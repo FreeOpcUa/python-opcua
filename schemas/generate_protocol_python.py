@@ -1,3 +1,7 @@
+#temporary hack
+import sys
+sys.path.append("../../schemas/")
+
 import struct
 
 import  generate_protocol as gp
@@ -192,7 +196,7 @@ if __name__ == "__main__":
     gp.IgnoredEnums = []
     gp.IgnoredStructs = []
     xmlpath = "Opc.Ua.Types.bsd"
-    protocolpath = "protocol_auto.py"
+    protocolpath = "../opcua/protocol_auto.py"
     p = gp.Parser(xmlpath)
     model = p.parse()
     gp.add_encoding_field(model)
