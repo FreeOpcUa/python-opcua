@@ -6,6 +6,8 @@ import struct
 
 import  generate_protocol as gp
 
+IgnoredEnums = ["NodeIdType"]
+IgnoredStructs = ["NodeId", "ExpandedNodeId"]
 
 class CodeGenerator(object):
     def __init__(self, model, output):
@@ -15,12 +17,15 @@ class CodeGenerator(object):
         self.iidx = 0 #indent index
 
     def run(self):
+        print("Writting python protocol code to ", self.output_path)
         self.output_file = open(self.output_path, "w")
         self.make_header()
         for enum in self.model.enums:
-            self.generate_enum_code(enum)
+            if not enum.name in IgnoredEnums:
+                self.generate_enum_code(enum)
         for struct in self.model.structs:
-            self.generate_struct_code(struct)
+            if not struct.name in IgnoredStructs:
+                self.generate_struct_code(struct)
 
     def write(self, *args):
         args = list(args)
@@ -35,7 +40,8 @@ class CodeGenerator(object):
         self.write("")
         self.write("import struct")
         self.write("")
-        self.write("import types")
+        self.write("from .uatypes import *")
+        self.write("from .object_ids import ObjectIds")
         self.write("")
         self.write("")
 
@@ -55,9 +61,19 @@ class CodeGenerator(object):
         self.write("def __init__(self):")
         self.iidx += 1
         for field in obj.fields:
-            self.write("self.{} = {}".format(field.name, "[]" if field.length else "None"))
-            if not field.is_struct():
-                fmt = "<" + str(self.to_fmt(field.uatype))
+            if field.name == "TypeId" and ( obj.name.endswith("Request") or obj.name.endswith("Response")):
+                #self.write("nodeid = NodeId()")
+                #self.write("fourbyte = FourByteNodeId()")
+                #self.write("fourbyte.NamespaceIndex = 0")
+                #self.write("fourbyte.Identifier = ObjectIds.{}".format(obj.name +"_Encoding_DefaultBinary"))
+                #self.write("nodeid.FourByte = fourbyte")
+
+                self.write("self.{} = NodeId(0, ObjectIds.{}, NodeIdType.FourByte)".format(field.name, obj.name +"_Encoding_DefaultBinary"))
+                #self.write("self.{} = nodeid".format(field.name))
+            else:
+                self.write("self.{} = {}".format(field.name, "[]" if field.length else self.get_default_value(field)))
+            if field.is_native_type() or field.name in self.model.enum_list:
+                fmt = "<" + str(self.to_fmt(field))
                 self.write("self._{}_fmt = '{}'".format(field.name, fmt))
                 self.write("self._{}_fmt_size = {}".format(field.name, struct.calcsize(fmt)))
         self.iidx = 1
@@ -95,16 +111,19 @@ class CodeGenerator(object):
                 self.write("tmp.append(struct.pack('<i', len(self.{})))".format(field.name))
                 self.write("for i in {}:".format(field.name))
                 self.iidx += 1
-            if field.is_struct():
-                self.write("tmp.append(self.{}.to_binary())".format(field.name))
-            else:
+            if field.uatype == "String":
+                self.write("tmp.append(struct.pack('<i', len(self.{})))".format(field.name))
+                self.write("tmp.append(struct.pack('<{{}}s'.format(len(self.{name})), self.{name}.encode()))".format(name=field.name))
+            elif field.is_native_type() or field.name in self.model.enum_list:
                 self.write("tmp.append(struct.pack(self._{name}_fmt, self.{name}))".format(name=field.name))
+            else:
+                self.write("tmp.append(self.{}.to_binary())".format(field.name))
             if field.length:
                 self.iidx -= 1
         self.iidx = 2
         if obj.is_extension_object():
             self.write("body = b''.join(tmp)")
-            self.write("packet.append(struct.pack('<i', struct.calcsize(body)))")
+            self.write("packet.append(struct.pack('<i', len(body)))")
             self.write("packet.append(body)")
         self.write("return b''.join(packet)")
         self.write("")
@@ -135,52 +154,73 @@ class CodeGenerator(object):
                 self.iidx += 1
                 self.write("for i in range(0, length):")
                 self.iidx += 1
-            if field.is_struct():
-                self.write("self.{} = {}.from_binary(data)".format(field.name, field.uatype))
-            else:
+            if field.uatype == "String":
+                self.write("slength = struct.unpack('<i', data.red(1))")
+                self.write("self.{name} = struct.unpack('<{{}}s'.format(slength), data.read(slength))".format(name=field.name))
+            if field.is_native_type() or field.name in self.model.enum_list:
                 self.write("self.{name} = struct.unpack(self._{name}_fmt, data.read(self._{name}_fmt_size))[0]".format(name=field.name))
+            else:
+                self.write("self.{} = {}.from_binary(data)".format(field.name, field.uatype))
         self.iidx = 3
         self.write("return data")
         self.iix = 0
 
-
-    def to_fmt(self, uatype):
-        if uatype == "String":
-            return "s"
-        elif uatype == "CharArray":
-            return "s"
-        elif uatype == "Char":
-            return "s"
-        elif uatype == "SByte":
-            return "B"
-        elif uatype == "Int8":
-            return "b"
-        elif uatype == "Int16":
-            return "h"
-        elif uatype == "Int32":
-            return "i"
-        elif uatype == "Int64":
-            return "q"
-        elif uatype == "UInt8":
-            return "B"
-        elif uatype == "UInt16":
-            return "H"
-        elif uatype == "UInt32":
-            return "I"
-        elif uatype == "UInt64":
-            return "Q"
-        elif uatype == "DateTime":
-            return "d"
-        elif uatype == "Boolean":
-            return "?"
-        elif uatype == "Double":
-            return "d"
-        elif uatype == "Float":
-            return "f"
-        elif uatype == "Byte":
-            return "B"
+    
+    def get_default_value(self, field):
+        if field.name in self.model.enum_list:
+            return 0
+        if field.uatype in ("String"):
+            return "''"
+        elif field.uatype in ("CharArray", "Char"):
+            return "b''"
+        elif field.uatype in ("Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "DateTime", "Boolean", "Double", "Float", "Byte"):
+            return 0
         else:
-            print("Error unknown uatype: ", uatype)
+            return field.uatype + "()"
+
+    def to_fmt(self, obj):
+        if obj.uatype == "String":
+            return "s"
+        elif obj.uatype == "CharArray":
+            return "s"
+        elif obj.uatype == "Char":
+            return "s"
+        elif obj.uatype == "SByte":
+            return "B"
+        elif obj.uatype == "Int8":
+            return "b"
+        elif obj.uatype == "Int16":
+            return "h"
+        elif obj.uatype == "Int32":
+            return "i"
+        elif obj.uatype == "Int64":
+            return "q"
+        elif obj.uatype == "UInt8":
+            return "B"
+        elif obj.uatype == "UInt16":
+            return "H"
+        elif obj.uatype == "UInt32":
+            return "I"
+        elif obj.uatype == "UInt64":
+            return "Q"
+        elif obj.uatype == "DateTime":
+            return "d"
+        elif obj.uatype == "Boolean":
+            return "?"
+        elif obj.uatype == "Double":
+            return "d"
+        elif obj.uatype == "Float":
+            return "f"
+        elif obj.uatype == "Byte":
+            return "B"
+        elif obj.uatype in ("6", "8"):
+            return "B"
+        elif obj.uatype == "32": 
+            return "I"
+        else:
+            field = self.model.get_enum(obj.name)
+            return self.to_fmt(field)
+            #print("Error unknown uatype: ", obj.uatype)
 
 
 
@@ -193,10 +233,8 @@ def fix_names(model):
 
 
 if __name__ == "__main__":
-    gp.IgnoredEnums = []
-    gp.IgnoredStructs = []
     xmlpath = "Opc.Ua.Types.bsd"
-    protocolpath = "../opcua/protocol_auto.py"
+    protocolpath = "../opcua/uaprotocol_auto.py"
     p = gp.Parser(xmlpath)
     model = p.parse()
     gp.add_encoding_field(model)

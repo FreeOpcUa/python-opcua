@@ -1,4 +1,6 @@
-from protocol_auto import *
+#from . import uaprotocol_auto as auto
+from .uaprotocol_auto import *
+import struct 
 
 class Hello(object):
     def __init__(self):

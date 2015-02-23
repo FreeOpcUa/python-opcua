@@ -6,7 +6,7 @@ import logging
 import socket
 from threading import Thread
 
-import uaprotocol as ua
+from . import uaprotocol as ua
 
 
 class BinaryClient(Thread):
@@ -16,7 +16,7 @@ class BinaryClient(Thread):
         self._do_stop = False
         self._security_token = ua.ChannelSecurityToken()
         self._sequence_number = 0
-        self._authentication_token = None
+        self._authentication_token = ua.AnonymousIdentityToken()
         self._request_handle = 0
 
     def run(self):
@@ -103,15 +103,3 @@ class BinaryClient(Thread):
         hdr.SequenceNumber = self._sequence_number
         return hdr
 
-
-if __name__ == "__main__": 
-    from IPython import embed
-    logging.basicConfig(level=logging.DEBUG)
-    client = BinaryClient()
-    client.connect()
-    #client.start()
-    ack = client.send_hello("opc.tcp://localhost:4841/freeopcua/server/")
-    params = ua.OpenSecureChannelParameters()
-    client.open_secure_channel(params)
-    embed()
-    #binclient.stop()

@@ -1,1 +1,0 @@
-../schemas/protocol_auto.py
