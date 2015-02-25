@@ -1,15 +1,19 @@
 """
 implement ua datatypes
 """
-
+from datetime import datetime, timedelta
 import uuid
 import struct 
 
 def pack_string(string):
     length = len(string)
+    if length == 0:
+        return struct.pack("<i", -1) 
     if not type(string) is bytes:
         string = string.encode()
-    b.append(struct.pack("<i{}s".format(length), length, string))
+    return struct.pack("<i", length) + string
+
+pack_bytes = pack_string
 
 def unpack_bytes(data):
     length = struct.unpack("<i", data.read(4))[0]
@@ -38,25 +42,41 @@ class Guid(object):
     def to_binary(self):
         return self.uuid.bytes 
 
-    def from_binary(self, data):
-        self.uuid = uuid.UUID(bytes=data.read(16))
+    @staticmethod
+    def from_binary(data):
+        g = Guid()
+        g.uuid = uuid.UUID(bytes=data.read(16))
+        return g
+
 
 class ByteString(object):
-    def __init__(self):
-        self.data = b""
+    def __init__(self, data=b""):
+        self.data = data
 
     def to_binary(self):
-        if not self.data:
-            return struct.pack("!i", -1)
-        size = len(self.data)
-        data = struct.pack("!i", size)
-        data += struct.pack("!{}B".format(size), *self.data)
-        return data
+        return pack_bytes(self.data)
 
-    def from_binary(self, data):
-        size = struct.unpack("!i", data.read(4))[0]
-        self.data = struct.unpack("!{}c".format(size), data.read(size))
-        self.data = b"".join(self.data)
+    @staticmethod
+    def from_binary(data):
+        bs = ByteString()
+        bs.data = unpack_bytes(data)
+        return bs
+
+    def __bool__(self):
+        if len(self.data) != 0:
+            return True
+        return False
+
+"""
+
+class ByteString(bytes):
+    def __init__(self, data):
+        bytes.__init__(self, data)
+        self.data
+
+    def to_binary(self):
+        return 
+"""
 
 class StatusCode(object):
     def __init__(self):
@@ -78,7 +98,12 @@ class NodeIdType(object):
 
 
 class NodeId(object):
-    def __init__(self, namespaceidx=0, identifier=0, nodeidtype=None):
+    def __init__(self, namespaceidx=None, identifier=None, nodeidtype=None):
+        if namespaceidx is None:
+            self.NamespaceIndex = 0
+            self.Identifier = 0
+            self.NodeIdType = NodeIdType.TwoByte
+            return
         self.NamespaceIndex = namespaceidx
         self.Identifier = identifier
         if nodeidtype is None:
@@ -116,37 +141,45 @@ class NodeId(object):
 
     def to_binary(self):
         b = []
-        b.append(struct.pack("<BH", self.NodeIdType, self.NamespaceIndex))
+        b.append(struct.pack("<B", self.NodeIdType))
         if self.NodeIdType == NodeIdType.TwoByte:
             b.append(struct.pack("<B", self.Identifier))
         elif self.NodeIdType == NodeIdType.FourByte:
-            b.append(struct.pack("<H", self.Identifier))
+            b.append(struct.pack("<BH", self.NamespaceIndex, self.Identifier))
         elif self.NodeIdType == NodeIdType.Numeric:
-            b.append(struct.pack("<I", self.Identifier))
+            b.append(struct.pack("<HI", self.NamespaceIndex, self.Identifier))
         elif self.NodeIdType == NodeIdType.String:
+            b.append(struct,pack("<H", self.NamespaceIndex))
             b.append(pack_string(self._identifier))
         else:
+            b.append(struct,pack("<H", self.NamespaceIndex))
             b.append(self.Indentifier.to_binary())
         return b"".join(b)
 
-    def from_binary(self, data):
-        encoding, self.NamespaceIndex = struct.unpack("<BH", data.read(3))
-        self.NodeIdType = encoding & 0b00111111
+    @staticmethod
+    def from_binary(data):
+        nid = NodeId()
+        encoding = struct.unpack("<B", data.read(1))[0]
+        nid.NodeIdType = encoding & 0b00111111
 
-        if self.NodeIdType == NodeIdType.TwoByte:
-            self.Identifier = struct.unpack("<B", data.read(1))[0]
-        elif self.NodeIdType == NodeIdType.FourByte:
-            self.Identifier = struct.unpack("<B", data.read(1))[0]
-        elif self.NodeIdType == NodeIdType.Numeric:
-            self.Identifier = struct.unpack("<B", data.read(1))[0]
-        elif self.NodeIdType == NodeIdType.String:
-            self.Identifier = unpack_string(data)
+        if nid.NodeIdType == NodeIdType.TwoByte:
+            nid.Identifier = struct.unpack("<B", data.read(1))[0]
+        elif nid.NodeIdType == NodeIdType.FourByte:
+            nid.NamespaceIndex, nid.Identifier = struct.unpack("<BH", data.read(3))
+        elif nid.NodeIdType == NodeIdType.Numeric:
+            nid.NamespaceIndex, nid.Identifier = struct.unpack("<HI", data.read(6))
+        elif nid.NodeIdType == NodeIdType.String:
+            nid.NamespaceIndex = struct.unpack("<H", data.read(2))
+            nid.Identifier = unpack_string(data)
         elif self.NodeIdType == NodeIdType.ByteString:
-            self.Identifier = ByteString.from_binary(data)
-        elif self.NodeIdType == NodeIdType.Guid:
-            self.Identifier = Guid.from_binary(data)
+            nid.NamespaceIndex = struct.unpack("<H", data.read(2))
+            nid.Identifier = ByteString.from_binary(data)
+        elif nid.NodeIdType == NodeIdType.Guid:
+            nid.NamespaceIndex = struct.unpack("<H", data.read(2))
+            nid.Identifier = Guid.from_binary(data)
         else:
-            raise Exception("Unknown NodeId encoding: " + str(self.NodeIdType))
+            raise Exception("Unknown NodeId encoding: " + str(nid.NodeIdType))
+        return nid
 
         if test_bit(encoding, 6):
             self.NamespaceURI = unpack_string(data)
@@ -155,24 +188,70 @@ class NodeId(object):
 
 ExpandedNodeId = NodeId
 
-if __name__ == "__main__":
-    import io
-    from IPython import embed
-    bs = ByteString()
-    g = Guid()
-    sc = StatusCode()
-    s = b"this is a test string"
-    stream = io.BytesIO(s)
-    bs.data = s
-    d=bs.to_binary()
-    print(d)
-    bs.from_binary(io.BytesIO(d))
-    nid = NodeId()
-    print(nid)
-    nid.to_binary()
-    nid = NodeId(1, 4, NodeIdType.FourByte)
-    print(nid)
-    d = nid.to_binary()
-    print(nid.from_binary(io.BytesIO(d)))
+class DateTime(object):
+    def __init__(self, data=None):
+        if data is None:
+            self.data = self._to1601(datetime.now()) 
+        else:
+            self.data = data
 
-    embed()
+    def _to1601(self, dt):
+        return (dt - datetime(1601,1,1,0,0)).total_seconds() * 10**7
+
+    def to_datetime(self):
+        us = self.data / 10.0
+        return datetime(1601,1,1) + timedelta(microseconds=us)
+
+    @staticmethod
+    def now():
+        return DateTime.from_datetime(datetime.now())
+
+    @staticmethod
+    def from_datetime(pydt):
+        dt = DateTime()
+        dt.data = dt._to1601(pydt) 
+        return dt
+
+    def to_binary(self):
+        return struct.pack("<d", self.data)
+    
+    @staticmethod
+    def from_binary(self, data):
+        d = DateTime()
+        d.data = struct.unpack("<d", data.read(8))
+        return d
+
+    @staticmethod
+    def from_ctime(self, data):
+        return DateTime.from_datetime(datetime.fromtimestamp(data))
+
+    def __str__(self):
+        return "Datetime({})".format(self.to_datetime().isoformat())
+    __repr__ = __str__
+
+"""
+class ExtensionObject(object):
+    def __init__(self):
+        self.TypeId = ExpandedNodeId()
+        self.Encoding = 0
+        self.Body = b''
+    
+    def to_binary(self):
+        packet = []
+        packet.append(self.TypeId.to_binary())
+        if self.Body:
+            set_bit(self.Encoding, 0)
+        packet.append(struct.pack('<B', self.Encoding))
+        if self.Body:
+            pack_bytes(self.Body)
+        
+        @staticmethod
+        def from_binary(self, data):
+            obj = ExtensionObject()
+            obj.TypeId = ExpandedNodeId.from_binary(data)
+            obj.Encoding = struct.unpack('<B', data.read(1))[0]
+            if test_but(obj.Encoding, 0):
+                obj.Body = unpack_string(data)
+            return obj
+"""
+

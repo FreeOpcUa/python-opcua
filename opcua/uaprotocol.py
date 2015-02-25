@@ -18,11 +18,7 @@ class Hello(object):
         b.append(struct.pack("<I", self.SendBufferSize))
         b.append(struct.pack("<I", self.MaxMessageSize))
         b.append(struct.pack("<I", self.MaxChunkCount))
-        #s = self.EndpointUrl.encode('utf-8')
-        #s = self.EndpointUrl.encode('utf-8')
-        b.append(struct.pack("<I", len(self.EndpointUrl)))
-        b.append(self.EndpointUrl.encode("utf-8"))
-        #b.append(struct.pack("<{}s".format(len(s)), s))
+        b.append(pack_string(self.EndpointUrl))
         return b"".join(b)
 
     def get_binary_size(self):
@@ -112,6 +108,7 @@ class SecureHeader(Header):
     def __init__(self, msgtype=None, chunktype=None, channelid=0):
         Header.__init__(self, msgtype, chunktype)
         self.ChannelId = channelid
+        self.Size = 12
 
     def to_binary(self):
         b = []
@@ -130,29 +127,23 @@ class SecureHeader(Header):
 
 class AsymmetricAlgorithmHeader:
     def __init__(self):
-        self.SecurityPolicyURI = None
-        self.SenderCertificate = None
-        self.ReceiverCertificateThumbPrint = None
+        self.SecurityPolicyURI = "http://opcfoundation.org/UA/SecurityPolicy#None"
+        self.SenderCertificate = b""
+        self.ReceiverCertificateThumbPrint = b""
 
     def to_binary(self):
         b = []
-        b.append(struct.pack("<is", len(self.SecurityPolicyURI), self.SecurityPolicyURI.encode()))
-        b.append(struct.pack("<is", len(self.SenderCertificate), self.SenderCertificate))
-        b.append(struct.pack("<is", len(self.ReceiverCertificateThumbPrint), self.ReceiverCertificateThumbPrint))
+        b.append(pack_string(self.SecurityPolicyURI))
+        b.append(pack_string(self.SenderCertificate))
+        b.append(pack_string(self.ReceiverCertificateThumbPrint))
         return b"".join(b)
 
     @staticmethod
     def from_binary(data):
         hdr = AsymmetricAlgorithmHeader()
-        l = struct.unpack("<i")
-        if l != -1:
-            hdr.SecurityPolicyURI = struct.unpack("<{}s".format(l), data.read(l))[0]
-        l = struct.unpack("<i")
-        if l != -1:
-            hdr.SenderCertificate = struct.unpack("<{}s".format(l), data.read(l))[0]
-        l = struct.unpack("<i")
-        if l != -1:
-            hdr.ReceiverCertificateThumbPrint = struct.unpack("<{}s".format(l), data.read(l))[0]
+        hdr.SecurityPolicyURI = unpack_string(data)
+        hdr.SenderCertificate = unpack_string(data)
+        hdr.ReceiverCertificateThumbPrint = unpack_string(data)
         return hdr
 
 

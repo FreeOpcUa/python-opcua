@@ -13,6 +13,11 @@ if __name__ == "__main__":
     #client.start()
     ack = client.send_hello("opc.tcp://localhost:4841/freeopcua/server/")
     params = ua.OpenSecureChannelParameters()
+    params.ClientProtocolVersion = 255
+    params.RequestType = ua.SecurityTokenRequestType.Issue
+    params.SecurityMode = ua.MessageSecurityMode.None_
+    params.RequestedLifetime = 300000
+    params.ClientNonce = ua.ByteString('\x00')
     client.open_secure_channel(params)
     embed()
     #binclient.stop()

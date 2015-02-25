@@ -16,7 +16,7 @@ class BinaryClient(Thread):
         self._do_stop = False
         self._security_token = ua.ChannelSecurityToken()
         self._sequence_number = 0
-        self._authentication_token = ua.AnonymousIdentityToken()
+        self._request_id = 0
         self._request_handle = 0
 
     def run(self):
@@ -49,20 +49,30 @@ class BinaryClient(Thread):
         return  ua.Acknowledge.from_binary(io.BytesIO(data))
     
     def _write_socket(self, hdr, *args):
+        print("wrtting to socket")
         alle = []
         for arg in args:
             data = arg.to_binary()
             hdr.add_size(len(data))
+            print(arg, len(data), hdr.Size, data)
             alle.append(data)
         alle.insert(0, hdr.to_binary())
-        for obj in alle:
-            self.socket.send(obj)
+        print(data)
+        alle = b"".join(alle)
+        self.socket.send(alle)
 
     def open_secure_channel(self, params):
         request = ua.OpenSecureChannelRequest()
         request.Parameters = params
+        request.RequestHeader.TimeoutHint = 255
 
-        response = self._send(request)
+        hdr = ua.SecureHeader(ua.MessageType.SecureOpen, ua.ChunkType.Single, self._security_token.TokenId)
+        asymhdr = ua.AsymmetricAlgorithmHeader()
+        #asymhdr.SecurityPolicyURI = "http://opcfoundation.org/UA/SecurityPolicy#None" 
+        #asymhdr.SenderCertificate 
+        #asymhdr.ReceiverCertificateThumbPrint
+        seqhdr = self._create_sequence_header()
+        self._write_socket(hdr, asymhdr, seqhdr, request)
 
         header = self._recv_header()
         data = self.socket.recv(header.Size)
@@ -79,7 +89,6 @@ class BinaryClient(Thread):
         hdr = ua.SecureHeader(ua.MessageType.SecureMessage, ua.ChunkType.Single, self._security_token.TokenId)
         symhdr = self._create_algo_header()
         seqhdr = self._create_sequence_header()
-        request = request.to_binary()
 
         self._write_socket(hdr, symhdr, seqhdr, request)
 
@@ -101,5 +110,7 @@ class BinaryClient(Thread):
         hdr = ua.SequenceHeader()
         self._sequence_number += 1
         hdr.SequenceNumber = self._sequence_number
+        self._request_id += 1
+        hdr.RequestId = self._request_id
         return hdr
 
