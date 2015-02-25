@@ -1,0 +1,157 @@
+<xs:schema 
+  xmlns:DI="http://opcfoundation.org/UA/DI/Types.xsd"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:ua="http://opcfoundation.org/UA/2008/02/Types.xsd" 
+  xmlns:tns="http://opcfoundation.org/UA/ADI/Types.xsd" 
+  targetNamespace="http://opcfoundation.org/UA/ADI/Types.xsd" 
+  elementFormDefault="qualified"
+>
+  <xs:import namespace="http://opcfoundation.org/UA/DI/Types.xsd" />
+  <xs:import namespace="http://opcfoundation.org/UA/2008/02/Types.xsd" />
+  
+  <xs:simpleType  name="ExecutionCycleEnumeration">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="IDLE_0" />
+      <xs:enumeration value="DIAGNOSTIC_1" />
+      <xs:enumeration value="CLEANING_2" />
+      <xs:enumeration value="CALIBRATION_4" />
+      <xs:enumeration value="VALIDATION_8" />
+      <xs:enumeration value="SAMPLING_16" />
+      <xs:enumeration value="DIAGNOSTIC_WITH_GRAB_SAMPLE_32769" />
+      <xs:enumeration value="CLEANING_WITH_GRAB_SAMPLE_32770" />
+      <xs:enumeration value="CALIBRATION_WITH_GRAB_SAMPLE_32772" />
+      <xs:enumeration value="VALIDATION_WITH_GRAB_SAMPLE_32776" />
+      <xs:enumeration value="SAMPLING_WITH_GRAB_SAMPLE_32784" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="ExecutionCycleEnumeration" type="tns:ExecutionCycleEnumeration" />
+
+  <xs:complexType name="ListOfExecutionCycleEnumeration">
+    <xs:sequence>
+      <xs:element name="ExecutionCycleEnumeration" type="tns:ExecutionCycleEnumeration" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ListOfExecutionCycleEnumeration" type="tns:ListOfExecutionCycleEnumeration" nillable="true"></xs:element>
+
+  <xs:simpleType  name="DiagnosticStatusEnumeration">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NORMAL_0" />
+      <xs:enumeration value="MAINTENANCE_REQUIRED_1" />
+      <xs:enumeration value="FAULT_2" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="DiagnosticStatusEnumeration" type="tns:DiagnosticStatusEnumeration" />
+
+  <xs:complexType name="ListOfDiagnosticStatusEnumeration">
+    <xs:sequence>
+      <xs:element name="DiagnosticStatusEnumeration" type="tns:DiagnosticStatusEnumeration" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ListOfDiagnosticStatusEnumeration" type="tns:ListOfDiagnosticStatusEnumeration" nillable="true"></xs:element>
+
+  <xs:simpleType  name="AcquisitionResultStatusEnumeration">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="IN_PROGRESS_0" />
+      <xs:enumeration value="GOOD_1" />
+      <xs:enumeration value="BAD_2" />
+      <xs:enumeration value="UNKNOWN_3" />
+      <xs:enumeration value="PARTIAL_4" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="AcquisitionResultStatusEnumeration" type="tns:AcquisitionResultStatusEnumeration" />
+
+  <xs:complexType name="ListOfAcquisitionResultStatusEnumeration">
+    <xs:sequence>
+      <xs:element name="AcquisitionResultStatusEnumeration" type="tns:AcquisitionResultStatusEnumeration" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ListOfAcquisitionResultStatusEnumeration" type="tns:ListOfAcquisitionResultStatusEnumeration" nillable="true"></xs:element>
+
+  <xs:complexType name="AxisInformation">
+  	<xs:annotation>
+  	  <xs:documentation>Structure defining the information for auxiliary axis for array type variables.</xs:documentation>
+  	</xs:annotation>
+  	<xs:sequence>
+      <xs:element name="EngineeringUnits" type="ua:EUInformation" minOccurs="0" nillable="true" />
+      <xs:element name="EURange" type="ua:Range" minOccurs="0" nillable="true" />
+      <xs:element name="title" type="ua:LocalizedText" minOccurs="0" nillable="true" />
+      <xs:element name="axisScaleType" type="tns:AxisScaleEnumeration" minOccurs="0" />
+      <xs:element name="axisSteps" type="ua:ListOfDouble" minOccurs="0" nillable="true" />
+  	</xs:sequence>
+  </xs:complexType>
+  <xs:element name="AxisInformation" type="tns:AxisInformation" />
+
+  <xs:complexType name="ListOfAxisInformation">
+    <xs:sequence>
+      <xs:element name="AxisInformation" type="tns:AxisInformation" minOccurs="0" maxOccurs="unbounded" nillable="true" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ListOfAxisInformation" type="tns:ListOfAxisInformation" nillable="true"></xs:element>
+
+  <xs:simpleType  name="AxisScaleEnumeration">
+    <xs:annotation>
+      <xs:documentation>Identify on which type of axis the data shall be displayed.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="LINEAR_0" />
+      <xs:enumeration value="LOG_1" />
+      <xs:enumeration value="LN_2" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="AxisScaleEnumeration" type="tns:AxisScaleEnumeration" />
+
+  <xs:complexType name="XVType">
+  	<xs:annotation>
+  	  <xs:documentation>Structure defining XY value like a list of peaks.</xs:documentation>
+  	</xs:annotation>
+  	<xs:sequence>
+      <xs:element name="x" type="xs:double" minOccurs="0" />
+      <xs:element name="value" type="xs:float" minOccurs="0" />
+  	</xs:sequence>
+  </xs:complexType>
+  <xs:element name="XVType" type="tns:XVType" />
+
+  <xs:complexType name="ListOfXVType">
+    <xs:sequence>
+      <xs:element name="XVType" type="tns:XVType" minOccurs="0" maxOccurs="unbounded" nillable="true" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ListOfXVType" type="tns:ListOfXVType" nillable="true"></xs:element>
+
+  <xs:complexType name="ComplexType">
+  	<xs:annotation>
+  	  <xs:documentation>Structure defining double IEEE 32 bits complex value</xs:documentation>
+  	</xs:annotation>
+  	<xs:sequence>
+      <xs:element name="Real" type="xs:float" minOccurs="0" />
+      <xs:element name="Imaginary" type="xs:float" minOccurs="0" />
+  	</xs:sequence>
+  </xs:complexType>
+  <xs:element name="ComplexType" type="tns:ComplexType" />
+
+  <xs:complexType name="ListOfComplexType">
+    <xs:sequence>
+      <xs:element name="ComplexType" type="tns:ComplexType" minOccurs="0" maxOccurs="unbounded" nillable="true" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ListOfComplexType" type="tns:ListOfComplexType" nillable="true"></xs:element>
+
+  <xs:complexType name="DoubleComplexType">
+  	<xs:annotation>
+  	  <xs:documentation>Structure defining double IEEE 64 bits complex value</xs:documentation>
+  	</xs:annotation>
+  	<xs:sequence>
+      <xs:element name="Real" type="xs:double" minOccurs="0" />
+      <xs:element name="Imaginary" type="xs:double" minOccurs="0" />
+  	</xs:sequence>
+  </xs:complexType>
+  <xs:element name="DoubleComplexType" type="tns:DoubleComplexType" />
+
+  <xs:complexType name="ListOfDoubleComplexType">
+    <xs:sequence>
+      <xs:element name="DoubleComplexType" type="tns:DoubleComplexType" minOccurs="0" maxOccurs="unbounded" nillable="true" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ListOfDoubleComplexType" type="tns:ListOfDoubleComplexType" nillable="true"></xs:element>
+  
+</xs:schema>
