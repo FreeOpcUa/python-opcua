@@ -247,15 +247,24 @@ class ExtensionObject(object):
             packet.append(self.Body.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ExtensionObject()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ExtensionObject(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ')'
+    
+    __repr__ = __str__
+    
 class XmlElement(object):
     def __init__(self):
         self.Length = 0
@@ -271,19 +280,26 @@ class XmlElement(object):
             packet.append(struct.pack(fmt, self.Value))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<i'
-            fmt_size = Length
-            self.Length = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<s'
-                    fmt_size = Value
-                    self.Value = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = XmlElement()
+        fmt = '<i'
+        fmt_size = 4
+        obj.Length = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<s'
+                fmt_size = 1
+                obj.Value = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'XmlElement(' + 'Length:' + str(self.Length) + ', '  + \
+             'Value:' + str(self.Value) + ')'
+    
+    __repr__ = __str__
+    
 class TwoByteNodeId(object):
     def __init__(self):
         self.Identifier = 0
@@ -294,13 +310,19 @@ class TwoByteNodeId(object):
         packet.append(struct.pack(fmt, self.Identifier))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<B'
-            fmt_size = Identifier
-            self.Identifier = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TwoByteNodeId()
+        fmt = '<B'
+        fmt_size = 1
+        obj.Identifier = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'TwoByteNodeId(' + 'Identifier:' + str(self.Identifier) + ')'
+    
+    __repr__ = __str__
+    
 class FourByteNodeId(object):
     def __init__(self):
         self.NamespaceIndex = 0
@@ -314,16 +336,23 @@ class FourByteNodeId(object):
         packet.append(struct.pack(fmt, self.Identifier))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<B'
-            fmt_size = NamespaceIndex
-            self.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<H'
-            fmt_size = Identifier
-            self.Identifier = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = FourByteNodeId()
+        fmt = '<B'
+        fmt_size = 1
+        obj.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<H'
+        fmt_size = 2
+        obj.Identifier = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'FourByteNodeId(' + 'NamespaceIndex:' + str(self.NamespaceIndex) + ', '  + \
+             'Identifier:' + str(self.Identifier) + ')'
+    
+    __repr__ = __str__
+    
 class NumericNodeId(object):
     def __init__(self):
         self.NamespaceIndex = 0
@@ -337,16 +366,23 @@ class NumericNodeId(object):
         packet.append(struct.pack(fmt, self.Identifier))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<H'
-            fmt_size = NamespaceIndex
-            self.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = Identifier
-            self.Identifier = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = NumericNodeId()
+        fmt = '<H'
+        fmt_size = 2
+        obj.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.Identifier = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'NumericNodeId(' + 'NamespaceIndex:' + str(self.NamespaceIndex) + ', '  + \
+             'Identifier:' + str(self.Identifier) + ')'
+    
+    __repr__ = __str__
+    
 class StringNodeId(object):
     def __init__(self):
         self.NamespaceIndex = 0
@@ -360,16 +396,23 @@ class StringNodeId(object):
         packet.append(struct.pack(fmt, self.Identifier))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<H'
-            fmt_size = NamespaceIndex
-            self.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<s'
-            fmt_size = Identifier
-            self.Identifier = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = StringNodeId()
+        fmt = '<H'
+        fmt_size = 2
+        obj.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<s'
+        fmt_size = 1
+        obj.Identifier = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'StringNodeId(' + 'NamespaceIndex:' + str(self.NamespaceIndex) + ', '  + \
+             'Identifier:' + str(self.Identifier) + ')'
+    
+    __repr__ = __str__
+    
 class GuidNodeId(object):
     def __init__(self):
         self.NamespaceIndex = 0
@@ -382,14 +425,21 @@ class GuidNodeId(object):
         packet.append(self.Identifier.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<H'
-            fmt_size = NamespaceIndex
-            self.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.Identifier = Guid.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = GuidNodeId()
+        fmt = '<H'
+        fmt_size = 2
+        obj.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.Identifier = Guid.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'GuidNodeId(' + 'NamespaceIndex:' + str(self.NamespaceIndex) + ', '  + \
+             'Identifier:' + str(self.Identifier) + ')'
+    
+    __repr__ = __str__
+    
 class ByteStringNodeId(object):
     def __init__(self):
         self.NamespaceIndex = 0
@@ -402,14 +452,21 @@ class ByteStringNodeId(object):
         packet.append(self.Identifier.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<H'
-            fmt_size = NamespaceIndex
-            self.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.Identifier = ByteString.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ByteStringNodeId()
+        fmt = '<H'
+        fmt_size = 2
+        obj.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.Identifier = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ByteStringNodeId(' + 'NamespaceIndex:' + str(self.NamespaceIndex) + ', '  + \
+             'Identifier:' + str(self.Identifier) + ')'
+    
+    __repr__ = __str__
+    
 class DiagnosticInfo(object):
     def __init__(self):
         self.Encoding = 0
@@ -418,9 +475,10 @@ class DiagnosticInfo(object):
         self.LocalizedText = 0
         self.AdditionalInfo = b''
         self.InnerStatusCode = StatusCode()
-        self.InnerDiagnosticInfo = DiagnosticInfo()
+        self.InnerDiagnosticInfo = None
     
     def to_binary(self):
+        if self.InnerDiagnosticInfo is None: self.InnerDiagnosticInfo = DiagnosticInfo()
         packet = []
         if self.SymbolicId: self.Encoding |= (1 << 0)
         if self.NamespaceURI: self.Encoding |= (1 << 1)
@@ -448,33 +506,45 @@ class DiagnosticInfo(object):
             packet.append(self.InnerDiagnosticInfo.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            if self.Encoding & (1 << 0):
-                fmt = '<i'
-                fmt_size = SymbolicId
-                self.SymbolicId = struct.unpack(fmt, data.read(fmt_size))[0]
-            if self.Encoding & (1 << 1):
-                fmt = '<i'
-                fmt_size = NamespaceURI
-                self.NamespaceURI = struct.unpack(fmt, data.read(fmt_size))[0]
-            if self.Encoding & (1 << 2):
-                fmt = '<i'
-                fmt_size = LocalizedText
-                self.LocalizedText = struct.unpack(fmt, data.read(fmt_size))[0]
-            if self.Encoding & (1 << 4):
-                fmt = '<s'
-                fmt_size = AdditionalInfo
-                self.AdditionalInfo = struct.unpack(fmt, data.read(fmt_size))[0]
-            if self.Encoding & (1 << 5):
-                self.InnerStatusCode = StatusCode.from_binary(data)
-            if self.Encoding & (1 << 6):
-                self.InnerDiagnosticInfo = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DiagnosticInfo()
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            fmt = '<i'
+            fmt_size = 4
+            obj.SymbolicId = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 1):
+            fmt = '<i'
+            fmt_size = 4
+            obj.NamespaceURI = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 2):
+            fmt = '<i'
+            fmt_size = 4
+            obj.LocalizedText = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 4):
+            fmt = '<s'
+            fmt_size = 1
+            obj.AdditionalInfo = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 5):
+            obj.InnerStatusCode = StatusCode.from_binary(data)
+        if obj.Encoding & (1 << 6):
+            obj.InnerDiagnosticInfo = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DiagnosticInfo(' + 'Encoding:' + str(self.Encoding) + ', '  + \
+             'SymbolicId:' + str(self.SymbolicId) + ', '  + \
+             'NamespaceURI:' + str(self.NamespaceURI) + ', '  + \
+             'LocalizedText:' + str(self.LocalizedText) + ', '  + \
+             'AdditionalInfo:' + str(self.AdditionalInfo) + ', '  + \
+             'InnerStatusCode:' + str(self.InnerStatusCode) + ', '  + \
+             'InnerDiagnosticInfo:' + str(self.InnerDiagnosticInfo) + ')'
+    
+    __repr__ = __str__
+    
 class QualifiedName(object):
     def __init__(self):
         self.NamespaceIndex = 0
@@ -488,16 +558,23 @@ class QualifiedName(object):
         packet.append(struct.pack(fmt, self.Name))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<i'
-            fmt_size = NamespaceIndex
-            self.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<s'
-            fmt_size = Name
-            self.Name = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = QualifiedName()
+        fmt = '<i'
+        fmt_size = 4
+        obj.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<s'
+        fmt_size = 1
+        obj.Name = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'QualifiedName(' + 'NamespaceIndex:' + str(self.NamespaceIndex) + ', '  + \
+             'Name:' + str(self.Name) + ')'
+    
+    __repr__ = __str__
+    
 class LocalizedText(object):
     def __init__(self):
         self.Encoding = 0
@@ -518,21 +595,29 @@ class LocalizedText(object):
             packet.append(struct.pack(fmt, self.Text))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            if self.Encoding & (1 << 0):
-                fmt = '<s'
-                fmt_size = Locale
-                self.Locale = struct.unpack(fmt, data.read(fmt_size))[0]
-            if self.Encoding & (1 << 1):
-                fmt = '<s'
-                fmt_size = Text
-                self.Text = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = LocalizedText()
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            fmt = '<s'
+            fmt_size = 1
+            obj.Locale = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 1):
+            fmt = '<s'
+            fmt_size = 1
+            obj.Text = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', '  + \
+             'Locale:' + str(self.Locale) + ', '  + \
+             'Text:' + str(self.Text) + ')'
+    
+    __repr__ = __str__
+    
 class DataValue(object):
     def __init__(self):
         self.Encoding = 0
@@ -569,29 +654,41 @@ class DataValue(object):
             packet.append(struct.pack(fmt, self.ServerPicoseconds))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            if self.Encoding & (1 << 0):
-                self.Value = Variant.from_binary(data)
-            if self.Encoding & (1 << 1):
-                self.StatusCode = StatusCode.from_binary(data)
-            if self.Encoding & (1 << 2):
-                self.SourceTimestamp = DateTime.from_binary(data)
-            if self.Encoding & (1 << 3):
-                fmt = '<H'
-                fmt_size = SourcePicoseconds
-                self.SourcePicoseconds = struct.unpack(fmt, data.read(fmt_size))[0]
-            if self.Encoding & (1 << 4):
-                self.ServerTimestamp = DateTime.from_binary(data)
-            if self.Encoding & (1 << 5):
-                fmt = '<H'
-                fmt_size = ServerPicoseconds
-                self.ServerPicoseconds = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DataValue()
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Value = Variant.from_binary(data)
+        if obj.Encoding & (1 << 1):
+            obj.StatusCode = StatusCode.from_binary(data)
+        if obj.Encoding & (1 << 2):
+            obj.SourceTimestamp = DateTime.from_binary(data)
+        if obj.Encoding & (1 << 3):
+            fmt = '<H'
+            fmt_size = 2
+            obj.SourcePicoseconds = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 4):
+            obj.ServerTimestamp = DateTime.from_binary(data)
+        if obj.Encoding & (1 << 5):
+            fmt = '<H'
+            fmt_size = 2
+            obj.ServerPicoseconds = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'DataValue(' + 'Encoding:' + str(self.Encoding) + ', '  + \
+             'Value:' + str(self.Value) + ', '  + \
+             'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'SourceTimestamp:' + str(self.SourceTimestamp) + ', '  + \
+             'SourcePicoseconds:' + str(self.SourcePicoseconds) + ', '  + \
+             'ServerTimestamp:' + str(self.ServerTimestamp) + ', '  + \
+             'ServerPicoseconds:' + str(self.ServerPicoseconds) + ')'
+    
+    __repr__ = __str__
+    
 class Variant(object):
     def __init__(self):
         self.Encoding = 0
@@ -620,9 +717,10 @@ class Variant(object):
         self.LocalizedText = []
         self.ExtensionObject = []
         self.DataValue = []
-        self.Variant = []
+        self.Variant = None
     
     def to_binary(self):
+        if self.Variant is None: self.Variant = Variant()
         packet = []
         if self.ArrayLength: self.Encoding |= (1 << 7)
         others = self.Encoding & 0b01111111
@@ -794,190 +892,222 @@ class Variant(object):
                 packet.append(self.Variant.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            if self.Encoding & (1 << 7):
-                fmt = '<i'
-                fmt_size = ArrayLength
-                self.ArrayLength = struct.unpack(fmt, data.read(fmt_size))[0]
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        fmt = '<?'
-                        fmt_size = Boolean
-                        self.Boolean = struct.unpack(fmt, data.read(fmt_size))[0]
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        fmt = '<B'
-                        fmt_size = SByte
-                        self.SByte = struct.unpack(fmt, data.read(fmt_size))[0]
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        fmt = '<B'
-                        fmt_size = Byte
-                        self.Byte = struct.unpack(fmt, data.read(fmt_size))[0]
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        fmt = '<h'
-                        fmt_size = Int16
-                        self.Int16 = struct.unpack(fmt, data.read(fmt_size))[0]
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        fmt = '<H'
-                        fmt_size = UInt16
-                        self.UInt16 = struct.unpack(fmt, data.read(fmt_size))[0]
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        fmt = '<i'
-                        fmt_size = Int32
-                        self.Int32 = struct.unpack(fmt, data.read(fmt_size))[0]
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        fmt = '<I'
-                        fmt_size = UInt32
-                        self.UInt32 = struct.unpack(fmt, data.read(fmt_size))[0]
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        fmt = '<q'
-                        fmt_size = Int64
-                        self.Int64 = struct.unpack(fmt, data.read(fmt_size))[0]
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        fmt = '<Q'
-                        fmt_size = UInt64
-                        self.UInt64 = struct.unpack(fmt, data.read(fmt_size))[0]
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        fmt = '<f'
-                        fmt_size = Float
-                        self.Float = struct.unpack(fmt, data.read(fmt_size))[0]
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        fmt = '<d'
-                        fmt_size = Double
-                        self.Double = struct.unpack(fmt, data.read(fmt_size))[0]
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        slength = struct.unpack('<i', data.red(1))
-                        self.String = struct.unpack('<{}s'.format(slength), data.read(slength))
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        self.DateTime = DateTime.from_binary(data)
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        self.Guid = Guid.from_binary(data)
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        self.ByteString = ByteString.from_binary(data)
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        self.XmlElement = XmlElement.from_binary(data)
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        self.NodeId = NodeId.from_binary(data)
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        self.ExpandedNodeId = ExpandedNodeId.from_binary(data)
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        self.StatusCode = StatusCode.from_binary(data)
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        self.DiagnosticInfo = DiagnosticInfo.from_binary(data)
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        self.QualifiedName = QualifiedName.from_binary(data)
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        self.LocalizedText = LocalizedText.from_binary(data)
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        self.ExtensionObject = ExtensionObject.from_binary(data)
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        self.DataValue = DataValue.from_binary(data)
-            val = self.Encoding & 0b01111111
-            if val == 0:
-                length = struct.unpack('<i', data.read(4))[0]
-                if length <= -1:
-                    for i in range(0, length):
-                        self.Variant = Variant.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = Variant()
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 7):
+            fmt = '<i'
+            fmt_size = 4
+            obj.ArrayLength = struct.unpack(fmt, data.read(fmt_size))[0]
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    fmt = '<?'
+                    fmt_size = 1
+                    obj.Boolean = struct.unpack(fmt, data.read(fmt_size))[0]
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    fmt = '<B'
+                    fmt_size = 1
+                    obj.SByte = struct.unpack(fmt, data.read(fmt_size))[0]
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    fmt = '<B'
+                    fmt_size = 1
+                    obj.Byte = struct.unpack(fmt, data.read(fmt_size))[0]
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    fmt = '<h'
+                    fmt_size = 2
+                    obj.Int16 = struct.unpack(fmt, data.read(fmt_size))[0]
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    fmt = '<H'
+                    fmt_size = 2
+                    obj.UInt16 = struct.unpack(fmt, data.read(fmt_size))[0]
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    fmt = '<i'
+                    fmt_size = 4
+                    obj.Int32 = struct.unpack(fmt, data.read(fmt_size))[0]
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    fmt = '<I'
+                    fmt_size = 4
+                    obj.UInt32 = struct.unpack(fmt, data.read(fmt_size))[0]
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    fmt = '<q'
+                    fmt_size = 8
+                    obj.Int64 = struct.unpack(fmt, data.read(fmt_size))[0]
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    fmt = '<Q'
+                    fmt_size = 8
+                    obj.UInt64 = struct.unpack(fmt, data.read(fmt_size))[0]
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    fmt = '<f'
+                    fmt_size = 4
+                    obj.Float = struct.unpack(fmt, data.read(fmt_size))[0]
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    fmt = '<d'
+                    fmt_size = 8
+                    obj.Double = struct.unpack(fmt, data.read(fmt_size))[0]
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    slength = struct.unpack('<i', data.red(1))
+                    obj.String = struct.unpack('<{}s'.format(slength), data.read(slength))
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    obj.DateTime = DateTime.from_binary(data)
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    obj.Guid = Guid.from_binary(data)
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    obj.ByteString = ByteString.from_binary(data)
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    obj.XmlElement = XmlElement.from_binary(data)
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    obj.NodeId = NodeId.from_binary(data)
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    obj.ExpandedNodeId = ExpandedNodeId.from_binary(data)
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    obj.StatusCode = StatusCode.from_binary(data)
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    obj.DiagnosticInfo = DiagnosticInfo.from_binary(data)
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    obj.QualifiedName = QualifiedName.from_binary(data)
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    obj.LocalizedText = LocalizedText.from_binary(data)
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    obj.ExtensionObject = ExtensionObject.from_binary(data)
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    obj.DataValue = DataValue.from_binary(data)
+        val = obj.Encoding & 0b01111111
+        if val == 0:
+            length = struct.unpack('<i', data.read(4))[0]
+            if length <= -1:
+                for i in range(0, length):
+                    obj.Variant = Variant.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'Variant(' + 'Encoding:' + str(self.Encoding) + ', '  + \
+             'ArrayLength:' + str(self.ArrayLength) + ', '  + \
+             'Boolean:' + str(self.Boolean) + ', '  + \
+             'SByte:' + str(self.SByte) + ', '  + \
+             'Byte:' + str(self.Byte) + ', '  + \
+             'Int16:' + str(self.Int16) + ', '  + \
+             'UInt16:' + str(self.UInt16) + ', '  + \
+             'Int32:' + str(self.Int32) + ', '  + \
+             'UInt32:' + str(self.UInt32) + ', '  + \
+             'Int64:' + str(self.Int64) + ', '  + \
+             'UInt64:' + str(self.UInt64) + ', '  + \
+             'Float:' + str(self.Float) + ', '  + \
+             'Double:' + str(self.Double) + ', '  + \
+             'String:' + str(self.String) + ', '  + \
+             'DateTime:' + str(self.DateTime) + ', '  + \
+             'Guid:' + str(self.Guid) + ', '  + \
+             'ByteString:' + str(self.ByteString) + ', '  + \
+             'XmlElement:' + str(self.XmlElement) + ', '  + \
+             'NodeId:' + str(self.NodeId) + ', '  + \
+             'ExpandedNodeId:' + str(self.ExpandedNodeId) + ', '  + \
+             'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'DiagnosticInfo:' + str(self.DiagnosticInfo) + ', '  + \
+             'QualifiedName:' + str(self.QualifiedName) + ', '  + \
+             'LocalizedText:' + str(self.LocalizedText) + ', '  + \
+             'ExtensionObject:' + str(self.ExtensionObject) + ', '  + \
+             'DataValue:' + str(self.DataValue) + ', '  + \
+             'Variant:' + str(self.Variant) + ')'
+    
+    __repr__ = __str__
+    
 class Node(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -1006,27 +1136,40 @@ class Node(object):
             packet.append(self.References.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = NodeClass
-            self.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.BrowseName = QualifiedName.from_binary(data)
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.References = ReferenceNode.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = Node()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.BrowseName = QualifiedName.from_binary(data)
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.References = ReferenceNode.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'Node(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'NodeClass:' + str(self.NodeClass) + ', '  + \
+             'BrowseName:' + str(self.BrowseName) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'References:' + str(self.References) + ')'
+    
+    __repr__ = __str__
+    
 class InstanceNode(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -1055,27 +1198,40 @@ class InstanceNode(object):
             packet.append(self.References.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = NodeClass
-            self.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.BrowseName = QualifiedName.from_binary(data)
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.References = ReferenceNode.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = InstanceNode()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.BrowseName = QualifiedName.from_binary(data)
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.References = ReferenceNode.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'InstanceNode(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'NodeClass:' + str(self.NodeClass) + ', '  + \
+             'BrowseName:' + str(self.BrowseName) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'References:' + str(self.References) + ')'
+    
+    __repr__ = __str__
+    
 class TypeNode(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -1104,27 +1260,40 @@ class TypeNode(object):
             packet.append(self.References.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = NodeClass
-            self.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.BrowseName = QualifiedName.from_binary(data)
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.References = ReferenceNode.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TypeNode()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.BrowseName = QualifiedName.from_binary(data)
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.References = ReferenceNode.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TypeNode(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'NodeClass:' + str(self.NodeClass) + ', '  + \
+             'BrowseName:' + str(self.BrowseName) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'References:' + str(self.References) + ')'
+    
+    __repr__ = __str__
+    
 class ObjectNode(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -1156,30 +1325,44 @@ class ObjectNode(object):
         packet.append(struct.pack(fmt, self.EventNotifier))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = NodeClass
-            self.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.BrowseName = QualifiedName.from_binary(data)
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.References = ReferenceNode.from_binary(data)
-            fmt = '<B'
-            fmt_size = EventNotifier
-            self.EventNotifier = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ObjectNode()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.BrowseName = QualifiedName.from_binary(data)
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.References = ReferenceNode.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.EventNotifier = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ObjectNode(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'NodeClass:' + str(self.NodeClass) + ', '  + \
+             'BrowseName:' + str(self.BrowseName) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'References:' + str(self.References) + ', '  + \
+             'EventNotifier:' + str(self.EventNotifier) + ')'
+    
+    __repr__ = __str__
+    
 class ObjectTypeNode(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -1211,30 +1394,44 @@ class ObjectTypeNode(object):
         packet.append(struct.pack(fmt, self.IsAbstract))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = NodeClass
-            self.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.BrowseName = QualifiedName.from_binary(data)
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.References = ReferenceNode.from_binary(data)
-            fmt = '<?'
-            fmt_size = IsAbstract
-            self.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ObjectTypeNode()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.BrowseName = QualifiedName.from_binary(data)
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.References = ReferenceNode.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ObjectTypeNode(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'NodeClass:' + str(self.NodeClass) + ', '  + \
+             'BrowseName:' + str(self.BrowseName) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'References:' + str(self.References) + ', '  + \
+             'IsAbstract:' + str(self.IsAbstract) + ')'
+    
+    __repr__ = __str__
+    
 class VariableNode(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -1287,50 +1484,71 @@ class VariableNode(object):
         packet.append(struct.pack(fmt, self.Historizing))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = NodeClass
-            self.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.BrowseName = QualifiedName.from_binary(data)
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.References = ReferenceNode.from_binary(data)
-            self.Value = Variant.from_binary(data)
-            self.DataType = NodeId.from_binary(data)
-            fmt = '<i'
-            fmt_size = ValueRank
-            self.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = ArrayDimensions
-                    self.ArrayDimensions = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<B'
-            fmt_size = AccessLevel
-            self.AccessLevel = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<B'
-            fmt_size = UserAccessLevel
-            self.UserAccessLevel = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<d'
-            fmt_size = MinimumSamplingInterval
-            self.MinimumSamplingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = Historizing
-            self.Historizing = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = VariableNode()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.BrowseName = QualifiedName.from_binary(data)
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.References = ReferenceNode.from_binary(data)
+        obj.Value = Variant.from_binary(data)
+        obj.DataType = NodeId.from_binary(data)
+        fmt = '<i'
+        fmt_size = 4
+        obj.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.ArrayDimensions = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<B'
+        fmt_size = 1
+        obj.AccessLevel = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<B'
+        fmt_size = 1
+        obj.UserAccessLevel = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<d'
+        fmt_size = 8
+        obj.MinimumSamplingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.Historizing = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'VariableNode(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'NodeClass:' + str(self.NodeClass) + ', '  + \
+             'BrowseName:' + str(self.BrowseName) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'References:' + str(self.References) + ', '  + \
+             'Value:' + str(self.Value) + ', '  + \
+             'DataType:' + str(self.DataType) + ', '  + \
+             'ValueRank:' + str(self.ValueRank) + ', '  + \
+             'ArrayDimensions:' + str(self.ArrayDimensions) + ', '  + \
+             'AccessLevel:' + str(self.AccessLevel) + ', '  + \
+             'UserAccessLevel:' + str(self.UserAccessLevel) + ', '  + \
+             'MinimumSamplingInterval:' + str(self.MinimumSamplingInterval) + ', '  + \
+             'Historizing:' + str(self.Historizing) + ')'
+    
+    __repr__ = __str__
+    
 class VariableTypeNode(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -1374,41 +1592,59 @@ class VariableTypeNode(object):
         packet.append(struct.pack(fmt, self.IsAbstract))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = NodeClass
-            self.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.BrowseName = QualifiedName.from_binary(data)
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.References = ReferenceNode.from_binary(data)
-            self.Value = Variant.from_binary(data)
-            self.DataType = NodeId.from_binary(data)
-            fmt = '<i'
-            fmt_size = ValueRank
-            self.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = ArrayDimensions
-                    self.ArrayDimensions = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = IsAbstract
-            self.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = VariableTypeNode()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.BrowseName = QualifiedName.from_binary(data)
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.References = ReferenceNode.from_binary(data)
+        obj.Value = Variant.from_binary(data)
+        obj.DataType = NodeId.from_binary(data)
+        fmt = '<i'
+        fmt_size = 4
+        obj.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.ArrayDimensions = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'VariableTypeNode(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'NodeClass:' + str(self.NodeClass) + ', '  + \
+             'BrowseName:' + str(self.BrowseName) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'References:' + str(self.References) + ', '  + \
+             'Value:' + str(self.Value) + ', '  + \
+             'DataType:' + str(self.DataType) + ', '  + \
+             'ValueRank:' + str(self.ValueRank) + ', '  + \
+             'ArrayDimensions:' + str(self.ArrayDimensions) + ', '  + \
+             'IsAbstract:' + str(self.IsAbstract) + ')'
+    
+    __repr__ = __str__
+    
 class ReferenceTypeNode(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -1445,34 +1681,50 @@ class ReferenceTypeNode(object):
         packet.append(self.InverseName.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = NodeClass
-            self.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.BrowseName = QualifiedName.from_binary(data)
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.References = ReferenceNode.from_binary(data)
-            fmt = '<?'
-            fmt_size = IsAbstract
-            self.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = Symmetric
-            self.Symmetric = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.InverseName = LocalizedText.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ReferenceTypeNode()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.BrowseName = QualifiedName.from_binary(data)
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.References = ReferenceNode.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.Symmetric = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.InverseName = LocalizedText.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ReferenceTypeNode(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'NodeClass:' + str(self.NodeClass) + ', '  + \
+             'BrowseName:' + str(self.BrowseName) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'References:' + str(self.References) + ', '  + \
+             'IsAbstract:' + str(self.IsAbstract) + ', '  + \
+             'Symmetric:' + str(self.Symmetric) + ', '  + \
+             'InverseName:' + str(self.InverseName) + ')'
+    
+    __repr__ = __str__
+    
 class MethodNode(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -1507,33 +1759,48 @@ class MethodNode(object):
         packet.append(struct.pack(fmt, self.UserExecutable))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = NodeClass
-            self.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.BrowseName = QualifiedName.from_binary(data)
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.References = ReferenceNode.from_binary(data)
-            fmt = '<?'
-            fmt_size = Executable
-            self.Executable = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = UserExecutable
-            self.UserExecutable = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = MethodNode()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.BrowseName = QualifiedName.from_binary(data)
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.References = ReferenceNode.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.Executable = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.UserExecutable = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'MethodNode(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'NodeClass:' + str(self.NodeClass) + ', '  + \
+             'BrowseName:' + str(self.BrowseName) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'References:' + str(self.References) + ', '  + \
+             'Executable:' + str(self.Executable) + ', '  + \
+             'UserExecutable:' + str(self.UserExecutable) + ')'
+    
+    __repr__ = __str__
+    
 class ViewNode(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -1568,33 +1835,48 @@ class ViewNode(object):
         packet.append(struct.pack(fmt, self.EventNotifier))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = NodeClass
-            self.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.BrowseName = QualifiedName.from_binary(data)
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.References = ReferenceNode.from_binary(data)
-            fmt = '<?'
-            fmt_size = ContainsNoLoops
-            self.ContainsNoLoops = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<B'
-            fmt_size = EventNotifier
-            self.EventNotifier = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ViewNode()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.BrowseName = QualifiedName.from_binary(data)
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.References = ReferenceNode.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.ContainsNoLoops = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<B'
+        fmt_size = 1
+        obj.EventNotifier = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ViewNode(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'NodeClass:' + str(self.NodeClass) + ', '  + \
+             'BrowseName:' + str(self.BrowseName) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'References:' + str(self.References) + ', '  + \
+             'ContainsNoLoops:' + str(self.ContainsNoLoops) + ', '  + \
+             'EventNotifier:' + str(self.EventNotifier) + ')'
+    
+    __repr__ = __str__
+    
 class DataTypeNode(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -1626,30 +1908,44 @@ class DataTypeNode(object):
         packet.append(struct.pack(fmt, self.IsAbstract))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = NodeClass
-            self.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.BrowseName = QualifiedName.from_binary(data)
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.References = ReferenceNode.from_binary(data)
-            fmt = '<?'
-            fmt_size = IsAbstract
-            self.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DataTypeNode()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.BrowseName = QualifiedName.from_binary(data)
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.References = ReferenceNode.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'DataTypeNode(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'NodeClass:' + str(self.NodeClass) + ', '  + \
+             'BrowseName:' + str(self.BrowseName) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'References:' + str(self.References) + ', '  + \
+             'IsAbstract:' + str(self.IsAbstract) + ')'
+    
+    __repr__ = __str__
+    
 class ReferenceNode(object):
     def __init__(self):
         self.ReferenceTypeId = NodeId()
@@ -1664,15 +1960,23 @@ class ReferenceNode(object):
         packet.append(self.TargetId.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.ReferenceTypeId = NodeId.from_binary(data)
-            fmt = '<?'
-            fmt_size = IsInverse
-            self.IsInverse = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.TargetId = ExpandedNodeId.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ReferenceNode()
+        obj.ReferenceTypeId = NodeId.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsInverse = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.TargetId = ExpandedNodeId.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ReferenceNode(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
+             'IsInverse:' + str(self.IsInverse) + ', '  + \
+             'TargetId:' + str(self.TargetId) + ')'
+    
+    __repr__ = __str__
+    
 class Argument(object):
     def __init__(self):
         self.Name = ''
@@ -1695,23 +1999,33 @@ class Argument(object):
         packet.append(self.Description.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.Name = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.DataType = NodeId.from_binary(data)
-            fmt = '<i'
-            fmt_size = ValueRank
-            self.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = ArrayDimensions
-                    self.ArrayDimensions = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.Description = LocalizedText.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = Argument()
+        slength = struct.unpack('<i', data.red(1))
+        obj.Name = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.DataType = NodeId.from_binary(data)
+        fmt = '<i'
+        fmt_size = 4
+        obj.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.ArrayDimensions = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.Description = LocalizedText.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'Argument(' + 'Name:' + str(self.Name) + ', '  + \
+             'DataType:' + str(self.DataType) + ', '  + \
+             'ValueRank:' + str(self.ValueRank) + ', '  + \
+             'ArrayDimensions:' + str(self.ArrayDimensions) + ', '  + \
+             'Description:' + str(self.Description) + ')'
+    
+    __repr__ = __str__
+    
 class EnumValueType(object):
     def __init__(self):
         self.Value = 0
@@ -1726,15 +2040,23 @@ class EnumValueType(object):
         packet.append(self.Description.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<q'
-            fmt_size = Value
-            self.Value = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = EnumValueType()
+        fmt = '<q'
+        fmt_size = 8
+        obj.Value = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'EnumValueType(' + 'Value:' + str(self.Value) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ')'
+    
+    __repr__ = __str__
+    
 class TimeZoneDataType(object):
     def __init__(self):
         self.Offset = 0
@@ -1748,16 +2070,23 @@ class TimeZoneDataType(object):
         packet.append(struct.pack(fmt, self.DaylightSavingInOffset))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<h'
-            fmt_size = Offset
-            self.Offset = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = DaylightSavingInOffset
-            self.DaylightSavingInOffset = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TimeZoneDataType()
+        fmt = '<h'
+        fmt_size = 2
+        obj.Offset = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.DaylightSavingInOffset = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'TimeZoneDataType(' + 'Offset:' + str(self.Offset) + ', '  + \
+             'DaylightSavingInOffset:' + str(self.DaylightSavingInOffset) + ')'
+    
+    __repr__ = __str__
+    
 class ApplicationDescription(object):
     def __init__(self):
         self.ApplicationUri = ''
@@ -1787,27 +2116,39 @@ class ApplicationDescription(object):
             packet.append(struct.pack('<{}s'.format(len(self.DiscoveryUrls)), self.DiscoveryUrls.encode()))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.ApplicationUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.ProductUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.ApplicationName = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = ApplicationType
-            self.ApplicationType = struct.unpack(fmt, data.read(fmt_size))[0]
-            slength = struct.unpack('<i', data.red(1))
-            self.GatewayServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.DiscoveryProfileUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    slength = struct.unpack('<i', data.red(1))
-                    self.DiscoveryUrls = struct.unpack('<{}s'.format(slength), data.read(slength))
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ApplicationDescription()
+        slength = struct.unpack('<i', data.red(1))
+        obj.ApplicationUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.ProductUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.ApplicationName = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.ApplicationType = struct.unpack(fmt, data.read(fmt_size))[0]
+        slength = struct.unpack('<i', data.red(1))
+        obj.GatewayServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.DiscoveryProfileUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                slength = struct.unpack('<i', data.red(1))
+                obj.DiscoveryUrls = struct.unpack('<{}s'.format(slength), data.read(slength))
+        return obj
+    
+    def __str__(self):
+        return 'ApplicationDescription(' + 'ApplicationUri:' + str(self.ApplicationUri) + ', '  + \
+             'ProductUri:' + str(self.ProductUri) + ', '  + \
+             'ApplicationName:' + str(self.ApplicationName) + ', '  + \
+             'ApplicationType:' + str(self.ApplicationType) + ', '  + \
+             'GatewayServerUri:' + str(self.GatewayServerUri) + ', '  + \
+             'DiscoveryProfileUri:' + str(self.DiscoveryProfileUri) + ', '  + \
+             'DiscoveryUrls:' + str(self.DiscoveryUrls) + ')'
+    
+    __repr__ = __str__
+    
 class RequestHeader(object):
     def __init__(self):
         self.AuthenticationToken = NodeId()
@@ -1833,24 +2174,36 @@ class RequestHeader(object):
         packet.append(self.AdditionalHeader.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.AuthenticationToken = NodeId.from_binary(data)
-            self.Timestamp = DateTime.from_binary(data)
-            fmt = '<I'
-            fmt_size = RequestHandle
-            self.RequestHandle = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = ReturnDiagnostics
-            self.ReturnDiagnostics = struct.unpack(fmt, data.read(fmt_size))[0]
-            slength = struct.unpack('<i', data.red(1))
-            self.AuditEntryId = struct.unpack('<{}s'.format(slength), data.read(slength))
-            fmt = '<I'
-            fmt_size = TimeoutHint
-            self.TimeoutHint = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.AdditionalHeader = ExtensionObject.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RequestHeader()
+        obj.AuthenticationToken = NodeId.from_binary(data)
+        obj.Timestamp = DateTime.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.RequestHandle = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.ReturnDiagnostics = struct.unpack(fmt, data.read(fmt_size))[0]
+        slength = struct.unpack('<i', data.red(1))
+        obj.AuditEntryId = struct.unpack('<{}s'.format(slength), data.read(slength))
+        fmt = '<I'
+        fmt_size = 4
+        obj.TimeoutHint = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.AdditionalHeader = ExtensionObject.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RequestHeader(' + 'AuthenticationToken:' + str(self.AuthenticationToken) + ', '  + \
+             'Timestamp:' + str(self.Timestamp) + ', '  + \
+             'RequestHandle:' + str(self.RequestHandle) + ', '  + \
+             'ReturnDiagnostics:' + str(self.ReturnDiagnostics) + ', '  + \
+             'AuditEntryId:' + str(self.AuditEntryId) + ', '  + \
+             'TimeoutHint:' + str(self.TimeoutHint) + ', '  + \
+             'AdditionalHeader:' + str(self.AdditionalHeader) + ')'
+    
+    __repr__ = __str__
+    
 class ResponseHeader(object):
     def __init__(self):
         self.Timestamp = DateTime()
@@ -1874,22 +2227,33 @@ class ResponseHeader(object):
         packet.append(self.AdditionalHeader.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.Timestamp = DateTime.from_binary(data)
-            fmt = '<I'
-            fmt_size = RequestHandle
-            self.RequestHandle = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.ServiceResult = StatusCode.from_binary(data)
-            self.ServiceDiagnostics = DiagnosticInfo.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    slength = struct.unpack('<i', data.red(1))
-                    self.StringTable = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.AdditionalHeader = ExtensionObject.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ResponseHeader()
+        obj.Timestamp = DateTime.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.RequestHandle = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.ServiceResult = StatusCode.from_binary(data)
+        obj.ServiceDiagnostics = DiagnosticInfo.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                slength = struct.unpack('<i', data.red(1))
+                obj.StringTable = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.AdditionalHeader = ExtensionObject.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ResponseHeader(' + 'Timestamp:' + str(self.Timestamp) + ', '  + \
+             'RequestHandle:' + str(self.RequestHandle) + ', '  + \
+             'ServiceResult:' + str(self.ServiceResult) + ', '  + \
+             'ServiceDiagnostics:' + str(self.ServiceDiagnostics) + ', '  + \
+             'StringTable:' + str(self.StringTable) + ', '  + \
+             'AdditionalHeader:' + str(self.AdditionalHeader) + ')'
+    
+    __repr__ = __str__
+    
 class ServiceFault(object):
     def __init__(self):
         self.ResponseHeader = ResponseHeader()
@@ -1899,11 +2263,17 @@ class ServiceFault(object):
         packet.append(self.ResponseHeader.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ServiceFault()
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ServiceFault(' + 'ResponseHeader:' + str(self.ResponseHeader) + ')'
+    
+    __repr__ = __str__
+    
 class FindServersParameters(object):
     def __init__(self):
         self.EndpointUrl = ''
@@ -1924,22 +2294,30 @@ class FindServersParameters(object):
             packet.append(struct.pack('<{}s'.format(len(self.ServerUris)), self.ServerUris.encode()))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    slength = struct.unpack('<i', data.red(1))
-                    self.LocaleIds = struct.unpack('<{}s'.format(slength), data.read(slength))
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    slength = struct.unpack('<i', data.red(1))
-                    self.ServerUris = struct.unpack('<{}s'.format(slength), data.read(slength))
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = FindServersParameters()
+        slength = struct.unpack('<i', data.red(1))
+        obj.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                slength = struct.unpack('<i', data.red(1))
+                obj.LocaleIds = struct.unpack('<{}s'.format(slength), data.read(slength))
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                slength = struct.unpack('<i', data.red(1))
+                obj.ServerUris = struct.unpack('<{}s'.format(slength), data.read(slength))
+        return obj
+    
+    def __str__(self):
+        return 'FindServersParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', '  + \
+             'LocaleIds:' + str(self.LocaleIds) + ', '  + \
+             'ServerUris:' + str(self.ServerUris) + ')'
+    
+    __repr__ = __str__
+    
 class FindServersRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.FindServersRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -1953,13 +2331,21 @@ class FindServersRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = FindServersParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = FindServersRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = FindServersParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'FindServersRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class FindServersResult(object):
     def __init__(self):
         self.Servers = []
@@ -1971,14 +2357,20 @@ class FindServersResult(object):
             packet.append(self.Servers.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Servers = ApplicationDescription.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = FindServersResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Servers = ApplicationDescription.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'FindServersResult(' + 'Servers:' + str(self.Servers) + ')'
+    
+    __repr__ = __str__
+    
 class FindServersResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.FindServersResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -1992,13 +2384,21 @@ class FindServersResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = FindServersResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = FindServersResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = FindServersResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'FindServersResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class UserTokenPolicy(object):
     def __init__(self):
         self.PolicyId = ''
@@ -2021,21 +2421,31 @@ class UserTokenPolicy(object):
         packet.append(struct.pack('<{}s'.format(len(self.SecurityPolicyUri)), self.SecurityPolicyUri.encode()))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
-            fmt = '<I'
-            fmt_size = TokenType
-            self.TokenType = struct.unpack(fmt, data.read(fmt_size))[0]
-            slength = struct.unpack('<i', data.red(1))
-            self.IssuedTokenType = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.IssuerEndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.SecurityPolicyUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = UserTokenPolicy()
+        slength = struct.unpack('<i', data.red(1))
+        obj.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
+        fmt = '<I'
+        fmt_size = 4
+        obj.TokenType = struct.unpack(fmt, data.read(fmt_size))[0]
+        slength = struct.unpack('<i', data.red(1))
+        obj.IssuedTokenType = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.IssuerEndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.SecurityPolicyUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        return obj
+    
+    def __str__(self):
+        return 'UserTokenPolicy(' + 'PolicyId:' + str(self.PolicyId) + ', '  + \
+             'TokenType:' + str(self.TokenType) + ', '  + \
+             'IssuedTokenType:' + str(self.IssuedTokenType) + ', '  + \
+             'IssuerEndpointUrl:' + str(self.IssuerEndpointUrl) + ', '  + \
+             'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ')'
+    
+    __repr__ = __str__
+    
 class EndpointDescription(object):
     def __init__(self):
         self.EndpointUrl = ''
@@ -2066,28 +2476,41 @@ class EndpointDescription(object):
         packet.append(struct.pack(fmt, self.SecurityLevel))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.Server = ApplicationDescription.from_binary(data)
-            self.ServerCertificate = ByteString.from_binary(data)
-            fmt = '<I'
-            fmt_size = SecurityMode
-            self.SecurityMode = struct.unpack(fmt, data.read(fmt_size))[0]
-            slength = struct.unpack('<i', data.red(1))
-            self.SecurityPolicyUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.UserIdentityTokens = UserTokenPolicy.from_binary(data)
-            slength = struct.unpack('<i', data.red(1))
-            self.TransportProfileUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            fmt = '<B'
-            fmt_size = SecurityLevel
-            self.SecurityLevel = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = EndpointDescription()
+        slength = struct.unpack('<i', data.red(1))
+        obj.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.Server = ApplicationDescription.from_binary(data)
+        obj.ServerCertificate = ByteString.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.SecurityMode = struct.unpack(fmt, data.read(fmt_size))[0]
+        slength = struct.unpack('<i', data.red(1))
+        obj.SecurityPolicyUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.UserIdentityTokens = UserTokenPolicy.from_binary(data)
+        slength = struct.unpack('<i', data.red(1))
+        obj.TransportProfileUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        fmt = '<B'
+        fmt_size = 1
+        obj.SecurityLevel = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'EndpointDescription(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', '  + \
+             'Server:' + str(self.Server) + ', '  + \
+             'ServerCertificate:' + str(self.ServerCertificate) + ', '  + \
+             'SecurityMode:' + str(self.SecurityMode) + ', '  + \
+             'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', '  + \
+             'UserIdentityTokens:' + str(self.UserIdentityTokens) + ', '  + \
+             'TransportProfileUri:' + str(self.TransportProfileUri) + ', '  + \
+             'SecurityLevel:' + str(self.SecurityLevel) + ')'
+    
+    __repr__ = __str__
+    
 class GetEndpointsParameters(object):
     def __init__(self):
         self.EndpointUrl = ''
@@ -2108,22 +2531,30 @@ class GetEndpointsParameters(object):
             packet.append(struct.pack('<{}s'.format(len(self.ProfileUris)), self.ProfileUris.encode()))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    slength = struct.unpack('<i', data.red(1))
-                    self.LocaleIds = struct.unpack('<{}s'.format(slength), data.read(slength))
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    slength = struct.unpack('<i', data.red(1))
-                    self.ProfileUris = struct.unpack('<{}s'.format(slength), data.read(slength))
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = GetEndpointsParameters()
+        slength = struct.unpack('<i', data.red(1))
+        obj.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                slength = struct.unpack('<i', data.red(1))
+                obj.LocaleIds = struct.unpack('<{}s'.format(slength), data.read(slength))
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                slength = struct.unpack('<i', data.red(1))
+                obj.ProfileUris = struct.unpack('<{}s'.format(slength), data.read(slength))
+        return obj
+    
+    def __str__(self):
+        return 'GetEndpointsParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', '  + \
+             'LocaleIds:' + str(self.LocaleIds) + ', '  + \
+             'ProfileUris:' + str(self.ProfileUris) + ')'
+    
+    __repr__ = __str__
+    
 class GetEndpointsRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.GetEndpointsRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2137,13 +2568,21 @@ class GetEndpointsRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = GetEndpointsParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = GetEndpointsRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = GetEndpointsParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'GetEndpointsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class GetEndpointsResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.GetEndpointsResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2159,16 +2598,24 @@ class GetEndpointsResponse(object):
             packet.append(self.Endpoints.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Endpoints = EndpointDescription.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = GetEndpointsResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Endpoints = EndpointDescription.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'GetEndpointsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Endpoints:' + str(self.Endpoints) + ')'
+    
+    __repr__ = __str__
+    
 class RegisteredServer(object):
     def __init__(self):
         self.ServerUri = ''
@@ -2203,33 +2650,46 @@ class RegisteredServer(object):
         packet.append(struct.pack(fmt, self.IsOnline))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.ServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.ProductUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ServerNames = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = ServerType
-            self.ServerType = struct.unpack(fmt, data.read(fmt_size))[0]
-            slength = struct.unpack('<i', data.red(1))
-            self.GatewayServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    slength = struct.unpack('<i', data.red(1))
-                    self.DiscoveryUrls = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.SemaphoreFilePath = struct.unpack('<{}s'.format(slength), data.read(slength))
-            fmt = '<?'
-            fmt_size = IsOnline
-            self.IsOnline = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RegisteredServer()
+        slength = struct.unpack('<i', data.red(1))
+        obj.ServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.ProductUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ServerNames = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.ServerType = struct.unpack(fmt, data.read(fmt_size))[0]
+        slength = struct.unpack('<i', data.red(1))
+        obj.GatewayServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                slength = struct.unpack('<i', data.red(1))
+                obj.DiscoveryUrls = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.SemaphoreFilePath = struct.unpack('<{}s'.format(slength), data.read(slength))
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsOnline = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'RegisteredServer(' + 'ServerUri:' + str(self.ServerUri) + ', '  + \
+             'ProductUri:' + str(self.ProductUri) + ', '  + \
+             'ServerNames:' + str(self.ServerNames) + ', '  + \
+             'ServerType:' + str(self.ServerType) + ', '  + \
+             'GatewayServerUri:' + str(self.GatewayServerUri) + ', '  + \
+             'DiscoveryUrls:' + str(self.DiscoveryUrls) + ', '  + \
+             'SemaphoreFilePath:' + str(self.SemaphoreFilePath) + ', '  + \
+             'IsOnline:' + str(self.IsOnline) + ')'
+    
+    __repr__ = __str__
+    
 class RegisterServerParameters(object):
     def __init__(self):
         self.Server = RegisteredServer()
@@ -2239,11 +2699,17 @@ class RegisterServerParameters(object):
         packet.append(self.Server.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.Server = RegisteredServer.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RegisterServerParameters()
+        obj.Server = RegisteredServer.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RegisterServerParameters(' + 'Server:' + str(self.Server) + ')'
+    
+    __repr__ = __str__
+    
 class RegisterServerRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.RegisterServerRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2257,13 +2723,21 @@ class RegisterServerRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = RegisterServerParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RegisterServerRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = RegisterServerParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RegisterServerRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class RegisterServerResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.RegisterServerResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2275,12 +2749,19 @@ class RegisterServerResponse(object):
         packet.append(self.ResponseHeader.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RegisterServerResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RegisterServerResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ')'
+    
+    __repr__ = __str__
+    
 class ChannelSecurityToken(object):
     def __init__(self):
         self.ChannelId = 0
@@ -2299,20 +2780,29 @@ class ChannelSecurityToken(object):
         packet.append(struct.pack(fmt, self.RevisedLifetime))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = ChannelId
-            self.ChannelId = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = TokenId
-            self.TokenId = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.CreatedAt = DateTime.from_binary(data)
-            fmt = '<I'
-            fmt_size = RevisedLifetime
-            self.RevisedLifetime = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ChannelSecurityToken()
+        fmt = '<I'
+        fmt_size = 4
+        obj.ChannelId = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.TokenId = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.CreatedAt = DateTime.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.RevisedLifetime = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ChannelSecurityToken(' + 'ChannelId:' + str(self.ChannelId) + ', '  + \
+             'TokenId:' + str(self.TokenId) + ', '  + \
+             'CreatedAt:' + str(self.CreatedAt) + ', '  + \
+             'RevisedLifetime:' + str(self.RevisedLifetime) + ')'
+    
+    __repr__ = __str__
+    
 class OpenSecureChannelParameters(object):
     def __init__(self):
         self.ClientProtocolVersion = 0
@@ -2334,23 +2824,33 @@ class OpenSecureChannelParameters(object):
         packet.append(struct.pack(fmt, self.RequestedLifetime))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = ClientProtocolVersion
-            self.ClientProtocolVersion = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RequestType
-            self.RequestType = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = SecurityMode
-            self.SecurityMode = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.ClientNonce = ByteString.from_binary(data)
-            fmt = '<I'
-            fmt_size = RequestedLifetime
-            self.RequestedLifetime = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = OpenSecureChannelParameters()
+        fmt = '<I'
+        fmt_size = 4
+        obj.ClientProtocolVersion = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RequestType = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.SecurityMode = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.ClientNonce = ByteString.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.RequestedLifetime = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'OpenSecureChannelParameters(' + 'ClientProtocolVersion:' + str(self.ClientProtocolVersion) + ', '  + \
+             'RequestType:' + str(self.RequestType) + ', '  + \
+             'SecurityMode:' + str(self.SecurityMode) + ', '  + \
+             'ClientNonce:' + str(self.ClientNonce) + ', '  + \
+             'RequestedLifetime:' + str(self.RequestedLifetime) + ')'
+    
+    __repr__ = __str__
+    
 class OpenSecureChannelRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.OpenSecureChannelRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2364,13 +2864,21 @@ class OpenSecureChannelRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = OpenSecureChannelParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = OpenSecureChannelRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = OpenSecureChannelParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'OpenSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class OpenSecureChannelResult(object):
     def __init__(self):
         self.ServerProtocolVersion = 0
@@ -2385,15 +2893,23 @@ class OpenSecureChannelResult(object):
         packet.append(self.ServerNonce.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = ServerProtocolVersion
-            self.ServerProtocolVersion = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.SecurityToken = ChannelSecurityToken.from_binary(data)
-            self.ServerNonce = ByteString.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = OpenSecureChannelResult()
+        fmt = '<I'
+        fmt_size = 4
+        obj.ServerProtocolVersion = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.SecurityToken = ChannelSecurityToken.from_binary(data)
+        obj.ServerNonce = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'OpenSecureChannelResult(' + 'ServerProtocolVersion:' + str(self.ServerProtocolVersion) + ', '  + \
+             'SecurityToken:' + str(self.SecurityToken) + ', '  + \
+             'ServerNonce:' + str(self.ServerNonce) + ')'
+    
+    __repr__ = __str__
+    
 class OpenSecureChannelResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.OpenSecureChannelResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2407,13 +2923,22 @@ class OpenSecureChannelResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = OpenSecureChannelResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = OpenSecureChannelResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        print(obj.ResponseHeader)
+        obj.Parameters = OpenSecureChannelResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'OpenSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class CloseSecureChannelRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CloseSecureChannelRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2425,12 +2950,19 @@ class CloseSecureChannelRequest(object):
         packet.append(self.RequestHeader.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CloseSecureChannelRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CloseSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ')'
+    
+    __repr__ = __str__
+    
 class CloseSecureChannelResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CloseSecureChannelResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2442,12 +2974,19 @@ class CloseSecureChannelResponse(object):
         packet.append(self.ResponseHeader.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CloseSecureChannelResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CloseSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ')'
+    
+    __repr__ = __str__
+    
 class SignedSoftwareCertificate(object):
     def __init__(self):
         self.CertificateData = ByteString()
@@ -2459,12 +2998,19 @@ class SignedSoftwareCertificate(object):
         packet.append(self.Signature.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.CertificateData = ByteString.from_binary(data)
-            self.Signature = ByteString.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SignedSoftwareCertificate()
+        obj.CertificateData = ByteString.from_binary(data)
+        obj.Signature = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SignedSoftwareCertificate(' + 'CertificateData:' + str(self.CertificateData) + ', '  + \
+             'Signature:' + str(self.Signature) + ')'
+    
+    __repr__ = __str__
+    
 class SignatureData(object):
     def __init__(self):
         self.Algorithm = ''
@@ -2477,13 +3023,20 @@ class SignatureData(object):
         packet.append(self.Signature.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.Algorithm = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.Signature = ByteString.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SignatureData()
+        slength = struct.unpack('<i', data.red(1))
+        obj.Algorithm = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.Signature = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SignatureData(' + 'Algorithm:' + str(self.Algorithm) + ', '  + \
+             'Signature:' + str(self.Signature) + ')'
+    
+    __repr__ = __str__
+    
 class CreateSessionParameters(object):
     def __init__(self):
         self.ClientDescription = ApplicationDescription()
@@ -2512,25 +3065,38 @@ class CreateSessionParameters(object):
         packet.append(struct.pack(fmt, self.MaxResponseMessageSize))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.ClientDescription = ApplicationDescription.from_binary(data)
-            slength = struct.unpack('<i', data.red(1))
-            self.ServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.SessionName = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.ClientNonce = ByteString.from_binary(data)
-            self.ClientCertificate = ByteString.from_binary(data)
-            fmt = '<d'
-            fmt_size = RequestedSessionTimeout
-            self.RequestedSessionTimeout = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = MaxResponseMessageSize
-            self.MaxResponseMessageSize = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CreateSessionParameters()
+        obj.ClientDescription = ApplicationDescription.from_binary(data)
+        slength = struct.unpack('<i', data.red(1))
+        obj.ServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.SessionName = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.ClientNonce = ByteString.from_binary(data)
+        obj.ClientCertificate = ByteString.from_binary(data)
+        fmt = '<d'
+        fmt_size = 8
+        obj.RequestedSessionTimeout = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.MaxResponseMessageSize = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'CreateSessionParameters(' + 'ClientDescription:' + str(self.ClientDescription) + ', '  + \
+             'ServerUri:' + str(self.ServerUri) + ', '  + \
+             'EndpointUrl:' + str(self.EndpointUrl) + ', '  + \
+             'SessionName:' + str(self.SessionName) + ', '  + \
+             'ClientNonce:' + str(self.ClientNonce) + ', '  + \
+             'ClientCertificate:' + str(self.ClientCertificate) + ', '  + \
+             'RequestedSessionTimeout:' + str(self.RequestedSessionTimeout) + ', '  + \
+             'MaxResponseMessageSize:' + str(self.MaxResponseMessageSize) + ')'
+    
+    __repr__ = __str__
+    
 class CreateSessionRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CreateSessionRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2544,13 +3110,21 @@ class CreateSessionRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = CreateSessionParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CreateSessionRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = CreateSessionParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CreateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class CreateSessionResult(object):
     def __init__(self):
         self.SessionId = NodeId()
@@ -2582,29 +3156,43 @@ class CreateSessionResult(object):
         packet.append(struct.pack(fmt, self.MaxRequestMessageSize))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.SessionId = NodeId.from_binary(data)
-            self.AuthenticationToken = NodeId.from_binary(data)
-            fmt = '<d'
-            fmt_size = RevisedSessionTimeout
-            self.RevisedSessionTimeout = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.ServerNonce = ByteString.from_binary(data)
-            self.ServerCertificate = ByteString.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ServerEndpoints = EndpointDescription.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ServerSoftwareCertificates = SignedSoftwareCertificate.from_binary(data)
-            self.ServerSignature = SignatureData.from_binary(data)
-            fmt = '<I'
-            fmt_size = MaxRequestMessageSize
-            self.MaxRequestMessageSize = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CreateSessionResult()
+        obj.SessionId = NodeId.from_binary(data)
+        obj.AuthenticationToken = NodeId.from_binary(data)
+        fmt = '<d'
+        fmt_size = 8
+        obj.RevisedSessionTimeout = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.ServerNonce = ByteString.from_binary(data)
+        obj.ServerCertificate = ByteString.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ServerEndpoints = EndpointDescription.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ServerSoftwareCertificates = SignedSoftwareCertificate.from_binary(data)
+        obj.ServerSignature = SignatureData.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.MaxRequestMessageSize = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'CreateSessionResult(' + 'SessionId:' + str(self.SessionId) + ', '  + \
+             'AuthenticationToken:' + str(self.AuthenticationToken) + ', '  + \
+             'RevisedSessionTimeout:' + str(self.RevisedSessionTimeout) + ', '  + \
+             'ServerNonce:' + str(self.ServerNonce) + ', '  + \
+             'ServerCertificate:' + str(self.ServerCertificate) + ', '  + \
+             'ServerEndpoints:' + str(self.ServerEndpoints) + ', '  + \
+             'ServerSoftwareCertificates:' + str(self.ServerSoftwareCertificates) + ', '  + \
+             'ServerSignature:' + str(self.ServerSignature) + ', '  + \
+             'MaxRequestMessageSize:' + str(self.MaxRequestMessageSize) + ')'
+    
+    __repr__ = __str__
+    
 class CreateSessionResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CreateSessionResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2618,13 +3206,21 @@ class CreateSessionResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = CreateSessionResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CreateSessionResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = CreateSessionResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CreateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class UserIdentityToken(object):
     def __init__(self):
         self.PolicyId = ''
@@ -2635,12 +3231,18 @@ class UserIdentityToken(object):
         packet.append(struct.pack('<{}s'.format(len(self.PolicyId)), self.PolicyId.encode()))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = UserIdentityToken()
+        slength = struct.unpack('<i', data.red(1))
+        obj.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
+        return obj
+    
+    def __str__(self):
+        return 'UserIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ')'
+    
+    __repr__ = __str__
+    
 class AnonymousIdentityToken(object):
     def __init__(self):
         self.PolicyId = ''
@@ -2651,12 +3253,18 @@ class AnonymousIdentityToken(object):
         packet.append(struct.pack('<{}s'.format(len(self.PolicyId)), self.PolicyId.encode()))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AnonymousIdentityToken()
+        slength = struct.unpack('<i', data.red(1))
+        obj.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
+        return obj
+    
+    def __str__(self):
+        return 'AnonymousIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ')'
+    
+    __repr__ = __str__
+    
 class UserNameIdentityToken(object):
     def __init__(self):
         self.PolicyId = ''
@@ -2675,17 +3283,26 @@ class UserNameIdentityToken(object):
         packet.append(struct.pack('<{}s'.format(len(self.EncryptionAlgorithm)), self.EncryptionAlgorithm.encode()))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.UserName = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.Password = ByteString.from_binary(data)
-            slength = struct.unpack('<i', data.red(1))
-            self.EncryptionAlgorithm = struct.unpack('<{}s'.format(slength), data.read(slength))
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = UserNameIdentityToken()
+        slength = struct.unpack('<i', data.red(1))
+        obj.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.UserName = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.Password = ByteString.from_binary(data)
+        slength = struct.unpack('<i', data.red(1))
+        obj.EncryptionAlgorithm = struct.unpack('<{}s'.format(slength), data.read(slength))
+        return obj
+    
+    def __str__(self):
+        return 'UserNameIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', '  + \
+             'UserName:' + str(self.UserName) + ', '  + \
+             'Password:' + str(self.Password) + ', '  + \
+             'EncryptionAlgorithm:' + str(self.EncryptionAlgorithm) + ')'
+    
+    __repr__ = __str__
+    
 class X509IdentityToken(object):
     def __init__(self):
         self.PolicyId = ''
@@ -2698,13 +3315,20 @@ class X509IdentityToken(object):
         packet.append(self.CertificateData.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.CertificateData = ByteString.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = X509IdentityToken()
+        slength = struct.unpack('<i', data.red(1))
+        obj.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.CertificateData = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'X509IdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', '  + \
+             'CertificateData:' + str(self.CertificateData) + ')'
+    
+    __repr__ = __str__
+    
 class IssuedIdentityToken(object):
     def __init__(self):
         self.PolicyId = ''
@@ -2720,15 +3344,23 @@ class IssuedIdentityToken(object):
         packet.append(struct.pack('<{}s'.format(len(self.EncryptionAlgorithm)), self.EncryptionAlgorithm.encode()))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.TokenData = ByteString.from_binary(data)
-            slength = struct.unpack('<i', data.red(1))
-            self.EncryptionAlgorithm = struct.unpack('<{}s'.format(slength), data.read(slength))
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = IssuedIdentityToken()
+        slength = struct.unpack('<i', data.red(1))
+        obj.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.TokenData = ByteString.from_binary(data)
+        slength = struct.unpack('<i', data.red(1))
+        obj.EncryptionAlgorithm = struct.unpack('<{}s'.format(slength), data.read(slength))
+        return obj
+    
+    def __str__(self):
+        return 'IssuedIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', '  + \
+             'TokenData:' + str(self.TokenData) + ', '  + \
+             'EncryptionAlgorithm:' + str(self.EncryptionAlgorithm) + ')'
+    
+    __repr__ = __str__
+    
 class ActivateSessionParameters(object):
     def __init__(self):
         self.ClientSignature = SignatureData()
@@ -2751,22 +3383,32 @@ class ActivateSessionParameters(object):
         packet.append(self.UserTokenSignature.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.ClientSignature = SignatureData.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ClientSoftwareCertificates = SignedSoftwareCertificate.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    slength = struct.unpack('<i', data.red(1))
-                    self.LocaleIds = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.UserIdentityToken = ExtensionObject.from_binary(data)
-            self.UserTokenSignature = SignatureData.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ActivateSessionParameters()
+        obj.ClientSignature = SignatureData.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ClientSoftwareCertificates = SignedSoftwareCertificate.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                slength = struct.unpack('<i', data.red(1))
+                obj.LocaleIds = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.UserIdentityToken = ExtensionObject.from_binary(data)
+        obj.UserTokenSignature = SignatureData.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ActivateSessionParameters(' + 'ClientSignature:' + str(self.ClientSignature) + ', '  + \
+             'ClientSoftwareCertificates:' + str(self.ClientSoftwareCertificates) + ', '  + \
+             'LocaleIds:' + str(self.LocaleIds) + ', '  + \
+             'UserIdentityToken:' + str(self.UserIdentityToken) + ', '  + \
+             'UserTokenSignature:' + str(self.UserTokenSignature) + ')'
+    
+    __repr__ = __str__
+    
 class ActivateSessionRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.ActivateSessionRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2780,13 +3422,21 @@ class ActivateSessionRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = ActivateSessionParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ActivateSessionRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = ActivateSessionParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ActivateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class ActivateSessionResult(object):
     def __init__(self):
         self.ServerNonce = ByteString()
@@ -2804,19 +3454,27 @@ class ActivateSessionResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.ServerNonce = ByteString.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ActivateSessionResult()
+        obj.ServerNonce = ByteString.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ActivateSessionResult(' + 'ServerNonce:' + str(self.ServerNonce) + ', '  + \
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class ActivateSessionResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.ActivateSessionResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2830,13 +3488,21 @@ class ActivateSessionResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = ActivateSessionResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ActivateSessionResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = ActivateSessionResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ActivateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class CloseSessionRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CloseSessionRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2851,15 +3517,23 @@ class CloseSessionRequest(object):
         packet.append(struct.pack(fmt, self.DeleteSubscriptions))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            fmt = '<?'
-            fmt_size = DeleteSubscriptions
-            self.DeleteSubscriptions = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CloseSessionRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.DeleteSubscriptions = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'CloseSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'DeleteSubscriptions:' + str(self.DeleteSubscriptions) + ')'
+    
+    __repr__ = __str__
+    
 class CloseSessionResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CloseSessionResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2871,12 +3545,19 @@ class CloseSessionResponse(object):
         packet.append(self.ResponseHeader.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CloseSessionResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CloseSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ')'
+    
+    __repr__ = __str__
+    
 class CancelParameters(object):
     def __init__(self):
         self.RequestHandle = 0
@@ -2887,13 +3568,19 @@ class CancelParameters(object):
         packet.append(struct.pack(fmt, self.RequestHandle))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = RequestHandle
-            self.RequestHandle = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CancelParameters()
+        fmt = '<I'
+        fmt_size = 4
+        obj.RequestHandle = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'CancelParameters(' + 'RequestHandle:' + str(self.RequestHandle) + ')'
+    
+    __repr__ = __str__
+    
 class CancelRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CancelRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2907,13 +3594,21 @@ class CancelRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = CancelParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CancelRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = CancelParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CancelRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class CancelResult(object):
     def __init__(self):
         self.CancelCount = 0
@@ -2924,13 +3619,19 @@ class CancelResult(object):
         packet.append(struct.pack(fmt, self.CancelCount))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = CancelCount
-            self.CancelCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CancelResult()
+        fmt = '<I'
+        fmt_size = 4
+        obj.CancelCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'CancelResult(' + 'CancelCount:' + str(self.CancelCount) + ')'
+    
+    __repr__ = __str__
+    
 class CancelResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CancelResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -2944,13 +3645,21 @@ class CancelResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = CancelResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CancelResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = CancelResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CancelResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class NodeAttributes(object):
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -2971,21 +3680,31 @@ class NodeAttributes(object):
         packet.append(struct.pack(fmt, self.UserWriteMask))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SpecifiedAttributes
-            self.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = NodeAttributes()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'NodeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ')'
+    
+    __repr__ = __str__
+    
 class ObjectAttributes(object):
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -3009,24 +3728,35 @@ class ObjectAttributes(object):
         packet.append(struct.pack(fmt, self.EventNotifier))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SpecifiedAttributes
-            self.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<B'
-            fmt_size = EventNotifier
-            self.EventNotifier = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ObjectAttributes()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<B'
+        fmt_size = 1
+        obj.EventNotifier = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ObjectAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'EventNotifier:' + str(self.EventNotifier) + ')'
+    
+    __repr__ = __str__
+    
 class VariableAttributes(object):
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -3071,44 +3801,62 @@ class VariableAttributes(object):
         packet.append(struct.pack(fmt, self.Historizing))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SpecifiedAttributes
-            self.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.Value = Variant.from_binary(data)
-            self.DataType = NodeId.from_binary(data)
-            fmt = '<i'
-            fmt_size = ValueRank
-            self.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = ArrayDimensions
-                    self.ArrayDimensions = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<B'
-            fmt_size = AccessLevel
-            self.AccessLevel = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<B'
-            fmt_size = UserAccessLevel
-            self.UserAccessLevel = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<d'
-            fmt_size = MinimumSamplingInterval
-            self.MinimumSamplingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = Historizing
-            self.Historizing = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = VariableAttributes()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.Value = Variant.from_binary(data)
+        obj.DataType = NodeId.from_binary(data)
+        fmt = '<i'
+        fmt_size = 4
+        obj.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.ArrayDimensions = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<B'
+        fmt_size = 1
+        obj.AccessLevel = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<B'
+        fmt_size = 1
+        obj.UserAccessLevel = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<d'
+        fmt_size = 8
+        obj.MinimumSamplingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.Historizing = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'VariableAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'Value:' + str(self.Value) + ', '  + \
+             'DataType:' + str(self.DataType) + ', '  + \
+             'ValueRank:' + str(self.ValueRank) + ', '  + \
+             'ArrayDimensions:' + str(self.ArrayDimensions) + ', '  + \
+             'AccessLevel:' + str(self.AccessLevel) + ', '  + \
+             'UserAccessLevel:' + str(self.UserAccessLevel) + ', '  + \
+             'MinimumSamplingInterval:' + str(self.MinimumSamplingInterval) + ', '  + \
+             'Historizing:' + str(self.Historizing) + ')'
+    
+    __repr__ = __str__
+    
 class MethodAttributes(object):
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -3135,27 +3883,39 @@ class MethodAttributes(object):
         packet.append(struct.pack(fmt, self.UserExecutable))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SpecifiedAttributes
-            self.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = Executable
-            self.Executable = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = UserExecutable
-            self.UserExecutable = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = MethodAttributes()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.Executable = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.UserExecutable = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'MethodAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'Executable:' + str(self.Executable) + ', '  + \
+             'UserExecutable:' + str(self.UserExecutable) + ')'
+    
+    __repr__ = __str__
+    
 class ObjectTypeAttributes(object):
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -3179,24 +3939,35 @@ class ObjectTypeAttributes(object):
         packet.append(struct.pack(fmt, self.IsAbstract))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SpecifiedAttributes
-            self.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = IsAbstract
-            self.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ObjectTypeAttributes()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ObjectTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'IsAbstract:' + str(self.IsAbstract) + ')'
+    
+    __repr__ = __str__
+    
 class VariableTypeAttributes(object):
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -3232,35 +4003,50 @@ class VariableTypeAttributes(object):
         packet.append(struct.pack(fmt, self.IsAbstract))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SpecifiedAttributes
-            self.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.Value = Variant.from_binary(data)
-            self.DataType = NodeId.from_binary(data)
-            fmt = '<i'
-            fmt_size = ValueRank
-            self.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = ArrayDimensions
-                    self.ArrayDimensions = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = IsAbstract
-            self.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = VariableTypeAttributes()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.Value = Variant.from_binary(data)
+        obj.DataType = NodeId.from_binary(data)
+        fmt = '<i'
+        fmt_size = 4
+        obj.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.ArrayDimensions = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'VariableTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'Value:' + str(self.Value) + ', '  + \
+             'DataType:' + str(self.DataType) + ', '  + \
+             'ValueRank:' + str(self.ValueRank) + ', '  + \
+             'ArrayDimensions:' + str(self.ArrayDimensions) + ', '  + \
+             'IsAbstract:' + str(self.IsAbstract) + ')'
+    
+    __repr__ = __str__
+    
 class ReferenceTypeAttributes(object):
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -3289,28 +4075,41 @@ class ReferenceTypeAttributes(object):
         packet.append(self.InverseName.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SpecifiedAttributes
-            self.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = IsAbstract
-            self.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = Symmetric
-            self.Symmetric = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.InverseName = LocalizedText.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ReferenceTypeAttributes()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.Symmetric = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.InverseName = LocalizedText.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ReferenceTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'IsAbstract:' + str(self.IsAbstract) + ', '  + \
+             'Symmetric:' + str(self.Symmetric) + ', '  + \
+             'InverseName:' + str(self.InverseName) + ')'
+    
+    __repr__ = __str__
+    
 class DataTypeAttributes(object):
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -3334,24 +4133,35 @@ class DataTypeAttributes(object):
         packet.append(struct.pack(fmt, self.IsAbstract))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SpecifiedAttributes
-            self.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = IsAbstract
-            self.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DataTypeAttributes()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsAbstract = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'DataTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'IsAbstract:' + str(self.IsAbstract) + ')'
+    
+    __repr__ = __str__
+    
 class ViewAttributes(object):
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -3378,27 +4188,39 @@ class ViewAttributes(object):
         packet.append(struct.pack(fmt, self.EventNotifier))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SpecifiedAttributes
-            self.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = WriteMask
-            self.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UserWriteMask
-            self.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = ContainsNoLoops
-            self.ContainsNoLoops = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<B'
-            fmt_size = EventNotifier
-            self.EventNotifier = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ViewAttributes()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SpecifiedAttributes = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.WriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.ContainsNoLoops = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<B'
+        fmt_size = 1
+        obj.EventNotifier = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ViewAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ', '  + \
+             'WriteMask:' + str(self.WriteMask) + ', '  + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+             'ContainsNoLoops:' + str(self.ContainsNoLoops) + ', '  + \
+             'EventNotifier:' + str(self.EventNotifier) + ')'
+    
+    __repr__ = __str__
+    
 class AddNodesItem(object):
     def __init__(self):
         self.ParentNodeId = ExpandedNodeId()
@@ -3421,19 +4243,31 @@ class AddNodesItem(object):
         packet.append(self.TypeDefinition.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.ParentNodeId = ExpandedNodeId.from_binary(data)
-            self.ReferenceTypeId = NodeId.from_binary(data)
-            self.RequestedNewNodeId = ExpandedNodeId.from_binary(data)
-            self.BrowseName = QualifiedName.from_binary(data)
-            fmt = '<I'
-            fmt_size = NodeClass
-            self.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.NodeAttributes = ExtensionObject.from_binary(data)
-            self.TypeDefinition = ExpandedNodeId.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AddNodesItem()
+        obj.ParentNodeId = ExpandedNodeId.from_binary(data)
+        obj.ReferenceTypeId = NodeId.from_binary(data)
+        obj.RequestedNewNodeId = ExpandedNodeId.from_binary(data)
+        obj.BrowseName = QualifiedName.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.NodeAttributes = ExtensionObject.from_binary(data)
+        obj.TypeDefinition = ExpandedNodeId.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'AddNodesItem(' + 'ParentNodeId:' + str(self.ParentNodeId) + ', '  + \
+             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
+             'RequestedNewNodeId:' + str(self.RequestedNewNodeId) + ', '  + \
+             'BrowseName:' + str(self.BrowseName) + ', '  + \
+             'NodeClass:' + str(self.NodeClass) + ', '  + \
+             'NodeAttributes:' + str(self.NodeAttributes) + ', '  + \
+             'TypeDefinition:' + str(self.TypeDefinition) + ')'
+    
+    __repr__ = __str__
+    
 class AddNodesResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -3445,12 +4279,19 @@ class AddNodesResult(object):
         packet.append(self.AddedNodeId.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StatusCode = StatusCode.from_binary(data)
-            self.AddedNodeId = NodeId.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AddNodesResult()
+        obj.StatusCode = StatusCode.from_binary(data)
+        obj.AddedNodeId = NodeId.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'AddNodesResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'AddedNodeId:' + str(self.AddedNodeId) + ')'
+    
+    __repr__ = __str__
+    
 class AddNodesParameters(object):
     def __init__(self):
         self.NodesToAdd = []
@@ -3462,14 +4303,20 @@ class AddNodesParameters(object):
             packet.append(self.NodesToAdd.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.NodesToAdd = AddNodesItem.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AddNodesParameters()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.NodesToAdd = AddNodesItem.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'AddNodesParameters(' + 'NodesToAdd:' + str(self.NodesToAdd) + ')'
+    
+    __repr__ = __str__
+    
 class AddNodesRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.AddNodesRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -3483,13 +4330,21 @@ class AddNodesRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = AddNodesParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AddNodesRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = AddNodesParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'AddNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class AddNodesResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.AddNodesResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -3509,20 +4364,29 @@ class AddNodesResponse(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = AddNodesResult.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AddNodesResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = AddNodesResult.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'AddNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class AddReferencesItem(object):
     def __init__(self):
         self.SourceNodeId = NodeId()
@@ -3545,21 +4409,32 @@ class AddReferencesItem(object):
         packet.append(struct.pack(fmt, self.TargetNodeClass))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.SourceNodeId = NodeId.from_binary(data)
-            self.ReferenceTypeId = NodeId.from_binary(data)
-            fmt = '<?'
-            fmt_size = IsForward
-            self.IsForward = struct.unpack(fmt, data.read(fmt_size))[0]
-            slength = struct.unpack('<i', data.red(1))
-            self.TargetServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.TargetNodeId = ExpandedNodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = TargetNodeClass
-            self.TargetNodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AddReferencesItem()
+        obj.SourceNodeId = NodeId.from_binary(data)
+        obj.ReferenceTypeId = NodeId.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsForward = struct.unpack(fmt, data.read(fmt_size))[0]
+        slength = struct.unpack('<i', data.red(1))
+        obj.TargetServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.TargetNodeId = ExpandedNodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.TargetNodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'AddReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', '  + \
+             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
+             'IsForward:' + str(self.IsForward) + ', '  + \
+             'TargetServerUri:' + str(self.TargetServerUri) + ', '  + \
+             'TargetNodeId:' + str(self.TargetNodeId) + ', '  + \
+             'TargetNodeClass:' + str(self.TargetNodeClass) + ')'
+    
+    __repr__ = __str__
+    
 class AddReferencesParameters(object):
     def __init__(self):
         self.ReferencesToAdd = []
@@ -3571,14 +4446,20 @@ class AddReferencesParameters(object):
             packet.append(self.ReferencesToAdd.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ReferencesToAdd = AddReferencesItem.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AddReferencesParameters()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ReferencesToAdd = AddReferencesItem.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'AddReferencesParameters(' + 'ReferencesToAdd:' + str(self.ReferencesToAdd) + ')'
+    
+    __repr__ = __str__
+    
 class AddReferencesRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.AddReferencesRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -3592,13 +4473,21 @@ class AddReferencesRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = AddReferencesParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AddReferencesRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = AddReferencesParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'AddReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class AddReferencesResult(object):
     def __init__(self):
         self.Results = []
@@ -3614,18 +4503,25 @@ class AddReferencesResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AddReferencesResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'AddReferencesResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class AddReferencesResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.AddReferencesResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -3639,13 +4535,21 @@ class AddReferencesResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = AddReferencesResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AddReferencesResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = AddReferencesResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'AddReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteNodesItem(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -3658,14 +4562,21 @@ class DeleteNodesItem(object):
         packet.append(struct.pack(fmt, self.DeleteTargetReferences))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<?'
-            fmt_size = DeleteTargetReferences
-            self.DeleteTargetReferences = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteNodesItem()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.DeleteTargetReferences = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'DeleteNodesItem(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'DeleteTargetReferences:' + str(self.DeleteTargetReferences) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteNodesParameters(object):
     def __init__(self):
         self.NodesToDelete = []
@@ -3677,14 +4588,20 @@ class DeleteNodesParameters(object):
             packet.append(self.NodesToDelete.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.NodesToDelete = DeleteNodesItem.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteNodesParameters()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.NodesToDelete = DeleteNodesItem.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteNodesParameters(' + 'NodesToDelete:' + str(self.NodesToDelete) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteNodesRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.DeleteNodesRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -3698,13 +4615,21 @@ class DeleteNodesRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = DeleteNodesParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteNodesRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = DeleteNodesParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteNodesResult(object):
     def __init__(self):
         self.Results = []
@@ -3720,18 +4645,25 @@ class DeleteNodesResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteNodesResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteNodesResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteNodesResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.DeleteNodesResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -3745,13 +4677,21 @@ class DeleteNodesResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = DeleteNodesResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteNodesResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = DeleteNodesResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteReferencesItem(object):
     def __init__(self):
         self.SourceNodeId = NodeId()
@@ -3771,19 +4711,29 @@ class DeleteReferencesItem(object):
         packet.append(struct.pack(fmt, self.DeleteBidirectional))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.SourceNodeId = NodeId.from_binary(data)
-            self.ReferenceTypeId = NodeId.from_binary(data)
-            fmt = '<?'
-            fmt_size = IsForward
-            self.IsForward = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.TargetNodeId = ExpandedNodeId.from_binary(data)
-            fmt = '<?'
-            fmt_size = DeleteBidirectional
-            self.DeleteBidirectional = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteReferencesItem()
+        obj.SourceNodeId = NodeId.from_binary(data)
+        obj.ReferenceTypeId = NodeId.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsForward = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.TargetNodeId = ExpandedNodeId.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.DeleteBidirectional = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'DeleteReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', '  + \
+             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
+             'IsForward:' + str(self.IsForward) + ', '  + \
+             'TargetNodeId:' + str(self.TargetNodeId) + ', '  + \
+             'DeleteBidirectional:' + str(self.DeleteBidirectional) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteReferencesParameters(object):
     def __init__(self):
         self.ReferencesToDelete = []
@@ -3795,14 +4745,20 @@ class DeleteReferencesParameters(object):
             packet.append(self.ReferencesToDelete.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ReferencesToDelete = DeleteReferencesItem.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteReferencesParameters()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ReferencesToDelete = DeleteReferencesItem.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteReferencesParameters(' + 'ReferencesToDelete:' + str(self.ReferencesToDelete) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteReferencesRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.DeleteReferencesRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -3816,13 +4772,21 @@ class DeleteReferencesRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = DeleteReferencesParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteReferencesRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = DeleteReferencesParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteReferencesResult(object):
     def __init__(self):
         self.Results = []
@@ -3838,18 +4802,25 @@ class DeleteReferencesResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteReferencesResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteReferencesResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteReferencesResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.DeleteReferencesResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -3863,13 +4834,21 @@ class DeleteReferencesResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = DeleteReferencesResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteReferencesResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = DeleteReferencesResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class ViewDescription(object):
     def __init__(self):
         self.ViewId = NodeId()
@@ -3884,15 +4863,23 @@ class ViewDescription(object):
         packet.append(struct.pack(fmt, self.ViewVersion))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.ViewId = NodeId.from_binary(data)
-            self.Timestamp = DateTime.from_binary(data)
-            fmt = '<I'
-            fmt_size = ViewVersion
-            self.ViewVersion = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ViewDescription()
+        obj.ViewId = NodeId.from_binary(data)
+        obj.Timestamp = DateTime.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.ViewVersion = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ViewDescription(' + 'ViewId:' + str(self.ViewId) + ', '  + \
+             'Timestamp:' + str(self.Timestamp) + ', '  + \
+             'ViewVersion:' + str(self.ViewVersion) + ')'
+    
+    __repr__ = __str__
+    
 class BrowseDescription(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -3916,24 +4903,35 @@ class BrowseDescription(object):
         packet.append(struct.pack(fmt, self.ResultMask))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = BrowseDirection
-            self.BrowseDirection = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.ReferenceTypeId = NodeId.from_binary(data)
-            fmt = '<?'
-            fmt_size = IncludeSubtypes
-            self.IncludeSubtypes = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = NodeClassMask
-            self.NodeClassMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = ResultMask
-            self.ResultMask = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = BrowseDescription()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.BrowseDirection = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.ReferenceTypeId = NodeId.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.IncludeSubtypes = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.NodeClassMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.ResultMask = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'BrowseDescription(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'BrowseDirection:' + str(self.BrowseDirection) + ', '  + \
+             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
+             'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', '  + \
+             'NodeClassMask:' + str(self.NodeClassMask) + ', '  + \
+             'ResultMask:' + str(self.ResultMask) + ')'
+    
+    __repr__ = __str__
+    
 class ReferenceDescription(object):
     def __init__(self):
         self.ReferenceTypeId = NodeId()
@@ -3957,21 +4955,33 @@ class ReferenceDescription(object):
         packet.append(self.TypeDefinition.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.ReferenceTypeId = NodeId.from_binary(data)
-            fmt = '<?'
-            fmt_size = IsForward
-            self.IsForward = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.NodeId = ExpandedNodeId.from_binary(data)
-            self.BrowseName = QualifiedName.from_binary(data)
-            self.DisplayName = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = NodeClass
-            self.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.TypeDefinition = ExpandedNodeId.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ReferenceDescription()
+        obj.ReferenceTypeId = NodeId.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsForward = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.NodeId = ExpandedNodeId.from_binary(data)
+        obj.BrowseName = QualifiedName.from_binary(data)
+        obj.DisplayName = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NodeClass = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.TypeDefinition = ExpandedNodeId.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ReferenceDescription(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
+             'IsForward:' + str(self.IsForward) + ', '  + \
+             'NodeId:' + str(self.NodeId) + ', '  + \
+             'BrowseName:' + str(self.BrowseName) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'NodeClass:' + str(self.NodeClass) + ', '  + \
+             'TypeDefinition:' + str(self.TypeDefinition) + ')'
+    
+    __repr__ = __str__
+    
 class BrowseResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -3987,16 +4997,24 @@ class BrowseResult(object):
             packet.append(self.References.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StatusCode = StatusCode.from_binary(data)
-            self.ContinuationPoint = ByteString.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.References = ReferenceDescription.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = BrowseResult()
+        obj.StatusCode = StatusCode.from_binary(data)
+        obj.ContinuationPoint = ByteString.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.References = ReferenceDescription.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'BrowseResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'ContinuationPoint:' + str(self.ContinuationPoint) + ', '  + \
+             'References:' + str(self.References) + ')'
+    
+    __repr__ = __str__
+    
 class BrowseParameters(object):
     def __init__(self):
         self.View = ViewDescription()
@@ -4013,18 +5031,26 @@ class BrowseParameters(object):
             packet.append(self.NodesToBrowse.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.View = ViewDescription.from_binary(data)
-            fmt = '<I'
-            fmt_size = RequestedMaxReferencesPerNode
-            self.RequestedMaxReferencesPerNode = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.NodesToBrowse = BrowseDescription.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = BrowseParameters()
+        obj.View = ViewDescription.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.RequestedMaxReferencesPerNode = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.NodesToBrowse = BrowseDescription.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'BrowseParameters(' + 'View:' + str(self.View) + ', '  + \
+             'RequestedMaxReferencesPerNode:' + str(self.RequestedMaxReferencesPerNode) + ', '  + \
+             'NodesToBrowse:' + str(self.NodesToBrowse) + ')'
+    
+    __repr__ = __str__
+    
 class BrowseRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.BrowseRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -4038,13 +5064,21 @@ class BrowseRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = BrowseParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = BrowseRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = BrowseParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'BrowseRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class BrowseResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.BrowseResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -4064,20 +5098,29 @@ class BrowseResponse(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = BrowseResult.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = BrowseResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = BrowseResult.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'BrowseResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class BrowseNextParameters(object):
     def __init__(self):
         self.ReleaseContinuationPoints = 0
@@ -4092,17 +5135,24 @@ class BrowseNextParameters(object):
             packet.append(self.ContinuationPoints.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<?'
-            fmt_size = ReleaseContinuationPoints
-            self.ReleaseContinuationPoints = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ContinuationPoints = ByteString.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = BrowseNextParameters()
+        fmt = '<?'
+        fmt_size = 1
+        obj.ReleaseContinuationPoints = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ContinuationPoints = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'BrowseNextParameters(' + 'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', '  + \
+             'ContinuationPoints:' + str(self.ContinuationPoints) + ')'
+    
+    __repr__ = __str__
+    
 class BrowseNextRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.BrowseNextRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -4116,13 +5166,21 @@ class BrowseNextRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = BrowseNextParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = BrowseNextRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = BrowseNextParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'BrowseNextRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class BrowseNextResult(object):
     def __init__(self):
         self.Results = []
@@ -4138,18 +5196,25 @@ class BrowseNextResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = BrowseResult.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = BrowseNextResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = BrowseResult.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'BrowseNextResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class BrowseNextResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.BrowseNextResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -4163,13 +5228,21 @@ class BrowseNextResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = BrowseNextResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = BrowseNextResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = BrowseNextResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'BrowseNextResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class RelativePathElement(object):
     def __init__(self):
         self.ReferenceTypeId = NodeId()
@@ -4187,18 +5260,27 @@ class RelativePathElement(object):
         packet.append(self.TargetName.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.ReferenceTypeId = NodeId.from_binary(data)
-            fmt = '<?'
-            fmt_size = IsInverse
-            self.IsInverse = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = IncludeSubtypes
-            self.IncludeSubtypes = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.TargetName = QualifiedName.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RelativePathElement()
+        obj.ReferenceTypeId = NodeId.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsInverse = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.IncludeSubtypes = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.TargetName = QualifiedName.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RelativePathElement(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
+             'IsInverse:' + str(self.IsInverse) + ', '  + \
+             'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', '  + \
+             'TargetName:' + str(self.TargetName) + ')'
+    
+    __repr__ = __str__
+    
 class RelativePath(object):
     def __init__(self):
         self.Elements = []
@@ -4210,14 +5292,20 @@ class RelativePath(object):
             packet.append(self.Elements.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Elements = RelativePathElement.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RelativePath()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Elements = RelativePathElement.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RelativePath(' + 'Elements:' + str(self.Elements) + ')'
+    
+    __repr__ = __str__
+    
 class BrowsePath(object):
     def __init__(self):
         self.StartingNode = NodeId()
@@ -4229,12 +5317,19 @@ class BrowsePath(object):
         packet.append(self.RelativePath.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StartingNode = NodeId.from_binary(data)
-            self.RelativePath = RelativePath.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = BrowsePath()
+        obj.StartingNode = NodeId.from_binary(data)
+        obj.RelativePath = RelativePath.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'BrowsePath(' + 'StartingNode:' + str(self.StartingNode) + ', '  + \
+             'RelativePath:' + str(self.RelativePath) + ')'
+    
+    __repr__ = __str__
+    
 class BrowsePathTarget(object):
     def __init__(self):
         self.TargetId = ExpandedNodeId()
@@ -4247,14 +5342,21 @@ class BrowsePathTarget(object):
         packet.append(struct.pack(fmt, self.RemainingPathIndex))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TargetId = ExpandedNodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = RemainingPathIndex
-            self.RemainingPathIndex = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = BrowsePathTarget()
+        obj.TargetId = ExpandedNodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.RemainingPathIndex = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'BrowsePathTarget(' + 'TargetId:' + str(self.TargetId) + ', '  + \
+             'RemainingPathIndex:' + str(self.RemainingPathIndex) + ')'
+    
+    __repr__ = __str__
+    
 class BrowsePathResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -4268,15 +5370,22 @@ class BrowsePathResult(object):
             packet.append(self.Targets.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StatusCode = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Targets = BrowsePathTarget.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = BrowsePathResult()
+        obj.StatusCode = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Targets = BrowsePathTarget.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'BrowsePathResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'Targets:' + str(self.Targets) + ')'
+    
+    __repr__ = __str__
+    
 class TranslateBrowsePathsToNodeIdsParameters(object):
     def __init__(self):
         self.BrowsePaths = []
@@ -4288,14 +5397,20 @@ class TranslateBrowsePathsToNodeIdsParameters(object):
             packet.append(self.BrowsePaths.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.BrowsePaths = BrowsePath.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TranslateBrowsePathsToNodeIdsParameters()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.BrowsePaths = BrowsePath.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TranslateBrowsePathsToNodeIdsParameters(' + 'BrowsePaths:' + str(self.BrowsePaths) + ')'
+    
+    __repr__ = __str__
+    
 class TranslateBrowsePathsToNodeIdsRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -4309,13 +5424,21 @@ class TranslateBrowsePathsToNodeIdsRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = TranslateBrowsePathsToNodeIdsParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TranslateBrowsePathsToNodeIdsRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = TranslateBrowsePathsToNodeIdsParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TranslateBrowsePathsToNodeIdsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class TranslateBrowsePathsToNodeIdsResult(object):
     def __init__(self):
         self.Results = []
@@ -4331,18 +5454,25 @@ class TranslateBrowsePathsToNodeIdsResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = BrowsePathResult.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TranslateBrowsePathsToNodeIdsResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = BrowsePathResult.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TranslateBrowsePathsToNodeIdsResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class TranslateBrowsePathsToNodeIdsResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.TranslateBrowsePathsToNodeIdsResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -4356,13 +5486,21 @@ class TranslateBrowsePathsToNodeIdsResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = TranslateBrowsePathsToNodeIdsResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TranslateBrowsePathsToNodeIdsResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = TranslateBrowsePathsToNodeIdsResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TranslateBrowsePathsToNodeIdsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class RegisterNodesParameters(object):
     def __init__(self):
         self.NodesToRegister = []
@@ -4374,14 +5512,20 @@ class RegisterNodesParameters(object):
             packet.append(self.NodesToRegister.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.NodesToRegister = NodeId.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RegisterNodesParameters()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.NodesToRegister = NodeId.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RegisterNodesParameters(' + 'NodesToRegister:' + str(self.NodesToRegister) + ')'
+    
+    __repr__ = __str__
+    
 class RegisterNodesRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.RegisterNodesRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -4395,13 +5539,21 @@ class RegisterNodesRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = RegisterNodesParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RegisterNodesRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = RegisterNodesParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RegisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class RegisterNodesResult(object):
     def __init__(self):
         self.RegisteredNodeIds = []
@@ -4413,14 +5565,20 @@ class RegisterNodesResult(object):
             packet.append(self.RegisteredNodeIds.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.RegisteredNodeIds = NodeId.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RegisterNodesResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.RegisteredNodeIds = NodeId.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RegisterNodesResult(' + 'RegisteredNodeIds:' + str(self.RegisteredNodeIds) + ')'
+    
+    __repr__ = __str__
+    
 class RegisterNodesResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.RegisterNodesResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -4434,13 +5592,21 @@ class RegisterNodesResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = RegisterNodesResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RegisterNodesResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = RegisterNodesResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RegisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class UnregisterNodesParameters(object):
     def __init__(self):
         self.NodesToUnregister = []
@@ -4452,14 +5618,20 @@ class UnregisterNodesParameters(object):
             packet.append(self.NodesToUnregister.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.NodesToUnregister = NodeId.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = UnregisterNodesParameters()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.NodesToUnregister = NodeId.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'UnregisterNodesParameters(' + 'NodesToUnregister:' + str(self.NodesToUnregister) + ')'
+    
+    __repr__ = __str__
+    
 class UnregisterNodesRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.UnregisterNodesRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -4473,13 +5645,21 @@ class UnregisterNodesRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = UnregisterNodesParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = UnregisterNodesRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = UnregisterNodesParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'UnregisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class UnregisterNodesResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.UnregisterNodesResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -4491,12 +5671,19 @@ class UnregisterNodesResponse(object):
         packet.append(self.ResponseHeader.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = UnregisterNodesResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'UnregisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ')'
+    
+    __repr__ = __str__
+    
 class EndpointConfiguration(object):
     def __init__(self):
         self.OperationTimeout = 0
@@ -4531,37 +5718,51 @@ class EndpointConfiguration(object):
         packet.append(struct.pack(fmt, self.SecurityTokenLifetime))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<i'
-            fmt_size = OperationTimeout
-            self.OperationTimeout = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = UseBinaryEncoding
-            self.UseBinaryEncoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<i'
-            fmt_size = MaxStringLength
-            self.MaxStringLength = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<i'
-            fmt_size = MaxByteStringLength
-            self.MaxByteStringLength = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<i'
-            fmt_size = MaxArrayLength
-            self.MaxArrayLength = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<i'
-            fmt_size = MaxMessageSize
-            self.MaxMessageSize = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<i'
-            fmt_size = MaxBufferSize
-            self.MaxBufferSize = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<i'
-            fmt_size = ChannelLifetime
-            self.ChannelLifetime = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<i'
-            fmt_size = SecurityTokenLifetime
-            self.SecurityTokenLifetime = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = EndpointConfiguration()
+        fmt = '<i'
+        fmt_size = 4
+        obj.OperationTimeout = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.UseBinaryEncoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<i'
+        fmt_size = 4
+        obj.MaxStringLength = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<i'
+        fmt_size = 4
+        obj.MaxByteStringLength = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<i'
+        fmt_size = 4
+        obj.MaxArrayLength = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<i'
+        fmt_size = 4
+        obj.MaxMessageSize = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<i'
+        fmt_size = 4
+        obj.MaxBufferSize = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<i'
+        fmt_size = 4
+        obj.ChannelLifetime = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<i'
+        fmt_size = 4
+        obj.SecurityTokenLifetime = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'EndpointConfiguration(' + 'OperationTimeout:' + str(self.OperationTimeout) + ', '  + \
+             'UseBinaryEncoding:' + str(self.UseBinaryEncoding) + ', '  + \
+             'MaxStringLength:' + str(self.MaxStringLength) + ', '  + \
+             'MaxByteStringLength:' + str(self.MaxByteStringLength) + ', '  + \
+             'MaxArrayLength:' + str(self.MaxArrayLength) + ', '  + \
+             'MaxMessageSize:' + str(self.MaxMessageSize) + ', '  + \
+             'MaxBufferSize:' + str(self.MaxBufferSize) + ', '  + \
+             'ChannelLifetime:' + str(self.ChannelLifetime) + ', '  + \
+             'SecurityTokenLifetime:' + str(self.SecurityTokenLifetime) + ')'
+    
+    __repr__ = __str__
+    
 class SupportedProfile(object):
     def __init__(self):
         self.OrganizationUri = ''
@@ -4588,25 +5789,36 @@ class SupportedProfile(object):
             packet.append(struct.pack('<{}s'.format(len(self.UnsupportedUnitIds)), self.UnsupportedUnitIds.encode()))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.OrganizationUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.ProfileId = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.ComplianceTool = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.ComplianceDate = DateTime.from_binary(data)
-            fmt = '<I'
-            fmt_size = ComplianceLevel
-            self.ComplianceLevel = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    slength = struct.unpack('<i', data.red(1))
-                    self.UnsupportedUnitIds = struct.unpack('<{}s'.format(slength), data.read(slength))
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SupportedProfile()
+        slength = struct.unpack('<i', data.red(1))
+        obj.OrganizationUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.ProfileId = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.ComplianceTool = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.ComplianceDate = DateTime.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.ComplianceLevel = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                slength = struct.unpack('<i', data.red(1))
+                obj.UnsupportedUnitIds = struct.unpack('<{}s'.format(slength), data.read(slength))
+        return obj
+    
+    def __str__(self):
+        return 'SupportedProfile(' + 'OrganizationUri:' + str(self.OrganizationUri) + ', '  + \
+             'ProfileId:' + str(self.ProfileId) + ', '  + \
+             'ComplianceTool:' + str(self.ComplianceTool) + ', '  + \
+             'ComplianceDate:' + str(self.ComplianceDate) + ', '  + \
+             'ComplianceLevel:' + str(self.ComplianceLevel) + ', '  + \
+             'UnsupportedUnitIds:' + str(self.UnsupportedUnitIds) + ')'
+    
+    __repr__ = __str__
+    
 class SoftwareCertificate(object):
     def __init__(self):
         self.ProductName = ''
@@ -4642,29 +5854,44 @@ class SoftwareCertificate(object):
             packet.append(self.SupportedProfiles.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.ProductName = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.ProductUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.VendorName = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.VendorProductCertificate = ByteString.from_binary(data)
-            slength = struct.unpack('<i', data.red(1))
-            self.SoftwareVersion = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.BuildNumber = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.BuildDate = DateTime.from_binary(data)
-            slength = struct.unpack('<i', data.red(1))
-            self.IssuedBy = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.IssueDate = DateTime.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.SupportedProfiles = SupportedProfile.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SoftwareCertificate()
+        slength = struct.unpack('<i', data.red(1))
+        obj.ProductName = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.ProductUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.VendorName = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.VendorProductCertificate = ByteString.from_binary(data)
+        slength = struct.unpack('<i', data.red(1))
+        obj.SoftwareVersion = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.BuildNumber = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.BuildDate = DateTime.from_binary(data)
+        slength = struct.unpack('<i', data.red(1))
+        obj.IssuedBy = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.IssueDate = DateTime.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.SupportedProfiles = SupportedProfile.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SoftwareCertificate(' + 'ProductName:' + str(self.ProductName) + ', '  + \
+             'ProductUri:' + str(self.ProductUri) + ', '  + \
+             'VendorName:' + str(self.VendorName) + ', '  + \
+             'VendorProductCertificate:' + str(self.VendorProductCertificate) + ', '  + \
+             'SoftwareVersion:' + str(self.SoftwareVersion) + ', '  + \
+             'BuildNumber:' + str(self.BuildNumber) + ', '  + \
+             'BuildDate:' + str(self.BuildDate) + ', '  + \
+             'IssuedBy:' + str(self.IssuedBy) + ', '  + \
+             'IssueDate:' + str(self.IssueDate) + ', '  + \
+             'SupportedProfiles:' + str(self.SupportedProfiles) + ')'
+    
+    __repr__ = __str__
+    
 class QueryDataDescription(object):
     def __init__(self):
         self.RelativePath = RelativePath()
@@ -4680,16 +5907,24 @@ class QueryDataDescription(object):
         packet.append(struct.pack('<{}s'.format(len(self.IndexRange)), self.IndexRange.encode()))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.RelativePath = RelativePath.from_binary(data)
-            fmt = '<I'
-            fmt_size = AttributeId
-            self.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
-            slength = struct.unpack('<i', data.red(1))
-            self.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = QueryDataDescription()
+        obj.RelativePath = RelativePath.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
+        slength = struct.unpack('<i', data.red(1))
+        obj.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
+        return obj
+    
+    def __str__(self):
+        return 'QueryDataDescription(' + 'RelativePath:' + str(self.RelativePath) + ', '  + \
+             'AttributeId:' + str(self.AttributeId) + ', '  + \
+             'IndexRange:' + str(self.IndexRange) + ')'
+    
+    __repr__ = __str__
+    
 class NodeTypeDescription(object):
     def __init__(self):
         self.TypeDefinitionNode = ExpandedNodeId()
@@ -4706,18 +5941,26 @@ class NodeTypeDescription(object):
             packet.append(self.DataToReturn.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeDefinitionNode = ExpandedNodeId.from_binary(data)
-            fmt = '<?'
-            fmt_size = IncludeSubTypes
-            self.IncludeSubTypes = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DataToReturn = QueryDataDescription.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = NodeTypeDescription()
+        obj.TypeDefinitionNode = ExpandedNodeId.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.IncludeSubTypes = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DataToReturn = QueryDataDescription.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'NodeTypeDescription(' + 'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', '  + \
+             'IncludeSubTypes:' + str(self.IncludeSubTypes) + ', '  + \
+             'DataToReturn:' + str(self.DataToReturn) + ')'
+    
+    __repr__ = __str__
+    
 class QueryDataSet(object):
     def __init__(self):
         self.NodeId = ExpandedNodeId()
@@ -4733,16 +5976,24 @@ class QueryDataSet(object):
             packet.append(self.Values.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = ExpandedNodeId.from_binary(data)
-            self.TypeDefinitionNode = ExpandedNodeId.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Values = Variant.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = QueryDataSet()
+        obj.NodeId = ExpandedNodeId.from_binary(data)
+        obj.TypeDefinitionNode = ExpandedNodeId.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Values = Variant.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'QueryDataSet(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', '  + \
+             'Values:' + str(self.Values) + ')'
+    
+    __repr__ = __str__
+    
 class NodeReference(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -4761,19 +6012,28 @@ class NodeReference(object):
             packet.append(self.ReferencedNodeIds.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            self.ReferenceTypeId = NodeId.from_binary(data)
-            fmt = '<?'
-            fmt_size = IsForward
-            self.IsForward = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ReferencedNodeIds = NodeId.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = NodeReference()
+        obj.NodeId = NodeId.from_binary(data)
+        obj.ReferenceTypeId = NodeId.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsForward = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ReferencedNodeIds = NodeId.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'NodeReference(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
+             'IsForward:' + str(self.IsForward) + ', '  + \
+             'ReferencedNodeIds:' + str(self.ReferencedNodeIds) + ')'
+    
+    __repr__ = __str__
+    
 class ContentFilterElement(object):
     def __init__(self):
         self.FilterOperator = 0
@@ -4788,17 +6048,24 @@ class ContentFilterElement(object):
             packet.append(self.FilterOperands.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = FilterOperator
-            self.FilterOperator = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.FilterOperands = ExtensionObject.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ContentFilterElement()
+        fmt = '<I'
+        fmt_size = 4
+        obj.FilterOperator = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.FilterOperands = ExtensionObject.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ContentFilterElement(' + 'FilterOperator:' + str(self.FilterOperator) + ', '  + \
+             'FilterOperands:' + str(self.FilterOperands) + ')'
+    
+    __repr__ = __str__
+    
 class ContentFilter(object):
     def __init__(self):
         self.Elements = []
@@ -4810,14 +6077,20 @@ class ContentFilter(object):
             packet.append(self.Elements.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Elements = ContentFilterElement.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ContentFilter()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Elements = ContentFilterElement.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ContentFilter(' + 'Elements:' + str(self.Elements) + ')'
+    
+    __repr__ = __str__
+    
 class ElementOperand(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -4837,18 +6110,28 @@ class ElementOperand(object):
         packet.append(struct.pack(fmt, self.Index))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            fmt = '<I'
-            fmt_size = Index
-            self.Index = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ElementOperand()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.Index = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ElementOperand(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'Index:' + str(self.Index) + ')'
+    
+    __repr__ = __str__
+    
 class LiteralOperand(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -4867,16 +6150,26 @@ class LiteralOperand(object):
         packet.append(self.Value.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            self.Value = Variant.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = LiteralOperand()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        obj.Value = Variant.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'LiteralOperand(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'Value:' + str(self.Value) + ')'
+    
+    __repr__ = __str__
+    
 class AttributeOperand(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -4906,24 +6199,38 @@ class AttributeOperand(object):
         packet.append(struct.pack('<{}s'.format(len(self.IndexRange)), self.IndexRange.encode()))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            self.NodeId = NodeId.from_binary(data)
-            slength = struct.unpack('<i', data.red(1))
-            self.Alias = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.BrowsePath = RelativePath.from_binary(data)
-            fmt = '<I'
-            fmt_size = AttributeId
-            self.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
-            slength = struct.unpack('<i', data.red(1))
-            self.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AttributeOperand()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        obj.NodeId = NodeId.from_binary(data)
+        slength = struct.unpack('<i', data.red(1))
+        obj.Alias = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.BrowsePath = RelativePath.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
+        slength = struct.unpack('<i', data.red(1))
+        obj.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
+        return obj
+    
+    def __str__(self):
+        return 'AttributeOperand(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'NodeId:' + str(self.NodeId) + ', '  + \
+             'Alias:' + str(self.Alias) + ', '  + \
+             'BrowsePath:' + str(self.BrowsePath) + ', '  + \
+             'AttributeId:' + str(self.AttributeId) + ', '  + \
+             'IndexRange:' + str(self.IndexRange) + ')'
+    
+    __repr__ = __str__
+    
 class SimpleAttributeOperand(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -4952,25 +6259,38 @@ class SimpleAttributeOperand(object):
         packet.append(struct.pack('<{}s'.format(len(self.IndexRange)), self.IndexRange.encode()))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            self.TypeDefinitionId = NodeId.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.BrowsePath = QualifiedName.from_binary(data)
-            fmt = '<I'
-            fmt_size = AttributeId
-            self.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
-            slength = struct.unpack('<i', data.red(1))
-            self.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SimpleAttributeOperand()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        obj.TypeDefinitionId = NodeId.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.BrowsePath = QualifiedName.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
+        slength = struct.unpack('<i', data.red(1))
+        obj.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
+        return obj
+    
+    def __str__(self):
+        return 'SimpleAttributeOperand(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'TypeDefinitionId:' + str(self.TypeDefinitionId) + ', '  + \
+             'BrowsePath:' + str(self.BrowsePath) + ', '  + \
+             'AttributeId:' + str(self.AttributeId) + ', '  + \
+             'IndexRange:' + str(self.IndexRange) + ')'
+    
+    __repr__ = __str__
+    
 class ContentFilterElementResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -4988,19 +6308,27 @@ class ContentFilterElementResult(object):
             packet.append(self.OperandDiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StatusCode = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.OperandStatusCodes = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.OperandDiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ContentFilterElementResult()
+        obj.StatusCode = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.OperandStatusCodes = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.OperandDiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ContentFilterElementResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'OperandStatusCodes:' + str(self.OperandStatusCodes) + ', '  + \
+             'OperandDiagnosticInfos:' + str(self.OperandDiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class ContentFilterResult(object):
     def __init__(self):
         self.ElementResults = []
@@ -5016,18 +6344,25 @@ class ContentFilterResult(object):
             packet.append(self.ElementDiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ElementResults = ContentFilterElementResult.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ElementDiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ContentFilterResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ElementResults = ContentFilterElementResult.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ElementDiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ContentFilterResult(' + 'ElementResults:' + str(self.ElementResults) + ', '  + \
+             'ElementDiagnosticInfos:' + str(self.ElementDiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class ParsingResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -5045,19 +6380,27 @@ class ParsingResult(object):
             packet.append(self.DataDiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StatusCode = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DataStatusCodes = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DataDiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ParsingResult()
+        obj.StatusCode = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DataStatusCodes = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DataDiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ParsingResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'DataStatusCodes:' + str(self.DataStatusCodes) + ', '  + \
+             'DataDiagnosticInfos:' + str(self.DataDiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class QueryFirstParameters(object):
     def __init__(self):
         self.View = ViewDescription()
@@ -5079,22 +6422,32 @@ class QueryFirstParameters(object):
         packet.append(struct.pack(fmt, self.MaxReferencesToReturn))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.View = ViewDescription.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.NodeTypes = NodeTypeDescription.from_binary(data)
-            self.Filter = ContentFilter.from_binary(data)
-            fmt = '<I'
-            fmt_size = MaxDataSetsToReturn
-            self.MaxDataSetsToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = MaxReferencesToReturn
-            self.MaxReferencesToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = QueryFirstParameters()
+        obj.View = ViewDescription.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.NodeTypes = NodeTypeDescription.from_binary(data)
+        obj.Filter = ContentFilter.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.MaxDataSetsToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.MaxReferencesToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'QueryFirstParameters(' + 'View:' + str(self.View) + ', '  + \
+             'NodeTypes:' + str(self.NodeTypes) + ', '  + \
+             'Filter:' + str(self.Filter) + ', '  + \
+             'MaxDataSetsToReturn:' + str(self.MaxDataSetsToReturn) + ', '  + \
+             'MaxReferencesToReturn:' + str(self.MaxReferencesToReturn) + ')'
+    
+    __repr__ = __str__
+    
 class QueryFirstRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.QueryFirstRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -5108,13 +6461,21 @@ class QueryFirstRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = QueryFirstParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = QueryFirstRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = QueryFirstParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'QueryFirstRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class QueryFirstResult(object):
     def __init__(self):
         self.QueryDataSets = []
@@ -5138,24 +6499,34 @@ class QueryFirstResult(object):
         packet.append(self.FilterResult.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.QueryDataSets = QueryDataSet.from_binary(data)
-            self.ContinuationPoint = ByteString.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ParsingResults = ParsingResult.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            self.FilterResult = ContentFilterResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = QueryFirstResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.QueryDataSets = QueryDataSet.from_binary(data)
+        obj.ContinuationPoint = ByteString.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ParsingResults = ParsingResult.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        obj.FilterResult = ContentFilterResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'QueryFirstResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', '  + \
+             'ContinuationPoint:' + str(self.ContinuationPoint) + ', '  + \
+             'ParsingResults:' + str(self.ParsingResults) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ', '  + \
+             'FilterResult:' + str(self.FilterResult) + ')'
+    
+    __repr__ = __str__
+    
 class QueryFirstResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.QueryFirstResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -5169,13 +6540,21 @@ class QueryFirstResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = QueryFirstResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = QueryFirstResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = QueryFirstResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'QueryFirstResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class QueryNextParameters(object):
     def __init__(self):
         self.ReleaseContinuationPoint = 0
@@ -5188,14 +6567,21 @@ class QueryNextParameters(object):
         packet.append(self.ContinuationPoint.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<?'
-            fmt_size = ReleaseContinuationPoint
-            self.ReleaseContinuationPoint = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.ContinuationPoint = ByteString.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = QueryNextParameters()
+        fmt = '<?'
+        fmt_size = 1
+        obj.ReleaseContinuationPoint = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.ContinuationPoint = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'QueryNextParameters(' + 'ReleaseContinuationPoint:' + str(self.ReleaseContinuationPoint) + ', '  + \
+             'ContinuationPoint:' + str(self.ContinuationPoint) + ')'
+    
+    __repr__ = __str__
+    
 class QueryNextRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.QueryNextRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -5209,13 +6595,21 @@ class QueryNextRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = QueryNextParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = QueryNextRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = QueryNextParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'QueryNextRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class QueryNextResult(object):
     def __init__(self):
         self.QueryDataSets = []
@@ -5229,15 +6623,22 @@ class QueryNextResult(object):
         packet.append(self.RevisedContinuationPoint.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.QueryDataSets = QueryDataSet.from_binary(data)
-            self.RevisedContinuationPoint = ByteString.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = QueryNextResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.QueryDataSets = QueryDataSet.from_binary(data)
+        obj.RevisedContinuationPoint = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'QueryNextResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', '  + \
+             'RevisedContinuationPoint:' + str(self.RevisedContinuationPoint) + ')'
+    
+    __repr__ = __str__
+    
 class QueryNextResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.QueryNextResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -5251,13 +6652,21 @@ class QueryNextResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = QueryNextResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = QueryNextResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = QueryNextResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'QueryNextResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class ReadValueId(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -5275,17 +6684,26 @@ class ReadValueId(object):
         packet.append(self.DataEncoding.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = AttributeId
-            self.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
-            slength = struct.unpack('<i', data.red(1))
-            self.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.DataEncoding = QualifiedName.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ReadValueId()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
+        slength = struct.unpack('<i', data.red(1))
+        obj.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.DataEncoding = QualifiedName.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ReadValueId(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'AttributeId:' + str(self.AttributeId) + ', '  + \
+             'IndexRange:' + str(self.IndexRange) + ', '  + \
+             'DataEncoding:' + str(self.DataEncoding) + ')'
+    
+    __repr__ = __str__
+    
 class ReadParameters(object):
     def __init__(self):
         self.MaxAge = 0
@@ -5303,20 +6721,28 @@ class ReadParameters(object):
             packet.append(self.NodesToRead.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<d'
-            fmt_size = MaxAge
-            self.MaxAge = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = TimestampsToReturn
-            self.TimestampsToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.NodesToRead = ReadValueId.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ReadParameters()
+        fmt = '<d'
+        fmt_size = 8
+        obj.MaxAge = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.TimestampsToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.NodesToRead = ReadValueId.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ReadParameters(' + 'MaxAge:' + str(self.MaxAge) + ', '  + \
+             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', '  + \
+             'NodesToRead:' + str(self.NodesToRead) + ')'
+    
+    __repr__ = __str__
+    
 class ReadRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.ReadRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -5330,13 +6756,21 @@ class ReadRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = ReadParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ReadRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = ReadParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ReadRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class ReadResult(object):
     def __init__(self):
         self.Results = []
@@ -5352,18 +6786,25 @@ class ReadResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = DataValue.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ReadResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = DataValue.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ReadResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class ReadResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.ReadResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -5377,13 +6818,21 @@ class ReadResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = ReadResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ReadResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = ReadResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ReadResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryReadValueId(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -5400,15 +6849,24 @@ class HistoryReadValueId(object):
         packet.append(self.ContinuationPoint.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            slength = struct.unpack('<i', data.red(1))
-            self.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.DataEncoding = QualifiedName.from_binary(data)
-            self.ContinuationPoint = ByteString.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryReadValueId()
+        obj.NodeId = NodeId.from_binary(data)
+        slength = struct.unpack('<i', data.red(1))
+        obj.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.DataEncoding = QualifiedName.from_binary(data)
+        obj.ContinuationPoint = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryReadValueId(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'IndexRange:' + str(self.IndexRange) + ', '  + \
+             'DataEncoding:' + str(self.DataEncoding) + ', '  + \
+             'ContinuationPoint:' + str(self.ContinuationPoint) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryReadResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -5422,13 +6880,21 @@ class HistoryReadResult(object):
         packet.append(self.HistoryData.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StatusCode = StatusCode.from_binary(data)
-            self.ContinuationPoint = ByteString.from_binary(data)
-            self.HistoryData = ExtensionObject.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryReadResult()
+        obj.StatusCode = StatusCode.from_binary(data)
+        obj.ContinuationPoint = ByteString.from_binary(data)
+        obj.HistoryData = ExtensionObject.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryReadResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'ContinuationPoint:' + str(self.ContinuationPoint) + ', '  + \
+             'HistoryData:' + str(self.HistoryData) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryReadDetails(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -5445,15 +6911,24 @@ class HistoryReadDetails(object):
             packet.append(self.Body.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryReadDetails()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryReadDetails(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ')'
+    
+    __repr__ = __str__
+    
 class ReadEventDetails(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -5479,21 +6954,34 @@ class ReadEventDetails(object):
         packet.append(self.Filter.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            fmt = '<I'
-            fmt_size = NumValuesPerNode
-            self.NumValuesPerNode = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.StartTime = DateTime.from_binary(data)
-            self.EndTime = DateTime.from_binary(data)
-            self.Filter = EventFilter.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ReadEventDetails()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NumValuesPerNode = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.StartTime = DateTime.from_binary(data)
+        obj.EndTime = DateTime.from_binary(data)
+        obj.Filter = EventFilter.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ReadEventDetails(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', '  + \
+             'StartTime:' + str(self.StartTime) + ', '  + \
+             'EndTime:' + str(self.EndTime) + ', '  + \
+             'Filter:' + str(self.Filter) + ')'
+    
+    __repr__ = __str__
+    
 class ReadRawModifiedDetails(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -5523,26 +7011,40 @@ class ReadRawModifiedDetails(object):
         packet.append(struct.pack(fmt, self.ReturnBounds))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            fmt = '<?'
-            fmt_size = IsReadModified
-            self.IsReadModified = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.StartTime = DateTime.from_binary(data)
-            self.EndTime = DateTime.from_binary(data)
-            fmt = '<I'
-            fmt_size = NumValuesPerNode
-            self.NumValuesPerNode = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = ReturnBounds
-            self.ReturnBounds = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ReadRawModifiedDetails()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsReadModified = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.StartTime = DateTime.from_binary(data)
+        obj.EndTime = DateTime.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.NumValuesPerNode = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.ReturnBounds = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ReadRawModifiedDetails(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'IsReadModified:' + str(self.IsReadModified) + ', '  + \
+             'StartTime:' + str(self.StartTime) + ', '  + \
+             'EndTime:' + str(self.EndTime) + ', '  + \
+             'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', '  + \
+             'ReturnBounds:' + str(self.ReturnBounds) + ')'
+    
+    __repr__ = __str__
+    
 class ReadProcessedDetails(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -5572,25 +7074,39 @@ class ReadProcessedDetails(object):
         packet.append(self.AggregateConfiguration.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            self.StartTime = DateTime.from_binary(data)
-            self.EndTime = DateTime.from_binary(data)
-            fmt = '<d'
-            fmt_size = ProcessingInterval
-            self.ProcessingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.AggregateType = NodeId.from_binary(data)
-            self.AggregateConfiguration = AggregateConfiguration.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ReadProcessedDetails()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        obj.StartTime = DateTime.from_binary(data)
+        obj.EndTime = DateTime.from_binary(data)
+        fmt = '<d'
+        fmt_size = 8
+        obj.ProcessingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.AggregateType = NodeId.from_binary(data)
+        obj.AggregateConfiguration = AggregateConfiguration.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ReadProcessedDetails(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'StartTime:' + str(self.StartTime) + ', '  + \
+             'EndTime:' + str(self.EndTime) + ', '  + \
+             'ProcessingInterval:' + str(self.ProcessingInterval) + ', '  + \
+             'AggregateType:' + str(self.AggregateType) + ', '  + \
+             'AggregateConfiguration:' + str(self.AggregateConfiguration) + ')'
+    
+    __repr__ = __str__
+    
 class ReadAtTimeDetails(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -5614,22 +7130,33 @@ class ReadAtTimeDetails(object):
         packet.append(struct.pack(fmt, self.UseSimpleBounds))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ReqTimes = DateTime.from_binary(data)
-            fmt = '<?'
-            fmt_size = UseSimpleBounds
-            self.UseSimpleBounds = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ReadAtTimeDetails()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ReqTimes = DateTime.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.UseSimpleBounds = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ReadAtTimeDetails(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'ReqTimes:' + str(self.ReqTimes) + ', '  + \
+             'UseSimpleBounds:' + str(self.UseSimpleBounds) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryData(object):
     def __init__(self):
         self.DataValues = []
@@ -5641,14 +7168,20 @@ class HistoryData(object):
             packet.append(self.DataValues.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DataValues = DataValue.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryData()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DataValues = DataValue.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryData(' + 'DataValues:' + str(self.DataValues) + ')'
+    
+    __repr__ = __str__
+    
 class ModificationInfo(object):
     def __init__(self):
         self.ModificationTime = DateTime()
@@ -5664,16 +7197,24 @@ class ModificationInfo(object):
         packet.append(struct.pack('<{}s'.format(len(self.UserName)), self.UserName.encode()))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.ModificationTime = DateTime.from_binary(data)
-            fmt = '<I'
-            fmt_size = UpdateType
-            self.UpdateType = struct.unpack(fmt, data.read(fmt_size))[0]
-            slength = struct.unpack('<i', data.red(1))
-            self.UserName = struct.unpack('<{}s'.format(slength), data.read(slength))
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ModificationInfo()
+        obj.ModificationTime = DateTime.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.UpdateType = struct.unpack(fmt, data.read(fmt_size))[0]
+        slength = struct.unpack('<i', data.red(1))
+        obj.UserName = struct.unpack('<{}s'.format(slength), data.read(slength))
+        return obj
+    
+    def __str__(self):
+        return 'ModificationInfo(' + 'ModificationTime:' + str(self.ModificationTime) + ', '  + \
+             'UpdateType:' + str(self.UpdateType) + ', '  + \
+             'UserName:' + str(self.UserName) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryModifiedData(object):
     def __init__(self):
         self.DataValues = []
@@ -5689,18 +7230,25 @@ class HistoryModifiedData(object):
             packet.append(self.ModificationInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DataValues = DataValue.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ModificationInfos = ModificationInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryModifiedData()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DataValues = DataValue.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ModificationInfos = ModificationInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryModifiedData(' + 'DataValues:' + str(self.DataValues) + ', '  + \
+             'ModificationInfos:' + str(self.ModificationInfos) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryEvent(object):
     def __init__(self):
         self.Events = []
@@ -5712,14 +7260,20 @@ class HistoryEvent(object):
             packet.append(self.Events.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Events = HistoryEventFieldList.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryEvent()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Events = HistoryEventFieldList.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryEvent(' + 'Events:' + str(self.Events) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryReadParameters(object):
     def __init__(self):
         self.HistoryReadDetails = ExtensionObject()
@@ -5739,21 +7293,30 @@ class HistoryReadParameters(object):
             packet.append(self.NodesToRead.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.HistoryReadDetails = ExtensionObject.from_binary(data)
-            fmt = '<I'
-            fmt_size = TimestampsToReturn
-            self.TimestampsToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = ReleaseContinuationPoints
-            self.ReleaseContinuationPoints = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.NodesToRead = HistoryReadValueId.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryReadParameters()
+        obj.HistoryReadDetails = ExtensionObject.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.TimestampsToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.ReleaseContinuationPoints = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.NodesToRead = HistoryReadValueId.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryReadParameters(' + 'HistoryReadDetails:' + str(self.HistoryReadDetails) + ', '  + \
+             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', '  + \
+             'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', '  + \
+             'NodesToRead:' + str(self.NodesToRead) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryReadRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.HistoryReadRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -5767,13 +7330,21 @@ class HistoryReadRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = HistoryReadParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryReadRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = HistoryReadParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryReadRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryReadResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.HistoryReadResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -5793,20 +7364,29 @@ class HistoryReadResponse(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = HistoryReadResult.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryReadResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = HistoryReadResult.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryReadResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class WriteValue(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -5824,17 +7404,26 @@ class WriteValue(object):
         packet.append(self.Value.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = AttributeId
-            self.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
-            slength = struct.unpack('<i', data.red(1))
-            self.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.Value = DataValue.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = WriteValue()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
+        slength = struct.unpack('<i', data.red(1))
+        obj.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.Value = DataValue.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'WriteValue(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'AttributeId:' + str(self.AttributeId) + ', '  + \
+             'IndexRange:' + str(self.IndexRange) + ', '  + \
+             'Value:' + str(self.Value) + ')'
+    
+    __repr__ = __str__
+    
 class WriteParameters(object):
     def __init__(self):
         self.NodesToWrite = []
@@ -5846,14 +7435,20 @@ class WriteParameters(object):
             packet.append(self.NodesToWrite.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.NodesToWrite = WriteValue.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = WriteParameters()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.NodesToWrite = WriteValue.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'WriteParameters(' + 'NodesToWrite:' + str(self.NodesToWrite) + ')'
+    
+    __repr__ = __str__
+    
 class WriteRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.WriteRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -5867,13 +7462,21 @@ class WriteRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = WriteParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = WriteRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = WriteParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'WriteRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class WriteResult(object):
     def __init__(self):
         self.Results = []
@@ -5889,18 +7492,25 @@ class WriteResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = WriteResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'WriteResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class WriteResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.WriteResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -5914,13 +7524,21 @@ class WriteResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = WriteResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = WriteResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = WriteResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'WriteResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryUpdateDetails(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -5930,11 +7548,17 @@ class HistoryUpdateDetails(object):
         packet.append(self.NodeId.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryUpdateDetails()
+        obj.NodeId = NodeId.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryUpdateDetails(' + 'NodeId:' + str(self.NodeId) + ')'
+    
+    __repr__ = __str__
+    
 class UpdateDataDetails(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -5951,18 +7575,26 @@ class UpdateDataDetails(object):
             packet.append(self.UpdateValues.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = PerformInsertReplace
-            self.PerformInsertReplace = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.UpdateValues = DataValue.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = UpdateDataDetails()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.PerformInsertReplace = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.UpdateValues = DataValue.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'UpdateDataDetails(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', '  + \
+             'UpdateValues:' + str(self.UpdateValues) + ')'
+    
+    __repr__ = __str__
+    
 class UpdateStructureDataDetails(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -5979,18 +7611,26 @@ class UpdateStructureDataDetails(object):
             packet.append(self.UpdateValues.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = PerformInsertReplace
-            self.PerformInsertReplace = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.UpdateValues = DataValue.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = UpdateStructureDataDetails()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.PerformInsertReplace = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.UpdateValues = DataValue.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'UpdateStructureDataDetails(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', '  + \
+             'UpdateValues:' + str(self.UpdateValues) + ')'
+    
+    __repr__ = __str__
+    
 class UpdateEventDetails(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -6009,19 +7649,28 @@ class UpdateEventDetails(object):
             packet.append(self.EventData.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = PerformInsertReplace
-            self.PerformInsertReplace = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.Filter = EventFilter.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.EventData = HistoryEventFieldList.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = UpdateEventDetails()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.PerformInsertReplace = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.Filter = EventFilter.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.EventData = HistoryEventFieldList.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'UpdateEventDetails(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', '  + \
+             'Filter:' + str(self.Filter) + ', '  + \
+             'EventData:' + str(self.EventData) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteRawModifiedDetails(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -6038,16 +7687,25 @@ class DeleteRawModifiedDetails(object):
         packet.append(self.EndTime.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            fmt = '<?'
-            fmt_size = IsDeleteModified
-            self.IsDeleteModified = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.StartTime = DateTime.from_binary(data)
-            self.EndTime = DateTime.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteRawModifiedDetails()
+        obj.NodeId = NodeId.from_binary(data)
+        fmt = '<?'
+        fmt_size = 1
+        obj.IsDeleteModified = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.StartTime = DateTime.from_binary(data)
+        obj.EndTime = DateTime.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteRawModifiedDetails(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'IsDeleteModified:' + str(self.IsDeleteModified) + ', '  + \
+             'StartTime:' + str(self.StartTime) + ', '  + \
+             'EndTime:' + str(self.EndTime) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteAtTimeDetails(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -6061,15 +7719,22 @@ class DeleteAtTimeDetails(object):
             packet.append(self.ReqTimes.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ReqTimes = DateTime.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteAtTimeDetails()
+        obj.NodeId = NodeId.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ReqTimes = DateTime.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteAtTimeDetails(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'ReqTimes:' + str(self.ReqTimes) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteEventDetails(object):
     def __init__(self):
         self.NodeId = NodeId()
@@ -6083,15 +7748,22 @@ class DeleteEventDetails(object):
             packet.append(self.EventIds.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NodeId = NodeId.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.EventIds = ByteString.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteEventDetails()
+        obj.NodeId = NodeId.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.EventIds = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteEventDetails(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+             'EventIds:' + str(self.EventIds) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryUpdateResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -6109,19 +7781,27 @@ class HistoryUpdateResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StatusCode = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.OperationResults = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryUpdateResult()
+        obj.StatusCode = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.OperationResults = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryUpdateResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'OperationResults:' + str(self.OperationResults) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryUpdateEventResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -6133,12 +7813,19 @@ class HistoryUpdateEventResult(object):
         packet.append(self.EventFilterResult.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StatusCode = StatusCode.from_binary(data)
-            self.EventFilterResult = EventFilterResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryUpdateEventResult()
+        obj.StatusCode = StatusCode.from_binary(data)
+        obj.EventFilterResult = EventFilterResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryUpdateEventResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'EventFilterResult:' + str(self.EventFilterResult) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryUpdateParameters(object):
     def __init__(self):
         self.HistoryUpdateDetails = []
@@ -6150,14 +7837,20 @@ class HistoryUpdateParameters(object):
             packet.append(self.HistoryUpdateDetails.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.HistoryUpdateDetails = ExtensionObject.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryUpdateParameters()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.HistoryUpdateDetails = ExtensionObject.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryUpdateParameters(' + 'HistoryUpdateDetails:' + str(self.HistoryUpdateDetails) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryUpdateRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.HistoryUpdateRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -6171,13 +7864,21 @@ class HistoryUpdateRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = HistoryUpdateParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryUpdateRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = HistoryUpdateParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryUpdateRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryUpdateResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.HistoryUpdateResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -6197,20 +7898,29 @@ class HistoryUpdateResponse(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = HistoryUpdateResult.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryUpdateResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = HistoryUpdateResult.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryUpdateResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class CallMethodParameters(object):
     def __init__(self):
         self.MethodId = NodeId()
@@ -6224,15 +7934,22 @@ class CallMethodParameters(object):
             packet.append(self.InputArguments.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.MethodId = NodeId.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.InputArguments = Variant.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CallMethodParameters()
+        obj.MethodId = NodeId.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.InputArguments = Variant.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CallMethodParameters(' + 'MethodId:' + str(self.MethodId) + ', '  + \
+             'InputArguments:' + str(self.InputArguments) + ')'
+    
+    __repr__ = __str__
+    
 class CallMethodRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CallMethodRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -6246,13 +7963,21 @@ class CallMethodRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ObjectId = NodeId.from_binary(data)
-            self.Parameters = CallMethodParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CallMethodRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ObjectId = NodeId.from_binary(data)
+        obj.Parameters = CallMethodParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CallMethodRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ObjectId:' + str(self.ObjectId) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class CallMethodResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -6274,23 +7999,32 @@ class CallMethodResult(object):
             packet.append(self.OutputArguments.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StatusCode = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.InputArgumentResults = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.InputArgumentDiagnosticInfos = DiagnosticInfo.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.OutputArguments = Variant.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CallMethodResult()
+        obj.StatusCode = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.InputArgumentResults = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.InputArgumentDiagnosticInfos = DiagnosticInfo.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.OutputArguments = Variant.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CallMethodResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'InputArgumentResults:' + str(self.InputArgumentResults) + ', '  + \
+             'InputArgumentDiagnosticInfos:' + str(self.InputArgumentDiagnosticInfos) + ', '  + \
+             'OutputArguments:' + str(self.OutputArguments) + ')'
+    
+    __repr__ = __str__
+    
 class CallParameters(object):
     def __init__(self):
         self.MethodsToCall = []
@@ -6302,14 +8036,20 @@ class CallParameters(object):
             packet.append(self.MethodsToCall.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.MethodsToCall = CallMethodRequest.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CallParameters()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.MethodsToCall = CallMethodRequest.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CallParameters(' + 'MethodsToCall:' + str(self.MethodsToCall) + ')'
+    
+    __repr__ = __str__
+    
 class CallRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CallRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -6323,13 +8063,21 @@ class CallRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = CallParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CallRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = CallParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CallRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class CallResult(object):
     def __init__(self):
         self.Results = []
@@ -6345,18 +8093,25 @@ class CallResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = CallMethodResult.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CallResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = CallMethodResult.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CallResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class CallResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CallResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -6370,13 +8125,21 @@ class CallResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = CallResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CallResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = CallResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CallResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class MonitoringFilter(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -6393,15 +8156,24 @@ class MonitoringFilter(object):
             packet.append(self.Body.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = MonitoringFilter()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'MonitoringFilter(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ')'
+    
+    __repr__ = __str__
+    
 class DataChangeFilter(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -6427,24 +8199,36 @@ class DataChangeFilter(object):
         packet.append(struct.pack(fmt, self.DeadbandValue))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            fmt = '<I'
-            fmt_size = Trigger
-            self.Trigger = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = DeadbandType
-            self.DeadbandType = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<d'
-            fmt_size = DeadbandValue
-            self.DeadbandValue = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DataChangeFilter()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.Trigger = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.DeadbandType = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<d'
+        fmt_size = 8
+        obj.DeadbandValue = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'DataChangeFilter(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'Trigger:' + str(self.Trigger) + ', '  + \
+             'DeadbandType:' + str(self.DeadbandType) + ', '  + \
+             'DeadbandValue:' + str(self.DeadbandValue) + ')'
+    
+    __repr__ = __str__
+    
 class EventFilter(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -6467,20 +8251,31 @@ class EventFilter(object):
         packet.append(self.WhereClause.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.SelectClauses = SimpleAttributeOperand.from_binary(data)
-            self.WhereClause = ContentFilter.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = EventFilter()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.SelectClauses = SimpleAttributeOperand.from_binary(data)
+        obj.WhereClause = ContentFilter.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'EventFilter(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'SelectClauses:' + str(self.SelectClauses) + ', '  + \
+             'WhereClause:' + str(self.WhereClause) + ')'
+    
+    __repr__ = __str__
+    
 class AggregateConfiguration(object):
     def __init__(self):
         self.UseServerCapabilitiesDefaults = 0
@@ -6503,25 +8298,35 @@ class AggregateConfiguration(object):
         packet.append(struct.pack(fmt, self.UseSlopedExtrapolation))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<?'
-            fmt_size = UseServerCapabilitiesDefaults
-            self.UseServerCapabilitiesDefaults = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = TreatUncertainAsBad
-            self.TreatUncertainAsBad = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<B'
-            fmt_size = PercentDataBad
-            self.PercentDataBad = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<B'
-            fmt_size = PercentDataGood
-            self.PercentDataGood = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = UseSlopedExtrapolation
-            self.UseSlopedExtrapolation = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AggregateConfiguration()
+        fmt = '<?'
+        fmt_size = 1
+        obj.UseServerCapabilitiesDefaults = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.TreatUncertainAsBad = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<B'
+        fmt_size = 1
+        obj.PercentDataBad = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<B'
+        fmt_size = 1
+        obj.PercentDataGood = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.UseSlopedExtrapolation = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'AggregateConfiguration(' + 'UseServerCapabilitiesDefaults:' + str(self.UseServerCapabilitiesDefaults) + ', '  + \
+             'TreatUncertainAsBad:' + str(self.TreatUncertainAsBad) + ', '  + \
+             'PercentDataBad:' + str(self.PercentDataBad) + ', '  + \
+             'PercentDataGood:' + str(self.PercentDataGood) + ', '  + \
+             'UseSlopedExtrapolation:' + str(self.UseSlopedExtrapolation) + ')'
+    
+    __repr__ = __str__
+    
 class AggregateFilter(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -6547,21 +8352,34 @@ class AggregateFilter(object):
         packet.append(self.AggregateConfiguration.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            self.StartTime = DateTime.from_binary(data)
-            self.AggregateType = NodeId.from_binary(data)
-            fmt = '<d'
-            fmt_size = ProcessingInterval
-            self.ProcessingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.AggregateConfiguration = AggregateConfiguration.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AggregateFilter()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        obj.StartTime = DateTime.from_binary(data)
+        obj.AggregateType = NodeId.from_binary(data)
+        fmt = '<d'
+        fmt_size = 8
+        obj.ProcessingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.AggregateConfiguration = AggregateConfiguration.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'AggregateFilter(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'StartTime:' + str(self.StartTime) + ', '  + \
+             'AggregateType:' + str(self.AggregateType) + ', '  + \
+             'ProcessingInterval:' + str(self.ProcessingInterval) + ', '  + \
+             'AggregateConfiguration:' + str(self.AggregateConfiguration) + ')'
+    
+    __repr__ = __str__
+    
 class MonitoringFilterResult(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -6578,15 +8396,24 @@ class MonitoringFilterResult(object):
             packet.append(self.Body.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = MonitoringFilterResult()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'MonitoringFilterResult(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ')'
+    
+    __repr__ = __str__
+    
 class EventFilterResult(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -6613,24 +8440,36 @@ class EventFilterResult(object):
         packet.append(self.WhereClauseResult.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.SelectClauseResults = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.SelectClauseDiagnosticInfos = DiagnosticInfo.from_binary(data)
-            self.WhereClauseResult = ContentFilterResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = EventFilterResult()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.SelectClauseResults = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.SelectClauseDiagnosticInfos = DiagnosticInfo.from_binary(data)
+        obj.WhereClauseResult = ContentFilterResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'EventFilterResult(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'SelectClauseResults:' + str(self.SelectClauseResults) + ', '  + \
+             'SelectClauseDiagnosticInfos:' + str(self.SelectClauseDiagnosticInfos) + ', '  + \
+             'WhereClauseResult:' + str(self.WhereClauseResult) + ')'
+    
+    __repr__ = __str__
+    
 class AggregateFilterResult(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -6654,20 +8493,32 @@ class AggregateFilterResult(object):
         packet.append(self.RevisedAggregateConfiguration.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            self.RevisedStartTime = DateTime.from_binary(data)
-            fmt = '<d'
-            fmt_size = RevisedProcessingInterval
-            self.RevisedProcessingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.RevisedAggregateConfiguration = AggregateConfiguration.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AggregateFilterResult()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        obj.RevisedStartTime = DateTime.from_binary(data)
+        fmt = '<d'
+        fmt_size = 8
+        obj.RevisedProcessingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.RevisedAggregateConfiguration = AggregateConfiguration.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'AggregateFilterResult(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'RevisedStartTime:' + str(self.RevisedStartTime) + ', '  + \
+             'RevisedProcessingInterval:' + str(self.RevisedProcessingInterval) + ', '  + \
+             'RevisedAggregateConfiguration:' + str(self.RevisedAggregateConfiguration) + ')'
+    
+    __repr__ = __str__
+    
 class MonitoringParameters(object):
     def __init__(self):
         self.ClientHandle = 0
@@ -6689,23 +8540,33 @@ class MonitoringParameters(object):
         packet.append(struct.pack(fmt, self.DiscardOldest))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = ClientHandle
-            self.ClientHandle = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<d'
-            fmt_size = SamplingInterval
-            self.SamplingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.Filter = ExtensionObject.from_binary(data)
-            fmt = '<I'
-            fmt_size = QueueSize
-            self.QueueSize = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = DiscardOldest
-            self.DiscardOldest = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = MonitoringParameters()
+        fmt = '<I'
+        fmt_size = 4
+        obj.ClientHandle = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<d'
+        fmt_size = 8
+        obj.SamplingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.Filter = ExtensionObject.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.QueueSize = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.DiscardOldest = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'MonitoringParameters(' + 'ClientHandle:' + str(self.ClientHandle) + ', '  + \
+             'SamplingInterval:' + str(self.SamplingInterval) + ', '  + \
+             'Filter:' + str(self.Filter) + ', '  + \
+             'QueueSize:' + str(self.QueueSize) + ', '  + \
+             'DiscardOldest:' + str(self.DiscardOldest) + ')'
+    
+    __repr__ = __str__
+    
 class MonitoredItemCreateParameters(object):
     def __init__(self):
         self.MonitoringMode = 0
@@ -6718,14 +8579,21 @@ class MonitoredItemCreateParameters(object):
         packet.append(self.RequestedParameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = MonitoringMode
-            self.MonitoringMode = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.RequestedParameters = MonitoringParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = MonitoredItemCreateParameters()
+        fmt = '<I'
+        fmt_size = 4
+        obj.MonitoringMode = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.RequestedParameters = MonitoringParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'MonitoredItemCreateParameters(' + 'MonitoringMode:' + str(self.MonitoringMode) + ', '  + \
+             'RequestedParameters:' + str(self.RequestedParameters) + ')'
+    
+    __repr__ = __str__
+    
 class MonitoredItemCreateRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.MonitoredItemCreateRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -6739,13 +8607,21 @@ class MonitoredItemCreateRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ItemToMonitor = ReadValueId.from_binary(data)
-            self.Parameters = MonitoredItemCreateParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = MonitoredItemCreateRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ItemToMonitor = ReadValueId.from_binary(data)
+        obj.Parameters = MonitoredItemCreateParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'MonitoredItemCreateRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ItemToMonitor:' + str(self.ItemToMonitor) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class MonitoredItemCreateResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -6766,21 +8642,31 @@ class MonitoredItemCreateResult(object):
         packet.append(self.FilterResult.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StatusCode = StatusCode.from_binary(data)
-            fmt = '<I'
-            fmt_size = MonitoredItemId
-            self.MonitoredItemId = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<d'
-            fmt_size = RevisedSamplingInterval
-            self.RevisedSamplingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RevisedQueueSize
-            self.RevisedQueueSize = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.FilterResult = ExtensionObject.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = MonitoredItemCreateResult()
+        obj.StatusCode = StatusCode.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.MonitoredItemId = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<d'
+        fmt_size = 8
+        obj.RevisedSamplingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RevisedQueueSize = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.FilterResult = ExtensionObject.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'MonitoredItemCreateResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'MonitoredItemId:' + str(self.MonitoredItemId) + ', '  + \
+             'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', '  + \
+             'RevisedQueueSize:' + str(self.RevisedQueueSize) + ', '  + \
+             'FilterResult:' + str(self.FilterResult) + ')'
+    
+    __repr__ = __str__
+    
 class CreateMonitoredItemsParameters(object):
     def __init__(self):
         self.SubscriptionId = 0
@@ -6798,20 +8684,28 @@ class CreateMonitoredItemsParameters(object):
             packet.append(self.ItemsToCreate.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SubscriptionId
-            self.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = TimestampsToReturn
-            self.TimestampsToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ItemsToCreate = MonitoredItemCreateRequest.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CreateMonitoredItemsParameters()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.TimestampsToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ItemsToCreate = MonitoredItemCreateRequest.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CreateMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', '  + \
+             'ItemsToCreate:' + str(self.ItemsToCreate) + ')'
+    
+    __repr__ = __str__
+    
 class CreateMonitoredItemsRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CreateMonitoredItemsRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -6825,13 +8719,21 @@ class CreateMonitoredItemsRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = CreateMonitoredItemsParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CreateMonitoredItemsRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = CreateMonitoredItemsParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CreateMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class CreateMonitoredItemsResult(object):
     def __init__(self):
         self.Results = []
@@ -6847,18 +8749,25 @@ class CreateMonitoredItemsResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = MonitoredItemCreateResult.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CreateMonitoredItemsResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = MonitoredItemCreateResult.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CreateMonitoredItemsResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class CreateMonitoredItemsResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CreateMonitoredItemsResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -6872,13 +8781,21 @@ class CreateMonitoredItemsResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = CreateMonitoredItemsResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CreateMonitoredItemsResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = CreateMonitoredItemsResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CreateMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class MonitoredItemModifyRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.MonitoredItemModifyRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -6893,15 +8810,23 @@ class MonitoredItemModifyRequest(object):
         packet.append(self.RequestedParameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = MonitoredItemId
-            self.MonitoredItemId = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.RequestedParameters = MonitoringParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = MonitoredItemModifyRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.MonitoredItemId = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.RequestedParameters = MonitoringParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'MonitoredItemModifyRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'MonitoredItemId:' + str(self.MonitoredItemId) + ', '  + \
+             'RequestedParameters:' + str(self.RequestedParameters) + ')'
+    
+    __repr__ = __str__
+    
 class MonitoredItemModifyResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -6919,18 +8844,27 @@ class MonitoredItemModifyResult(object):
         packet.append(self.FilterResult.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StatusCode = StatusCode.from_binary(data)
-            fmt = '<d'
-            fmt_size = RevisedSamplingInterval
-            self.RevisedSamplingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RevisedQueueSize
-            self.RevisedQueueSize = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.FilterResult = ExtensionObject.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = MonitoredItemModifyResult()
+        obj.StatusCode = StatusCode.from_binary(data)
+        fmt = '<d'
+        fmt_size = 8
+        obj.RevisedSamplingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RevisedQueueSize = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.FilterResult = ExtensionObject.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'MonitoredItemModifyResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', '  + \
+             'RevisedQueueSize:' + str(self.RevisedQueueSize) + ', '  + \
+             'FilterResult:' + str(self.FilterResult) + ')'
+    
+    __repr__ = __str__
+    
 class ModifyMonitoredItemsParameters(object):
     def __init__(self):
         self.SubscriptionId = 0
@@ -6948,20 +8882,28 @@ class ModifyMonitoredItemsParameters(object):
             packet.append(self.ItemsToModify.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SubscriptionId
-            self.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = TimestampsToReturn
-            self.TimestampsToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ItemsToModify = MonitoredItemModifyRequest.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ModifyMonitoredItemsParameters()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.TimestampsToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ItemsToModify = MonitoredItemModifyRequest.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ModifyMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', '  + \
+             'ItemsToModify:' + str(self.ItemsToModify) + ')'
+    
+    __repr__ = __str__
+    
 class ModifyMonitoredItemsRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.ModifyMonitoredItemsRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -6975,13 +8917,21 @@ class ModifyMonitoredItemsRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = ModifyMonitoredItemsParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ModifyMonitoredItemsRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = ModifyMonitoredItemsParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ModifyMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class ModifyMonitoredItemsResult(object):
     def __init__(self):
         self.Results = []
@@ -6997,18 +8947,25 @@ class ModifyMonitoredItemsResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = MonitoredItemModifyResult.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ModifyMonitoredItemsResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = MonitoredItemModifyResult.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ModifyMonitoredItemsResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class ModifyMonitoredItemsResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.ModifyMonitoredItemsResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -7022,13 +8979,21 @@ class ModifyMonitoredItemsResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = ModifyMonitoredItemsResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ModifyMonitoredItemsResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = ModifyMonitoredItemsResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ModifyMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class SetMonitoringModeParameters(object):
     def __init__(self):
         self.SubscriptionId = 0
@@ -7047,22 +9012,30 @@ class SetMonitoringModeParameters(object):
             packet.append(struct.pack(fmt, self.MonitoredItemIds))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SubscriptionId
-            self.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = MonitoringMode
-            self.MonitoringMode = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = MonitoredItemIds
-                    self.MonitoredItemIds = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SetMonitoringModeParameters()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.MonitoringMode = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.MonitoredItemIds = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'SetMonitoringModeParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+             'MonitoringMode:' + str(self.MonitoringMode) + ', '  + \
+             'MonitoredItemIds:' + str(self.MonitoredItemIds) + ')'
+    
+    __repr__ = __str__
+    
 class SetMonitoringModeRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.SetMonitoringModeRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -7076,13 +9049,21 @@ class SetMonitoringModeRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = SetMonitoringModeParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SetMonitoringModeRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = SetMonitoringModeParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SetMonitoringModeRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class SetMonitoringModeResult(object):
     def __init__(self):
         self.Results = []
@@ -7098,18 +9079,25 @@ class SetMonitoringModeResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SetMonitoringModeResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SetMonitoringModeResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class SetMonitoringModeResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.SetMonitoringModeResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -7123,13 +9111,21 @@ class SetMonitoringModeResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = SetMonitoringModeResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SetMonitoringModeResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = SetMonitoringModeResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SetMonitoringModeResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class SetTriggeringParameters(object):
     def __init__(self):
         self.SubscriptionId = 0
@@ -7153,28 +9149,37 @@ class SetTriggeringParameters(object):
             packet.append(struct.pack(fmt, self.LinksToRemove))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SubscriptionId
-            self.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = TriggeringItemId
-            self.TriggeringItemId = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = LinksToAdd
-                    self.LinksToAdd = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = LinksToRemove
-                    self.LinksToRemove = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SetTriggeringParameters()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.TriggeringItemId = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.LinksToAdd = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.LinksToRemove = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'SetTriggeringParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+             'TriggeringItemId:' + str(self.TriggeringItemId) + ', '  + \
+             'LinksToAdd:' + str(self.LinksToAdd) + ', '  + \
+             'LinksToRemove:' + str(self.LinksToRemove) + ')'
+    
+    __repr__ = __str__
+    
 class SetTriggeringRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.SetTriggeringRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -7188,13 +9193,21 @@ class SetTriggeringRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = SetTriggeringParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SetTriggeringRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = SetTriggeringParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SetTriggeringRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class SetTriggeringResult(object):
     def __init__(self):
         self.AddResults = []
@@ -7218,26 +9231,35 @@ class SetTriggeringResult(object):
             packet.append(self.RemoveDiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.AddResults = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.AddDiagnosticInfos = DiagnosticInfo.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.RemoveResults = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.RemoveDiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SetTriggeringResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.AddResults = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.AddDiagnosticInfos = DiagnosticInfo.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.RemoveResults = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.RemoveDiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SetTriggeringResult(' + 'AddResults:' + str(self.AddResults) + ', '  + \
+             'AddDiagnosticInfos:' + str(self.AddDiagnosticInfos) + ', '  + \
+             'RemoveResults:' + str(self.RemoveResults) + ', '  + \
+             'RemoveDiagnosticInfos:' + str(self.RemoveDiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class SetTriggeringResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.SetTriggeringResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -7251,13 +9273,21 @@ class SetTriggeringResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = SetTriggeringResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SetTriggeringResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = SetTriggeringResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SetTriggeringResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteMonitoredItemsParameters(object):
     def __init__(self):
         self.SubscriptionId = 0
@@ -7273,19 +9303,26 @@ class DeleteMonitoredItemsParameters(object):
             packet.append(struct.pack(fmt, self.MonitoredItemIds))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SubscriptionId
-            self.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = MonitoredItemIds
-                    self.MonitoredItemIds = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteMonitoredItemsParameters()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.MonitoredItemIds = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'DeleteMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+             'MonitoredItemIds:' + str(self.MonitoredItemIds) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteMonitoredItemsRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.DeleteMonitoredItemsRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -7299,13 +9336,21 @@ class DeleteMonitoredItemsRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = DeleteMonitoredItemsParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteMonitoredItemsRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = DeleteMonitoredItemsParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteMonitoredItemsResult(object):
     def __init__(self):
         self.Results = []
@@ -7321,18 +9366,25 @@ class DeleteMonitoredItemsResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteMonitoredItemsResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteMonitoredItemsResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteMonitoredItemsResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.DeleteMonitoredItemsResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -7346,13 +9398,21 @@ class DeleteMonitoredItemsResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = DeleteMonitoredItemsResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteMonitoredItemsResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = DeleteMonitoredItemsResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class CreateSubscriptionParameters(object):
     def __init__(self):
         self.RequestedPublishingInterval = 0
@@ -7378,28 +9438,39 @@ class CreateSubscriptionParameters(object):
         packet.append(struct.pack(fmt, self.Priority))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<d'
-            fmt_size = RequestedPublishingInterval
-            self.RequestedPublishingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RequestedLifetimeCount
-            self.RequestedLifetimeCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RequestedMaxKeepAliveCount
-            self.RequestedMaxKeepAliveCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = MaxNotificationsPerPublish
-            self.MaxNotificationsPerPublish = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = PublishingEnabled
-            self.PublishingEnabled = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<B'
-            fmt_size = Priority
-            self.Priority = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CreateSubscriptionParameters()
+        fmt = '<d'
+        fmt_size = 8
+        obj.RequestedPublishingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RequestedLifetimeCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RequestedMaxKeepAliveCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.MaxNotificationsPerPublish = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.PublishingEnabled = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<B'
+        fmt_size = 1
+        obj.Priority = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'CreateSubscriptionParameters(' + 'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', '  + \
+             'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', '  + \
+             'RequestedMaxKeepAliveCount:' + str(self.RequestedMaxKeepAliveCount) + ', '  + \
+             'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', '  + \
+             'PublishingEnabled:' + str(self.PublishingEnabled) + ', '  + \
+             'Priority:' + str(self.Priority) + ')'
+    
+    __repr__ = __str__
+    
 class CreateSubscriptionRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CreateSubscriptionRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -7413,13 +9484,21 @@ class CreateSubscriptionRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = CreateSubscriptionParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CreateSubscriptionRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = CreateSubscriptionParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CreateSubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class CreateSubscriptionResult(object):
     def __init__(self):
         self.SubscriptionId = 0
@@ -7439,22 +9518,31 @@ class CreateSubscriptionResult(object):
         packet.append(struct.pack(fmt, self.RevisedMaxKeepAliveCount))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SubscriptionId
-            self.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<d'
-            fmt_size = RevisedPublishingInterval
-            self.RevisedPublishingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RevisedLifetimeCount
-            self.RevisedLifetimeCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RevisedMaxKeepAliveCount
-            self.RevisedMaxKeepAliveCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CreateSubscriptionResult()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<d'
+        fmt_size = 8
+        obj.RevisedPublishingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RevisedLifetimeCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RevisedMaxKeepAliveCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'CreateSubscriptionResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+             'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', '  + \
+             'RevisedLifetimeCount:' + str(self.RevisedLifetimeCount) + ', '  + \
+             'RevisedMaxKeepAliveCount:' + str(self.RevisedMaxKeepAliveCount) + ')'
+    
+    __repr__ = __str__
+    
 class CreateSubscriptionResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.CreateSubscriptionResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -7468,13 +9556,21 @@ class CreateSubscriptionResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = CreateSubscriptionResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CreateSubscriptionResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = CreateSubscriptionResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CreateSubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class ModifySubscriptionParameters(object):
     def __init__(self):
         self.SubscriptionId = 0
@@ -7500,28 +9596,39 @@ class ModifySubscriptionParameters(object):
         packet.append(struct.pack(fmt, self.Priority))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SubscriptionId
-            self.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<d'
-            fmt_size = RequestedPublishingInterval
-            self.RequestedPublishingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RequestedLifetimeCount
-            self.RequestedLifetimeCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RequestedMaxKeepAliveCount
-            self.RequestedMaxKeepAliveCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = MaxNotificationsPerPublish
-            self.MaxNotificationsPerPublish = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<B'
-            fmt_size = Priority
-            self.Priority = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ModifySubscriptionParameters()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<d'
+        fmt_size = 8
+        obj.RequestedPublishingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RequestedLifetimeCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RequestedMaxKeepAliveCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.MaxNotificationsPerPublish = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<B'
+        fmt_size = 1
+        obj.Priority = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ModifySubscriptionParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+             'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', '  + \
+             'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', '  + \
+             'RequestedMaxKeepAliveCount:' + str(self.RequestedMaxKeepAliveCount) + ', '  + \
+             'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', '  + \
+             'Priority:' + str(self.Priority) + ')'
+    
+    __repr__ = __str__
+    
 class ModifySubscriptionRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.ModifySubscriptionRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -7535,13 +9642,21 @@ class ModifySubscriptionRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = ModifySubscriptionParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ModifySubscriptionRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = ModifySubscriptionParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ModifySubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class ModifySubscriptionResult(object):
     def __init__(self):
         self.RevisedPublishingInterval = 0
@@ -7558,19 +9673,27 @@ class ModifySubscriptionResult(object):
         packet.append(struct.pack(fmt, self.RevisedMaxKeepAliveCount))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<d'
-            fmt_size = RevisedPublishingInterval
-            self.RevisedPublishingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RevisedLifetimeCount
-            self.RevisedLifetimeCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RevisedMaxKeepAliveCount
-            self.RevisedMaxKeepAliveCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ModifySubscriptionResult()
+        fmt = '<d'
+        fmt_size = 8
+        obj.RevisedPublishingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RevisedLifetimeCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RevisedMaxKeepAliveCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ModifySubscriptionResult(' + 'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', '  + \
+             'RevisedLifetimeCount:' + str(self.RevisedLifetimeCount) + ', '  + \
+             'RevisedMaxKeepAliveCount:' + str(self.RevisedMaxKeepAliveCount) + ')'
+    
+    __repr__ = __str__
+    
 class ModifySubscriptionResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.ModifySubscriptionResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -7584,13 +9707,21 @@ class ModifySubscriptionResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = ModifySubscriptionResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ModifySubscriptionResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = ModifySubscriptionResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ModifySubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class SetPublishingModeParameters(object):
     def __init__(self):
         self.PublishingEnabled = 0
@@ -7606,19 +9737,26 @@ class SetPublishingModeParameters(object):
             packet.append(struct.pack(fmt, self.SubscriptionIds))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<?'
-            fmt_size = PublishingEnabled
-            self.PublishingEnabled = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = SubscriptionIds
-                    self.SubscriptionIds = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SetPublishingModeParameters()
+        fmt = '<?'
+        fmt_size = 1
+        obj.PublishingEnabled = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.SubscriptionIds = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'SetPublishingModeParameters(' + 'PublishingEnabled:' + str(self.PublishingEnabled) + ', '  + \
+             'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
+    
+    __repr__ = __str__
+    
 class SetPublishingModeRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.SetPublishingModeRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -7632,13 +9770,21 @@ class SetPublishingModeRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = SetPublishingModeParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SetPublishingModeRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = SetPublishingModeParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SetPublishingModeRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class SetPublishingModeResult(object):
     def __init__(self):
         self.Results = []
@@ -7654,18 +9800,25 @@ class SetPublishingModeResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SetPublishingModeResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SetPublishingModeResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class SetPublishingModeResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.SetPublishingModeResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -7679,13 +9832,21 @@ class SetPublishingModeResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = SetPublishingModeResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SetPublishingModeResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = SetPublishingModeResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SetPublishingModeResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class NotificationMessage(object):
     def __init__(self):
         self.SequenceNumber = 0
@@ -7702,18 +9863,26 @@ class NotificationMessage(object):
             packet.append(self.NotificationData.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SequenceNumber
-            self.SequenceNumber = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.PublishTime = DateTime.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.NotificationData = ExtensionObject.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = NotificationMessage()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SequenceNumber = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.PublishTime = DateTime.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.NotificationData = ExtensionObject.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'NotificationMessage(' + 'SequenceNumber:' + str(self.SequenceNumber) + ', '  + \
+             'PublishTime:' + str(self.PublishTime) + ', '  + \
+             'NotificationData:' + str(self.NotificationData) + ')'
+    
+    __repr__ = __str__
+    
 class NotificationData(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -7730,15 +9899,24 @@ class NotificationData(object):
             packet.append(self.Body.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = NotificationData()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'NotificationData(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ')'
+    
+    __repr__ = __str__
+    
 class DataChangeNotification(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -7763,23 +9941,34 @@ class DataChangeNotification(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.MonitoredItems = MonitoredItemNotification.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DataChangeNotification()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.MonitoredItems = MonitoredItemNotification.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DataChangeNotification(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'MonitoredItems:' + str(self.MonitoredItems) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class MonitoredItemNotification(object):
     def __init__(self):
         self.ClientHandle = 0
@@ -7792,14 +9981,21 @@ class MonitoredItemNotification(object):
         packet.append(self.Value.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = ClientHandle
-            self.ClientHandle = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.Value = DataValue.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = MonitoredItemNotification()
+        fmt = '<I'
+        fmt_size = 4
+        obj.ClientHandle = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.Value = DataValue.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'MonitoredItemNotification(' + 'ClientHandle:' + str(self.ClientHandle) + ', '  + \
+             'Value:' + str(self.Value) + ')'
+    
+    __repr__ = __str__
+    
 class EventNotificationList(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -7820,19 +10016,29 @@ class EventNotificationList(object):
             packet.append(self.Events.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Events = EventFieldList.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = EventNotificationList()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Events = EventFieldList.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'EventNotificationList(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'Events:' + str(self.Events) + ')'
+    
+    __repr__ = __str__
+    
 class EventFieldList(object):
     def __init__(self):
         self.ClientHandle = 0
@@ -7847,17 +10053,24 @@ class EventFieldList(object):
             packet.append(self.EventFields.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = ClientHandle
-            self.ClientHandle = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.EventFields = Variant.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = EventFieldList()
+        fmt = '<I'
+        fmt_size = 4
+        obj.ClientHandle = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.EventFields = Variant.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'EventFieldList(' + 'ClientHandle:' + str(self.ClientHandle) + ', '  + \
+             'EventFields:' + str(self.EventFields) + ')'
+    
+    __repr__ = __str__
+    
 class HistoryEventFieldList(object):
     def __init__(self):
         self.EventFields = []
@@ -7869,14 +10082,20 @@ class HistoryEventFieldList(object):
             packet.append(self.EventFields.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.EventFields = Variant.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = HistoryEventFieldList()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.EventFields = Variant.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'HistoryEventFieldList(' + 'EventFields:' + str(self.EventFields) + ')'
+    
+    __repr__ = __str__
+    
 class StatusChangeNotification(object):
     def __init__(self):
         self.TypeId = NodeId()
@@ -7897,17 +10116,28 @@ class StatusChangeNotification(object):
         packet.append(self.DiagnosticInfo.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Encoding
-            self.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
-            bodylength = struct.unpack('<i', data.read(4))[0]
-            self.Status = StatusCode.from_binary(data)
-            self.DiagnosticInfo = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = StatusChangeNotification()
+        obj.TypeId = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
+        if obj.Encoding & (1 << 0):
+            obj.Body = ByteString.from_binary(data)
+        obj.Status = StatusCode.from_binary(data)
+        obj.DiagnosticInfo = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'StatusChangeNotification(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ', '  + \
+             'Status:' + str(self.Status) + ', '  + \
+             'DiagnosticInfo:' + str(self.DiagnosticInfo) + ')'
+    
+    __repr__ = __str__
+    
 class SubscriptionAcknowledgement(object):
     def __init__(self):
         self.SubscriptionId = 0
@@ -7921,16 +10151,23 @@ class SubscriptionAcknowledgement(object):
         packet.append(struct.pack(fmt, self.SequenceNumber))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SubscriptionId
-            self.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = SequenceNumber
-            self.SequenceNumber = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SubscriptionAcknowledgement()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.SequenceNumber = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'SubscriptionAcknowledgement(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+             'SequenceNumber:' + str(self.SequenceNumber) + ')'
+    
+    __repr__ = __str__
+    
 class PublishParameters(object):
     def __init__(self):
         self.SubscriptionAcknowledgements = []
@@ -7942,14 +10179,20 @@ class PublishParameters(object):
             packet.append(self.SubscriptionAcknowledgements.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.SubscriptionAcknowledgements = SubscriptionAcknowledgement.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = PublishParameters()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.SubscriptionAcknowledgements = SubscriptionAcknowledgement.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'PublishParameters(' + 'SubscriptionAcknowledgements:' + str(self.SubscriptionAcknowledgements) + ')'
+    
+    __repr__ = __str__
+    
 class PublishRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.PublishRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -7963,13 +10206,21 @@ class PublishRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = PublishParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = PublishRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = PublishParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'PublishRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class PublishResult(object):
     def __init__(self):
         self.SubscriptionId = 0
@@ -7998,31 +10249,42 @@ class PublishResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SubscriptionId
-            self.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = AvailableSequenceNumbers
-                    self.AvailableSequenceNumbers = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = MoreNotifications
-            self.MoreNotifications = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.NotificationMessage = NotificationMessage.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = PublishResult()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.AvailableSequenceNumbers = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.MoreNotifications = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.NotificationMessage = NotificationMessage.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'PublishResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+             'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ', '  + \
+             'MoreNotifications:' + str(self.MoreNotifications) + ', '  + \
+             'NotificationMessage:' + str(self.NotificationMessage) + ', '  + \
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class PublishResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.PublishResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -8036,13 +10298,21 @@ class PublishResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = PublishResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = PublishResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = PublishResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'PublishResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class RepublishParameters(object):
     def __init__(self):
         self.SubscriptionId = 0
@@ -8056,16 +10326,23 @@ class RepublishParameters(object):
         packet.append(struct.pack(fmt, self.RetransmitSequenceNumber))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = SubscriptionId
-            self.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RetransmitSequenceNumber
-            self.RetransmitSequenceNumber = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RepublishParameters()
+        fmt = '<I'
+        fmt_size = 4
+        obj.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RetransmitSequenceNumber = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'RepublishParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+             'RetransmitSequenceNumber:' + str(self.RetransmitSequenceNumber) + ')'
+    
+    __repr__ = __str__
+    
 class RepublishRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.RepublishRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -8079,13 +10356,21 @@ class RepublishRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = RepublishParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RepublishRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = RepublishParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RepublishRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class RepublishResult(object):
     def __init__(self):
         self.NotificationMessage = NotificationMessage()
@@ -8095,11 +10380,17 @@ class RepublishResult(object):
         packet.append(self.NotificationMessage.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.NotificationMessage = NotificationMessage.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RepublishResult()
+        obj.NotificationMessage = NotificationMessage.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RepublishResult(' + 'NotificationMessage:' + str(self.NotificationMessage) + ')'
+    
+    __repr__ = __str__
+    
 class RepublishResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.RepublishResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -8113,13 +10404,21 @@ class RepublishResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = RepublishResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RepublishResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = RepublishResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RepublishResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class TransferResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -8134,17 +10433,24 @@ class TransferResult(object):
             packet.append(struct.pack(fmt, self.AvailableSequenceNumbers))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StatusCode = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = AvailableSequenceNumbers
-                    self.AvailableSequenceNumbers = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TransferResult()
+        obj.StatusCode = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.AvailableSequenceNumbers = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'TransferResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ')'
+    
+    __repr__ = __str__
+    
 class TransferSubscriptionsParameters(object):
     def __init__(self):
         self.SubscriptionIds = []
@@ -8160,19 +10466,26 @@ class TransferSubscriptionsParameters(object):
         packet.append(struct.pack(fmt, self.SendInitialValues))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = SubscriptionIds
-                    self.SubscriptionIds = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = SendInitialValues
-            self.SendInitialValues = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TransferSubscriptionsParameters()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.SubscriptionIds = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.SendInitialValues = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'TransferSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ', '  + \
+             'SendInitialValues:' + str(self.SendInitialValues) + ')'
+    
+    __repr__ = __str__
+    
 class TransferSubscriptionsRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.TransferSubscriptionsRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -8186,13 +10499,21 @@ class TransferSubscriptionsRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = TransferSubscriptionsParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TransferSubscriptionsRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = TransferSubscriptionsParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TransferSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class TransferSubscriptionsResult(object):
     def __init__(self):
         self.Results = []
@@ -8208,18 +10529,25 @@ class TransferSubscriptionsResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = TransferResult.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TransferSubscriptionsResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = TransferResult.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TransferSubscriptionsResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class TransferSubscriptionsResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.TransferSubscriptionsResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -8233,13 +10561,21 @@ class TransferSubscriptionsResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = TransferSubscriptionsResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TransferSubscriptionsResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = TransferSubscriptionsResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TransferSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteSubscriptionsParameters(object):
     def __init__(self):
         self.SubscriptionIds = []
@@ -8252,16 +10588,22 @@ class DeleteSubscriptionsParameters(object):
             packet.append(struct.pack(fmt, self.SubscriptionIds))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = SubscriptionIds
-                    self.SubscriptionIds = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteSubscriptionsParameters()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.SubscriptionIds = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'DeleteSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteSubscriptionsRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -8275,13 +10617,21 @@ class DeleteSubscriptionsRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = DeleteSubscriptionsParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteSubscriptionsRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = DeleteSubscriptionsParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteSubscriptionsResult(object):
     def __init__(self):
         self.Results = []
@@ -8297,18 +10647,25 @@ class DeleteSubscriptionsResult(object):
             packet.append(self.DiagnosticInfos.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Results = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteSubscriptionsResult()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Results = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteSubscriptionsResult(' + 'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
 class DeleteSubscriptionsResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.DeleteSubscriptionsResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -8322,13 +10679,21 @@ class DeleteSubscriptionsResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = DeleteSubscriptionsResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DeleteSubscriptionsResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = DeleteSubscriptionsResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class ScalarTestType(object):
     def __init__(self):
         self.Boolean = 0
@@ -8399,60 +10764,90 @@ class ScalarTestType(object):
         packet.append(struct.pack(fmt, self.EnumeratedValue))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<?'
-            fmt_size = Boolean
-            self.Boolean = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<B'
-            fmt_size = SByte
-            self.SByte = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<B'
-            fmt_size = Byte
-            self.Byte = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<h'
-            fmt_size = Int16
-            self.Int16 = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<H'
-            fmt_size = UInt16
-            self.UInt16 = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<i'
-            fmt_size = Int32
-            self.Int32 = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UInt32
-            self.UInt32 = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<q'
-            fmt_size = Int64
-            self.Int64 = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<Q'
-            fmt_size = UInt64
-            self.UInt64 = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<f'
-            fmt_size = Float
-            self.Float = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<d'
-            fmt_size = Double
-            self.Double = struct.unpack(fmt, data.read(fmt_size))[0]
-            slength = struct.unpack('<i', data.red(1))
-            self.String = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.DateTime = DateTime.from_binary(data)
-            self.Guid = Guid.from_binary(data)
-            self.ByteString = ByteString.from_binary(data)
-            self.XmlElement = XmlElement.from_binary(data)
-            self.NodeId = NodeId.from_binary(data)
-            self.ExpandedNodeId = ExpandedNodeId.from_binary(data)
-            self.StatusCode = StatusCode.from_binary(data)
-            self.DiagnosticInfo = DiagnosticInfo.from_binary(data)
-            self.QualifiedName = QualifiedName.from_binary(data)
-            self.LocalizedText = LocalizedText.from_binary(data)
-            self.ExtensionObject = ExtensionObject.from_binary(data)
-            self.DataValue = DataValue.from_binary(data)
-            fmt = '<I'
-            fmt_size = EnumeratedValue
-            self.EnumeratedValue = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ScalarTestType()
+        fmt = '<?'
+        fmt_size = 1
+        obj.Boolean = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<B'
+        fmt_size = 1
+        obj.SByte = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<B'
+        fmt_size = 1
+        obj.Byte = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<h'
+        fmt_size = 2
+        obj.Int16 = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<H'
+        fmt_size = 2
+        obj.UInt16 = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<i'
+        fmt_size = 4
+        obj.Int32 = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UInt32 = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<q'
+        fmt_size = 8
+        obj.Int64 = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<Q'
+        fmt_size = 8
+        obj.UInt64 = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<f'
+        fmt_size = 4
+        obj.Float = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<d'
+        fmt_size = 8
+        obj.Double = struct.unpack(fmt, data.read(fmt_size))[0]
+        slength = struct.unpack('<i', data.red(1))
+        obj.String = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.DateTime = DateTime.from_binary(data)
+        obj.Guid = Guid.from_binary(data)
+        obj.ByteString = ByteString.from_binary(data)
+        obj.XmlElement = XmlElement.from_binary(data)
+        obj.NodeId = NodeId.from_binary(data)
+        obj.ExpandedNodeId = ExpandedNodeId.from_binary(data)
+        obj.StatusCode = StatusCode.from_binary(data)
+        obj.DiagnosticInfo = DiagnosticInfo.from_binary(data)
+        obj.QualifiedName = QualifiedName.from_binary(data)
+        obj.LocalizedText = LocalizedText.from_binary(data)
+        obj.ExtensionObject = ExtensionObject.from_binary(data)
+        obj.DataValue = DataValue.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.EnumeratedValue = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ScalarTestType(' + 'Boolean:' + str(self.Boolean) + ', '  + \
+             'SByte:' + str(self.SByte) + ', '  + \
+             'Byte:' + str(self.Byte) + ', '  + \
+             'Int16:' + str(self.Int16) + ', '  + \
+             'UInt16:' + str(self.UInt16) + ', '  + \
+             'Int32:' + str(self.Int32) + ', '  + \
+             'UInt32:' + str(self.UInt32) + ', '  + \
+             'Int64:' + str(self.Int64) + ', '  + \
+             'UInt64:' + str(self.UInt64) + ', '  + \
+             'Float:' + str(self.Float) + ', '  + \
+             'Double:' + str(self.Double) + ', '  + \
+             'String:' + str(self.String) + ', '  + \
+             'DateTime:' + str(self.DateTime) + ', '  + \
+             'Guid:' + str(self.Guid) + ', '  + \
+             'ByteString:' + str(self.ByteString) + ', '  + \
+             'XmlElement:' + str(self.XmlElement) + ', '  + \
+             'NodeId:' + str(self.NodeId) + ', '  + \
+             'ExpandedNodeId:' + str(self.ExpandedNodeId) + ', '  + \
+             'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'DiagnosticInfo:' + str(self.DiagnosticInfo) + ', '  + \
+             'QualifiedName:' + str(self.QualifiedName) + ', '  + \
+             'LocalizedText:' + str(self.LocalizedText) + ', '  + \
+             'ExtensionObject:' + str(self.ExtensionObject) + ', '  + \
+             'DataValue:' + str(self.DataValue) + ', '  + \
+             'EnumeratedValue:' + str(self.EnumeratedValue) + ')'
+    
+    __repr__ = __str__
+    
 class ArrayTestType(object):
     def __init__(self):
         self.Booleans = []
@@ -8572,133 +10967,163 @@ class ArrayTestType(object):
             packet.append(struct.pack(fmt, self.EnumeratedValues))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<?'
-                    fmt_size = Booleans
-                    self.Booleans = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<B'
-                    fmt_size = SBytes
-                    self.SBytes = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<h'
-                    fmt_size = Int16s
-                    self.Int16s = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<H'
-                    fmt_size = UInt16s
-                    self.UInt16s = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<i'
-                    fmt_size = Int32s
-                    self.Int32s = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = UInt32s
-                    self.UInt32s = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<q'
-                    fmt_size = Int64s
-                    self.Int64s = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<Q'
-                    fmt_size = UInt64s
-                    self.UInt64s = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<f'
-                    fmt_size = Floats
-                    self.Floats = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<d'
-                    fmt_size = Doubles
-                    self.Doubles = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    slength = struct.unpack('<i', data.red(1))
-                    self.Strings = struct.unpack('<{}s'.format(slength), data.read(slength))
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DateTimes = DateTime.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Guids = Guid.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ByteStrings = ByteString.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.XmlElements = XmlElement.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.NodeIds = NodeId.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ExpandedNodeIds = ExpandedNodeId.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.StatusCodes = StatusCode.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DiagnosticInfos = DiagnosticInfo.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.QualifiedNames = QualifiedName.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.LocalizedTexts = LocalizedText.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.ExtensionObjects = ExtensionObject.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.DataValues = DataValue.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.Variants = Variant.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<I'
-                    fmt_size = EnumeratedValues
-                    self.EnumeratedValues = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ArrayTestType()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<?'
+                fmt_size = 1
+                obj.Booleans = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<B'
+                fmt_size = 1
+                obj.SBytes = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<h'
+                fmt_size = 2
+                obj.Int16s = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<H'
+                fmt_size = 2
+                obj.UInt16s = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<i'
+                fmt_size = 4
+                obj.Int32s = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.UInt32s = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<q'
+                fmt_size = 8
+                obj.Int64s = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<Q'
+                fmt_size = 8
+                obj.UInt64s = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<f'
+                fmt_size = 4
+                obj.Floats = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<d'
+                fmt_size = 8
+                obj.Doubles = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                slength = struct.unpack('<i', data.red(1))
+                obj.Strings = struct.unpack('<{}s'.format(slength), data.read(slength))
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DateTimes = DateTime.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Guids = Guid.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ByteStrings = ByteString.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.XmlElements = XmlElement.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.NodeIds = NodeId.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ExpandedNodeIds = ExpandedNodeId.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.StatusCodes = StatusCode.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.QualifiedNames = QualifiedName.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.LocalizedTexts = LocalizedText.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.ExtensionObjects = ExtensionObject.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.DataValues = DataValue.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.Variants = Variant.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<I'
+                fmt_size = 4
+                obj.EnumeratedValues = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ArrayTestType(' + 'Booleans:' + str(self.Booleans) + ', '  + \
+             'SBytes:' + str(self.SBytes) + ', '  + \
+             'Int16s:' + str(self.Int16s) + ', '  + \
+             'UInt16s:' + str(self.UInt16s) + ', '  + \
+             'Int32s:' + str(self.Int32s) + ', '  + \
+             'UInt32s:' + str(self.UInt32s) + ', '  + \
+             'Int64s:' + str(self.Int64s) + ', '  + \
+             'UInt64s:' + str(self.UInt64s) + ', '  + \
+             'Floats:' + str(self.Floats) + ', '  + \
+             'Doubles:' + str(self.Doubles) + ', '  + \
+             'Strings:' + str(self.Strings) + ', '  + \
+             'DateTimes:' + str(self.DateTimes) + ', '  + \
+             'Guids:' + str(self.Guids) + ', '  + \
+             'ByteStrings:' + str(self.ByteStrings) + ', '  + \
+             'XmlElements:' + str(self.XmlElements) + ', '  + \
+             'NodeIds:' + str(self.NodeIds) + ', '  + \
+             'ExpandedNodeIds:' + str(self.ExpandedNodeIds) + ', '  + \
+             'StatusCodes:' + str(self.StatusCodes) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ', '  + \
+             'QualifiedNames:' + str(self.QualifiedNames) + ', '  + \
+             'LocalizedTexts:' + str(self.LocalizedTexts) + ', '  + \
+             'ExtensionObjects:' + str(self.ExtensionObjects) + ', '  + \
+             'DataValues:' + str(self.DataValues) + ', '  + \
+             'Variants:' + str(self.Variants) + ', '  + \
+             'EnumeratedValues:' + str(self.EnumeratedValues) + ')'
+    
+    __repr__ = __str__
+    
 class CompositeTestType(object):
     def __init__(self):
         self.Field1 = ScalarTestType()
@@ -8710,12 +11135,19 @@ class CompositeTestType(object):
         packet.append(self.Field2.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.Field1 = ScalarTestType.from_binary(data)
-            self.Field2 = ArrayTestType.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = CompositeTestType()
+        obj.Field1 = ScalarTestType.from_binary(data)
+        obj.Field2 = ArrayTestType.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'CompositeTestType(' + 'Field1:' + str(self.Field1) + ', '  + \
+             'Field2:' + str(self.Field2) + ')'
+    
+    __repr__ = __str__
+    
 class TestStackParameters(object):
     def __init__(self):
         self.TestId = 0
@@ -8731,17 +11163,25 @@ class TestStackParameters(object):
         packet.append(self.Input.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = TestId
-            self.TestId = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<i'
-            fmt_size = Iteration
-            self.Iteration = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.Input = Variant.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TestStackParameters()
+        fmt = '<I'
+        fmt_size = 4
+        obj.TestId = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<i'
+        fmt_size = 4
+        obj.Iteration = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.Input = Variant.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TestStackParameters(' + 'TestId:' + str(self.TestId) + ', '  + \
+             'Iteration:' + str(self.Iteration) + ', '  + \
+             'Input:' + str(self.Input) + ')'
+    
+    __repr__ = __str__
+    
 class TestStackRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.TestStackRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -8755,13 +11195,21 @@ class TestStackRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = TestStackParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TestStackRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = TestStackParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TestStackRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class TestStackResult(object):
     def __init__(self):
         self.Output = Variant()
@@ -8771,11 +11219,17 @@ class TestStackResult(object):
         packet.append(self.Output.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.Output = Variant.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TestStackResult()
+        obj.Output = Variant.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TestStackResult(' + 'Output:' + str(self.Output) + ')'
+    
+    __repr__ = __str__
+    
 class TestStackResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.TestStackResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -8789,13 +11243,21 @@ class TestStackResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = TestStackResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TestStackResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = TestStackResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TestStackResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class TestStackExParameters(object):
     def __init__(self):
         self.TestId = 0
@@ -8811,17 +11273,25 @@ class TestStackExParameters(object):
         packet.append(self.Input.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = TestId
-            self.TestId = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<i'
-            fmt_size = Iteration
-            self.Iteration = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.Input = CompositeTestType.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TestStackExParameters()
+        fmt = '<I'
+        fmt_size = 4
+        obj.TestId = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<i'
+        fmt_size = 4
+        obj.Iteration = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.Input = CompositeTestType.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TestStackExParameters(' + 'TestId:' + str(self.TestId) + ', '  + \
+             'Iteration:' + str(self.Iteration) + ', '  + \
+             'Input:' + str(self.Input) + ')'
+    
+    __repr__ = __str__
+    
 class TestStackExRequest(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.TestStackExRequest_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -8835,13 +11305,21 @@ class TestStackExRequest(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.RequestHeader = RequestHeader.from_binary(data)
-            self.Parameters = TestStackExParameters.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TestStackExRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = TestStackExParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TestStackExRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class TestStackExResult(object):
     def __init__(self):
         self.Output = CompositeTestType()
@@ -8851,11 +11329,17 @@ class TestStackExResult(object):
         packet.append(self.Output.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.Output = CompositeTestType.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TestStackExResult()
+        obj.Output = CompositeTestType.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TestStackExResult(' + 'Output:' + str(self.Output) + ')'
+    
+    __repr__ = __str__
+    
 class TestStackExResponse(object):
     def __init__(self):
         self.TypeId = NodeId(0, ObjectIds.TestStackExResponse_Encoding_DefaultBinary, NodeIdType.FourByte)
@@ -8869,13 +11353,21 @@ class TestStackExResponse(object):
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.TypeId = NodeId.from_binary(data)
-            self.ResponseHeader = ResponseHeader.from_binary(data)
-            self.Parameters = TestStackExResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = TestStackExResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = TestStackExResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'TestStackExResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
 class BuildInfo(object):
     def __init__(self):
         self.ProductUri = ''
@@ -8900,21 +11392,32 @@ class BuildInfo(object):
         packet.append(self.BuildDate.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.ProductUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.ManufacturerName = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.ProductName = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.SoftwareVersion = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.BuildNumber = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.BuildDate = DateTime.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = BuildInfo()
+        slength = struct.unpack('<i', data.red(1))
+        obj.ProductUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.ManufacturerName = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.ProductName = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.SoftwareVersion = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.BuildNumber = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.BuildDate = DateTime.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'BuildInfo(' + 'ProductUri:' + str(self.ProductUri) + ', '  + \
+             'ManufacturerName:' + str(self.ManufacturerName) + ', '  + \
+             'ProductName:' + str(self.ProductName) + ', '  + \
+             'SoftwareVersion:' + str(self.SoftwareVersion) + ', '  + \
+             'BuildNumber:' + str(self.BuildNumber) + ', '  + \
+             'BuildDate:' + str(self.BuildDate) + ')'
+    
+    __repr__ = __str__
+    
 class RedundantServerDataType(object):
     def __init__(self):
         self.ServerId = ''
@@ -8931,18 +11434,26 @@ class RedundantServerDataType(object):
         packet.append(struct.pack(fmt, self.ServerState))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.ServerId = struct.unpack('<{}s'.format(slength), data.read(slength))
-            fmt = '<B'
-            fmt_size = ServiceLevel
-            self.ServiceLevel = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = ServerState
-            self.ServerState = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = RedundantServerDataType()
+        slength = struct.unpack('<i', data.red(1))
+        obj.ServerId = struct.unpack('<{}s'.format(slength), data.read(slength))
+        fmt = '<B'
+        fmt_size = 1
+        obj.ServiceLevel = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.ServerState = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'RedundantServerDataType(' + 'ServerId:' + str(self.ServerId) + ', '  + \
+             'ServiceLevel:' + str(self.ServiceLevel) + ', '  + \
+             'ServerState:' + str(self.ServerState) + ')'
+    
+    __repr__ = __str__
+    
 class EndpointUrlListDataType(object):
     def __init__(self):
         self.EndpointUrlList = []
@@ -8955,15 +11466,21 @@ class EndpointUrlListDataType(object):
             packet.append(struct.pack('<{}s'.format(len(self.EndpointUrlList)), self.EndpointUrlList.encode()))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    slength = struct.unpack('<i', data.red(1))
-                    self.EndpointUrlList = struct.unpack('<{}s'.format(slength), data.read(slength))
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = EndpointUrlListDataType()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                slength = struct.unpack('<i', data.red(1))
+                obj.EndpointUrlList = struct.unpack('<{}s'.format(slength), data.read(slength))
+        return obj
+    
+    def __str__(self):
+        return 'EndpointUrlListDataType(' + 'EndpointUrlList:' + str(self.EndpointUrlList) + ')'
+    
+    __repr__ = __str__
+    
 class NetworkGroupDataType(object):
     def __init__(self):
         self.ServerUri = ''
@@ -8978,16 +11495,23 @@ class NetworkGroupDataType(object):
             packet.append(self.NetworkPaths.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.ServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.NetworkPaths = EndpointUrlListDataType.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = NetworkGroupDataType()
+        slength = struct.unpack('<i', data.red(1))
+        obj.ServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.NetworkPaths = EndpointUrlListDataType.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'NetworkGroupDataType(' + 'ServerUri:' + str(self.ServerUri) + ', '  + \
+             'NetworkPaths:' + str(self.NetworkPaths) + ')'
+    
+    __repr__ = __str__
+    
 class SamplingIntervalDiagnosticsDataType(object):
     def __init__(self):
         self.SamplingInterval = 0
@@ -9007,22 +11531,31 @@ class SamplingIntervalDiagnosticsDataType(object):
         packet.append(struct.pack(fmt, self.DisabledMonitoredItemCount))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<d'
-            fmt_size = SamplingInterval
-            self.SamplingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = MonitoredItemCount
-            self.MonitoredItemCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = MaxMonitoredItemCount
-            self.MaxMonitoredItemCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = DisabledMonitoredItemCount
-            self.DisabledMonitoredItemCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SamplingIntervalDiagnosticsDataType()
+        fmt = '<d'
+        fmt_size = 8
+        obj.SamplingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.MonitoredItemCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.MaxMonitoredItemCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.DisabledMonitoredItemCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'SamplingIntervalDiagnosticsDataType(' + 'SamplingInterval:' + str(self.SamplingInterval) + ', '  + \
+             'MonitoredItemCount:' + str(self.MonitoredItemCount) + ', '  + \
+             'MaxMonitoredItemCount:' + str(self.MaxMonitoredItemCount) + ', '  + \
+             'DisabledMonitoredItemCount:' + str(self.DisabledMonitoredItemCount) + ')'
+    
+    __repr__ = __str__
+    
 class ServerDiagnosticsSummaryDataType(object):
     def __init__(self):
         self.ServerViewCount = 0
@@ -9066,46 +11599,63 @@ class ServerDiagnosticsSummaryDataType(object):
         packet.append(struct.pack(fmt, self.RejectedRequestsCount))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = ServerViewCount
-            self.ServerViewCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = CurrentSessionCount
-            self.CurrentSessionCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = CumulatedSessionCount
-            self.CumulatedSessionCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = SecurityRejectedSessionCount
-            self.SecurityRejectedSessionCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RejectedSessionCount
-            self.RejectedSessionCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = SessionTimeoutCount
-            self.SessionTimeoutCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = SessionAbortCount
-            self.SessionAbortCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = CurrentSubscriptionCount
-            self.CurrentSubscriptionCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = CumulatedSubscriptionCount
-            self.CumulatedSubscriptionCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = PublishingIntervalCount
-            self.PublishingIntervalCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = SecurityRejectedRequestsCount
-            self.SecurityRejectedRequestsCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RejectedRequestsCount
-            self.RejectedRequestsCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ServerDiagnosticsSummaryDataType()
+        fmt = '<I'
+        fmt_size = 4
+        obj.ServerViewCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.CurrentSessionCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.CumulatedSessionCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.SecurityRejectedSessionCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RejectedSessionCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.SessionTimeoutCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.SessionAbortCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.CurrentSubscriptionCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.CumulatedSubscriptionCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.PublishingIntervalCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.SecurityRejectedRequestsCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RejectedRequestsCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ServerDiagnosticsSummaryDataType(' + 'ServerViewCount:' + str(self.ServerViewCount) + ', '  + \
+             'CurrentSessionCount:' + str(self.CurrentSessionCount) + ', '  + \
+             'CumulatedSessionCount:' + str(self.CumulatedSessionCount) + ', '  + \
+             'SecurityRejectedSessionCount:' + str(self.SecurityRejectedSessionCount) + ', '  + \
+             'RejectedSessionCount:' + str(self.RejectedSessionCount) + ', '  + \
+             'SessionTimeoutCount:' + str(self.SessionTimeoutCount) + ', '  + \
+             'SessionAbortCount:' + str(self.SessionAbortCount) + ', '  + \
+             'CurrentSubscriptionCount:' + str(self.CurrentSubscriptionCount) + ', '  + \
+             'CumulatedSubscriptionCount:' + str(self.CumulatedSubscriptionCount) + ', '  + \
+             'PublishingIntervalCount:' + str(self.PublishingIntervalCount) + ', '  + \
+             'SecurityRejectedRequestsCount:' + str(self.SecurityRejectedRequestsCount) + ', '  + \
+             'RejectedRequestsCount:' + str(self.RejectedRequestsCount) + ')'
+    
+    __repr__ = __str__
+    
 class ServerStatusDataType(object):
     def __init__(self):
         self.StartTime = DateTime()
@@ -9127,20 +11677,31 @@ class ServerStatusDataType(object):
         packet.append(self.ShutdownReason.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StartTime = DateTime.from_binary(data)
-            self.CurrentTime = DateTime.from_binary(data)
-            fmt = '<I'
-            fmt_size = State
-            self.State = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.BuildInfo = BuildInfo.from_binary(data)
-            fmt = '<I'
-            fmt_size = SecondsTillShutdown
-            self.SecondsTillShutdown = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.ShutdownReason = LocalizedText.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ServerStatusDataType()
+        obj.StartTime = DateTime.from_binary(data)
+        obj.CurrentTime = DateTime.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.State = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.BuildInfo = BuildInfo.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.SecondsTillShutdown = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.ShutdownReason = LocalizedText.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ServerStatusDataType(' + 'StartTime:' + str(self.StartTime) + ', '  + \
+             'CurrentTime:' + str(self.CurrentTime) + ', '  + \
+             'State:' + str(self.State) + ', '  + \
+             'BuildInfo:' + str(self.BuildInfo) + ', '  + \
+             'SecondsTillShutdown:' + str(self.SecondsTillShutdown) + ', '  + \
+             'ShutdownReason:' + str(self.ShutdownReason) + ')'
+    
+    __repr__ = __str__
+    
 class SessionDiagnosticsDataType(object):
     def __init__(self):
         self.SessionId = NodeId()
@@ -9246,72 +11807,120 @@ class SessionDiagnosticsDataType(object):
         packet.append(self.UnregisterNodesCount.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.SessionId = NodeId.from_binary(data)
-            slength = struct.unpack('<i', data.red(1))
-            self.SessionName = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.ClientDescription = ApplicationDescription.from_binary(data)
-            slength = struct.unpack('<i', data.red(1))
-            self.ServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    slength = struct.unpack('<i', data.red(1))
-                    self.LocaleIds = struct.unpack('<{}s'.format(slength), data.read(slength))
-            fmt = '<d'
-            fmt_size = ActualSessionTimeout
-            self.ActualSessionTimeout = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = MaxResponseMessageSize
-            self.MaxResponseMessageSize = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.ClientConnectionTime = DateTime.from_binary(data)
-            self.ClientLastContactTime = DateTime.from_binary(data)
-            fmt = '<I'
-            fmt_size = CurrentSubscriptionsCount
-            self.CurrentSubscriptionsCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = CurrentMonitoredItemsCount
-            self.CurrentMonitoredItemsCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = CurrentPublishRequestsInQueue
-            self.CurrentPublishRequestsInQueue = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.TotalRequestCount = ServiceCounterDataType.from_binary(data)
-            fmt = '<I'
-            fmt_size = UnauthorizedRequestCount
-            self.UnauthorizedRequestCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.ReadCount = ServiceCounterDataType.from_binary(data)
-            self.HistoryReadCount = ServiceCounterDataType.from_binary(data)
-            self.WriteCount = ServiceCounterDataType.from_binary(data)
-            self.HistoryUpdateCount = ServiceCounterDataType.from_binary(data)
-            self.CallCount = ServiceCounterDataType.from_binary(data)
-            self.CreateMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
-            self.ModifyMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
-            self.SetMonitoringModeCount = ServiceCounterDataType.from_binary(data)
-            self.SetTriggeringCount = ServiceCounterDataType.from_binary(data)
-            self.DeleteMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
-            self.CreateSubscriptionCount = ServiceCounterDataType.from_binary(data)
-            self.ModifySubscriptionCount = ServiceCounterDataType.from_binary(data)
-            self.SetPublishingModeCount = ServiceCounterDataType.from_binary(data)
-            self.PublishCount = ServiceCounterDataType.from_binary(data)
-            self.RepublishCount = ServiceCounterDataType.from_binary(data)
-            self.TransferSubscriptionsCount = ServiceCounterDataType.from_binary(data)
-            self.DeleteSubscriptionsCount = ServiceCounterDataType.from_binary(data)
-            self.AddNodesCount = ServiceCounterDataType.from_binary(data)
-            self.AddReferencesCount = ServiceCounterDataType.from_binary(data)
-            self.DeleteNodesCount = ServiceCounterDataType.from_binary(data)
-            self.DeleteReferencesCount = ServiceCounterDataType.from_binary(data)
-            self.BrowseCount = ServiceCounterDataType.from_binary(data)
-            self.BrowseNextCount = ServiceCounterDataType.from_binary(data)
-            self.TranslateBrowsePathsToNodeIdsCount = ServiceCounterDataType.from_binary(data)
-            self.QueryFirstCount = ServiceCounterDataType.from_binary(data)
-            self.QueryNextCount = ServiceCounterDataType.from_binary(data)
-            self.RegisterNodesCount = ServiceCounterDataType.from_binary(data)
-            self.UnregisterNodesCount = ServiceCounterDataType.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SessionDiagnosticsDataType()
+        obj.SessionId = NodeId.from_binary(data)
+        slength = struct.unpack('<i', data.red(1))
+        obj.SessionName = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.ClientDescription = ApplicationDescription.from_binary(data)
+        slength = struct.unpack('<i', data.red(1))
+        obj.ServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                slength = struct.unpack('<i', data.red(1))
+                obj.LocaleIds = struct.unpack('<{}s'.format(slength), data.read(slength))
+        fmt = '<d'
+        fmt_size = 8
+        obj.ActualSessionTimeout = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.MaxResponseMessageSize = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.ClientConnectionTime = DateTime.from_binary(data)
+        obj.ClientLastContactTime = DateTime.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.CurrentSubscriptionsCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.CurrentMonitoredItemsCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.CurrentPublishRequestsInQueue = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.TotalRequestCount = ServiceCounterDataType.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.UnauthorizedRequestCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.ReadCount = ServiceCounterDataType.from_binary(data)
+        obj.HistoryReadCount = ServiceCounterDataType.from_binary(data)
+        obj.WriteCount = ServiceCounterDataType.from_binary(data)
+        obj.HistoryUpdateCount = ServiceCounterDataType.from_binary(data)
+        obj.CallCount = ServiceCounterDataType.from_binary(data)
+        obj.CreateMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
+        obj.ModifyMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
+        obj.SetMonitoringModeCount = ServiceCounterDataType.from_binary(data)
+        obj.SetTriggeringCount = ServiceCounterDataType.from_binary(data)
+        obj.DeleteMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
+        obj.CreateSubscriptionCount = ServiceCounterDataType.from_binary(data)
+        obj.ModifySubscriptionCount = ServiceCounterDataType.from_binary(data)
+        obj.SetPublishingModeCount = ServiceCounterDataType.from_binary(data)
+        obj.PublishCount = ServiceCounterDataType.from_binary(data)
+        obj.RepublishCount = ServiceCounterDataType.from_binary(data)
+        obj.TransferSubscriptionsCount = ServiceCounterDataType.from_binary(data)
+        obj.DeleteSubscriptionsCount = ServiceCounterDataType.from_binary(data)
+        obj.AddNodesCount = ServiceCounterDataType.from_binary(data)
+        obj.AddReferencesCount = ServiceCounterDataType.from_binary(data)
+        obj.DeleteNodesCount = ServiceCounterDataType.from_binary(data)
+        obj.DeleteReferencesCount = ServiceCounterDataType.from_binary(data)
+        obj.BrowseCount = ServiceCounterDataType.from_binary(data)
+        obj.BrowseNextCount = ServiceCounterDataType.from_binary(data)
+        obj.TranslateBrowsePathsToNodeIdsCount = ServiceCounterDataType.from_binary(data)
+        obj.QueryFirstCount = ServiceCounterDataType.from_binary(data)
+        obj.QueryNextCount = ServiceCounterDataType.from_binary(data)
+        obj.RegisterNodesCount = ServiceCounterDataType.from_binary(data)
+        obj.UnregisterNodesCount = ServiceCounterDataType.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SessionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', '  + \
+             'SessionName:' + str(self.SessionName) + ', '  + \
+             'ClientDescription:' + str(self.ClientDescription) + ', '  + \
+             'ServerUri:' + str(self.ServerUri) + ', '  + \
+             'EndpointUrl:' + str(self.EndpointUrl) + ', '  + \
+             'LocaleIds:' + str(self.LocaleIds) + ', '  + \
+             'ActualSessionTimeout:' + str(self.ActualSessionTimeout) + ', '  + \
+             'MaxResponseMessageSize:' + str(self.MaxResponseMessageSize) + ', '  + \
+             'ClientConnectionTime:' + str(self.ClientConnectionTime) + ', '  + \
+             'ClientLastContactTime:' + str(self.ClientLastContactTime) + ', '  + \
+             'CurrentSubscriptionsCount:' + str(self.CurrentSubscriptionsCount) + ', '  + \
+             'CurrentMonitoredItemsCount:' + str(self.CurrentMonitoredItemsCount) + ', '  + \
+             'CurrentPublishRequestsInQueue:' + str(self.CurrentPublishRequestsInQueue) + ', '  + \
+             'TotalRequestCount:' + str(self.TotalRequestCount) + ', '  + \
+             'UnauthorizedRequestCount:' + str(self.UnauthorizedRequestCount) + ', '  + \
+             'ReadCount:' + str(self.ReadCount) + ', '  + \
+             'HistoryReadCount:' + str(self.HistoryReadCount) + ', '  + \
+             'WriteCount:' + str(self.WriteCount) + ', '  + \
+             'HistoryUpdateCount:' + str(self.HistoryUpdateCount) + ', '  + \
+             'CallCount:' + str(self.CallCount) + ', '  + \
+             'CreateMonitoredItemsCount:' + str(self.CreateMonitoredItemsCount) + ', '  + \
+             'ModifyMonitoredItemsCount:' + str(self.ModifyMonitoredItemsCount) + ', '  + \
+             'SetMonitoringModeCount:' + str(self.SetMonitoringModeCount) + ', '  + \
+             'SetTriggeringCount:' + str(self.SetTriggeringCount) + ', '  + \
+             'DeleteMonitoredItemsCount:' + str(self.DeleteMonitoredItemsCount) + ', '  + \
+             'CreateSubscriptionCount:' + str(self.CreateSubscriptionCount) + ', '  + \
+             'ModifySubscriptionCount:' + str(self.ModifySubscriptionCount) + ', '  + \
+             'SetPublishingModeCount:' + str(self.SetPublishingModeCount) + ', '  + \
+             'PublishCount:' + str(self.PublishCount) + ', '  + \
+             'RepublishCount:' + str(self.RepublishCount) + ', '  + \
+             'TransferSubscriptionsCount:' + str(self.TransferSubscriptionsCount) + ', '  + \
+             'DeleteSubscriptionsCount:' + str(self.DeleteSubscriptionsCount) + ', '  + \
+             'AddNodesCount:' + str(self.AddNodesCount) + ', '  + \
+             'AddReferencesCount:' + str(self.AddReferencesCount) + ', '  + \
+             'DeleteNodesCount:' + str(self.DeleteNodesCount) + ', '  + \
+             'DeleteReferencesCount:' + str(self.DeleteReferencesCount) + ', '  + \
+             'BrowseCount:' + str(self.BrowseCount) + ', '  + \
+             'BrowseNextCount:' + str(self.BrowseNextCount) + ', '  + \
+             'TranslateBrowsePathsToNodeIdsCount:' + str(self.TranslateBrowsePathsToNodeIdsCount) + ', '  + \
+             'QueryFirstCount:' + str(self.QueryFirstCount) + ', '  + \
+             'QueryNextCount:' + str(self.QueryNextCount) + ', '  + \
+             'RegisterNodesCount:' + str(self.RegisterNodesCount) + ', '  + \
+             'UnregisterNodesCount:' + str(self.UnregisterNodesCount) + ')'
+    
+    __repr__ = __str__
+    
 class SessionSecurityDiagnosticsDataType(object):
     def __init__(self):
         self.SessionId = NodeId()
@@ -9346,30 +11955,44 @@ class SessionSecurityDiagnosticsDataType(object):
         packet.append(self.ClientCertificate.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.SessionId = NodeId.from_binary(data)
-            slength = struct.unpack('<i', data.red(1))
-            self.ClientUserIdOfSession = struct.unpack('<{}s'.format(slength), data.read(slength))
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    slength = struct.unpack('<i', data.red(1))
-                    self.ClientUserIdHistory = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.AuthenticationMechanism = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.Encoding = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.TransportProtocol = struct.unpack('<{}s'.format(slength), data.read(slength))
-            fmt = '<I'
-            fmt_size = SecurityMode
-            self.SecurityMode = struct.unpack(fmt, data.read(fmt_size))[0]
-            slength = struct.unpack('<i', data.red(1))
-            self.SecurityPolicyUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.ClientCertificate = ByteString.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SessionSecurityDiagnosticsDataType()
+        obj.SessionId = NodeId.from_binary(data)
+        slength = struct.unpack('<i', data.red(1))
+        obj.ClientUserIdOfSession = struct.unpack('<{}s'.format(slength), data.read(slength))
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                slength = struct.unpack('<i', data.red(1))
+                obj.ClientUserIdHistory = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.AuthenticationMechanism = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.Encoding = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.TransportProtocol = struct.unpack('<{}s'.format(slength), data.read(slength))
+        fmt = '<I'
+        fmt_size = 4
+        obj.SecurityMode = struct.unpack(fmt, data.read(fmt_size))[0]
+        slength = struct.unpack('<i', data.red(1))
+        obj.SecurityPolicyUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.ClientCertificate = ByteString.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SessionSecurityDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', '  + \
+             'ClientUserIdOfSession:' + str(self.ClientUserIdOfSession) + ', '  + \
+             'ClientUserIdHistory:' + str(self.ClientUserIdHistory) + ', '  + \
+             'AuthenticationMechanism:' + str(self.AuthenticationMechanism) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'TransportProtocol:' + str(self.TransportProtocol) + ', '  + \
+             'SecurityMode:' + str(self.SecurityMode) + ', '  + \
+             'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', '  + \
+             'ClientCertificate:' + str(self.ClientCertificate) + ')'
+    
+    __repr__ = __str__
+    
 class ServiceCounterDataType(object):
     def __init__(self):
         self.TotalCount = 0
@@ -9383,16 +12006,23 @@ class ServiceCounterDataType(object):
         packet.append(struct.pack(fmt, self.ErrorCount))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<I'
-            fmt_size = TotalCount
-            self.TotalCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = ErrorCount
-            self.ErrorCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ServiceCounterDataType()
+        fmt = '<I'
+        fmt_size = 4
+        obj.TotalCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.ErrorCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ServiceCounterDataType(' + 'TotalCount:' + str(self.TotalCount) + ', '  + \
+             'ErrorCount:' + str(self.ErrorCount) + ')'
+    
+    __repr__ = __str__
+    
 class StatusResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -9404,12 +12034,19 @@ class StatusResult(object):
         packet.append(self.DiagnosticInfo.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.StatusCode = StatusCode.from_binary(data)
-            self.DiagnosticInfo = DiagnosticInfo.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = StatusResult()
+        obj.StatusCode = StatusCode.from_binary(data)
+        obj.DiagnosticInfo = DiagnosticInfo.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'StatusResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'DiagnosticInfo:' + str(self.DiagnosticInfo) + ')'
+    
+    __repr__ = __str__
+    
 class SubscriptionDiagnosticsDataType(object):
     def __init__(self):
         self.SessionId = NodeId()
@@ -9509,101 +12146,137 @@ class SubscriptionDiagnosticsDataType(object):
         packet.append(struct.pack(fmt, self.EventQueueOverFlowCount))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.SessionId = NodeId.from_binary(data)
-            fmt = '<I'
-            fmt_size = SubscriptionId
-            self.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<B'
-            fmt_size = Priority
-            self.Priority = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<d'
-            fmt_size = PublishingInterval
-            self.PublishingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = MaxKeepAliveCount
-            self.MaxKeepAliveCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = MaxLifetimeCount
-            self.MaxLifetimeCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = MaxNotificationsPerPublish
-            self.MaxNotificationsPerPublish = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<?'
-            fmt_size = PublishingEnabled
-            self.PublishingEnabled = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = ModifyCount
-            self.ModifyCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = EnableCount
-            self.EnableCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = DisableCount
-            self.DisableCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RepublishRequestCount
-            self.RepublishRequestCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RepublishMessageRequestCount
-            self.RepublishMessageRequestCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = RepublishMessageCount
-            self.RepublishMessageCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = TransferRequestCount
-            self.TransferRequestCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = TransferredToAltClientCount
-            self.TransferredToAltClientCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = TransferredToSameClientCount
-            self.TransferredToSameClientCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = PublishRequestCount
-            self.PublishRequestCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = DataChangeNotificationsCount
-            self.DataChangeNotificationsCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = EventNotificationsCount
-            self.EventNotificationsCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = NotificationsCount
-            self.NotificationsCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = LatePublishRequestCount
-            self.LatePublishRequestCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = CurrentKeepAliveCount
-            self.CurrentKeepAliveCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = CurrentLifetimeCount
-            self.CurrentLifetimeCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = UnacknowledgedMessageCount
-            self.UnacknowledgedMessageCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = DiscardedMessageCount
-            self.DiscardedMessageCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = MonitoredItemCount
-            self.MonitoredItemCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = DisabledMonitoredItemCount
-            self.DisabledMonitoredItemCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = MonitoringQueueOverflowCount
-            self.MonitoringQueueOverflowCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = NextSequenceNumber
-            self.NextSequenceNumber = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<I'
-            fmt_size = EventQueueOverFlowCount
-            self.EventQueueOverFlowCount = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SubscriptionDiagnosticsDataType()
+        obj.SessionId = NodeId.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<B'
+        fmt_size = 1
+        obj.Priority = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<d'
+        fmt_size = 8
+        obj.PublishingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.MaxKeepAliveCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.MaxLifetimeCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.MaxNotificationsPerPublish = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<?'
+        fmt_size = 1
+        obj.PublishingEnabled = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.ModifyCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.EnableCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.DisableCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RepublishRequestCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RepublishMessageRequestCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.RepublishMessageCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.TransferRequestCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.TransferredToAltClientCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.TransferredToSameClientCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.PublishRequestCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.DataChangeNotificationsCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.EventNotificationsCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.NotificationsCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.LatePublishRequestCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.CurrentKeepAliveCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.CurrentLifetimeCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.UnacknowledgedMessageCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.DiscardedMessageCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.MonitoredItemCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.DisabledMonitoredItemCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.MonitoringQueueOverflowCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.NextSequenceNumber = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<I'
+        fmt_size = 4
+        obj.EventQueueOverFlowCount = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'SubscriptionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', '  + \
+             'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+             'Priority:' + str(self.Priority) + ', '  + \
+             'PublishingInterval:' + str(self.PublishingInterval) + ', '  + \
+             'MaxKeepAliveCount:' + str(self.MaxKeepAliveCount) + ', '  + \
+             'MaxLifetimeCount:' + str(self.MaxLifetimeCount) + ', '  + \
+             'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', '  + \
+             'PublishingEnabled:' + str(self.PublishingEnabled) + ', '  + \
+             'ModifyCount:' + str(self.ModifyCount) + ', '  + \
+             'EnableCount:' + str(self.EnableCount) + ', '  + \
+             'DisableCount:' + str(self.DisableCount) + ', '  + \
+             'RepublishRequestCount:' + str(self.RepublishRequestCount) + ', '  + \
+             'RepublishMessageRequestCount:' + str(self.RepublishMessageRequestCount) + ', '  + \
+             'RepublishMessageCount:' + str(self.RepublishMessageCount) + ', '  + \
+             'TransferRequestCount:' + str(self.TransferRequestCount) + ', '  + \
+             'TransferredToAltClientCount:' + str(self.TransferredToAltClientCount) + ', '  + \
+             'TransferredToSameClientCount:' + str(self.TransferredToSameClientCount) + ', '  + \
+             'PublishRequestCount:' + str(self.PublishRequestCount) + ', '  + \
+             'DataChangeNotificationsCount:' + str(self.DataChangeNotificationsCount) + ', '  + \
+             'EventNotificationsCount:' + str(self.EventNotificationsCount) + ', '  + \
+             'NotificationsCount:' + str(self.NotificationsCount) + ', '  + \
+             'LatePublishRequestCount:' + str(self.LatePublishRequestCount) + ', '  + \
+             'CurrentKeepAliveCount:' + str(self.CurrentKeepAliveCount) + ', '  + \
+             'CurrentLifetimeCount:' + str(self.CurrentLifetimeCount) + ', '  + \
+             'UnacknowledgedMessageCount:' + str(self.UnacknowledgedMessageCount) + ', '  + \
+             'DiscardedMessageCount:' + str(self.DiscardedMessageCount) + ', '  + \
+             'MonitoredItemCount:' + str(self.MonitoredItemCount) + ', '  + \
+             'DisabledMonitoredItemCount:' + str(self.DisabledMonitoredItemCount) + ', '  + \
+             'MonitoringQueueOverflowCount:' + str(self.MonitoringQueueOverflowCount) + ', '  + \
+             'NextSequenceNumber:' + str(self.NextSequenceNumber) + ', '  + \
+             'EventQueueOverFlowCount:' + str(self.EventQueueOverFlowCount) + ')'
+    
+    __repr__ = __str__
+    
 class ModelChangeStructureDataType(object):
     def __init__(self):
         self.Affected = NodeId()
@@ -9618,15 +12291,23 @@ class ModelChangeStructureDataType(object):
         packet.append(struct.pack(fmt, self.Verb))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.Affected = NodeId.from_binary(data)
-            self.AffectedType = NodeId.from_binary(data)
-            fmt = '<B'
-            fmt_size = Verb
-            self.Verb = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ModelChangeStructureDataType()
+        obj.Affected = NodeId.from_binary(data)
+        obj.AffectedType = NodeId.from_binary(data)
+        fmt = '<B'
+        fmt_size = 1
+        obj.Verb = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ModelChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', '  + \
+             'AffectedType:' + str(self.AffectedType) + ', '  + \
+             'Verb:' + str(self.Verb) + ')'
+    
+    __repr__ = __str__
+    
 class SemanticChangeStructureDataType(object):
     def __init__(self):
         self.Affected = NodeId()
@@ -9638,12 +12319,19 @@ class SemanticChangeStructureDataType(object):
         packet.append(self.AffectedType.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.Affected = NodeId.from_binary(data)
-            self.AffectedType = NodeId.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = SemanticChangeStructureDataType()
+        obj.Affected = NodeId.from_binary(data)
+        obj.AffectedType = NodeId.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'SemanticChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', '  + \
+             'AffectedType:' + str(self.AffectedType) + ')'
+    
+    __repr__ = __str__
+    
 class Range(object):
     def __init__(self):
         self.Low = 0
@@ -9657,16 +12345,23 @@ class Range(object):
         packet.append(struct.pack(fmt, self.High))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<d'
-            fmt_size = Low
-            self.Low = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<d'
-            fmt_size = High
-            self.High = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = Range()
+        fmt = '<d'
+        fmt_size = 8
+        obj.Low = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<d'
+        fmt_size = 8
+        obj.High = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'Range(' + 'Low:' + str(self.Low) + ', '  + \
+             'High:' + str(self.High) + ')'
+    
+    __repr__ = __str__
+    
 class EUInformation(object):
     def __init__(self):
         self.NamespaceUri = ''
@@ -9684,17 +12379,26 @@ class EUInformation(object):
         packet.append(self.Description.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.NamespaceUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-            fmt = '<i'
-            fmt_size = UnitId
-            self.UnitId = struct.unpack(fmt, data.read(fmt_size))[0]
-            self.DisplayName = LocalizedText.from_binary(data)
-            self.Description = LocalizedText.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = EUInformation()
+        slength = struct.unpack('<i', data.red(1))
+        obj.NamespaceUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        fmt = '<i'
+        fmt_size = 4
+        obj.UnitId = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.DisplayName = LocalizedText.from_binary(data)
+        obj.Description = LocalizedText.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'EUInformation(' + 'NamespaceUri:' + str(self.NamespaceUri) + ', '  + \
+             'UnitId:' + str(self.UnitId) + ', '  + \
+             'DisplayName:' + str(self.DisplayName) + ', '  + \
+             'Description:' + str(self.Description) + ')'
+    
+    __repr__ = __str__
+    
 class ComplexNumberType(object):
     def __init__(self):
         self.Real = 0
@@ -9708,16 +12412,23 @@ class ComplexNumberType(object):
         packet.append(struct.pack(fmt, self.Imaginary))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<f'
-            fmt_size = Real
-            self.Real = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<f'
-            fmt_size = Imaginary
-            self.Imaginary = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ComplexNumberType()
+        fmt = '<f'
+        fmt_size = 4
+        obj.Real = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<f'
+        fmt_size = 4
+        obj.Imaginary = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'ComplexNumberType(' + 'Real:' + str(self.Real) + ', '  + \
+             'Imaginary:' + str(self.Imaginary) + ')'
+    
+    __repr__ = __str__
+    
 class DoubleComplexNumberType(object):
     def __init__(self):
         self.Real = 0
@@ -9731,16 +12442,23 @@ class DoubleComplexNumberType(object):
         packet.append(struct.pack(fmt, self.Imaginary))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<d'
-            fmt_size = Real
-            self.Real = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<d'
-            fmt_size = Imaginary
-            self.Imaginary = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = DoubleComplexNumberType()
+        fmt = '<d'
+        fmt_size = 8
+        obj.Real = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<d'
+        fmt_size = 8
+        obj.Imaginary = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'DoubleComplexNumberType(' + 'Real:' + str(self.Real) + ', '  + \
+             'Imaginary:' + str(self.Imaginary) + ')'
+    
+    __repr__ = __str__
+    
 class AxisInformation(object):
     def __init__(self):
         self.EngineeringUnits = EUInformation()
@@ -9762,22 +12480,32 @@ class AxisInformation(object):
             packet.append(struct.pack(fmt, self.AxisSteps))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.EngineeringUnits = EUInformation.from_binary(data)
-            self.EURange = Range.from_binary(data)
-            self.Title = LocalizedText.from_binary(data)
-            fmt = '<I'
-            fmt_size = AxisScaleType
-            self.AxisScaleType = struct.unpack(fmt, data.read(fmt_size))[0]
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    fmt = '<d'
-                    fmt_size = AxisSteps
-                    self.AxisSteps = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = AxisInformation()
+        obj.EngineeringUnits = EUInformation.from_binary(data)
+        obj.EURange = Range.from_binary(data)
+        obj.Title = LocalizedText.from_binary(data)
+        fmt = '<I'
+        fmt_size = 4
+        obj.AxisScaleType = struct.unpack(fmt, data.read(fmt_size))[0]
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                fmt = '<d'
+                fmt_size = 8
+                obj.AxisSteps = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'AxisInformation(' + 'EngineeringUnits:' + str(self.EngineeringUnits) + ', '  + \
+             'EURange:' + str(self.EURange) + ', '  + \
+             'Title:' + str(self.Title) + ', '  + \
+             'AxisScaleType:' + str(self.AxisScaleType) + ', '  + \
+             'AxisSteps:' + str(self.AxisSteps) + ')'
+    
+    __repr__ = __str__
+    
 class XVType(object):
     def __init__(self):
         self.X = 0
@@ -9791,16 +12519,23 @@ class XVType(object):
         packet.append(struct.pack(fmt, self.Value))
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            fmt = '<d'
-            fmt_size = X
-            self.X = struct.unpack(fmt, data.read(fmt_size))[0]
-            fmt = '<f'
-            fmt_size = Value
-            self.Value = struct.unpack(fmt, data.read(fmt_size))[0]
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = XVType()
+        fmt = '<d'
+        fmt_size = 8
+        obj.X = struct.unpack(fmt, data.read(fmt_size))[0]
+        fmt = '<f'
+        fmt_size = 4
+        obj.Value = struct.unpack(fmt, data.read(fmt_size))[0]
+        return obj
+    
+    def __str__(self):
+        return 'XVType(' + 'X:' + str(self.X) + ', '  + \
+             'Value:' + str(self.Value) + ')'
+    
+    __repr__ = __str__
+    
 class ProgramDiagnosticDataType(object):
     def __init__(self):
         self.CreateSessionId = NodeId()
@@ -9834,28 +12569,43 @@ class ProgramDiagnosticDataType(object):
         packet.append(self.LastMethodReturnStatus.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            self.CreateSessionId = NodeId.from_binary(data)
-            slength = struct.unpack('<i', data.red(1))
-            self.CreateClientName = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.InvocationCreationTime = DateTime.from_binary(data)
-            self.LastTransitionTime = DateTime.from_binary(data)
-            slength = struct.unpack('<i', data.red(1))
-            self.LastMethodCall = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.LastMethodSessionId = NodeId.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.LastMethodInputArguments = Argument.from_binary(data)
-            length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
-                for i in range(0, length):
-                    self.LastMethodOutputArguments = Argument.from_binary(data)
-            self.LastMethodCallTime = DateTime.from_binary(data)
-            self.LastMethodReturnStatus = StatusResult.from_binary(data)
-            return data
-            
+    @staticmethod
+    def from_binary(data):
+        obj = ProgramDiagnosticDataType()
+        obj.CreateSessionId = NodeId.from_binary(data)
+        slength = struct.unpack('<i', data.red(1))
+        obj.CreateClientName = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.InvocationCreationTime = DateTime.from_binary(data)
+        obj.LastTransitionTime = DateTime.from_binary(data)
+        slength = struct.unpack('<i', data.red(1))
+        obj.LastMethodCall = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.LastMethodSessionId = NodeId.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.LastMethodInputArguments = Argument.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length <= -1:
+            for i in range(0, length):
+                obj.LastMethodOutputArguments = Argument.from_binary(data)
+        obj.LastMethodCallTime = DateTime.from_binary(data)
+        obj.LastMethodReturnStatus = StatusResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'ProgramDiagnosticDataType(' + 'CreateSessionId:' + str(self.CreateSessionId) + ', '  + \
+             'CreateClientName:' + str(self.CreateClientName) + ', '  + \
+             'InvocationCreationTime:' + str(self.InvocationCreationTime) + ', '  + \
+             'LastTransitionTime:' + str(self.LastTransitionTime) + ', '  + \
+             'LastMethodCall:' + str(self.LastMethodCall) + ', '  + \
+             'LastMethodSessionId:' + str(self.LastMethodSessionId) + ', '  + \
+             'LastMethodInputArguments:' + str(self.LastMethodInputArguments) + ', '  + \
+             'LastMethodOutputArguments:' + str(self.LastMethodOutputArguments) + ', '  + \
+             'LastMethodCallTime:' + str(self.LastMethodCallTime) + ', '  + \
+             'LastMethodReturnStatus:' + str(self.LastMethodReturnStatus) + ')'
+    
+    __repr__ = __str__
+    
 class Annotation(object):
     def __init__(self):
         self.Message = ''
@@ -9871,11 +12621,19 @@ class Annotation(object):
         packet.append(self.AnnotationTime.to_binary())
         return b''.join(packet)
         
-        @staticmethod
-        def from_binary(self, data):
-            slength = struct.unpack('<i', data.red(1))
-            self.Message = struct.unpack('<{}s'.format(slength), data.read(slength))
-            slength = struct.unpack('<i', data.red(1))
-            self.UserName = struct.unpack('<{}s'.format(slength), data.read(slength))
-            self.AnnotationTime = DateTime.from_binary(data)
-            return data
+    @staticmethod
+    def from_binary(data):
+        obj = Annotation()
+        slength = struct.unpack('<i', data.red(1))
+        obj.Message = struct.unpack('<{}s'.format(slength), data.read(slength))
+        slength = struct.unpack('<i', data.red(1))
+        obj.UserName = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.AnnotationTime = DateTime.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'Annotation(' + 'Message:' + str(self.Message) + ', '  + \
+             'UserName:' + str(self.UserName) + ', '  + \
+             'AnnotationTime:' + str(self.AnnotationTime) + ')'
+    
+    __repr__ = __str__

@@ -125,6 +125,10 @@ class SecureHeader(Header):
         hdr.ChannelId = struct.unpack("<I", data.read(4))[0]
         return hdr
 
+    def __str__(self):
+        return "Header(type:{},size:{},channel:{})".format(self.MessageType, self.Size, self.ChannelId)
+    __repr__ = __str__
+
 class AsymmetricAlgorithmHeader:
     def __init__(self):
         self.SecurityPolicyURI = "http://opcfoundation.org/UA/SecurityPolicy#None"
@@ -141,11 +145,14 @@ class AsymmetricAlgorithmHeader:
     @staticmethod
     def from_binary(data):
         hdr = AsymmetricAlgorithmHeader()
-        hdr.SecurityPolicyURI = unpack_string(data)
-        hdr.SenderCertificate = unpack_string(data)
-        hdr.ReceiverCertificateThumbPrint = unpack_string(data)
+        hdr.SecurityPolicyURI = unpack_bytes(data)
+        hdr.SenderCertificate = unpack_bytes(data)
+        hdr.ReceiverCertificateThumbPrint = unpack_bytes(data)
         return hdr
 
+    def __str__(self):
+        return "{}(SecurytyPolicy:{}, certificatesize:{}, receiverCertificatesize )".format(self.__class__.__name__, self.SecurityPolicyURI, len(self.SenderCertificate), len(self.ReceiverCertificateThumbPrint))
+    __repr__ = __str__
 
 
 class SymmetricAlgorithmHeader:
@@ -160,6 +167,10 @@ class SymmetricAlgorithmHeader:
 
     def to_binary(self):
         return struct.pack("<I", self.TokenId)
+
+    def __str__(self):
+        return "{}(TokenId:{} )".format(self.__class__.__name__, self.TokenId)
+    __repr__ = __str__
 
 
 class SequenceHeader:
@@ -180,6 +191,9 @@ class SequenceHeader:
         b.append(struct.pack("<I", self.RequestId))
         return b"".join(b)
 
+    def __str__(self):
+        return "{}(SequenceNumber:{}, RequestId )".format(self.__class__.__name__, self.SequenceNumber, self.RequestId)
+    __repr__ = __str__
 
 
 if __name__ == "__main__":

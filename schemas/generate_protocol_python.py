@@ -62,7 +62,9 @@ class CodeGenerator(object):
         self.write("def __init__(self):")
         self.iidx += 1
         for field in obj.fields:
-            if field.name == "TypeId" and ( obj.name.endswith("Request") or obj.name.endswith("Response")):
+            if field.uatype == obj.name: #help!!! selv referencing class
+                self.write("self.{} = None".format(field.name))
+            elif field.name == "TypeId" and ( obj.name.endswith("Request") or obj.name.endswith("Response")):
                 #self.write("nodeid = NodeId()")
                 #self.write("fourbyte = FourByteNodeId()")
                 #self.write("fourbyte.NamespaceIndex = 0")
@@ -81,6 +83,12 @@ class CodeGenerator(object):
         self.write("")
         self.write("def to_binary(self):")
         self.iidx += 1
+
+        #hack for self referencing classes
+        for field in obj.fields:
+            if field.uatype == obj.name: #help!!! selv referencing class
+                self.write("if self.{name} is None: self.{name} = {uatype}()".format(name=field.name, uatype=field.uatype))
+
         self.write("packet = []")
         #if obj.is_extension_object():
             #self.write("body = []")
@@ -128,25 +136,27 @@ class CodeGenerator(object):
         self.write("return b''.join(packet)")
         self.write("")
 
+        self.iidx = 1
         #deserialize
         self.write("@staticmethod")
-        self.write("def from_binary(self, data):")
+        self.write("def from_binary(data):")
         self.iidx += 1 
         iidx = self.iidx
+        self.write("obj = {}()".format(obj.name))
         for idx, field in enumerate(obj.fields):
             self.iidx = iidx
-            if field.name == "Body" and idx <= (len(obj.fields)-1):
-                self.write("bodylength = struct.unpack('<i', data.read(4))[0]")
-                continue
+            #if field.name == "Body" and idx <= (len(obj.fields)-1):
+                #self.write("bodylength = struct.unpack('<i', data.read(4))[0]")
+                #continue
             if field.switchfield:
                 bit = obj.bits[field.switchfield]
                 if field.switchvalue:
                     mask = '0b' + '0' *(8-bit.length) + '1' * bit.length
-                    self.write("val = self.{} & {}".format(bit.container, mask))
+                    self.write("val = obj.{} & {}".format(bit.container, mask))
                     self.write("if val == {}:".format(bit.idx))
                     #self.write("if self.{} & (1 << {}):".format(field.switchfield, field.switchvalue))
                 else:
-                    self.write("if self.{} & (1 << {}):".format(bit.container, bit.idx))
+                    self.write("if obj.{} & (1 << {}):".format(bit.container, bit.idx))
                 self.iidx += 1
             if field.length:
                 self.write("length = struct.unpack('<i', data.read(4))[0]")
@@ -156,16 +166,37 @@ class CodeGenerator(object):
                 self.iidx += 1
             if field.uatype == "String":
                 self.write("slength = struct.unpack('<i', data.red(1))")
-                self.write("self.{name} = struct.unpack('<{{}}s'.format(slength), data.read(slength))".format(name=field.name))
+                self.write("obj.{name} = struct.unpack('<{{}}s'.format(slength), data.read(slength))".format(name=field.name))
             elif field.is_native_type() or field.uatype in self.model.enum_list:
                 fmt =  self.to_fmt(field)
                 self.write("fmt = '<{}'".format(fmt))
-                self.write("fmt_size = {}".format(field.name, struct.calcsize(fmt)))
-                self.write("self.{name} = struct.unpack(fmt, data.read(fmt_size))[0]".format(name=field.name))
+                self.write("fmt_size = {}".format(struct.calcsize(fmt)))
+                self.write("obj.{name} = struct.unpack(fmt, data.read(fmt_size))[0]".format(name=field.name))
             else:
-                self.write("self.{} = {}.from_binary(data)".format(field.name, field.uatype))
-        self.iidx = 3
-        self.write("return data")
+                self.write("obj.{} = {}.from_binary(data)".format(field.name, field.uatype))
+        self.iidx = 2
+        self.write("return obj")
+        
+        #__str__
+        self.iidx = 1
+        self.write("")
+        self.write("def __str__(self):")
+        self.iidx += 1
+        #ObjectName(fieldnam:fieldvalue, fieldname:fieldvalue)
+        #'ObjectName(fiel)dname:' + fieldvalye + ',fieldname:' ))+ value + ',fieldname:' + value + ')'
+        tmp = ["'{name}:' + str(self.{name})".format(name=f.name ) for f in obj.fields]
+        tmp = " + ', '  + \\\n             ".join(tmp)
+        self.write("return '{}(' + {} + ')'".format(obj.name, tmp))
+        self.iidx -= 1
+        self.write("")
+        self.write("__repr__ = __str__")
+
+
+
+
+
+
+
         self.iix = 0
 
     

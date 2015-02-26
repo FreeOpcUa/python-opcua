@@ -17,11 +17,14 @@ pack_bytes = pack_string
 
 def unpack_bytes(data):
     length = struct.unpack("<i", data.read(4))[0]
-    return struct.unpack("<{}s", data.read(length))[0]
+    if length == -1:
+        return b''
+    return data.read(length)
 
 def unpack_string(data):
     b = unpack_bytes(data)
-    return b.encode("utf-8")
+    return str(b)
+    #return b.decode("utf-8")
 
 def unpack_array(data, uatype):
     pass
@@ -67,6 +70,11 @@ class ByteString(object):
             return True
         return False
 
+    def __str__(self):
+        return 'ByteString({})'.format(self.data)
+
+    __repr__ = __str__
+
 """
 
 class ByteString(bytes):
@@ -84,9 +92,17 @@ class StatusCode(object):
 
     def to_binary(self):
         return struct.pack("!I", self.data)
-    
-    def from_binary(self, data):
-        self.data = struct.unpack("!I", data.read(4))[0]
+
+    @staticmethod 
+    def from_binary(data):
+        sc = StatusCode()
+        sc.data = struct.unpack("!I", data.read(4))[0]
+        return sc
+
+    def __str__(self):
+        return 'StatusCode({})'.format(self.data)
+
+    __repr__ = __str__
 
 class NodeIdType(object):
     TwoByte = 0
@@ -200,6 +216,8 @@ class DateTime(object):
 
     def to_datetime(self):
         us = self.data / 10.0
+        print(us)
+        print(timedelta(microseconds=us))
         return datetime(1601,1,1) + timedelta(microseconds=us)
 
     @staticmethod
@@ -216,13 +234,13 @@ class DateTime(object):
         return struct.pack("<d", self.data)
     
     @staticmethod
-    def from_binary(self, data):
+    def from_binary(data):
         d = DateTime()
-        d.data = struct.unpack("<d", data.read(8))
+        d.data = struct.unpack("<d", data.read(8))[0]
         return d
 
     @staticmethod
-    def from_ctime(self, data):
+    def from_ctime(data):
         return DateTime.from_datetime(datetime.fromtimestamp(data))
 
     def __str__(self):

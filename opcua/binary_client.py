@@ -32,6 +32,32 @@ class BinaryClient(Thread):
         print(header)
         return header
 
+    def _receive(self):
+        data = self.socket.recv(12)
+        header = ua.SecureHeader.from_binary(io.BytesIO(data))
+        print(header)
+        if header.MessageType == ua.MessageType.Error:
+            print("Received an error message type")
+            return None
+        nbbytes = header.Size - 12
+        data = self.socket.recv(nbbytes)
+        print("Asked socket for {} bytes, received {}".format(nbbytes, len(data)))
+        if nbbytes != len(data):
+            print("Error, did not received expected number of bytes")
+            return None
+        data = io.BytesIO(data)
+        if header.MessageType == ua.MessageType.SecureOpen:
+            algohdr = ua.AsymmetricAlgorithmHeader.from_binary(data)
+        elif header.MessageType == ua.MessageType.SecureMessage:
+            algohdr = ua.SymmetricAlgorithmHeader.from_binary(data)
+        else:
+            print("Error unsupported message type")
+            return
+        print(algohdr)
+        seqhdr = ua.SequenceHeader.from_binary(data)
+        print(seqhdr)
+        return data
+
     def stop(self):
         self._do_stop = True
 
@@ -74,9 +100,11 @@ class BinaryClient(Thread):
         seqhdr = self._create_sequence_header()
         self._write_socket(hdr, asymhdr, seqhdr, request)
 
-        header = self._recv_header()
-        data = self.socket.recv(header.Size)
-        return  io.BytesIO(data)
+        data = self._receive()
+        response = ua.OpenSecureChannelResponse.from_binary(data)
+        print(response)
+        return response
+        
 
     def _send(self, request):
         request.RequestHeader = self._create_request_header()
