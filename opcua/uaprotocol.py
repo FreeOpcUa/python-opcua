@@ -1,6 +1,10 @@
-#from . import uaprotocol_auto as auto
-from .uaprotocol_auto import *
 import struct 
+import logging
+
+from .uaprotocol_auto import *
+
+logger = logging.getLogger(__name__)
+
 
 class Hello(object):
     def __init__(self):
@@ -196,13 +200,4 @@ class SequenceHeader:
     __repr__ = __str__
 
 
-if __name__ == "__main__":
-    from IPython import embed
-    h = Header(MessageType.Hello, ChunkType.Single)
-    h.Size = 20
-    print("header", h.to_binary())
-    hello = Hello()
-    hello.EndpointUrl = "opc.tcp::/localhost"
-    print("hello", hello.to_binary())
-    embed()
 

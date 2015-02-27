@@ -4,46 +4,54 @@ Low level binary client
 import io
 import logging
 import socket
-from threading import Thread
+from threading import Thread, Condition
 
 from . import uaprotocol as ua
+
+class RequestCallback(object):
+    def __init__(self, callback=None):
+        self.condition = Condition()
+        self.data = None
 
 
 class BinaryClient(Thread):
     def __init__(self):
         Thread.__init__(self)
+        self.logger = logging.getLogger(self.__class__.__name__)
         self.socket = None
         self._do_stop = False
         self._security_token = ua.ChannelSecurityToken()
+        self._authentication_token = ua.NodeId()
         self._sequence_number = 0
         self._request_id = 0
         self._request_handle = 0
+        self._callbackmap = {}
+        self._dostop = False
 
     def run(self):
-        print("Thread started")
-        while True:
-            header = self._recv_header()
-            body = self.socket.recv(header.Size)
-            print("received body of size: ", len(body))
+        self.logger.info("Thread started")
+        while not self._dostop:
+            data = self._receive()
+        self.logger.info("Thread ended")
 
     def _recv_header(self):
         data = self.socket.recv(8)
         header = ua.Header.from_binary(io.BytesIO(data))
-        print(header)
+        self.logger.info(header)
         return header
 
     def _receive(self):
         data = self.socket.recv(12)
         header = ua.SecureHeader.from_binary(io.BytesIO(data))
-        print(header)
+        self.logger.info(header)
         if header.MessageType == ua.MessageType.Error:
-            print("Received an error message type")
+            self.logger.warn("Received an error message type")
             return None
         nbbytes = header.Size - 12
         data = self.socket.recv(nbbytes)
-        print("Asked socket for {} bytes, received {}".format(nbbytes, len(data)))
+        self.logger.info("Asked socket for {} bytes, received {}".format(nbbytes, len(data)))
         if nbbytes != len(data):
-            print("Error, did not received expected number of bytes")
+            self.logger.warn("Error, did not received expected number of bytes")
             return None
         data = io.BytesIO(data)
         if header.MessageType == ua.MessageType.SecureOpen:
@@ -51,18 +59,26 @@ class BinaryClient(Thread):
         elif header.MessageType == ua.MessageType.SecureMessage:
             algohdr = ua.SymmetricAlgorithmHeader.from_binary(data)
         else:
-            print("Error unsupported message type")
+            self.logger.warn("Unsupported message type")
             return
-        print(algohdr)
+        self.logger.info(algohdr)
         seqhdr = ua.SequenceHeader.from_binary(data)
-        print(seqhdr)
-        return data
+        self.logger.info(seqhdr)
+        if not seqhdr.RequestId in self._callbackmap:
+            self.logger.warn("No callback object found for request: {}", seqhdr.RequestId)
+            return
+        rcall = self._callbackmap[seqhdr.RequestId]
+        rcall.condition.acquire()
+        rcall.data = data
+        rcall.condition.notify_all()
+        rcall.condition.release()
+        del(self._callbackmap[seqhdr.RequestId])
 
     def stop(self):
         self._do_stop = True
 
     def connect(self):
-        print("opening connection")
+        self.logger.info("opening connection")
         self.socket = socket.create_connection(('localhost', 4841))
 
     def send_hello(self, url):
@@ -75,51 +91,66 @@ class BinaryClient(Thread):
         return  ua.Acknowledge.from_binary(io.BytesIO(data))
     
     def _write_socket(self, hdr, *args):
-        print("wrtting to socket")
+        self.logger.info("wrtting to socket")
         alle = []
         for arg in args:
             data = arg.to_binary()
             hdr.add_size(len(data))
-            print(arg, len(data), hdr.Size, data)
+            self.logger.debug("preparing to write: %s with length %s and data %s",  arg, len(data), data)
             alle.append(data)
         alle.insert(0, hdr.to_binary())
-        print(data)
+        #self.logger.info(data)
         alle = b"".join(alle)
         self.socket.send(alle)
 
     def open_secure_channel(self, params):
+        self.logger.info("open_secure_channel")
         request = ua.OpenSecureChannelRequest()
         request.Parameters = params
-        request.RequestHeader.TimeoutHint = 255
+        request.RequestHeader = self._create_request_header()
 
         hdr = ua.SecureHeader(ua.MessageType.SecureOpen, ua.ChunkType.Single, self._security_token.TokenId)
         asymhdr = ua.AsymmetricAlgorithmHeader()
-        #asymhdr.SecurityPolicyURI = "http://opcfoundation.org/UA/SecurityPolicy#None" 
-        #asymhdr.SenderCertificate 
-        #asymhdr.ReceiverCertificateThumbPrint
         seqhdr = self._create_sequence_header()
         self._write_socket(hdr, asymhdr, seqhdr, request)
 
-        data = self._receive()
-        response = ua.OpenSecureChannelResponse.from_binary(data)
-        print(response)
+        rcall = RequestCallback()
+        self._callbackmap[seqhdr.RequestId] = rcall
+        rcall.condition.acquire()
+        rcall.condition.wait()
+        #FICME: could copy data here ....
+        rcall.condition.release()
+
+
+        response = ua.OpenSecureChannelResponse.from_binary(rcall.data)
+        self._security_token = response.Parameters.SecurityToken
+        self.logger.info(response)
         return response
-        
 
-    def _send(self, request):
+    def create_session(self, parameters):
+        self.logger.info("create_session")
+        request = ua.CreateSessionRequest()
+        request.Parameters = parameters
+        response = self._send_request(request)
+        return response
+
+    def get_endpoints(self, parameters, callback=None):
+        self.logger.info("get_endpoint")
+        request = ua.GetEndpointsRequest()
+        request.Parameters = parameters
+        response = self._send_request(request)
+        return response
+
+    def _send_request(self, request):
         request.RequestHeader = self._create_request_header()
-        def callback():
-            pass
-        clb = callback
-        self._send_async(request, clb)
-
-    def _send_async(self, request, callback):
-        hdr = ua.SecureHeader(ua.MessageType.SecureMessage, ua.ChunkType.Single, self._security_token.TokenId)
-        symhdr = self._create_algo_header()
+        hdr = ua.SecureHeader(ua.MessageType.SecureOpen, ua.ChunkType.Single, self._security_token.TokenId)
+        asymhdr = ua.AsymmetricAlgorithmHeader()
         seqhdr = self._create_sequence_header()
-
-        self._write_socket(hdr, symhdr, seqhdr, request)
-
+        self._write_socket(hdr, asymhdr, seqhdr, request)
+        rcall = RequestCallback()
+        self._callbackmap[seqhdr.RequestId] = rcall
+        rcall.condition.wait()
+        return rcall.data
 
     def _create_request_header(self):
         hdr = ua.RequestHeader()
