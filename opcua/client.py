@@ -35,6 +35,9 @@ class Client(object):
         params.ClientNonce = '\x00'
         self.bclient.open_secure_channel(params)
 
+    def close_secure_channel(self):
+        return self.bclient.close_secure_channel()
+
     def get_endpoints(self):
         params = ua.GetEndpointsParameters()
         params.EndpointUrl = self.server_uri

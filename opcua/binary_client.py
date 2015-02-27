@@ -26,11 +26,10 @@ class BinaryClient(Thread):
         self._request_id = 0
         self._request_handle = 0
         self._callbackmap = {}
-        self._dostop = False
 
     def run(self):
         self.logger.info("Thread started")
-        while not self._dostop:
+        while not self._do_stop:
             data = self._receive()
         self.logger.info("Thread ended")
 
@@ -71,7 +70,7 @@ class BinaryClient(Thread):
         seqhdr = ua.SequenceHeader.from_binary(data)
         self.logger.info(seqhdr)
         if not seqhdr.RequestId in self._callbackmap:
-            self.logger.warn("No callback object found for request: {}", seqhdr.RequestId)
+            self.logger.warn("No callback object found for request: %s, callbacks in list are %s", seqhdr.RequestId, self._callbackmap.keys())
             return
         rcall = self._callbackmap[seqhdr.RequestId]
         rcall.condition.acquire()
@@ -81,7 +80,9 @@ class BinaryClient(Thread):
         del(self._callbackmap[seqhdr.RequestId])
 
     def stop(self):
+        self.logger.info("stop request")
         self._do_stop = True
+        self.socket.shutdown(socket.SHUT_WR)
 
     def connect(self):
         self.logger.info("opening connection")
@@ -145,11 +146,18 @@ class BinaryClient(Thread):
         self.logger.info("get_endpoint")
         request = ua.GetEndpointsRequest()
         request.Parameters = params
-        print(request)
         data = self._send_request(request)
         response = ua.GetEndpointsResponse.from_binary(data)
-        self.logger.info(response)
         return response.Endpoints
+
+    def close_secure_channel(self):
+        self.logger.info("get_endpoint")
+        request = ua.CloseSecureChannelRequest()
+        data = self._send_request(request)
+        response = ua.CloseSecureChannelResponse.from_binary(data)
+        return response
+
+
 
     def _send_request(self, request):
         request.RequestHeader = self._create_request_header()
