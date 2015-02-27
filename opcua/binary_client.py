@@ -41,13 +41,19 @@ class BinaryClient(Thread):
         return header
 
     def _receive(self):
+        self.logger.info("Waiting for socket data")
         data = self.socket.recv(12)
+        while len(data) != 12:
+            self.logger.warn("received %s bytes, we expected 12, waiting", len(data))
+            data += self.socket.recv(12-len(data))
+            return
         header = ua.SecureHeader.from_binary(io.BytesIO(data))
-        self.logger.info(header)
+        self.logger.info("received header: %s", header)
         if header.MessageType == ua.MessageType.Error:
             self.logger.warn("Received an error message type")
             return None
         nbbytes = header.Size - 12
+        self.logger.info("reading rest of message (%s bytes)", nbbytes)
         data = self.socket.recv(nbbytes)
         self.logger.info("Asked socket for {} bytes, received {}".format(nbbytes, len(data)))
         if nbbytes != len(data):
@@ -132,25 +138,30 @@ class BinaryClient(Thread):
         request = ua.CreateSessionRequest()
         request.Parameters = parameters
         response = self._send_request(request)
-        return response
+        response = ua.CreateSessionResponse.from_binary(data)
+        return response.Parameters
 
-    def get_endpoints(self, parameters, callback=None):
+    def get_endpoints(self, params, callback=None):
         self.logger.info("get_endpoint")
         request = ua.GetEndpointsRequest()
-        request.Parameters = parameters
-        response = self._send_request(request)
-        return response
+        request.Parameters = params
+        print(request)
+        data = self._send_request(request)
+        response = ua.GetEndpointsResponse.from_binary(data)
+        self.logger.info(response)
+        return response.Endpoints
 
     def _send_request(self, request):
         request.RequestHeader = self._create_request_header()
-        hdr = ua.SecureHeader(ua.MessageType.SecureOpen, ua.ChunkType.Single, self._security_token.TokenId)
-        asymhdr = ua.AsymmetricAlgorithmHeader()
+        hdr = ua.SecureHeader(ua.MessageType.SecureMessage, ua.ChunkType.Single, self._security_token.TokenId)
+        symhdr = ua.SymmetricAlgorithmHeader()
         seqhdr = self._create_sequence_header()
-        self._write_socket(hdr, asymhdr, seqhdr, request)
+        self._write_socket(hdr, symhdr, seqhdr, request)
         rcall = RequestCallback()
         self._callbackmap[seqhdr.RequestId] = rcall
-        rcall.condition.wait()
-        return rcall.data
+        with rcall.condition:
+            rcall.condition.wait()
+            return rcall.data
 
     def _create_request_header(self):
         hdr = ua.RequestHeader()

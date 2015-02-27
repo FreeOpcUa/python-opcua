@@ -111,21 +111,26 @@ class CodeGenerator(object):
                 #continue
             self.iidx = iidx
             switch = ""
+            fname = "self." + field.name
             if field.switchfield:
                 self.write("if self.{}: ".format(field.name))
                 self.iidx += 1
             if field.length:
                 self.write("packet.append(struct.pack('<i', len(self.{})))".format(field.name))
-                self.write("for i in self.{}:".format(field.name))
+                self.write("for fieldname in self.{}:".format(field.name))
+                fname = "fieldname"
                 self.iidx += 1
-            if field.uatype == "String":
-                self.write("packet.append(struct.pack('<i', len(self.{})))".format(field.name))
-                self.write("packet.append(struct.pack('<{{}}s'.format(len(self.{name})), self.{name}.encode()))".format(name=field.name))
+            if field.uatype in ("CharArray", "ByteString"):
+                self.write("packet.append(pack_bytes({name}))".format(name=fname))
+            elif field.uatype == "String":
+                #self.write("packet.append(struct.pack('<i', len({})))".format(fname))
+                #self.write("packet.append(struct.pack('<{{}}s'.format(len({name})), {name}.encode()))".format(name=fname))
+                self.write("packet.append(pack_string({name}))".format(name=fname))
             elif field.is_native_type() or field.uatype in self.model.enum_list:
                 self.write("fmt = '<{}'".format(self.to_fmt(field)))
-                self.write("packet.append(struct.pack(fmt, self.{name}))".format(name=field.name))
+                self.write("packet.append(struct.pack(fmt, {name}))".format(name=fname))
             else:
-                self.write("packet.append(self.{}.to_binary())".format(field.name))
+                self.write("packet.append({}.to_binary())".format(fname))
             if field.length:
                 self.iidx -= 1
         self.iidx = 2
@@ -160,13 +165,14 @@ class CodeGenerator(object):
                 self.iidx += 1
             if field.length:
                 self.write("length = struct.unpack('<i', data.read(4))[0]")
-                self.write("if length <= -1:")
+                self.write("if length != -1:")
                 self.iidx += 1
                 self.write("for i in range(0, length):")
                 self.iidx += 1
-            if field.uatype == "String":
-                self.write("slength = struct.unpack('<i', data.red(1))")
-                self.write("obj.{name} = struct.unpack('<{{}}s'.format(slength), data.read(slength))".format(name=field.name))
+            if field.uatype in ("CharArray", "ByteString"):
+                self.write("obj.{name} = unpack_bytes(data)".format(name=field.name))
+            elif field.uatype == "String":
+                self.write("obj.{name} = unpack_string(data)".format(name=field.name))
             elif field.is_native_type() or field.uatype in self.model.enum_list:
                 fmt =  self.to_fmt(field)
                 self.write("fmt = '<{}'".format(fmt))
@@ -205,7 +211,7 @@ class CodeGenerator(object):
             return 0
         if field.uatype in ("String"):
             return "''"
-        elif field.uatype in ("CharArray", "Char"):
+        elif field.uatype in ("ByteString", "CharArray", "Char"):
             return "b''"
         elif field.uatype in ("Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Boolean", "Double", "Float", "Byte"):
             return 0

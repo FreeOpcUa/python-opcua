@@ -235,7 +235,7 @@ class ExtensionObject(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
     
     def to_binary(self):
         packet = []
@@ -244,7 +244,7 @@ class ExtensionObject(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         return b''.join(packet)
         
     @staticmethod
@@ -255,7 +255,7 @@ class ExtensionObject(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -275,9 +275,9 @@ class XmlElement(object):
         fmt = '<i'
         packet.append(struct.pack(fmt, self.Length))
         packet.append(struct.pack('<i', len(self.Value)))
-        for i in self.Value:
+        for fieldname in self.Value:
             fmt = '<s'
-            packet.append(struct.pack(fmt, self.Value))
+            packet.append(struct.pack(fmt, fieldname))
         return b''.join(packet)
         
     @staticmethod
@@ -287,7 +287,7 @@ class XmlElement(object):
         fmt_size = 4
         obj.Length = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<s'
                 fmt_size = 1
@@ -392,8 +392,7 @@ class StringNodeId(object):
         packet = []
         fmt = '<H'
         packet.append(struct.pack(fmt, self.NamespaceIndex))
-        fmt = '<s'
-        packet.append(struct.pack(fmt, self.Identifier))
+        packet.append(pack_bytes(self.Identifier))
         return b''.join(packet)
         
     @staticmethod
@@ -402,9 +401,7 @@ class StringNodeId(object):
         fmt = '<H'
         fmt_size = 2
         obj.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
-        fmt = '<s'
-        fmt_size = 1
-        obj.Identifier = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.Identifier = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -443,13 +440,13 @@ class GuidNodeId(object):
 class ByteStringNodeId(object):
     def __init__(self):
         self.NamespaceIndex = 0
-        self.Identifier = ByteString()
+        self.Identifier = b''
     
     def to_binary(self):
         packet = []
         fmt = '<H'
         packet.append(struct.pack(fmt, self.NamespaceIndex))
-        packet.append(self.Identifier.to_binary())
+        packet.append(pack_bytes(self.Identifier))
         return b''.join(packet)
         
     @staticmethod
@@ -458,7 +455,7 @@ class ByteStringNodeId(object):
         fmt = '<H'
         fmt_size = 2
         obj.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
-        obj.Identifier = ByteString.from_binary(data)
+        obj.Identifier = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -498,8 +495,7 @@ class DiagnosticInfo(object):
             fmt = '<i'
             packet.append(struct.pack(fmt, self.LocalizedText))
         if self.AdditionalInfo: 
-            fmt = '<s'
-            packet.append(struct.pack(fmt, self.AdditionalInfo))
+            packet.append(pack_bytes(self.AdditionalInfo))
         if self.InnerStatusCode: 
             packet.append(self.InnerStatusCode.to_binary())
         if self.InnerDiagnosticInfo: 
@@ -525,9 +521,7 @@ class DiagnosticInfo(object):
             fmt_size = 4
             obj.LocalizedText = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 4):
-            fmt = '<s'
-            fmt_size = 1
-            obj.AdditionalInfo = struct.unpack(fmt, data.read(fmt_size))[0]
+            obj.AdditionalInfo = unpack_bytes(data)
         if obj.Encoding & (1 << 5):
             obj.InnerStatusCode = StatusCode.from_binary(data)
         if obj.Encoding & (1 << 6):
@@ -554,8 +548,7 @@ class QualifiedName(object):
         packet = []
         fmt = '<i'
         packet.append(struct.pack(fmt, self.NamespaceIndex))
-        fmt = '<s'
-        packet.append(struct.pack(fmt, self.Name))
+        packet.append(pack_bytes(self.Name))
         return b''.join(packet)
         
     @staticmethod
@@ -564,9 +557,7 @@ class QualifiedName(object):
         fmt = '<i'
         fmt_size = 4
         obj.NamespaceIndex = struct.unpack(fmt, data.read(fmt_size))[0]
-        fmt = '<s'
-        fmt_size = 1
-        obj.Name = struct.unpack(fmt, data.read(fmt_size))[0]
+        obj.Name = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -588,11 +579,9 @@ class LocalizedText(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Locale: 
-            fmt = '<s'
-            packet.append(struct.pack(fmt, self.Locale))
+            packet.append(pack_bytes(self.Locale))
         if self.Text: 
-            fmt = '<s'
-            packet.append(struct.pack(fmt, self.Text))
+            packet.append(pack_bytes(self.Text))
         return b''.join(packet)
         
     @staticmethod
@@ -602,13 +591,9 @@ class LocalizedText(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            fmt = '<s'
-            fmt_size = 1
-            obj.Locale = struct.unpack(fmt, data.read(fmt_size))[0]
+            obj.Locale = unpack_bytes(data)
         if obj.Encoding & (1 << 1):
-            fmt = '<s'
-            fmt_size = 1
-            obj.Text = struct.unpack(fmt, data.read(fmt_size))[0]
+            obj.Text = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -780,116 +765,115 @@ class Variant(object):
             packet.append(struct.pack(fmt, self.ArrayLength))
         if self.Boolean: 
             packet.append(struct.pack('<i', len(self.Boolean)))
-            for i in self.Boolean:
+            for fieldname in self.Boolean:
                 fmt = '<?'
-                packet.append(struct.pack(fmt, self.Boolean))
+                packet.append(struct.pack(fmt, fieldname))
         if self.SByte: 
             packet.append(struct.pack('<i', len(self.SByte)))
-            for i in self.SByte:
+            for fieldname in self.SByte:
                 fmt = '<B'
-                packet.append(struct.pack(fmt, self.SByte))
+                packet.append(struct.pack(fmt, fieldname))
         if self.Byte: 
             packet.append(struct.pack('<i', len(self.Byte)))
-            for i in self.Byte:
+            for fieldname in self.Byte:
                 fmt = '<B'
-                packet.append(struct.pack(fmt, self.Byte))
+                packet.append(struct.pack(fmt, fieldname))
         if self.Int16: 
             packet.append(struct.pack('<i', len(self.Int16)))
-            for i in self.Int16:
+            for fieldname in self.Int16:
                 fmt = '<h'
-                packet.append(struct.pack(fmt, self.Int16))
+                packet.append(struct.pack(fmt, fieldname))
         if self.UInt16: 
             packet.append(struct.pack('<i', len(self.UInt16)))
-            for i in self.UInt16:
+            for fieldname in self.UInt16:
                 fmt = '<H'
-                packet.append(struct.pack(fmt, self.UInt16))
+                packet.append(struct.pack(fmt, fieldname))
         if self.Int32: 
             packet.append(struct.pack('<i', len(self.Int32)))
-            for i in self.Int32:
+            for fieldname in self.Int32:
                 fmt = '<i'
-                packet.append(struct.pack(fmt, self.Int32))
+                packet.append(struct.pack(fmt, fieldname))
         if self.UInt32: 
             packet.append(struct.pack('<i', len(self.UInt32)))
-            for i in self.UInt32:
+            for fieldname in self.UInt32:
                 fmt = '<I'
-                packet.append(struct.pack(fmt, self.UInt32))
+                packet.append(struct.pack(fmt, fieldname))
         if self.Int64: 
             packet.append(struct.pack('<i', len(self.Int64)))
-            for i in self.Int64:
+            for fieldname in self.Int64:
                 fmt = '<q'
-                packet.append(struct.pack(fmt, self.Int64))
+                packet.append(struct.pack(fmt, fieldname))
         if self.UInt64: 
             packet.append(struct.pack('<i', len(self.UInt64)))
-            for i in self.UInt64:
+            for fieldname in self.UInt64:
                 fmt = '<Q'
-                packet.append(struct.pack(fmt, self.UInt64))
+                packet.append(struct.pack(fmt, fieldname))
         if self.Float: 
             packet.append(struct.pack('<i', len(self.Float)))
-            for i in self.Float:
+            for fieldname in self.Float:
                 fmt = '<f'
-                packet.append(struct.pack(fmt, self.Float))
+                packet.append(struct.pack(fmt, fieldname))
         if self.Double: 
             packet.append(struct.pack('<i', len(self.Double)))
-            for i in self.Double:
+            for fieldname in self.Double:
                 fmt = '<d'
-                packet.append(struct.pack(fmt, self.Double))
+                packet.append(struct.pack(fmt, fieldname))
         if self.String: 
             packet.append(struct.pack('<i', len(self.String)))
-            for i in self.String:
-                packet.append(struct.pack('<i', len(self.String)))
-                packet.append(struct.pack('<{}s'.format(len(self.String)), self.String.encode()))
+            for fieldname in self.String:
+                packet.append(pack_string(fieldname))
         if self.DateTime: 
             packet.append(struct.pack('<i', len(self.DateTime)))
-            for i in self.DateTime:
-                packet.append(self.DateTime.to_binary())
+            for fieldname in self.DateTime:
+                packet.append(fieldname.to_binary())
         if self.Guid: 
             packet.append(struct.pack('<i', len(self.Guid)))
-            for i in self.Guid:
-                packet.append(self.Guid.to_binary())
+            for fieldname in self.Guid:
+                packet.append(fieldname.to_binary())
         if self.ByteString: 
             packet.append(struct.pack('<i', len(self.ByteString)))
-            for i in self.ByteString:
-                packet.append(self.ByteString.to_binary())
+            for fieldname in self.ByteString:
+                packet.append(pack_bytes(fieldname))
         if self.XmlElement: 
             packet.append(struct.pack('<i', len(self.XmlElement)))
-            for i in self.XmlElement:
-                packet.append(self.XmlElement.to_binary())
+            for fieldname in self.XmlElement:
+                packet.append(fieldname.to_binary())
         if self.NodeId: 
             packet.append(struct.pack('<i', len(self.NodeId)))
-            for i in self.NodeId:
-                packet.append(self.NodeId.to_binary())
+            for fieldname in self.NodeId:
+                packet.append(fieldname.to_binary())
         if self.ExpandedNodeId: 
             packet.append(struct.pack('<i', len(self.ExpandedNodeId)))
-            for i in self.ExpandedNodeId:
-                packet.append(self.ExpandedNodeId.to_binary())
+            for fieldname in self.ExpandedNodeId:
+                packet.append(fieldname.to_binary())
         if self.StatusCode: 
             packet.append(struct.pack('<i', len(self.StatusCode)))
-            for i in self.StatusCode:
-                packet.append(self.StatusCode.to_binary())
+            for fieldname in self.StatusCode:
+                packet.append(fieldname.to_binary())
         if self.DiagnosticInfo: 
             packet.append(struct.pack('<i', len(self.DiagnosticInfo)))
-            for i in self.DiagnosticInfo:
-                packet.append(self.DiagnosticInfo.to_binary())
+            for fieldname in self.DiagnosticInfo:
+                packet.append(fieldname.to_binary())
         if self.QualifiedName: 
             packet.append(struct.pack('<i', len(self.QualifiedName)))
-            for i in self.QualifiedName:
-                packet.append(self.QualifiedName.to_binary())
+            for fieldname in self.QualifiedName:
+                packet.append(fieldname.to_binary())
         if self.LocalizedText: 
             packet.append(struct.pack('<i', len(self.LocalizedText)))
-            for i in self.LocalizedText:
-                packet.append(self.LocalizedText.to_binary())
+            for fieldname in self.LocalizedText:
+                packet.append(fieldname.to_binary())
         if self.ExtensionObject: 
             packet.append(struct.pack('<i', len(self.ExtensionObject)))
-            for i in self.ExtensionObject:
-                packet.append(self.ExtensionObject.to_binary())
+            for fieldname in self.ExtensionObject:
+                packet.append(fieldname.to_binary())
         if self.DataValue: 
             packet.append(struct.pack('<i', len(self.DataValue)))
-            for i in self.DataValue:
-                packet.append(self.DataValue.to_binary())
+            for fieldname in self.DataValue:
+                packet.append(fieldname.to_binary())
         if self.Variant: 
             packet.append(struct.pack('<i', len(self.Variant)))
-            for i in self.Variant:
-                packet.append(self.Variant.to_binary())
+            for fieldname in self.Variant:
+                packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -905,7 +889,7 @@ class Variant(object):
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     fmt = '<?'
                     fmt_size = 1
@@ -913,7 +897,7 @@ class Variant(object):
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     fmt = '<B'
                     fmt_size = 1
@@ -921,7 +905,7 @@ class Variant(object):
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     fmt = '<B'
                     fmt_size = 1
@@ -929,7 +913,7 @@ class Variant(object):
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     fmt = '<h'
                     fmt_size = 2
@@ -937,7 +921,7 @@ class Variant(object):
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     fmt = '<H'
                     fmt_size = 2
@@ -945,7 +929,7 @@ class Variant(object):
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     fmt = '<i'
                     fmt_size = 4
@@ -953,7 +937,7 @@ class Variant(object):
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     fmt = '<I'
                     fmt_size = 4
@@ -961,7 +945,7 @@ class Variant(object):
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     fmt = '<q'
                     fmt_size = 8
@@ -969,7 +953,7 @@ class Variant(object):
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     fmt = '<Q'
                     fmt_size = 8
@@ -977,7 +961,7 @@ class Variant(object):
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     fmt = '<f'
                     fmt_size = 4
@@ -985,7 +969,7 @@ class Variant(object):
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     fmt = '<d'
                     fmt_size = 8
@@ -993,86 +977,85 @@ class Variant(object):
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
-                    slength = struct.unpack('<i', data.red(1))
-                    obj.String = struct.unpack('<{}s'.format(slength), data.read(slength))
+                    obj.String = unpack_string(data)
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     obj.DateTime = DateTime.from_binary(data)
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     obj.Guid = Guid.from_binary(data)
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
-                    obj.ByteString = ByteString.from_binary(data)
+                    obj.ByteString = unpack_bytes(data)
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     obj.XmlElement = XmlElement.from_binary(data)
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     obj.NodeId = NodeId.from_binary(data)
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     obj.ExpandedNodeId = ExpandedNodeId.from_binary(data)
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     obj.StatusCode = StatusCode.from_binary(data)
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     obj.DiagnosticInfo = DiagnosticInfo.from_binary(data)
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     obj.QualifiedName = QualifiedName.from_binary(data)
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     obj.LocalizedText = LocalizedText.from_binary(data)
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     obj.ExtensionObject = ExtensionObject.from_binary(data)
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     obj.DataValue = DataValue.from_binary(data)
         val = obj.Encoding & 0b01111111
         if val == 0:
             length = struct.unpack('<i', data.read(4))[0]
-            if length <= -1:
+            if length != -1:
                 for i in range(0, length):
                     obj.Variant = Variant.from_binary(data)
         return obj
@@ -1132,8 +1115,8 @@ class Node(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.UserWriteMask))
         packet.append(struct.pack('<i', len(self.References)))
-        for i in self.References:
-            packet.append(self.References.to_binary())
+        for fieldname in self.References:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -1153,7 +1136,7 @@ class Node(object):
         fmt_size = 4
         obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.References = ReferenceNode.from_binary(data)
         return obj
@@ -1194,8 +1177,8 @@ class InstanceNode(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.UserWriteMask))
         packet.append(struct.pack('<i', len(self.References)))
-        for i in self.References:
-            packet.append(self.References.to_binary())
+        for fieldname in self.References:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -1215,7 +1198,7 @@ class InstanceNode(object):
         fmt_size = 4
         obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.References = ReferenceNode.from_binary(data)
         return obj
@@ -1256,8 +1239,8 @@ class TypeNode(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.UserWriteMask))
         packet.append(struct.pack('<i', len(self.References)))
-        for i in self.References:
-            packet.append(self.References.to_binary())
+        for fieldname in self.References:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -1277,7 +1260,7 @@ class TypeNode(object):
         fmt_size = 4
         obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.References = ReferenceNode.from_binary(data)
         return obj
@@ -1319,8 +1302,8 @@ class ObjectNode(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.UserWriteMask))
         packet.append(struct.pack('<i', len(self.References)))
-        for i in self.References:
-            packet.append(self.References.to_binary())
+        for fieldname in self.References:
+            packet.append(fieldname.to_binary())
         fmt = '<B'
         packet.append(struct.pack(fmt, self.EventNotifier))
         return b''.join(packet)
@@ -1342,7 +1325,7 @@ class ObjectNode(object):
         fmt_size = 4
         obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.References = ReferenceNode.from_binary(data)
         fmt = '<B'
@@ -1388,8 +1371,8 @@ class ObjectTypeNode(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.UserWriteMask))
         packet.append(struct.pack('<i', len(self.References)))
-        for i in self.References:
-            packet.append(self.References.to_binary())
+        for fieldname in self.References:
+            packet.append(fieldname.to_binary())
         fmt = '<?'
         packet.append(struct.pack(fmt, self.IsAbstract))
         return b''.join(packet)
@@ -1411,7 +1394,7 @@ class ObjectTypeNode(object):
         fmt_size = 4
         obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.References = ReferenceNode.from_binary(data)
         fmt = '<?'
@@ -1464,16 +1447,16 @@ class VariableNode(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.UserWriteMask))
         packet.append(struct.pack('<i', len(self.References)))
-        for i in self.References:
-            packet.append(self.References.to_binary())
+        for fieldname in self.References:
+            packet.append(fieldname.to_binary())
         packet.append(self.Value.to_binary())
         packet.append(self.DataType.to_binary())
         fmt = '<i'
         packet.append(struct.pack(fmt, self.ValueRank))
         packet.append(struct.pack('<i', len(self.ArrayDimensions)))
-        for i in self.ArrayDimensions:
+        for fieldname in self.ArrayDimensions:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.ArrayDimensions))
+            packet.append(struct.pack(fmt, fieldname))
         fmt = '<B'
         packet.append(struct.pack(fmt, self.AccessLevel))
         fmt = '<B'
@@ -1501,7 +1484,7 @@ class VariableNode(object):
         fmt_size = 4
         obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.References = ReferenceNode.from_binary(data)
         obj.Value = Variant.from_binary(data)
@@ -1510,7 +1493,7 @@ class VariableNode(object):
         fmt_size = 4
         obj.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
@@ -1578,16 +1561,16 @@ class VariableTypeNode(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.UserWriteMask))
         packet.append(struct.pack('<i', len(self.References)))
-        for i in self.References:
-            packet.append(self.References.to_binary())
+        for fieldname in self.References:
+            packet.append(fieldname.to_binary())
         packet.append(self.Value.to_binary())
         packet.append(self.DataType.to_binary())
         fmt = '<i'
         packet.append(struct.pack(fmt, self.ValueRank))
         packet.append(struct.pack('<i', len(self.ArrayDimensions)))
-        for i in self.ArrayDimensions:
+        for fieldname in self.ArrayDimensions:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.ArrayDimensions))
+            packet.append(struct.pack(fmt, fieldname))
         fmt = '<?'
         packet.append(struct.pack(fmt, self.IsAbstract))
         return b''.join(packet)
@@ -1609,7 +1592,7 @@ class VariableTypeNode(object):
         fmt_size = 4
         obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.References = ReferenceNode.from_binary(data)
         obj.Value = Variant.from_binary(data)
@@ -1618,7 +1601,7 @@ class VariableTypeNode(object):
         fmt_size = 4
         obj.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
@@ -1672,8 +1655,8 @@ class ReferenceTypeNode(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.UserWriteMask))
         packet.append(struct.pack('<i', len(self.References)))
-        for i in self.References:
-            packet.append(self.References.to_binary())
+        for fieldname in self.References:
+            packet.append(fieldname.to_binary())
         fmt = '<?'
         packet.append(struct.pack(fmt, self.IsAbstract))
         fmt = '<?'
@@ -1698,7 +1681,7 @@ class ReferenceTypeNode(object):
         fmt_size = 4
         obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.References = ReferenceNode.from_binary(data)
         fmt = '<?'
@@ -1751,8 +1734,8 @@ class MethodNode(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.UserWriteMask))
         packet.append(struct.pack('<i', len(self.References)))
-        for i in self.References:
-            packet.append(self.References.to_binary())
+        for fieldname in self.References:
+            packet.append(fieldname.to_binary())
         fmt = '<?'
         packet.append(struct.pack(fmt, self.Executable))
         fmt = '<?'
@@ -1776,7 +1759,7 @@ class MethodNode(object):
         fmt_size = 4
         obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.References = ReferenceNode.from_binary(data)
         fmt = '<?'
@@ -1827,8 +1810,8 @@ class ViewNode(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.UserWriteMask))
         packet.append(struct.pack('<i', len(self.References)))
-        for i in self.References:
-            packet.append(self.References.to_binary())
+        for fieldname in self.References:
+            packet.append(fieldname.to_binary())
         fmt = '<?'
         packet.append(struct.pack(fmt, self.ContainsNoLoops))
         fmt = '<B'
@@ -1852,7 +1835,7 @@ class ViewNode(object):
         fmt_size = 4
         obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.References = ReferenceNode.from_binary(data)
         fmt = '<?'
@@ -1902,8 +1885,8 @@ class DataTypeNode(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.UserWriteMask))
         packet.append(struct.pack('<i', len(self.References)))
-        for i in self.References:
-            packet.append(self.References.to_binary())
+        for fieldname in self.References:
+            packet.append(fieldname.to_binary())
         fmt = '<?'
         packet.append(struct.pack(fmt, self.IsAbstract))
         return b''.join(packet)
@@ -1925,7 +1908,7 @@ class DataTypeNode(object):
         fmt_size = 4
         obj.UserWriteMask = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.References = ReferenceNode.from_binary(data)
         fmt = '<?'
@@ -1987,29 +1970,27 @@ class Argument(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.Name)))
-        packet.append(struct.pack('<{}s'.format(len(self.Name)), self.Name.encode()))
+        packet.append(pack_string(self.Name))
         packet.append(self.DataType.to_binary())
         fmt = '<i'
         packet.append(struct.pack(fmt, self.ValueRank))
         packet.append(struct.pack('<i', len(self.ArrayDimensions)))
-        for i in self.ArrayDimensions:
+        for fieldname in self.ArrayDimensions:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.ArrayDimensions))
+            packet.append(struct.pack(fmt, fieldname))
         packet.append(self.Description.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = Argument()
-        slength = struct.unpack('<i', data.red(1))
-        obj.Name = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.Name = unpack_string(data)
         obj.DataType = NodeId.from_binary(data)
         fmt = '<i'
         fmt_size = 4
         obj.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
@@ -2099,43 +2080,33 @@ class ApplicationDescription(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.ApplicationUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.ApplicationUri)), self.ApplicationUri.encode()))
-        packet.append(struct.pack('<i', len(self.ProductUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.ProductUri)), self.ProductUri.encode()))
+        packet.append(pack_string(self.ApplicationUri))
+        packet.append(pack_string(self.ProductUri))
         packet.append(self.ApplicationName.to_binary())
         fmt = '<I'
         packet.append(struct.pack(fmt, self.ApplicationType))
-        packet.append(struct.pack('<i', len(self.GatewayServerUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.GatewayServerUri)), self.GatewayServerUri.encode()))
-        packet.append(struct.pack('<i', len(self.DiscoveryProfileUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.DiscoveryProfileUri)), self.DiscoveryProfileUri.encode()))
+        packet.append(pack_string(self.GatewayServerUri))
+        packet.append(pack_string(self.DiscoveryProfileUri))
         packet.append(struct.pack('<i', len(self.DiscoveryUrls)))
-        for i in self.DiscoveryUrls:
-            packet.append(struct.pack('<i', len(self.DiscoveryUrls)))
-            packet.append(struct.pack('<{}s'.format(len(self.DiscoveryUrls)), self.DiscoveryUrls.encode()))
+        for fieldname in self.DiscoveryUrls:
+            packet.append(pack_string(fieldname))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ApplicationDescription()
-        slength = struct.unpack('<i', data.red(1))
-        obj.ApplicationUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.ProductUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.ApplicationUri = unpack_string(data)
+        obj.ProductUri = unpack_string(data)
         obj.ApplicationName = LocalizedText.from_binary(data)
         fmt = '<I'
         fmt_size = 4
         obj.ApplicationType = struct.unpack(fmt, data.read(fmt_size))[0]
-        slength = struct.unpack('<i', data.red(1))
-        obj.GatewayServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.DiscoveryProfileUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.GatewayServerUri = unpack_string(data)
+        obj.DiscoveryProfileUri = unpack_string(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                slength = struct.unpack('<i', data.red(1))
-                obj.DiscoveryUrls = struct.unpack('<{}s'.format(slength), data.read(slength))
+                obj.DiscoveryUrls = unpack_string(data)
         return obj
     
     def __str__(self):
@@ -2167,8 +2138,7 @@ class RequestHeader(object):
         packet.append(struct.pack(fmt, self.RequestHandle))
         fmt = '<I'
         packet.append(struct.pack(fmt, self.ReturnDiagnostics))
-        packet.append(struct.pack('<i', len(self.AuditEntryId)))
-        packet.append(struct.pack('<{}s'.format(len(self.AuditEntryId)), self.AuditEntryId.encode()))
+        packet.append(pack_string(self.AuditEntryId))
         fmt = '<I'
         packet.append(struct.pack(fmt, self.TimeoutHint))
         packet.append(self.AdditionalHeader.to_binary())
@@ -2185,8 +2155,7 @@ class RequestHeader(object):
         fmt = '<I'
         fmt_size = 4
         obj.ReturnDiagnostics = struct.unpack(fmt, data.read(fmt_size))[0]
-        slength = struct.unpack('<i', data.red(1))
-        obj.AuditEntryId = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.AuditEntryId = unpack_string(data)
         fmt = '<I'
         fmt_size = 4
         obj.TimeoutHint = struct.unpack(fmt, data.read(fmt_size))[0]
@@ -2221,9 +2190,8 @@ class ResponseHeader(object):
         packet.append(self.ServiceResult.to_binary())
         packet.append(self.ServiceDiagnostics.to_binary())
         packet.append(struct.pack('<i', len(self.StringTable)))
-        for i in self.StringTable:
-            packet.append(struct.pack('<i', len(self.StringTable)))
-            packet.append(struct.pack('<{}s'.format(len(self.StringTable)), self.StringTable.encode()))
+        for fieldname in self.StringTable:
+            packet.append(pack_string(fieldname))
         packet.append(self.AdditionalHeader.to_binary())
         return b''.join(packet)
         
@@ -2237,10 +2205,9 @@ class ResponseHeader(object):
         obj.ServiceResult = StatusCode.from_binary(data)
         obj.ServiceDiagnostics = DiagnosticInfo.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                slength = struct.unpack('<i', data.red(1))
-                obj.StringTable = struct.unpack('<{}s'.format(slength), data.read(slength))
+                obj.StringTable = unpack_string(data)
         obj.AdditionalHeader = ExtensionObject.from_binary(data)
         return obj
     
@@ -2282,33 +2249,27 @@ class FindServersParameters(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.EndpointUrl)))
-        packet.append(struct.pack('<{}s'.format(len(self.EndpointUrl)), self.EndpointUrl.encode()))
+        packet.append(pack_string(self.EndpointUrl))
         packet.append(struct.pack('<i', len(self.LocaleIds)))
-        for i in self.LocaleIds:
-            packet.append(struct.pack('<i', len(self.LocaleIds)))
-            packet.append(struct.pack('<{}s'.format(len(self.LocaleIds)), self.LocaleIds.encode()))
+        for fieldname in self.LocaleIds:
+            packet.append(pack_string(fieldname))
         packet.append(struct.pack('<i', len(self.ServerUris)))
-        for i in self.ServerUris:
-            packet.append(struct.pack('<i', len(self.ServerUris)))
-            packet.append(struct.pack('<{}s'.format(len(self.ServerUris)), self.ServerUris.encode()))
+        for fieldname in self.ServerUris:
+            packet.append(pack_string(fieldname))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = FindServersParameters()
-        slength = struct.unpack('<i', data.red(1))
-        obj.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.EndpointUrl = unpack_string(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                slength = struct.unpack('<i', data.red(1))
-                obj.LocaleIds = struct.unpack('<{}s'.format(slength), data.read(slength))
+                obj.LocaleIds = unpack_string(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                slength = struct.unpack('<i', data.red(1))
-                obj.ServerUris = struct.unpack('<{}s'.format(slength), data.read(slength))
+                obj.ServerUris = unpack_string(data)
         return obj
     
     def __str__(self):
@@ -2353,15 +2314,15 @@ class FindServersResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Servers)))
-        for i in self.Servers:
-            packet.append(self.Servers.to_binary())
+        for fieldname in self.Servers:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = FindServersResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Servers = ApplicationDescription.from_binary(data)
         return obj
@@ -2409,32 +2370,24 @@ class UserTokenPolicy(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.PolicyId)))
-        packet.append(struct.pack('<{}s'.format(len(self.PolicyId)), self.PolicyId.encode()))
+        packet.append(pack_string(self.PolicyId))
         fmt = '<I'
         packet.append(struct.pack(fmt, self.TokenType))
-        packet.append(struct.pack('<i', len(self.IssuedTokenType)))
-        packet.append(struct.pack('<{}s'.format(len(self.IssuedTokenType)), self.IssuedTokenType.encode()))
-        packet.append(struct.pack('<i', len(self.IssuerEndpointUrl)))
-        packet.append(struct.pack('<{}s'.format(len(self.IssuerEndpointUrl)), self.IssuerEndpointUrl.encode()))
-        packet.append(struct.pack('<i', len(self.SecurityPolicyUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.SecurityPolicyUri)), self.SecurityPolicyUri.encode()))
+        packet.append(pack_string(self.IssuedTokenType))
+        packet.append(pack_string(self.IssuerEndpointUrl))
+        packet.append(pack_string(self.SecurityPolicyUri))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = UserTokenPolicy()
-        slength = struct.unpack('<i', data.red(1))
-        obj.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.PolicyId = unpack_string(data)
         fmt = '<I'
         fmt_size = 4
         obj.TokenType = struct.unpack(fmt, data.read(fmt_size))[0]
-        slength = struct.unpack('<i', data.red(1))
-        obj.IssuedTokenType = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.IssuerEndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.SecurityPolicyUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.IssuedTokenType = unpack_string(data)
+        obj.IssuerEndpointUrl = unpack_string(data)
+        obj.SecurityPolicyUri = unpack_string(data)
         return obj
     
     def __str__(self):
@@ -2450,7 +2403,7 @@ class EndpointDescription(object):
     def __init__(self):
         self.EndpointUrl = ''
         self.Server = ApplicationDescription()
-        self.ServerCertificate = ByteString()
+        self.ServerCertificate = b''
         self.SecurityMode = 0
         self.SecurityPolicyUri = ''
         self.UserIdentityTokens = []
@@ -2459,19 +2412,16 @@ class EndpointDescription(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.EndpointUrl)))
-        packet.append(struct.pack('<{}s'.format(len(self.EndpointUrl)), self.EndpointUrl.encode()))
+        packet.append(pack_string(self.EndpointUrl))
         packet.append(self.Server.to_binary())
-        packet.append(self.ServerCertificate.to_binary())
+        packet.append(pack_bytes(self.ServerCertificate))
         fmt = '<I'
         packet.append(struct.pack(fmt, self.SecurityMode))
-        packet.append(struct.pack('<i', len(self.SecurityPolicyUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.SecurityPolicyUri)), self.SecurityPolicyUri.encode()))
+        packet.append(pack_string(self.SecurityPolicyUri))
         packet.append(struct.pack('<i', len(self.UserIdentityTokens)))
-        for i in self.UserIdentityTokens:
-            packet.append(self.UserIdentityTokens.to_binary())
-        packet.append(struct.pack('<i', len(self.TransportProfileUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.TransportProfileUri)), self.TransportProfileUri.encode()))
+        for fieldname in self.UserIdentityTokens:
+            packet.append(fieldname.to_binary())
+        packet.append(pack_string(self.TransportProfileUri))
         fmt = '<B'
         packet.append(struct.pack(fmt, self.SecurityLevel))
         return b''.join(packet)
@@ -2479,21 +2429,18 @@ class EndpointDescription(object):
     @staticmethod
     def from_binary(data):
         obj = EndpointDescription()
-        slength = struct.unpack('<i', data.red(1))
-        obj.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.EndpointUrl = unpack_string(data)
         obj.Server = ApplicationDescription.from_binary(data)
-        obj.ServerCertificate = ByteString.from_binary(data)
+        obj.ServerCertificate = unpack_bytes(data)
         fmt = '<I'
         fmt_size = 4
         obj.SecurityMode = struct.unpack(fmt, data.read(fmt_size))[0]
-        slength = struct.unpack('<i', data.red(1))
-        obj.SecurityPolicyUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.SecurityPolicyUri = unpack_string(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.UserIdentityTokens = UserTokenPolicy.from_binary(data)
-        slength = struct.unpack('<i', data.red(1))
-        obj.TransportProfileUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.TransportProfileUri = unpack_string(data)
         fmt = '<B'
         fmt_size = 1
         obj.SecurityLevel = struct.unpack(fmt, data.read(fmt_size))[0]
@@ -2519,33 +2466,27 @@ class GetEndpointsParameters(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.EndpointUrl)))
-        packet.append(struct.pack('<{}s'.format(len(self.EndpointUrl)), self.EndpointUrl.encode()))
+        packet.append(pack_string(self.EndpointUrl))
         packet.append(struct.pack('<i', len(self.LocaleIds)))
-        for i in self.LocaleIds:
-            packet.append(struct.pack('<i', len(self.LocaleIds)))
-            packet.append(struct.pack('<{}s'.format(len(self.LocaleIds)), self.LocaleIds.encode()))
+        for fieldname in self.LocaleIds:
+            packet.append(pack_string(fieldname))
         packet.append(struct.pack('<i', len(self.ProfileUris)))
-        for i in self.ProfileUris:
-            packet.append(struct.pack('<i', len(self.ProfileUris)))
-            packet.append(struct.pack('<{}s'.format(len(self.ProfileUris)), self.ProfileUris.encode()))
+        for fieldname in self.ProfileUris:
+            packet.append(pack_string(fieldname))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = GetEndpointsParameters()
-        slength = struct.unpack('<i', data.red(1))
-        obj.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.EndpointUrl = unpack_string(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                slength = struct.unpack('<i', data.red(1))
-                obj.LocaleIds = struct.unpack('<{}s'.format(slength), data.read(slength))
+                obj.LocaleIds = unpack_string(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                slength = struct.unpack('<i', data.red(1))
-                obj.ProfileUris = struct.unpack('<{}s'.format(slength), data.read(slength))
+                obj.ProfileUris = unpack_string(data)
         return obj
     
     def __str__(self):
@@ -2594,8 +2535,8 @@ class GetEndpointsResponse(object):
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.Endpoints)))
-        for i in self.Endpoints:
-            packet.append(self.Endpoints.to_binary())
+        for fieldname in self.Endpoints:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -2604,7 +2545,7 @@ class GetEndpointsResponse(object):
         obj.TypeId = NodeId.from_binary(data)
         obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Endpoints = EndpointDescription.from_binary(data)
         return obj
@@ -2629,23 +2570,18 @@ class RegisteredServer(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.ServerUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.ServerUri)), self.ServerUri.encode()))
-        packet.append(struct.pack('<i', len(self.ProductUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.ProductUri)), self.ProductUri.encode()))
+        packet.append(pack_string(self.ServerUri))
+        packet.append(pack_string(self.ProductUri))
         packet.append(struct.pack('<i', len(self.ServerNames)))
-        for i in self.ServerNames:
-            packet.append(self.ServerNames.to_binary())
+        for fieldname in self.ServerNames:
+            packet.append(fieldname.to_binary())
         fmt = '<I'
         packet.append(struct.pack(fmt, self.ServerType))
-        packet.append(struct.pack('<i', len(self.GatewayServerUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.GatewayServerUri)), self.GatewayServerUri.encode()))
+        packet.append(pack_string(self.GatewayServerUri))
         packet.append(struct.pack('<i', len(self.DiscoveryUrls)))
-        for i in self.DiscoveryUrls:
-            packet.append(struct.pack('<i', len(self.DiscoveryUrls)))
-            packet.append(struct.pack('<{}s'.format(len(self.DiscoveryUrls)), self.DiscoveryUrls.encode()))
-        packet.append(struct.pack('<i', len(self.SemaphoreFilePath)))
-        packet.append(struct.pack('<{}s'.format(len(self.SemaphoreFilePath)), self.SemaphoreFilePath.encode()))
+        for fieldname in self.DiscoveryUrls:
+            packet.append(pack_string(fieldname))
+        packet.append(pack_string(self.SemaphoreFilePath))
         fmt = '<?'
         packet.append(struct.pack(fmt, self.IsOnline))
         return b''.join(packet)
@@ -2653,26 +2589,21 @@ class RegisteredServer(object):
     @staticmethod
     def from_binary(data):
         obj = RegisteredServer()
-        slength = struct.unpack('<i', data.red(1))
-        obj.ServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.ProductUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.ServerUri = unpack_string(data)
+        obj.ProductUri = unpack_string(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ServerNames = LocalizedText.from_binary(data)
         fmt = '<I'
         fmt_size = 4
         obj.ServerType = struct.unpack(fmt, data.read(fmt_size))[0]
-        slength = struct.unpack('<i', data.red(1))
-        obj.GatewayServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.GatewayServerUri = unpack_string(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                slength = struct.unpack('<i', data.red(1))
-                obj.DiscoveryUrls = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.SemaphoreFilePath = struct.unpack('<{}s'.format(slength), data.read(slength))
+                obj.DiscoveryUrls = unpack_string(data)
+        obj.SemaphoreFilePath = unpack_string(data)
         fmt = '<?'
         fmt_size = 1
         obj.IsOnline = struct.unpack(fmt, data.read(fmt_size))[0]
@@ -2808,7 +2739,7 @@ class OpenSecureChannelParameters(object):
         self.ClientProtocolVersion = 0
         self.RequestType = 0
         self.SecurityMode = 0
-        self.ClientNonce = ByteString()
+        self.ClientNonce = b''
         self.RequestedLifetime = 0
     
     def to_binary(self):
@@ -2819,7 +2750,7 @@ class OpenSecureChannelParameters(object):
         packet.append(struct.pack(fmt, self.RequestType))
         fmt = '<I'
         packet.append(struct.pack(fmt, self.SecurityMode))
-        packet.append(self.ClientNonce.to_binary())
+        packet.append(pack_bytes(self.ClientNonce))
         fmt = '<I'
         packet.append(struct.pack(fmt, self.RequestedLifetime))
         return b''.join(packet)
@@ -2836,7 +2767,7 @@ class OpenSecureChannelParameters(object):
         fmt = '<I'
         fmt_size = 4
         obj.SecurityMode = struct.unpack(fmt, data.read(fmt_size))[0]
-        obj.ClientNonce = ByteString.from_binary(data)
+        obj.ClientNonce = unpack_bytes(data)
         fmt = '<I'
         fmt_size = 4
         obj.RequestedLifetime = struct.unpack(fmt, data.read(fmt_size))[0]
@@ -2883,14 +2814,14 @@ class OpenSecureChannelResult(object):
     def __init__(self):
         self.ServerProtocolVersion = 0
         self.SecurityToken = ChannelSecurityToken()
-        self.ServerNonce = ByteString()
+        self.ServerNonce = b''
     
     def to_binary(self):
         packet = []
         fmt = '<I'
         packet.append(struct.pack(fmt, self.ServerProtocolVersion))
         packet.append(self.SecurityToken.to_binary())
-        packet.append(self.ServerNonce.to_binary())
+        packet.append(pack_bytes(self.ServerNonce))
         return b''.join(packet)
         
     @staticmethod
@@ -2900,7 +2831,7 @@ class OpenSecureChannelResult(object):
         fmt_size = 4
         obj.ServerProtocolVersion = struct.unpack(fmt, data.read(fmt_size))[0]
         obj.SecurityToken = ChannelSecurityToken.from_binary(data)
-        obj.ServerNonce = ByteString.from_binary(data)
+        obj.ServerNonce = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -2928,7 +2859,6 @@ class OpenSecureChannelResponse(object):
         obj = OpenSecureChannelResponse()
         obj.TypeId = NodeId.from_binary(data)
         obj.ResponseHeader = ResponseHeader.from_binary(data)
-        print(obj.ResponseHeader)
         obj.Parameters = OpenSecureChannelResult.from_binary(data)
         return obj
     
@@ -2989,20 +2919,20 @@ class CloseSecureChannelResponse(object):
     
 class SignedSoftwareCertificate(object):
     def __init__(self):
-        self.CertificateData = ByteString()
-        self.Signature = ByteString()
+        self.CertificateData = b''
+        self.Signature = b''
     
     def to_binary(self):
         packet = []
-        packet.append(self.CertificateData.to_binary())
-        packet.append(self.Signature.to_binary())
+        packet.append(pack_bytes(self.CertificateData))
+        packet.append(pack_bytes(self.Signature))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = SignedSoftwareCertificate()
-        obj.CertificateData = ByteString.from_binary(data)
-        obj.Signature = ByteString.from_binary(data)
+        obj.CertificateData = unpack_bytes(data)
+        obj.Signature = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -3014,21 +2944,19 @@ class SignedSoftwareCertificate(object):
 class SignatureData(object):
     def __init__(self):
         self.Algorithm = ''
-        self.Signature = ByteString()
+        self.Signature = b''
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.Algorithm)))
-        packet.append(struct.pack('<{}s'.format(len(self.Algorithm)), self.Algorithm.encode()))
-        packet.append(self.Signature.to_binary())
+        packet.append(pack_string(self.Algorithm))
+        packet.append(pack_bytes(self.Signature))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = SignatureData()
-        slength = struct.unpack('<i', data.red(1))
-        obj.Algorithm = struct.unpack('<{}s'.format(slength), data.read(slength))
-        obj.Signature = ByteString.from_binary(data)
+        obj.Algorithm = unpack_string(data)
+        obj.Signature = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -3043,22 +2971,19 @@ class CreateSessionParameters(object):
         self.ServerUri = ''
         self.EndpointUrl = ''
         self.SessionName = ''
-        self.ClientNonce = ByteString()
-        self.ClientCertificate = ByteString()
+        self.ClientNonce = b''
+        self.ClientCertificate = b''
         self.RequestedSessionTimeout = 0
         self.MaxResponseMessageSize = 0
     
     def to_binary(self):
         packet = []
         packet.append(self.ClientDescription.to_binary())
-        packet.append(struct.pack('<i', len(self.ServerUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.ServerUri)), self.ServerUri.encode()))
-        packet.append(struct.pack('<i', len(self.EndpointUrl)))
-        packet.append(struct.pack('<{}s'.format(len(self.EndpointUrl)), self.EndpointUrl.encode()))
-        packet.append(struct.pack('<i', len(self.SessionName)))
-        packet.append(struct.pack('<{}s'.format(len(self.SessionName)), self.SessionName.encode()))
-        packet.append(self.ClientNonce.to_binary())
-        packet.append(self.ClientCertificate.to_binary())
+        packet.append(pack_string(self.ServerUri))
+        packet.append(pack_string(self.EndpointUrl))
+        packet.append(pack_string(self.SessionName))
+        packet.append(pack_bytes(self.ClientNonce))
+        packet.append(pack_bytes(self.ClientCertificate))
         fmt = '<d'
         packet.append(struct.pack(fmt, self.RequestedSessionTimeout))
         fmt = '<I'
@@ -3069,14 +2994,11 @@ class CreateSessionParameters(object):
     def from_binary(data):
         obj = CreateSessionParameters()
         obj.ClientDescription = ApplicationDescription.from_binary(data)
-        slength = struct.unpack('<i', data.red(1))
-        obj.ServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.SessionName = struct.unpack('<{}s'.format(slength), data.read(slength))
-        obj.ClientNonce = ByteString.from_binary(data)
-        obj.ClientCertificate = ByteString.from_binary(data)
+        obj.ServerUri = unpack_string(data)
+        obj.EndpointUrl = unpack_string(data)
+        obj.SessionName = unpack_string(data)
+        obj.ClientNonce = unpack_bytes(data)
+        obj.ClientCertificate = unpack_bytes(data)
         fmt = '<d'
         fmt_size = 8
         obj.RequestedSessionTimeout = struct.unpack(fmt, data.read(fmt_size))[0]
@@ -3130,8 +3052,8 @@ class CreateSessionResult(object):
         self.SessionId = NodeId()
         self.AuthenticationToken = NodeId()
         self.RevisedSessionTimeout = 0
-        self.ServerNonce = ByteString()
-        self.ServerCertificate = ByteString()
+        self.ServerNonce = b''
+        self.ServerCertificate = b''
         self.ServerEndpoints = []
         self.ServerSoftwareCertificates = []
         self.ServerSignature = SignatureData()
@@ -3143,14 +3065,14 @@ class CreateSessionResult(object):
         packet.append(self.AuthenticationToken.to_binary())
         fmt = '<d'
         packet.append(struct.pack(fmt, self.RevisedSessionTimeout))
-        packet.append(self.ServerNonce.to_binary())
-        packet.append(self.ServerCertificate.to_binary())
+        packet.append(pack_bytes(self.ServerNonce))
+        packet.append(pack_bytes(self.ServerCertificate))
         packet.append(struct.pack('<i', len(self.ServerEndpoints)))
-        for i in self.ServerEndpoints:
-            packet.append(self.ServerEndpoints.to_binary())
+        for fieldname in self.ServerEndpoints:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.ServerSoftwareCertificates)))
-        for i in self.ServerSoftwareCertificates:
-            packet.append(self.ServerSoftwareCertificates.to_binary())
+        for fieldname in self.ServerSoftwareCertificates:
+            packet.append(fieldname.to_binary())
         packet.append(self.ServerSignature.to_binary())
         fmt = '<I'
         packet.append(struct.pack(fmt, self.MaxRequestMessageSize))
@@ -3164,14 +3086,14 @@ class CreateSessionResult(object):
         fmt = '<d'
         fmt_size = 8
         obj.RevisedSessionTimeout = struct.unpack(fmt, data.read(fmt_size))[0]
-        obj.ServerNonce = ByteString.from_binary(data)
-        obj.ServerCertificate = ByteString.from_binary(data)
+        obj.ServerNonce = unpack_bytes(data)
+        obj.ServerCertificate = unpack_bytes(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ServerEndpoints = EndpointDescription.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ServerSoftwareCertificates = SignedSoftwareCertificate.from_binary(data)
         obj.ServerSignature = SignatureData.from_binary(data)
@@ -3227,15 +3149,13 @@ class UserIdentityToken(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.PolicyId)))
-        packet.append(struct.pack('<{}s'.format(len(self.PolicyId)), self.PolicyId.encode()))
+        packet.append(pack_string(self.PolicyId))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = UserIdentityToken()
-        slength = struct.unpack('<i', data.red(1))
-        obj.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.PolicyId = unpack_string(data)
         return obj
     
     def __str__(self):
@@ -3249,15 +3169,13 @@ class AnonymousIdentityToken(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.PolicyId)))
-        packet.append(struct.pack('<{}s'.format(len(self.PolicyId)), self.PolicyId.encode()))
+        packet.append(pack_string(self.PolicyId))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = AnonymousIdentityToken()
-        slength = struct.unpack('<i', data.red(1))
-        obj.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.PolicyId = unpack_string(data)
         return obj
     
     def __str__(self):
@@ -3269,30 +3187,24 @@ class UserNameIdentityToken(object):
     def __init__(self):
         self.PolicyId = ''
         self.UserName = ''
-        self.Password = ByteString()
+        self.Password = b''
         self.EncryptionAlgorithm = ''
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.PolicyId)))
-        packet.append(struct.pack('<{}s'.format(len(self.PolicyId)), self.PolicyId.encode()))
-        packet.append(struct.pack('<i', len(self.UserName)))
-        packet.append(struct.pack('<{}s'.format(len(self.UserName)), self.UserName.encode()))
-        packet.append(self.Password.to_binary())
-        packet.append(struct.pack('<i', len(self.EncryptionAlgorithm)))
-        packet.append(struct.pack('<{}s'.format(len(self.EncryptionAlgorithm)), self.EncryptionAlgorithm.encode()))
+        packet.append(pack_string(self.PolicyId))
+        packet.append(pack_string(self.UserName))
+        packet.append(pack_bytes(self.Password))
+        packet.append(pack_string(self.EncryptionAlgorithm))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = UserNameIdentityToken()
-        slength = struct.unpack('<i', data.red(1))
-        obj.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.UserName = struct.unpack('<{}s'.format(slength), data.read(slength))
-        obj.Password = ByteString.from_binary(data)
-        slength = struct.unpack('<i', data.red(1))
-        obj.EncryptionAlgorithm = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.PolicyId = unpack_string(data)
+        obj.UserName = unpack_string(data)
+        obj.Password = unpack_bytes(data)
+        obj.EncryptionAlgorithm = unpack_string(data)
         return obj
     
     def __str__(self):
@@ -3306,21 +3218,19 @@ class UserNameIdentityToken(object):
 class X509IdentityToken(object):
     def __init__(self):
         self.PolicyId = ''
-        self.CertificateData = ByteString()
+        self.CertificateData = b''
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.PolicyId)))
-        packet.append(struct.pack('<{}s'.format(len(self.PolicyId)), self.PolicyId.encode()))
-        packet.append(self.CertificateData.to_binary())
+        packet.append(pack_string(self.PolicyId))
+        packet.append(pack_bytes(self.CertificateData))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = X509IdentityToken()
-        slength = struct.unpack('<i', data.red(1))
-        obj.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
-        obj.CertificateData = ByteString.from_binary(data)
+        obj.PolicyId = unpack_string(data)
+        obj.CertificateData = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -3332,26 +3242,22 @@ class X509IdentityToken(object):
 class IssuedIdentityToken(object):
     def __init__(self):
         self.PolicyId = ''
-        self.TokenData = ByteString()
+        self.TokenData = b''
         self.EncryptionAlgorithm = ''
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.PolicyId)))
-        packet.append(struct.pack('<{}s'.format(len(self.PolicyId)), self.PolicyId.encode()))
-        packet.append(self.TokenData.to_binary())
-        packet.append(struct.pack('<i', len(self.EncryptionAlgorithm)))
-        packet.append(struct.pack('<{}s'.format(len(self.EncryptionAlgorithm)), self.EncryptionAlgorithm.encode()))
+        packet.append(pack_string(self.PolicyId))
+        packet.append(pack_bytes(self.TokenData))
+        packet.append(pack_string(self.EncryptionAlgorithm))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = IssuedIdentityToken()
-        slength = struct.unpack('<i', data.red(1))
-        obj.PolicyId = struct.unpack('<{}s'.format(slength), data.read(slength))
-        obj.TokenData = ByteString.from_binary(data)
-        slength = struct.unpack('<i', data.red(1))
-        obj.EncryptionAlgorithm = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.PolicyId = unpack_string(data)
+        obj.TokenData = unpack_bytes(data)
+        obj.EncryptionAlgorithm = unpack_string(data)
         return obj
     
     def __str__(self):
@@ -3373,12 +3279,11 @@ class ActivateSessionParameters(object):
         packet = []
         packet.append(self.ClientSignature.to_binary())
         packet.append(struct.pack('<i', len(self.ClientSoftwareCertificates)))
-        for i in self.ClientSoftwareCertificates:
-            packet.append(self.ClientSoftwareCertificates.to_binary())
+        for fieldname in self.ClientSoftwareCertificates:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.LocaleIds)))
-        for i in self.LocaleIds:
-            packet.append(struct.pack('<i', len(self.LocaleIds)))
-            packet.append(struct.pack('<{}s'.format(len(self.LocaleIds)), self.LocaleIds.encode()))
+        for fieldname in self.LocaleIds:
+            packet.append(pack_string(fieldname))
         packet.append(self.UserIdentityToken.to_binary())
         packet.append(self.UserTokenSignature.to_binary())
         return b''.join(packet)
@@ -3388,14 +3293,13 @@ class ActivateSessionParameters(object):
         obj = ActivateSessionParameters()
         obj.ClientSignature = SignatureData.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ClientSoftwareCertificates = SignedSoftwareCertificate.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                slength = struct.unpack('<i', data.red(1))
-                obj.LocaleIds = struct.unpack('<{}s'.format(slength), data.read(slength))
+                obj.LocaleIds = unpack_string(data)
         obj.UserIdentityToken = ExtensionObject.from_binary(data)
         obj.UserTokenSignature = SignatureData.from_binary(data)
         return obj
@@ -3439,31 +3343,31 @@ class ActivateSessionRequest(object):
     
 class ActivateSessionResult(object):
     def __init__(self):
-        self.ServerNonce = ByteString()
+        self.ServerNonce = b''
         self.Results = []
         self.DiagnosticInfos = []
     
     def to_binary(self):
         packet = []
-        packet.append(self.ServerNonce.to_binary())
+        packet.append(pack_bytes(self.ServerNonce))
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ActivateSessionResult()
-        obj.ServerNonce = ByteString.from_binary(data)
+        obj.ServerNonce = unpack_bytes(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -3788,9 +3692,9 @@ class VariableAttributes(object):
         fmt = '<i'
         packet.append(struct.pack(fmt, self.ValueRank))
         packet.append(struct.pack('<i', len(self.ArrayDimensions)))
-        for i in self.ArrayDimensions:
+        for fieldname in self.ArrayDimensions:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.ArrayDimensions))
+            packet.append(struct.pack(fmt, fieldname))
         fmt = '<B'
         packet.append(struct.pack(fmt, self.AccessLevel))
         fmt = '<B'
@@ -3821,7 +3725,7 @@ class VariableAttributes(object):
         fmt_size = 4
         obj.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
@@ -3996,9 +3900,9 @@ class VariableTypeAttributes(object):
         fmt = '<i'
         packet.append(struct.pack(fmt, self.ValueRank))
         packet.append(struct.pack('<i', len(self.ArrayDimensions)))
-        for i in self.ArrayDimensions:
+        for fieldname in self.ArrayDimensions:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.ArrayDimensions))
+            packet.append(struct.pack(fmt, fieldname))
         fmt = '<?'
         packet.append(struct.pack(fmt, self.IsAbstract))
         return b''.join(packet)
@@ -4023,7 +3927,7 @@ class VariableTypeAttributes(object):
         fmt_size = 4
         obj.ValueRank = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
@@ -4299,15 +4203,15 @@ class AddNodesParameters(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.NodesToAdd)))
-        for i in self.NodesToAdd:
-            packet.append(self.NodesToAdd.to_binary())
+        for fieldname in self.NodesToAdd:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = AddNodesParameters()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.NodesToAdd = AddNodesItem.from_binary(data)
         return obj
@@ -4357,11 +4261,11 @@ class AddNodesResponse(object):
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -4370,11 +4274,11 @@ class AddNodesResponse(object):
         obj.TypeId = NodeId.from_binary(data)
         obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = AddNodesResult.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -4402,8 +4306,7 @@ class AddReferencesItem(object):
         packet.append(self.ReferenceTypeId.to_binary())
         fmt = '<?'
         packet.append(struct.pack(fmt, self.IsForward))
-        packet.append(struct.pack('<i', len(self.TargetServerUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.TargetServerUri)), self.TargetServerUri.encode()))
+        packet.append(pack_string(self.TargetServerUri))
         packet.append(self.TargetNodeId.to_binary())
         fmt = '<I'
         packet.append(struct.pack(fmt, self.TargetNodeClass))
@@ -4417,8 +4320,7 @@ class AddReferencesItem(object):
         fmt = '<?'
         fmt_size = 1
         obj.IsForward = struct.unpack(fmt, data.read(fmt_size))[0]
-        slength = struct.unpack('<i', data.red(1))
-        obj.TargetServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.TargetServerUri = unpack_string(data)
         obj.TargetNodeId = ExpandedNodeId.from_binary(data)
         fmt = '<I'
         fmt_size = 4
@@ -4442,15 +4344,15 @@ class AddReferencesParameters(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.ReferencesToAdd)))
-        for i in self.ReferencesToAdd:
-            packet.append(self.ReferencesToAdd.to_binary())
+        for fieldname in self.ReferencesToAdd:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = AddReferencesParameters()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ReferencesToAdd = AddReferencesItem.from_binary(data)
         return obj
@@ -4496,22 +4398,22 @@ class AddReferencesResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = AddReferencesResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -4584,15 +4486,15 @@ class DeleteNodesParameters(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.NodesToDelete)))
-        for i in self.NodesToDelete:
-            packet.append(self.NodesToDelete.to_binary())
+        for fieldname in self.NodesToDelete:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = DeleteNodesParameters()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.NodesToDelete = DeleteNodesItem.from_binary(data)
         return obj
@@ -4638,22 +4540,22 @@ class DeleteNodesResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = DeleteNodesResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -4741,15 +4643,15 @@ class DeleteReferencesParameters(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.ReferencesToDelete)))
-        for i in self.ReferencesToDelete:
-            packet.append(self.ReferencesToDelete.to_binary())
+        for fieldname in self.ReferencesToDelete:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = DeleteReferencesParameters()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ReferencesToDelete = DeleteReferencesItem.from_binary(data)
         return obj
@@ -4795,22 +4697,22 @@ class DeleteReferencesResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = DeleteReferencesResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -4985,25 +4887,25 @@ class ReferenceDescription(object):
 class BrowseResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
-        self.ContinuationPoint = ByteString()
+        self.ContinuationPoint = b''
         self.References = []
     
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
-        packet.append(self.ContinuationPoint.to_binary())
+        packet.append(pack_bytes(self.ContinuationPoint))
         packet.append(struct.pack('<i', len(self.References)))
-        for i in self.References:
-            packet.append(self.References.to_binary())
+        for fieldname in self.References:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = BrowseResult()
         obj.StatusCode = StatusCode.from_binary(data)
-        obj.ContinuationPoint = ByteString.from_binary(data)
+        obj.ContinuationPoint = unpack_bytes(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.References = ReferenceDescription.from_binary(data)
         return obj
@@ -5027,8 +4929,8 @@ class BrowseParameters(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.RequestedMaxReferencesPerNode))
         packet.append(struct.pack('<i', len(self.NodesToBrowse)))
-        for i in self.NodesToBrowse:
-            packet.append(self.NodesToBrowse.to_binary())
+        for fieldname in self.NodesToBrowse:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -5039,7 +4941,7 @@ class BrowseParameters(object):
         fmt_size = 4
         obj.RequestedMaxReferencesPerNode = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.NodesToBrowse = BrowseDescription.from_binary(data)
         return obj
@@ -5091,11 +4993,11 @@ class BrowseResponse(object):
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -5104,11 +5006,11 @@ class BrowseResponse(object):
         obj.TypeId = NodeId.from_binary(data)
         obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = BrowseResult.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -5131,8 +5033,8 @@ class BrowseNextParameters(object):
         fmt = '<?'
         packet.append(struct.pack(fmt, self.ReleaseContinuationPoints))
         packet.append(struct.pack('<i', len(self.ContinuationPoints)))
-        for i in self.ContinuationPoints:
-            packet.append(self.ContinuationPoints.to_binary())
+        for fieldname in self.ContinuationPoints:
+            packet.append(pack_bytes(fieldname))
         return b''.join(packet)
         
     @staticmethod
@@ -5142,9 +5044,9 @@ class BrowseNextParameters(object):
         fmt_size = 1
         obj.ReleaseContinuationPoints = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                obj.ContinuationPoints = ByteString.from_binary(data)
+                obj.ContinuationPoints = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -5189,22 +5091,22 @@ class BrowseNextResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = BrowseNextResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = BrowseResult.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -5288,15 +5190,15 @@ class RelativePath(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Elements)))
-        for i in self.Elements:
-            packet.append(self.Elements.to_binary())
+        for fieldname in self.Elements:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = RelativePath()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Elements = RelativePathElement.from_binary(data)
         return obj
@@ -5366,8 +5268,8 @@ class BrowsePathResult(object):
         packet = []
         packet.append(self.StatusCode.to_binary())
         packet.append(struct.pack('<i', len(self.Targets)))
-        for i in self.Targets:
-            packet.append(self.Targets.to_binary())
+        for fieldname in self.Targets:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -5375,7 +5277,7 @@ class BrowsePathResult(object):
         obj = BrowsePathResult()
         obj.StatusCode = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Targets = BrowsePathTarget.from_binary(data)
         return obj
@@ -5393,15 +5295,15 @@ class TranslateBrowsePathsToNodeIdsParameters(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.BrowsePaths)))
-        for i in self.BrowsePaths:
-            packet.append(self.BrowsePaths.to_binary())
+        for fieldname in self.BrowsePaths:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = TranslateBrowsePathsToNodeIdsParameters()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.BrowsePaths = BrowsePath.from_binary(data)
         return obj
@@ -5447,22 +5349,22 @@ class TranslateBrowsePathsToNodeIdsResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = TranslateBrowsePathsToNodeIdsResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = BrowsePathResult.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -5508,15 +5410,15 @@ class RegisterNodesParameters(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.NodesToRegister)))
-        for i in self.NodesToRegister:
-            packet.append(self.NodesToRegister.to_binary())
+        for fieldname in self.NodesToRegister:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = RegisterNodesParameters()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.NodesToRegister = NodeId.from_binary(data)
         return obj
@@ -5561,15 +5463,15 @@ class RegisterNodesResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.RegisteredNodeIds)))
-        for i in self.RegisteredNodeIds:
-            packet.append(self.RegisteredNodeIds.to_binary())
+        for fieldname in self.RegisteredNodeIds:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = RegisterNodesResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.RegisteredNodeIds = NodeId.from_binary(data)
         return obj
@@ -5614,15 +5516,15 @@ class UnregisterNodesParameters(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.NodesToUnregister)))
-        for i in self.NodesToUnregister:
-            packet.append(self.NodesToUnregister.to_binary())
+        for fieldname in self.NodesToUnregister:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = UnregisterNodesParameters()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.NodesToUnregister = NodeId.from_binary(data)
         return obj
@@ -5774,39 +5676,31 @@ class SupportedProfile(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.OrganizationUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.OrganizationUri)), self.OrganizationUri.encode()))
-        packet.append(struct.pack('<i', len(self.ProfileId)))
-        packet.append(struct.pack('<{}s'.format(len(self.ProfileId)), self.ProfileId.encode()))
-        packet.append(struct.pack('<i', len(self.ComplianceTool)))
-        packet.append(struct.pack('<{}s'.format(len(self.ComplianceTool)), self.ComplianceTool.encode()))
+        packet.append(pack_string(self.OrganizationUri))
+        packet.append(pack_string(self.ProfileId))
+        packet.append(pack_string(self.ComplianceTool))
         packet.append(self.ComplianceDate.to_binary())
         fmt = '<I'
         packet.append(struct.pack(fmt, self.ComplianceLevel))
         packet.append(struct.pack('<i', len(self.UnsupportedUnitIds)))
-        for i in self.UnsupportedUnitIds:
-            packet.append(struct.pack('<i', len(self.UnsupportedUnitIds)))
-            packet.append(struct.pack('<{}s'.format(len(self.UnsupportedUnitIds)), self.UnsupportedUnitIds.encode()))
+        for fieldname in self.UnsupportedUnitIds:
+            packet.append(pack_string(fieldname))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = SupportedProfile()
-        slength = struct.unpack('<i', data.red(1))
-        obj.OrganizationUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.ProfileId = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.ComplianceTool = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.OrganizationUri = unpack_string(data)
+        obj.ProfileId = unpack_string(data)
+        obj.ComplianceTool = unpack_string(data)
         obj.ComplianceDate = DateTime.from_binary(data)
         fmt = '<I'
         fmt_size = 4
         obj.ComplianceLevel = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                slength = struct.unpack('<i', data.red(1))
-                obj.UnsupportedUnitIds = struct.unpack('<{}s'.format(slength), data.read(slength))
+                obj.UnsupportedUnitIds = unpack_string(data)
         return obj
     
     def __str__(self):
@@ -5824,7 +5718,7 @@ class SoftwareCertificate(object):
         self.ProductName = ''
         self.ProductUri = ''
         self.VendorName = ''
-        self.VendorProductCertificate = ByteString()
+        self.VendorProductCertificate = b''
         self.SoftwareVersion = ''
         self.BuildNumber = ''
         self.BuildDate = DateTime()
@@ -5834,46 +5728,34 @@ class SoftwareCertificate(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.ProductName)))
-        packet.append(struct.pack('<{}s'.format(len(self.ProductName)), self.ProductName.encode()))
-        packet.append(struct.pack('<i', len(self.ProductUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.ProductUri)), self.ProductUri.encode()))
-        packet.append(struct.pack('<i', len(self.VendorName)))
-        packet.append(struct.pack('<{}s'.format(len(self.VendorName)), self.VendorName.encode()))
-        packet.append(self.VendorProductCertificate.to_binary())
-        packet.append(struct.pack('<i', len(self.SoftwareVersion)))
-        packet.append(struct.pack('<{}s'.format(len(self.SoftwareVersion)), self.SoftwareVersion.encode()))
-        packet.append(struct.pack('<i', len(self.BuildNumber)))
-        packet.append(struct.pack('<{}s'.format(len(self.BuildNumber)), self.BuildNumber.encode()))
+        packet.append(pack_string(self.ProductName))
+        packet.append(pack_string(self.ProductUri))
+        packet.append(pack_string(self.VendorName))
+        packet.append(pack_bytes(self.VendorProductCertificate))
+        packet.append(pack_string(self.SoftwareVersion))
+        packet.append(pack_string(self.BuildNumber))
         packet.append(self.BuildDate.to_binary())
-        packet.append(struct.pack('<i', len(self.IssuedBy)))
-        packet.append(struct.pack('<{}s'.format(len(self.IssuedBy)), self.IssuedBy.encode()))
+        packet.append(pack_string(self.IssuedBy))
         packet.append(self.IssueDate.to_binary())
         packet.append(struct.pack('<i', len(self.SupportedProfiles)))
-        for i in self.SupportedProfiles:
-            packet.append(self.SupportedProfiles.to_binary())
+        for fieldname in self.SupportedProfiles:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = SoftwareCertificate()
-        slength = struct.unpack('<i', data.red(1))
-        obj.ProductName = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.ProductUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.VendorName = struct.unpack('<{}s'.format(slength), data.read(slength))
-        obj.VendorProductCertificate = ByteString.from_binary(data)
-        slength = struct.unpack('<i', data.red(1))
-        obj.SoftwareVersion = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.BuildNumber = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.ProductName = unpack_string(data)
+        obj.ProductUri = unpack_string(data)
+        obj.VendorName = unpack_string(data)
+        obj.VendorProductCertificate = unpack_bytes(data)
+        obj.SoftwareVersion = unpack_string(data)
+        obj.BuildNumber = unpack_string(data)
         obj.BuildDate = DateTime.from_binary(data)
-        slength = struct.unpack('<i', data.red(1))
-        obj.IssuedBy = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.IssuedBy = unpack_string(data)
         obj.IssueDate = DateTime.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.SupportedProfiles = SupportedProfile.from_binary(data)
         return obj
@@ -5903,8 +5785,7 @@ class QueryDataDescription(object):
         packet.append(self.RelativePath.to_binary())
         fmt = '<I'
         packet.append(struct.pack(fmt, self.AttributeId))
-        packet.append(struct.pack('<i', len(self.IndexRange)))
-        packet.append(struct.pack('<{}s'.format(len(self.IndexRange)), self.IndexRange.encode()))
+        packet.append(pack_string(self.IndexRange))
         return b''.join(packet)
         
     @staticmethod
@@ -5914,8 +5795,7 @@ class QueryDataDescription(object):
         fmt = '<I'
         fmt_size = 4
         obj.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
-        slength = struct.unpack('<i', data.red(1))
-        obj.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.IndexRange = unpack_string(data)
         return obj
     
     def __str__(self):
@@ -5937,8 +5817,8 @@ class NodeTypeDescription(object):
         fmt = '<?'
         packet.append(struct.pack(fmt, self.IncludeSubTypes))
         packet.append(struct.pack('<i', len(self.DataToReturn)))
-        for i in self.DataToReturn:
-            packet.append(self.DataToReturn.to_binary())
+        for fieldname in self.DataToReturn:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -5949,7 +5829,7 @@ class NodeTypeDescription(object):
         fmt_size = 1
         obj.IncludeSubTypes = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DataToReturn = QueryDataDescription.from_binary(data)
         return obj
@@ -5972,8 +5852,8 @@ class QueryDataSet(object):
         packet.append(self.NodeId.to_binary())
         packet.append(self.TypeDefinitionNode.to_binary())
         packet.append(struct.pack('<i', len(self.Values)))
-        for i in self.Values:
-            packet.append(self.Values.to_binary())
+        for fieldname in self.Values:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -5982,7 +5862,7 @@ class QueryDataSet(object):
         obj.NodeId = ExpandedNodeId.from_binary(data)
         obj.TypeDefinitionNode = ExpandedNodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Values = Variant.from_binary(data)
         return obj
@@ -6008,8 +5888,8 @@ class NodeReference(object):
         fmt = '<?'
         packet.append(struct.pack(fmt, self.IsForward))
         packet.append(struct.pack('<i', len(self.ReferencedNodeIds)))
-        for i in self.ReferencedNodeIds:
-            packet.append(self.ReferencedNodeIds.to_binary())
+        for fieldname in self.ReferencedNodeIds:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -6021,7 +5901,7 @@ class NodeReference(object):
         fmt_size = 1
         obj.IsForward = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ReferencedNodeIds = NodeId.from_binary(data)
         return obj
@@ -6044,8 +5924,8 @@ class ContentFilterElement(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.FilterOperator))
         packet.append(struct.pack('<i', len(self.FilterOperands)))
-        for i in self.FilterOperands:
-            packet.append(self.FilterOperands.to_binary())
+        for fieldname in self.FilterOperands:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -6055,7 +5935,7 @@ class ContentFilterElement(object):
         fmt_size = 4
         obj.FilterOperator = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.FilterOperands = ExtensionObject.from_binary(data)
         return obj
@@ -6073,15 +5953,15 @@ class ContentFilter(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Elements)))
-        for i in self.Elements:
-            packet.append(self.Elements.to_binary())
+        for fieldname in self.Elements:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ContentFilter()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Elements = ContentFilterElement.from_binary(data)
         return obj
@@ -6095,7 +5975,7 @@ class ElementOperand(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.Index = 0
     
     def to_binary(self):
@@ -6105,7 +5985,7 @@ class ElementOperand(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         fmt = '<I'
         packet.append(struct.pack(fmt, self.Index))
         return b''.join(packet)
@@ -6118,7 +5998,7 @@ class ElementOperand(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         fmt = '<I'
         fmt_size = 4
         obj.Index = struct.unpack(fmt, data.read(fmt_size))[0]
@@ -6136,7 +6016,7 @@ class LiteralOperand(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.Value = Variant()
     
     def to_binary(self):
@@ -6146,7 +6026,7 @@ class LiteralOperand(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         packet.append(self.Value.to_binary())
         return b''.join(packet)
         
@@ -6158,7 +6038,7 @@ class LiteralOperand(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         obj.Value = Variant.from_binary(data)
         return obj
     
@@ -6174,7 +6054,7 @@ class AttributeOperand(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.NodeId = NodeId()
         self.Alias = ''
         self.BrowsePath = RelativePath()
@@ -6188,15 +6068,13 @@ class AttributeOperand(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         packet.append(self.NodeId.to_binary())
-        packet.append(struct.pack('<i', len(self.Alias)))
-        packet.append(struct.pack('<{}s'.format(len(self.Alias)), self.Alias.encode()))
+        packet.append(pack_string(self.Alias))
         packet.append(self.BrowsePath.to_binary())
         fmt = '<I'
         packet.append(struct.pack(fmt, self.AttributeId))
-        packet.append(struct.pack('<i', len(self.IndexRange)))
-        packet.append(struct.pack('<{}s'.format(len(self.IndexRange)), self.IndexRange.encode()))
+        packet.append(pack_string(self.IndexRange))
         return b''.join(packet)
         
     @staticmethod
@@ -6207,16 +6085,14 @@ class AttributeOperand(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         obj.NodeId = NodeId.from_binary(data)
-        slength = struct.unpack('<i', data.red(1))
-        obj.Alias = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.Alias = unpack_string(data)
         obj.BrowsePath = RelativePath.from_binary(data)
         fmt = '<I'
         fmt_size = 4
         obj.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
-        slength = struct.unpack('<i', data.red(1))
-        obj.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.IndexRange = unpack_string(data)
         return obj
     
     def __str__(self):
@@ -6235,7 +6111,7 @@ class SimpleAttributeOperand(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.TypeDefinitionId = NodeId()
         self.BrowsePath = []
         self.AttributeId = 0
@@ -6248,15 +6124,14 @@ class SimpleAttributeOperand(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         packet.append(self.TypeDefinitionId.to_binary())
         packet.append(struct.pack('<i', len(self.BrowsePath)))
-        for i in self.BrowsePath:
-            packet.append(self.BrowsePath.to_binary())
+        for fieldname in self.BrowsePath:
+            packet.append(fieldname.to_binary())
         fmt = '<I'
         packet.append(struct.pack(fmt, self.AttributeId))
-        packet.append(struct.pack('<i', len(self.IndexRange)))
-        packet.append(struct.pack('<{}s'.format(len(self.IndexRange)), self.IndexRange.encode()))
+        packet.append(pack_string(self.IndexRange))
         return b''.join(packet)
         
     @staticmethod
@@ -6267,17 +6142,16 @@ class SimpleAttributeOperand(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         obj.TypeDefinitionId = NodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.BrowsePath = QualifiedName.from_binary(data)
         fmt = '<I'
         fmt_size = 4
         obj.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
-        slength = struct.unpack('<i', data.red(1))
-        obj.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.IndexRange = unpack_string(data)
         return obj
     
     def __str__(self):
@@ -6301,11 +6175,11 @@ class ContentFilterElementResult(object):
         packet = []
         packet.append(self.StatusCode.to_binary())
         packet.append(struct.pack('<i', len(self.OperandStatusCodes)))
-        for i in self.OperandStatusCodes:
-            packet.append(self.OperandStatusCodes.to_binary())
+        for fieldname in self.OperandStatusCodes:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.OperandDiagnosticInfos)))
-        for i in self.OperandDiagnosticInfos:
-            packet.append(self.OperandDiagnosticInfos.to_binary())
+        for fieldname in self.OperandDiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -6313,11 +6187,11 @@ class ContentFilterElementResult(object):
         obj = ContentFilterElementResult()
         obj.StatusCode = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.OperandStatusCodes = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.OperandDiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -6337,22 +6211,22 @@ class ContentFilterResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.ElementResults)))
-        for i in self.ElementResults:
-            packet.append(self.ElementResults.to_binary())
+        for fieldname in self.ElementResults:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.ElementDiagnosticInfos)))
-        for i in self.ElementDiagnosticInfos:
-            packet.append(self.ElementDiagnosticInfos.to_binary())
+        for fieldname in self.ElementDiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ContentFilterResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ElementResults = ContentFilterElementResult.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ElementDiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -6373,11 +6247,11 @@ class ParsingResult(object):
         packet = []
         packet.append(self.StatusCode.to_binary())
         packet.append(struct.pack('<i', len(self.DataStatusCodes)))
-        for i in self.DataStatusCodes:
-            packet.append(self.DataStatusCodes.to_binary())
+        for fieldname in self.DataStatusCodes:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DataDiagnosticInfos)))
-        for i in self.DataDiagnosticInfos:
-            packet.append(self.DataDiagnosticInfos.to_binary())
+        for fieldname in self.DataDiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -6385,11 +6259,11 @@ class ParsingResult(object):
         obj = ParsingResult()
         obj.StatusCode = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DataStatusCodes = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DataDiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -6413,8 +6287,8 @@ class QueryFirstParameters(object):
         packet = []
         packet.append(self.View.to_binary())
         packet.append(struct.pack('<i', len(self.NodeTypes)))
-        for i in self.NodeTypes:
-            packet.append(self.NodeTypes.to_binary())
+        for fieldname in self.NodeTypes:
+            packet.append(fieldname.to_binary())
         packet.append(self.Filter.to_binary())
         fmt = '<I'
         packet.append(struct.pack(fmt, self.MaxDataSetsToReturn))
@@ -6427,7 +6301,7 @@ class QueryFirstParameters(object):
         obj = QueryFirstParameters()
         obj.View = ViewDescription.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.NodeTypes = NodeTypeDescription.from_binary(data)
         obj.Filter = ContentFilter.from_binary(data)
@@ -6479,7 +6353,7 @@ class QueryFirstRequest(object):
 class QueryFirstResult(object):
     def __init__(self):
         self.QueryDataSets = []
-        self.ContinuationPoint = ByteString()
+        self.ContinuationPoint = b''
         self.ParsingResults = []
         self.DiagnosticInfos = []
         self.FilterResult = ContentFilterResult()
@@ -6487,15 +6361,15 @@ class QueryFirstResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.QueryDataSets)))
-        for i in self.QueryDataSets:
-            packet.append(self.QueryDataSets.to_binary())
-        packet.append(self.ContinuationPoint.to_binary())
+        for fieldname in self.QueryDataSets:
+            packet.append(fieldname.to_binary())
+        packet.append(pack_bytes(self.ContinuationPoint))
         packet.append(struct.pack('<i', len(self.ParsingResults)))
-        for i in self.ParsingResults:
-            packet.append(self.ParsingResults.to_binary())
+        for fieldname in self.ParsingResults:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         packet.append(self.FilterResult.to_binary())
         return b''.join(packet)
         
@@ -6503,16 +6377,16 @@ class QueryFirstResult(object):
     def from_binary(data):
         obj = QueryFirstResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.QueryDataSets = QueryDataSet.from_binary(data)
-        obj.ContinuationPoint = ByteString.from_binary(data)
+        obj.ContinuationPoint = unpack_bytes(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ParsingResults = ParsingResult.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         obj.FilterResult = ContentFilterResult.from_binary(data)
@@ -6558,13 +6432,13 @@ class QueryFirstResponse(object):
 class QueryNextParameters(object):
     def __init__(self):
         self.ReleaseContinuationPoint = 0
-        self.ContinuationPoint = ByteString()
+        self.ContinuationPoint = b''
     
     def to_binary(self):
         packet = []
         fmt = '<?'
         packet.append(struct.pack(fmt, self.ReleaseContinuationPoint))
-        packet.append(self.ContinuationPoint.to_binary())
+        packet.append(pack_bytes(self.ContinuationPoint))
         return b''.join(packet)
         
     @staticmethod
@@ -6573,7 +6447,7 @@ class QueryNextParameters(object):
         fmt = '<?'
         fmt_size = 1
         obj.ReleaseContinuationPoint = struct.unpack(fmt, data.read(fmt_size))[0]
-        obj.ContinuationPoint = ByteString.from_binary(data)
+        obj.ContinuationPoint = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -6613,24 +6487,24 @@ class QueryNextRequest(object):
 class QueryNextResult(object):
     def __init__(self):
         self.QueryDataSets = []
-        self.RevisedContinuationPoint = ByteString()
+        self.RevisedContinuationPoint = b''
     
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.QueryDataSets)))
-        for i in self.QueryDataSets:
-            packet.append(self.QueryDataSets.to_binary())
-        packet.append(self.RevisedContinuationPoint.to_binary())
+        for fieldname in self.QueryDataSets:
+            packet.append(fieldname.to_binary())
+        packet.append(pack_bytes(self.RevisedContinuationPoint))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = QueryNextResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.QueryDataSets = QueryDataSet.from_binary(data)
-        obj.RevisedContinuationPoint = ByteString.from_binary(data)
+        obj.RevisedContinuationPoint = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -6679,8 +6553,7 @@ class ReadValueId(object):
         packet.append(self.NodeId.to_binary())
         fmt = '<I'
         packet.append(struct.pack(fmt, self.AttributeId))
-        packet.append(struct.pack('<i', len(self.IndexRange)))
-        packet.append(struct.pack('<{}s'.format(len(self.IndexRange)), self.IndexRange.encode()))
+        packet.append(pack_string(self.IndexRange))
         packet.append(self.DataEncoding.to_binary())
         return b''.join(packet)
         
@@ -6691,8 +6564,7 @@ class ReadValueId(object):
         fmt = '<I'
         fmt_size = 4
         obj.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
-        slength = struct.unpack('<i', data.red(1))
-        obj.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.IndexRange = unpack_string(data)
         obj.DataEncoding = QualifiedName.from_binary(data)
         return obj
     
@@ -6717,8 +6589,8 @@ class ReadParameters(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.TimestampsToReturn))
         packet.append(struct.pack('<i', len(self.NodesToRead)))
-        for i in self.NodesToRead:
-            packet.append(self.NodesToRead.to_binary())
+        for fieldname in self.NodesToRead:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -6731,7 +6603,7 @@ class ReadParameters(object):
         fmt_size = 4
         obj.TimestampsToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.NodesToRead = ReadValueId.from_binary(data)
         return obj
@@ -6779,22 +6651,22 @@ class ReadResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ReadResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = DataValue.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -6838,25 +6710,23 @@ class HistoryReadValueId(object):
         self.NodeId = NodeId()
         self.IndexRange = ''
         self.DataEncoding = QualifiedName()
-        self.ContinuationPoint = ByteString()
+        self.ContinuationPoint = b''
     
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
-        packet.append(struct.pack('<i', len(self.IndexRange)))
-        packet.append(struct.pack('<{}s'.format(len(self.IndexRange)), self.IndexRange.encode()))
+        packet.append(pack_string(self.IndexRange))
         packet.append(self.DataEncoding.to_binary())
-        packet.append(self.ContinuationPoint.to_binary())
+        packet.append(pack_bytes(self.ContinuationPoint))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = HistoryReadValueId()
         obj.NodeId = NodeId.from_binary(data)
-        slength = struct.unpack('<i', data.red(1))
-        obj.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.IndexRange = unpack_string(data)
         obj.DataEncoding = QualifiedName.from_binary(data)
-        obj.ContinuationPoint = ByteString.from_binary(data)
+        obj.ContinuationPoint = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -6870,13 +6740,13 @@ class HistoryReadValueId(object):
 class HistoryReadResult(object):
     def __init__(self):
         self.StatusCode = StatusCode()
-        self.ContinuationPoint = ByteString()
+        self.ContinuationPoint = b''
         self.HistoryData = ExtensionObject()
     
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
-        packet.append(self.ContinuationPoint.to_binary())
+        packet.append(pack_bytes(self.ContinuationPoint))
         packet.append(self.HistoryData.to_binary())
         return b''.join(packet)
         
@@ -6884,7 +6754,7 @@ class HistoryReadResult(object):
     def from_binary(data):
         obj = HistoryReadResult()
         obj.StatusCode = StatusCode.from_binary(data)
-        obj.ContinuationPoint = ByteString.from_binary(data)
+        obj.ContinuationPoint = unpack_bytes(data)
         obj.HistoryData = ExtensionObject.from_binary(data)
         return obj
     
@@ -6899,7 +6769,7 @@ class HistoryReadDetails(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
     
     def to_binary(self):
         packet = []
@@ -6908,7 +6778,7 @@ class HistoryReadDetails(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         return b''.join(packet)
         
     @staticmethod
@@ -6919,7 +6789,7 @@ class HistoryReadDetails(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -6933,7 +6803,7 @@ class ReadEventDetails(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.NumValuesPerNode = 0
         self.StartTime = DateTime()
         self.EndTime = DateTime()
@@ -6946,7 +6816,7 @@ class ReadEventDetails(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         fmt = '<I'
         packet.append(struct.pack(fmt, self.NumValuesPerNode))
         packet.append(self.StartTime.to_binary())
@@ -6962,7 +6832,7 @@ class ReadEventDetails(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         fmt = '<I'
         fmt_size = 4
         obj.NumValuesPerNode = struct.unpack(fmt, data.read(fmt_size))[0]
@@ -6986,7 +6856,7 @@ class ReadRawModifiedDetails(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.IsReadModified = 0
         self.StartTime = DateTime()
         self.EndTime = DateTime()
@@ -7000,7 +6870,7 @@ class ReadRawModifiedDetails(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         fmt = '<?'
         packet.append(struct.pack(fmt, self.IsReadModified))
         packet.append(self.StartTime.to_binary())
@@ -7019,7 +6889,7 @@ class ReadRawModifiedDetails(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         fmt = '<?'
         fmt_size = 1
         obj.IsReadModified = struct.unpack(fmt, data.read(fmt_size))[0]
@@ -7049,7 +6919,7 @@ class ReadProcessedDetails(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.StartTime = DateTime()
         self.EndTime = DateTime()
         self.ProcessingInterval = 0
@@ -7063,14 +6933,14 @@ class ReadProcessedDetails(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         packet.append(self.StartTime.to_binary())
         packet.append(self.EndTime.to_binary())
         fmt = '<d'
         packet.append(struct.pack(fmt, self.ProcessingInterval))
         packet.append(struct.pack('<i', len(self.AggregateType)))
-        for i in self.AggregateType:
-            packet.append(self.AggregateType.to_binary())
+        for fieldname in self.AggregateType:
+            packet.append(fieldname.to_binary())
         packet.append(self.AggregateConfiguration.to_binary())
         return b''.join(packet)
         
@@ -7082,14 +6952,14 @@ class ReadProcessedDetails(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         obj.StartTime = DateTime.from_binary(data)
         obj.EndTime = DateTime.from_binary(data)
         fmt = '<d'
         fmt_size = 8
         obj.ProcessingInterval = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.AggregateType = NodeId.from_binary(data)
         obj.AggregateConfiguration = AggregateConfiguration.from_binary(data)
@@ -7111,7 +6981,7 @@ class ReadAtTimeDetails(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.ReqTimes = []
         self.UseSimpleBounds = 0
     
@@ -7122,10 +6992,10 @@ class ReadAtTimeDetails(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         packet.append(struct.pack('<i', len(self.ReqTimes)))
-        for i in self.ReqTimes:
-            packet.append(self.ReqTimes.to_binary())
+        for fieldname in self.ReqTimes:
+            packet.append(fieldname.to_binary())
         fmt = '<?'
         packet.append(struct.pack(fmt, self.UseSimpleBounds))
         return b''.join(packet)
@@ -7138,9 +7008,9 @@ class ReadAtTimeDetails(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ReqTimes = DateTime.from_binary(data)
         fmt = '<?'
@@ -7164,15 +7034,15 @@ class HistoryData(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.DataValues)))
-        for i in self.DataValues:
-            packet.append(self.DataValues.to_binary())
+        for fieldname in self.DataValues:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = HistoryData()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DataValues = DataValue.from_binary(data)
         return obj
@@ -7193,8 +7063,7 @@ class ModificationInfo(object):
         packet.append(self.ModificationTime.to_binary())
         fmt = '<I'
         packet.append(struct.pack(fmt, self.UpdateType))
-        packet.append(struct.pack('<i', len(self.UserName)))
-        packet.append(struct.pack('<{}s'.format(len(self.UserName)), self.UserName.encode()))
+        packet.append(pack_string(self.UserName))
         return b''.join(packet)
         
     @staticmethod
@@ -7204,8 +7073,7 @@ class ModificationInfo(object):
         fmt = '<I'
         fmt_size = 4
         obj.UpdateType = struct.unpack(fmt, data.read(fmt_size))[0]
-        slength = struct.unpack('<i', data.red(1))
-        obj.UserName = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.UserName = unpack_string(data)
         return obj
     
     def __str__(self):
@@ -7223,22 +7091,22 @@ class HistoryModifiedData(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.DataValues)))
-        for i in self.DataValues:
-            packet.append(self.DataValues.to_binary())
+        for fieldname in self.DataValues:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.ModificationInfos)))
-        for i in self.ModificationInfos:
-            packet.append(self.ModificationInfos.to_binary())
+        for fieldname in self.ModificationInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = HistoryModifiedData()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DataValues = DataValue.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ModificationInfos = ModificationInfo.from_binary(data)
         return obj
@@ -7256,15 +7124,15 @@ class HistoryEvent(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Events)))
-        for i in self.Events:
-            packet.append(self.Events.to_binary())
+        for fieldname in self.Events:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = HistoryEvent()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Events = HistoryEventFieldList.from_binary(data)
         return obj
@@ -7289,8 +7157,8 @@ class HistoryReadParameters(object):
         fmt = '<?'
         packet.append(struct.pack(fmt, self.ReleaseContinuationPoints))
         packet.append(struct.pack('<i', len(self.NodesToRead)))
-        for i in self.NodesToRead:
-            packet.append(self.NodesToRead.to_binary())
+        for fieldname in self.NodesToRead:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -7304,7 +7172,7 @@ class HistoryReadParameters(object):
         fmt_size = 1
         obj.ReleaseContinuationPoints = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.NodesToRead = HistoryReadValueId.from_binary(data)
         return obj
@@ -7357,11 +7225,11 @@ class HistoryReadResponse(object):
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -7370,11 +7238,11 @@ class HistoryReadResponse(object):
         obj.TypeId = NodeId.from_binary(data)
         obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = HistoryReadResult.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -7399,8 +7267,7 @@ class WriteValue(object):
         packet.append(self.NodeId.to_binary())
         fmt = '<I'
         packet.append(struct.pack(fmt, self.AttributeId))
-        packet.append(struct.pack('<i', len(self.IndexRange)))
-        packet.append(struct.pack('<{}s'.format(len(self.IndexRange)), self.IndexRange.encode()))
+        packet.append(pack_string(self.IndexRange))
         packet.append(self.Value.to_binary())
         return b''.join(packet)
         
@@ -7411,8 +7278,7 @@ class WriteValue(object):
         fmt = '<I'
         fmt_size = 4
         obj.AttributeId = struct.unpack(fmt, data.read(fmt_size))[0]
-        slength = struct.unpack('<i', data.red(1))
-        obj.IndexRange = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.IndexRange = unpack_string(data)
         obj.Value = DataValue.from_binary(data)
         return obj
     
@@ -7431,15 +7297,15 @@ class WriteParameters(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.NodesToWrite)))
-        for i in self.NodesToWrite:
-            packet.append(self.NodesToWrite.to_binary())
+        for fieldname in self.NodesToWrite:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = WriteParameters()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.NodesToWrite = WriteValue.from_binary(data)
         return obj
@@ -7485,22 +7351,22 @@ class WriteResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = WriteResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -7571,8 +7437,8 @@ class UpdateDataDetails(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.PerformInsertReplace))
         packet.append(struct.pack('<i', len(self.UpdateValues)))
-        for i in self.UpdateValues:
-            packet.append(self.UpdateValues.to_binary())
+        for fieldname in self.UpdateValues:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -7583,7 +7449,7 @@ class UpdateDataDetails(object):
         fmt_size = 4
         obj.PerformInsertReplace = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.UpdateValues = DataValue.from_binary(data)
         return obj
@@ -7607,8 +7473,8 @@ class UpdateStructureDataDetails(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.PerformInsertReplace))
         packet.append(struct.pack('<i', len(self.UpdateValues)))
-        for i in self.UpdateValues:
-            packet.append(self.UpdateValues.to_binary())
+        for fieldname in self.UpdateValues:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -7619,7 +7485,7 @@ class UpdateStructureDataDetails(object):
         fmt_size = 4
         obj.PerformInsertReplace = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.UpdateValues = DataValue.from_binary(data)
         return obj
@@ -7645,8 +7511,8 @@ class UpdateEventDetails(object):
         packet.append(struct.pack(fmt, self.PerformInsertReplace))
         packet.append(self.Filter.to_binary())
         packet.append(struct.pack('<i', len(self.EventData)))
-        for i in self.EventData:
-            packet.append(self.EventData.to_binary())
+        for fieldname in self.EventData:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -7658,7 +7524,7 @@ class UpdateEventDetails(object):
         obj.PerformInsertReplace = struct.unpack(fmt, data.read(fmt_size))[0]
         obj.Filter = EventFilter.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.EventData = HistoryEventFieldList.from_binary(data)
         return obj
@@ -7715,8 +7581,8 @@ class DeleteAtTimeDetails(object):
         packet = []
         packet.append(self.NodeId.to_binary())
         packet.append(struct.pack('<i', len(self.ReqTimes)))
-        for i in self.ReqTimes:
-            packet.append(self.ReqTimes.to_binary())
+        for fieldname in self.ReqTimes:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -7724,7 +7590,7 @@ class DeleteAtTimeDetails(object):
         obj = DeleteAtTimeDetails()
         obj.NodeId = NodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ReqTimes = DateTime.from_binary(data)
         return obj
@@ -7744,8 +7610,8 @@ class DeleteEventDetails(object):
         packet = []
         packet.append(self.NodeId.to_binary())
         packet.append(struct.pack('<i', len(self.EventIds)))
-        for i in self.EventIds:
-            packet.append(self.EventIds.to_binary())
+        for fieldname in self.EventIds:
+            packet.append(pack_bytes(fieldname))
         return b''.join(packet)
         
     @staticmethod
@@ -7753,9 +7619,9 @@ class DeleteEventDetails(object):
         obj = DeleteEventDetails()
         obj.NodeId = NodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                obj.EventIds = ByteString.from_binary(data)
+                obj.EventIds = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -7774,11 +7640,11 @@ class HistoryUpdateResult(object):
         packet = []
         packet.append(self.StatusCode.to_binary())
         packet.append(struct.pack('<i', len(self.OperationResults)))
-        for i in self.OperationResults:
-            packet.append(self.OperationResults.to_binary())
+        for fieldname in self.OperationResults:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -7786,11 +7652,11 @@ class HistoryUpdateResult(object):
         obj = HistoryUpdateResult()
         obj.StatusCode = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.OperationResults = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -7833,15 +7699,15 @@ class HistoryUpdateParameters(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.HistoryUpdateDetails)))
-        for i in self.HistoryUpdateDetails:
-            packet.append(self.HistoryUpdateDetails.to_binary())
+        for fieldname in self.HistoryUpdateDetails:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = HistoryUpdateParameters()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.HistoryUpdateDetails = ExtensionObject.from_binary(data)
         return obj
@@ -7891,11 +7757,11 @@ class HistoryUpdateResponse(object):
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -7904,11 +7770,11 @@ class HistoryUpdateResponse(object):
         obj.TypeId = NodeId.from_binary(data)
         obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = HistoryUpdateResult.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -7930,8 +7796,8 @@ class CallMethodParameters(object):
         packet = []
         packet.append(self.MethodId.to_binary())
         packet.append(struct.pack('<i', len(self.InputArguments)))
-        for i in self.InputArguments:
-            packet.append(self.InputArguments.to_binary())
+        for fieldname in self.InputArguments:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -7939,7 +7805,7 @@ class CallMethodParameters(object):
         obj = CallMethodParameters()
         obj.MethodId = NodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.InputArguments = Variant.from_binary(data)
         return obj
@@ -7989,14 +7855,14 @@ class CallMethodResult(object):
         packet = []
         packet.append(self.StatusCode.to_binary())
         packet.append(struct.pack('<i', len(self.InputArgumentResults)))
-        for i in self.InputArgumentResults:
-            packet.append(self.InputArgumentResults.to_binary())
+        for fieldname in self.InputArgumentResults:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.InputArgumentDiagnosticInfos)))
-        for i in self.InputArgumentDiagnosticInfos:
-            packet.append(self.InputArgumentDiagnosticInfos.to_binary())
+        for fieldname in self.InputArgumentDiagnosticInfos:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.OutputArguments)))
-        for i in self.OutputArguments:
-            packet.append(self.OutputArguments.to_binary())
+        for fieldname in self.OutputArguments:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -8004,15 +7870,15 @@ class CallMethodResult(object):
         obj = CallMethodResult()
         obj.StatusCode = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.InputArgumentResults = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.InputArgumentDiagnosticInfos = DiagnosticInfo.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.OutputArguments = Variant.from_binary(data)
         return obj
@@ -8032,15 +7898,15 @@ class CallParameters(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.MethodsToCall)))
-        for i in self.MethodsToCall:
-            packet.append(self.MethodsToCall.to_binary())
+        for fieldname in self.MethodsToCall:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = CallParameters()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.MethodsToCall = CallMethodRequest.from_binary(data)
         return obj
@@ -8086,22 +7952,22 @@ class CallResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = CallResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = CallMethodResult.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -8144,7 +8010,7 @@ class MonitoringFilter(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
     
     def to_binary(self):
         packet = []
@@ -8153,7 +8019,7 @@ class MonitoringFilter(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         return b''.join(packet)
         
     @staticmethod
@@ -8164,7 +8030,7 @@ class MonitoringFilter(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -8178,7 +8044,7 @@ class DataChangeFilter(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.Trigger = 0
         self.DeadbandType = 0
         self.DeadbandValue = 0
@@ -8190,7 +8056,7 @@ class DataChangeFilter(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         fmt = '<I'
         packet.append(struct.pack(fmt, self.Trigger))
         fmt = '<I'
@@ -8207,7 +8073,7 @@ class DataChangeFilter(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         fmt = '<I'
         fmt_size = 4
         obj.Trigger = struct.unpack(fmt, data.read(fmt_size))[0]
@@ -8233,7 +8099,7 @@ class EventFilter(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.SelectClauses = []
         self.WhereClause = ContentFilter()
     
@@ -8244,10 +8110,10 @@ class EventFilter(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         packet.append(struct.pack('<i', len(self.SelectClauses)))
-        for i in self.SelectClauses:
-            packet.append(self.SelectClauses.to_binary())
+        for fieldname in self.SelectClauses:
+            packet.append(fieldname.to_binary())
         packet.append(self.WhereClause.to_binary())
         return b''.join(packet)
         
@@ -8259,9 +8125,9 @@ class EventFilter(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.SelectClauses = SimpleAttributeOperand.from_binary(data)
         obj.WhereClause = ContentFilter.from_binary(data)
@@ -8331,7 +8197,7 @@ class AggregateFilter(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.StartTime = DateTime()
         self.AggregateType = NodeId()
         self.ProcessingInterval = 0
@@ -8344,7 +8210,7 @@ class AggregateFilter(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         packet.append(self.StartTime.to_binary())
         packet.append(self.AggregateType.to_binary())
         fmt = '<d'
@@ -8360,7 +8226,7 @@ class AggregateFilter(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         obj.StartTime = DateTime.from_binary(data)
         obj.AggregateType = NodeId.from_binary(data)
         fmt = '<d'
@@ -8384,7 +8250,7 @@ class MonitoringFilterResult(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
     
     def to_binary(self):
         packet = []
@@ -8393,7 +8259,7 @@ class MonitoringFilterResult(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         return b''.join(packet)
         
     @staticmethod
@@ -8404,7 +8270,7 @@ class MonitoringFilterResult(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -8418,7 +8284,7 @@ class EventFilterResult(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.SelectClauseResults = []
         self.SelectClauseDiagnosticInfos = []
         self.WhereClauseResult = ContentFilterResult()
@@ -8430,13 +8296,13 @@ class EventFilterResult(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         packet.append(struct.pack('<i', len(self.SelectClauseResults)))
-        for i in self.SelectClauseResults:
-            packet.append(self.SelectClauseResults.to_binary())
+        for fieldname in self.SelectClauseResults:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.SelectClauseDiagnosticInfos)))
-        for i in self.SelectClauseDiagnosticInfos:
-            packet.append(self.SelectClauseDiagnosticInfos.to_binary())
+        for fieldname in self.SelectClauseDiagnosticInfos:
+            packet.append(fieldname.to_binary())
         packet.append(self.WhereClauseResult.to_binary())
         return b''.join(packet)
         
@@ -8448,13 +8314,13 @@ class EventFilterResult(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.SelectClauseResults = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.SelectClauseDiagnosticInfos = DiagnosticInfo.from_binary(data)
         obj.WhereClauseResult = ContentFilterResult.from_binary(data)
@@ -8474,7 +8340,7 @@ class AggregateFilterResult(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.RevisedStartTime = DateTime()
         self.RevisedProcessingInterval = 0
         self.RevisedAggregateConfiguration = AggregateConfiguration()
@@ -8486,7 +8352,7 @@ class AggregateFilterResult(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         packet.append(self.RevisedStartTime.to_binary())
         fmt = '<d'
         packet.append(struct.pack(fmt, self.RevisedProcessingInterval))
@@ -8501,7 +8367,7 @@ class AggregateFilterResult(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         obj.RevisedStartTime = DateTime.from_binary(data)
         fmt = '<d'
         fmt_size = 8
@@ -8680,8 +8546,8 @@ class CreateMonitoredItemsParameters(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.TimestampsToReturn))
         packet.append(struct.pack('<i', len(self.ItemsToCreate)))
-        for i in self.ItemsToCreate:
-            packet.append(self.ItemsToCreate.to_binary())
+        for fieldname in self.ItemsToCreate:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -8694,7 +8560,7 @@ class CreateMonitoredItemsParameters(object):
         fmt_size = 4
         obj.TimestampsToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ItemsToCreate = MonitoredItemCreateRequest.from_binary(data)
         return obj
@@ -8742,22 +8608,22 @@ class CreateMonitoredItemsResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = CreateMonitoredItemsResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = MonitoredItemCreateResult.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -8878,8 +8744,8 @@ class ModifyMonitoredItemsParameters(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.TimestampsToReturn))
         packet.append(struct.pack('<i', len(self.ItemsToModify)))
-        for i in self.ItemsToModify:
-            packet.append(self.ItemsToModify.to_binary())
+        for fieldname in self.ItemsToModify:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -8892,7 +8758,7 @@ class ModifyMonitoredItemsParameters(object):
         fmt_size = 4
         obj.TimestampsToReturn = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ItemsToModify = MonitoredItemModifyRequest.from_binary(data)
         return obj
@@ -8940,22 +8806,22 @@ class ModifyMonitoredItemsResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ModifyMonitoredItemsResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = MonitoredItemModifyResult.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -9007,9 +8873,9 @@ class SetMonitoringModeParameters(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.MonitoringMode))
         packet.append(struct.pack('<i', len(self.MonitoredItemIds)))
-        for i in self.MonitoredItemIds:
+        for fieldname in self.MonitoredItemIds:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.MonitoredItemIds))
+            packet.append(struct.pack(fmt, fieldname))
         return b''.join(packet)
         
     @staticmethod
@@ -9022,7 +8888,7 @@ class SetMonitoringModeParameters(object):
         fmt_size = 4
         obj.MonitoringMode = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
@@ -9072,22 +8938,22 @@ class SetMonitoringModeResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = SetMonitoringModeResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -9140,13 +9006,13 @@ class SetTriggeringParameters(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.TriggeringItemId))
         packet.append(struct.pack('<i', len(self.LinksToAdd)))
-        for i in self.LinksToAdd:
+        for fieldname in self.LinksToAdd:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.LinksToAdd))
+            packet.append(struct.pack(fmt, fieldname))
         packet.append(struct.pack('<i', len(self.LinksToRemove)))
-        for i in self.LinksToRemove:
+        for fieldname in self.LinksToRemove:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.LinksToRemove))
+            packet.append(struct.pack(fmt, fieldname))
         return b''.join(packet)
         
     @staticmethod
@@ -9159,13 +9025,13 @@ class SetTriggeringParameters(object):
         fmt_size = 4
         obj.TriggeringItemId = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
                 obj.LinksToAdd = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
@@ -9218,36 +9084,36 @@ class SetTriggeringResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.AddResults)))
-        for i in self.AddResults:
-            packet.append(self.AddResults.to_binary())
+        for fieldname in self.AddResults:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.AddDiagnosticInfos)))
-        for i in self.AddDiagnosticInfos:
-            packet.append(self.AddDiagnosticInfos.to_binary())
+        for fieldname in self.AddDiagnosticInfos:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.RemoveResults)))
-        for i in self.RemoveResults:
-            packet.append(self.RemoveResults.to_binary())
+        for fieldname in self.RemoveResults:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.RemoveDiagnosticInfos)))
-        for i in self.RemoveDiagnosticInfos:
-            packet.append(self.RemoveDiagnosticInfos.to_binary())
+        for fieldname in self.RemoveDiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = SetTriggeringResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.AddResults = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.AddDiagnosticInfos = DiagnosticInfo.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.RemoveResults = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.RemoveDiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -9298,9 +9164,9 @@ class DeleteMonitoredItemsParameters(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.SubscriptionId))
         packet.append(struct.pack('<i', len(self.MonitoredItemIds)))
-        for i in self.MonitoredItemIds:
+        for fieldname in self.MonitoredItemIds:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.MonitoredItemIds))
+            packet.append(struct.pack(fmt, fieldname))
         return b''.join(packet)
         
     @staticmethod
@@ -9310,7 +9176,7 @@ class DeleteMonitoredItemsParameters(object):
         fmt_size = 4
         obj.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
@@ -9359,22 +9225,22 @@ class DeleteMonitoredItemsResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = DeleteMonitoredItemsResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -9732,9 +9598,9 @@ class SetPublishingModeParameters(object):
         fmt = '<?'
         packet.append(struct.pack(fmt, self.PublishingEnabled))
         packet.append(struct.pack('<i', len(self.SubscriptionIds)))
-        for i in self.SubscriptionIds:
+        for fieldname in self.SubscriptionIds:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.SubscriptionIds))
+            packet.append(struct.pack(fmt, fieldname))
         return b''.join(packet)
         
     @staticmethod
@@ -9744,7 +9610,7 @@ class SetPublishingModeParameters(object):
         fmt_size = 1
         obj.PublishingEnabled = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
@@ -9793,22 +9659,22 @@ class SetPublishingModeResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = SetPublishingModeResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -9859,8 +9725,8 @@ class NotificationMessage(object):
         packet.append(struct.pack(fmt, self.SequenceNumber))
         packet.append(self.PublishTime.to_binary())
         packet.append(struct.pack('<i', len(self.NotificationData)))
-        for i in self.NotificationData:
-            packet.append(self.NotificationData.to_binary())
+        for fieldname in self.NotificationData:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -9871,7 +9737,7 @@ class NotificationMessage(object):
         obj.SequenceNumber = struct.unpack(fmt, data.read(fmt_size))[0]
         obj.PublishTime = DateTime.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.NotificationData = ExtensionObject.from_binary(data)
         return obj
@@ -9887,7 +9753,7 @@ class NotificationData(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
     
     def to_binary(self):
         packet = []
@@ -9896,7 +9762,7 @@ class NotificationData(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         return b''.join(packet)
         
     @staticmethod
@@ -9907,7 +9773,7 @@ class NotificationData(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -9921,7 +9787,7 @@ class DataChangeNotification(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.MonitoredItems = []
         self.DiagnosticInfos = []
     
@@ -9932,13 +9798,13 @@ class DataChangeNotification(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         packet.append(struct.pack('<i', len(self.MonitoredItems)))
-        for i in self.MonitoredItems:
-            packet.append(self.MonitoredItems.to_binary())
+        for fieldname in self.MonitoredItems:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -9949,13 +9815,13 @@ class DataChangeNotification(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.MonitoredItems = MonitoredItemNotification.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -10000,7 +9866,7 @@ class EventNotificationList(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.Events = []
     
     def to_binary(self):
@@ -10010,10 +9876,10 @@ class EventNotificationList(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         packet.append(struct.pack('<i', len(self.Events)))
-        for i in self.Events:
-            packet.append(self.Events.to_binary())
+        for fieldname in self.Events:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -10024,9 +9890,9 @@ class EventNotificationList(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Events = EventFieldList.from_binary(data)
         return obj
@@ -10049,8 +9915,8 @@ class EventFieldList(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.ClientHandle))
         packet.append(struct.pack('<i', len(self.EventFields)))
-        for i in self.EventFields:
-            packet.append(self.EventFields.to_binary())
+        for fieldname in self.EventFields:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -10060,7 +9926,7 @@ class EventFieldList(object):
         fmt_size = 4
         obj.ClientHandle = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.EventFields = Variant.from_binary(data)
         return obj
@@ -10078,15 +9944,15 @@ class HistoryEventFieldList(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.EventFields)))
-        for i in self.EventFields:
-            packet.append(self.EventFields.to_binary())
+        for fieldname in self.EventFields:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = HistoryEventFieldList()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.EventFields = Variant.from_binary(data)
         return obj
@@ -10100,7 +9966,7 @@ class StatusChangeNotification(object):
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = ByteString()
+        self.Body = b''
         self.Status = StatusCode()
         self.DiagnosticInfo = DiagnosticInfo()
     
@@ -10111,7 +9977,7 @@ class StatusChangeNotification(object):
         fmt = '<B'
         packet.append(struct.pack(fmt, self.Encoding))
         if self.Body: 
-            packet.append(self.Body.to_binary())
+            packet.append(pack_bytes(self.Body))
         packet.append(self.Status.to_binary())
         packet.append(self.DiagnosticInfo.to_binary())
         return b''.join(packet)
@@ -10124,7 +9990,7 @@ class StatusChangeNotification(object):
         fmt_size = 1
         obj.Encoding = struct.unpack(fmt, data.read(fmt_size))[0]
         if obj.Encoding & (1 << 0):
-            obj.Body = ByteString.from_binary(data)
+            obj.Body = unpack_bytes(data)
         obj.Status = StatusCode.from_binary(data)
         obj.DiagnosticInfo = DiagnosticInfo.from_binary(data)
         return obj
@@ -10175,15 +10041,15 @@ class PublishParameters(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.SubscriptionAcknowledgements)))
-        for i in self.SubscriptionAcknowledgements:
-            packet.append(self.SubscriptionAcknowledgements.to_binary())
+        for fieldname in self.SubscriptionAcknowledgements:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = PublishParameters()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.SubscriptionAcknowledgements = SubscriptionAcknowledgement.from_binary(data)
         return obj
@@ -10235,18 +10101,18 @@ class PublishResult(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.SubscriptionId))
         packet.append(struct.pack('<i', len(self.AvailableSequenceNumbers)))
-        for i in self.AvailableSequenceNumbers:
+        for fieldname in self.AvailableSequenceNumbers:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.AvailableSequenceNumbers))
+            packet.append(struct.pack(fmt, fieldname))
         fmt = '<?'
         packet.append(struct.pack(fmt, self.MoreNotifications))
         packet.append(self.NotificationMessage.to_binary())
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -10256,7 +10122,7 @@ class PublishResult(object):
         fmt_size = 4
         obj.SubscriptionId = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
@@ -10266,11 +10132,11 @@ class PublishResult(object):
         obj.MoreNotifications = struct.unpack(fmt, data.read(fmt_size))[0]
         obj.NotificationMessage = NotificationMessage.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -10428,9 +10294,9 @@ class TransferResult(object):
         packet = []
         packet.append(self.StatusCode.to_binary())
         packet.append(struct.pack('<i', len(self.AvailableSequenceNumbers)))
-        for i in self.AvailableSequenceNumbers:
+        for fieldname in self.AvailableSequenceNumbers:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.AvailableSequenceNumbers))
+            packet.append(struct.pack(fmt, fieldname))
         return b''.join(packet)
         
     @staticmethod
@@ -10438,7 +10304,7 @@ class TransferResult(object):
         obj = TransferResult()
         obj.StatusCode = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
@@ -10459,9 +10325,9 @@ class TransferSubscriptionsParameters(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.SubscriptionIds)))
-        for i in self.SubscriptionIds:
+        for fieldname in self.SubscriptionIds:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.SubscriptionIds))
+            packet.append(struct.pack(fmt, fieldname))
         fmt = '<?'
         packet.append(struct.pack(fmt, self.SendInitialValues))
         return b''.join(packet)
@@ -10470,7 +10336,7 @@ class TransferSubscriptionsParameters(object):
     def from_binary(data):
         obj = TransferSubscriptionsParameters()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
@@ -10522,22 +10388,22 @@ class TransferSubscriptionsResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = TransferSubscriptionsResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = TransferResult.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -10583,16 +10449,16 @@ class DeleteSubscriptionsParameters(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.SubscriptionIds)))
-        for i in self.SubscriptionIds:
+        for fieldname in self.SubscriptionIds:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.SubscriptionIds))
+            packet.append(struct.pack(fmt, fieldname))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = DeleteSubscriptionsParameters()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
@@ -10640,22 +10506,22 @@ class DeleteSubscriptionsResult(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
-        for i in self.Results:
-            packet.append(self.Results.to_binary())
+        for fieldname in self.Results:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = DeleteSubscriptionsResult()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Results = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         return obj
@@ -10710,7 +10576,7 @@ class ScalarTestType(object):
         self.String = ''
         self.DateTime = DateTime()
         self.Guid = Guid()
-        self.ByteString = ByteString()
+        self.ByteString = b''
         self.XmlElement = XmlElement()
         self.NodeId = NodeId()
         self.ExpandedNodeId = ExpandedNodeId()
@@ -10746,11 +10612,10 @@ class ScalarTestType(object):
         packet.append(struct.pack(fmt, self.Float))
         fmt = '<d'
         packet.append(struct.pack(fmt, self.Double))
-        packet.append(struct.pack('<i', len(self.String)))
-        packet.append(struct.pack('<{}s'.format(len(self.String)), self.String.encode()))
+        packet.append(pack_string(self.String))
         packet.append(self.DateTime.to_binary())
         packet.append(self.Guid.to_binary())
-        packet.append(self.ByteString.to_binary())
+        packet.append(pack_bytes(self.ByteString))
         packet.append(self.XmlElement.to_binary())
         packet.append(self.NodeId.to_binary())
         packet.append(self.ExpandedNodeId.to_binary())
@@ -10800,11 +10665,10 @@ class ScalarTestType(object):
         fmt = '<d'
         fmt_size = 8
         obj.Double = struct.unpack(fmt, data.read(fmt_size))[0]
-        slength = struct.unpack('<i', data.red(1))
-        obj.String = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.String = unpack_string(data)
         obj.DateTime = DateTime.from_binary(data)
         obj.Guid = Guid.from_binary(data)
-        obj.ByteString = ByteString.from_binary(data)
+        obj.ByteString = unpack_bytes(data)
         obj.XmlElement = XmlElement.from_binary(data)
         obj.NodeId = NodeId.from_binary(data)
         obj.ExpandedNodeId = ExpandedNodeId.from_binary(data)
@@ -10879,216 +10743,214 @@ class ArrayTestType(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Booleans)))
-        for i in self.Booleans:
+        for fieldname in self.Booleans:
             fmt = '<?'
-            packet.append(struct.pack(fmt, self.Booleans))
+            packet.append(struct.pack(fmt, fieldname))
         packet.append(struct.pack('<i', len(self.SBytes)))
-        for i in self.SBytes:
+        for fieldname in self.SBytes:
             fmt = '<B'
-            packet.append(struct.pack(fmt, self.SBytes))
+            packet.append(struct.pack(fmt, fieldname))
         packet.append(struct.pack('<i', len(self.Int16s)))
-        for i in self.Int16s:
+        for fieldname in self.Int16s:
             fmt = '<h'
-            packet.append(struct.pack(fmt, self.Int16s))
+            packet.append(struct.pack(fmt, fieldname))
         packet.append(struct.pack('<i', len(self.UInt16s)))
-        for i in self.UInt16s:
+        for fieldname in self.UInt16s:
             fmt = '<H'
-            packet.append(struct.pack(fmt, self.UInt16s))
+            packet.append(struct.pack(fmt, fieldname))
         packet.append(struct.pack('<i', len(self.Int32s)))
-        for i in self.Int32s:
+        for fieldname in self.Int32s:
             fmt = '<i'
-            packet.append(struct.pack(fmt, self.Int32s))
+            packet.append(struct.pack(fmt, fieldname))
         packet.append(struct.pack('<i', len(self.UInt32s)))
-        for i in self.UInt32s:
+        for fieldname in self.UInt32s:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.UInt32s))
+            packet.append(struct.pack(fmt, fieldname))
         packet.append(struct.pack('<i', len(self.Int64s)))
-        for i in self.Int64s:
+        for fieldname in self.Int64s:
             fmt = '<q'
-            packet.append(struct.pack(fmt, self.Int64s))
+            packet.append(struct.pack(fmt, fieldname))
         packet.append(struct.pack('<i', len(self.UInt64s)))
-        for i in self.UInt64s:
+        for fieldname in self.UInt64s:
             fmt = '<Q'
-            packet.append(struct.pack(fmt, self.UInt64s))
+            packet.append(struct.pack(fmt, fieldname))
         packet.append(struct.pack('<i', len(self.Floats)))
-        for i in self.Floats:
+        for fieldname in self.Floats:
             fmt = '<f'
-            packet.append(struct.pack(fmt, self.Floats))
+            packet.append(struct.pack(fmt, fieldname))
         packet.append(struct.pack('<i', len(self.Doubles)))
-        for i in self.Doubles:
+        for fieldname in self.Doubles:
             fmt = '<d'
-            packet.append(struct.pack(fmt, self.Doubles))
+            packet.append(struct.pack(fmt, fieldname))
         packet.append(struct.pack('<i', len(self.Strings)))
-        for i in self.Strings:
-            packet.append(struct.pack('<i', len(self.Strings)))
-            packet.append(struct.pack('<{}s'.format(len(self.Strings)), self.Strings.encode()))
+        for fieldname in self.Strings:
+            packet.append(pack_string(fieldname))
         packet.append(struct.pack('<i', len(self.DateTimes)))
-        for i in self.DateTimes:
-            packet.append(self.DateTimes.to_binary())
+        for fieldname in self.DateTimes:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.Guids)))
-        for i in self.Guids:
-            packet.append(self.Guids.to_binary())
+        for fieldname in self.Guids:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.ByteStrings)))
-        for i in self.ByteStrings:
-            packet.append(self.ByteStrings.to_binary())
+        for fieldname in self.ByteStrings:
+            packet.append(pack_bytes(fieldname))
         packet.append(struct.pack('<i', len(self.XmlElements)))
-        for i in self.XmlElements:
-            packet.append(self.XmlElements.to_binary())
+        for fieldname in self.XmlElements:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.NodeIds)))
-        for i in self.NodeIds:
-            packet.append(self.NodeIds.to_binary())
+        for fieldname in self.NodeIds:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.ExpandedNodeIds)))
-        for i in self.ExpandedNodeIds:
-            packet.append(self.ExpandedNodeIds.to_binary())
+        for fieldname in self.ExpandedNodeIds:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.StatusCodes)))
-        for i in self.StatusCodes:
-            packet.append(self.StatusCodes.to_binary())
+        for fieldname in self.StatusCodes:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for i in self.DiagnosticInfos:
-            packet.append(self.DiagnosticInfos.to_binary())
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.QualifiedNames)))
-        for i in self.QualifiedNames:
-            packet.append(self.QualifiedNames.to_binary())
+        for fieldname in self.QualifiedNames:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.LocalizedTexts)))
-        for i in self.LocalizedTexts:
-            packet.append(self.LocalizedTexts.to_binary())
+        for fieldname in self.LocalizedTexts:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.ExtensionObjects)))
-        for i in self.ExtensionObjects:
-            packet.append(self.ExtensionObjects.to_binary())
+        for fieldname in self.ExtensionObjects:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.DataValues)))
-        for i in self.DataValues:
-            packet.append(self.DataValues.to_binary())
+        for fieldname in self.DataValues:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.Variants)))
-        for i in self.Variants:
-            packet.append(self.Variants.to_binary())
+        for fieldname in self.Variants:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.EnumeratedValues)))
-        for i in self.EnumeratedValues:
+        for fieldname in self.EnumeratedValues:
             fmt = '<I'
-            packet.append(struct.pack(fmt, self.EnumeratedValues))
+            packet.append(struct.pack(fmt, fieldname))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ArrayTestType()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<?'
                 fmt_size = 1
                 obj.Booleans = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<B'
                 fmt_size = 1
                 obj.SBytes = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<h'
                 fmt_size = 2
                 obj.Int16s = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<H'
                 fmt_size = 2
                 obj.UInt16s = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<i'
                 fmt_size = 4
                 obj.Int32s = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
                 obj.UInt32s = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<q'
                 fmt_size = 8
                 obj.Int64s = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<Q'
                 fmt_size = 8
                 obj.UInt64s = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<f'
                 fmt_size = 4
                 obj.Floats = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<d'
                 fmt_size = 8
                 obj.Doubles = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                slength = struct.unpack('<i', data.red(1))
-                obj.Strings = struct.unpack('<{}s'.format(slength), data.read(slength))
+                obj.Strings = unpack_string(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DateTimes = DateTime.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Guids = Guid.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                obj.ByteStrings = ByteString.from_binary(data)
+                obj.ByteStrings = unpack_bytes(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.XmlElements = XmlElement.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.NodeIds = NodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ExpandedNodeIds = ExpandedNodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.StatusCodes = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DiagnosticInfos = DiagnosticInfo.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.QualifiedNames = QualifiedName.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.LocalizedTexts = LocalizedText.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.ExtensionObjects = ExtensionObject.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.DataValues = DataValue.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.Variants = Variant.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<I'
                 fmt_size = 4
@@ -11379,32 +11241,22 @@ class BuildInfo(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.ProductUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.ProductUri)), self.ProductUri.encode()))
-        packet.append(struct.pack('<i', len(self.ManufacturerName)))
-        packet.append(struct.pack('<{}s'.format(len(self.ManufacturerName)), self.ManufacturerName.encode()))
-        packet.append(struct.pack('<i', len(self.ProductName)))
-        packet.append(struct.pack('<{}s'.format(len(self.ProductName)), self.ProductName.encode()))
-        packet.append(struct.pack('<i', len(self.SoftwareVersion)))
-        packet.append(struct.pack('<{}s'.format(len(self.SoftwareVersion)), self.SoftwareVersion.encode()))
-        packet.append(struct.pack('<i', len(self.BuildNumber)))
-        packet.append(struct.pack('<{}s'.format(len(self.BuildNumber)), self.BuildNumber.encode()))
+        packet.append(pack_string(self.ProductUri))
+        packet.append(pack_string(self.ManufacturerName))
+        packet.append(pack_string(self.ProductName))
+        packet.append(pack_string(self.SoftwareVersion))
+        packet.append(pack_string(self.BuildNumber))
         packet.append(self.BuildDate.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = BuildInfo()
-        slength = struct.unpack('<i', data.red(1))
-        obj.ProductUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.ManufacturerName = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.ProductName = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.SoftwareVersion = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.BuildNumber = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.ProductUri = unpack_string(data)
+        obj.ManufacturerName = unpack_string(data)
+        obj.ProductName = unpack_string(data)
+        obj.SoftwareVersion = unpack_string(data)
+        obj.BuildNumber = unpack_string(data)
         obj.BuildDate = DateTime.from_binary(data)
         return obj
     
@@ -11426,8 +11278,7 @@ class RedundantServerDataType(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.ServerId)))
-        packet.append(struct.pack('<{}s'.format(len(self.ServerId)), self.ServerId.encode()))
+        packet.append(pack_string(self.ServerId))
         fmt = '<B'
         packet.append(struct.pack(fmt, self.ServiceLevel))
         fmt = '<I'
@@ -11437,8 +11288,7 @@ class RedundantServerDataType(object):
     @staticmethod
     def from_binary(data):
         obj = RedundantServerDataType()
-        slength = struct.unpack('<i', data.red(1))
-        obj.ServerId = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.ServerId = unpack_string(data)
         fmt = '<B'
         fmt_size = 1
         obj.ServiceLevel = struct.unpack(fmt, data.read(fmt_size))[0]
@@ -11461,19 +11311,17 @@ class EndpointUrlListDataType(object):
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.EndpointUrlList)))
-        for i in self.EndpointUrlList:
-            packet.append(struct.pack('<i', len(self.EndpointUrlList)))
-            packet.append(struct.pack('<{}s'.format(len(self.EndpointUrlList)), self.EndpointUrlList.encode()))
+        for fieldname in self.EndpointUrlList:
+            packet.append(pack_string(fieldname))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = EndpointUrlListDataType()
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                slength = struct.unpack('<i', data.red(1))
-                obj.EndpointUrlList = struct.unpack('<{}s'.format(slength), data.read(slength))
+                obj.EndpointUrlList = unpack_string(data)
         return obj
     
     def __str__(self):
@@ -11488,20 +11336,18 @@ class NetworkGroupDataType(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.ServerUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.ServerUri)), self.ServerUri.encode()))
+        packet.append(pack_string(self.ServerUri))
         packet.append(struct.pack('<i', len(self.NetworkPaths)))
-        for i in self.NetworkPaths:
-            packet.append(self.NetworkPaths.to_binary())
+        for fieldname in self.NetworkPaths:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = NetworkGroupDataType()
-        slength = struct.unpack('<i', data.red(1))
-        obj.ServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.ServerUri = unpack_string(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.NetworkPaths = EndpointUrlListDataType.from_binary(data)
         return obj
@@ -11751,17 +11597,13 @@ class SessionDiagnosticsDataType(object):
     def to_binary(self):
         packet = []
         packet.append(self.SessionId.to_binary())
-        packet.append(struct.pack('<i', len(self.SessionName)))
-        packet.append(struct.pack('<{}s'.format(len(self.SessionName)), self.SessionName.encode()))
+        packet.append(pack_string(self.SessionName))
         packet.append(self.ClientDescription.to_binary())
-        packet.append(struct.pack('<i', len(self.ServerUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.ServerUri)), self.ServerUri.encode()))
-        packet.append(struct.pack('<i', len(self.EndpointUrl)))
-        packet.append(struct.pack('<{}s'.format(len(self.EndpointUrl)), self.EndpointUrl.encode()))
+        packet.append(pack_string(self.ServerUri))
+        packet.append(pack_string(self.EndpointUrl))
         packet.append(struct.pack('<i', len(self.LocaleIds)))
-        for i in self.LocaleIds:
-            packet.append(struct.pack('<i', len(self.LocaleIds)))
-            packet.append(struct.pack('<{}s'.format(len(self.LocaleIds)), self.LocaleIds.encode()))
+        for fieldname in self.LocaleIds:
+            packet.append(pack_string(fieldname))
         fmt = '<d'
         packet.append(struct.pack(fmt, self.ActualSessionTimeout))
         fmt = '<I'
@@ -11811,18 +11653,14 @@ class SessionDiagnosticsDataType(object):
     def from_binary(data):
         obj = SessionDiagnosticsDataType()
         obj.SessionId = NodeId.from_binary(data)
-        slength = struct.unpack('<i', data.red(1))
-        obj.SessionName = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.SessionName = unpack_string(data)
         obj.ClientDescription = ApplicationDescription.from_binary(data)
-        slength = struct.unpack('<i', data.red(1))
-        obj.ServerUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.EndpointUrl = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.ServerUri = unpack_string(data)
+        obj.EndpointUrl = unpack_string(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                slength = struct.unpack('<i', data.red(1))
-                obj.LocaleIds = struct.unpack('<{}s'.format(slength), data.read(slength))
+                obj.LocaleIds = unpack_string(data)
         fmt = '<d'
         fmt_size = 8
         obj.ActualSessionTimeout = struct.unpack(fmt, data.read(fmt_size))[0]
@@ -11931,53 +11769,41 @@ class SessionSecurityDiagnosticsDataType(object):
         self.TransportProtocol = ''
         self.SecurityMode = 0
         self.SecurityPolicyUri = ''
-        self.ClientCertificate = ByteString()
+        self.ClientCertificate = b''
     
     def to_binary(self):
         packet = []
         packet.append(self.SessionId.to_binary())
-        packet.append(struct.pack('<i', len(self.ClientUserIdOfSession)))
-        packet.append(struct.pack('<{}s'.format(len(self.ClientUserIdOfSession)), self.ClientUserIdOfSession.encode()))
+        packet.append(pack_string(self.ClientUserIdOfSession))
         packet.append(struct.pack('<i', len(self.ClientUserIdHistory)))
-        for i in self.ClientUserIdHistory:
-            packet.append(struct.pack('<i', len(self.ClientUserIdHistory)))
-            packet.append(struct.pack('<{}s'.format(len(self.ClientUserIdHistory)), self.ClientUserIdHistory.encode()))
-        packet.append(struct.pack('<i', len(self.AuthenticationMechanism)))
-        packet.append(struct.pack('<{}s'.format(len(self.AuthenticationMechanism)), self.AuthenticationMechanism.encode()))
-        packet.append(struct.pack('<i', len(self.Encoding)))
-        packet.append(struct.pack('<{}s'.format(len(self.Encoding)), self.Encoding.encode()))
-        packet.append(struct.pack('<i', len(self.TransportProtocol)))
-        packet.append(struct.pack('<{}s'.format(len(self.TransportProtocol)), self.TransportProtocol.encode()))
+        for fieldname in self.ClientUserIdHistory:
+            packet.append(pack_string(fieldname))
+        packet.append(pack_string(self.AuthenticationMechanism))
+        packet.append(pack_string(self.Encoding))
+        packet.append(pack_string(self.TransportProtocol))
         fmt = '<I'
         packet.append(struct.pack(fmt, self.SecurityMode))
-        packet.append(struct.pack('<i', len(self.SecurityPolicyUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.SecurityPolicyUri)), self.SecurityPolicyUri.encode()))
-        packet.append(self.ClientCertificate.to_binary())
+        packet.append(pack_string(self.SecurityPolicyUri))
+        packet.append(pack_bytes(self.ClientCertificate))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = SessionSecurityDiagnosticsDataType()
         obj.SessionId = NodeId.from_binary(data)
-        slength = struct.unpack('<i', data.red(1))
-        obj.ClientUserIdOfSession = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.ClientUserIdOfSession = unpack_string(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
-                slength = struct.unpack('<i', data.red(1))
-                obj.ClientUserIdHistory = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.AuthenticationMechanism = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.Encoding = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.TransportProtocol = struct.unpack('<{}s'.format(slength), data.read(slength))
+                obj.ClientUserIdHistory = unpack_string(data)
+        obj.AuthenticationMechanism = unpack_string(data)
+        obj.Encoding = unpack_string(data)
+        obj.TransportProtocol = unpack_string(data)
         fmt = '<I'
         fmt_size = 4
         obj.SecurityMode = struct.unpack(fmt, data.read(fmt_size))[0]
-        slength = struct.unpack('<i', data.red(1))
-        obj.SecurityPolicyUri = struct.unpack('<{}s'.format(slength), data.read(slength))
-        obj.ClientCertificate = ByteString.from_binary(data)
+        obj.SecurityPolicyUri = unpack_string(data)
+        obj.ClientCertificate = unpack_bytes(data)
         return obj
     
     def __str__(self):
@@ -12371,8 +12197,7 @@ class EUInformation(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.NamespaceUri)))
-        packet.append(struct.pack('<{}s'.format(len(self.NamespaceUri)), self.NamespaceUri.encode()))
+        packet.append(pack_string(self.NamespaceUri))
         fmt = '<i'
         packet.append(struct.pack(fmt, self.UnitId))
         packet.append(self.DisplayName.to_binary())
@@ -12382,8 +12207,7 @@ class EUInformation(object):
     @staticmethod
     def from_binary(data):
         obj = EUInformation()
-        slength = struct.unpack('<i', data.red(1))
-        obj.NamespaceUri = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.NamespaceUri = unpack_string(data)
         fmt = '<i'
         fmt_size = 4
         obj.UnitId = struct.unpack(fmt, data.read(fmt_size))[0]
@@ -12475,9 +12299,9 @@ class AxisInformation(object):
         fmt = '<I'
         packet.append(struct.pack(fmt, self.AxisScaleType))
         packet.append(struct.pack('<i', len(self.AxisSteps)))
-        for i in self.AxisSteps:
+        for fieldname in self.AxisSteps:
             fmt = '<d'
-            packet.append(struct.pack(fmt, self.AxisSteps))
+            packet.append(struct.pack(fmt, fieldname))
         return b''.join(packet)
         
     @staticmethod
@@ -12490,7 +12314,7 @@ class AxisInformation(object):
         fmt_size = 4
         obj.AxisScaleType = struct.unpack(fmt, data.read(fmt_size))[0]
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 fmt = '<d'
                 fmt_size = 8
@@ -12552,19 +12376,17 @@ class ProgramDiagnosticDataType(object):
     def to_binary(self):
         packet = []
         packet.append(self.CreateSessionId.to_binary())
-        packet.append(struct.pack('<i', len(self.CreateClientName)))
-        packet.append(struct.pack('<{}s'.format(len(self.CreateClientName)), self.CreateClientName.encode()))
+        packet.append(pack_string(self.CreateClientName))
         packet.append(self.InvocationCreationTime.to_binary())
         packet.append(self.LastTransitionTime.to_binary())
-        packet.append(struct.pack('<i', len(self.LastMethodCall)))
-        packet.append(struct.pack('<{}s'.format(len(self.LastMethodCall)), self.LastMethodCall.encode()))
+        packet.append(pack_string(self.LastMethodCall))
         packet.append(self.LastMethodSessionId.to_binary())
         packet.append(struct.pack('<i', len(self.LastMethodInputArguments)))
-        for i in self.LastMethodInputArguments:
-            packet.append(self.LastMethodInputArguments.to_binary())
+        for fieldname in self.LastMethodInputArguments:
+            packet.append(fieldname.to_binary())
         packet.append(struct.pack('<i', len(self.LastMethodOutputArguments)))
-        for i in self.LastMethodOutputArguments:
-            packet.append(self.LastMethodOutputArguments.to_binary())
+        for fieldname in self.LastMethodOutputArguments:
+            packet.append(fieldname.to_binary())
         packet.append(self.LastMethodCallTime.to_binary())
         packet.append(self.LastMethodReturnStatus.to_binary())
         return b''.join(packet)
@@ -12573,19 +12395,17 @@ class ProgramDiagnosticDataType(object):
     def from_binary(data):
         obj = ProgramDiagnosticDataType()
         obj.CreateSessionId = NodeId.from_binary(data)
-        slength = struct.unpack('<i', data.red(1))
-        obj.CreateClientName = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.CreateClientName = unpack_string(data)
         obj.InvocationCreationTime = DateTime.from_binary(data)
         obj.LastTransitionTime = DateTime.from_binary(data)
-        slength = struct.unpack('<i', data.red(1))
-        obj.LastMethodCall = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.LastMethodCall = unpack_string(data)
         obj.LastMethodSessionId = NodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.LastMethodInputArguments = Argument.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
-        if length <= -1:
+        if length != -1:
             for i in range(0, length):
                 obj.LastMethodOutputArguments = Argument.from_binary(data)
         obj.LastMethodCallTime = DateTime.from_binary(data)
@@ -12614,20 +12434,16 @@ class Annotation(object):
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.Message)))
-        packet.append(struct.pack('<{}s'.format(len(self.Message)), self.Message.encode()))
-        packet.append(struct.pack('<i', len(self.UserName)))
-        packet.append(struct.pack('<{}s'.format(len(self.UserName)), self.UserName.encode()))
+        packet.append(pack_string(self.Message))
+        packet.append(pack_string(self.UserName))
         packet.append(self.AnnotationTime.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = Annotation()
-        slength = struct.unpack('<i', data.red(1))
-        obj.Message = struct.unpack('<{}s'.format(slength), data.read(slength))
-        slength = struct.unpack('<i', data.red(1))
-        obj.UserName = struct.unpack('<{}s'.format(slength), data.read(slength))
+        obj.Message = unpack_string(data)
+        obj.UserName = unpack_string(data)
         obj.AnnotationTime = DateTime.from_binary(data)
         return obj
     

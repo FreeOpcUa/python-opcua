@@ -10,6 +10,8 @@ if __name__ == "__main__":
     try:
         client.connect()
         client.open_secure_channel()
+        endpoints = client.get_endpoints()
+        print(endpoints)
         embed()
     finally:
         client.disconnect()

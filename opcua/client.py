@@ -27,13 +27,19 @@ class Client(object):
 
 
     def open_secure_channel(self):
-
         params = ua.OpenSecureChannelParameters()
         params.ClientProtocolVersion = 0
         params.RequestType = ua.SecurityTokenRequestType.Issue
         params.SecurityMode = ua.MessageSecurityMode.None_
         params.RequestedLifetime = 300000
-        params.ClientNonce = ua.ByteString('\x00')
+        params.ClientNonce = '\x00'
         self.bclient.open_secure_channel(params)
+
+    def get_endpoints(self):
+        params = ua.GetEndpointsParameters()
+        params.EndpointUrl = self.server_uri
+        params.ProfileUris = ["http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary"]
+        params.LocaleIds = ["http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary"]
+        return self.bclient.get_endpoints(params)
 
 

@@ -161,7 +161,7 @@ class AsymmetricAlgorithmHeader:
 
 class SymmetricAlgorithmHeader:
     def __init__(self):
-        self.TokenId = None
+        self.TokenId = 0
 
     @staticmethod
     def from_binary(data):

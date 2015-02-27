@@ -52,28 +52,28 @@ class Guid(object):
         return g
 
 
-class ByteString(object):
-    def __init__(self, data=b""):
-        self.data = data
+#class ByteString(object):
+    #def __init__(self, data=b""):
+        #self.data = data
+#
+    #def to_binary(self):
+        #return pack_bytes(self.data)
 
-    def to_binary(self):
-        return pack_bytes(self.data)
+    #@staticmethod
+    #def from_binary(data):
+        #bs = ByteString()
+        #bs.data = unpack_bytes(data)
+        #return bs
 
-    @staticmethod
-    def from_binary(data):
-        bs = ByteString()
-        bs.data = unpack_bytes(data)
-        return bs
+    #def __bool__(self):
+        #if len(self.data) != 0:
+            #return True
+        #return False
 
-    def __bool__(self):
-        if len(self.data) != 0:
-            return True
-        return False
+    #def __str__(self):
+        #return 'ByteString({})'.format(self.data)
 
-    def __str__(self):
-        return 'ByteString({})'.format(self.data)
-
-    __repr__ = __str__
+    #__repr__ = __str__
 
 """
 
