@@ -69,7 +69,9 @@ class Client(object):
     def activate_session(self):
         params = ua.ActivateSessionParameters()
         params.LocaleIds.append("en")
-        return self.bclient.get_endpoints(params)
+        params.UserIdentityToken = ua.AnonymousIdentityToken()
+        params.UserIdentityToken.PolicyId = b"anonymous"
+        return self.bclient.activate_session(params)
 
 
 

@@ -1,11 +1,9 @@
 #temporary hack
 from IPython import embed
-import sys
-sys.path.append("../../schemas/")
 
 import struct
 
-import  generate_protocol as gp
+import  generate_model as gm
 
 IgnoredEnums = ["NodeIdType"]
 IgnoredStructs = ["NodeId", "ExpandedNodeId", "FilterOperand"]
@@ -61,10 +59,18 @@ class CodeGenerator(object):
         self.iidx += 1
         self.write("def __init__(self):")
         self.iidx += 1
+
+        #hack extension object stuff
+        extobj_hack = False 
+        if "BodyLength" in [f.name for f in obj.fields]:
+            extobj_hack = True
+
         for field in obj.fields:
-            if field.uatype == obj.name: #help!!! selv referencing class
+            if extobj_hack and field.name == "Encoding":
+                self.write("self.Encoding = 1")
+            elif field.uatype == obj.name: #help!!! selv referencing class
                 self.write("self.{} = None".format(field.name))
-            elif field.name == "TypeId" and ( obj.name.endswith("Request") or obj.name.endswith("Response")):
+            elif not obj.name in ("ExtensionObject") and field.name == "TypeId" :# and ( obj.name.endswith("Request") or obj.name.endswith("Response")):
                 #self.write("nodeid = NodeId()")
                 #self.write("fourbyte = FourByteNodeId()")
                 #self.write("fourbyte.NamespaceIndex = 0")
@@ -90,8 +96,9 @@ class CodeGenerator(object):
                 self.write("if self.{name} is None: self.{name} = {uatype}()".format(name=field.name, uatype=field.uatype))
 
         self.write("packet = []")
-        #if obj.is_extension_object():
-            #self.write("body = []")
+        if extobj_hack:
+            print(obj.name, " is extension object")
+            self.write("body = []")
         #self.write("tmp = packet")
         for field in obj.fields:
             if field.switchfield:
@@ -105,10 +112,13 @@ class CodeGenerator(object):
                     bit = obj.bits[field.switchfield]
                     self.write("if self.{}: self.{} |= (1 << {})".format(field.name, bit.container, bit.idx))
         iidx = self.iidx
+        listname = "packet"
         for idx, field in enumerate(obj.fields):
             #if field.name == "Body" and idx <= (len(obj.fields)-1):
+            if field.name == "BodyLength":
+                listname = "body"
                 #self.write("tmp = packet")
-                #continue
+                continue
             self.iidx = iidx
             switch = ""
             fname = "self." + field.name
@@ -116,28 +126,28 @@ class CodeGenerator(object):
                 self.write("if self.{}: ".format(field.name))
                 self.iidx += 1
             if field.length:
-                self.write("packet.append(struct.pack('<i', len(self.{})))".format(field.name))
+                self.write("{}.append(struct.pack('<i', len(self.{})))".format(listname, field.name))
                 self.write("for fieldname in self.{}:".format(field.name))
                 fname = "fieldname"
                 self.iidx += 1
             if field.uatype in ("CharArray", "ByteString"):
-                self.write("packet.append(pack_bytes({name}))".format(name=fname))
+                self.write("{}.append(pack_bytes({name}))".format(listname, name=fname))
             elif field.uatype == "String":
                 #self.write("packet.append(struct.pack('<i', len({})))".format(fname))
                 #self.write("packet.append(struct.pack('<{{}}s'.format(len({name})), {name}.encode()))".format(name=fname))
-                self.write("packet.append(pack_string({name}))".format(name=fname))
+                self.write("{}.append(pack_string({name}))".format(listname, name=fname))
             elif field.is_native_type() or field.uatype in self.model.enum_list:
                 self.write("fmt = '<{}'".format(self.to_fmt(field)))
-                self.write("packet.append(struct.pack(fmt, {name}))".format(name=fname))
+                self.write("{}.append(struct.pack(fmt, {name}))".format(listname, name=fname))
             else:
-                self.write("packet.append({}.to_binary())".format(fname))
+                self.write("{}.append({}.to_binary())".format(listname, fname))
             if field.length:
                 self.iidx -= 1
         self.iidx = 2
-        #if obj.is_extension_object():
-            #self.write("body = b''.join(tmp)")
-            #self.write("packet.append(struct.pack('<i', len(body)))")
-            #self.write("packet.append(body)")
+        if extobj_hack:
+            self.write("body = b''.join(body)")
+            self.write("packet.append(struct.pack('<i', len(body)))")
+            self.write("packet.append(body)")
         self.write("return b''.join(packet)")
         self.write("")
 
@@ -275,15 +285,15 @@ def fix_names(model):
 if __name__ == "__main__":
     xmlpath = "Opc.Ua.Types.bsd"
     protocolpath = "../opcua/uaprotocol_auto.py"
-    p = gp.Parser(xmlpath)
+    p = gm.Parser(xmlpath)
     model = p.parse()
     #gp.reorder_extobjects(model)
-    gp.add_basetype_members(model)
-    gp.add_encoding_field(model)
-    gp.remove_duplicates(model)
-    gp.remove_vector_length(model)
-    gp.remove_body_length(model)
-    gp.split_requests(model)
+    gm.add_basetype_members(model)
+    gm.add_encoding_field(model)
+    gm.remove_duplicates(model)
+    gm.remove_vector_length(model)
+    #gm.remove_body_length(model)
+    gm.split_requests(model)
     fix_names(model)
     c = CodeGenerator(model, protocolpath)
     c.run()

@@ -17,6 +17,7 @@ if __name__ == "__main__":
         client.send_hello()
         client.open_secure_channel()
         client.create_session()
+        client.activate_session()
         embed()
     finally:
         client.disconnect()
