@@ -9,9 +9,14 @@ if __name__ == "__main__":
     client = Client("opc.tcp://localhost:4841/freeopcua/server/")
     try:
         client.connect()
+        client.send_hello()
         client.open_secure_channel()
         endpoints = client.get_endpoints()
         client.close_secure_channel()
-        #embed()
+        client.connect()
+        client.send_hello()
+        client.open_secure_channel()
+        client.create_session()
+        embed()
     finally:
         client.disconnect()

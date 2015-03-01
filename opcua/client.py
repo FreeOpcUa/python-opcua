@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 from opcua import uaprotocol as ua
 from opcua import BinaryClient 
@@ -8,23 +9,25 @@ class Client(object):
     def __init__(self, uri):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.server_uri = uri
-        self.session_name = "Pure Python Client"
+        self.name = "Pure Python Client" 
+        self.description = self.name 
         self.application_uri = "urn:freeopcua:client"
         self.product_uri = "urn:freeopcua.github.no:client"
         self.security_policy_uri = "http://opcfoundation.org/UA/SecurityPolicy#None"
         self.secure_channel_id = None
         self.default_timeout = 3600000
         self.bclient = BinaryClient()
+        self._nonce = None
+        self._session_counter = 1
 
     def connect(self):
         self.bclient.connect()
-        ack = self.bclient.send_hello(self.server_uri)
-        self.bclient.start()
 
     def disconnect(self):
-        #self.bclient.disconnect()
-        self.bclient.stop()
+        self.bclient.disconnect()
 
+    def send_hello(self):
+        ack = self.bclient.send_hello(self.server_uri)
 
     def open_secure_channel(self):
         params = ua.OpenSecureChannelParameters()
@@ -44,5 +47,29 @@ class Client(object):
         params.ProfileUris = ["http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary"]
         params.LocaleIds = ["http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary"]
         return self.bclient.get_endpoints(params)
+
+    def create_session(self):
+        desc = ua.ApplicationDescription()
+        desc.ApplicationUri = self.application_uri
+        desc.ProductUri = self.product_uri
+        desc.ApplicationName = ua.LocalizedText(self.name)
+        desc.ApplicationType = ua.ApplicationType.Client
+
+        params = ua.CreateSessionParameters()
+        params.ClientNonce = uuid.uuid4().bytes
+        params.ClientCertificate = b''
+        params.ClientDescription = desc 
+        params.EndpointUrl = self.server_uri
+        params.SessionName = self.description + " Session" + str(self._session_counter)
+        params.RequestedSessionTimeout = 3600000
+        params.MaxResponseMessageSize = 0 #means not max size
+        response = self.bclient.create_session(params)
+        return response
+
+    def activate_session(self):
+        params = ua.ActivateSessionParameters()
+        params.LocaleIds.append("en")
+        return self.bclient.get_endpoints(params)
+
 
 

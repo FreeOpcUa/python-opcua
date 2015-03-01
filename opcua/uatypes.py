@@ -52,40 +52,6 @@ class Guid(object):
         return g
 
 
-#class ByteString(object):
-    #def __init__(self, data=b""):
-        #self.data = data
-#
-    #def to_binary(self):
-        #return pack_bytes(self.data)
-
-    #@staticmethod
-    #def from_binary(data):
-        #bs = ByteString()
-        #bs.data = unpack_bytes(data)
-        #return bs
-
-    #def __bool__(self):
-        #if len(self.data) != 0:
-            #return True
-        #return False
-
-    #def __str__(self):
-        #return 'ByteString({})'.format(self.data)
-
-    #__repr__ = __str__
-
-"""
-
-class ByteString(bytes):
-    def __init__(self, data):
-        bytes.__init__(self, data)
-        self.data
-
-    def to_binary(self):
-        return 
-"""
-
 class StatusCode(object):
     def __init__(self):
         self.data = b""
@@ -133,6 +99,8 @@ class NodeId(object):
                 raise Exception("NodeId: Could not guess type of NodeId, set NodeIdType")
         else:
             self.NodeIdType = nodeidtype
+        self.NamespaceUri = ""
+        self.ServerIndex = 0
 
     def to_string(self):
         #FIXME:
@@ -165,11 +133,11 @@ class NodeId(object):
         elif self.NodeIdType == NodeIdType.Numeric:
             b.append(struct.pack("<HI", self.NamespaceIndex, self.Identifier))
         elif self.NodeIdType == NodeIdType.String:
-            b.append(struct,pack("<H", self.NamespaceIndex))
-            b.append(pack_string(self._identifier))
+            b.append(struct.pack("<H", self.NamespaceIndex))
+            b.append(pack_string(self.Identifier))
         else:
-            b.append(struct,pack("<H", self.NamespaceIndex))
-            b.append(self.Indentifier.to_binary())
+            b.append(struct.pack("<H", self.NamespaceIndex))
+            b.append(self.Identifier.to_binary())
         return b"".join(b)
 
     @staticmethod
@@ -187,20 +155,21 @@ class NodeId(object):
         elif nid.NodeIdType == NodeIdType.String:
             nid.NamespaceIndex = struct.unpack("<H", data.read(2))
             nid.Identifier = unpack_string(data)
-        elif self.NodeIdType == NodeIdType.ByteString:
+        elif nid.NodeIdType == NodeIdType.ByteString:
             nid.NamespaceIndex = struct.unpack("<H", data.read(2))
-            nid.Identifier = ByteString.from_binary(data)
+            nid.Identifier = unpack_bytes(data)
         elif nid.NodeIdType == NodeIdType.Guid:
             nid.NamespaceIndex = struct.unpack("<H", data.read(2))
             nid.Identifier = Guid.from_binary(data)
         else:
             raise Exception("Unknown NodeId encoding: " + str(nid.NodeIdType))
-        return nid
 
         if test_bit(encoding, 6):
-            self.NamespaceURI = unpack_string(data)
+            nid.NamespaceUri = unpack_string(data)
         if test_bit(encoding, 7):
-            self.ServerIndex = struct.unpack("<I", data.read(1))[0]
+            nid.ServerIndex = struct.unpack("<I", data.read(1))[0]
+
+        return nid
 
 ExpandedNodeId = NodeId
 
