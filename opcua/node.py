@@ -12,7 +12,11 @@ class Node(object):
 
     def get_name(self):
         result = self.get_attribute(ua.AttributeIds.BrowseName)
-        return result.Value.Value
+        return result.Value
+
+    def get_value(self):
+        result = self.get_attribute(ua.AttributeIds.Value)
+        return result.Value
 
     def get_attribute(self, attr):
         rv = ua.ReadValueId()
@@ -21,8 +25,7 @@ class Node(object):
         params = ua.ReadParameters()
         params.NodesToRead.append(rv)
         result = self.server.read(params)
-        print(result)
-        return result[0]
+        return result[0].Value
 
     def get_children(self):
         desc = ua.BrowseDescription()

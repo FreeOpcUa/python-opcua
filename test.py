@@ -1,6 +1,7 @@
 import logging
 
 from opcua import Client
+from opcua import uaprotocol as ua
 
 
 if __name__ == "__main__": 
@@ -24,6 +25,9 @@ if __name__ == "__main__":
         print(childs)
         bname = root.get_name()
         print(bname)
+        var = client.get_node(ua.NodeId(1002, 2))
+        print(var)
+        print(var.get_value())
         embed()
         client.close_session()
     finally:

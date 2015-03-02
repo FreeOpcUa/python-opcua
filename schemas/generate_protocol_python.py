@@ -6,7 +6,7 @@ import struct
 import  generate_model as gm
 
 IgnoredEnums = ["NodeIdType"]
-IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant"]
+IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue"]
 
 class CodeGenerator(object):
     def __init__(self, model, output):

@@ -1,12 +1,34 @@
 """
 Low level binary client
 """
-import io
+#import io
 import logging
 import socket
 from threading import Thread, Condition, Lock
 
 from . import uaprotocol as ua
+
+class Buffer(object):
+    """
+    alternative to io.BytesIO making debug easier
+    """
+    def __init__(self, data):
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.data = data
+
+    def __str__(self):
+        return "Buffer(size:{}, data:{})".format(len(self.data), self.data)
+    __repr__ = __str__
+
+    def read(self, size):
+        if size > len(self.data):
+            raise Exception("No enough data left in buffer, request for {}, we have {}".format(size, self))
+        self.logger.debug("Request for %s bytes, from %s", size, self)
+        data = self.data[:size]
+        self.data = self.data[size:]
+        self.logger.debug("Returning: %s ", data)
+        return data
+
 
 class RequestCallback(object):
     def __init__(self, callback=None):
@@ -78,7 +100,8 @@ class BinaryClient(object):
         data = self._socket.recv(size)
         if size != len(data):
             raise Exception("Error, did not received expected number of bytes")
-        return io.BytesIO(data)
+        #return io.BytesIO(data)
+        return Buffer(data)
 
     def _receive(self):
         header = self._receive_header()

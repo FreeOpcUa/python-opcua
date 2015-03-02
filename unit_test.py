@@ -56,7 +56,9 @@ class Unit(unittest.TestCase):
         print(qn)
         qn.to_binary()
 
-    def test_variant(self)
+    def test_variant(self):
+        qn = ua.QualifiedName("Root", 0)
+        v = Variant
 
 
 

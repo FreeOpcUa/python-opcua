@@ -8,6 +8,8 @@ import struct
 from .attribute_ids import AttributeIds
 from .object_ids import ObjectIds
 
+UaTypes = ( "Boolean", "SByte", "Byte", "UInt8", "Int8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double", "String", "DateTime", "Guid", "ByteString" )
+
 def uatype_to_fmt(uatype):
     if uatype == "String":
         return "s"
@@ -324,6 +326,7 @@ class DateTime(object):
     
     @staticmethod
     def from_binary(data):
+        print("Generating DateTime from {}", data)
         d = DateTime()
         d.data = struct.unpack("<d", data.read(8))[0]
         return d
@@ -443,8 +446,8 @@ class Variant(object):
 
     @staticmethod
     def _unpack_val_array(vtype, data):
-        if vtype.name in ( "Boolean", "SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double", "String", "DateTime", "Guid", "ByteString" ):
-            return unpack_uatype_array(obj.VariantType.name, data)
+        if vtype.name in UaTypes:
+            return unpack_uatype_array(vtype.name, data)
         else:
             length = struct.unpack("<i", data.read(4))
             res = []
@@ -454,13 +457,79 @@ class Variant(object):
 
     @staticmethod
     def _unpack_val(vtype, data):
-        if vtype.name in ( "Boolean", "SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double", "String", "DateTime", "Guid", "ByteString" ):
+        if vtype.name in UaTypes:
             return unpack_uatype(obj.VariantType.name, data)
         else:
             code = "{}.from_binary(data)".format(vtype.name)
             tmp = eval(code)
             return tmp
 
+class DataValue(object):
+    '''
+    A value with an associated timestamp, and quality.
+    Automatically generated from xml , copied and modified here to fix errors in xml spec
+    '''
+    def __init__(self, variant=None):
+        self.Encoding = 0
+        if variant is None:
+            self.Value = Variant()
+        self.StatusCode = StatusCode()
+        self.SourceTimestamp = DateTime()
+        self.SourcePicoseconds = 0
+        self.ServerTimestamp = DateTime()
+        self.ServerPicoseconds = 0
+    
+    def to_binary(self):
+        packet = []
+        if self.Value: self.Encoding |= (1 << 0)
+        if self.StatusCode: self.Encoding |= (1 << 1)
+        if self.SourceTimestamp: self.Encoding |= (1 << 2)
+        if self.ServerTimestamp: self.Encoding |= (1 << 3)
+        if self.SourcePicoseconds: self.Encoding |= (1 << 4)
+        if self.ServerPicoseconds: self.Encoding |= (1 << 5)
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        if self.Value: 
+            packet.append(self.Value.to_binary())
+        if self.StatusCode: 
+            packet.append(self.StatusCode.to_binary())
+        if self.SourceTimestamp: 
+            packet.append(self.SourceTimestamp.to_binary())
+        if self.ServerTimestamp: 
+            packet.append(self.ServerTimestamp.to_binary())
+        if self.SourcePicoseconds: 
+            packet.append(pack_uatype('UInt16', self.SourcePicoseconds))
+        if self.ServerPicoseconds: 
+            packet.append(pack_uatype('UInt16', self.ServerPicoseconds))
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = DataValue()
+        obj.Encoding = unpack_uatype('UInt8', data)
+        if obj.Encoding & (1 << 0):
+            obj.Value = Variant.from_binary(data)
+        if obj.Encoding & (1 << 1):
+            obj.StatusCode = StatusCode.from_binary(data)
+        if obj.Encoding & (1 << 2):
+            obj.SourceTimestamp = DateTime.from_binary(data)
+        if obj.Encoding & (1 << 3):
+            obj.ServerTimestamp = DateTime.from_binary(data)
+        if obj.Encoding & (1 << 4):
+            obj.SourcePicoseconds = unpack_uatype('UInt16', data)
+        if obj.Encoding & (1 << 5):
+            obj.ServerPicoseconds = unpack_uatype('UInt16', data)
+        return obj
+    
+    def __str__(self):
+        return 'DataValue(' + 'Encoding:' + str(self.Encoding) + ', '  + \
+             'Value:' + str(self.Value) + ', '  + \
+             'StatusCode:' + str(self.StatusCode) + ', '  + \
+             'SourceTimestamp:' + str(self.SourceTimestamp) + ', '  + \
+             'ServerTimestamp:' + str(self.ServerTimestamp) + ', '  + \
+             'SourcePicoseconds:' + str(self.SourcePicoseconds) + ', '  + \
+             'ServerPicoseconds:' + str(self.ServerPicoseconds) + ')'
+    
+    __repr__ = __str__
 
 
 
