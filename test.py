@@ -18,6 +18,11 @@ if __name__ == "__main__":
         client.open_secure_channel()
         client.create_session()
         client.activate_session()
+        root = client.get_root_node()
+        print(root)
+        childs = root.get_children()
+        print(childs)
         embed()
+        client.close_session()
     finally:
         client.disconnect()

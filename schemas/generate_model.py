@@ -20,7 +20,7 @@ OverrideNames = {}#{"RequestHeader": "Header", "ResponseHeader": "Header", "Stat
 
 #some object are defined in extensionobjects in spec but seems not to be in reality
 #in addition to this list all request and response and descriptions will not inherit
-NoInherit = ["RequestHeader", "ResponseHeader", "ChannelSecurityToken", "UserTokenPolicy", "SignatureData"]#, "ApplicationDescription", "EndpointDescription"
+NoInherit = ["RequestHeader", "ResponseHeader", "ChannelSecurityToken", "UserTokenPolicy", "SignatureData", "BrowseResult"]#, "ApplicationDescription", "EndpointDescription"
 
 
 class Bit(object):
@@ -38,7 +38,7 @@ class Struct(object):
     def __init__(self):
         self.name = None
         self.basetype = None
-        self.doc = None
+        self.doc = ""
         self.fields = []
         self.bits = {}
         self.needconstructor = None
@@ -127,7 +127,7 @@ class Enum(object):
         self.name = None
         self.uatype = None
         self.values = []
-        self.doc = None
+        self.doc = ""
 
     def get_ctype(self):
         return "uint{}_t".format(self.uatype)
@@ -472,13 +472,11 @@ def add_basetype_members(model):
             #continue
         for name, bit in base.bits.items():
             struct.bits[name] = bit
-        print(struct.name, struct.fields, struct.basetype, base.fields)
         for idx, field in enumerate(base.fields):
             field = copy(field)
             if field.name == "Body" and not emptystruct:
                 #print("Field is names Body", struct.name, field.name)
                 struct.extensionobject = True
-                print(struct.name, " set to extensionobject")
                 field.name = "BodyLength"
                 field.uatype = "Int32"
                 field.length = None

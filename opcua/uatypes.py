@@ -80,10 +80,10 @@ class NodeIdType(object):
 
 
 class NodeId(object):
-    def __init__(self, namespaceidx=None, identifier=None, nodeidtype=None):
-        if namespaceidx is None:
-            self.NamespaceIndex = 0
+    def __init__(self, identifier=None, namespaceidx=0, nodeidtype=None):
+        if identifier is None:
             self.Identifier = 0
+            self.NamespaceIndex = 0
             self.NodeIdType = NodeIdType.TwoByte
             return
         self.NamespaceIndex = namespaceidx
@@ -171,8 +171,44 @@ class NodeId(object):
 
         return nid
 
+class TwoByteNodeId(NodeId):
+    def __init__(self, identifier):
+        NodeId.__init__(self, identifier, 0, NodeIdType.TwoByte)
+
+class FourByteNodeId(NodeId):
+    def __init__(self, identifier, namespace=0):
+        NodeId.__init__(self, identifier, namespace, NodeIdType.FourByte)
+
 ExpandedNodeId = NodeId
 
+class QualifiedName(object):
+    '''
+    A string qualified with a namespace index.
+    '''
+    def __init__(self, name="", namespaceidx=0):
+        self.NamespaceIndex = namespaceidx
+        self.Name = name
+    
+    def to_binary(self):
+        packet = []
+        fmt = '<H'
+        packet.append(struct.pack(fmt, self.NamespaceIndex))
+        packet.append(pack_string(self.Name))
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = QualifiedName()
+        fmt = '<H'
+        obj.NamespaceIndex = struct.unpack(fmt, data.read(2))[0]
+        obj.Name = unpack_string(data)
+        return obj
+    
+    def __str__(self):
+        return 'QualifiedName({}:{})'.format(self.NamespaceIndex, self.Name)
+    
+    __repr__ = __str__
+ 
 class DateTime(object):
     def __init__(self, data=None):
         if data is None:

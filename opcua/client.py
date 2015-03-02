@@ -2,7 +2,7 @@ import logging
 import uuid
 
 from opcua import uaprotocol as ua
-from opcua import BinaryClient 
+from opcua import BinaryClient, Node
 
 
 class Client(object):
@@ -72,6 +72,19 @@ class Client(object):
         params.UserIdentityToken = ua.AnonymousIdentityToken()
         params.UserIdentityToken.PolicyId = b"anonymous"
         return self.bclient.activate_session(params)
+
+    def close_session(self):
+        return self.bclient.close_session(True)
+
+    def get_root_node(self):
+        return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.RootFolder))
+
+    def get_objects_node(self):
+        return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.ObjectsFolder))
+
+    def get_node(self, nodeid):
+        return Node(self.bclient, nodeid)
+
 
 
 

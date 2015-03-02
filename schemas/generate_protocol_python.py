@@ -6,7 +6,7 @@ import struct
 import  generate_model as gm
 
 IgnoredEnums = ["NodeIdType"]
-IgnoredStructs = ["NodeId", "ExpandedNodeId", "FilterOperand"]
+IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand"]
 
 class CodeGenerator(object):
     def __init__(self, model, output):
@@ -23,8 +23,11 @@ class CodeGenerator(object):
             if not enum.name in IgnoredEnums:
                 self.generate_enum_code(enum)
         for struct in self.model.structs:
-            if not struct.name in IgnoredStructs:
-                self.generate_struct_code(struct)
+            if struct.name in IgnoredStructs:
+                continue
+            if struct.name.endswith("Node") or struct.name.endswith("NodeId"):
+                continue
+            self.generate_struct_code(struct)
 
     def write(self, *args):
         args = list(args)
@@ -48,6 +51,9 @@ class CodeGenerator(object):
         self.write("")
         self.write("class {}(object):".format(enum.name))
         self.iidx = 1
+        self.write("'''")
+        self.write(enum.doc)
+        self.write("'''")
         for val in enum.values:
             self.write("{} = {}".format(val.name, val.value))
         self.iidx = 0
@@ -57,6 +63,9 @@ class CodeGenerator(object):
         self.iidx = 0
         self.write("class {}(object):".format(obj.name))
         self.iidx += 1
+        self.write("'''")
+        self.write(obj.doc)
+        self.write("'''")
         self.write("def __init__(self):")
         self.iidx += 1
 
@@ -77,7 +86,7 @@ class CodeGenerator(object):
                 #self.write("fourbyte.Identifier = ObjectIds.{}".format(obj.name +"_Encoding_DefaultBinary"))
                 #self.write("nodeid.FourByte = fourbyte")
 
-                self.write("self.TypeId = NodeId(0, ObjectIds.{}, NodeIdType.FourByte)".format(obj.name +"_Encoding_DefaultBinary"))
+                self.write("self.TypeId = FourByteNodeId(ObjectIds.{}_Encoding_DefaultBinary)".format(obj.name))
                 #self.write("self.{} = nodeid".format(field.name))
             else:
                 self.write("self.{} = {}".format(field.name, "[]" if field.length else self.get_default_value(field)))
@@ -97,7 +106,6 @@ class CodeGenerator(object):
 
         self.write("packet = []")
         if extobj_hack:
-            print(obj.name, " is extension object")
             self.write("body = []")
         #self.write("tmp = packet")
         for field in obj.fields:
@@ -173,23 +181,37 @@ class CodeGenerator(object):
                 else:
                     self.write("if obj.{} & (1 << {}):".format(bit.container, bit.idx))
                 self.iidx += 1
+            array = False
             if field.length:
+                array = True
                 self.write("length = struct.unpack('<i', data.read(4))[0]")
                 self.write("if length != -1:")
                 self.iidx += 1
                 self.write("for i in range(0, length):")
                 self.iidx += 1
             if field.uatype in ("CharArray", "ByteString"):
-                self.write("obj.{name} = unpack_bytes(data)".format(name=field.name))
+                if array:
+                    self.write("obj.{name}.append(unpack_bytes(data))".format(name=field.name))
+                else:
+                    self.write("obj.{name} = unpack_bytes(data)".format(name=field.name))
             elif field.uatype == "String":
-                self.write("obj.{name} = unpack_string(data)".format(name=field.name))
+                if array:
+                    self.write("obj.{name}.append(unpack_string(data))".format(name=field.name))
+                else:
+                    self.write("obj.{name} = unpack_string(data)".format(name=field.name))
             elif field.is_native_type() or field.uatype in self.model.enum_list:
                 fmt =  self.to_fmt(field)
                 self.write("fmt = '<{}'".format(fmt))
                 self.write("fmt_size = {}".format(struct.calcsize(fmt)))
-                self.write("obj.{name} = struct.unpack(fmt, data.read(fmt_size))[0]".format(name=field.name))
+                if array:
+                    self.write("obj.{name}.append(struct.unpack(fmt, data.read(fmt_size))[0])".format(name=field.name))
+                else:
+                    self.write("obj.{name} = struct.unpack(fmt, data.read(fmt_size))[0]".format(name=field.name))
             else:
-                self.write("obj.{} = {}.from_binary(data)".format(field.name, field.uatype))
+                if array:
+                    self.write("obj.{}.append({}.from_binary(data))".format(field.name, field.uatype))
+                else:
+                    self.write("obj.{} = {}.from_binary(data)".format(field.name, field.uatype))
         self.iidx = 2
         self.write("return obj")
         
@@ -207,12 +229,6 @@ class CodeGenerator(object):
         self.write("")
         self.write("__repr__ = __str__")
 
-
-
-
-
-
-
         self.iix = 0
 
     
@@ -223,7 +239,9 @@ class CodeGenerator(object):
             return "''"
         elif field.uatype in ("ByteString", "CharArray", "Char"):
             return "b''"
-        elif field.uatype in ("Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Boolean", "Double", "Float", "Byte"):
+        elif field.uatype in ("Boolean"):
+            return "True"
+        elif field.uatype in ("Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Double", "Float", "Byte"):
             return 0
         else:
             return field.uatype + "()"

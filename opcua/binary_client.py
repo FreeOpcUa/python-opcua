@@ -4,7 +4,7 @@ Low level binary client
 import io
 import logging
 import socket
-from threading import Thread, Condition
+from threading import Thread, Condition, Lock
 
 from . import uaprotocol as ua
 
@@ -33,6 +33,7 @@ class BinaryClient(object):
         self._request_handle = 0
         self._callbackmap = {}
         self._thread = None
+        self._lock = Lock()
 
     def start(self):
         """
@@ -44,13 +45,14 @@ class BinaryClient(object):
         self._thread.start()
 
     def _send_request(self, request):
-        request.RequestHeader = self._create_request_header()
-        hdr = ua.Header(ua.MessageType.SecureMessage, ua.ChunkType.Single, self._security_token.TokenId)
-        symhdr = ua.SymmetricAlgorithmHeader()
-        seqhdr = self._create_sequence_header()
-        self._write_socket(hdr, symhdr, seqhdr, request)
-        rcall = RequestCallback()
-        self._callbackmap[seqhdr.RequestId] = rcall
+        with self._lock:
+            request.RequestHeader = self._create_request_header()
+            hdr = ua.Header(ua.MessageType.SecureMessage, ua.ChunkType.Single, self._security_token.TokenId)
+            symhdr = ua.SymmetricAlgorithmHeader()
+            seqhdr = self._create_sequence_header()
+            rcall = RequestCallback()
+            self._callbackmap[seqhdr.RequestId] = rcall
+            self._write_socket(hdr, symhdr, seqhdr, request)
         with rcall.condition:
             rcall.condition.wait()
             return rcall.data
@@ -185,6 +187,23 @@ class BinaryClient(object):
         data = self._send_request(request)
         response = ua.ActivateSessionResponse.from_binary(data)
         return response.Parameters
+
+    def close_session(self, deletesubscriptions):
+        self.logger.info("close_session")
+        request = ua.CloseSessionRequest()
+        request.DeleteSubscriptions = deletesubscriptions
+        data = self._send_request(request)
+        response = ua.CloseSessionResponse.from_binary(data)
+
+    def browse(self, parameters):
+        self.logger.info("browse")
+        request = ua.BrowseRequest()
+        request.Parameters = parameters
+        data = self._send_request(request)
+        response = ua.BrowseResponse.from_binary(data)
+        return response.Results
+
+
 
 
 

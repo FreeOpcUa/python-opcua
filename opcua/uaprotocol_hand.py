@@ -201,4 +201,3 @@ class SequenceHeader:
     __repr__ = __str__
 
 
-
