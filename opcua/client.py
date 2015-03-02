@@ -21,9 +21,25 @@ class Client(object):
         self._session_counter = 1
 
     def connect(self):
+        self.connect_socket()
+        self.send_hello()
+        self.open_secure_channel()
+        endpoints = self.get_endpoints()
+        #FIXME check endpoint, config, etc
+        self.close_secure_channel()
+        #here we expect server to close connection automatically
+        self.connect_socket()
+        self.create_session()
+        self.activate_session()
+
+    def connect_socket(self):
         self.bclient.connect()
 
+    def disconnect_socket(self):
+        self.bclient.disconnect()
+
     def disconnect(self):
+        self.close_secure_channel()
         self.bclient.disconnect()
 
     def send_hello(self):
