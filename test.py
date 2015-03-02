@@ -28,6 +28,7 @@ if __name__ == "__main__":
         var = client.get_node(ua.NodeId(1002, 2))
         print(var)
         print(var.get_value())
+        var.set_value(ua.Variant([23], ua.VariantType.Int64))
         embed()
         client.close_session()
     finally:

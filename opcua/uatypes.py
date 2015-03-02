@@ -58,6 +58,7 @@ def pack_uatype_array(uatype, value):
     b.append(struct.pack("<i", len(value)))
     for val in value:
         b.append(pack_uatype(uatype, val))
+    return b"".join(b)
 
 def pack_uatype(uatype, value):
     if uatype == "String":
@@ -140,7 +141,7 @@ class Guid(object):
 
 class StatusCode(object):
     def __init__(self):
-        self.data = b""
+        self.data = 0 
 
     def to_binary(self):
         return struct.pack("!I", self.data)
@@ -430,6 +431,7 @@ class Variant(object):
         else:
             b.append(pack_uatype(self.VariantType.name, self.Value))
         b.insert(0, struct.pack("<B", self.Encoding))
+        print(b)
         return b"".join(b)
 
     @staticmethod
@@ -473,6 +475,8 @@ class DataValue(object):
         self.Encoding = 0
         if variant is None:
             self.Value = Variant()
+        else:
+            self.Value = variant
         self.StatusCode = StatusCode()
         self.SourceTimestamp = DateTime()
         self.SourcePicoseconds = 0

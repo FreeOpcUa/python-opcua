@@ -6439,9 +6439,6 @@ class WriteValue(object):
     
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.WriteValue_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.NodeId = NodeId()
         self.AttributeId = 0
         self.IndexRange = ''
@@ -6449,24 +6446,15 @@ class WriteValue(object):
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(self.NodeId.to_binary())
-        body.append(pack_uatype('UInt32', self.AttributeId))
-        body.append(pack_uatype('String', self.IndexRange))
-        body.append(self.Value.to_binary())
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+        packet.append(self.NodeId.to_binary())
+        packet.append(pack_uatype('UInt32', self.AttributeId))
+        packet.append(pack_uatype('String', self.IndexRange))
+        packet.append(self.Value.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = WriteValue()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.NodeId = NodeId.from_binary(data)
         obj.AttributeId = unpack_uatype('UInt32', data)
         obj.IndexRange = unpack_uatype('String', data)
@@ -6474,41 +6462,10 @@ class WriteValue(object):
         return obj
     
     def __str__(self):
-        return 'WriteValue(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'NodeId:' + str(self.NodeId) + ', '  + \
+        return 'WriteValue(' + 'NodeId:' + str(self.NodeId) + ', '  + \
              'AttributeId:' + str(self.AttributeId) + ', '  + \
              'IndexRange:' + str(self.IndexRange) + ', '  + \
              'Value:' + str(self.Value) + ')'
-    
-    __repr__ = __str__
-    
-class WriteParameters(object):
-    '''
-    
-    '''
-    def __init__(self):
-        self.NodesToWrite = []
-    
-    def to_binary(self):
-        packet = []
-        packet.append(struct.pack('<i', len(self.NodesToWrite)))
-        for fieldname in self.NodesToWrite:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = WriteParameters()
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for i in range(0, length):
-                obj.NodesToWrite.append(WriteValue.from_binary(data))
-        return obj
-    
-    def __str__(self):
-        return 'WriteParameters(' + 'NodesToWrite:' + str(self.NodesToWrite) + ')'
     
     __repr__ = __str__
     
@@ -6519,13 +6476,15 @@ class WriteRequest(object):
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.WriteRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
-        self.Parameters = WriteParameters()
+        self.NodesToWrite = []
     
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
+        packet.append(struct.pack('<i', len(self.NodesToWrite)))
+        for fieldname in self.NodesToWrite:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -6533,26 +6492,33 @@ class WriteRequest(object):
         obj = WriteRequest()
         obj.TypeId = NodeId.from_binary(data)
         obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = WriteParameters.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length != -1:
+            for i in range(0, length):
+                obj.NodesToWrite.append(WriteValue.from_binary(data))
         return obj
     
     def __str__(self):
         return 'WriteRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'RequestHeader:' + str(self.RequestHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'NodesToWrite:' + str(self.NodesToWrite) + ')'
     
     __repr__ = __str__
     
-class WriteResult(object):
+class WriteResponse(object):
     '''
     
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.WriteResponse_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
     
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.Results)))
         for fieldname in self.Results:
             packet.append(fieldname.to_binary())
@@ -6563,7 +6529,9 @@ class WriteResult(object):
         
     @staticmethod
     def from_binary(data):
-        obj = WriteResult()
+        obj = WriteResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for i in range(0, length):
@@ -6575,39 +6543,10 @@ class WriteResult(object):
         return obj
     
     def __str__(self):
-        return 'WriteResult(' + 'Results:' + str(self.Results) + ', '  + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
-    __repr__ = __str__
-    
-class WriteResponse(object):
-    '''
-    
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.WriteResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = WriteResult()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = WriteResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = WriteResult.from_binary(data)
-        return obj
-    
-    def __str__(self):
         return 'WriteResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
     
     __repr__ = __str__
     

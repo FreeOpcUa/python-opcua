@@ -236,6 +236,15 @@ class BinaryClient(object):
         response = ua.ReadResponse.from_binary(data)
         return response.Results
 
+    def write(self, nodestowrite):
+        self.logger.info("read")
+        request = ua.WriteRequest()
+        request.NodesToWrite = nodestowrite
+        data = self._send_request(request)
+        response = ua.WriteResponse.from_binary(data)
+        return response.Results
+
+
 
 
 

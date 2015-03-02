@@ -18,6 +18,21 @@ class Node(object):
         result = self.get_attribute(ua.AttributeIds.Value)
         return result.Value
 
+    def _value(self):
+        result = self.get_attribute(ua.AttributeIds.Value)
+        return result.Value
+
+    def set_value(self, variant):
+        return self.set_attribute(ua.AttributeIds.Value, ua.DataValue(variant))
+
+    def set_attribute(self, attributeid, datavalue):
+        attr = ua.WriteValue()
+        attr.NodeId = self.nodeid
+        attr.AttributeId = attributeid
+        attr.Value = datavalue
+        result = self.server.write([attr])
+        return result[0]
+
     def get_attribute(self, attr):
         rv = ua.ReadValueId()
         rv.NodeId = self.nodeid
