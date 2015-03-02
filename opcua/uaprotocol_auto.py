@@ -5717,9 +5717,6 @@ class ReadValueId(object):
     
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.ReadValueId_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.NodeId = NodeId()
         self.AttributeId = 0
         self.IndexRange = ''
@@ -5727,24 +5724,15 @@ class ReadValueId(object):
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(self.NodeId.to_binary())
-        body.append(pack_uatype('UInt32', self.AttributeId))
-        body.append(pack_uatype('String', self.IndexRange))
-        body.append(self.DataEncoding.to_binary())
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+        packet.append(self.NodeId.to_binary())
+        packet.append(pack_uatype('UInt32', self.AttributeId))
+        packet.append(pack_uatype('String', self.IndexRange))
+        packet.append(self.DataEncoding.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ReadValueId()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.NodeId = NodeId.from_binary(data)
         obj.AttributeId = unpack_uatype('UInt32', data)
         obj.IndexRange = unpack_uatype('String', data)
@@ -5752,10 +5740,7 @@ class ReadValueId(object):
         return obj
     
     def __str__(self):
-        return 'ReadValueId(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'NodeId:' + str(self.NodeId) + ', '  + \
+        return 'ReadValueId(' + 'NodeId:' + str(self.NodeId) + ', '  + \
              'AttributeId:' + str(self.AttributeId) + ', '  + \
              'IndexRange:' + str(self.IndexRange) + ', '  + \
              'DataEncoding:' + str(self.DataEncoding) + ')'
@@ -5829,16 +5814,20 @@ class ReadRequest(object):
     
     __repr__ = __str__
     
-class ReadResult(object):
+class ReadResponse(object):
     '''
     
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.ReadResponse_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
     
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.Results)))
         for fieldname in self.Results:
             packet.append(fieldname.to_binary())
@@ -5849,7 +5838,9 @@ class ReadResult(object):
         
     @staticmethod
     def from_binary(data):
-        obj = ReadResult()
+        obj = ReadResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for i in range(0, length):
@@ -5861,39 +5852,10 @@ class ReadResult(object):
         return obj
     
     def __str__(self):
-        return 'ReadResult(' + 'Results:' + str(self.Results) + ', '  + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
-    __repr__ = __str__
-    
-class ReadResponse(object):
-    '''
-    
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.ReadResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = ReadResult()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = ReadResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = ReadResult.from_binary(data)
-        return obj
-    
-    def __str__(self):
         return 'ReadResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
     
     __repr__ = __str__
     

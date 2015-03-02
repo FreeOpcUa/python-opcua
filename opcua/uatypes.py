@@ -5,6 +5,8 @@ from enum import Enum
 from datetime import datetime, timedelta
 import uuid
 import struct 
+from .attribute_ids import AttributeIds
+from .object_ids import ObjectIds
 
 def uatype_to_fmt(uatype):
     if uatype == "String":
@@ -105,8 +107,8 @@ def unpack_bytes(data):
 
 def unpack_string(data):
     b = unpack_bytes(data)
-    return str(b)
-    #return b.decode("utf-8")
+    #return str(b)
+    return b.decode("utf-8")
 
 def unpack_array(data, uatype):
     pass
@@ -367,7 +369,7 @@ class VariantType(Enum):
     Boolean = 1
     SByte = 2
     Byte = 3
-    Int16 = 5
+    Int16 = 4
     UInt16 = 5
     Int32 = 6
     UInt32 = 7
@@ -383,12 +385,12 @@ class VariantType(Enum):
     NodeId = 17
     ExpandedNodeId = 18
     StatusCode = 19
-    DiagnosticInfo = 20
-    QualifiedName = 21
-    LocalizedText = 22
-    ExtensionObject = 23
-    DataValue = 24
-    Variant = 25
+    QualifiedName = 20
+    LocalizedText = 21
+    ExtensionObject = 22
+    DataValue = 23
+    Variant = 24
+    DiagnosticInfo = 25
 
 class Variant(object):
     def __init__(self, value=None, varianttype=None):
@@ -432,12 +434,35 @@ class Variant(object):
         obj = Variant()
         obj.Encoding = unpack_uatype('UInt8', data)
         val = obj.Encoding & 0b01111111
-        self.VariantType = VariantType(val)
+        obj.VariantType = VariantType(val)
         if obj.Encoding & (1 << 7):
-            obj.Value = unpack_uatype_array(self.VariantType.name, data)
+            obj.Value = Variant._unpack_val_array(obj.VariantType, data)
         else:
-            obj.Value = unpack_uatype(self.VariantType.name, data)
+            obj.Value = Variant._unpack_val(obj.VariantType, data)
         return obj
+
+    @staticmethod
+    def _unpack_val_array(vtype, data):
+        if vtype.name in ( "Boolean", "SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double", "String", "DateTime", "Guid", "ByteString" ):
+            return unpack_uatype_array(obj.VariantType.name, data)
+        else:
+            length = struct.unpack("<i", data.read(4))
+            res = []
+            for i in range(o, length):
+                res.append(self._unpack_val(vtype, data))
+            return res
+
+    @staticmethod
+    def _unpack_val(vtype, data):
+        if vtype.name in ( "Boolean", "SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double", "String", "DateTime", "Guid", "ByteString" ):
+            return unpack_uatype(obj.VariantType.name, data)
+        else:
+            code = "{}.from_binary(data)".format(vtype.name)
+            tmp = eval(code)
+            return tmp
+
+
+
 
         
 

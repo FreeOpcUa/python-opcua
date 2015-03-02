@@ -119,7 +119,9 @@ class BinaryClient(object):
         for arg in args:
             data = arg.to_binary()
             hdr.add_size(len(data))
-            self.logger.debug("preparing to write: %s with length %s and data %s", arg, len(data), data)
+            self.logger.debug("writting to socket: %s with length %s ", type(arg), len(data))
+            self.logger.debug("struct: %s", arg)
+            self.logger.debug("data: %s", data)
             alle.append(data)
         alle.insert(0, hdr.to_binary())
         alle = b"".join(alle)
@@ -202,6 +204,15 @@ class BinaryClient(object):
         data = self._send_request(request)
         response = ua.BrowseResponse.from_binary(data)
         return response.Results
+
+    def read(self, parameters):
+        self.logger.info("read")
+        request = ua.ReadRequest()
+        request.Parameters = parameters
+        data = self._send_request(request)
+        response = ua.ReadResponse.from_binary(data)
+        return response.Results
+
 
 
 

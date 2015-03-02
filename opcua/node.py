@@ -10,6 +10,20 @@ class Node(object):
         return "Node({})".format(self.nodeid)
     __repr__ = __str__
 
+    def get_name(self):
+        result = self.get_attribute(ua.AttributeIds.BrowseName)
+        return result.Value.Value
+
+    def get_attribute(self, attr):
+        rv = ua.ReadValueId()
+        rv.NodeId = self.nodeid
+        rv.AttributeId = attr
+        params = ua.ReadParameters()
+        params.NodesToRead.append(rv)
+        result = self.server.read(params)
+        print(result)
+        return result[0]
+
     def get_children(self):
         desc = ua.BrowseDescription()
         desc.BrowseDirection = ua.BrowseDirection.Forward

@@ -22,6 +22,8 @@ if __name__ == "__main__":
         print(root)
         childs = root.get_children()
         print(childs)
+        bname = root.get_name()
+        print(bname)
         embed()
         client.close_session()
     finally:

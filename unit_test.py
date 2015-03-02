@@ -51,6 +51,13 @@ class Unit(unittest.TestCase):
         d = n.to_binary()
         self.assertEqual(len(d), 8)
 
+    def test_qualified_name(self):
+        qn = ua.QualifiedName("Root", 0)
+        print(qn)
+        qn.to_binary()
+
+    def test_variant(self)
+
 
 
 if __name__ == '__main__':
