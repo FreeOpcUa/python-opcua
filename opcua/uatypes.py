@@ -1,9 +1,91 @@
 """
 implement ua datatypes
 """
+from enum import Enum
 from datetime import datetime, timedelta
 import uuid
 import struct 
+
+def uatype_to_fmt(uatype):
+    if uatype == "String":
+        return "s"
+    elif uatype == "CharArray":
+        return "s"
+    elif uatype == "Char":
+        return "s"
+    elif uatype == "SByte":
+        return "B"
+    elif uatype == "Int6":
+        return "b"
+    elif uatype == "Int8":
+        return "b"
+    elif uatype == "Int16":
+        return "h"
+    elif uatype == "Int32":
+        return "i"
+    elif uatype == "Int64":
+        return "q"
+    elif uatype == "UInt8":
+        return "B"
+    elif uatype == "UInt16":
+        return "H"
+    elif uatype == "UInt32":
+        return "I"
+    elif uatype == "UInt64":
+        return "Q"
+    elif uatype == "Boolean":
+        return "?"
+    elif uatype == "Double":
+        return "d"
+    elif uatype == "Float":
+        return "f"
+    elif uatype == "Byte":
+        return "B"
+    else:
+        #field = self.model.get_enum(obj.uatype)
+        #return self.to_fmt(field)
+        #print("Error unknown uatype: ", obj.uatype)
+        raise Exception("Error unknown uatype: "+ uatype)
+
+def pack_uatype_array(uatype, value):
+    if value is None:
+        return struct.pack("<i", -1)
+    b = []
+    b.append(struct.pack("<i", len(value)))
+    for val in value:
+        b.append(pack_uatype(uatype, val))
+
+def pack_uatype(uatype, value):
+    if uatype == "String":
+        return pack_string(value)
+    elif uatype in ("CharArray", "ByteString"):
+        return pack_bytes(value)
+    else:
+        fmt = uatype_to_fmt(uatype)
+        return struct.pack(fmt, value)
+
+def unpack_uatype(uatype, data):
+    if uatype == "String":
+        return unpack_string(data)
+    elif uatype in ("CharArray", "ByteString"):
+        return unpack_bytes(data)
+    else:
+        fmt = uatype_to_fmt(uatype)
+        size = struct.calcsize(fmt)
+        return struct.unpack(fmt, data.read(size))[0]
+
+def unpack_uatype_array(uatype, data):
+    length = struct.unpack('<i', data.read(4))[0]
+    if length == -1:
+        return None
+    else:
+        result = []
+        for i in range(0, length):
+            result.append(unpack_uatype(uatype, data))
+        return result
+
+
+
 
 def pack_string(string):
     length = len(string)
@@ -277,4 +359,85 @@ class ExtensionObject(object):
                 obj.Body = unpack_string(data)
             return obj
 """
+class VariantType(Enum):
+    '''
+    The possible types of a variant.
+    '''
+    Null = 0
+    Boolean = 1
+    SByte = 2
+    Byte = 3
+    Int16 = 5
+    UInt16 = 5
+    Int32 = 6
+    UInt32 = 7
+    Int64 = 8
+    UInt64 = 9
+    Float = 10
+    Double = 11
+    String = 12
+    DateTime = 13
+    Guid = 14
+    ByteString = 15
+    XmlElement = 16
+    NodeId = 17
+    ExpandedNodeId = 18
+    StatusCode = 19
+    DiagnosticInfo = 20
+    QualifiedName = 21
+    LocalizedText = 22
+    ExtensionObject = 23
+    DataValue = 24
+    Variant = 25
+
+class Variant(object):
+    def __init__(self, value=None, varianttype=None):
+        self.Encoding = 0
+        self.Value = value
+        if varianttype is None:
+            if self.Value is None:
+                self.VariantType = VariantType.Null
+            elif type(self.Value) == float:
+                self.VariantType = VariantType.Double
+            elif type(self.Value) == int:
+                self.VariantType = VariantType.UInt64
+            elif type(self.Value) == str:
+                self.VariantType = VariantType.String
+            elif type(self.Value) == bytes:
+                self.VariantType = VariantType.ByteString
+            else:
+                raise Exception("Could not guess variant type, specify type")
+        self.VariantType = varianttype
+
+    def __str__(self):
+        return "Variant(val:{},type:{})".format(self.Value, self.VariantType)
+    __repr__ = __str__
+
+    def to_binary(self):
+        b = []
+        mask = self.Encoding & 0b01111111
+        self.Encoding = (self.VariantType.value | mask)
+        if self.Value is None:
+            return
+        if type(self.Value) in (list, tuple):
+            self.Encoding |= (1 << 7)
+            b.append(pack_uatype_array(self.VariantType.name, self.Value))
+        else:
+            b.append(pack_uatype(self.VariantType.name, self.Value))
+        b.insert(0, struct.pack("<B", self.Encoding))
+        return b"".join(b)
+
+    @staticmethod
+    def from_binary(data):
+        obj = Variant()
+        obj.Encoding = unpack_uatype('UInt8', data)
+        val = obj.Encoding & 0b01111111
+        self.VariantType = VariantType(val)
+        if obj.Encoding & (1 << 7):
+            obj.Value = unpack_uatype_array(self.VariantType.name, data)
+        else:
+            obj.Value = unpack_uatype(self.VariantType.name, data)
+        return obj
+
+        
 

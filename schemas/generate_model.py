@@ -75,7 +75,7 @@ class Field(object):
     __repr__ = __str__
 
     def is_native_type(self):
-        if self.uatype in ("Char", "SByte", "Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Boolean", "Double", "Float", "Byte", "String"):
+        if self.uatype in ("Char", "SByte", "Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Boolean", "Double", "Float", "Byte", "String", "CharArray", "ByteString"):
             return True
         return False
 
@@ -419,7 +419,7 @@ class Parser(object):
             if k == "Name":
                 enum.name = v
             elif k == "LengthInBits":
-                enum.uatype = v
+                enum.uatype = "UInt" + v
             else:
                 print("Unknown attr for enum: ", k)
         for el in child:
