@@ -441,14 +441,15 @@ class Variant(object):
             elif type(self.Value) == float:
                 self.VariantType = VariantType.Double
             elif type(self.Value) == int:
-                self.VariantType = VariantType.UInt64
+                self.VariantType = VariantType.Int64
             elif type(self.Value) == str:
                 self.VariantType = VariantType.String
             elif type(self.Value) == bytes:
                 self.VariantType = VariantType.ByteString
             else:
                 raise Exception("Could not guess variant type, specify type")
-        self.VariantType = varianttype
+        else:
+            self.VariantType = varianttype
 
     def __str__(self):
         return "Variant(val:{},type:{})".format(self.Value, self.VariantType)

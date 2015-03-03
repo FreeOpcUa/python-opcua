@@ -28,7 +28,12 @@ class Node(object):
         result = self.get_attribute(ua.AttributeIds.Value)
         return result.Value
 
-    def set_value(self, variant):
+    def set_value(self, value, varianttype=None):
+        variant = None
+        if type(value) == ua.Variant:
+            variant = value
+        else:
+            variant = ua.Variant(value, varianttype)
         return self.set_attribute(ua.AttributeIds.Value, ua.DataValue(variant))
 
     def set_attribute(self, attributeid, datavalue):

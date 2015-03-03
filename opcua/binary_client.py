@@ -68,10 +68,12 @@ class BinaryClient(object):
         self._thread.start()
 
     def _send_request(self, request):
+        #HACK to make sure we can convert our request to binary before increasing request counter etc ...
+        request.to_binary()
+        #END HACK
         with self._lock:
             request.RequestHeader = self._create_request_header()
             hdr = ua.Header(ua.MessageType.SecureMessage, ua.ChunkType.Single, self._security_token.ChannelId)
-            print("using", hdr)
             symhdr = self._create_sym_algo_header()
             seqhdr = self._create_sequence_header()
             rcall = RequestCallback()
@@ -196,7 +198,6 @@ class BinaryClient(object):
 
         response = ua.OpenSecureChannelResponse.from_binary(rcall.data)
         self._security_token = response.Parameters.SecurityToken
-        print("SEtting security token to",  self._security_token)
         self.logger.info(response)
         return response
 
@@ -247,12 +248,6 @@ class BinaryClient(object):
         data = self._send_request(request)
         response = ua.WriteResponse.from_binary(data)
         return response.Results
-
-
-
-
-
-
 
     def get_endpoints(self, params, callback=None):
         self.logger.info("get_endpoint")
