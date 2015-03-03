@@ -3,12 +3,13 @@ import uuid
 
 from opcua import uaprotocol as ua
 from opcua import BinaryClient, Node
+from urllib.parse import urlparse
 
 
 class Client(object):
-    def __init__(self, uri):
+    def __init__(self, url):
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.server_uri = uri
+        self.server_url = urlparse(url)
         self.name = "Pure Python Client" 
         self.description = self.name 
         self.application_uri = "urn:freeopcua:client"
@@ -33,7 +34,7 @@ class Client(object):
         self.activate_session()
 
     def connect_socket(self):
-        self.bclient.connect()
+        self.bclient.connect(self.server_url.hostname, self.server_url.port)
 
     def disconnect_socket(self):
         self.bclient.disconnect()
@@ -43,7 +44,7 @@ class Client(object):
         self.bclient.disconnect()
 
     def send_hello(self):
-        ack = self.bclient.send_hello(self.server_uri)
+        ack = self.bclient.send_hello(self.server_url.geturl())
 
     def open_secure_channel(self):
         params = ua.OpenSecureChannelParameters()
@@ -59,7 +60,7 @@ class Client(object):
 
     def get_endpoints(self):
         params = ua.GetEndpointsParameters()
-        params.EndpointUrl = self.server_uri
+        params.EndpointUrl = self.server_url.geturl()
         params.ProfileUris = ["http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary"]
         params.LocaleIds = ["http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary"]
         return self.bclient.get_endpoints(params)
@@ -75,7 +76,7 @@ class Client(object):
         params.ClientNonce = uuid.uuid4().bytes
         params.ClientCertificate = b''
         params.ClientDescription = desc 
-        params.EndpointUrl = self.server_uri
+        params.EndpointUrl = self.server_url.geturl()
         params.SessionName = self.description + " Session" + str(self._session_counter)
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0 #means not max size

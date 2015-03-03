@@ -150,12 +150,12 @@ class BinaryClient(object):
         alle = b"".join(alle)
         self._socket.send(alle)
 
-    def connect(self):
+    def connect(self, host, port):
         """
         connect to server socket and start receiving thread
         """
         self.logger.info("opening connection")
-        self._socket = socket.create_connection(('localhost', 4841))
+        self._socket = socket.create_connection((host, port))
         self.start()
 
     def disconnect(self):
