@@ -48,7 +48,8 @@ class BinaryClient(object):
         self.logger = logging.getLogger(self.__class__.__name__)
         self._socket = None
         self._do_stop = False
-        self._security_token = ua.ChannelSecurityToken()
+        self._security_token = ua.ChannelSecurityToken() 
+        #self._secure_channel_id = 0 
         self._authentication_token = ua.NodeId()
         self._sequence_number = 0
         self._request_id = 0
@@ -69,8 +70,9 @@ class BinaryClient(object):
     def _send_request(self, request):
         with self._lock:
             request.RequestHeader = self._create_request_header()
-            hdr = ua.Header(ua.MessageType.SecureMessage, ua.ChunkType.Single, self._security_token.TokenId)
-            symhdr = ua.SymmetricAlgorithmHeader()
+            hdr = ua.Header(ua.MessageType.SecureMessage, ua.ChunkType.Single, self._security_token.ChannelId)
+            print("using", hdr)
+            symhdr = self._create_sym_algo_header()
             seqhdr = self._create_sequence_header()
             rcall = RequestCallback()
             self._callbackmap[seqhdr.RequestId] = rcall
@@ -99,7 +101,7 @@ class BinaryClient(object):
         self.logger.info("reading body of message (%s bytes)", size)
         data = self._socket.recv(size)
         if size != len(data):
-            raise Exception("Error, did not received expected number of bytes")
+            raise Exception("Error, did not received expected number of bytes, got {}, asked for {}".format(len(data), size))
         #return io.BytesIO(data)
         return Buffer(data)
 
@@ -110,6 +112,7 @@ class BinaryClient(object):
         if header.MessageType == ua.MessageType.Error:
             self.logger.warn("Received an error message type")
             return None
+        #FIXME check StatusCOde here !!!!
         body = self._receive_body(header.body_size)
         if header.MessageType == ua.MessageType.Acknowledge:
             self._call_callback(0, body)
@@ -150,7 +153,7 @@ class BinaryClient(object):
         alle = b"".join(alle)
         self._socket.send(alle)
 
-    def connect(self, host, port):
+    def connect_socket(self, host, port):
         """
         connect to server socket and start receiving thread
         """
@@ -158,7 +161,7 @@ class BinaryClient(object):
         self._socket = socket.create_connection((host, port))
         self.start()
 
-    def disconnect(self):
+    def disconnect_socket(self):
         self.logger.info("stop request")
         self._do_stop = True
         self._socket.shutdown(socket.SHUT_WR)
@@ -180,7 +183,7 @@ class BinaryClient(object):
         request.Parameters = params
         request.RequestHeader = self._create_request_header()
 
-        hdr = ua.Header(ua.MessageType.SecureOpen, ua.ChunkType.Single, self._security_token.TokenId)
+        hdr = ua.Header(ua.MessageType.SecureOpen, ua.ChunkType.Single, self._security_token.ChannelId)
         asymhdr = ua.AsymmetricAlgorithmHeader()
         seqhdr = self._create_sequence_header()
         self._write_socket(hdr, asymhdr, seqhdr, request)
@@ -193,6 +196,7 @@ class BinaryClient(object):
 
         response = ua.OpenSecureChannelResponse.from_binary(rcall.data)
         self._security_token = response.Parameters.SecurityToken
+        print("SEtting security token to",  self._security_token)
         self.logger.info(response)
         return response
 
@@ -282,7 +286,7 @@ class BinaryClient(object):
         hdr.TimeoutHint = 10000
         return hdr
 
-    def _create_algo_header(self):
+    def _create_sym_algo_header(self):
         hdr = ua.SymmetricAlgorithmHeader()
         hdr.TokenId = self._security_token.TokenId
         return hdr

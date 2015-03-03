@@ -8,7 +8,7 @@ import struct
 from .attribute_ids import AttributeIds
 from .object_ids import ObjectIds
 
-UaTypes = ( "Boolean", "SByte", "Byte", "UInt8", "Int8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double", "String", "DateTime", "Guid", "ByteString" )
+UaTypes = ( "Boolean", "SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double", "String", "DateTime", "Guid", "ByteString" )
 
 def uatype_to_fmt(uatype):
     if uatype == "String":
@@ -46,9 +46,6 @@ def uatype_to_fmt(uatype):
     elif uatype == "Byte":
         return "B"
     else:
-        #field = self.model.get_enum(obj.uatype)
-        #return self.to_fmt(field)
-        #print("Error unknown uatype: ", obj.uatype)
         raise Exception("Error unknown uatype: "+ uatype)
 
 def pack_uatype_array(uatype, value):
@@ -189,22 +186,62 @@ class NodeId(object):
         self.NamespaceUri = ""
         self.ServerIndex = 0
 
+    @staticmethod
+    def from_string(string):
+        l = string.split(";")
+        identifier = None
+        namespace = 0
+        ntype = None
+        srv = None
+        nsu = None
+        for el in l:
+            k, v = el.split("=")
+            if k == "ns":
+                namespace = int(v)
+            elif k == "i":
+                ntype = NodeIdType.Numeric
+                identifier = int(v)
+            elif k == "s":
+                ntype = NodeIdType.String
+                identifier = v
+            elif k == "g":
+                ntype = NodeIdType.Guid
+                identifier = v
+            elif k == "b":
+                ntype = NodeIdType.ByteString
+                identifier = v
+            elif k == "srv":
+                srv = v
+            elif k == "nsu":
+                nsu = v
+        if not identifier:
+            raise Exception("Could not parse nodeid string: " + string)
+        return NodeId(identifier, namespace, ntype)
+
+
     def to_string(self):
-        #FIXME:
-        types = "ERROR"
+        string = ""
+        if self.NamespaceIndex != 0:
+            string += "ns={}".format(self.NamespaceIndex)
+        ntype = None
         if self.NodeIdType == NodeIdType.Numeric:
-            types = "i"
+            ntype = "i"
         elif self.NodeIdType == NodeIdType.String:
-            types = "s"
+            ntype = "s"
         elif self.NodeIdType == NodeIdType.TwoByte:
-            types = "twobyte"
+            ntype = "i" #FIXME check
         elif self.NodeIdType == NodeIdType.FourByte:
-            types = "foubyte"
+            ntype = "i" #FIXME check
         elif self.NodeIdType == NodeIdType.Guid:
-            types = "g"
+            ntype = "g"
         elif self.NodeIdType == NodeIdType.ByteString:
-            types = "bytestring"
-        return "ns={}; {}={}".format(self.NamespaceIndex, types, self.Identifier)
+            ntype = "b"
+        string += "{}={}".format(ntype, self.Identifier)
+        if self.ServerIndex:
+            string = "srv=" + str(self.ServerIndex) + string
+        if self.NamespaceUri:
+            string += "nsu={}".format(self.NamespaceUri)
+        return string 
 
     def __str__(self):
         return "NodeId({})".format(self.to_string())
@@ -254,7 +291,7 @@ class NodeId(object):
         if test_bit(encoding, 6):
             nid.NamespaceUri = unpack_string(data)
         if test_bit(encoding, 7):
-            nid.ServerIndex = struct.unpack("<I", data.read(1))[0]
+            nid.ServerIndex = struct.unpack("<I", data.read(4))[0]
 
         return nid
 
@@ -308,8 +345,6 @@ class DateTime(object):
 
     def to_datetime(self):
         us = self.data / 10.0
-        print(us)
-        print(timedelta(microseconds=us))
         return datetime(1601,1,1) + timedelta(microseconds=us)
 
     @staticmethod
@@ -431,7 +466,6 @@ class Variant(object):
         else:
             b.append(pack_uatype(self.VariantType.name, self.Value))
         b.insert(0, struct.pack("<B", self.Encoding))
-        print(b)
         return b"".join(b)
 
     @staticmethod
@@ -453,14 +487,14 @@ class Variant(object):
         else:
             length = struct.unpack("<i", data.read(4))
             res = []
-            for i in range(o, length):
-                res.append(self._unpack_val(vtype, data))
+            for i in range(0, length):
+                res.append(Variant._unpack_val(vtype, data))
             return res
 
     @staticmethod
     def _unpack_val(vtype, data):
         if vtype.name in UaTypes:
-            return unpack_uatype(obj.VariantType.name, data)
+            return unpack_uatype(vtype.name, data)
         else:
             code = "{}.from_binary(data)".format(vtype.name)
             tmp = eval(code)

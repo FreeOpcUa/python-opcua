@@ -4,7 +4,13 @@ from . import uaprotocol as ua
 class Node(object):
     def __init__(self, server, nodeid):
         self.server = server
-        self.nodeid = nodeid
+        self.nodeid = None
+        if isinstance(nodeid, ua.NodeId):
+            self.nodeid = nodeid
+        elif type(nodeid) in (str, bytes):
+            self.nodeid = ua.NodeId.from_string(nodeid)
+        else:
+            raise Exception("argument to node must be a NodeId object or a string defining a nodeid found {} of type {}".format(nodeid, type(nodeid)) )
 
     def __str__(self):
         return "Node({})".format(self.nodeid)
