@@ -3957,9 +3957,6 @@ class RelativePathElement(object):
     An element in a relative path.
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.RelativePathElement_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.ReferenceTypeId = NodeId()
         self.IsInverse = True
         self.IncludeSubtypes = True
@@ -3967,24 +3964,15 @@ class RelativePathElement(object):
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(self.ReferenceTypeId.to_binary())
-        body.append(pack_uatype('Boolean', self.IsInverse))
-        body.append(pack_uatype('Boolean', self.IncludeSubtypes))
-        body.append(self.TargetName.to_binary())
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+        packet.append(self.ReferenceTypeId.to_binary())
+        packet.append(pack_uatype('Boolean', self.IsInverse))
+        packet.append(pack_uatype('Boolean', self.IncludeSubtypes))
+        packet.append(self.TargetName.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = RelativePathElement()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.ReferenceTypeId = NodeId.from_binary(data)
         obj.IsInverse = unpack_uatype('Boolean', data)
         obj.IncludeSubtypes = unpack_uatype('Boolean', data)
@@ -3992,10 +3980,7 @@ class RelativePathElement(object):
         return obj
     
     def __str__(self):
-        return 'RelativePathElement(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
+        return 'RelativePathElement(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
              'IsInverse:' + str(self.IsInverse) + ', '  + \
              'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', '  + \
              'TargetName:' + str(self.TargetName) + ')'
@@ -4007,30 +3992,18 @@ class RelativePath(object):
     A relative path constructed from reference types and browse names.
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.RelativePath_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.Elements = []
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(struct.pack('<i', len(self.Elements)))
+        packet.append(struct.pack('<i', len(self.Elements)))
         for fieldname in self.Elements:
-            body.append(fieldname.to_binary())
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = RelativePath()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -4038,10 +4011,7 @@ class RelativePath(object):
         return obj
     
     def __str__(self):
-        return 'RelativePath(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'Elements:' + str(self.Elements) + ')'
+        return 'RelativePath(' + 'Elements:' + str(self.Elements) + ')'
     
     __repr__ = __str__
     
@@ -4050,39 +4020,24 @@ class BrowsePath(object):
     A request to translate a path into a node id.
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.BrowsePath_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.StartingNode = NodeId()
         self.RelativePath = RelativePath()
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(self.StartingNode.to_binary())
-        body.append(self.RelativePath.to_binary())
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+        packet.append(self.StartingNode.to_binary())
+        packet.append(self.RelativePath.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = BrowsePath()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.StartingNode = NodeId.from_binary(data)
         obj.RelativePath = RelativePath.from_binary(data)
         return obj
     
     def __str__(self):
-        return 'BrowsePath(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'StartingNode:' + str(self.StartingNode) + ', '  + \
+        return 'BrowsePath(' + 'StartingNode:' + str(self.StartingNode) + ', '  + \
              'RelativePath:' + str(self.RelativePath) + ')'
     
     __repr__ = __str__
@@ -4092,39 +4047,24 @@ class BrowsePathTarget(object):
     The target of the translated path.
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.BrowsePathTarget_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.TargetId = ExpandedNodeId()
         self.RemainingPathIndex = 0
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(self.TargetId.to_binary())
-        body.append(pack_uatype('UInt32', self.RemainingPathIndex))
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+        packet.append(self.TargetId.to_binary())
+        packet.append(pack_uatype('UInt32', self.RemainingPathIndex))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = BrowsePathTarget()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.TargetId = ExpandedNodeId.from_binary(data)
         obj.RemainingPathIndex = unpack_uatype('UInt32', data)
         return obj
     
     def __str__(self):
-        return 'BrowsePathTarget(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'TargetId:' + str(self.TargetId) + ', '  + \
+        return 'BrowsePathTarget(' + 'TargetId:' + str(self.TargetId) + ', '  + \
              'RemainingPathIndex:' + str(self.RemainingPathIndex) + ')'
     
     __repr__ = __str__
@@ -4134,32 +4074,20 @@ class BrowsePathResult(object):
     The result of a translate opearation.
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.BrowsePathResult_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.StatusCode = StatusCode()
         self.Targets = []
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(self.StatusCode.to_binary())
-        body.append(struct.pack('<i', len(self.Targets)))
+        packet.append(self.StatusCode.to_binary())
+        packet.append(struct.pack('<i', len(self.Targets)))
         for fieldname in self.Targets:
-            body.append(fieldname.to_binary())
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = BrowsePathResult()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.StatusCode = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
@@ -4168,38 +4096,8 @@ class BrowsePathResult(object):
         return obj
     
     def __str__(self):
-        return 'BrowsePathResult(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'StatusCode:' + str(self.StatusCode) + ', '  + \
+        return 'BrowsePathResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
              'Targets:' + str(self.Targets) + ')'
-    
-    __repr__ = __str__
-    
-class TranslateBrowsePathsToNodeIdsParameters(object):
-    '''
-    '''
-    def __init__(self):
-        self.BrowsePaths = []
-    
-    def to_binary(self):
-        packet = []
-        packet.append(struct.pack('<i', len(self.BrowsePaths)))
-        for fieldname in self.BrowsePaths:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = TranslateBrowsePathsToNodeIdsParameters()
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.BrowsePaths.append(BrowsePath.from_binary(data))
-        return obj
-    
-    def __str__(self):
-        return 'TranslateBrowsePathsToNodeIdsParameters(' + 'BrowsePaths:' + str(self.BrowsePaths) + ')'
     
     __repr__ = __str__
     
@@ -4210,13 +4108,15 @@ class TranslateBrowsePathsToNodeIdsRequest(object):
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
-        self.Parameters = TranslateBrowsePathsToNodeIdsParameters()
+        self.BrowsePaths = []
     
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
+        packet.append(struct.pack('<i', len(self.BrowsePaths)))
+        for fieldname in self.BrowsePaths:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -4224,25 +4124,33 @@ class TranslateBrowsePathsToNodeIdsRequest(object):
         obj = TranslateBrowsePathsToNodeIdsRequest()
         obj.TypeId = NodeId.from_binary(data)
         obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = TranslateBrowsePathsToNodeIdsParameters.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length != -1:
+            for _ in range(0, length):
+                obj.BrowsePaths.append(BrowsePath.from_binary(data))
         return obj
     
     def __str__(self):
         return 'TranslateBrowsePathsToNodeIdsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'RequestHeader:' + str(self.RequestHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'BrowsePaths:' + str(self.BrowsePaths) + ')'
     
     __repr__ = __str__
     
-class TranslateBrowsePathsToNodeIdsResult(object):
+class TranslateBrowsePathsToNodeIdsResponse(object):
     '''
+    Translates one or more paths in the server address space.
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsResponse_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
     
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.Results)))
         for fieldname in self.Results:
             packet.append(fieldname.to_binary())
@@ -4253,7 +4161,9 @@ class TranslateBrowsePathsToNodeIdsResult(object):
         
     @staticmethod
     def from_binary(data):
-        obj = TranslateBrowsePathsToNodeIdsResult()
+        obj = TranslateBrowsePathsToNodeIdsResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -4265,39 +4175,10 @@ class TranslateBrowsePathsToNodeIdsResult(object):
         return obj
     
     def __str__(self):
-        return 'TranslateBrowsePathsToNodeIdsResult(' + 'Results:' + str(self.Results) + ', '  + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
-    __repr__ = __str__
-    
-class TranslateBrowsePathsToNodeIdsResponse(object):
-    '''
-    Translates one or more paths in the server address space.
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = TranslateBrowsePathsToNodeIdsResult()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = TranslateBrowsePathsToNodeIdsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = TranslateBrowsePathsToNodeIdsResult.from_binary(data)
-        return obj
-    
-    def __str__(self):
         return 'TranslateBrowsePathsToNodeIdsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
     
     __repr__ = __str__
     

@@ -317,6 +317,14 @@ class QualifiedName(object):
     def __init__(self, name="", namespaceidx=0):
         self.NamespaceIndex = namespaceidx
         self.Name = name
+
+    def to_string(self):
+        return "{}:{}".format(self.NamespaceIndex, self.Name)
+
+    @staticmethod
+    def from_string(string):
+        idx, name = string.split(":")
+        return QualifiedName(name, int(idx))
     
     def to_binary(self):
         packet = []

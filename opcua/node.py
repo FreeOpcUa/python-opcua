@@ -42,7 +42,7 @@ class Node(object):
             variant = value
         else:
             variant = ua.Variant(value, varianttype)
-        response = self.set_attribute(ua.AttributeIds.Value, ua.DataValue(variant))
+        self.set_attribute(ua.AttributeIds.Value, ua.DataValue(variant))
 
     def set_attribute(self, attributeid, datavalue):
         attr = ua.WriteValue()
@@ -78,4 +78,26 @@ class Node(object):
             node = Node(self.server, desc.NodeId)
             nodes.append(node)
         return nodes
-        
+
+    def get_child(self, path):
+        rpath = ua.RelativePath()
+        for item in path:
+            el = ua.RelativePathElement()
+            el.ReferenceTypeId = ua.TwoByteNodeId(ua.ObjectIds.HierarchicalReferences)
+            el.IsInverse = False
+            el.IncludeSubTypes = True
+            if type(item) == ua.QualifiedName:
+                el.TargetName = item
+            else:
+                el.TargetName = ua.QualifiedName.from_string(item)
+            rpath.Elements.append(el)
+        bpath = ua.BrowsePath()
+        bpath.StartingNode = self.nodeid
+        bpath.RelativePath = rpath
+        result = self.server.translate_browsepaths_to_nodeids([bpath])
+        result = result[0]
+        result.StatusCode.check()
+        #FIXME: seems this method may return several nodes
+        return Node(self.server, result.Targets[0].TargetId)
+
+      

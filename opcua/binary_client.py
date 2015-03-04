@@ -154,6 +154,28 @@ class BinaryClient(object):
         alle = b"".join(alle)
         self._socket.send(alle)
 
+    def _create_request_header(self):
+        hdr = ua.RequestHeader()
+        hdr.AuthenticationToken = self._authentication_token
+        self._request_handle += 1
+        hdr.RequestHandle = self._request_handle
+        hdr.TimeoutHint = 10000
+        return hdr
+
+    def _create_sym_algo_header(self):
+        hdr = ua.SymmetricAlgorithmHeader()
+        hdr.TokenId = self._security_token.TokenId
+        return hdr
+
+    def _create_sequence_header(self):
+        hdr = ua.SequenceHeader()
+        self._sequence_number += 1
+        hdr.SequenceNumber = self._sequence_number
+        self._request_id += 1
+        hdr.RequestId = self._request_id
+        return hdr
+
+
     def connect_socket(self, host, port):
         """
         connect to server socket and start receiving thread
@@ -280,24 +302,13 @@ class BinaryClient(object):
 
         #some servers send a response here, most do not ... so we ignore
 
-    def _create_request_header(self):
-        hdr = ua.RequestHeader()
-        hdr.AuthenticationToken = self._authentication_token
-        self._request_handle += 1
-        hdr.RequestHandle = self._request_handle
-        hdr.TimeoutHint = 10000
-        return hdr
+    def translate_browsepaths_to_nodeids(self, browsepaths):
+        self.logger.info("translate_browsepath_to_nodeid")
+        request = ua.TranslateBrowsePathsToNodeIdsRequest()
+        request.BrowsePaths = browsepaths
+        data = self._send_request(request)
+        response = ua.TranslateBrowsePathsToNodeIdsResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
 
-    def _create_sym_algo_header(self):
-        hdr = ua.SymmetricAlgorithmHeader()
-        hdr.TokenId = self._security_token.TokenId
-        return hdr
-
-    def _create_sequence_header(self):
-        hdr = ua.SequenceHeader()
-        self._sequence_number += 1
-        hdr.SequenceNumber = self._sequence_number
-        self._request_id += 1
-        hdr.RequestId = self._request_id
-        return hdr
 

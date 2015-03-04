@@ -18,6 +18,8 @@ if __name__ == "__main__":
         print(var)
         print(var.get_value())
         var.set_value(ua.Variant([23], ua.VariantType.Int64))
+        myvar = root.get_child(["0:Objects", "2:NewObject", "2:MyVariable"])
+        print("yvar is: ", myvar)
         embed()
         client.close_session()
     finally:
