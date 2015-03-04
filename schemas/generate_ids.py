@@ -17,5 +17,5 @@ if __name__ == "__main__":
     outputfile.write("class AttributeIds:\n")
     for line in inputfile:
         name, nb = line.split(",")
-        outputfile.write("    {} = {}\n".format(name, nb))
+        outputfile.write("    {} = {}\n".format(name.strip(), nb.strip()))
 

@@ -1,7 +1,15 @@
+"""
+High level node object, to access node attribute 
+and browse address space
+"""
 
-from . import uaprotocol as ua
+import opcua.uaprotocol as ua
 
 class Node(object):
+    """
+    High level node object, to access node attribute 
+    and browse address space
+    """
     def __init__(self, server, nodeid):
         self.server = server
         self.nodeid = None
@@ -10,7 +18,7 @@ class Node(object):
         elif type(nodeid) in (str, bytes):
             self.nodeid = ua.NodeId.from_string(nodeid)
         else:
-            raise Exception("argument to node must be a NodeId object or a string defining a nodeid found {} of type {}".format(nodeid, type(nodeid)) )
+            raise Exception("argument to node must be a NodeId object or a string defining a nodeid found {} of type {}".format(nodeid, type(nodeid)))
 
     def __str__(self):
         return "Node({})".format(self.nodeid)

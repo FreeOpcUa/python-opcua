@@ -42,8 +42,8 @@ class CodeGenerator(object):
         self.write("")
         self.write("import struct")
         self.write("")
-        self.write("from .uatypes import *")
-        self.write("from .object_ids import ObjectIds")
+        self.write("from opcua.uatypes import *")
+        self.write("from opcua.object_ids import ObjectIds")
         self.write("")
         self.write("")
 
@@ -52,7 +52,8 @@ class CodeGenerator(object):
         self.write("class {}(object):".format(enum.name))
         self.iidx = 1
         self.write("'''")
-        self.write(enum.doc)
+        if enum.doc:
+            self.write(enum.doc)
         self.write("'''")
         for val in enum.values:
             self.write("{} = {}".format(val.name, val.value))
@@ -64,7 +65,8 @@ class CodeGenerator(object):
         self.write("class {}(object):".format(obj.name))
         self.iidx += 1
         self.write("'''")
-        self.write(obj.doc)
+        if obj.doc:
+            self.write(obj.doc)
         self.write("'''")
         self.write("def __init__(self):")
         self.iidx += 1
@@ -181,7 +183,7 @@ class CodeGenerator(object):
                     self.write("length = struct.unpack('<i', data.read(4))[0]")
                     self.write("if length != -1:")
                     self.iidx += 1
-                    self.write("for i in range(0, length):")
+                    self.write("for _ in range(0, length):")
                     self.iidx += 1
                     self.write("obj.{}.append({}.from_binary(data))".format(field.name, field.uatype))
                 else:

@@ -5,10 +5,8 @@ from enum import Enum
 from datetime import datetime, timedelta
 import uuid
 import struct 
-from .attribute_ids import AttributeIds
-from .object_ids import ObjectIds
 
-UaTypes = ( "Boolean", "SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double", "String", "DateTime", "Guid", "ByteString" )
+UaTypes = ("Boolean", "SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double", "String", "DateTime", "Guid", "ByteString")
 
 def uatype_to_fmt(uatype):
     if uatype == "String":
@@ -82,7 +80,7 @@ def unpack_uatype_array(uatype, data):
         return None
     else:
         result = []
-        for i in range(0, length):
+        for _ in range(0, length):
             result.append(unpack_uatype(uatype, data))
         return result
 
@@ -111,16 +109,16 @@ def unpack_string(data):
     return b.decode("utf-8")
 
 def unpack_array(data, uatype):
-    pass
+    raise NotImplementedError
 
 
 def test_bit(data, offset):
     mask = 1 << offset
-    return(data & mask)
+    return data & mask
 
 def set_bit(data, offset):
     mask = 1 << offset
-    return(data | mask)
+    return data | mask
 
 class Guid(object):
     def __init__(self):
@@ -165,14 +163,16 @@ class NodeIdType(object):
 
 class NodeId(object):
     def __init__(self, identifier=None, namespaceidx=0, nodeidtype=None):
-        if identifier is None:
+        self.Identifier = identifier
+        self.NamespaceIndex = namespaceidx
+        self.NodeIdType = nodeidtype
+        self.NamespaceUri = ""
+        self.ServerIndex = 0
+        if self.Identifier is None:
             self.Identifier = 0
-            self.NamespaceIndex = 0
             self.NodeIdType = NodeIdType.TwoByte
             return
-        self.NamespaceIndex = namespaceidx
-        self.Identifier = identifier
-        if nodeidtype is None:
+        if self.NodeIdType is None:
             if type(self.Identifier) == int:
                 self.NodeIdType = NodeIdType.Numeric
             elif type(self.Identifier) == str:
@@ -181,10 +181,6 @@ class NodeId(object):
                 self.NodeIdType = NodeIdType.ByteString
             else:
                 raise Exception("NodeId: Could not guess type of NodeId, set NodeIdType")
-        else:
-            self.NodeIdType = nodeidtype
-        self.NamespaceUri = ""
-        self.ServerIndex = 0
 
     @staticmethod
     def from_string(string):
@@ -216,7 +212,10 @@ class NodeId(object):
                 nsu = v
         if not identifier:
             raise Exception("Could not parse nodeid string: " + string)
-        return NodeId(identifier, namespace, ntype)
+        nodeid = NodeId(identifier, namespace, ntype)
+        nodeid.NamespaceUri = nsu
+        nodeid.ServerIndex = srv
+        return nodeid
 
 
     def to_string(self):
@@ -237,6 +236,7 @@ class NodeId(object):
         elif self.NodeIdType == NodeIdType.ByteString:
             ntype = "b"
         string += "{}={}".format(ntype, self.Identifier)
+        print(dir(self))
         if self.ServerIndex:
             string = "srv=" + str(self.ServerIndex) + string
         if self.NamespaceUri:
@@ -341,11 +341,11 @@ class DateTime(object):
             self.data = data
 
     def _to1601(self, dt):
-        return (dt - datetime(1601,1,1,0,0)).total_seconds() * 10**7
+        return (dt - datetime(1601, 1, 1, 0, 0)).total_seconds() * 10 ** 7
 
     def to_datetime(self):
         us = self.data / 10.0
-        return datetime(1601,1,1) + timedelta(microseconds=us)
+        return datetime(1601, 1, 1) + timedelta(microseconds=us)
 
     @staticmethod
     def now():
@@ -375,31 +375,6 @@ class DateTime(object):
         return "Datetime({})".format(self.to_datetime().isoformat())
     __repr__ = __str__
 
-"""
-class ExtensionObject(object):
-    def __init__(self):
-        self.TypeId = ExpandedNodeId()
-        self.Encoding = 0
-        self.Body = b''
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        if self.Body:
-            set_bit(self.Encoding, 0)
-        packet.append(struct.pack('<B', self.Encoding))
-        if self.Body:
-            pack_bytes(self.Body)
-        
-        @staticmethod
-        def from_binary(self, data):
-            obj = ExtensionObject()
-            obj.TypeId = ExpandedNodeId.from_binary(data)
-            obj.Encoding = struct.unpack('<B', data.read(1))[0]
-            if test_but(obj.Encoding, 0):
-                obj.Body = unpack_string(data)
-            return obj
-"""
 class VariantType(Enum):
     '''
     The possible types of a variant.
@@ -488,7 +463,7 @@ class Variant(object):
         else:
             length = struct.unpack("<i", data.read(4))
             res = []
-            for i in range(0, length):
+            for _ in range(0, length):
                 res.append(Variant._unpack_val(vtype, data))
             return res
 

@@ -55,6 +55,7 @@ class Client(object):
 
     def send_hello(self):
         ack = self.bclient.send_hello(self.server_url.geturl())
+        #FIXME check ack
 
     def open_secure_channel(self):
         params = ua.OpenSecureChannelParameters()

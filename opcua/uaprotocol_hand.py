@@ -2,8 +2,8 @@ import io
 import struct 
 import logging
 
-from . import uaprotocol_auto as auto
-from .uatypes import *
+import opcua.uaprotocol_auto as auto
+import opcua.uatypes as uatypes 
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class Hello(object):
         b.append(struct.pack("<I", self.SendBufferSize))
         b.append(struct.pack("<I", self.MaxMessageSize))
         b.append(struct.pack("<I", self.MaxChunkCount))
-        b.append(pack_string(self.EndpointUrl))
+        b.append(uatypes.pack_string(self.EndpointUrl))
         return b"".join(b)
 
     def get_binary_size(self):
@@ -142,17 +142,17 @@ class AsymmetricAlgorithmHeader:
 
     def to_binary(self):
         b = []
-        b.append(pack_string(self.SecurityPolicyURI))
-        b.append(pack_string(self.SenderCertificate))
-        b.append(pack_string(self.ReceiverCertificateThumbPrint))
+        b.append(uatypes.pack_string(self.SecurityPolicyURI))
+        b.append(uatypes.pack_string(self.SenderCertificate))
+        b.append(uatypes.pack_string(self.ReceiverCertificateThumbPrint))
         return b"".join(b)
 
     @staticmethod
     def from_binary(data):
         hdr = AsymmetricAlgorithmHeader()
-        hdr.SecurityPolicyURI = unpack_bytes(data)
-        hdr.SenderCertificate = unpack_bytes(data)
-        hdr.ReceiverCertificateThumbPrint = unpack_bytes(data)
+        hdr.SecurityPolicyURI = uatypes.unpack_bytes(data)
+        hdr.SenderCertificate = uatypes.unpack_bytes(data)
+        hdr.ReceiverCertificateThumbPrint = uatypes.unpack_bytes(data)
         return hdr
 
     def __str__(self):

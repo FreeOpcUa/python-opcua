@@ -6,7 +6,7 @@ import logging
 import socket
 from threading import Thread, Condition, Lock
 
-from . import uaprotocol as ua
+import opcua.uaprotocol as ua
 
 class Buffer(object):
     """
@@ -224,6 +224,7 @@ class BinaryClient(object):
         request.DeleteSubscriptions = deletesubscriptions
         data = self._send_request(request)
         response = ua.CloseSessionResponse.from_binary(data)
+        #FIXME check return code
 
     def browse(self, parameters):
         self.logger.info("browse")
