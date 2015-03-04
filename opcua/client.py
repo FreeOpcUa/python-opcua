@@ -1,9 +1,40 @@
+import time
+from threading import Thread, Condition
 import logging
 import uuid
 
 from opcua import uaprotocol as ua
 from opcua import BinaryClient, Node
 from urllib.parse import urlparse
+
+class KeepAlive(Thread):
+    def __init__(self, client, timeout):
+        Thread.__init__(self)
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.timeout = timeout
+        self.client = client
+        self._dostop = False
+        self._cond = Condition()
+
+    def run(self):
+        self.logger.debug("starting keepalive thread")
+        server_state = self.client.get_node(ua.FourByteNodeId(ua.ObjectIds.Server_ServerStatus_State))
+        while not self._dostop:
+            with self._cond:
+                self._cond.wait(self.timeout)
+            if self._dostop:
+                break
+            self.logger.debug("renewing channel")
+            self.client.open_secure_channel(renew=True)
+            val = server_state.get_value()
+            self.logger.debug("server state is: %s ", val)
+        self.logger.debug("keepalive thread has stopped")
+
+    def stop(self):
+        self.logger.debug("stoping keepalive thread")
+        with self._cond:
+            self._cond.notify_all()
+        self._dostop = True
 
 
 class Client(object):
@@ -20,6 +51,7 @@ class Client(object):
         self.bclient = BinaryClient()
         self._nonce = None
         self._session_counter = 1
+        self.keepalive = None
 
     def get_server_endpoints(self):
         """
@@ -43,6 +75,8 @@ class Client(object):
         self.activate_session()
 
     def disconnect(self):
+        self.keepalive.stop()
+        #FIXME: should ensure keepalive has left before continuing
         self.close_session()
         self.close_secure_channel()
         self.disconnect_socket()
@@ -57,10 +91,12 @@ class Client(object):
         ack = self.bclient.send_hello(self.server_url.geturl())
         #FIXME check ack
 
-    def open_secure_channel(self):
+    def open_secure_channel(self, renew=False):
         params = ua.OpenSecureChannelParameters()
         params.ClientProtocolVersion = 0
         params.RequestType = ua.SecurityTokenRequestType.Issue
+        if renew:
+            params.RequestType = ua.SecurityTokenRequestType.Renew
         params.SecurityMode = ua.MessageSecurityMode.None_
         params.RequestedLifetime = 300000
         params.ClientNonce = '\x00'
@@ -92,6 +128,8 @@ class Client(object):
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0 #means not max size
         response = self.bclient.create_session(params)
+        self.keepalive = KeepAlive(self, response.RevisedSessionTimeout * 0.8)
+        self.keepalive.start()
         return response
 
     def activate_session(self):

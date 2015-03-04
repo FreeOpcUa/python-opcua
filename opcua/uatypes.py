@@ -242,7 +242,6 @@ class NodeId(object):
         elif self.NodeIdType == NodeIdType.ByteString:
             ntype = "b"
         string += "{}={}".format(ntype, self.Identifier)
-        print(dir(self))
         if self.ServerIndex:
             string = "srv=" + str(self.ServerIndex) + string
         if self.NamespaceUri:
@@ -368,7 +367,7 @@ class DateTime(object):
     
     @staticmethod
     def from_binary(data):
-        print("Generating DateTime from {}", data)
+        #print("Generating DateTime from {}", data)
         d = DateTime()
         d.data = struct.unpack("<d", data.read(8))[0]
         return d
