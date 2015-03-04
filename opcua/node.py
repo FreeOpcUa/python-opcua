@@ -42,7 +42,7 @@ class Node(object):
             variant = value
         else:
             variant = ua.Variant(value, varianttype)
-        return self.set_attribute(ua.AttributeIds.Value, ua.DataValue(variant))
+        response = self.set_attribute(ua.AttributeIds.Value, ua.DataValue(variant))
 
     def set_attribute(self, attributeid, datavalue):
         attr = ua.WriteValue()
@@ -50,7 +50,7 @@ class Node(object):
         attr.AttributeId = attributeid
         attr.Value = datavalue
         result = self.server.write([attr])
-        return result[0]
+        result[0].check()
 
     def get_attribute(self, attr):
         rv = ua.ReadValueId()

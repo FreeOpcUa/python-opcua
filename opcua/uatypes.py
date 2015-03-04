@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 import uuid
 import struct 
 
+import opcua.status_code as status_code
+
 UaTypes = ("Boolean", "SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double", "String", "DateTime", "Guid", "ByteString")
 
 def uatype_to_fmt(uatype):
@@ -135,21 +137,25 @@ class Guid(object):
 
 
 class StatusCode(object):
-    def __init__(self):
-        self.data = 0 
+    def __init__(self, value=0):
+        self.value = value
+        self.name, self.doc = status_code.get_name_and_doc(value)
 
     def to_binary(self):
-        return struct.pack("!I", self.data)
+        return struct.pack("<I", self.value)
 
     @staticmethod 
     def from_binary(data):
-        sc = StatusCode()
-        sc.data = struct.unpack("!I", data.read(4))[0]
+        val = struct.unpack("<I", data.read(4))[0]
+        sc = StatusCode(val)
         return sc
 
-    def __str__(self):
-        return 'StatusCode({})'.format(self.data)
+    def check(self):
+        if self.value != 0:
+            raise Exception("{}:{}".format(self.name, self.doc))
 
+    def __str__(self):
+        return 'StatusCode({})'.format(self.name)
     __repr__ = __str__
 
 class NodeIdType(object):

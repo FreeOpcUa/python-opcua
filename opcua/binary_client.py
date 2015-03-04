@@ -114,7 +114,6 @@ class BinaryClient(object):
         if header.MessageType == ua.MessageType.Error:
             self.logger.warn("Received an error message type")
             return None
-        #FIXME check StatusCOde here !!!!
         body = self._receive_body(header.body_size)
         if header.MessageType == ua.MessageType.Acknowledge:
             self._call_callback(0, body)
@@ -177,7 +176,7 @@ class BinaryClient(object):
         self._callbackmap[0] = rcall
         with rcall.condition:
             rcall.condition.wait()
-        return  ua.Acknowledge.from_binary(rcall.data)
+        return ua.Acknowledge.from_binary(rcall.data)
  
     def open_secure_channel(self, params):
         self.logger.info("open_secure_channel")
@@ -197,6 +196,7 @@ class BinaryClient(object):
             #FICME: could copy data here ....
 
         response = ua.OpenSecureChannelResponse.from_binary(rcall.data)
+        response.ResponseHeader.ServiceResult.check()
         self._security_token = response.Parameters.SecurityToken
         self.logger.info(response)
         return response
@@ -207,6 +207,7 @@ class BinaryClient(object):
         request.Parameters = parameters
         data = self._send_request(request)
         response = ua.CreateSessionResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
         self._authentication_token = response.Parameters.AuthenticationToken
         return response.Parameters
 
@@ -216,6 +217,7 @@ class BinaryClient(object):
         request.Parameters = parameters
         data = self._send_request(request)
         response = ua.ActivateSessionResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
         return response.Parameters
 
     def close_session(self, deletesubscriptions):
@@ -224,7 +226,7 @@ class BinaryClient(object):
         request.DeleteSubscriptions = deletesubscriptions
         data = self._send_request(request)
         response = ua.CloseSessionResponse.from_binary(data)
-        #FIXME check return code
+        #response.ResponseHeader.ServiceResult.check() #disabled, it seems we sent wrong session Id, but where is the sessionId supposed to be sent???
 
     def browse(self, parameters):
         self.logger.info("browse")
@@ -232,6 +234,7 @@ class BinaryClient(object):
         request.Parameters = parameters
         data = self._send_request(request)
         response = ua.BrowseResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
         return response.Results
 
     def read(self, parameters):
@@ -240,6 +243,7 @@ class BinaryClient(object):
         request.Parameters = parameters
         data = self._send_request(request)
         response = ua.ReadResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
         return response.Results
 
     def write(self, nodestowrite):
@@ -248,6 +252,7 @@ class BinaryClient(object):
         request.NodesToWrite = nodestowrite
         data = self._send_request(request)
         response = ua.WriteResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
         return response.Results
 
     def get_endpoints(self, params, callback=None):
@@ -256,6 +261,7 @@ class BinaryClient(object):
         request.Parameters = params
         data = self._send_request(request)
         response = ua.GetEndpointsResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
         return response.Endpoints
 
     def close_secure_channel(self):

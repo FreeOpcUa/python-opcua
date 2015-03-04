@@ -84,7 +84,7 @@ class Client(object):
         desc.ApplicationType = ua.ApplicationType.Client
 
         params = ua.CreateSessionParameters()
-        params.ClientNonce = uuid.uuid4().bytes
+        params.ClientNonce = uuid.uuid4().bytes + uuid.uuid4().bytes #seems we need at least 32 bytes not 16 as python gives us...
         params.ClientCertificate = b''
         params.ClientDescription = desc 
         params.EndpointUrl = self.server_url.geturl()
