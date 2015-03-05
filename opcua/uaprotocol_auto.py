@@ -6809,59 +6809,33 @@ class MonitoringParameters(object):
     
     __repr__ = __str__
     
-class MonitoredItemCreateParameters(object):
+class MonitoredItemCreateRequest(object):
     '''
     '''
     def __init__(self):
+        self.ItemToMonitor = ReadValueId()
         self.MonitoringMode = 0
         self.RequestedParameters = MonitoringParameters()
     
     def to_binary(self):
         packet = []
+        packet.append(self.ItemToMonitor.to_binary())
         packet.append(pack_uatype('UInt32', self.MonitoringMode))
         packet.append(self.RequestedParameters.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
-        obj = MonitoredItemCreateParameters()
+        obj = MonitoredItemCreateRequest()
+        obj.ItemToMonitor = ReadValueId.from_binary(data)
         obj.MonitoringMode = unpack_uatype('UInt32', data)
         obj.RequestedParameters = MonitoringParameters.from_binary(data)
         return obj
     
     def __str__(self):
-        return 'MonitoredItemCreateParameters(' + 'MonitoringMode:' + str(self.MonitoringMode) + ', '  + \
+        return 'MonitoredItemCreateRequest(' + 'ItemToMonitor:' + str(self.ItemToMonitor) + ', '  + \
+             'MonitoringMode:' + str(self.MonitoringMode) + ', '  + \
              'RequestedParameters:' + str(self.RequestedParameters) + ')'
-    
-    __repr__ = __str__
-    
-class MonitoredItemCreateRequest(object):
-    '''
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.MonitoredItemCreateRequest_Encoding_DefaultBinary)
-        self.ItemToMonitor = ReadValueId()
-        self.Parameters = MonitoredItemCreateParameters()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ItemToMonitor.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = MonitoredItemCreateRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ItemToMonitor = ReadValueId.from_binary(data)
-        obj.Parameters = MonitoredItemCreateParameters.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'MonitoredItemCreateRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ItemToMonitor:' + str(self.ItemToMonitor) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
     
     __repr__ = __str__
     
@@ -6968,15 +6942,19 @@ class CreateMonitoredItemsRequest(object):
     
     __repr__ = __str__
     
-class CreateMonitoredItemsResult(object):
+class CreateMonitoredItemsResponse(object):
     '''
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.CreateMonitoredItemsResponse_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
     
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.Results)))
         for fieldname in self.Results:
             packet.append(fieldname.to_binary())
@@ -6987,7 +6965,9 @@ class CreateMonitoredItemsResult(object):
         
     @staticmethod
     def from_binary(data):
-        obj = CreateMonitoredItemsResult()
+        obj = CreateMonitoredItemsResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -6999,38 +6979,10 @@ class CreateMonitoredItemsResult(object):
         return obj
     
     def __str__(self):
-        return 'CreateMonitoredItemsResult(' + 'Results:' + str(self.Results) + ', '  + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
-    __repr__ = __str__
-    
-class CreateMonitoredItemsResponse(object):
-    '''
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.CreateMonitoredItemsResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = CreateMonitoredItemsResult()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = CreateMonitoredItemsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = CreateMonitoredItemsResult.from_binary(data)
-        return obj
-    
-    def __str__(self):
         return 'CreateMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
     
     __repr__ = __str__
     

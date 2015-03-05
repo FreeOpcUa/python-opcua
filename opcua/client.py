@@ -152,9 +152,9 @@ class Client(object):
 
     def create_subscription(self, period, handler):
         params = ua.CreateSubscriptionParameters()
-        params.RequestedPublishInterval = period
-        params.RequestedLifetimeCount = 0
-        params.RequestedMaxKeepAliveCount = 0
+        params.RequestedPublishingInterval = period
+        params.RequestedLifetimeCount = 3000
+        params.RequestedMaxKeepAliveCount = 10000
         params.MaxNotificationsPerPublish = 0
         params.PublishingEnabled = True
         params.Priority = 0

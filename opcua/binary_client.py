@@ -23,10 +23,10 @@ class Buffer(object):
     def read(self, size):
         if size > len(self.data):
             raise Exception("No enough data left in buffer, request for {}, we have {}".format(size, self))
-        self.logger.debug("Request for %s bytes, from %s", size, self)
+        #self.logger.debug("Request for %s bytes, from %s", size, self)
         data = self.data[:size]
         self.data = self.data[size:]
-        self.logger.debug("Returning: %s ", data)
+        #self.logger.debug("Returning: %s ", data)
         return data
 
 
@@ -93,7 +93,7 @@ class BinaryClient(object):
             try:
                 self._receive()
             except ua.SocketClosedException:
-                self.logger.warn("Socket has closed connection")
+                self.logger.info("Socket has closed connection")
                 #FIXME: should we wake up all waiting conditions here??
                 break
         self.logger.info("Thread ended")
@@ -101,11 +101,11 @@ class BinaryClient(object):
     def _receive_header(self):
         self.logger.debug("Waiting for header")
         header = ua.Header.from_stream(self._socket)
-        self.logger.info("received header: %s", header)
+        self.logger.debug("received header: %s", header)
         return header
 
     def _receive_body(self, size):
-        self.logger.info("reading body of message (%s bytes)", size)
+        self.logger.debug("reading body of message (%s bytes)", size)
         data = self._socket.recv(size)
         if size != len(data):
             raise Exception("Error, did not received expected number of bytes, got {}, asked for {}".format(len(data), size))
@@ -133,7 +133,7 @@ class BinaryClient(object):
             self.logger.warn("Unsupported message type: %s", header.MessageType)
             return
         seqhdr = ua.SequenceHeader.from_binary(body)
-        self.logger.info(seqhdr)
+        self.logger.debug(seqhdr)
         self._call_callback(seqhdr.RequestId, body)
 
     def _call_callback(self, requestId, body):
@@ -148,12 +148,11 @@ class BinaryClient(object):
             rcall.callback(rcall)
 
     def _write_socket(self, hdr, *args):
-        self.logger.info("wrtting to socket")
         alle = []
         for arg in args:
             data = arg.to_binary()
             hdr.add_size(len(data))
-            self.logger.debug("writting to socket: %s with length %s ", type(arg), len(data))
+            self.logger.info("writting to socket: %s with length %s ", type(arg), len(data))
             self.logger.debug("struct: %s", arg)
             self.logger.debug("data: %s", data)
             alle.append(data)
@@ -347,6 +346,15 @@ class BinaryClient(object):
         self.logger.debug("call_publish_callback")
         response = ua.PublishResponse.from_binary(rcall.data)
         self._publishcallbacks[response.SubscriptionId].callback(response.Results)
+
+    def create_monitored_items(self, params):
+        self.logger.info("subscribe_data_change")
+        request = ua.CreateMonitoredItemsRequest()
+        request.Parameters = params
+        data = self._send_request(request)
+        response = ua.CreateMonitoredItemsResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
 
 
 

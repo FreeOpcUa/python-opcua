@@ -14,7 +14,7 @@ IgnoredEnums = []#["IdType", "NodeIdType"]
 #we want to implement som struct by hand, to make better interface or simply because they are too complicated 
 IgnoredStructs = []#["NodeId", "ExpandedNodeId", "Variant", "QualifiedName", "DataValue", "LocalizedText"]#, "ExtensionObject"]
 #by default we split requests and respons in header and parameters, but some are so simple we do not split them
-NoSplitStruct = ["GetEndpointsResponse", "CloseSessionRequest", "AddNodesResponse", "BrowseResponse", "HistoryReadResponse", "HistoryUpdateResponse", "RegisterServerResponse", "CloseSecureChannelRequest", "CloseSecureChannelResponse", "CloseSessionRequest", "CloseSessionResponse", "UnregisterNodesResponse", "MonitoredItemModifyRequest", "MonitoredItemsCreateRequest", "ReadResponse", "WriteRequest", "WriteResponse", "TranslateBrowsePathsToNodeIdsRequest", "TranslateBrowsePathsToNodeIdsResponse", "DeleteSubscriptionsRequest", "DeleteSubscriptionsResponse", "PublishRequest", "PublishResponse"]
+NoSplitStruct = ["GetEndpointsResponse", "CloseSessionRequest", "AddNodesResponse", "BrowseResponse", "HistoryReadResponse", "HistoryUpdateResponse", "RegisterServerResponse", "CloseSecureChannelRequest", "CloseSecureChannelResponse", "CloseSessionRequest", "CloseSessionResponse", "UnregisterNodesResponse", "MonitoredItemModifyRequest", "MonitoredItemsCreateRequest", "ReadResponse", "WriteRequest", "WriteResponse", "TranslateBrowsePathsToNodeIdsRequest", "TranslateBrowsePathsToNodeIdsResponse", "DeleteSubscriptionsRequest", "DeleteSubscriptionsResponse", "PublishRequest", "PublishResponse", "CreateMonitoredItemsResponse"]
 OverrideTypes = {}#AttributeId": "AttributeID",  "ResultMask": "BrowseResultMask", "NodeClassMask": "NodeClass", "AccessLevel": "VariableAccessLevel", "UserAccessLevel": "VariableAccessLevel", "NotificationData": "NotificationData"}
 OverrideNames = {}#{"RequestHeader": "Header", "ResponseHeader": "Header", "StatusCode": "Status", "NodesToRead": "AttributesToRead"} # "MonitoringMode": "Mode",, "NotificationMessage": "Notification", "NodeIdType": "Type"}
 
@@ -276,7 +276,7 @@ def split_requests(model):
     structs = []
     for struct in model.structs:
         structtype = None
-        if struct.name.endswith("Request"):
+        if struct.name.endswith("Request") and not struct.name in ("MonitoredItemCreateRequest"):
             structtype = "Request"
         elif struct.name.endswith("Response"):
             structtype = "Response"
