@@ -8337,14 +8337,18 @@ class SubscriptionAcknowledgement(object):
     
     __repr__ = __str__
     
-class PublishParameters(object):
+class PublishRequest(object):
     '''
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.PublishRequest_Encoding_DefaultBinary)
+        self.RequestHeader = RequestHeader()
         self.SubscriptionAcknowledgements = []
     
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.RequestHeader.to_binary())
         packet.append(struct.pack('<i', len(self.SubscriptionAcknowledgements)))
         for fieldname in self.SubscriptionAcknowledgements:
             packet.append(fieldname.to_binary())
@@ -8352,7 +8356,9 @@ class PublishParameters(object):
         
     @staticmethod
     def from_binary(data):
-        obj = PublishParameters()
+        obj = PublishRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -8360,44 +8366,18 @@ class PublishParameters(object):
         return obj
     
     def __str__(self):
-        return 'PublishParameters(' + 'SubscriptionAcknowledgements:' + str(self.SubscriptionAcknowledgements) + ')'
-    
-    __repr__ = __str__
-    
-class PublishRequest(object):
-    '''
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.PublishRequest_Encoding_DefaultBinary)
-        self.RequestHeader = RequestHeader()
-        self.Parameters = PublishParameters()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = PublishRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = PublishParameters.from_binary(data)
-        return obj
-    
-    def __str__(self):
         return 'PublishRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'RequestHeader:' + str(self.RequestHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'SubscriptionAcknowledgements:' + str(self.SubscriptionAcknowledgements) + ')'
     
     __repr__ = __str__
     
-class PublishResult(object):
+class PublishResponse(object):
     '''
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.PublishResponse_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
         self.SubscriptionId = 0
         self.AvailableSequenceNumbers = []
         self.MoreNotifications = True
@@ -8407,6 +8387,8 @@ class PublishResult(object):
     
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
         packet.append(pack_uatype('UInt32', self.SubscriptionId))
         packet.append(struct.pack('<i', len(self.AvailableSequenceNumbers)))
         for fieldname in self.AvailableSequenceNumbers:
@@ -8423,7 +8405,9 @@ class PublishResult(object):
         
     @staticmethod
     def from_binary(data):
-        obj = PublishResult()
+        obj = PublishResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
         obj.SubscriptionId = unpack_uatype('UInt32', data)
         obj.AvailableSequenceNumbers = unpack_uatype_array('UInt32', data)
         obj.MoreNotifications = unpack_uatype('Boolean', data)
@@ -8439,42 +8423,14 @@ class PublishResult(object):
         return obj
     
     def __str__(self):
-        return 'PublishResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+        return 'PublishResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
              'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ', '  + \
              'MoreNotifications:' + str(self.MoreNotifications) + ', '  + \
              'NotificationMessage:' + str(self.NotificationMessage) + ', '  + \
              'Results:' + str(self.Results) + ', '  + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
-    __repr__ = __str__
-    
-class PublishResponse(object):
-    '''
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.PublishResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = PublishResult()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = PublishResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = PublishResult.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'PublishResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
     
     __repr__ = __str__
     
@@ -8738,14 +8694,18 @@ class TransferSubscriptionsResponse(object):
     
     __repr__ = __str__
     
-class DeleteSubscriptionsParameters(object):
+class DeleteSubscriptionsRequest(object):
     '''
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary)
+        self.RequestHeader = RequestHeader()
         self.SubscriptionIds = []
     
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.RequestHeader.to_binary())
         packet.append(struct.pack('<i', len(self.SubscriptionIds)))
         for fieldname in self.SubscriptionIds:
             packet.append(pack_uatype('UInt32', fieldname))
@@ -8753,54 +8713,32 @@ class DeleteSubscriptionsParameters(object):
         
     @staticmethod
     def from_binary(data):
-        obj = DeleteSubscriptionsParameters()
-        obj.SubscriptionIds = unpack_uatype_array('UInt32', data)
-        return obj
-    
-    def __str__(self):
-        return 'DeleteSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
-    
-    __repr__ = __str__
-    
-class DeleteSubscriptionsRequest(object):
-    '''
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary)
-        self.RequestHeader = RequestHeader()
-        self.Parameters = DeleteSubscriptionsParameters()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
         obj = DeleteSubscriptionsRequest()
         obj.TypeId = NodeId.from_binary(data)
         obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = DeleteSubscriptionsParameters.from_binary(data)
+        obj.SubscriptionIds = unpack_uatype_array('UInt32', data)
         return obj
     
     def __str__(self):
         return 'DeleteSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'RequestHeader:' + str(self.RequestHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
     
     __repr__ = __str__
     
-class DeleteSubscriptionsResult(object):
+class DeleteSubscriptionsResponse(object):
     '''
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsResponse_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
     
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.Results)))
         for fieldname in self.Results:
             packet.append(fieldname.to_binary())
@@ -8811,7 +8749,9 @@ class DeleteSubscriptionsResult(object):
         
     @staticmethod
     def from_binary(data):
-        obj = DeleteSubscriptionsResult()
+        obj = DeleteSubscriptionsResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -8823,38 +8763,10 @@ class DeleteSubscriptionsResult(object):
         return obj
     
     def __str__(self):
-        return 'DeleteSubscriptionsResult(' + 'Results:' + str(self.Results) + ', '  + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
-    __repr__ = __str__
-    
-class DeleteSubscriptionsResponse(object):
-    '''
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = DeleteSubscriptionsResult()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteSubscriptionsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = DeleteSubscriptionsResult.from_binary(data)
-        return obj
-    
-    def __str__(self):
         return 'DeleteSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
     
     __repr__ = __str__
     

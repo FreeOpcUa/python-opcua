@@ -31,9 +31,10 @@ class Buffer(object):
 
 
 class RequestCallback(object):
-    def __init__(self, callback=None):
+    def __init__(self):
         self.condition = Condition()
         self.data = None
+        self.callback = None
 
 
 class BinaryClient(object):
@@ -55,6 +56,7 @@ class BinaryClient(object):
         self._request_id = 0
         self._request_handle = 0
         self._callbackmap = {}
+        self._publishcallbacks = {}
         self._thread = None
         self._lock = Lock()
 
@@ -67,7 +69,7 @@ class BinaryClient(object):
         self._thread = Thread(target=self._run)
         self._thread.start()
 
-    def _send_request(self, request):
+    def _send_request(self, request, callback=None):
         #HACK to make sure we can convert our request to binary before increasing request counter etc ...
         request.to_binary()
         #END HACK
@@ -79,9 +81,11 @@ class BinaryClient(object):
             rcall = RequestCallback()
             self._callbackmap[seqhdr.RequestId] = rcall
             self._write_socket(hdr, symhdr, seqhdr, request)
-        with rcall.condition:
-            rcall.condition.wait()
-            return rcall.data
+        if not callback:
+            with rcall.condition:
+                rcall.condition.wait()
+                return rcall.data
+
 
     def _run(self):
         self.logger.info("Thread started")
@@ -140,6 +144,8 @@ class BinaryClient(object):
         rcall.data = body
         rcall.condition.notify_all()
         rcall.condition.release()
+        if rcall.callback:
+            rcall.callback(rcall)
 
     def _write_socket(self, hdr, *args):
         self.logger.info("wrtting to socket")
@@ -248,7 +254,7 @@ class BinaryClient(object):
         request = ua.CloseSessionRequest()
         request.DeleteSubscriptions = deletesubscriptions
         data = self._send_request(request)
-        response = ua.CloseSessionResponse.from_binary(data)
+        ua.CloseSessionResponse.from_binary(data)
         #response.ResponseHeader.ServiceResult.check() #disabled, it seems we sent wrong session Id, but where is the sessionId supposed to be sent???
 
     def browse(self, parameters):
@@ -278,7 +284,7 @@ class BinaryClient(object):
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
-    def get_endpoints(self, params, callback=None):
+    def get_endpoints(self, params):
         self.logger.info("get_endpoint")
         request = ua.GetEndpointsRequest()
         request.Parameters = params
@@ -311,5 +317,36 @@ class BinaryClient(object):
         response = ua.TranslateBrowsePathsToNodeIdsResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
+
+    def create_subscription(self, params, callback):
+        self.logger.info("create_subscription")
+        request = ua.CreateSubscriptionRequest()
+        request.Parameters = params
+        data = self._send_request(request)
+        response = ua.CreateSubscriptionResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        self._publishcallbacks[response.Parameters.SubscriptionId] = callback
+        return response.Parameters
+
+    def delete_subscriptions(self, subscriptionids):
+        self.logger.info("delete_subscription")
+        request = ua.DeleteSubscriptionsRequest()
+        request.SubscriptionIds = subscriptionids
+        data = self._send_request(request)
+        response = ua.DeleteSubscriptionsResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        for sid in subscriptionids:
+            del(self._publishcallbacks[sid])
+        return response.Results
+
+    def publish(self, request):
+        self.logger.info("publish")
+        self._send_request(request, self._call_publish_callback)
+
+    def _call_publish_callback(self, rcall):
+        self.logger.debug("call_publish_callback")
+        response = ua.PublishResponse.from_binary(rcall.data)
+        self._publishcallbacks[response.SubscriptionId].callback(response.Results)
+
 
 

@@ -1,10 +1,9 @@
-import time
 from threading import Thread, Condition
 import logging
 import uuid
 
 from opcua import uaprotocol as ua
-from opcua import BinaryClient, Node
+from opcua import BinaryClient, Node, Subscription
 from urllib.parse import urlparse
 
 class KeepAlive(Thread):
@@ -150,6 +149,16 @@ class Client(object):
 
     def get_node(self, nodeid):
         return Node(self.bclient, nodeid)
+
+    def create_subscription(self, period, handler):
+        params = ua.CreateSubscriptionParameters()
+        params.RequestedPublishInterval = period
+        params.RequestedLifetimeCount = 0
+        params.RequestedMaxKeepAliveCount = 0
+        params.MaxNotificationsPerPublish = 0
+        params.PublishingEnabled = True
+        params.Priority = 0
+        return Subscription(self.bclient, params, handler)
 
 
 
