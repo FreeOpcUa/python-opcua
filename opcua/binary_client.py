@@ -90,6 +90,7 @@ class BinaryClient(object):
                 self._receive()
             except ua.SocketClosedException:
                 self.logger.warn("Socket has closed connection")
+                #FIXME: should we wake up all waiting conditions here??
                 break
         self.logger.info("Thread ended")
 
