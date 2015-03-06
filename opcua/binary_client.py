@@ -79,6 +79,7 @@ class BinaryClient(object):
             symhdr = self._create_sym_algo_header()
             seqhdr = self._create_sequence_header()
             rcall = RequestCallback()
+            rcall.callback = callback
             self._callbackmap[seqhdr.RequestId] = rcall
             self._write_socket(hdr, symhdr, seqhdr, request)
         if not callback:
@@ -101,7 +102,7 @@ class BinaryClient(object):
     def _receive_header(self):
         self.logger.debug("Waiting for header")
         header = ua.Header.from_stream(self._socket)
-        self.logger.debug("received header: %s", header)
+        self.logger.info("received header: %s", header)
         return header
 
     def _receive_body(self, size):
@@ -338,14 +339,22 @@ class BinaryClient(object):
             del(self._publishcallbacks[sid])
         return response.Results
 
-    def publish(self, request):
+    def publish(self, acks=None):
         self.logger.info("publish")
+        if  acks is None:
+            acks = []
+        request = ua.PublishRequest()
+        request.SubscriptionAcknowledgements = acks
         self._send_request(request, self._call_publish_callback)
 
     def _call_publish_callback(self, rcall):
-        self.logger.debug("call_publish_callback")
+        self.logger.info("call_publish_callback")
         response = ua.PublishResponse.from_binary(rcall.data)
-        self._publishcallbacks[response.SubscriptionId].callback(response.Results)
+        try:
+            self._publishcallbacks[response.Parameters.SubscriptionId](response.Parameters)
+        except Exception as ex: #we call client code, catch everything!
+            self.logger.warn("exception while calling user callback:", ex)
+
 
     def create_monitored_items(self, params):
         self.logger.info("subscribe_data_change")

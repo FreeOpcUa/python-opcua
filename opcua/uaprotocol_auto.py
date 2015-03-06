@@ -8324,12 +8324,10 @@ class PublishRequest(object):
     
     __repr__ = __str__
     
-class PublishResponse(object):
+class PublishResult(object):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.PublishResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
         self.SubscriptionId = 0
         self.AvailableSequenceNumbers = []
         self.MoreNotifications = True
@@ -8339,8 +8337,6 @@ class PublishResponse(object):
     
     def to_binary(self):
         packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
         packet.append(pack_uatype('UInt32', self.SubscriptionId))
         packet.append(struct.pack('<i', len(self.AvailableSequenceNumbers)))
         for fieldname in self.AvailableSequenceNumbers:
@@ -8357,9 +8353,7 @@ class PublishResponse(object):
         
     @staticmethod
     def from_binary(data):
-        obj = PublishResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj = PublishResult()
         obj.SubscriptionId = unpack_uatype('UInt32', data)
         obj.AvailableSequenceNumbers = unpack_uatype_array('UInt32', data)
         obj.MoreNotifications = unpack_uatype('Boolean', data)
@@ -8375,14 +8369,42 @@ class PublishResponse(object):
         return obj
     
     def __str__(self):
-        return 'PublishResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+        return 'PublishResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
              'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ', '  + \
              'MoreNotifications:' + str(self.MoreNotifications) + ', '  + \
              'NotificationMessage:' + str(self.NotificationMessage) + ', '  + \
              'Results:' + str(self.Results) + ', '  + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
+class PublishResponse(object):
+    '''
+    '''
+    def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.PublishResponse_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
+        self.Parameters = PublishResult()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
+        packet.append(self.Parameters.to_binary())
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = PublishResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = PublishResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'PublishResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
     
     __repr__ = __str__
     

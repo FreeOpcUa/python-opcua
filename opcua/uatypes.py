@@ -188,6 +188,14 @@ class NodeId(object):
             else:
                 raise Exception("NodeId: Could not guess type of NodeId, set NodeIdType")
 
+    def __eq__(self, node):
+        if self.Identifier == node.Identifier and self.NamespaceIndex == node.NamespaceIndex:
+            return True
+        return False
+
+    def __nq__(self, node):
+        return not self.__eq__(node)
+
     @staticmethod
     def from_string(string):
         l = string.split(";")
