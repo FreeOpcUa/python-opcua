@@ -368,7 +368,6 @@ class DiagnosticInfo(object):
         self.InnerDiagnosticInfo = None
     
     def to_binary(self):
-        if self.InnerDiagnosticInfo is None: self.InnerDiagnosticInfo = DiagnosticInfo()
         packet = []
         if self.SymbolicId: self.Encoding |= (1 << 0)
         if self.NamespaceURI: self.Encoding |= (1 << 1)
@@ -701,21 +700,25 @@ class ServiceFault(object):
     The response returned by all services when there is a service level error.
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.ServiceFault_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
     
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ServiceFault()
+        obj.TypeId = NodeId.from_binary(data)
         obj.ResponseHeader = ResponseHeader.from_binary(data)
         return obj
     
     def __str__(self):
-        return 'ServiceFault(' + 'ResponseHeader:' + str(self.ResponseHeader) + ')'
+        return 'ServiceFault(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ')'
     
     __repr__ = __str__
     

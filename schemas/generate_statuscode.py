@@ -6,10 +6,18 @@ if __name__ == "__main__":
     #outputfile.write("from enum import Enum\n")
     outputfile.write("\n")
 
+    outputfile.write("class StatusCodes:\n")
+    for line in inputfile:
+        name, val, doc = line.split(",", maxsplit=2)
+        doc = doc.strip()
+        outputfile.write("    {} = {}\n".format(name, val))
+    outputfile.write("\n")
+    outputfile.write("\n")
 
     outputfile.write("def get_name_and_doc(val):\n")
     outputfile.write("    if val == 0:\n")
     outputfile.write("        return 'Good', 'Good'\n")
+    inputfile = open("StatusCode.csv")
     for line in inputfile:
         name, val, doc = line.split(",", maxsplit=2)
         doc = doc.strip()

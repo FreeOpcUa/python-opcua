@@ -7,6 +7,10 @@ from opcua import BinaryClient, Node, Subscription
 from urllib.parse import urlparse
 
 class KeepAlive(Thread):
+    """
+    Used by Client to keep session opened.
+    OPCUA defines timeout both for sessions and secure channel
+    """
     def __init__(self, client, timeout):
         Thread.__init__(self)
         self.logger = logging.getLogger(self.__class__.__name__)
@@ -37,7 +41,21 @@ class KeepAlive(Thread):
 
 
 class Client(object):
+    """
+    High level client to connect to an OPC-UA server. 
+    This class makes it easy to connect and browse address space.
+    It attemps to expose as much functionality as possible
+    but if you want to do to special things you will probably need
+    to work with the BinaryClient object, available as self.bclient
+    which offers a raw OPC-UA interface.
+
+    """
     def __init__(self, url):
+        """
+        used url argument to connect to server.
+        if you are unsure of url, write at least hostname and port
+        and call get_endpoints
+        """
         self.logger = logging.getLogger(self.__class__.__name__)
         self.server_url = urlparse(url)
         self.name = "Pure Python Client" 
@@ -65,6 +83,7 @@ class Client(object):
 
     def connect(self):
         """
+        High level method
         Connect, create and activate session
         """
         self.connect_socket()
@@ -74,23 +93,34 @@ class Client(object):
         self.activate_session()
 
     def disconnect(self):
-        self.keepalive.stop()
-        #FIXME: should ensure keepalive has left before continuing
+        """
+        High level method
+        Close session, secure channel and socket
+        """
         self.close_session()
         self.close_secure_channel()
         self.disconnect_socket()
 
     def connect_socket(self):
+        """
+        connect to socket defined in url
+        """
         self.bclient.connect_socket(self.server_url.hostname, self.server_url.port)
 
     def disconnect_socket(self):
         self.bclient.disconnect_socket()
 
     def send_hello(self):
+        """
+        Send OPC-UA hello to server
+        """
         ack = self.bclient.send_hello(self.server_url.geturl())
         #FIXME check ack
 
     def open_secure_channel(self, renew=False):
+        """
+        Open secure channel, if renew is True, renew channel
+        """
         params = ua.OpenSecureChannelParameters()
         params.ClientProtocolVersion = 0
         params.RequestType = ua.SecurityTokenRequestType.Issue
@@ -139,6 +169,11 @@ class Client(object):
         return self.bclient.activate_session(params)
 
     def close_session(self):
+        """
+        Close session
+        """
+        if self.keepalive:
+            self.keepalive.stop()
         return self.bclient.close_session(True)
 
     def get_root_node(self):
@@ -148,9 +183,17 @@ class Client(object):
         return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.ObjectsFolder))
 
     def get_node(self, nodeid):
+        """
+        Get node using NodeId object or a string representing a NodeId
+        """
         return Node(self.bclient, nodeid)
 
     def create_subscription(self, period, handler):
+        """
+        Create a subscription.
+        returns a Subscription object which allow
+        to subscribe to events or data on server
+        """
         params = ua.CreateSubscriptionParameters()
         params.RequestedPublishingInterval = period
         params.RequestedLifetimeCount = 3000

@@ -93,9 +93,9 @@ class CodeGenerator(object):
         self.iidx += 1
 
         #hack for self referencing classes
-        for field in obj.fields:
-            if field.uatype == obj.name: #help!!! selv referencing class
-                self.write("if self.{name} is None: self.{name} = {uatype}()".format(name=field.name, uatype=field.uatype))
+        #for field in obj.fields:
+            #if field.uatype == obj.name: #help!!! selv referencing class
+                #self.write("if self.{name} is None: self.{name} = {uatype}()".format(name=field.name, uatype=field.uatype))
 
         self.write("packet = []")
         if extobj_hack:

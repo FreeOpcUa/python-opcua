@@ -7,6 +7,54 @@ import opcua.uatypes as uatypes
 
 logger = logging.getLogger(__name__)
 
+
+
+class Buffer(object):
+    """
+    alternative to io.BytesIO making debug easier
+    and added a few conveniance methods
+    """
+    def __init__(self, data):
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.data = data
+
+    def __str__(self):
+        return "Buffer(size:{}, data:{})".format(len(self.data), self.data)
+    __repr__ = __str__
+
+    def read(self, size):
+        """
+        read and pop number of bytes for buffer
+        """
+        if size > len(self.data):
+            raise Exception("No enough data left in buffer, request for {}, we have {}".format(size, self))
+        #self.logger.debug("Request for %s bytes, from %s", size, self)
+        data = self.data[:size]
+        self.data = self.data[size:]
+        #self.logger.debug("Returning: %s ", data)
+        return data
+
+    def copy(self, size=None):
+        """
+        return a copy, optionnaly only copy 'size' bytes
+        """
+        if size is None:
+            return Buffer(self.data)
+        else:
+            return Buffer(self.data[:size])
+
+    def test_read(self, size):
+        """
+        read 'size' bytes from buffer, without removing them from buffer
+        """
+        if size > len(self.data):
+            raise Exception("No enough data left in buffer, request for {}, we have {}".format(size, self))
+        return self.data[:size]
+
+
+
+
+
 class SocketClosedException(Exception):
     pass
 
@@ -27,8 +75,8 @@ class Hello(object):
         self.ProtocolVersion = 0
         self.ReceiveBufferSize = 65536
         self.SendBufferSize = 65536
-        self.MaxMessageSize = 65536
-        self.MaxChunkCount = 256
+        self.MaxMessageSize = 0
+        self.MaxChunkCount = 0
         self.EndpointUrl = ""
 
     def to_binary(self):
@@ -43,6 +91,18 @@ class Hello(object):
 
     def get_binary_size(self):
         return 5*4
+
+    @staticmethod
+    def from_binary(data):
+        hello = Hello()
+        hello.ProtocolVersion = struct.unpack("<I", data.read(4))[0]
+        hello.ReceiveBufferSize = struct.unpack("<I", data.read(4))[0]
+        hello.SendBufferSize = struct.unpack("<I", data.read(4))[0]
+        hello.MaxMessageSize = struct.unpack("<I", data.read(4))[0]
+        hello.MaxChunkCount = struct.unpack("<I", data.read(4))[0]
+        hello.EndpointUrl = uatypes.unpack_string(data)
+        return hello
+
 
 
 class MessageType(object):
@@ -77,7 +137,7 @@ class Header(object):
         b.append(struct.pack("<3s", self.MessageType))
         b.append(struct.pack("<s", self.ChunkType))
         size = self.body_size + 8
-        if self.MessageType != MessageType.Hello:
+        if not self.MessageType in (MessageType.Hello, MessageType.Acknowledge):
             size += 4
         b.append(struct.pack("<I", size))
         if not self.MessageType in (MessageType.Hello, MessageType.Acknowledge):
@@ -104,11 +164,22 @@ class Header(object):
 
 class Acknowledge:
     def __init__(self):
-        self.ProtocolVersion = None
-        self.ReceiveBufferSize = None
-        self.SendBufferSize = None
-        self.MaxMessageSize = None
-        self.MaxChunkCount = None
+        self.ProtocolVersion = 0
+        self.ReceiveBufferSize = 65536
+        self.SendBufferSize = 65536
+        self.MaxMessageSize = 0 #No limits
+        self.MaxChunkCount = 0 #No limits
+
+    def to_binary(self):
+        b = []
+        b.append(struct.pack("<I", self.ProtocolVersion))
+        b.append(struct.pack("<I", self.ReceiveBufferSize))
+        b.append(struct.pack("<I", self.SendBufferSize))
+        b.append(struct.pack("<I", self.MaxMessageSize))
+        b.append(struct.pack("<I", self.MaxChunkCount))
+        return b"".join(b)
+
+
 
     @staticmethod
     def from_binary(data):
