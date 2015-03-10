@@ -63,7 +63,7 @@ def pack_uatype(uatype, value):
     elif uatype in ("CharArray", "ByteString"):
         return pack_bytes(value)
     else:
-        fmt = uatype_to_fmt(uatype)
+        fmt = '<' + uatype_to_fmt(uatype)
         return struct.pack(fmt, value)
 
 def unpack_uatype(uatype, data):
@@ -72,7 +72,7 @@ def unpack_uatype(uatype, data):
     elif uatype in ("CharArray", "ByteString"):
         return unpack_bytes(data)
     else:
-        fmt = uatype_to_fmt(uatype)
+        fmt = '<' + uatype_to_fmt(uatype)
         size = struct.calcsize(fmt)
         return struct.unpack(fmt, data.read(size))[0]
 
