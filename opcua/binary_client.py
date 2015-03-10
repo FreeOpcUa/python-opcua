@@ -7,6 +7,7 @@ import socket
 from threading import Thread, Condition, Lock
 
 import opcua.uaprotocol as ua
+import opcua.utils as utils
 
 class Buffer(object):
     """
@@ -107,7 +108,7 @@ class BinaryClient(object):
 
     def _receive_body(self, size):
         self.logger.debug("reading body of message (%s bytes)", size)
-        data = self._socket.recv(size)
+        data = utils.recv_all(self._socket, size)
         if size != len(data):
             raise Exception("Error, did not received expected number of bytes, got {}, asked for {}".format(len(data), size))
         #return io.BytesIO(data)
