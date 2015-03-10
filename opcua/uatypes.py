@@ -290,13 +290,13 @@ class NodeId(object):
         elif nid.NodeIdType == NodeIdType.Numeric:
             nid.NamespaceIndex, nid.Identifier = struct.unpack("<HI", data.read(6))
         elif nid.NodeIdType == NodeIdType.String:
-            nid.NamespaceIndex = struct.unpack("<H", data.read(2))
+            nid.NamespaceIndex = struct.unpack("<H", data.read(2))[0]
             nid.Identifier = unpack_string(data)
         elif nid.NodeIdType == NodeIdType.ByteString:
-            nid.NamespaceIndex = struct.unpack("<H", data.read(2))
+            nid.NamespaceIndex = struct.unpack("<H", data.read(2))[0]
             nid.Identifier = unpack_bytes(data)
         elif nid.NodeIdType == NodeIdType.Guid:
-            nid.NamespaceIndex = struct.unpack("<H", data.read(2))
+            nid.NamespaceIndex = struct.unpack("<H", data.read(2))[0]
             nid.Identifier = Guid.from_binary(data)
         else:
             raise Exception("Unknown NodeId encoding: " + str(nid.NodeIdType))
@@ -482,7 +482,7 @@ class Variant(object):
         if vtype.name in UaTypes:
             return unpack_uatype_array(vtype.name, data)
         else:
-            length = struct.unpack("<i", data.read(4))
+            length = struct.unpack("<i", data.read(4))[0]
             res = []
             for _ in range(0, length):
                 res.append(Variant._unpack_val(vtype, data))
