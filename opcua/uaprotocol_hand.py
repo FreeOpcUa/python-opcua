@@ -4,6 +4,7 @@ import logging
 
 import opcua.uaprotocol_auto as auto
 import opcua.uatypes as uatypes 
+import opcua.utils as utils
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +60,7 @@ class SocketClosedException(Exception):
     pass
 
 def get_bytes_from_sock(sock, size):
-    data = sock.recv(size)
+    data = utils.recv_all(sock, size)
     if len(data) < size: #socket has closed!
         raise SocketClosedException("Server socket has closed")
     return io.BytesIO(data)
