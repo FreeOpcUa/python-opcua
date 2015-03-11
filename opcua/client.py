@@ -1,10 +1,11 @@
 from threading import Thread, Condition
 import logging
-import uuid
+from urllib.parse import urlparse
 
 from opcua import uaprotocol as ua
 from opcua import BinaryClient, Node, Subscription
-from urllib.parse import urlparse
+from opcua import utils
+
 
 class KeepAlive(Thread):
     """
@@ -149,7 +150,7 @@ class Client(object):
         desc.ApplicationType = ua.ApplicationType.Client
 
         params = ua.CreateSessionParameters()
-        params.ClientNonce = uuid.uuid4().bytes + uuid.uuid4().bytes #seems we need at least 32 bytes not 16 as python gives us...
+        params.ClientNonce = utils.create_nonce()
         params.ClientCertificate = b''
         params.ClientDescription = desc 
         params.EndpointUrl = self.server_url.geturl()

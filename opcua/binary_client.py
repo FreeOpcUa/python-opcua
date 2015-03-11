@@ -64,7 +64,16 @@ class BinaryClient(object):
         if not callback:
             with rcall.condition:
                 rcall.condition.wait()
+                self._check_answer(rcall.data, " in response to " + request.__class__.__name__)
                 return rcall.data
+
+    def _check_answer(self, data, context):
+        data = data.copy(50)#FIXME check max length
+        typeid = ua.NodeId.from_binary(data)
+        if typeid == ua.FourByteNodeId(ua.ObjectIds.ServiceFault_Encoding_DefaultBinary):
+            self.logger.warn("ServiceFault from server received %s", context)
+            hdr = ua.ResponseHeader.from_binary(data)
+            hdr.ServiceResult.check()
 
 
     def _run(self):
@@ -91,7 +100,7 @@ class BinaryClient(object):
         if size != len(data):
             raise Exception("Error, did not received expected number of bytes, got {}, asked for {}".format(len(data), size))
         #return io.BytesIO(data)
-        return ua.Buffer(data)
+        return utils.Buffer(data)
 
     def _receive(self):
         header = self._receive_header()
@@ -117,10 +126,10 @@ class BinaryClient(object):
         self.logger.debug(seqhdr)
         self._call_callback(seqhdr.RequestId, body)
 
-    def _call_callback(self, requestId, body):
-        rcall = self._callbackmap.pop(requestId, None)
+    def _call_callback(self, request_id, body):
+        rcall = self._callbackmap.pop(request_id, None)
         if rcall is None:
-            raise Exception("No callback object found for request: {}, callbacks in list are {}".format(requestId, self._callbackmap.keys()))
+            raise Exception("No callback object found for request: {}, callbacks in list are {}".format(request_id, self._callbackmap.keys()))
         rcall.condition.acquire()
         rcall.data = body
         rcall.condition.notify_all()
@@ -316,7 +325,7 @@ class BinaryClient(object):
         response = ua.DeleteSubscriptionsResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         for sid in subscriptionids:
-            del(self._publishcallbacks[sid])
+            self._publishcallbacks.pop(sid)
         return response.Results
 
     def publish(self, acks=None):
@@ -333,7 +342,7 @@ class BinaryClient(object):
         try:
             self._publishcallbacks[response.Parameters.SubscriptionId](response.Parameters)
         except Exception as ex: #we call client code, catch everything!
-            self.logger.warn("exception while calling user callback:", ex)
+            self.logger.warn("exception while calling user callback: %s", ex)
 
 
     def create_monitored_items(self, params):

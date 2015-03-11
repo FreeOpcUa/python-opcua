@@ -152,7 +152,7 @@ class StatusCode(object):
 
     def check(self):
         if self.value != 0:
-            raise Exception("{}:{}".format(self.name, self.doc))
+            raise Exception("{}({})".format(self.doc, self.name))
 
     def __str__(self):
         return 'StatusCode({})'.format(self.name)
@@ -188,13 +188,17 @@ class NodeId(object):
             else:
                 raise Exception("NodeId: Could not guess type of NodeId, set NodeIdType")
 
-    def __eq__(self, node):
-        if self.Identifier == node.Identifier and self.NamespaceIndex == node.NamespaceIndex:
-            return True
-        return False
+    def __key(self):
+        if self.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric):#twobyte, fourbyte and numeric may represent the same node
+            return (self.NamespaceIndex, self.Identifier) 
+        else:
+            return (self.NodeIdType, self.NamespaceIndex, self.Identifier) 
 
-    def __nq__(self, node):
-        return not self.__eq__(node)
+    def __eq__(self, node):
+        return isinstance(node, NodeId) and self.__key() == node.__key()
+
+    def __hash__(self):
+        return hash(self.__key())
 
     @staticmethod
     def from_string(string):
