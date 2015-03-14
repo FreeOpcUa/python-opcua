@@ -59,6 +59,7 @@ class Node(object):
         params = ua.ReadParameters()
         params.NodesToRead.append(rv)
         result = self.server.read(params)
+        result[0].StatusCode.check()
         return result[0].Value
 
     def get_children(self):

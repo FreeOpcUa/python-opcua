@@ -13,6 +13,7 @@ if __name__ == "__main__":
     server.set_server_name("FreeOpcUa Example Server")
     server.start()
     try:
+        root = server.get_root_node()
         embed()
     finally:
         server.stop()

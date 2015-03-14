@@ -2955,33 +2955,6 @@ class AddReferencesItem(object):
     
     __repr__ = __str__
     
-class AddReferencesParameters(object):
-    '''
-    '''
-    def __init__(self):
-        self.ReferencesToAdd = []
-    
-    def to_binary(self):
-        packet = []
-        packet.append(struct.pack('<i', len(self.ReferencesToAdd)))
-        for fieldname in self.ReferencesToAdd:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = AddReferencesParameters()
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.ReferencesToAdd.append(AddReferencesItem.from_binary(data))
-        return obj
-    
-    def __str__(self):
-        return 'AddReferencesParameters(' + 'ReferencesToAdd:' + str(self.ReferencesToAdd) + ')'
-    
-    __repr__ = __str__
-    
 class AddReferencesRequest(object):
     '''
     Adds one or more references to the server address space.
@@ -2989,13 +2962,15 @@ class AddReferencesRequest(object):
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AddReferencesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
-        self.Parameters = AddReferencesParameters()
+        self.ReferencesToAdd = []
     
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
+        packet.append(struct.pack('<i', len(self.ReferencesToAdd)))
+        for fieldname in self.ReferencesToAdd:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -3003,25 +2978,33 @@ class AddReferencesRequest(object):
         obj = AddReferencesRequest()
         obj.TypeId = NodeId.from_binary(data)
         obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = AddReferencesParameters.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length != -1:
+            for _ in range(0, length):
+                obj.ReferencesToAdd.append(AddReferencesItem.from_binary(data))
         return obj
     
     def __str__(self):
         return 'AddReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'RequestHeader:' + str(self.RequestHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'ReferencesToAdd:' + str(self.ReferencesToAdd) + ')'
     
     __repr__ = __str__
     
-class AddReferencesResult(object):
+class AddReferencesResponse(object):
     '''
+    Adds one or more references to the server address space.
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.AddReferencesResponse_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
     
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.Results)))
         for fieldname in self.Results:
             packet.append(fieldname.to_binary())
@@ -3032,7 +3015,9 @@ class AddReferencesResult(object):
         
     @staticmethod
     def from_binary(data):
-        obj = AddReferencesResult()
+        obj = AddReferencesResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -3044,39 +3029,10 @@ class AddReferencesResult(object):
         return obj
     
     def __str__(self):
-        return 'AddReferencesResult(' + 'Results:' + str(self.Results) + ', '  + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
-    __repr__ = __str__
-    
-class AddReferencesResponse(object):
-    '''
-    Adds one or more references to the server address space.
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.AddReferencesResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = AddReferencesResult()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = AddReferencesResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = AddReferencesResult.from_binary(data)
-        return obj
-    
-    def __str__(self):
         return 'AddReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
     
     __repr__ = __str__
     

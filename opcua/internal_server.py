@@ -7,6 +7,14 @@ import logging
 from opcua import ua
 from opcua import utils
 from opcua.address_space import AddressSpace
+from opcua.standard_address_space_part3 import create_standard_address_space_Part3
+from opcua.standard_address_space_part4 import create_standard_address_space_Part4
+from opcua.standard_address_space_part5 import create_standard_address_space_Part5
+from opcua.standard_address_space_part8 import create_standard_address_space_Part8
+from opcua.standard_address_space_part9 import create_standard_address_space_Part9
+from opcua.standard_address_space_part10 import create_standard_address_space_Part10
+from opcua.standard_address_space_part11 import create_standard_address_space_Part11
+from opcua.standard_address_space_part13 import create_standard_address_space_Part13
 
 class Session(object):
     _counter = 10
@@ -26,6 +34,14 @@ class InternalServer(object):
         self.sessions = {}
         self._channel_id_counter = 1
         self.aspace = AddressSpace()
+        create_standard_address_space_Part3(self.aspace)
+        create_standard_address_space_Part4(self.aspace)
+        create_standard_address_space_Part5(self.aspace)
+        create_standard_address_space_Part8(self.aspace)
+        create_standard_address_space_Part9(self.aspace)
+        create_standard_address_space_Part10(self.aspace)
+        create_standard_address_space_Part11(self.aspace)
+        create_standard_address_space_Part13(self.aspace)
         self.channels = {}
 
     def open_secure_channel(self, params, current=None):
@@ -48,6 +64,15 @@ class InternalServer(object):
     def get_endpoints(self, params=None):
         #FIXME check params
         return self.endpoints 
+
+    def read(self, params):
+        return self.aspace.read(params)
+
+    def write(self, params):
+        return self.aspace.read(params)
+
+    def browse(self, params):
+        return self.aspace.browse(params)
 
     def create_session(self, params):
         session = Session()

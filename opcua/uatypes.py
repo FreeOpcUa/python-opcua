@@ -58,7 +58,9 @@ def pack_uatype_array(uatype, value):
     return b"".join(b)
 
 def pack_uatype(uatype, value):
-    if uatype == "String":
+    if uatype == "Null":
+        return b''
+    elif uatype == "String":
         return pack_string(value)
     elif uatype in ("CharArray", "ByteString"):
         return pack_bytes(value)
@@ -335,7 +337,11 @@ class QualifiedName(object):
 
     @staticmethod
     def from_string(string):
-        idx, name = string.split(":")
+        if ":" in string:
+            idx, name = string.split(":")
+        else:
+            idx = 0
+            name = string
         return QualifiedName(name, int(idx))
     
     def to_binary(self):
@@ -459,8 +465,6 @@ class Variant(object):
         b = []
         mask = self.Encoding & 0b01111111
         self.Encoding = (self.VariantType.value | mask)
-        if self.Value is None:
-            return
         if type(self.Value) in (list, tuple):
             self.Encoding |= (1 << 7)
             b.append(pack_uatype_array(self.VariantType.name, self.Value))
@@ -475,6 +479,8 @@ class Variant(object):
         obj.Encoding = unpack_uatype('UInt8', data)
         val = obj.Encoding & 0b01111111
         obj.VariantType = VariantType(val)
+        if obj.VariantType == VariantType.Null:
+            return obj
         if obj.Encoding & (1 << 7):
             obj.Value = Variant._unpack_val_array(obj.VariantType, data)
         else:

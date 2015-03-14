@@ -235,7 +235,7 @@ ana = auto.NodeAttributesMask
 class ObjectAttributes(auto.ObjectAttributes):
     def __init__(self):
         auto.ObjectAttributes.__init__(self)
-        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.Eventnotifier
+        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.EventNotifier
 
 class ObjectTypeAttributes(auto.ObjectTypeAttributes):
     def __init__(self):
@@ -277,10 +277,12 @@ class ViewAttributes(auto.ViewAttributes):
         auto.ViewAttributes.__init__(self)
         self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.ContainsNoLoops | ana.EventNotifier 
 
-ObjectsIdsInv = {v: k for k, v in ObjectIds.__dict__.items()}
+ObjectIdsInv = {v: k for k, v in ObjectIds.__dict__.items()}
 
 def downcast_extobject(item):
-    objectidname = ObjectIdsInv[item.TypeId]
+    objectidname = ObjectIdsInv[item.TypeId.Identifier]
     classname = objectidname.split("_")[0]
-    return eval("{}.from_binary(utils.Buffer(item.to_binary))".format(classname))
+    cmd = "{}.from_binary(utils.Buffer(item.to_binary()))".format(classname)
+    #logger.debug("running %s", cmd)
+    return eval(cmd)
 
