@@ -2158,6 +2158,9 @@ class NodeAttributes(object):
     The base attributes for all nodes.
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.NodeAttributes_Encoding_DefaultBinary)
+        self.Encoding = 1
+        self.BodyLength = 0
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -2166,16 +2169,25 @@ class NodeAttributes(object):
     
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(pack_uatype('UInt32', self.WriteMask))
-        packet.append(pack_uatype('UInt32', self.UserWriteMask))
+        body = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        body.append(pack_uatype('UInt32', self.SpecifiedAttributes))
+        body.append(self.DisplayName.to_binary())
+        body.append(self.Description.to_binary())
+        body.append(pack_uatype('UInt32', self.WriteMask))
+        body.append(pack_uatype('UInt32', self.UserWriteMask))
+        body = b''.join(body)
+        packet.append(struct.pack('<i', len(body)))
+        packet.append(body)
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = NodeAttributes()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        obj.BodyLength = unpack_uatype('Int32', data)
         obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
         obj.DisplayName = LocalizedText.from_binary(data)
         obj.Description = LocalizedText.from_binary(data)
@@ -2184,7 +2196,10 @@ class NodeAttributes(object):
         return obj
     
     def __str__(self):
-        return 'NodeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+        return 'NodeAttributes(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'BodyLength:' + str(self.BodyLength) + ', '  + \
+             'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
              'DisplayName:' + str(self.DisplayName) + ', '  + \
              'Description:' + str(self.Description) + ', '  + \
              'WriteMask:' + str(self.WriteMask) + ', '  + \
@@ -2197,6 +2212,9 @@ class ObjectAttributes(object):
     The attributes for an object node.
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.ObjectAttributes_Encoding_DefaultBinary)
+        self.Encoding = 1
+        self.BodyLength = 0
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -2206,17 +2224,26 @@ class ObjectAttributes(object):
     
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(pack_uatype('UInt32', self.WriteMask))
-        packet.append(pack_uatype('UInt32', self.UserWriteMask))
-        packet.append(pack_uatype('Byte', self.EventNotifier))
+        body = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        body.append(pack_uatype('UInt32', self.SpecifiedAttributes))
+        body.append(self.DisplayName.to_binary())
+        body.append(self.Description.to_binary())
+        body.append(pack_uatype('UInt32', self.WriteMask))
+        body.append(pack_uatype('UInt32', self.UserWriteMask))
+        body.append(pack_uatype('Byte', self.EventNotifier))
+        body = b''.join(body)
+        packet.append(struct.pack('<i', len(body)))
+        packet.append(body)
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ObjectAttributes()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        obj.BodyLength = unpack_uatype('Int32', data)
         obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
         obj.DisplayName = LocalizedText.from_binary(data)
         obj.Description = LocalizedText.from_binary(data)
@@ -2226,7 +2253,10 @@ class ObjectAttributes(object):
         return obj
     
     def __str__(self):
-        return 'ObjectAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+        return 'ObjectAttributes(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'BodyLength:' + str(self.BodyLength) + ', '  + \
+             'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
              'DisplayName:' + str(self.DisplayName) + ', '  + \
              'Description:' + str(self.Description) + ', '  + \
              'WriteMask:' + str(self.WriteMask) + ', '  + \
@@ -2240,6 +2270,9 @@ class VariableAttributes(object):
     The attributes for a variable node.
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.VariableAttributes_Encoding_DefaultBinary)
+        self.Encoding = 1
+        self.BodyLength = 0
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -2256,26 +2289,35 @@ class VariableAttributes(object):
     
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(pack_uatype('UInt32', self.WriteMask))
-        packet.append(pack_uatype('UInt32', self.UserWriteMask))
-        packet.append(self.Value.to_binary())
-        packet.append(self.DataType.to_binary())
-        packet.append(pack_uatype('Int32', self.ValueRank))
-        packet.append(struct.pack('<i', len(self.ArrayDimensions)))
+        body = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        body.append(pack_uatype('UInt32', self.SpecifiedAttributes))
+        body.append(self.DisplayName.to_binary())
+        body.append(self.Description.to_binary())
+        body.append(pack_uatype('UInt32', self.WriteMask))
+        body.append(pack_uatype('UInt32', self.UserWriteMask))
+        body.append(self.Value.to_binary())
+        body.append(self.DataType.to_binary())
+        body.append(pack_uatype('Int32', self.ValueRank))
+        body.append(struct.pack('<i', len(self.ArrayDimensions)))
         for fieldname in self.ArrayDimensions:
-            packet.append(pack_uatype('UInt32', fieldname))
-        packet.append(pack_uatype('Byte', self.AccessLevel))
-        packet.append(pack_uatype('Byte', self.UserAccessLevel))
-        packet.append(pack_uatype('Double', self.MinimumSamplingInterval))
-        packet.append(pack_uatype('Boolean', self.Historizing))
+            body.append(pack_uatype('UInt32', fieldname))
+        body.append(pack_uatype('Byte', self.AccessLevel))
+        body.append(pack_uatype('Byte', self.UserAccessLevel))
+        body.append(pack_uatype('Double', self.MinimumSamplingInterval))
+        body.append(pack_uatype('Boolean', self.Historizing))
+        body = b''.join(body)
+        packet.append(struct.pack('<i', len(body)))
+        packet.append(body)
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = VariableAttributes()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        obj.BodyLength = unpack_uatype('Int32', data)
         obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
         obj.DisplayName = LocalizedText.from_binary(data)
         obj.Description = LocalizedText.from_binary(data)
@@ -2292,7 +2334,10 @@ class VariableAttributes(object):
         return obj
     
     def __str__(self):
-        return 'VariableAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+        return 'VariableAttributes(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'BodyLength:' + str(self.BodyLength) + ', '  + \
+             'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
              'DisplayName:' + str(self.DisplayName) + ', '  + \
              'Description:' + str(self.Description) + ', '  + \
              'WriteMask:' + str(self.WriteMask) + ', '  + \
@@ -2313,6 +2358,9 @@ class MethodAttributes(object):
     The attributes for a method node.
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.MethodAttributes_Encoding_DefaultBinary)
+        self.Encoding = 1
+        self.BodyLength = 0
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -2323,18 +2371,27 @@ class MethodAttributes(object):
     
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(pack_uatype('UInt32', self.WriteMask))
-        packet.append(pack_uatype('UInt32', self.UserWriteMask))
-        packet.append(pack_uatype('Boolean', self.Executable))
-        packet.append(pack_uatype('Boolean', self.UserExecutable))
+        body = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        body.append(pack_uatype('UInt32', self.SpecifiedAttributes))
+        body.append(self.DisplayName.to_binary())
+        body.append(self.Description.to_binary())
+        body.append(pack_uatype('UInt32', self.WriteMask))
+        body.append(pack_uatype('UInt32', self.UserWriteMask))
+        body.append(pack_uatype('Boolean', self.Executable))
+        body.append(pack_uatype('Boolean', self.UserExecutable))
+        body = b''.join(body)
+        packet.append(struct.pack('<i', len(body)))
+        packet.append(body)
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = MethodAttributes()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        obj.BodyLength = unpack_uatype('Int32', data)
         obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
         obj.DisplayName = LocalizedText.from_binary(data)
         obj.Description = LocalizedText.from_binary(data)
@@ -2345,7 +2402,10 @@ class MethodAttributes(object):
         return obj
     
     def __str__(self):
-        return 'MethodAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+        return 'MethodAttributes(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'BodyLength:' + str(self.BodyLength) + ', '  + \
+             'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
              'DisplayName:' + str(self.DisplayName) + ', '  + \
              'Description:' + str(self.Description) + ', '  + \
              'WriteMask:' + str(self.WriteMask) + ', '  + \
@@ -2360,6 +2420,9 @@ class ObjectTypeAttributes(object):
     The attributes for an object type node.
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.ObjectTypeAttributes_Encoding_DefaultBinary)
+        self.Encoding = 1
+        self.BodyLength = 0
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -2369,17 +2432,26 @@ class ObjectTypeAttributes(object):
     
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(pack_uatype('UInt32', self.WriteMask))
-        packet.append(pack_uatype('UInt32', self.UserWriteMask))
-        packet.append(pack_uatype('Boolean', self.IsAbstract))
+        body = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        body.append(pack_uatype('UInt32', self.SpecifiedAttributes))
+        body.append(self.DisplayName.to_binary())
+        body.append(self.Description.to_binary())
+        body.append(pack_uatype('UInt32', self.WriteMask))
+        body.append(pack_uatype('UInt32', self.UserWriteMask))
+        body.append(pack_uatype('Boolean', self.IsAbstract))
+        body = b''.join(body)
+        packet.append(struct.pack('<i', len(body)))
+        packet.append(body)
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ObjectTypeAttributes()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        obj.BodyLength = unpack_uatype('Int32', data)
         obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
         obj.DisplayName = LocalizedText.from_binary(data)
         obj.Description = LocalizedText.from_binary(data)
@@ -2389,7 +2461,10 @@ class ObjectTypeAttributes(object):
         return obj
     
     def __str__(self):
-        return 'ObjectTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+        return 'ObjectTypeAttributes(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'BodyLength:' + str(self.BodyLength) + ', '  + \
+             'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
              'DisplayName:' + str(self.DisplayName) + ', '  + \
              'Description:' + str(self.Description) + ', '  + \
              'WriteMask:' + str(self.WriteMask) + ', '  + \
@@ -2403,6 +2478,9 @@ class VariableTypeAttributes(object):
     The attributes for a variable type node.
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.VariableTypeAttributes_Encoding_DefaultBinary)
+        self.Encoding = 1
+        self.BodyLength = 0
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -2416,23 +2494,32 @@ class VariableTypeAttributes(object):
     
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(pack_uatype('UInt32', self.WriteMask))
-        packet.append(pack_uatype('UInt32', self.UserWriteMask))
-        packet.append(self.Value.to_binary())
-        packet.append(self.DataType.to_binary())
-        packet.append(pack_uatype('Int32', self.ValueRank))
-        packet.append(struct.pack('<i', len(self.ArrayDimensions)))
+        body = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        body.append(pack_uatype('UInt32', self.SpecifiedAttributes))
+        body.append(self.DisplayName.to_binary())
+        body.append(self.Description.to_binary())
+        body.append(pack_uatype('UInt32', self.WriteMask))
+        body.append(pack_uatype('UInt32', self.UserWriteMask))
+        body.append(self.Value.to_binary())
+        body.append(self.DataType.to_binary())
+        body.append(pack_uatype('Int32', self.ValueRank))
+        body.append(struct.pack('<i', len(self.ArrayDimensions)))
         for fieldname in self.ArrayDimensions:
-            packet.append(pack_uatype('UInt32', fieldname))
-        packet.append(pack_uatype('Boolean', self.IsAbstract))
+            body.append(pack_uatype('UInt32', fieldname))
+        body.append(pack_uatype('Boolean', self.IsAbstract))
+        body = b''.join(body)
+        packet.append(struct.pack('<i', len(body)))
+        packet.append(body)
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = VariableTypeAttributes()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        obj.BodyLength = unpack_uatype('Int32', data)
         obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
         obj.DisplayName = LocalizedText.from_binary(data)
         obj.Description = LocalizedText.from_binary(data)
@@ -2446,7 +2533,10 @@ class VariableTypeAttributes(object):
         return obj
     
     def __str__(self):
-        return 'VariableTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+        return 'VariableTypeAttributes(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'BodyLength:' + str(self.BodyLength) + ', '  + \
+             'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
              'DisplayName:' + str(self.DisplayName) + ', '  + \
              'Description:' + str(self.Description) + ', '  + \
              'WriteMask:' + str(self.WriteMask) + ', '  + \
@@ -2464,6 +2554,9 @@ class ReferenceTypeAttributes(object):
     The attributes for a reference type node.
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.ReferenceTypeAttributes_Encoding_DefaultBinary)
+        self.Encoding = 1
+        self.BodyLength = 0
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -2475,19 +2568,28 @@ class ReferenceTypeAttributes(object):
     
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(pack_uatype('UInt32', self.WriteMask))
-        packet.append(pack_uatype('UInt32', self.UserWriteMask))
-        packet.append(pack_uatype('Boolean', self.IsAbstract))
-        packet.append(pack_uatype('Boolean', self.Symmetric))
-        packet.append(self.InverseName.to_binary())
+        body = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        body.append(pack_uatype('UInt32', self.SpecifiedAttributes))
+        body.append(self.DisplayName.to_binary())
+        body.append(self.Description.to_binary())
+        body.append(pack_uatype('UInt32', self.WriteMask))
+        body.append(pack_uatype('UInt32', self.UserWriteMask))
+        body.append(pack_uatype('Boolean', self.IsAbstract))
+        body.append(pack_uatype('Boolean', self.Symmetric))
+        body.append(self.InverseName.to_binary())
+        body = b''.join(body)
+        packet.append(struct.pack('<i', len(body)))
+        packet.append(body)
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ReferenceTypeAttributes()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        obj.BodyLength = unpack_uatype('Int32', data)
         obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
         obj.DisplayName = LocalizedText.from_binary(data)
         obj.Description = LocalizedText.from_binary(data)
@@ -2499,7 +2601,10 @@ class ReferenceTypeAttributes(object):
         return obj
     
     def __str__(self):
-        return 'ReferenceTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+        return 'ReferenceTypeAttributes(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'BodyLength:' + str(self.BodyLength) + ', '  + \
+             'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
              'DisplayName:' + str(self.DisplayName) + ', '  + \
              'Description:' + str(self.Description) + ', '  + \
              'WriteMask:' + str(self.WriteMask) + ', '  + \
@@ -2515,6 +2620,9 @@ class DataTypeAttributes(object):
     The attributes for a data type node.
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.DataTypeAttributes_Encoding_DefaultBinary)
+        self.Encoding = 1
+        self.BodyLength = 0
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -2524,17 +2632,26 @@ class DataTypeAttributes(object):
     
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(pack_uatype('UInt32', self.WriteMask))
-        packet.append(pack_uatype('UInt32', self.UserWriteMask))
-        packet.append(pack_uatype('Boolean', self.IsAbstract))
+        body = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        body.append(pack_uatype('UInt32', self.SpecifiedAttributes))
+        body.append(self.DisplayName.to_binary())
+        body.append(self.Description.to_binary())
+        body.append(pack_uatype('UInt32', self.WriteMask))
+        body.append(pack_uatype('UInt32', self.UserWriteMask))
+        body.append(pack_uatype('Boolean', self.IsAbstract))
+        body = b''.join(body)
+        packet.append(struct.pack('<i', len(body)))
+        packet.append(body)
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = DataTypeAttributes()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        obj.BodyLength = unpack_uatype('Int32', data)
         obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
         obj.DisplayName = LocalizedText.from_binary(data)
         obj.Description = LocalizedText.from_binary(data)
@@ -2544,7 +2661,10 @@ class DataTypeAttributes(object):
         return obj
     
     def __str__(self):
-        return 'DataTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+        return 'DataTypeAttributes(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'BodyLength:' + str(self.BodyLength) + ', '  + \
+             'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
              'DisplayName:' + str(self.DisplayName) + ', '  + \
              'Description:' + str(self.Description) + ', '  + \
              'WriteMask:' + str(self.WriteMask) + ', '  + \
@@ -2558,6 +2678,9 @@ class ViewAttributes(object):
     The attributes for a view node.
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.ViewAttributes_Encoding_DefaultBinary)
+        self.Encoding = 1
+        self.BodyLength = 0
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -2568,18 +2691,27 @@ class ViewAttributes(object):
     
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(pack_uatype('UInt32', self.WriteMask))
-        packet.append(pack_uatype('UInt32', self.UserWriteMask))
-        packet.append(pack_uatype('Boolean', self.ContainsNoLoops))
-        packet.append(pack_uatype('Byte', self.EventNotifier))
+        body = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        body.append(pack_uatype('UInt32', self.SpecifiedAttributes))
+        body.append(self.DisplayName.to_binary())
+        body.append(self.Description.to_binary())
+        body.append(pack_uatype('UInt32', self.WriteMask))
+        body.append(pack_uatype('UInt32', self.UserWriteMask))
+        body.append(pack_uatype('Boolean', self.ContainsNoLoops))
+        body.append(pack_uatype('Byte', self.EventNotifier))
+        body = b''.join(body)
+        packet.append(struct.pack('<i', len(body)))
+        packet.append(body)
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ViewAttributes()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        obj.BodyLength = unpack_uatype('Int32', data)
         obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
         obj.DisplayName = LocalizedText.from_binary(data)
         obj.Description = LocalizedText.from_binary(data)
@@ -2590,7 +2722,10 @@ class ViewAttributes(object):
         return obj
     
     def __str__(self):
-        return 'ViewAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
+        return 'ViewAttributes(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'BodyLength:' + str(self.BodyLength) + ', '  + \
+             'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
              'DisplayName:' + str(self.DisplayName) + ', '  + \
              'Description:' + str(self.Description) + ', '  + \
              'WriteMask:' + str(self.WriteMask) + ', '  + \

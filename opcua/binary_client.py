@@ -68,13 +68,12 @@ class BinaryClient(object):
                 return rcall.data
 
     def _check_answer(self, data, context):
-        data = data.copy(50)#FIXME check max length
+        data = data.copy(50)#FIXME check max length nodeid + responseheader
         typeid = ua.NodeId.from_binary(data)
         if typeid == ua.FourByteNodeId(ua.ObjectIds.ServiceFault_Encoding_DefaultBinary):
             self.logger.warn("ServiceFault from server received %s", context)
             hdr = ua.ResponseHeader.from_binary(data)
             hdr.ServiceResult.check()
-
 
     def _run(self):
         self.logger.info("Thread started")

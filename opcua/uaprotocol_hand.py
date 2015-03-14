@@ -5,6 +5,7 @@ import logging
 import opcua.uaprotocol_auto as auto
 import opcua.uatypes as uatypes 
 import opcua.utils as utils
+from opcua.object_ids import ObjectIds
 
 logger = logging.getLogger(__name__)
 
@@ -228,4 +229,58 @@ class SequenceHeader:
         return "{}(SequenceNumber:{}, RequestId:{} )".format(self.__class__.__name__, self.SequenceNumber, self.RequestId)
     __repr__ = __str__
 
+###FIXES for missing switchfield in NodeAttributes classes
+ana = auto.NodeAttributesMask
+
+class ObjectAttributes(auto.ObjectAttributes):
+    def __init__(self):
+        auto.ObjectAttributes.__init__(self)
+        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.Eventnotifier
+
+class ObjectTypeAttributes(auto.ObjectTypeAttributes):
+    def __init__(self):
+        auto.ObjectTypeAttributes.__init__(self)
+        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.IsAbstract
+
+
+
+
+class VariableAttributes(auto.VariableAttributes):
+    def __init__(self):
+        auto.VariableAttributes.__init__(self)
+        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.Value | ana.DataType | ana.ValueRank | ana.ArrayDimensions | ana.AccessLevel | ana.UserAccessLevel | ana.MinimumSamplingInterval |ana.Historizing  
+
+class VariableTypeAttributes(auto.VariableTypeAttributes):
+    def __init__(self):
+        auto.VariableTypeAttributes.__init__(self)
+        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.Value | ana.DataType | ana.ValueRank | ana.ArrayDimensions | ana.IsAbstract
+
+class MethodAttributes(auto.MethodAttributes):
+    def __init__(self):
+        auto.MethodAttributes.__init__(self)
+        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.Executable | ana.UserExecutable 
+
+
+class ReferenceTypeAttributes(auto.ReferenceTypeAttributes):
+    def __init__(self):
+        auto.ReferenceTypeAttributes.__init__(self)
+        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.IsAbstract | ana.Symmetric | ana.InverseName 
+
+class DataTypeAttributes(auto.DataTypeAttributes):
+    def __init__(self):
+        auto.DataTypeAttributes.__init__(self)
+        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.IsAbstract 
+
+
+class ViewAttributes(auto.ViewAttributes):
+    def __init__(self):
+        auto.ViewAttributes.__init__(self)
+        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.ContainsNoLoops | ana.EventNotifier 
+
+ObjectsIdsInv = {v: k for k, v in ObjectIds.__dict__.items()}
+
+def downcast_extobject(item):
+    objectidname = ObjectIdsInv[item.TypeId]
+    classname = objectidname.split("_")[0]
+    return eval("{}.from_binary(utils.Buffer(item.to_binary))".format(classname))
 

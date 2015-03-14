@@ -59,6 +59,7 @@ class UAProcessor(object):
         self.socket = socket
         self.channel = None
         self._lock = Lock()
+        self.session = None
 
     def loop(self):
         #first we want a hello message
@@ -126,11 +127,21 @@ class UAProcessor(object):
             self.logger.info("Create session request")
             params = ua.CreateSessionParameters.from_binary(body)
 
-            result = self.iserver.create_session(params)
+            self.session = self.iserver.create_session(params)
 
             response = ua.CreateSessionResponse()
-            response.Parameters = result
+            response.Parameters = self.session 
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.CloseSessionRequest_Encoding_DefaultBinary):
+            self.logger.info("Create session request")
+            deletesubs = ua.unpack_uatype('Boolean', body)
+            
+            self.iserver.close_session(self.session.SessionId, deletesubs)
+
+            response = ua.CloseSessionResponse()
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
         else:
             self.logger.warn("Uknown message received %s", typeid)
             sf = ua.ServiceFault()

@@ -63,5 +63,8 @@ class InternalServer(object):
 
         return result
 
+    def close_session(self, session_id, delete_subs):
+        self.sessions.pop(session_id)
+
 
 
