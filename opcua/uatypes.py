@@ -8,15 +8,16 @@ import struct
 
 import opcua.status_code as status_code
 
-UaTypes = ("Boolean", "SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double", "String", "DateTime", "Guid", "ByteString")
+#UaTypes = ("Boolean", "SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double", "String", "DateTime", "Guid", "ByteString")
+UaTypes = ("Boolean", "SByte", "Byte", "Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double") #, "String", "DateTime", "Guid", "ByteString")
 
 def uatype_to_fmt(uatype):
-    if uatype == "String":
-        return "s"
-    elif uatype == "CharArray":
-        return "s"
-    elif uatype == "Char":
-        return "s"
+    #if uatype == "String":
+        #return "s"
+    #elif uatype == "CharArray":
+        #return "s"
+    if uatype == "Char":
+        return "B"
     elif uatype == "SByte":
         return "B"
     elif uatype == "Int6":
@@ -64,19 +65,25 @@ def pack_uatype(uatype, value):
         return pack_string(value)
     elif uatype in ("CharArray", "ByteString"):
         return pack_bytes(value)
-    else:
+    elif uatype in UaTypes:
         fmt = '<' + uatype_to_fmt(uatype)
         return struct.pack(fmt, value)
+    else:
+        return value.to_binary()
 
 def unpack_uatype(uatype, data):
     if uatype == "String":
         return unpack_string(data)
     elif uatype in ("CharArray", "ByteString"):
         return unpack_bytes(data)
-    else:
+    elif uatype in UaTypes:
         fmt = '<' + uatype_to_fmt(uatype)
         size = struct.calcsize(fmt)
         return struct.unpack(fmt, data.read(size))[0]
+    else:
+        code = "{}.from_binary(data)".format(uatype)
+        tmp = eval(code)
+        return tmp
 
 def unpack_uatype_array(uatype, data):
     length = struct.unpack('<i', data.read(4))[0]
@@ -115,7 +122,14 @@ def unpack_string(data):
 def unpack_array(data, uatype):
     raise NotImplementedError
 
-
+def unpack_object_array(objclass, data):
+    length = struct.unpack('<i', data.read(4))[0]
+    array = []
+    if length != -1:
+        for _ in range(0, length):
+            array.append(objclass.from_binary(data))
+    return obj
+ 
 def test_bit(data, offset):
     mask = 1 << offset
     return data & mask
@@ -482,30 +496,40 @@ class Variant(object):
         if obj.VariantType == VariantType.Null:
             return obj
         if obj.Encoding & (1 << 7):
-            obj.Value = Variant._unpack_val_array(obj.VariantType, data)
+            obj.Value = unpack_uatype_array(obj.VariantType.name, data)
         else:
-            obj.Value = Variant._unpack_val(obj.VariantType, data)
+            obj.Value = unpack_uatype(obj.VariantType.name, data)
         return obj
 
-    @staticmethod
-    def _unpack_val_array(vtype, data):
-        if vtype.name in UaTypes:
-            return unpack_uatype_array(vtype.name, data)
-        else:
-            length = struct.unpack("<i", data.read(4))[0]
-            res = []
-            for _ in range(0, length):
-                res.append(Variant._unpack_val(vtype, data))
-            return res
+    #@staticmethod
+    #def _unpack_val_array(vtype, data):
+        #if vtype.name in UaTypes:
+            #return unpack_uatype_array(vtype.name, data)
+        #else:
+            #length = struct.unpack("<i", data.read(4))[0]
+            #res = []
+            #for _ in range(0, length):
+                #res.append(Variant._unpack_val(vtype, data))
+            #return res
 
-    @staticmethod
-    def _unpack_val(vtype, data):
-        if vtype.name in UaTypes:
-            return unpack_uatype(vtype.name, data)
-        else:
-            code = "{}.from_binary(data)".format(vtype.name)
-            tmp = eval(code)
-            return tmp
+    #@staticmethod
+    #def _unpack_val(vtype, data):
+        #if vtype.name in UaTypes:
+            #return unpack_uatype(vtype.name, data)
+        #else:
+            #code = "{}.from_binary(data)".format(vtype.name)
+            #tmp = eval(code)
+            #return tmp
+
+    #def _pack_val(vtype, value):
+        #if vtype.name in UaTypes:
+            #return pack_uatype(vtype.name, value)
+        #else:
+            #return value.to_binary()
+
+    #def _pack_val_array(vtype, value):
+
+
 
 class DataValue(object):
     '''

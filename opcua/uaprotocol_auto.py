@@ -5818,18 +5818,14 @@ class WriteValue(object):
     
     __repr__ = __str__
     
-class WriteRequest(object):
+class WriteParameters(object):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.WriteRequest_Encoding_DefaultBinary)
-        self.RequestHeader = RequestHeader()
         self.NodesToWrite = []
     
     def to_binary(self):
         packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
         packet.append(struct.pack('<i', len(self.NodesToWrite)))
         for fieldname in self.NodesToWrite:
             packet.append(fieldname.to_binary())
@@ -5837,9 +5833,7 @@ class WriteRequest(object):
         
     @staticmethod
     def from_binary(data):
-        obj = WriteRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj = WriteParameters()
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -5847,9 +5841,37 @@ class WriteRequest(object):
         return obj
     
     def __str__(self):
+        return 'WriteParameters(' + 'NodesToWrite:' + str(self.NodesToWrite) + ')'
+    
+    __repr__ = __str__
+    
+class WriteRequest(object):
+    '''
+    '''
+    def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.WriteRequest_Encoding_DefaultBinary)
+        self.RequestHeader = RequestHeader()
+        self.Parameters = WriteParameters()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.RequestHeader.to_binary())
+        packet.append(self.Parameters.to_binary())
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = WriteRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = WriteParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
         return 'WriteRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'RequestHeader:' + str(self.RequestHeader) + ', '  + \
-             'NodesToWrite:' + str(self.NodesToWrite) + ')'
+             'Parameters:' + str(self.Parameters) + ')'
     
     __repr__ = __str__
     

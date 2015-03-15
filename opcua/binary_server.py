@@ -94,8 +94,6 @@ class UAProcessor(object):
         request = ua.OpenSecureChannelRequest.from_binary(body)
 
         self.channel = self.iserver.open_secure_channel(request.Parameters)
-        print("CHANNEL", self.channel)
-
         #send response
         hdr = ua.Header(ua.MessageType.SecureOpen, ua.ChunkType.Single, self.channel.SecurityToken.TokenId)
         response = ua.OpenSecureChannelResponse()
@@ -142,6 +140,46 @@ class UAProcessor(object):
             response = ua.CloseSessionResponse()
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
+        elif typeid == ua.NodeId(ua.ObjectIds.ActivateSessionRequest_Encoding_DefaultBinary):
+            self.logger.info("Activate session request")
+            params = ua.ActivateSessionParameters.from_binary(body) 
+            
+            result = self.iserver.activate_session(self.session.SessionId, params)
+
+            response = ua.ActivateSessionResponse()
+            response.Parameters = result
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.ReadRequest_Encoding_DefaultBinary):
+            self.logger.info("Read request")
+            params = ua.ReadParameters.from_binary(body) 
+            
+            results = self.iserver.read(params)
+
+            response = ua.ReadResponse()
+            response.Results = results
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.WriteRequest_Encoding_DefaultBinary):
+            self.logger.info("Write request")
+            params = ua.WriteParameters.from_binary(body) 
+            
+            results = self.iserver.write(params)
+
+            response = ua.WriteResponse()
+            response.Results = results
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.BrowseRequest_Encoding_DefaultBinary):
+            self.logger.info("Browse request")
+            params = ua.BrowseParameters.from_binary(body) 
+            
+            results = self.iserver.browse(params)
+
+            response = ua.BrowseResponse()
+            response.Results = results
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
         else:
             self.logger.warn("Uknown message received %s", typeid)
             sf = ua.ServiceFault()
@@ -152,7 +190,6 @@ class UAProcessor(object):
         with self._lock:
             response.ResponseHeader.RequestHandle = requesthandle
             seqhdr.SequenceNumber += 1
-            print("CHANNEL2", self.channel)
             hdr = ua.Header(msgtype, ua.ChunkType.Single, self.channel.SecurityToken.ChannelId)
             self.write_socket(hdr, algohdr, seqhdr, response)
 
@@ -164,8 +201,9 @@ class UAProcessor(object):
             alle.append(data)
         alle.insert(0, hdr.to_binary())
         alle = b"".join(alle)
-        self.logger.info("writting %s bytes to socket, with data %s %s", len(alle), hdr, [i for i in args])
-        self.logger.debug("data: %s", alle)
+        self.logger.info("writting %s bytes to socket, with header %s ", len(alle), hdr)
+        #self.logger.info("writting data %s", hdr, [i for i in args])
+        #self.logger.debug("data: %s", alle)
         self.socket.send(alle)
 
     def receive_body(self, size):

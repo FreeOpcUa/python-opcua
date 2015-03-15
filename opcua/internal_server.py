@@ -91,5 +91,13 @@ class InternalServer(object):
     def close_session(self, session_id, delete_subs):
         self.sessions.pop(session_id)
 
+    def activate_session(self, session_id, params):
+        result = ua.ActivateSessionResult()
+        result.ServerNonce = self.sessions[session_id].nonce
+        for _ in params.ClientSoftwareCertificates:
+            result.Results.append(ua.StatusCode())
+        return result
+ 
+
 
 
