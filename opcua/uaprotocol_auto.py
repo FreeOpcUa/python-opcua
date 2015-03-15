@@ -860,6 +860,7 @@ class UserTokenPolicy(object):
         packet = []
         packet.append(pack_uatype('String', self.PolicyId))
         packet.append(pack_uatype('UInt32', self.TokenType))
+        print(self.IssuedTokenType, type(self.IssuedTokenType))
         packet.append(pack_uatype('String', self.IssuedTokenType))
         packet.append(pack_uatype('String', self.IssuerEndpointUrl))
         packet.append(pack_uatype('String', self.SecurityPolicyUri))

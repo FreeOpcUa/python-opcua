@@ -30,16 +30,17 @@ class Server(object):
         #to be called just before starting server since it needs all parameters to be setup
         idtoken = ua.UserTokenPolicy()
         idtoken.PolicyId = 'anonymous'
-        idtoken.IssuedTokenType = ua.UserTokenType.Anonymous
+        idtoken.TokenType = ua.UserTokenType.Anonymous
 
-        appdesc = ua.ApplicationDescription
+        appdesc = ua.ApplicationDescription()
         appdesc.ApplicationName = ua.LocalizedText(self.name)
         appdesc.ApplicationUri = self.server_uri 
         appdesc.ApplicationType = ua.ApplicationType.Server
         appdesc.ProductUri = self.product_uri 
 
         edp = ua.EndpointDescription()
-        edp.Server = appdesc()
+        edp.EndpointUrl = self.endpoint.geturl()
+        edp.Server = appdesc
         edp.SecurityMode = ua.MessageSecurityMode.None_
         edp.SecurityPolicyUri = 'http://opcfoundation.org/UA/SecurityPolicy#None'
         edp.UserIdentityTokens = [idtoken]

@@ -88,6 +88,33 @@ class UAProcessor(object):
             if not self.process_body(header, body):
                 break
 
+    def send_response(self, requesthandle, algohdr, seqhdr, response, msgtype=ua.MessageType.SecureMessage):
+        with self._lock:
+            response.ResponseHeader.RequestHandle = requesthandle
+            seqhdr.SequenceNumber += 1
+            hdr = ua.Header(msgtype, ua.ChunkType.Single, self.channel.SecurityToken.ChannelId)
+            self.write_socket(hdr, algohdr, seqhdr, response)
+
+    def write_socket(self, hdr, *args):
+        alle = []
+        for arg in args:
+            data = arg.to_binary()
+            hdr.add_size(len(data))
+            alle.append(data)
+        alle.insert(0, hdr.to_binary())
+        alle = b"".join(alle)
+        self.logger.info("writting %s bytes to socket, with header %s ", len(alle), hdr)
+        #self.logger.info("writting data %s", hdr, [i for i in args])
+        #self.logger.debug("data: %s", alle)
+        self.socket.send(alle)
+
+    def receive_body(self, size):
+        self.logger.debug("reading body of message (%s bytes)", size)
+        data = self.socket.recv(size)
+        if size != len(data):
+            raise Exception("Error, did not received expected number of bytes, got {}, asked for {}".format(len(data), size))
+        return utils.Buffer(data)
+
     def open_secure_channel(self, body):
         algohdr = ua.AsymmetricAlgorithmHeader.from_binary(body)
         seqhdr = ua.SequenceHeader.from_binary(body)
@@ -179,42 +206,21 @@ class UAProcessor(object):
             response = ua.BrowseResponse()
             response.Results = results
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+        elif typeid == ua.NodeId(ua.ObjectIds.GetEndpointsRequest_Encoding_DefaultBinary):
+            self.logger.info("get endpoints request")
+            params = ua.GetEndpointsParameters.from_binary(body) 
+            
+            endpoints = self.iserver.get_endpoints(params)
+
+            response = ua.GetEndpointsResponse()
+            response.Endpoints = endpoints
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
 
         else:
             self.logger.warn("Uknown message received %s", typeid)
             sf = ua.ServiceFault()
             sf.ResponseHeader.ServiceResult = ua.StatusCode(ua.StatusCodes.BadNotImplemented)
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, sf)
-
-    def send_response(self, requesthandle, algohdr, seqhdr, response, msgtype=ua.MessageType.SecureMessage):
-        with self._lock:
-            response.ResponseHeader.RequestHandle = requesthandle
-            seqhdr.SequenceNumber += 1
-            hdr = ua.Header(msgtype, ua.ChunkType.Single, self.channel.SecurityToken.ChannelId)
-            self.write_socket(hdr, algohdr, seqhdr, response)
-
-    def write_socket(self, hdr, *args):
-        alle = []
-        for arg in args:
-            data = arg.to_binary()
-            hdr.add_size(len(data))
-            alle.append(data)
-        alle.insert(0, hdr.to_binary())
-        alle = b"".join(alle)
-        self.logger.info("writting %s bytes to socket, with header %s ", len(alle), hdr)
-        #self.logger.info("writting data %s", hdr, [i for i in args])
-        #self.logger.debug("data: %s", alle)
-        self.socket.send(alle)
-
-    def receive_body(self, size):
-        self.logger.debug("reading body of message (%s bytes)", size)
-        data = self.socket.recv(size)
-        if size != len(data):
-            raise Exception("Error, did not received expected number of bytes, got {}, asked for {}".format(len(data), size))
-        #return io.BytesIO(data)
-        return utils.Buffer(data)
-
-
-
 
 
