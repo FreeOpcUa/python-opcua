@@ -195,6 +195,77 @@ class AddressSpace(object):
         for writevalue in params:
             res.append(self.set_attribute_value(writevalue.NodeId, writevalue.AttributeId, writevalue.Value))
         return res
+
+    def browse(self, params):
+        self.logger.debug("browse %s", params)
+        res = []
+        for desc in params.NodesToBrowse:
+            res.append(self._browse(desc))
+        return res
+
+    def _browse(self, desc):
+        res = ua.BrowseResult()
+        if not desc.NodeId in self._nodes:
+            res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
+            return res
+        node = self._nodes[desc.NodeId]
+        for ref in node.references:
+            if not self._is_suitable_ref(desc, ref):
+                continue
+            res.References.append(ref)
+        return res
+
+    def _is_suitable_ref(self, desc, ref):
+        if not self._suitable_direction(desc.BrowseDirection, ref.IsForward):
+            self.logger.debug("%s is not suitable due to direction")
+            return False
+        if not self._suitable_reftype(desc.ReferenceTypeId, ref.ReferenceTypeId, desc.IncludeSubtypes):
+            self.logger.debug("%s is not suitable due to type")
+            return False
+        if desc.NodeClassMask and ((desc.NodeClassMask & ref.NodeClass) == 0):
+            self.logger.debug("%s is not suitable due to class")
+            return False
+        self.logger.debug("%s is a suitable ref for desc %s", ref, desc)
+        return True
+
+
+
+    def _suitable_reftype(self, ref1, ref2, subtypes):
+        """
+        """
+        if not subtypes:
+            return ref1.Identifier == ref2.Identifier
+        oktype = self._get_sub_ref(ref1)
+        #oktype = [node.Identifier for node in oktype]
+        print("suitable types for ", ref1, " are ", oktype)
+        print("ref2 is ", ref2)
+        return ref2 in oktype
+
+    def _get_sub_ref(self, ref):
+        #print("lookin for ubstypes of", ref)
+        res = []
+        nodedata = self._nodes[ref]
+        for ref in nodedata.references:
+            #print("is ", ref, " suitable?")
+            if ref.ReferenceTypeId.Identifier == ua.ObjectIds.HasSubtype:
+                res.append(ref.NodeId)
+                #print("OK ", ref, " is suitable")
+                res += self._get_sub_ref(ref.NodeId)
+        return res
+
+
+
+    def _suitable_direction(self, desc, isforward):
+        if desc == ua.BrowseDirection.Both:
+            return True
+        if desc == ua.BrowseDirection.Forward and isforward:
+            return True
+        return False
+
+
+
+
+
             
             
 
