@@ -44,6 +44,7 @@ class AddressSpace(object):
             return result
         nodedata = NodeData(item.RequestedNewNodeId)
         #add common attrs
+        nodedata.attributes[ua.AttributeIds.NodeId] = AttributeValue(ua.DataValue(ua.Variant(item.RequestedNewNodeId, ua.VariantType.NodeId)))
         nodedata.attributes[ua.AttributeIds.BrowseName] = AttributeValue(ua.DataValue(ua.Variant(item.BrowseName, ua.VariantType.QualifiedName)))
         nodedata.attributes[ua.AttributeIds.NodeClass] = AttributeValue(ua.DataValue(ua.Variant(item.NodeClass, ua.VariantType.Int32)))
         #add requested attrs
@@ -151,7 +152,7 @@ class AddressSpace(object):
         if item.SpecifiedAttributes & ua.NodeAttributesMask.DisplayName:
             nodedata.attributes[ua.AttributeIds.DisplayName] = AttributeValue(ua.DataValue(ua.Variant(item.DisplayName, ua.VariantType.LocalizedText)))
         if item.SpecifiedAttributes & ua.NodeAttributesMask.EventNotifier:
-            nodedata.attributes[ua.AttributeIds.EventNotifier] = AttributeValue(ua.DataValue(ua.Variant(item.EventNotifier, ua.VariantType.Boolean)))
+            nodedata.attributes[ua.AttributeIds.EventNotifier] = AttributeValue(ua.DataValue(ua.Variant(item.EventNotifier, ua.VariantType.Byte)))
         if item.SpecifiedAttributes & ua.NodeAttributesMask.Executable:
             nodedata.attributes[ua.AttributeIds.Executable] = AttributeValue(ua.DataValue(ua.Variant(item.Executable, ua.VariantType.Boolean)))
         if item.SpecifiedAttributes & ua.NodeAttributesMask.Historizing:
