@@ -50,12 +50,14 @@ class AddressSpace(object):
         #add requested attrs
         self._add_nodeattributes(item.Attributes, nodedata)
 
-        self._nodes[item.RequestedNewNodeId] = nodedata
 
         if item.ParentNodeId == ua.NodeId():
-            self.logger.warn("add_node: creating node %s without parent", item.RequestedNewNodeId) 
+            #self.logger.warn("add_node: creating node %s without parent", item.RequestedNewNodeId) 
+            pass
         elif not item.ParentNodeId in self._nodes:
-            self.logger.warn("add_node: while adding node %s, requested parent node %s does not exists", item.RequestedNewNodeId, item.ParentNodeId) 
+            #self.logger.warn("add_node: while adding node %s, requested parent node %s does not exists", item.RequestedNewNodeId, item.ParentNodeId) 
+            result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
+            return result
         else:
             desc = ua.ReferenceDescription()
             desc.ReferenceTypeId = item.ReferenceTypeId
@@ -73,13 +75,15 @@ class AddressSpace(object):
             addref = ua.AddReferencesItem()
             addref.SourceNodeId = item.RequestedNewNodeId
             addref.IsForward = True
-            addref.ReferenceTypeId = ua.ObjectIds.HasTypeDefinition
+            addref.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasTypeDefinition)
             addref.TargetNodeId = item.TypeDefinition
             addref.NodeClass = ua.NodeClass.DataType
             self._add_reference(addref)
 
         result.StatusCode = ua.StatusCode()
         result.AddedNodeId = item.RequestedNewNodeId
+
+        self._nodes[item.RequestedNewNodeId] = nodedata
 
         return result
 
@@ -91,19 +95,22 @@ class AddressSpace(object):
 
     def _add_reference(self, addref):
         if not addref.SourceNodeId in self._nodes:
-            self.logger.warn("add_reference: source node %s does not exists", addref.SourceNodeId)
+            #self.logger.warn("add_reference: source node %s does not exists", addref.SourceNodeId)
             return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
-        # we accept reference to whatever nodes, this seems to be necessary in many cases, where target node may be added later
-        #if not addref.TargetNodeId in self._nodes:
+        if not addref.TargetNodeId in self._nodes:
             #self.logger.warn("add_reference: target node %s does not exists", addref.TargetNodeId)
-            #return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
+            return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
         rdesc = ua.ReferenceDescription()
-        rdesc.ReferencetypeId = addref.ReferenceTypeId
+        rdesc.ReferenceTypeId = addref.ReferenceTypeId
         rdesc.IsForware = addref.IsForward
         rdesc.NodeId = addref.TargetNodeId
         rdesc.NodeClass = addref.NodeClass
-        rdesc.BrowseName = self.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.BrowseName)
-        rdesc.DisplayName = self.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.DisplayName)
+        bname = self.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.BrowseName).Value.Value
+        if bname:
+            rdesc.BrowseName = bname 
+        dname = self.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.DisplayName).Value.Value
+        if dname:
+            rdesc.DisplayName = dname 
         self._nodes[addref.SourceNodeId].references.append(rdesc)
         return ua.StatusCode()
 
@@ -147,7 +154,7 @@ class AddressSpace(object):
             nodedata.attributes[ua.AttributeIds.ContainsNoLoops] = AttributeValue(ua.DataValue(ua.Variant(item.ContainsNoLoops, ua.VariantType.Boolean)))
         if item.SpecifiedAttributes & ua.NodeAttributesMask.DataType:
             nodedata.attributes[ua.AttributeIds.DataType] = AttributeValue(ua.DataValue(ua.Variant(item.DataType, ua.VariantType.NodeId)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.DataType:
+        if item.SpecifiedAttributes & ua.NodeAttributesMask.Description:
             nodedata.attributes[ua.AttributeIds.Description] = AttributeValue(ua.DataValue(ua.Variant(item.Description, ua.VariantType.LocalizedText)))
         if item.SpecifiedAttributes & ua.NodeAttributesMask.DisplayName:
             nodedata.attributes[ua.AttributeIds.DisplayName] = AttributeValue(ua.DataValue(ua.Variant(item.DisplayName, ua.VariantType.LocalizedText)))
@@ -187,7 +194,6 @@ class AddressSpace(object):
         res = []
         for readvalue in params.NodesToRead:
             res.append(self.get_attribute_value(readvalue.NodeId, readvalue.AttributeId))
-        print(res)
         return res
 
     def write(self, params):
@@ -218,13 +224,13 @@ class AddressSpace(object):
 
     def _is_suitable_ref(self, desc, ref):
         if not self._suitable_direction(desc.BrowseDirection, ref.IsForward):
-            self.logger.debug("%s is not suitable due to direction")
+            self.logger.debug("%s is not suitable due to direction", ref)
             return False
         if not self._suitable_reftype(desc.ReferenceTypeId, ref.ReferenceTypeId, desc.IncludeSubtypes):
-            self.logger.debug("%s is not suitable due to type")
+            self.logger.debug("%s is not suitable due to type", ref)
             return False
         if desc.NodeClassMask and ((desc.NodeClassMask & ref.NodeClass) == 0):
-            self.logger.debug("%s is not suitable due to class")
+            self.logger.debug("%s is not suitable due to class", ref)
             return False
         self.logger.debug("%s is a suitable ref for desc %s", ref, desc)
         return True
@@ -237,9 +243,8 @@ class AddressSpace(object):
         if not subtypes:
             return ref1.Identifier == ref2.Identifier
         oktype = self._get_sub_ref(ref1)
-        #oktype = [node.Identifier for node in oktype]
-        print("suitable types for ", ref1, " are ", oktype)
-        print("ref2 is ", ref2)
+        #print("suitable types for ", ref1, " are ", oktype)
+        #print("ref2 is ", ref2)
         return ref2 in oktype
 
     def _get_sub_ref(self, ref):

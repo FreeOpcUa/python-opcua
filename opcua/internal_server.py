@@ -88,12 +88,17 @@ class InternalServer(object):
 
         return result
 
-    def close_session(self, session_id, delete_subs):
-        self.sessions.pop(session_id)
+    def close_session(self, session, delete_subs):
+        if not session:
+            self.logger.warn("session id is invalid: : %s", session)
+        self.sessions.pop(session.SessionId)
 
-    def activate_session(self, session_id, params):
+    def activate_session(self, session, params):
         result = ua.ActivateSessionResult()
-        result.ServerNonce = self.sessions[session_id].nonce
+        if not session:
+            result.Results = [ua.StatusCode(ua.StatusCodes.BadSessionIdInvalid)]
+            return result
+        result.ServerNonce = self.sessions[session.SessionId].nonce
         for _ in params.ClientSoftwareCertificates:
             result.Results.append(ua.StatusCode())
         return result

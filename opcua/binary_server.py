@@ -162,7 +162,7 @@ class UAProcessor(object):
             self.logger.info("Create session request")
             deletesubs = ua.unpack_uatype('Boolean', body)
             
-            self.iserver.close_session(self.session.SessionId, deletesubs)
+            self.iserver.close_session(self.session, deletesubs)
 
             response = ua.CloseSessionResponse()
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
@@ -171,7 +171,7 @@ class UAProcessor(object):
             self.logger.info("Activate session request")
             params = ua.ActivateSessionParameters.from_binary(body) 
             
-            result = self.iserver.activate_session(self.session.SessionId, params)
+            result = self.iserver.activate_session(self.session, params)
 
             response = ua.ActivateSessionResponse()
             response.Parameters = result
