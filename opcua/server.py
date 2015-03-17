@@ -3,7 +3,11 @@ High level interface to pure python OPC-UA server
 """
 
 import logging
-from urllib.parse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
+
 
 from opcua import ua
 from opcua.binary_server import BinaryServer

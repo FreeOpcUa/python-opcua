@@ -32,7 +32,7 @@ class InternalServer(object):
         self.logger = logging.getLogger(__name__)
         self.endpoints = []
         self.sessions = {}
-        self._channel_id_counter = 1
+        self._channel_id_counter = 5
         self.aspace = AddressSpace()
         create_standard_address_space_Part3(self.aspace)
         create_standard_address_space_Part4(self.aspace)
@@ -44,18 +44,21 @@ class InternalServer(object):
         create_standard_address_space_Part13(self.aspace)
         self.channels = {}
 
-    def open_secure_channel(self, params, current=None):
-        #handle data
+    def open_secure_channel(self, params, currentchannel=None):
+        print("channelds: ", self.channels)
         if params.RequestType == ua.SecurityTokenRequestType.Issue:
             channel = ua.OpenSecureChannelResult()
+            channel.SecurityToken.TokenId = 13 #random value
             channel.SecurityToken.ChannelId = self._channel_id_counter
+            channel.SecurityToken.RevisedLifetime = params.RequestedLifetime 
             self._channel_id_counter += 1
         else:
-            channel = self.channels[current]
+            channel = self.channels[currentchannel.SecurityToken.ChannelId]
         channel.SecurityToken.TokenId += 1
         channel.SecurityToken.CreatedAt = ua.DateTime()
         channel.SecurityToken.RevisedLifeTime = params.RequestedLifetime
         channel.ServerNonce = uuid.uuid4().bytes + uuid.uuid4().bytes
+        self.channels[channel.SecurityToken.ChannelId] = channel
         return channel
 
     def add_endpoint(self, endpoint):

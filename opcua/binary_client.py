@@ -29,7 +29,6 @@ class BinaryClient(object):
         self._socket = None
         self._do_stop = False
         self._security_token = ua.ChannelSecurityToken() 
-        #self._secure_channel_id = 0 
         self._authentication_token = ua.NodeId()
         self._sequence_number = 0
         self._request_id = 0
@@ -104,10 +103,12 @@ class BinaryClient(object):
         header = self._receive_header()
         if header is None:
             return
+        body = self._receive_body(header.body_size)
         if header.MessageType == ua.MessageType.Error:
             self.logger.warn("Received an error message type")
+            err = ua.ErrorMessage.from_binary(body)
+            self.logger.warn(err)
             return None
-        body = self._receive_body(header.body_size)
         if header.MessageType == ua.MessageType.Acknowledge:
             self._call_callback(0, body)
             return
@@ -140,7 +141,7 @@ class BinaryClient(object):
         for arg in args:
             data = arg.to_binary()
             hdr.add_size(len(data))
-            self.logger.info("writting to socket: %s with length %s ", type(arg), len(data))
+            self.logger.debug("writting to socket: %s with length %s ", type(arg), len(data))
             self.logger.debug("struct: %s", arg)
             self.logger.debug("data: %s", data)
             alle.append(data)
@@ -214,8 +215,7 @@ class BinaryClient(object):
         response = ua.OpenSecureChannelResponse.from_binary(rcall.data)
         response.ResponseHeader.ServiceResult.check()
         self._security_token = response.Parameters.SecurityToken
-        self.logger.info(response)
-        return response
+        return response.Parameters
 
     def create_session(self, parameters):
         self.logger.info("create_session")
@@ -289,7 +289,7 @@ class BinaryClient(object):
         request = ua.CloseSecureChannelRequest()
         request.RequestHeader = self._create_request_header()
 
-        hdr = ua.Header(ua.MessageType.SecureClose, ua.ChunkType.Single, self._security_token.TokenId)
+        hdr = ua.Header(ua.MessageType.SecureClose, ua.ChunkType.Single, self._security_token.ChannelId)
         symhdr = ua.SymmetricAlgorithmHeader()
         seqhdr = self._create_sequence_header()
         self._write_socket(hdr, symhdr, seqhdr, request)

@@ -1,6 +1,10 @@
+from __future__ import division #support for python2
 from threading import Thread, Condition
 import logging
-from urllib.parse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError: #support for python2
+    from urlparse import urlparse
 
 from opcua import uaprotocol as ua
 from opcua import BinaryClient, Node, Subscription
@@ -15,17 +19,19 @@ class KeepAlive(Thread):
     def __init__(self, client, timeout):
         Thread.__init__(self)
         self.logger = logging.getLogger(self.__class__.__name__)
+        if timeout == 0: # means no timeout bu we do not trust such servers
+            timeout = 360000
         self.timeout = timeout
         self.client = client
         self._dostop = False
         self._cond = Condition()
 
     def run(self):
-        self.logger.debug("starting keepalive thread")
+        self.logger.debug("starting keepalive thread with period of %s milliseconds", self.timeout)
         server_state = self.client.get_node(ua.FourByteNodeId(ua.ObjectIds.Server_ServerStatus_State))
         while not self._dostop:
             with self._cond:
-                self._cond.wait(self.timeout)
+                self._cond.wait(self.timeout/1000)
             if self._dostop:
                 break
             self.logger.debug("renewing channel")
@@ -66,6 +72,8 @@ class Client(object):
         self.security_policy_uri = "http://opcfoundation.org/UA/SecurityPolicy#None"
         self.secure_channel_id = None
         self.default_timeout = 3600000
+        self.secure_channel_timeout = self.default_timeout
+        self.session_timeout = self.default_timeout
         self.bclient = BinaryClient()
         self._nonce = None
         self._session_counter = 1
@@ -128,9 +136,10 @@ class Client(object):
         if renew:
             params.RequestType = ua.SecurityTokenRequestType.Renew
         params.SecurityMode = ua.MessageSecurityMode.None_
-        params.RequestedLifetime = 300000
+        params.RequestedLifetime = self.secure_channel_timeout
         params.ClientNonce = '\x00'
-        self.bclient.open_secure_channel(params)
+        result = self.bclient.open_secure_channel(params)
+        self.secure_channel_timeout = result.SecurityToken.RevisedLifetime
 
     def close_secure_channel(self):
         return self.bclient.close_secure_channel()
@@ -158,7 +167,8 @@ class Client(object):
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0 #means not max size
         response = self.bclient.create_session(params)
-        self.keepalive = KeepAlive(self, response.RevisedSessionTimeout * 0.8)
+        self.session_timeout = response.RevisedSessionTimeout
+        self.keepalive = KeepAlive(self, min(self.session_timeout, self.secure_channel_timeout) * 0.7) #0.7 is from spec
         self.keepalive.start()
         return response
 

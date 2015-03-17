@@ -47,9 +47,6 @@ class Hello(object):
         b.append(uatypes.pack_string(self.EndpointUrl))
         return b"".join(b)
 
-    def get_binary_size(self):
-        return 5*4
-
     @staticmethod
     def from_binary(data):
         hello = Hello()
@@ -95,10 +92,10 @@ class Header(object):
         b.append(struct.pack("<3s", self.MessageType))
         b.append(struct.pack("<s", self.ChunkType))
         size = self.body_size + 8
-        if not self.MessageType in (MessageType.Hello, MessageType.Acknowledge):
+        if self.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
             size += 4
         b.append(struct.pack("<I", size))
-        if not self.MessageType in (MessageType.Hello, MessageType.Acknowledge):
+        if self.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
             b.append(struct.pack("<I", self.ChannelId))
         return b"".join(b)
 
@@ -109,7 +106,7 @@ class Header(object):
         hdr.MessageType = struct.unpack("<3s", data.read(3))[0]
         hdr.ChunkType = struct.unpack("<c", data.read(1))[0]
         hdr.body_size = struct.unpack("<I", data.read(4))[0] - 8
-        if not hdr.MessageType in (MessageType.Hello, MessageType.Acknowledge):
+        if hdr.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
             hdr.body_size -= 4
             data = get_bytes_from_sock(sock, 4)
             hdr.ChannelId = struct.unpack("<I", data.read(4))[0]
@@ -117,6 +114,29 @@ class Header(object):
 
     def __str__(self):
         return "Header(type:{}, body_size:{}, channel:{})".format(self.MessageType, self.body_size, self.ChannelId)
+    __repr__ = __str__
+
+
+class ErrorMessage(object):
+    def __init__(self):
+        self.Error = uatypes.StatusCode()
+        self.Reason = ""
+
+    def to_binary(self):
+        b = []
+        b.append(self.Error.to_binary())
+        b.append(uatypes.pack_string(self.Reason))
+        return b"".join(b)
+
+    @staticmethod
+    def from_binary(data):
+        ack = ErrorMessage()
+        ack.Error = uatypes.StatusCode.from_binary(data)
+        ack.Reason = uatypes.unpack_string(data)
+        return ack
+
+    def __str__(self):
+        return "MessageAbort(error:{}, reason:{})".format(self.Error, self.Reason)
     __repr__ = __str__
 
 

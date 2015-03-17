@@ -2,7 +2,10 @@
 Socket server forwarding request to internal server
 """
 import logging
-import socketserver
+try:
+    import socketserver
+except ImportError:
+    import SocketServer as socketserver
 from threading import Thread, Lock
 
 from opcua import ua
@@ -120,11 +123,11 @@ class UAProcessor(object):
         seqhdr = ua.SequenceHeader.from_binary(body)
         request = ua.OpenSecureChannelRequest.from_binary(body)
 
-        self.channel = self.iserver.open_secure_channel(request.Parameters)
+        self.channel = self.iserver.open_secure_channel(request.Parameters, self.channel)
         #send response
         hdr = ua.Header(ua.MessageType.SecureOpen, ua.ChunkType.Single, self.channel.SecurityToken.TokenId)
         response = ua.OpenSecureChannelResponse()
-        response.Result = self.channel
+        response.Parameters = self.channel
         self.send_response(request.RequestHeader.RequestHandle, algohdr, seqhdr, response, ua.MessageType.SecureOpen)
 
     def process_body(self, header, body):
