@@ -90,7 +90,6 @@ class BinaryClient(object):
         self.logger.debug("Waiting for header")
         header = ua.Header.from_stream(self._socket)
         self.logger.info("received header: %s", header)
-        print(header.to_binary())
         return header
 
     def _receive_body(self, size):
@@ -266,7 +265,7 @@ class BinaryClient(object):
     def write(self, nodestowrite):
         self.logger.info("read")
         request = ua.WriteRequest()
-        request.NodesToWrite = nodestowrite
+        request.Parameters.NodesToWrite = nodestowrite
         data = self._send_request(request)
         response = ua.WriteResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()

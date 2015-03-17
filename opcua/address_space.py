@@ -259,14 +259,47 @@ class AddressSpace(object):
                 res += self._get_sub_ref(ref.NodeId)
         return res
 
-
-
     def _suitable_direction(self, desc, isforward):
         if desc == ua.BrowseDirection.Both:
             return True
         if desc == ua.BrowseDirection.Forward and isforward:
             return True
         return False
+
+    def translate_browsepaths_to_nodeids(self, browsepaths):
+        results = []
+        for path in browsepaths:
+            results.append(self._translate_browsepath_to_nodeid(path))
+        return results
+
+    def _translate_browsepath_to_nodeid(self, path):
+        res = ua.BrowsePathResult()
+        if not path.StartingNode:
+            res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
+            return res
+        current = path.Startingnode
+        for el in path.RelativePath.Elements:
+            nodeid = self._find_element_in_node(el, current)
+            if not nodeid:
+                res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNoMatch)
+                return res
+            current = nodeid
+        target = ua.BrowsePathTarget()
+        target.NodeId = current
+        target.RemainingPathIndex = 0xffffffffffffffff
+        res.Targets = [target]
+        return res
+
+    def _find_element_in_node(self, el, nodeid):
+        data = self._nodes[nodeid]
+        for ref in start.references:
+            #FIXME: here we should check other arguments!!
+            if ref.BrowseName == el.TargetName:
+                return ref.TargetNodeId
+        return None
+            
+
+
 
 
 
