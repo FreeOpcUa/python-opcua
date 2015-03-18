@@ -1,4 +1,4 @@
-
+from threading import RLock
 import logging
 
 from opcua import ua
@@ -27,6 +27,7 @@ class AddressSpace(object):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self._nodes = {}
+        self._lock = RLock() #FIXME: should use multiple reader, one writter pattern
 
 
     def add_nodes(self, addnodeitems):
@@ -36,56 +37,57 @@ class AddressSpace(object):
         return results
 
     def _add_node(self, item):
-        result = ua.AddNodesResult()
+        with self._lock:
+            result = ua.AddNodesResult()
 
-        if item.RequestedNewNodeId in self._nodes:
-            self.logger.warn("AddNodeItem: node already exists")
-            result.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdExists)
+            if item.RequestedNewNodeId in self._nodes:
+                self.logger.warn("AddNodeItem: node already exists")
+                result.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdExists)
+                return result
+            nodedata = NodeData(item.RequestedNewNodeId)
+            #add common attrs
+            nodedata.attributes[ua.AttributeIds.NodeId] = AttributeValue(ua.DataValue(ua.Variant(item.RequestedNewNodeId, ua.VariantType.NodeId)))
+            nodedata.attributes[ua.AttributeIds.BrowseName] = AttributeValue(ua.DataValue(ua.Variant(item.BrowseName, ua.VariantType.QualifiedName)))
+            nodedata.attributes[ua.AttributeIds.NodeClass] = AttributeValue(ua.DataValue(ua.Variant(item.NodeClass, ua.VariantType.Int32)))
+            #add requested attrs
+            self._add_nodeattributes(item.Attributes, nodedata)
+
+
+            if item.ParentNodeId == ua.NodeId():
+                #self.logger.warn("add_node: creating node %s without parent", item.RequestedNewNodeId) 
+                pass
+            elif not item.ParentNodeId in self._nodes:
+                #self.logger.warn("add_node: while adding node %s, requested parent node %s does not exists", item.RequestedNewNodeId, item.ParentNodeId) 
+                result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
+                return result
+            else:
+                desc = ua.ReferenceDescription()
+                desc.ReferenceTypeId = item.ReferenceTypeId
+                desc.NodeId = item.RequestedNewNodeId
+                desc.NodeClass = item.NodeClass
+                desc.BrowseName = item.BrowseName
+                desc.DisplayName = ua.LocalizedText(item.BrowseName.Name)
+                desc.TargetNodeTypeDefinition = item.TypeDefinition
+                desc.IsForward = True
+
+                self._nodes[item.ParentNodeId].references.append(desc)
+            
+            if item.TypeDefinition != ua.NodeId():
+                #type definition
+                addref = ua.AddReferencesItem()
+                addref.SourceNodeId = item.RequestedNewNodeId
+                addref.IsForward = True
+                addref.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasTypeDefinition)
+                addref.TargetNodeId = item.TypeDefinition
+                addref.NodeClass = ua.NodeClass.DataType
+                self._add_reference(addref)
+
+            result.StatusCode = ua.StatusCode()
+            result.AddedNodeId = item.RequestedNewNodeId
+
+            self._nodes[item.RequestedNewNodeId] = nodedata
+
             return result
-        nodedata = NodeData(item.RequestedNewNodeId)
-        #add common attrs
-        nodedata.attributes[ua.AttributeIds.NodeId] = AttributeValue(ua.DataValue(ua.Variant(item.RequestedNewNodeId, ua.VariantType.NodeId)))
-        nodedata.attributes[ua.AttributeIds.BrowseName] = AttributeValue(ua.DataValue(ua.Variant(item.BrowseName, ua.VariantType.QualifiedName)))
-        nodedata.attributes[ua.AttributeIds.NodeClass] = AttributeValue(ua.DataValue(ua.Variant(item.NodeClass, ua.VariantType.Int32)))
-        #add requested attrs
-        self._add_nodeattributes(item.Attributes, nodedata)
-
-
-        if item.ParentNodeId == ua.NodeId():
-            #self.logger.warn("add_node: creating node %s without parent", item.RequestedNewNodeId) 
-            pass
-        elif not item.ParentNodeId in self._nodes:
-            #self.logger.warn("add_node: while adding node %s, requested parent node %s does not exists", item.RequestedNewNodeId, item.ParentNodeId) 
-            result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
-            return result
-        else:
-            desc = ua.ReferenceDescription()
-            desc.ReferenceTypeId = item.ReferenceTypeId
-            desc.NodeId = item.RequestedNewNodeId
-            desc.NodeClass = item.NodeClass
-            desc.BrowseName = item.BrowseName
-            desc.DisplayName = ua.LocalizedText(item.BrowseName.Name)
-            desc.TargetNodeTypeDefinition = item.TypeDefinition
-            desc.IsForward = True
-
-            self._nodes[item.ParentNodeId].references.append(desc)
-        
-        if item.TypeDefinition != ua.NodeId():
-            #type definition
-            addref = ua.AddReferencesItem()
-            addref.SourceNodeId = item.RequestedNewNodeId
-            addref.IsForward = True
-            addref.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasTypeDefinition)
-            addref.TargetNodeId = item.TypeDefinition
-            addref.NodeClass = ua.NodeClass.DataType
-            self._add_reference(addref)
-
-        result.StatusCode = ua.StatusCode()
-        result.AddedNodeId = item.RequestedNewNodeId
-
-        self._nodes[item.RequestedNewNodeId] = nodedata
-
-        return result
 
     def add_references(self, refs):
         result = []
@@ -94,53 +96,56 @@ class AddressSpace(object):
         return result
 
     def _add_reference(self, addref):
-        if not addref.SourceNodeId in self._nodes:
-            #self.logger.warn("add_reference: source node %s does not exists", addref.SourceNodeId)
-            return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
-        if not addref.TargetNodeId in self._nodes:
-            #self.logger.warn("add_reference: target node %s does not exists", addref.TargetNodeId)
-            return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
-        rdesc = ua.ReferenceDescription()
-        rdesc.ReferenceTypeId = addref.ReferenceTypeId
-        rdesc.IsForware = addref.IsForward
-        rdesc.NodeId = addref.TargetNodeId
-        rdesc.NodeClass = addref.NodeClass
-        bname = self.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.BrowseName).Value.Value
-        if bname:
-            rdesc.BrowseName = bname 
-        dname = self.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.DisplayName).Value.Value
-        if dname:
-            rdesc.DisplayName = dname 
-        self._nodes[addref.SourceNodeId].references.append(rdesc)
-        return ua.StatusCode()
+        with self._lock:
+            if not addref.SourceNodeId in self._nodes:
+                #self.logger.warn("add_reference: source node %s does not exists", addref.SourceNodeId)
+                return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
+            if not addref.TargetNodeId in self._nodes:
+                #self.logger.warn("add_reference: target node %s does not exists", addref.TargetNodeId)
+                return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
+            rdesc = ua.ReferenceDescription()
+            rdesc.ReferenceTypeId = addref.ReferenceTypeId
+            rdesc.IsForware = addref.IsForward
+            rdesc.NodeId = addref.TargetNodeId
+            rdesc.NodeClass = addref.NodeClass
+            bname = self.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.BrowseName).Value.Value
+            if bname:
+                rdesc.BrowseName = bname 
+            dname = self.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.DisplayName).Value.Value
+            if dname:
+                rdesc.DisplayName = dname 
+            self._nodes[addref.SourceNodeId].references.append(rdesc)
+            return ua.StatusCode()
 
     def get_attribute_value(self, nodeid, attr):
-        #self.logger.debug("get attr val: %s %s", nodeid, attr)
-        dv = ua.DataValue()
-        if not nodeid in self._nodes:
-            dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
-            return dv
-        node = self._nodes[nodeid]
-        if not attr in node.attributes:
-            dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
-            return dv
-        attval = node.attributes[attr]
-        if attval.value_callback:
-            return attval.value_callback()
-        return attval.value
+        with self._lock:
+            #self.logger.debug("get attr val: %s %s", nodeid, attr)
+            dv = ua.DataValue()
+            if not nodeid in self._nodes:
+                dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
+                return dv
+            node = self._nodes[nodeid]
+            if not attr in node.attributes:
+                dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
+                return dv
+            attval = node.attributes[attr]
+            if attval.value_callback:
+                return attval.value_callback()
+            return attval.value
 
     def set_attribute_value(self, nodeid, attr, value):
-        self.logger.debug("set attr val: %s %s %s", nodeid, attr, value)
-        if not nodeid in self._nodes:
-            return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
-        node = self._nodes[nodeid]
-        if not attr in node.attributes:
-            return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
-        attval = node.attributes[attr]
-        attval.value = value
-        if attval.datachange_callback:
-            return attval.value_callback(nodeid, attr, value)
-        return ua.StatusCode()
+        with self._lock:
+            self.logger.debug("set attr val: %s %s %s", nodeid, attr, value)
+            if not nodeid in self._nodes:
+                return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
+            node = self._nodes[nodeid]
+            if not attr in node.attributes:
+                return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
+            attval = node.attributes[attr]
+            attval.value = value
+            if attval.datachange_callback:
+                return attval.value_callback(nodeid, attr, value)
+            return ua.StatusCode()
 
     def _add_nodeattributes(self, item, nodedata):
         item = ua.downcast_extobject(item)
@@ -211,16 +216,17 @@ class AddressSpace(object):
         return res
 
     def _browse(self, desc):
-        res = ua.BrowseResult()
-        if not desc.NodeId in self._nodes:
-            res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
+        with self._lock:
+            res = ua.BrowseResult()
+            if not desc.NodeId in self._nodes:
+                res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
+                return res
+            node = self._nodes[desc.NodeId]
+            for ref in node.references:
+                if not self._is_suitable_ref(desc, ref):
+                    continue
+                res.References.append(ref)
             return res
-        node = self._nodes[desc.NodeId]
-        for ref in node.references:
-            if not self._is_suitable_ref(desc, ref):
-                continue
-            res.References.append(ref)
-        return res
 
     def _is_suitable_ref(self, desc, ref):
         if not self._suitable_direction(desc.BrowseDirection, ref.IsForward):
@@ -235,27 +241,20 @@ class AddressSpace(object):
         self.logger.debug("%s is a suitable ref for desc %s", ref, desc)
         return True
 
-
-
     def _suitable_reftype(self, ref1, ref2, subtypes):
         """
         """
         if not subtypes:
             return ref1.Identifier == ref2.Identifier
         oktype = self._get_sub_ref(ref1)
-        #print("suitable types for ", ref1, " are ", oktype)
-        #print("ref2 is ", ref2)
         return ref2 in oktype
 
     def _get_sub_ref(self, ref):
-        #print("lookin for ubstypes of", ref)
         res = []
         nodedata = self._nodes[ref]
         for ref in nodedata.references:
-            #print("is ", ref, " suitable?")
             if ref.ReferenceTypeId.Identifier == ua.ObjectIds.HasSubtype:
                 res.append(ref.NodeId)
-                #print("OK ", ref, " is suitable")
                 res += self._get_sub_ref(ref.NodeId)
         return res
 
@@ -276,9 +275,10 @@ class AddressSpace(object):
     def _translate_browsepath_to_nodeid(self, path):
         self.logger.debug("looking at path: %s", path)
         res = ua.BrowsePathResult()
-        if not path.StartingNode:
-            res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
-            return res
+        with self._lock:
+            if not path.StartingNode in self._nodes:
+                res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
+                return res
         current = path.StartingNode
         for el in path.RelativePath.Elements:
             self.logger.debug("looking at leemnt: %s", el)
@@ -294,13 +294,14 @@ class AddressSpace(object):
         return res
 
     def _find_element_in_node(self, el, nodeid):
-        nodedata = self._nodes[nodeid]
-        for ref in nodedata.references:
-            #FIXME: here we should check other arguments!!
-            if ref.BrowseName == el.TargetName:
-                return ref.NodeId
-        self.logger.warn("element %s was not found in node %s", el, nodeid)
-        return None
+        with self._lock:
+            nodedata = self._nodes[nodeid]
+            for ref in nodedata.references:
+                #FIXME: here we should check other arguments!!
+                if ref.BrowseName == el.TargetName:
+                    return ref.NodeId
+            self.logger.warn("element %s was not found in node %s", el, nodeid)
+            return None
             
 
 
