@@ -3,8 +3,8 @@ from distutils.command.install_data import install_data
 
 
 setup (name = "freeopcua", 
-        version = "0.5.1",
-        description = "Pure Python OPC-UA client library",
+        version = "0.6.0",
+        description = "Pure Python OPC-UA client and server library",
         author = "Olivier Roulet-Dubonnet",
         author_email = "olivier.roulet@gmail.com",
         url = 'http://freeopcua.github.io/',

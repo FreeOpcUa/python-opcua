@@ -13,7 +13,7 @@ from opcua import ua
 from opcua.binary_server import BinaryServer
 from opcua.internal_server import InternalServer
 from opcua import Node, Subscription
-from opcua import utils
+
 
 class Server(object):
     def __init__(self):

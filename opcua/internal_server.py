@@ -125,3 +125,7 @@ class InternalServer(object):
     def translate_browsepaths_to_nodeids(self, params):
         return self.aspace.translate_browsepaths_to_nodeids(params)
 
+    def add_nodes(self, params):
+        return self.aspace.add_nodes(params)
+
+

@@ -51,8 +51,8 @@ class AddressSpace(object):
             nodedata.attributes[ua.AttributeIds.NodeClass] = AttributeValue(ua.DataValue(ua.Variant(item.NodeClass, ua.VariantType.Int32)))
             #add requested attrs
             self._add_nodeattributes(item.Attributes, nodedata)
-
-
+            
+            #add parent
             if item.ParentNodeId == ua.NodeId():
                 #self.logger.warn("add_node: creating node %s without parent", item.RequestedNewNodeId) 
                 pass
@@ -67,13 +67,15 @@ class AddressSpace(object):
                 desc.NodeClass = item.NodeClass
                 desc.BrowseName = item.BrowseName
                 desc.DisplayName = ua.LocalizedText(item.BrowseName.Name)
-                desc.TargetNodeTypeDefinition = item.TypeDefinition
+                desc.TypeDefinition = item.TypeDefinition
                 desc.IsForward = True
-
                 self._nodes[item.ParentNodeId].references.append(desc)
-            
+           
+            #now add our node to db
+            self._nodes[item.RequestedNewNodeId] = nodedata
+
+            #add type definition
             if item.TypeDefinition != ua.NodeId():
-                #type definition
                 addref = ua.AddReferencesItem()
                 addref.SourceNodeId = item.RequestedNewNodeId
                 addref.IsForward = True
@@ -85,7 +87,6 @@ class AddressSpace(object):
             result.StatusCode = ua.StatusCode()
             result.AddedNodeId = item.RequestedNewNodeId
 
-            self._nodes[item.RequestedNewNodeId] = nodedata
 
             return result
 
@@ -98,14 +99,14 @@ class AddressSpace(object):
     def _add_reference(self, addref):
         with self._lock:
             if not addref.SourceNodeId in self._nodes:
-                #self.logger.warn("add_reference: source node %s does not exists", addref.SourceNodeId)
+                print("add_reference: source node %s does not exists", addref.SourceNodeId)
                 return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
             if not addref.TargetNodeId in self._nodes:
-                #self.logger.warn("add_reference: target node %s does not exists", addref.TargetNodeId)
+                print("add_reference: target node %s does not exists", addref.TargetNodeId)
                 return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
             rdesc = ua.ReferenceDescription()
             rdesc.ReferenceTypeId = addref.ReferenceTypeId
-            rdesc.IsForware = addref.IsForward
+            rdesc.IsForward = addref.IsForward
             rdesc.NodeId = addref.TargetNodeId
             rdesc.NodeClass = addref.NodeClass
             bname = self.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.BrowseName).Value.Value
@@ -125,7 +126,7 @@ class AddressSpace(object):
                 dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
                 return dv
             node = self._nodes[nodeid]
-            if not attr in node.attributes:
+            if attr not in node.attributes:
                 dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
                 return dv
             attval = node.attributes[attr]
@@ -218,7 +219,7 @@ class AddressSpace(object):
     def _browse(self, desc):
         with self._lock:
             res = ua.BrowseResult()
-            if not desc.NodeId in self._nodes:
+            if desc.NodeId not in self._nodes:
                 res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
                 return res
             node = self._nodes[desc.NodeId]
@@ -281,7 +282,6 @@ class AddressSpace(object):
                 return res
         current = path.StartingNode
         for el in path.RelativePath.Elements:
-            self.logger.debug("looking at leemnt: %s", el)
             nodeid = self._find_element_in_node(el, current)
             if not nodeid:
                 res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNoMatch)

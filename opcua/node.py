@@ -101,4 +101,47 @@ class Node(object):
         #FIXME: seems this method may return several nodes
         return Node(self.server, result.Targets[0].TargetId)
 
+    def add_folder(self, *args):
+        """
+        create a child node folder
+        """
+        nodeid, qname = self._parse_add_args(*args)
+        return self._add_folder(nodeid, qname)
+    
+    def _add_folder(self, nodeid, qname):
+        node = ua.AddNodesItem()
+        node.RequestedNewNodeId = nodeid 
+        node.BrowseName = qname 
+        node.NodeClass = ua.NodeClass.Object
+        node.ParentNodeId = self.nodeid
+        node.ReferenceTypeId = ua.NodeId.from_string("i=35")
+        node.TypeDefinition = ua.NodeId.from_string("i=61")
+        attrs = ua.ObjectAttributes()
+        attrs.Description = ua.LocalizedText(qname.Name)
+        attrs.DisplayName = ua.LocalizedText(qname.Name)
+        attrs.EventNotifier = 0
+        node.Attributes = attrs
+        results = self.server.add_nodes([node])
+        results[0].StatusCode.check()
+        return Node(self.server, nodeid)
+     
+
+    def _parse_add_args(self, *args):
+        if type(args[0]) is ua.NodeId:
+            return args[0], args[1]
+        elif type(args[0]) is str:
+            return ua.NodeId.from_string(args[0]), ua.QualifiedName.from_string(args[1])
+        elif type(args[0]) is int:
+            return generate_nodeid(args[0]), ua.QualifiedName(args[1], args[0])
+        else:
+            raise TypeError("Add methods takes a nodeid and a qualifiedname as argument, received %s" % args)
+
+
+__nodeid_counter = 2000
+def generate_nodeid(idx):
+    global __nodeid_counter
+    __nodeid_counter += 1
+    return ua.NodeId(__nodeid_counter, idx)
+        
+
       

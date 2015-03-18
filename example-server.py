@@ -18,6 +18,7 @@ if __name__ == "__main__":
     print("Available loggers are: ", logging.Logger.manager.loggerDict.keys())
     try:
         root = server.get_root_node()
+        root.add_folder(2, "myfolder")
         embed()
     finally:
         server.stop()

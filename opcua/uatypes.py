@@ -47,7 +47,7 @@ def uatype_to_fmt(uatype):
     elif uatype == "Byte":
         return "B"
     else:
-        raise Exception("Error unknown uatype: "+ uatype)
+        raise Exception("Error unknown uatype: " + uatype)
 
 def pack_uatype_array(uatype, value):
     if value is None:
@@ -128,7 +128,7 @@ def unpack_object_array(objclass, data):
     if length != -1:
         for _ in range(0, length):
             array.append(objclass.from_binary(data))
-    return obj
+    return array
  
 def test_bit(data, offset):
     mask = 1 << offset
@@ -206,9 +206,9 @@ class NodeId(object):
 
     def __key(self):
         if self.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric):#twobyte, fourbyte and numeric may represent the same node
-            return (self.NamespaceIndex, self.Identifier) 
+            return self.NamespaceIndex, self.Identifier
         else:
-            return (self.NodeIdType, self.NamespaceIndex, self.Identifier) 
+            return self.NodeIdType, self.NamespaceIndex, self.Identifier
 
     def __eq__(self, node):
         return isinstance(node, NodeId) and self.__key() == node.__key()
@@ -262,9 +262,9 @@ class NodeId(object):
         elif self.NodeIdType == NodeIdType.String:
             ntype = "s"
         elif self.NodeIdType == NodeIdType.TwoByte:
-            ntype = "i" #FIXME check
+            ntype = "i" 
         elif self.NodeIdType == NodeIdType.FourByte:
-            ntype = "i" #FIXME check
+            ntype = "i" 
         elif self.NodeIdType == NodeIdType.Guid:
             ntype = "g"
         elif self.NodeIdType == NodeIdType.ByteString:
@@ -504,35 +504,6 @@ class Variant(object):
             obj.Value = unpack_uatype(obj.VariantType.name, data)
         return obj
 
-    #@staticmethod
-    #def _unpack_val_array(vtype, data):
-        #if vtype.name in UaTypes:
-            #return unpack_uatype_array(vtype.name, data)
-        #else:
-            #length = struct.unpack("<i", data.read(4))[0]
-            #res = []
-            #for _ in range(0, length):
-                #res.append(Variant._unpack_val(vtype, data))
-            #return res
-
-    #@staticmethod
-    #def _unpack_val(vtype, data):
-        #if vtype.name in UaTypes:
-            #return unpack_uatype(vtype.name, data)
-        #else:
-            #code = "{}.from_binary(data)".format(vtype.name)
-            #tmp = eval(code)
-            #return tmp
-
-    #def _pack_val(vtype, value):
-        #if vtype.name in UaTypes:
-            #return pack_uatype(vtype.name, value)
-        #else:
-            #return value.to_binary()
-
-    #def _pack_val_array(vtype, value):
-
-
 
 class DataValue(object):
     '''
@@ -593,12 +564,12 @@ class DataValue(object):
         return obj
     
     def __str__(self):
-        return 'DataValue(' + 'Encoding:' + str(self.Encoding) + ', '  + \
-             'Value:' + str(self.Value) + ', '  + \
+        return 'DataValue(' + 'Encoding:' + str(self.Encoding) + ', ' + \
+             'Value:' + str(self.Value) + ', ' + \
              'StatusCode:' + str(self.StatusCode) + ', '  + \
-             'SourceTimestamp:' + str(self.SourceTimestamp) + ', '  + \
-             'ServerTimestamp:' + str(self.ServerTimestamp) + ', '  + \
-             'SourcePicoseconds:' + str(self.SourcePicoseconds) + ', '  + \
+             'SourceTimestamp:' + str(self.SourceTimestamp) + ', ' + \
+             'ServerTimestamp:' + str(self.ServerTimestamp) + ', ' + \
+             'SourcePicoseconds:' + str(self.SourcePicoseconds) + ', ' + \
              'ServerPicoseconds:' + str(self.ServerPicoseconds) + ')'
     
     __repr__ = __str__

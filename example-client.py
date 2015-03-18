@@ -5,7 +5,7 @@ from opcua import uaprotocol as ua
 
 class SubHandler(object):
     """
-    Client to subcsription. It will receive events from server
+    Client to subscription. It will receive events from server
     """
     def data_change(self, handle, node, val, attr):
         print("Python: New data change event", handle, node, val, attr)
