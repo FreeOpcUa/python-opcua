@@ -21,10 +21,13 @@ class Session(object):
     _auth_counter = 1000
     def __init__(self):
         self.session_id = ua.NodeId(self._counter)
-        self._counter += 1
+        Session._counter += 1
         self.authentication_token = ua.NodeId(self._auth_counter)
-        self._auth_counter += 1
+        Session._auth_counter += 1
         self.nonce = utils.create_nonce() 
+
+    def __str__(self):
+        return "InternalSession(id:{}, auth_token:{})".format(self.session_id, self.authentication_token)
 
 
 class InternalServer(object):
@@ -68,18 +71,10 @@ class InternalServer(object):
         #FIXME check params
         return self.endpoints 
 
-    def read(self, params):
-        return self.aspace.read(params)
-
-    def write(self, params):
-        return self.aspace.read(params)
-
-    def browse(self, params):
-        return self.aspace.browse(params)
-
     def create_session(self, params):
         session = Session()
         self.sessions[session.session_id] = session
+        self.logger.info("Create session request, created session: %s", session)
 
         result = ua.CreateSessionResult()
         result.SessionId = session.session_id
@@ -92,8 +87,9 @@ class InternalServer(object):
         return result
 
     def close_session(self, session, delete_subs):
-        if not session:
-            self.logger.warn("session id is invalid: : %s", session)
+        if not session.SessionId in self.sessions:
+            self.logger.warn("session id %s is invalid: available sessions are %s", session.SessionId, self.sessions)
+            return
         self.sessions.pop(session.SessionId)
 
     def activate_session(self, session, params):
@@ -105,7 +101,16 @@ class InternalServer(object):
         for _ in params.ClientSoftwareCertificates:
             result.Results.append(ua.StatusCode())
         return result
- 
 
+    def read(self, params):
+        return self.aspace.read(params)
 
+    def write(self, params):
+        return self.aspace.read(params)
+
+    def browse(self, params):
+        return self.aspace.browse(params)
+
+    def translate_browsepaths_to_nodeids(self, params):
+        return self.aspace.translate_browsepaths_to_nodeids(params)
 

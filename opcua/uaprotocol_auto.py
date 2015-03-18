@@ -860,7 +860,6 @@ class UserTokenPolicy(object):
         packet = []
         packet.append(pack_uatype('String', self.PolicyId))
         packet.append(pack_uatype('UInt32', self.TokenType))
-        print(self.IssuedTokenType, type(self.IssuedTokenType))
         packet.append(pack_uatype('String', self.IssuedTokenType))
         packet.append(pack_uatype('String', self.IssuerEndpointUrl))
         packet.append(pack_uatype('String', self.SecurityPolicyUri))
@@ -3896,19 +3895,14 @@ class BrowsePathResult(object):
     
     __repr__ = __str__
     
-class TranslateBrowsePathsToNodeIdsRequest(object):
+class TranslateBrowsePathsToNodeIdsParameters(object):
     '''
-    Translates one or more paths in the server address space.
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary)
-        self.RequestHeader = RequestHeader()
         self.BrowsePaths = []
     
     def to_binary(self):
         packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
         packet.append(struct.pack('<i', len(self.BrowsePaths)))
         for fieldname in self.BrowsePaths:
             packet.append(fieldname.to_binary())
@@ -3916,9 +3910,7 @@ class TranslateBrowsePathsToNodeIdsRequest(object):
         
     @staticmethod
     def from_binary(data):
-        obj = TranslateBrowsePathsToNodeIdsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj = TranslateBrowsePathsToNodeIdsParameters()
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -3926,9 +3918,38 @@ class TranslateBrowsePathsToNodeIdsRequest(object):
         return obj
     
     def __str__(self):
+        return 'TranslateBrowsePathsToNodeIdsParameters(' + 'BrowsePaths:' + str(self.BrowsePaths) + ')'
+    
+    __repr__ = __str__
+    
+class TranslateBrowsePathsToNodeIdsRequest(object):
+    '''
+    Translates one or more paths in the server address space.
+    '''
+    def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary)
+        self.RequestHeader = RequestHeader()
+        self.Parameters = TranslateBrowsePathsToNodeIdsParameters()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.RequestHeader.to_binary())
+        packet.append(self.Parameters.to_binary())
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = TranslateBrowsePathsToNodeIdsRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = TranslateBrowsePathsToNodeIdsParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
         return 'TranslateBrowsePathsToNodeIdsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'RequestHeader:' + str(self.RequestHeader) + ', '  + \
-             'BrowsePaths:' + str(self.BrowsePaths) + ')'
+             'Parameters:' + str(self.Parameters) + ')'
     
     __repr__ = __str__
     

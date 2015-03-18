@@ -162,7 +162,7 @@ class UAProcessor(object):
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.CloseSessionRequest_Encoding_DefaultBinary):
-            self.logger.info("Create session request")
+            self.logger.info("Close session request")
             deletesubs = ua.unpack_uatype('Boolean', body)
             
             self.iserver.close_session(self.session, deletesubs)
@@ -209,6 +209,7 @@ class UAProcessor(object):
             response = ua.BrowseResponse()
             response.Results = results
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
         elif typeid == ua.NodeId(ua.ObjectIds.GetEndpointsRequest_Encoding_DefaultBinary):
             self.logger.info("get endpoints request")
             params = ua.GetEndpointsParameters.from_binary(body) 
@@ -217,6 +218,18 @@ class UAProcessor(object):
 
             response = ua.GetEndpointsResponse()
             response.Endpoints = endpoints
+
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary):
+            self.logger.info("translate browsepaths to nodeids request")
+            params = ua.TranslateBrowsePathsToNodeIdsParameters.from_binary(body) 
+            
+            paths = self.iserver.translate_browsepaths_to_nodeids(params.BrowsePaths)
+
+            response = ua.TranslateBrowsePathsToNodeIdsResponse()
+            response.Results = paths
+
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
 

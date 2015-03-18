@@ -267,35 +267,39 @@ class AddressSpace(object):
         return False
 
     def translate_browsepaths_to_nodeids(self, browsepaths):
+        self.logger.debug("translate browsepath: %s", browsepaths)
         results = []
         for path in browsepaths:
             results.append(self._translate_browsepath_to_nodeid(path))
         return results
 
     def _translate_browsepath_to_nodeid(self, path):
+        self.logger.debug("looking at path: %s", path)
         res = ua.BrowsePathResult()
         if not path.StartingNode:
             res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
             return res
-        current = path.Startingnode
+        current = path.StartingNode
         for el in path.RelativePath.Elements:
+            self.logger.debug("looking at leemnt: %s", el)
             nodeid = self._find_element_in_node(el, current)
             if not nodeid:
                 res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNoMatch)
                 return res
             current = nodeid
         target = ua.BrowsePathTarget()
-        target.NodeId = current
-        target.RemainingPathIndex = 0xffffffffffffffff
+        target.TargetId = current
+        target.RemainingPathIndex = 4294967295 
         res.Targets = [target]
         return res
 
     def _find_element_in_node(self, el, nodeid):
-        data = self._nodes[nodeid]
-        for ref in start.references:
+        nodedata = self._nodes[nodeid]
+        for ref in nodedata.references:
             #FIXME: here we should check other arguments!!
             if ref.BrowseName == el.TargetName:
-                return ref.TargetNodeId
+                return ref.NodeId
+        self.logger.warn("element %s was not found in node %s", el, nodeid)
         return None
             
 

@@ -373,6 +373,9 @@ class QualifiedName(object):
         obj.Name = unpack_string(data)
         return obj
     
+    def __eq__(self, bname):
+        return isinstance(bname, QualifiedName) and self.Name == bname.Name and self.NamespaceIndex == bname.NamespaceIndex
+
     def __str__(self):
         return 'QualifiedName({}:{})'.format(self.NamespaceIndex, self.Name)
     
