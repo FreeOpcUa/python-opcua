@@ -138,6 +138,22 @@ def set_bit(data, offset):
     mask = 1 << offset
     return data | mask
 
+
+class FrozenClass(object):
+    """
+    make it impossible to add members to a class.
+    This is a hack since I found out that most bugs are due to misspelling a variable in protocol
+    """
+    __isfrozen = False
+    def __setattr__(self, key, value):
+        if self.__isfrozen and not hasattr(self, key):
+            raise TypeError("Error adding member '{}' to class '{}', class is frozen, members are {}".format(key, self.__class__.__name__, self.__dict__.keys()))
+        object.__setattr__(self, key, value)
+
+    def _freeze(self):
+        self.__isfrozen = True
+
+
 class Guid(object):
     def __init__(self):
         self.uuid = uuid.uuid4()

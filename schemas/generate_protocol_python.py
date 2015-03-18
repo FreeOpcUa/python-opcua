@@ -40,8 +40,6 @@ class CodeGenerator(object):
         self.write("Autogenerate code from xml spec")
         self.write("'''")
         self.write("")
-        self.write("import struct")
-        self.write("")
         self.write("from opcua.uatypes import *")
         self.write("from opcua.object_ids import ObjectIds")
         self.write("")
@@ -62,7 +60,7 @@ class CodeGenerator(object):
     def generate_struct_code(self, obj):
         self.write("")
         self.iidx = 0
-        self.write("class {}(object):".format(obj.name))
+        self.write("class {}(FrozenClass):".format(obj.name))
         self.iidx += 1
         self.write("'''")
         if obj.doc:
@@ -85,6 +83,7 @@ class CodeGenerator(object):
                 self.write("self.TypeId = FourByteNodeId(ObjectIds.{}_Encoding_DefaultBinary)".format(obj.name))
             else:
                 self.write("self.{} = {}".format(field.name, "[]" if field.length else self.get_default_value(field)))
+        self.write("self._freeze()")
         self.iidx = 1
 
         #serialize code

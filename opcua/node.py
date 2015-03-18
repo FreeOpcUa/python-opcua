@@ -86,7 +86,7 @@ class Node(object):
             el = ua.RelativePathElement()
             el.ReferenceTypeId = ua.TwoByteNodeId(ua.ObjectIds.HierarchicalReferences)
             el.IsInverse = False
-            el.IncludeSubTypes = True
+            el.IncludeSubtypes = True
             if type(item) == ua.QualifiedName:
                 el.TargetName = item
             else:
@@ -120,7 +120,7 @@ class Node(object):
         attrs.Description = ua.LocalizedText(qname.Name)
         attrs.DisplayName = ua.LocalizedText(qname.Name)
         attrs.EventNotifier = 0
-        node.Attributes = attrs
+        node.NodeAttributes = attrs
         results = self.server.add_nodes([node])
         results[0].StatusCode.check()
         return Node(self.server, nodeid)

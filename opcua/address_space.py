@@ -50,7 +50,7 @@ class AddressSpace(object):
             nodedata.attributes[ua.AttributeIds.BrowseName] = AttributeValue(ua.DataValue(ua.Variant(item.BrowseName, ua.VariantType.QualifiedName)))
             nodedata.attributes[ua.AttributeIds.NodeClass] = AttributeValue(ua.DataValue(ua.Variant(item.NodeClass, ua.VariantType.Int32)))
             #add requested attrs
-            self._add_nodeattributes(item.Attributes, nodedata)
+            self._add_nodeattributes(item.NodeAttributes, nodedata)
             
             #add parent
             if item.ParentNodeId == ua.NodeId():
@@ -81,7 +81,7 @@ class AddressSpace(object):
                 addref.IsForward = True
                 addref.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasTypeDefinition)
                 addref.TargetNodeId = item.TypeDefinition
-                addref.NodeClass = ua.NodeClass.DataType
+                addref.TargetNodeClass = ua.NodeClass.DataType
                 self._add_reference(addref)
 
             result.StatusCode = ua.StatusCode()
@@ -99,16 +99,16 @@ class AddressSpace(object):
     def _add_reference(self, addref):
         with self._lock:
             if not addref.SourceNodeId in self._nodes:
-                print("add_reference: source node %s does not exists", addref.SourceNodeId)
+                #print("add_reference: source node %s does not exists", addref.SourceNodeId)
                 return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
             if not addref.TargetNodeId in self._nodes:
-                print("add_reference: target node %s does not exists", addref.TargetNodeId)
+                #print("add_reference: target node %s does not exists", addref.TargetNodeId)
                 return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
             rdesc = ua.ReferenceDescription()
             rdesc.ReferenceTypeId = addref.ReferenceTypeId
             rdesc.IsForward = addref.IsForward
             rdesc.NodeId = addref.TargetNodeId
-            rdesc.NodeClass = addref.NodeClass
+            rdesc.NodeClass = addref.TargetNodeClass
             bname = self.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.BrowseName).Value.Value
             if bname:
                 rdesc.BrowseName = bname 

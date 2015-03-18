@@ -62,7 +62,7 @@ class InternalServer(object):
                 channel = self.channels[currentchannel.SecurityToken.ChannelId]
             channel.SecurityToken.TokenId += 1
             channel.SecurityToken.CreatedAt = ua.DateTime()
-            channel.SecurityToken.RevisedLifeTime = params.RequestedLifetime
+            channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
             channel.ServerNonce = uuid.uuid4().bytes + uuid.uuid4().bytes
             self.channels[channel.SecurityToken.ChannelId] = channel
             return channel
@@ -89,7 +89,7 @@ class InternalServer(object):
             result.RevisedSessionTimeout = params.RequestedSessionTimeout
             result.MaxRequestMessageSize = 65536
             result.ServerNonce = session.nonce
-            result.endpoints = self.endpoints[:]
+            result.ServerEndpoints = self.endpoints[:]
 
             return result
 

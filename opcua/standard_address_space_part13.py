@@ -21,35 +21,35 @@ def create_standard_address_space_Part13(server):
     attrs = ua.ObjectTypeAttributes()
     attrs.DisplayName = ua.LocalizedText("AggregateConfigurationType")
     attrs.IsAbstract = false
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = true
     ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
     ref.SourceNodeId = ua.NodeId.from_string("i=11187")
-    ref.NodeClass = ua.NodeClass.DataType
+    ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=11188")
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = true
     ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
     ref.SourceNodeId = ua.NodeId.from_string("i=11187")
-    ref.NodeClass = ua.NodeClass.DataType
+    ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=11189")
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = true
     ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
     ref.SourceNodeId = ua.NodeId.from_string("i=11187")
-    ref.NodeClass = ua.NodeClass.DataType
+    ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=11190")
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = true
     ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
     ref.SourceNodeId = ua.NodeId.from_string("i=11187")
-    ref.NodeClass = ua.NodeClass.DataType
+    ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=11191")
     refs.append(ref)
     server.add_references(refs)
@@ -63,16 +63,16 @@ def create_standard_address_space_Part13(server):
     node.TypeDefinition = ua.NodeId.from_string("i=68")
     attrs = ua.VariableAttributes()
     attrs.DisplayName = ua.LocalizedText("TreatUncertainAsBad")
-    attrs.Type = ua.ObjectIds.Boolean
-    attrs.Rank = -1
-    node.Attributes = attrs
+    attrs.DataType = ua.NodeId(ua.ObjectIds.Boolean)
+    attrs.ValueRank = -1
+    node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = true
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=11188")
-    ref.NodeClass = ua.NodeClass.DataType
+    ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
     refs.append(ref)
     server.add_references(refs)
@@ -86,16 +86,16 @@ def create_standard_address_space_Part13(server):
     node.TypeDefinition = ua.NodeId.from_string("i=68")
     attrs = ua.VariableAttributes()
     attrs.DisplayName = ua.LocalizedText("PercentDataBad")
-    attrs.Type = ua.ObjectIds.Byte
-    attrs.Rank = -1
-    node.Attributes = attrs
+    attrs.DataType = ua.NodeId(ua.ObjectIds.Byte)
+    attrs.ValueRank = -1
+    node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = true
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=11189")
-    ref.NodeClass = ua.NodeClass.DataType
+    ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
     refs.append(ref)
     server.add_references(refs)
@@ -109,16 +109,16 @@ def create_standard_address_space_Part13(server):
     node.TypeDefinition = ua.NodeId.from_string("i=68")
     attrs = ua.VariableAttributes()
     attrs.DisplayName = ua.LocalizedText("PercentDataGood")
-    attrs.Type = ua.ObjectIds.Byte
-    attrs.Rank = -1
-    node.Attributes = attrs
+    attrs.DataType = ua.NodeId(ua.ObjectIds.Byte)
+    attrs.ValueRank = -1
+    node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = true
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=11190")
-    ref.NodeClass = ua.NodeClass.DataType
+    ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
     refs.append(ref)
     server.add_references(refs)
@@ -132,16 +132,16 @@ def create_standard_address_space_Part13(server):
     node.TypeDefinition = ua.NodeId.from_string("i=68")
     attrs = ua.VariableAttributes()
     attrs.DisplayName = ua.LocalizedText("UseSlopedExtrapolation")
-    attrs.Type = ua.ObjectIds.Boolean
-    attrs.Rank = -1
-    node.Attributes = attrs
+    attrs.DataType = ua.NodeId(ua.ObjectIds.Boolean)
+    attrs.ValueRank = -1
+    node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = true
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=11191")
-    ref.NodeClass = ua.NodeClass.DataType
+    ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
     refs.append(ref)
     server.add_references(refs)
@@ -155,7 +155,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("At the beginning of each interval, retrieve the calculated value from the data points on either side of the requested timestamp.")
     attrs.DisplayName = ua.LocalizedText("Interpolative")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -167,7 +167,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the average value of the data over the interval.")
     attrs.DisplayName = ua.LocalizedText("Average")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -179,7 +179,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the time weighted average data over the interval using Interpolated Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("TimeAverage")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -191,7 +191,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the time weighted average data over the interval using Simple Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("TimeAverage2")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -203,7 +203,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the total (time integral) of the data over the interval using Interpolated Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("Total")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -215,7 +215,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the total (time integral) of the data over the interval using Simple Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("Total2")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -227,7 +227,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the minimum raw value in the interval with the timestamp of the start of the interval.")
     attrs.DisplayName = ua.LocalizedText("Minimum")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -239,7 +239,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the maximum raw value in the interval with the timestamp of the start of the interval.")
     attrs.DisplayName = ua.LocalizedText("Maximum")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -251,7 +251,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the minimum value in the interval and the Timestamp of the minimum value.")
     attrs.DisplayName = ua.LocalizedText("MinimumActualTime")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -263,7 +263,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the maximum value in the interval and the Timestamp of the maximum value.")
     attrs.DisplayName = ua.LocalizedText("MaximumActualTime")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -275,7 +275,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the difference between the minimum and maximum Value over the interval.")
     attrs.DisplayName = ua.LocalizedText("Range")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -287,7 +287,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the minimum value in the interval including the Simple Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("Minimum2")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -299,7 +299,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the maximum value in the interval including the Simple Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("Maximum2")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -311,7 +311,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the minimum value with the actual timestamp including the Simple Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("MinimumActualTime2")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -323,7 +323,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the maximum value with the actual timestamp including the Simple Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("MaximumActualTime2")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -335,7 +335,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the difference between the Minimum2 and Maximum2 value over the interval.")
     attrs.DisplayName = ua.LocalizedText("Range2")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -347,7 +347,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the number of Annotations in the interval.")
     attrs.DisplayName = ua.LocalizedText("AnnotationCount")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -359,7 +359,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the number of raw values over the interval.")
     attrs.DisplayName = ua.LocalizedText("Count")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -371,7 +371,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the time a Boolean or numeric was in a zero state using Simple Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("DurationInStateZero")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -383,7 +383,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the time a Boolean or numeric was in a non-zero state using Simple Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("DurationInStateNonZero")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -395,7 +395,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the number of changes between zero and non-zero that a Boolean or Numeric value experienced in the interval.")
     attrs.DisplayName = ua.LocalizedText("NumberOfTransitions")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -407,7 +407,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the value at the beginning of the interval using Interpolated Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("Start")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -419,7 +419,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the value at the end of the interval using Interpolated Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("End")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -431,7 +431,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the difference between the Start and End value in the interval.")
     attrs.DisplayName = ua.LocalizedText("Delta")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -443,7 +443,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the value at the beginning of the interval using Simple Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("StartBound")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -455,7 +455,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the value at the end of the interval using Simple Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("EndBound")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -467,7 +467,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the difference between the StartBound and EndBound value in the interval.")
     attrs.DisplayName = ua.LocalizedText("DeltaBounds")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -479,7 +479,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the total duration of time in the interval during which the data is good.")
     attrs.DisplayName = ua.LocalizedText("DurationGood")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -491,7 +491,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the total duration of time in the interval during which the data is bad.")
     attrs.DisplayName = ua.LocalizedText("DurationBad")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -503,7 +503,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the percent of data (0 to 100) in the interval which has a good StatusCode.")
     attrs.DisplayName = ua.LocalizedText("PercentGood")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -515,7 +515,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the percent of data (0 to 100) in the interval which has a bad StatusCode.")
     attrs.DisplayName = ua.LocalizedText("PercentBad")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -527,7 +527,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the worst StatusCode of data in the interval.")
     attrs.DisplayName = ua.LocalizedText("WorstQuality")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -539,7 +539,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the worst StatusCode of data in the interval including the Simple Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("WorstQuality2")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -551,7 +551,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the standard deviation for the interval for a sample of the population (n-1).")
     attrs.DisplayName = ua.LocalizedText("StandardDeviationSample")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -563,7 +563,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the standard deviation for the interval for a complete population (n) which includes Simple Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("StandardDeviationPopulation")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -575,7 +575,7 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the variance for the interval as calculated by the StandardDeviationSample.")
     attrs.DisplayName = ua.LocalizedText("VarianceSample")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
@@ -587,5 +587,5 @@ def create_standard_address_space_Part13(server):
     attrs.Description = ua.LocalizedText("Retrieve the variance for the interval as calculated by the StandardDeviationPopulation which includes Simple Bounding Values.")
     attrs.DisplayName = ua.LocalizedText("VariancePopulation")
     attrs.EventNotifier = 0
-    node.Attributes = attrs
+    node.NodeAttributes = attrs
     server.add_nodes([node])

@@ -206,11 +206,11 @@ def create_standard_address_space_%s(server):
 
     def to_data_type(self, nodeid):
         if not nodeid:
-            return "ua.ObjectIds.String"
+            return "ua.NodeId(ua.ObjectIds.String)"
         if "=" in nodeid:
             return 'ua.NodeId.from_string("{}")'.format(nodeid)
         else:
-            return 'ua.ObjectIds.{}'.format(nodeid)
+            return 'ua.NodeId(ua.ObjectIds.{})'.format(nodeid)
 
     def to_ref_type(self, nodeid):
         if not "=" in nodeid:
@@ -225,7 +225,7 @@ def create_standard_address_space_%s(server):
         if obj.desc: self.writecode(indent, 'attrs.Description = ua.LocalizedText("{}")'.format(obj.desc))
         self.writecode(indent, 'attrs.DisplayName = ua.LocalizedText("{}")'.format(obj.displayname))
         self.writecode(indent, 'attrs.EventNotifier = {}'.format(obj.eventnotifier))
-        self.writecode(indent, 'node.Attributes = attrs')
+        self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
 
@@ -237,7 +237,7 @@ def create_standard_address_space_%s(server):
         if obj.desc: self.writecode(indent, 'attrs.Description = ua.LocalizedText("{}")'.format(obj.desc))
         self.writecode(indent, 'attrs.DisplayName = ua.LocalizedText("{}")'.format(obj.displayname))
         self.writecode(indent, 'attrs.IsAbstract = {}'.format(obj.abstract))
-        self.writecode(indent, 'node.Attributes = attrs')
+        self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
 
@@ -249,14 +249,14 @@ def create_standard_address_space_%s(server):
         self.writecode(indent, 'attrs = ua.VariableAttributes()')
         if obj.desc: self.writecode(indent, 'attrs.Description = ua.LocalizedText("{}")'.format(obj.desc))
         self.writecode(indent, 'attrs.DisplayName = ua.LocalizedText("{}")'.format(obj.displayname))
-        self.writecode(indent, 'attrs.Type = {}'.format(self.to_data_type(obj.datatype)))
+        self.writecode(indent, 'attrs.DataType = {}'.format(self.to_data_type(obj.datatype)))
         if obj.value and len(obj.value) == 1: self.writecode(indent, 'attrs.Value = ua.Variant({}, ua.VariantType.{})'.format(obj.value[0],obj.valuetype ))
-        if obj.rank: self.writecode(indent, 'attrs.Rank = {}'.format(obj.rank))
+        if obj.rank: self.writecode(indent, 'attrs.ValueRank = {}'.format(obj.rank))
         if obj.accesslevel: self.writecode(indent, 'attrs.AccessLevel = {}'.format(obj.accesslevel))
         if obj.useraccesslevel: self.writecode(indent, 'attrs.UserAccessLevel = {}'.format(obj.useraccesslevel))
         if obj.minsample: self.writecode(indent, 'attrs.MinimumSamplingInterval = {}'.format(obj.minsample))
-        if obj.dimensions: self.writecode(indent, 'attrs.Dimensions = {}'.format(self.to_vector(obj.dimensions)))
-        self.writecode(indent, 'node.Attributes = attrs')
+        if obj.dimensions: self.writecode(indent, 'attrs.ArrayDimensions = {}'.format(self.to_vector(obj.dimensions)))
+        self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
 
@@ -267,12 +267,12 @@ def create_standard_address_space_%s(server):
         self.writecode(indent, 'attrs = ua.VariableTypeAttributes()')
         if obj.desc: self.writecode(indent, 'attrs.Description = ua.LocalizedText("{}")'.format(obj.desc))
         self.writecode(indent, 'attrs.DisplayName = ua.LocalizedText("{}")'.format(obj.displayname))
-        self.writecode(indent, 'attrs.Type = {}'.format(self.to_data_type(obj.datatype)))
+        self.writecode(indent, 'attrs.DataType = {}'.format(self.to_data_type(obj.datatype)))
         if obj.value and len(obj.value) == 1: self.writecode(indent, 'attrs.Value = {}'.format(obj.value[0]))
-        if obj.rank: self.writecode(indent, 'attrs.Rank = {}'.format(obj.rank))
+        if obj.rank: self.writecode(indent, 'attrs.ValueRank = {}'.format(obj.rank))
         if obj.abstract: self.writecode(indent, 'attrs.IsAbstract = {}'.format(obj.abstract))
-        if obj.dimensions: self.writecode(indent, 'attrs.Dimensions = {}'.format(self.to_vector(obj.dimensions)))
-        self.writecode(indent, 'node.Attributes = attrs')
+        if obj.dimensions: self.writecode(indent, 'attrs.ArrayDimensions = {}'.format(self.to_vector(obj.dimensions)))
+        self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
 
@@ -288,7 +288,7 @@ def create_standard_address_space_%s(server):
         if obj. inversename: self.writecode(indent, 'attrs.InverseName = ua.LocalizedText("{}")'.format(obj.inversename))
         if obj.abstract: self.writecode(indent, 'attrs.IsAbstract = {}'.format(obj.abstract))
         if obj.symmetric: self.writecode(indent, 'attrs.Symmetric = {}'.format(obj.symmetric))
-        self.writecode(indent, 'node.Attributes = attrs')
+        self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
 
@@ -300,7 +300,7 @@ def create_standard_address_space_%s(server):
         if obj.desc: self.writecode(indent, u'attrs.Description = ua.LocalizedText("{}")'.format(obj.desc.encode('ascii', 'replace')))
         self.writecode(indent, 'attrs.DisplayName = ua.LocalizedText("{}")'.format(obj.displayname))
         if obj.abstract: self.writecode(indent, 'attrs.IsAbstract = {}'.format(obj.abstract))
-        self.writecode(indent, 'node.Attributes = attrs')
+        self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
 
@@ -313,7 +313,7 @@ def create_standard_address_space_%s(server):
             self.writecode(indent, 'ref.IsForward = true')
             self.writecode(indent, 'ref.ReferenceTypeId = {}'.format(self.to_ref_type(ref.reftype)))
             self.writecode(indent, 'ref.SourceNodeId = ua.NodeId.from_string("{}")'.format(obj.nodeid))
-            self.writecode(indent, 'ref.NodeClass = ua.NodeClass.DataType')
+            self.writecode(indent, 'ref.TargetNodeClass = ua.NodeClass.DataType')
             self.writecode(indent, 'ref.TargetNodeId = ua.NodeId.from_string("{}")'.format(ref.target))
             self.writecode(indent, "refs.append(ref)")
         self.writecode(indent, 'server.add_references(refs)')
