@@ -27,7 +27,7 @@ class BinaryServer(Thread):
     def run(self):
         logger.info("Starting server on %s:%s", self.hostname, self.port)
         socketserver.TCPServer.allow_reuse_address = True #get rid of address already in used warning
-        self.socket_server = socketserver.TCPServer((self.hostname, self.port), UAHandler)
+        self.socket_server = ThreadingTCPServer((self.hostname, self.port), UAHandler)
         self.socket_server.internal_server = self.iserver #allow handler to acces server properties
         self.socket_server.serve_forever()
 
@@ -52,7 +52,8 @@ class UAHandler(socketserver.BaseRequestHandler):
             logger.warn("Client has closed connection")
 
 
-
+class ThreadingTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    pass
 
 
 class UAProcessor(object):
