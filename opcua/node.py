@@ -124,7 +124,85 @@ class Node(object):
         results = self.server.add_nodes([node])
         results[0].StatusCode.check()
         return Node(self.server, nodeid)
+ 
+    def add_object(self, *args):
+        """
+        create a child node object
+        """
+        nodeid, qname = self._parse_add_args(*args)
+        return self._add_object(nodeid, qname)
+    
+    def _add_object(self, nodeid, qname):
+        node = ua.AddNodesItem()
+        node.RequestedNewNodeId = nodeid 
+        node.BrowseName = qname 
+        node.NodeClass = ua.NodeClass.Object
+        node.ParentNodeId = self.nodeid 
+        node.ReferenceTypeId = ua.NodeId.from_string("i=35")
+        node.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseObjectType)
+        attrs = ua.ObjectAttributes()
+        attrs.Description = ua.LocalizedText(qname.Name)
+        attrs.DisplayName = ua.LocalizedText(qname.Name)
+        attrs.EventNotifier = 0
+        node.NodeAttributes = attrs
+        results = self.server.add_nodes([node])
+        results[0].StatusCode.check()
+        return Node(self.server, nodeid)
+
+    def add_variable(self, *args):
+        """
+        create a child node variable
+        args are nodeid, browsename, value, [variant type]
+        or idx, name, value, [variant type]
+        """
+        nodeid, qname = self._parse_add_args(*args[:2])
+        val = args[2]
+        if type(val) is ua.Variant:
+            return self._add_variable(nodeid, qname, val)
+        else:
+            if len(args) > 3:
+                val = ua.Variant(val, args[3])
+            else:
+                #FIXME handle list and tuples!!!
+                tval = val
+                if type(val) in (list, tuple):
+                    if len(val) == 0:
+                        raise Exception("could not guess UA variable type")
+                    tval = val[0]
+                if type(tval) is str:
+                    val = ua.Variant(val, ua.VariantType.String)
+                elif type(tval) is float:
+                    val = ua.Variant(val, ua.VariantType.Double)
+                elif type(tval) is int:
+                    val = ua.Variant(val, ua.VariantType.Int64)
+                else:
+                    raise Exception("Could not guess UA variable type")
+            return self._add_variable(nodeid, qname, val)
+        
+    def _add_variable(self, nodeid, qname, val):
+        node = ua.AddNodesItem()
+        node.RequestedNewNodeId = nodeid 
+        node.BrowseName = qname 
+        node.NodeClass = ua.NodeClass.Variable
+        node.ParentNodeId = self.nodeid 
+        node.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
+        node.TypeDefinition =  ua.NodeId(ua.ObjectIds.BaseDataVariableType)
+        attrs = ua.VariableAttributes()
+        attrs.Description = ua.LocalizedText(qname.Name)
+        attrs.DisplayName = ua.LocalizedText(qname.Name)
+        attrs.DataType = self._vtype_to_uatype(val.VariantType)
+        attrs.Value = val
+        attrs.ValueRank = 0 
+        attrs.WriteMask = 0
+        attrs.UserWriteMask = 0
+        attrs.Historizing = 0
+        node.NodeAttributes = attrs
+        results = self.server.add_nodes([node])
+        results[0].StatusCode.check()
+        return Node(self.server, nodeid)
      
+    def _vtype_to_uatype(self, vtype):
+        return eval("ua.NodeId(ua.ObjectIds.{})".format(vtype.name))
 
     def _parse_add_args(self, *args):
         if type(args[0]) is ua.NodeId:

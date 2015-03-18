@@ -18,7 +18,11 @@ if __name__ == "__main__":
     print("Available loggers are: ", logging.Logger.manager.loggerDict.keys())
     try:
         root = server.get_root_node()
-        root.add_folder(2, "myfolder")
+        objects = server.get_objects_node()
+        myfolder = objects.add_folder(2, "myfolder")
+        myvar = myfolder.add_variable(2, "myvar", 6.7)
+        myvar = myfolder.add_variable(2, "myarrayvar", [6.7, 7.9])
+        myobj = myfolder.add_object(2, "myobj")
         embed()
     finally:
         server.stop()
