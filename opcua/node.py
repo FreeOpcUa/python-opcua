@@ -149,7 +149,11 @@ class Node(object):
         results[0].StatusCode.check()
         return Node(self.server, nodeid)
 
-    def add_variable(self, *args):
+    def add_property(self, *args):
+        return self.add_variable(*args, isproperty=True)
+
+
+    def add_variable(self, *args, isproperty=False):
         """
         create a child node variable
         args are nodeid, browsename, value, [variant type]
@@ -163,7 +167,6 @@ class Node(object):
             if len(args) > 3:
                 val = ua.Variant(val, args[3])
             else:
-                #FIXME handle list and tuples!!!
                 tval = val
                 if type(val) in (list, tuple):
                     if len(val) == 0:
@@ -177,16 +180,20 @@ class Node(object):
                     val = ua.Variant(val, ua.VariantType.Int64)
                 else:
                     raise Exception("Could not guess UA variable type")
-            return self._add_variable(nodeid, qname, val)
+            return self._add_variable(nodeid, qname, val, isproperty)
         
-    def _add_variable(self, nodeid, qname, val):
+    def _add_variable(self, nodeid, qname, val, isproperty=False):
         node = ua.AddNodesItem()
         node.RequestedNewNodeId = nodeid 
         node.BrowseName = qname 
         node.NodeClass = ua.NodeClass.Variable
         node.ParentNodeId = self.nodeid 
-        node.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
-        node.TypeDefinition =  ua.NodeId(ua.ObjectIds.BaseDataVariableType)
+        if isproperty:
+            node.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasProperty)
+            node.TypeDefinition =  ua.NodeId(ua.ObjectIds.PropertyType)
+        else:
+            node.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
+            node.TypeDefinition =  ua.NodeId(ua.ObjectIds.BaseDataVariableType)
         attrs = ua.VariableAttributes()
         attrs.Description = ua.LocalizedText(qname.Name)
         attrs.DisplayName = ua.LocalizedText(qname.Name)

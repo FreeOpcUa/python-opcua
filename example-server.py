@@ -21,8 +21,9 @@ if __name__ == "__main__":
         objects = server.get_objects_node()
         myfolder = objects.add_folder(2, "myfolder")
         myvar = myfolder.add_variable(2, "myvar", 6.7)
-        myvar = myfolder.add_variable(2, "myarrayvar", [6.7, 7.9])
         myobj = myfolder.add_object(2, "myobj")
+        myarrayvar = myobj.add_variable(2, "myarrayvar", [6.7, 7.9])
+        myprop = myobj.add_property(2, "myproperty", "I am a property")
         embed()
     finally:
         server.stop()

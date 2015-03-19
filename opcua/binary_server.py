@@ -28,10 +28,12 @@ class BinaryServer(Thread):
         logger.info("Starting server on %s:%s", self.hostname, self.port)
         socketserver.TCPServer.allow_reuse_address = True #get rid of address already in used warning
         self.socket_server = ThreadingTCPServer((self.hostname, self.port), UAHandler)
+        #self.socket_server.daemon_threads = True # this will force a shutdown of all threads, maybe too hard
         self.socket_server.internal_server = self.iserver #allow handler to acces server properties
         self.socket_server.serve_forever()
 
     def stop(self):
+        logger.warn("server shutdown request")
         self.socket_server.shutdown()
 
 
