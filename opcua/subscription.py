@@ -74,14 +74,18 @@ class Subscription(object):
         self._client_handle += 1
         mparams.ClientHandle = self._client_handle
         mparams.SamplingInterval = self.parameters.RequestedPublishingInterval
+        mparams.QueueSize = 1
+        mparams.DiscardOldest = True
 
         mir = ua.MonitoredItemCreateRequest() 
         mir.ItemToMonitor = rv
+        mir.MonitoringMode = ua.MonitoringMode.Reporting
         mir.RequestedParameters = mparams
 
         params = ua.CreateMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
         params.ItemsToCreate.append(mir)
+        params.TimestampsToReturn = ua.TimestampsToReturn.Neither
 
         results = self.server.create_monitored_items(params)
         result = results[0]

@@ -47,12 +47,12 @@ class BinaryClient(object):
         self._thread = Thread(target=self._run)
         self._thread.start()
 
-    def _send_request(self, request, callback=None):
+    def _send_request(self, request, callback=None, timeout=1000):
         #HACK to make sure we can convert our request to binary before increasing request counter etc ...
         request.to_binary()
         #END HACK
         with self._lock:
-            request.RequestHeader = self._create_request_header()
+            request.RequestHeader = self._create_request_header(timeout)
             hdr = ua.Header(ua.MessageType.SecureMessage, ua.ChunkType.Single, self._security_token.ChannelId)
             symhdr = self._create_sym_algo_header()
             seqhdr = self._create_sequence_header()
@@ -147,14 +147,14 @@ class BinaryClient(object):
             alle.append(data)
         alle.insert(0, hdr.to_binary())
         alle = b"".join(alle)
-        self._socket.send(alle)
+        self._socket.sendall(alle)
 
-    def _create_request_header(self):
+    def _create_request_header(self, timeout=1000):
         hdr = ua.RequestHeader()
         hdr.AuthenticationToken = self._authentication_token
         self._request_handle += 1
         hdr.RequestHandle = self._request_handle
-        hdr.TimeoutHint = 10000
+        hdr.TimeoutHint = timeout
         return hdr
 
     def _create_sym_algo_header(self):
@@ -177,6 +177,7 @@ class BinaryClient(object):
         """
         self.logger.info("opening connection")
         self._socket = socket.create_connection((host, port))
+        self._socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)#nodelay ncessary to avoid packing in one frame, some servers do not like it
         self.start()
 
     def disconnect_socket(self):
@@ -332,7 +333,7 @@ class BinaryClient(object):
             acks = []
         request = ua.PublishRequest()
         request.SubscriptionAcknowledgements = acks
-        self._send_request(request, self._call_publish_callback)
+        self._send_request(request, self._call_publish_callback, timeout=0)
 
     def _call_publish_callback(self, rcall):
         self.logger.info("call_publish_callback")

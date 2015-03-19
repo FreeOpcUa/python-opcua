@@ -209,7 +209,7 @@ class Client(object):
         params.RequestedPublishingInterval = period
         params.RequestedLifetimeCount = 3000
         params.RequestedMaxKeepAliveCount = 10000
-        params.MaxNotificationsPerPublish = 0
+        params.MaxNotificationsPerPublish = 4294967295
         params.PublishingEnabled = True
         params.Priority = 0
         return Subscription(self.bclient, params, handler)
