@@ -353,5 +353,14 @@ class BinaryClient(object):
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
+    def add_nodes(self, nodestoadd):
+        self.logger.info("add_nodes")
+        request = ua.AddNodesRequest()
+        request.Parameters.NodesToAdd = nodestoadd
+        data = self._send_request(request)
+        response = ua.AddNodesResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
+
 
 

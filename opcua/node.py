@@ -190,10 +190,10 @@ class Node(object):
         node.ParentNodeId = self.nodeid 
         if isproperty:
             node.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasProperty)
-            node.TypeDefinition =  ua.NodeId(ua.ObjectIds.PropertyType)
+            node.TypeDefinition = ua.NodeId(ua.ObjectIds.PropertyType)
         else:
             node.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
-            node.TypeDefinition =  ua.NodeId(ua.ObjectIds.BaseDataVariableType)
+            node.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseDataVariableType)
         attrs = ua.VariableAttributes()
         attrs.Description = ua.LocalizedText(qname.Name)
         attrs.DisplayName = ua.LocalizedText(qname.Name)

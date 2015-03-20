@@ -51,7 +51,7 @@ class UAHandler(socketserver.BaseRequestHandler):
         try:
             processor.loop()
         except ua.SocketClosedException as ex:
-            logger.warn("Client has closed connection")
+            logger.warn("Client has closed connection: %s", ex)
 
 
 class ThreadingTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
@@ -128,7 +128,6 @@ class UAProcessor(object):
 
         self.channel = self.iserver.open_secure_channel(request.Parameters, self.channel)
         #send response
-        hdr = ua.Header(ua.MessageType.SecureOpen, ua.ChunkType.Single, self.channel.SecurityToken.TokenId)
         response = ua.OpenSecureChannelResponse()
         response.Parameters = self.channel
         self.send_response(request.RequestHeader.RequestHandle, algohdr, seqhdr, response, ua.MessageType.SecureOpen)
@@ -145,13 +144,13 @@ class UAProcessor(object):
         elif header.MessageType == ua.MessageType.SecureMessage:
             algohdr = ua.SymmetricAlgorithmHeader.from_binary(body)
             seqhdr = ua.SequenceHeader.from_binary(body)
-            self.process_message(header, algohdr, seqhdr, body)
+            self.process_message(algohdr, seqhdr, body)
 
         else:
             self.logger.warn("Unsupported message type: %s", header.MessageType)
         return True
     
-    def process_message(self, hdr, algohdr, seqhdr, body):
+    def process_message(self, algohdr, seqhdr, body):
         typeid = ua.NodeId.from_binary(body)
         requesthdr = ua.RequestHeader.from_binary(body)
         if typeid == ua.NodeId(ua.ObjectIds.CreateSessionRequest_Encoding_DefaultBinary):
@@ -234,6 +233,19 @@ class UAProcessor(object):
             response.Results = paths
 
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.AddNodesRequest_Encoding_DefaultBinary):
+            self.logger.info("add nodes request")
+            params = ua.AddNodesParameters.from_binary(body) 
+            
+            results = self.iserver.add_nodes(params.NodesToAdd)
+
+            response = ua.AddNodesResponse()
+            response.Results = results
+
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+
 
 
         else:
