@@ -33,7 +33,7 @@ class BinaryServer(Thread):
         self.socket_server.serve_forever()
 
     def stop(self):
-        logger.warn("server shutdown request")
+        logger.warning("server shutdown request")
         self.socket_server.shutdown()
 
 
@@ -51,7 +51,7 @@ class UAHandler(socketserver.BaseRequestHandler):
         try:
             processor.loop()
         except ua.SocketClosedException as ex:
-            logger.warn("Client has closed connection: %s", ex)
+            logger.warning("Client has closed connection: %s", ex)
 
 
 class ThreadingTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
@@ -72,7 +72,7 @@ class UAProcessor(object):
         header = ua.Header.from_stream(self.socket)
         body = self.receive_body(header.body_size)
         if header.MessageType != ua.MessageType.Hello:
-            self.logger.warn("received a message which is not a hello, sending back an error message %s", header)
+            self.logger.warning("received a message which is not a hello, sending back an error message %s", header)
             hdr = ua.Header(ua.MessageType.Error, ua.ChunkType.Single)
             self.write_socket(hdr)
             return
@@ -88,7 +88,7 @@ class UAProcessor(object):
             if header is None:
                 return
             if header.MessageType == ua.MessageType.Error:
-                self.logger.warn("Received an error message type")
+                self.logger.warning("Received an error message type")
                 return
             body = self.receive_body(header.body_size)
             if not self.process_body(header, body):
@@ -138,7 +138,7 @@ class UAProcessor(object):
 
         elif header.MessageType == ua.MessageType.SecureClose:
             if not self.channel or header.ChannelId != self.channel.SecurityToken.ChannelId:
-                self.logger.warn("Request to close channel %s which was not issued, current channel is %s", header.ChannelId, self.channel)
+                self.logger.warning("Request to close channel %s which was not issued, current channel is %s", header.ChannelId, self.channel)
                 return False
 
         elif header.MessageType == ua.MessageType.SecureMessage:
@@ -147,7 +147,7 @@ class UAProcessor(object):
             self.process_message(algohdr, seqhdr, body)
 
         else:
-            self.logger.warn("Unsupported message type: %s", header.MessageType)
+            self.logger.warning("Unsupported message type: %s", header.MessageType)
         return True
     
     def process_message(self, algohdr, seqhdr, body):
@@ -249,7 +249,7 @@ class UAProcessor(object):
 
 
         else:
-            self.logger.warn("Uknown message received %s", typeid)
+            self.logger.warning("Uknown message received %s", typeid)
             sf = ua.ServiceFault()
             sf.ResponseHeader.ServiceResult = ua.StatusCode(ua.StatusCodes.BadNotImplemented)
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, sf)

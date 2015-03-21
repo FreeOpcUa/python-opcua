@@ -117,7 +117,7 @@ class InternalServer(object):
         return self.aspace.read(params)
 
     def write(self, params):
-        return self.aspace.read(params)
+        return self.aspace.write(params)
 
     def browse(self, params):
         return self.aspace.browse(params)

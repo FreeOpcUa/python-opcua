@@ -241,6 +241,8 @@ class NodeId(object):
         srv = None
         nsu = None
         for el in l:
+            if not el:
+                continue
             k, v = el.split("=")
             if k == "ns":
                 namespace = int(v)
@@ -260,7 +262,7 @@ class NodeId(object):
                 srv = v
             elif k == "nsu":
                 nsu = v
-        if not identifier:
+        if identifier is None:
             raise Exception("Could not parse nodeid string: " + string)
         nodeid = NodeId(identifier, namespace, ntype)
         nodeid.NamespaceUri = nsu
@@ -271,7 +273,7 @@ class NodeId(object):
     def to_string(self):
         string = ""
         if self.NamespaceIndex != 0:
-            string += "ns={}".format(self.NamespaceIndex)
+            string += "ns={};".format(self.NamespaceIndex)
         ntype = None
         if self.NodeIdType == NodeIdType.Numeric:
             ntype = "i"
@@ -432,8 +434,13 @@ class DateTime(object):
         return d
 
     @staticmethod
-    def from_ctime(data):
+    def from_time_t(data):
         return DateTime.from_datetime(datetime.fromtimestamp(data))
+    
+    def to_time_t(self):
+        epoch = datetime.utcfromtimestamp(0)
+        delta = self.to_datetime() - epoch
+        return delta.total_seconds()
 
     def __str__(self):
         return "Datetime({})".format(self.to_datetime().isoformat())
@@ -475,20 +482,37 @@ class Variant(object):
         self.Encoding = 0
         self.Value = value
         if varianttype is None:
-            if self.Value is None:
-                self.VariantType = VariantType.Null
-            elif type(self.Value) == float:
-                self.VariantType = VariantType.Double
-            elif type(self.Value) == int:
-                self.VariantType = VariantType.Int64
-            elif type(self.Value) == str:
-                self.VariantType = VariantType.String
-            elif type(self.Value) == bytes:
-                self.VariantType = VariantType.ByteString
+            if type(self.Value) in (list, tuple):
+                if len(self.Value) == 0:
+                    raise Exception("could not guess UA variable type")
+                self.VariantType = self._guess_type(self.Value[0])
             else:
-                raise Exception("Could not guess variant type, specify type")
+                self.VariantType = self._guess_type(self.Value)
         else:
             self.VariantType = varianttype
+        #special case for python datetime
+        if type(self.Value) is datetime:
+            self.Value = DateTime.from_datetime(self.Value)
+        #FIXME: finish
+        #if type(self.Value) in (list, tuple) :
+            #self.Value = [DateTime.from_datetime(i) for i in self.Value]
+
+    def _guess_type(self, val):
+        if val is None:
+            return VariantType.Null
+        elif type(val) == float:
+            return VariantType.Double
+        elif type(val) == int:
+            return VariantType.Int64
+        elif type(val) == str:
+            return VariantType.String
+        elif type(val) == bytes:
+            return VariantType.ByteString
+        elif type(val) == datetime:
+            return VariantType.DateTime
+        else:
+            raise Exception("Could not guess variant type, specify type")
+
 
     def __str__(self):
         return "Variant(val:{},type:{})".format(self.Value, self.VariantType)

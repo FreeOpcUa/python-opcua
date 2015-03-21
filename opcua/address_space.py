@@ -7,7 +7,7 @@ class AttributeValue(object):
     def __init__(self, value):
         self.value = value
         self.value_callback = None 
-        self.data_change_callback = None 
+        self.datachange_callback = None 
 
     def __str__(self):
         return "AttributeValue({})".format(self.value)
@@ -41,7 +41,7 @@ class AddressSpace(object):
             result = ua.AddNodesResult()
 
             if item.RequestedNewNodeId in self._nodes:
-                self.logger.warn("AddNodeItem: node already exists")
+                self.logger.warning("AddNodeItem: node already exists")
                 result.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdExists)
                 return result
             nodedata = NodeData(item.RequestedNewNodeId)
@@ -54,10 +54,10 @@ class AddressSpace(object):
             
             #add parent
             if item.ParentNodeId == ua.NodeId():
-                #self.logger.warn("add_node: creating node %s without parent", item.RequestedNewNodeId) 
+                #self.logger.warning("add_node: creating node %s without parent", item.RequestedNewNodeId) 
                 pass
             elif not item.ParentNodeId in self._nodes:
-                #self.logger.warn("add_node: while adding node %s, requested parent node %s does not exists", item.RequestedNewNodeId, item.ParentNodeId) 
+                #self.logger.warning("add_node: while adding node %s, requested parent node %s does not exists", item.RequestedNewNodeId, item.ParentNodeId) 
                 result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
                 return result
             else:
@@ -205,7 +205,7 @@ class AddressSpace(object):
     def write(self, params):
         self.logger.debug("write %s", params)
         res = []
-        for writevalue in params:
+        for writevalue in params.NodesToWrite:
             res.append(self.set_attribute_value(writevalue.NodeId, writevalue.AttributeId, writevalue.Value))
         return res
 
@@ -300,7 +300,7 @@ class AddressSpace(object):
                 #FIXME: here we should check other arguments!!
                 if ref.BrowseName == el.TargetName:
                     return ref.NodeId
-            self.logger.warn("element %s was not found in node %s", el, nodeid)
+            self.logger.warning("element %s was not found in node %s", el, nodeid)
             return None
             
 

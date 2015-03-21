@@ -19,6 +19,10 @@ class Node(object):
             self.nodeid = ua.NodeId.from_string(nodeid)
         else:
             raise Exception("argument to node must be a NodeId object or a string defining a nodeid found {} of type {}".format(nodeid, type(nodeid)))
+    def __eq__(self, other):
+        if isinstance(other, Node) and self.nodeid == other.nodeid:
+            return True
+        return False
 
     def __str__(self):
         return "Node({})".format(self.nodeid)
@@ -49,7 +53,9 @@ class Node(object):
         attr.NodeId = self.nodeid
         attr.AttributeId = attributeid
         attr.Value = datavalue
-        result = self.server.write([attr])
+        params = ua.WriteParameters()
+        params.NodesToWrite = [attr]
+        result = self.server.write(params)
         result[0].check()
 
     def get_attribute(self, attr):
@@ -81,6 +87,8 @@ class Node(object):
         return nodes
 
     def get_child(self, path):
+        if type(path) not in (list, tuple):
+            path = [path]
         rpath = ua.RelativePath()
         for item in path:
             el = ua.RelativePathElement()
@@ -90,6 +98,7 @@ class Node(object):
             if type(item) == ua.QualifiedName:
                 el.TargetName = item
             else:
+                print(item, type(item))
                 el.TargetName = ua.QualifiedName.from_string(item)
             rpath.Elements.append(el)
         bpath = ua.BrowsePath()
@@ -167,19 +176,7 @@ class Node(object):
             if len(args) > 3:
                 val = ua.Variant(val, args[3])
             else:
-                tval = val
-                if type(val) in (list, tuple):
-                    if len(val) == 0:
-                        raise Exception("could not guess UA variable type")
-                    tval = val[0]
-                if type(tval) is str:
-                    val = ua.Variant(val, ua.VariantType.String)
-                elif type(tval) is float:
-                    val = ua.Variant(val, ua.VariantType.Double)
-                elif type(tval) is int:
-                    val = ua.Variant(val, ua.VariantType.Int64)
-                else:
-                    raise Exception("Could not guess UA variable type")
+                val = ua.Variant(val)
             return self._add_variable(nodeid, qname, val, isproperty)
         
     def _add_variable(self, nodeid, qname, val, isproperty=False):

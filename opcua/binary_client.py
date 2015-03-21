@@ -70,7 +70,7 @@ class BinaryClient(object):
         data = data.copy(50)#FIXME check max length nodeid + responseheader
         typeid = ua.NodeId.from_binary(data)
         if typeid == ua.FourByteNodeId(ua.ObjectIds.ServiceFault_Encoding_DefaultBinary):
-            self.logger.warn("ServiceFault from server received %s", context)
+            self.logger.warning("ServiceFault from server received %s", context)
             hdr = ua.ResponseHeader.from_binary(data)
             hdr.ServiceResult.check()
 
@@ -105,9 +105,9 @@ class BinaryClient(object):
             return
         body = self._receive_body(header.body_size)
         if header.MessageType == ua.MessageType.Error:
-            self.logger.warn("Received an error message type")
+            self.logger.warning("Received an error message type")
             err = ua.ErrorMessage.from_binary(body)
-            self.logger.warn(err)
+            self.logger.warning(err)
             return None
         if header.MessageType == ua.MessageType.Acknowledge:
             self._call_callback(0, body)
@@ -119,7 +119,7 @@ class BinaryClient(object):
             algohdr = ua.SymmetricAlgorithmHeader.from_binary(body)
             self.logger.info(algohdr)
         else:
-            self.logger.warn("Unsupported message type: %s", header.MessageType)
+            self.logger.warning("Unsupported message type: %s", header.MessageType)
             return
         seqhdr = ua.SequenceHeader.from_binary(body)
         self.logger.debug(seqhdr)
@@ -263,10 +263,10 @@ class BinaryClient(object):
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
-    def write(self, nodestowrite):
+    def write(self, params):
         self.logger.info("read")
         request = ua.WriteRequest()
-        request.Parameters.NodesToWrite = nodestowrite
+        request.Parameters = params
         data = self._send_request(request)
         response = ua.WriteResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
@@ -341,7 +341,7 @@ class BinaryClient(object):
         try:
             self._publishcallbacks[response.Parameters.SubscriptionId](response.Parameters)
         except Exception as ex: #we call client code, catch everything!
-            self.logger.warn("exception while calling user callback: %s", ex)
+            self.logger.warning("exception while calling user callback: %s", ex)
 
 
     def create_monitored_items(self, params):
