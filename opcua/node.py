@@ -158,11 +158,27 @@ class Node(object):
         results[0].StatusCode.check()
         return Node(self.server, nodeid)
 
+    #def add_property(self, *args):
+        #return self.add_variable(*args, isproperty=True)
+
     def add_property(self, *args):
-        return self.add_variable(*args, isproperty=True)
-
-
-    def add_variable(self, *args, isproperty=False):
+        """
+        create a child node property
+        args are nodeid, browsename, value, [variant type]
+        or idx, name, value, [variant type]
+        """
+        nodeid, qname = self._parse_add_args(*args[:2])
+        val = args[2]
+        if type(val) is ua.Variant:
+            return self._add_variable(nodeid, qname, val)
+        else:
+            if len(args) > 3:
+                val = ua.Variant(val, args[3])
+            else:
+                val = ua.Variant(val)
+            return self._add_variable(nodeid, qname, val, isproperty=True)
+        
+    def add_variable(self, *args):
         """
         create a child node variable
         args are nodeid, browsename, value, [variant type]
@@ -177,7 +193,7 @@ class Node(object):
                 val = ua.Variant(val, args[3])
             else:
                 val = ua.Variant(val)
-            return self._add_variable(nodeid, qname, val, isproperty)
+            return self._add_variable(nodeid, qname, val, isproperty=False)
         
     def _add_variable(self, nodeid, qname, val, isproperty=False):
         node = ua.AddNodesItem()
