@@ -2,7 +2,9 @@
 implement ua datatypes
 """
 from enum import Enum
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, tzinfo
+from calendar import timegm
+
 import uuid
 import struct 
 
@@ -11,18 +13,38 @@ import opcua.status_code as status_code
 #types that will packed and unpacked directly using struct (string, bytes and datetime are handles as special cases
 UaTypes = ("Boolean", "SByte", "Byte", "Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double")
 
+
+EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
+HUNDREDS_OF_NANOSECONDS = 10000000
+
+class UTC(tzinfo):
+    """UTC"""
+    def utcoffset(self, dt):
+        return timedelta(0)
+
+    def tzname(self, dt):
+        return "UTC"
+
+    def dst(self, dt):
+        return timedelta(0)
+
+
+#methods copied from  David Buxton <david@gasmark6.com> sample code
 def datetime_to_win_epoch(dt):
-    epch = (dt - datetime(1601, 1, 1, 0, 0)).total_seconds() * 10 ** 7
-    return int(epch)
+    if (dt.tzinfo is None) or (dt.tzinfo.utcoffset(dt) is None):
+        dt = dt.replace(tzinfo=UTC())
+    ft = EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
+    return ft + (dt.microsecond * 10)
 
 def win_epoch_to_datetime(epch):
-    return datetime(1601, 1, 1) + timedelta(microseconds=epch/10.0)
+    (s, ns100) = divmod(epch - EPOCH_AS_FILETIME, HUNDREDS_OF_NANOSECONDS)
+    dt = datetime.utcfromtimestamp(s)
+    dt = dt.replace(microsecond=(ns100 // 10))
+    return dt
+
+
 
 def uatype_to_fmt(uatype):
-    #if uatype == "String":
-        #return "s"
-    #elif uatype == "CharArray":
-        #return "s"
     if uatype == "Char":
         return "B"
     elif uatype == "SByte":

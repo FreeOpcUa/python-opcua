@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 import io
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 import unittest
 from threading import Thread, Event
 try:
@@ -93,10 +93,18 @@ class Unit(unittest.TestCase):
         qn = ua.QualifiedName("Root", 0)
         v = Variant
 
+    def test_datetime(self):
+        now = datetime.now()
+        epch = ua.datetime_to_win_epoch(now)
+        dt = ua.win_epoch_to_datetime(epch)
+        self.assertEqual(now, dt)
 
-
-
-
+        epch = 128930364000001000
+        dt = ua.win_epoch_to_datetime(epch)
+        print("dt", dt)
+        epch2 = ua.datetime_to_win_epoch(dt)
+        print("epch2", epch2)
+        self.assertEqual(epch, epch2)
 
     def test_equal_nodeid(self):
         nid1 = ua.NodeId(999, 2)
@@ -145,7 +153,6 @@ class Unit(unittest.TestCase):
         self.assertEqual(dv.Value, ua.Variant('abc'))
         now = datetime.now() 
         dv.source_timestamp = now
-        #self.assertEqual(int(dv.source_timestamp.to_time_t()), tnow)
 
     def test_variant(self):
         dv = ua.Variant(True, ua.VariantType.Boolean)
@@ -156,7 +163,7 @@ class Unit(unittest.TestCase):
         self.assertEqual(v.Value, now)
         self.assertEqual(v.VariantType, ua.VariantType.DateTime)
         v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
-        #self.assertEqual(v.Value, v2.Value)
+        self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
 
     def test_variant_array(self):
@@ -172,7 +179,7 @@ class Unit(unittest.TestCase):
         self.assertEqual(v.Value[0], now)
         self.assertEqual(v.VariantType, ua.VariantType.DateTime)
         v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
-        #self.assertEqual(v.Value, v2.Value)
+        self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
 
 
@@ -268,10 +275,9 @@ class CommonTests(object):
     def test_datetime_read(self):
         time_node = self.opc.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
         dt = time_node.get_value()
-        #pydt = dt.to_datetime()
-        #utcnow = datetime.datetime.utcnow()
-        #delta = utcnow - pydt
-        #self.assertTrue(delta < datetime.timedelta(seconds=1))
+        utcnow = datetime.utcnow()
+        delta = utcnow - dt
+        self.assertTrue(delta < timedelta(seconds=1))
 
     def test_datetime_write(self):
         time_node = self.opc.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
@@ -279,7 +285,7 @@ class CommonTests(object):
         objects = self.opc.get_objects_node()
         v1 = objects.add_variable(4, "test_datetime", now)
         tid = v1.get_value()
-        #self.assertEqual(now, tid.to_datetime()) rounding error!!
+        self.assertEqual(now, tid) 
 
     def test_add_numeric_variable(self):
         objects = self.opc.get_objects_node()
