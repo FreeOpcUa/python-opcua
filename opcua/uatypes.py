@@ -8,8 +8,15 @@ import struct
 
 import opcua.status_code as status_code
 
-#UaTypes = ("Boolean", "SByte", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double", "String", "DateTime", "Guid", "ByteString")
-UaTypes = ("Boolean", "SByte", "Byte", "Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double") #, "String", "DateTime", "Guid", "ByteString")
+#types that will packed and unpacked directly using struct (string, bytes and datetime are handles as special cases
+UaTypes = ("Boolean", "SByte", "Byte", "Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double")
+
+def datetime_to_win_epoch(dt):
+    epch = (dt - datetime(1601, 1, 1, 0, 0)).total_seconds() * 10 ** 7
+    return int(epch)
+
+def win_epoch_to_datetime(epch):
+    return datetime(1601, 1, 1) + timedelta(microseconds=epch/10.0)
 
 def uatype_to_fmt(uatype):
     #if uatype == "String":
@@ -65,6 +72,9 @@ def pack_uatype(uatype, value):
         return pack_string(value)
     elif uatype in ("CharArray", "ByteString"):
         return pack_bytes(value)
+    elif uatype == "DateTime":
+        epch = datetime_to_win_epoch(value)
+        return struct.pack('<q', epch)
     elif uatype in UaTypes:
         fmt = '<' + uatype_to_fmt(uatype)
         return struct.pack(fmt, value)
@@ -76,6 +86,9 @@ def unpack_uatype(uatype, data):
         return unpack_string(data)
     elif uatype in ("CharArray", "ByteString"):
         return unpack_bytes(data)
+    elif uatype == "DateTime":
+        epch = struct.unpack('<q', data.read(8))[0]
+        return win_epoch_to_datetime(epch)
     elif uatype in UaTypes:
         fmt = '<' + uatype_to_fmt(uatype)
         size = struct.calcsize(fmt)
@@ -398,20 +411,14 @@ class QualifiedName(object):
         return 'QualifiedName({}:{})'.format(self.NamespaceIndex, self.Name)
     
     __repr__ = __str__
- 
+
+'''
 class DateTime(object):
     def __init__(self, data=None):
         if data is None:
-            self.data = self._to1601(datetime.now()) 
+            self.data = datetime_to_win_epoch(datetime.now()) 
         else:
             self.data = data
-
-    def _to1601(self, dt):
-        return (dt - datetime(1601, 1, 1, 0, 0)).total_seconds() * 10 ** 7
-
-    def to_datetime(self):
-        us = self.data / 10.0
-        return datetime(1601, 1, 1) + timedelta(microseconds=us)
 
     @staticmethod
     def now():
@@ -420,7 +427,7 @@ class DateTime(object):
     @staticmethod
     def from_datetime(pydt):
         dt = DateTime()
-        dt.data = dt._to1601(pydt) 
+        dt.data = datetime_to_win_epoch(pydt) 
         return dt
 
     def to_binary(self):
@@ -439,12 +446,14 @@ class DateTime(object):
     
     def to_time_t(self):
         epoch = datetime.utcfromtimestamp(0)
-        delta = self.to_datetime() - epoch
+        delta = self.win_epoch_to_datetime(self.data)() - epoch
         return delta.total_seconds()
 
     def __str__(self):
-        return "Datetime({})".format(self.to_datetime().isoformat())
+        return "Datetime({})".format(win_epoch_to_datetime(self.data).isoformat())
     __repr__ = __str__
+'''
+
 
 class VariantType(Enum):
     '''
@@ -490,12 +499,11 @@ class Variant(object):
                 self.VariantType = self._guess_type(self.Value)
         else:
             self.VariantType = varianttype
-        #special case for python datetime
-        if type(self.Value) is datetime:
-            self.Value = DateTime.from_datetime(self.Value)
-        #FIXME: finish
-        #if type(self.Value) in (list, tuple) :
-            #self.Value = [DateTime.from_datetime(i) for i in self.Value]
+
+    def __eq__(self, other):
+        if isinstance(other, Variant) and self.VariantType == other.VariantType and self.Value == other.Value:
+            return True
+        return False
 
     def _guess_type(self, val):
         if val is None:
@@ -511,8 +519,7 @@ class Variant(object):
         elif type(val) == datetime:
             return VariantType.DateTime
         else:
-            raise Exception("Could not guess variant type, specify type")
-
+            raise Exception("Could not guess UA type of {} with type {}, specify UA type".format(val, type(val)))
 
     def __str__(self):
         return "Variant(val:{},type:{})".format(self.Value, self.VariantType)
@@ -552,14 +559,13 @@ class DataValue(object):
     '''
     def __init__(self, variant=None):
         self.Encoding = 0
-        if variant is None:
-            self.Value = Variant()
-        else:
-            self.Value = variant
+        if not type(variant) is Variant:
+            variant = Variant(variant)
+        self.Value = variant
         self.StatusCode = StatusCode()
-        self.SourceTimestamp = DateTime()
+        self.SourceTimestamp = datetime.now()#DateTime()
         self.SourcePicoseconds = 0
-        self.ServerTimestamp = DateTime()
+        self.ServerTimestamp = datetime.now()#DateTime()
         self.ServerPicoseconds = 0
     
     def to_binary(self):
@@ -576,9 +582,9 @@ class DataValue(object):
         if self.StatusCode: 
             packet.append(self.StatusCode.to_binary())
         if self.SourceTimestamp: 
-            packet.append(self.SourceTimestamp.to_binary())
+            packet.append(pack_uatype('DateTime', self.SourceTimestamp))#self.SourceTimestamp.to_binary())
         if self.ServerTimestamp: 
-            packet.append(self.ServerTimestamp.to_binary())
+            packet.append(pack_uatype('DateTime', self.ServerTimestamp))#self.ServerTimestamp.to_binary())
         if self.SourcePicoseconds: 
             packet.append(pack_uatype('UInt16', self.SourcePicoseconds))
         if self.ServerPicoseconds: 
@@ -594,9 +600,9 @@ class DataValue(object):
         if obj.Encoding & (1 << 1):
             obj.StatusCode = StatusCode.from_binary(data)
         if obj.Encoding & (1 << 2):
-            obj.SourceTimestamp = DateTime.from_binary(data)
+            obj.SourceTimestamp = unpack_uatype('DateTime', data)#DateTime.from_binary(data)
         if obj.Encoding & (1 << 3):
-            obj.ServerTimestamp = DateTime.from_binary(data)
+            obj.ServerTimestamp = unpack_uatype('DateTime', data)#DateTime.from_binary(data)
         if obj.Encoding & (1 << 4):
             obj.SourcePicoseconds = unpack_uatype('UInt16', data)
         if obj.Encoding & (1 << 5):

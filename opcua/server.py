@@ -57,11 +57,13 @@ class Server(object):
         self.name = name
 
     def start(self):
+        self.iserver.start()
         self._set_endpoints()
         self.bserver = BinaryServer(self.iserver, self.endpoint.hostname, self.endpoint.port)
         self.bserver.start()
 
     def stop(self):
+        self.iserver.stop()
         self.bserver.stop()
 
 

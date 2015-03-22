@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 import io
 import sys
-import datetime
+from datetime import datetime
 import unittest
 from threading import Thread, Event
 try:
@@ -84,14 +84,6 @@ class Unit(unittest.TestCase):
         d = obj.to_binary()
         print(d)
     
-    def test_datetime(self):
-        dt = ua.DateTime()
-        print(dt)
-        n = ua.DateTime.now()
-        print(n)
-        d = n.to_binary()
-        self.assertEqual(len(d), 8)
-
     def test_qualified_name(self):
         qn = ua.QualifiedName("Root", 0)
         print(qn)
@@ -147,35 +139,42 @@ class Unit(unittest.TestCase):
     
     def test_datavalue(self):
         dv = ua.DataValue(123)
-        self.assertEqual(dv.Value, 123)
+        self.assertEqual(dv.Value, ua.Variant(123))
+        self.assertEqual(type(dv.Value), ua.Variant)
         dv = ua.DataValue('abc')
-        self.assertEqual(dv.Value, 'abc')
-        #tnow = int(time.time())
-        #dv.source_timestamp = ua.DateTime.from_time_t(tnow)
+        self.assertEqual(dv.Value, ua.Variant('abc'))
+        now = datetime.now() 
+        dv.source_timestamp = now
         #self.assertEqual(int(dv.source_timestamp.to_time_t()), tnow)
+
     def test_variant(self):
         dv = ua.Variant(True, ua.VariantType.Boolean)
         self.assertEqual(dv.Value, True)
         self.assertEqual(type(dv.Value), bool)
+        now = datetime.now()
+        v = ua.Variant(now)
+        self.assertEqual(v.Value, now)
+        self.assertEqual(v.VariantType, ua.VariantType.DateTime)
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        #self.assertEqual(v.Value, v2.Value)
+        self.assertEqual(v.VariantType, v2.VariantType)
 
-"""
-    def test_datetime(self):
-        tnow1 = int(time.time())
-        tnow = int((datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds())
-        self.assertEqual(tnow, tnow1) #if this one fails this is a system error, not freopcua
+    def test_variant_array(self):
+        v = ua.Variant([1,2,3,4,5])
+        self.assertEqual(v.Value[1], 2)
+        #self.assertEqual(v.VarianType, ua.VariantType.Int64) # we do not care, we should aonly test for sutff that matter
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        self.assertEqual(v.Value, v2.Value)
+        self.assertEqual(v.VariantType, v2.VariantType)
 
-        dt = ua.DateTime.from_time_t(tnow)
-        self.assertEqual(tnow, dt.to_time_t())
+        now = datetime.now()
+        v = ua.Variant([now])
+        self.assertEqual(v.Value[0], now)
+        self.assertEqual(v.VariantType, ua.VariantType.DateTime)
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        #self.assertEqual(v.Value, v2.Value)
+        self.assertEqual(v.VariantType, v2.VariantType)
 
-        pydt = dt.to_datetime()
-        self.assertEqual(tnow, int((pydt - datetime.datetime(1970,1,1)).total_seconds()))
-
-        dt2 = ua.DateTime(pydt)
-        #self.assertEqual(dt2, dt) #FIXME: not implemented
-        pydt2 = dt.to_datetime()
-        self.assertEqual(pydt, pydt2)
-
-"""
 
 class CommonTests(object):
     '''
@@ -276,7 +275,7 @@ class CommonTests(object):
 
     def test_datetime_write(self):
         time_node = self.opc.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
-        now = datetime.datetime.now()
+        now = datetime.now()
         objects = self.opc.get_objects_node()
         v1 = objects.add_variable(4, "test_datetime", now)
         tid = v1.get_value()

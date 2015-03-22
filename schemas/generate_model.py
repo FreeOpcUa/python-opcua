@@ -77,7 +77,7 @@ class Field(object):
     __repr__ = __str__
 
     def is_native_type(self):
-        if self.uatype in ("Char", "SByte", "Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Boolean", "Double", "Float", "Byte", "String", "CharArray", "ByteString"):
+        if self.uatype in ("Char", "SByte", "Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Boolean", "Double", "Float", "Byte", "String", "CharArray", "ByteString", "DateTime"):
             return True
         return False
 

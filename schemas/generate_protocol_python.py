@@ -40,6 +40,8 @@ class CodeGenerator(object):
         self.write("Autogenerate code from xml spec")
         self.write("'''")
         self.write("")
+        self.write("from datetime import datetime")
+        self.write("")
         self.write("from opcua.uatypes import *")
         self.write("from opcua.object_ids import ObjectIds")
         self.write("")
@@ -215,6 +217,8 @@ class CodeGenerator(object):
             return "b''"
         elif field.uatype in ("Boolean"):
             return "True"
+        elif field.uatype in ("DateTime"):
+            return "datetime.now()" 
         elif field.uatype in ("Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Double", "Float", "Byte"):
             return 0
         else:

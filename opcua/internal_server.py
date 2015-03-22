@@ -1,12 +1,14 @@
 """
 Internal server to be used on server side
 """
+from datetime import datetime
 import uuid
 import logging
-from threading import RLock
+from threading import RLock, Timer
 
 from opcua import ua
 from opcua import utils
+from opcua import Node
 from opcua.address_space import AddressSpace
 from opcua.standard_address_space_part3 import create_standard_address_space_Part3
 from opcua.standard_address_space_part4 import create_standard_address_space_Part4
@@ -48,6 +50,25 @@ class InternalServer(object):
         create_standard_address_space_Part13(self.aspace)
         self.channels = {}
         self._lock = RLock()
+        #set some node values expected by some clients
+        self.current_time_node = Node(self, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
+        self._stopev = False
+
+    def start(self): 
+        Node(self, ua.NodeId(ua.ObjectIds.Server_ServerStatus_State)).set_value(0)
+        Node(self, ua.NodeId(ua.ObjectIds.Server_ServerStatus_StartTime)).set_value(datetime.now())
+        # set time every seconds, maybe we should disable it for performance reason??
+        self._set_current_time()
+
+    def stop(self):
+        self._stopev = True
+
+    def _set_current_time(self):
+        if self._stopev:
+            return
+        self.current_time_node.set_value(datetime.now())
+        self._timer = Timer(1, self._set_current_time)
+        self._timer.start()
 
     def open_secure_channel(self, params, currentchannel=None):
         self.logger.info("open secure channel")
@@ -61,7 +82,7 @@ class InternalServer(object):
             else:
                 channel = self.channels[currentchannel.SecurityToken.ChannelId]
             channel.SecurityToken.TokenId += 1
-            channel.SecurityToken.CreatedAt = ua.DateTime()
+            channel.SecurityToken.CreatedAt = datetime.now()
             channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
             channel.ServerNonce = uuid.uuid4().bytes + uuid.uuid4().bytes
             self.channels[channel.SecurityToken.ChannelId] = channel

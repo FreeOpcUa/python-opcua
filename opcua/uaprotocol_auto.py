@@ -2,6 +2,8 @@
 Autogenerate code from xml spec
 '''
 
+from datetime import datetime
+
 from opcua.uatypes import *
 from opcua.object_ids import ObjectIds
 
@@ -615,7 +617,7 @@ class RequestHeader(FrozenClass):
     '''
     def __init__(self):
         self.AuthenticationToken = NodeId()
-        self.Timestamp = DateTime()
+        self.Timestamp = datetime.now()
         self.RequestHandle = 0
         self.ReturnDiagnostics = 0
         self.AuditEntryId = ''
@@ -626,7 +628,7 @@ class RequestHeader(FrozenClass):
     def to_binary(self):
         packet = []
         packet.append(self.AuthenticationToken.to_binary())
-        packet.append(self.Timestamp.to_binary())
+        packet.append(pack_uatype('DateTime', self.Timestamp))
         packet.append(pack_uatype('UInt32', self.RequestHandle))
         packet.append(pack_uatype('UInt32', self.ReturnDiagnostics))
         packet.append(pack_uatype('String', self.AuditEntryId))
@@ -638,7 +640,7 @@ class RequestHeader(FrozenClass):
     def from_binary(data):
         obj = RequestHeader()
         obj.AuthenticationToken = NodeId.from_binary(data)
-        obj.Timestamp = DateTime.from_binary(data)
+        obj.Timestamp = unpack_uatype('DateTime', data)
         obj.RequestHandle = unpack_uatype('UInt32', data)
         obj.ReturnDiagnostics = unpack_uatype('UInt32', data)
         obj.AuditEntryId = unpack_uatype('String', data)
@@ -662,7 +664,7 @@ class ResponseHeader(FrozenClass):
     The header passed with every server response.
     '''
     def __init__(self):
-        self.Timestamp = DateTime()
+        self.Timestamp = datetime.now()
         self.RequestHandle = 0
         self.ServiceResult = StatusCode()
         self.ServiceDiagnostics = DiagnosticInfo()
@@ -672,7 +674,7 @@ class ResponseHeader(FrozenClass):
     
     def to_binary(self):
         packet = []
-        packet.append(self.Timestamp.to_binary())
+        packet.append(pack_uatype('DateTime', self.Timestamp))
         packet.append(pack_uatype('UInt32', self.RequestHandle))
         packet.append(self.ServiceResult.to_binary())
         packet.append(self.ServiceDiagnostics.to_binary())
@@ -685,7 +687,7 @@ class ResponseHeader(FrozenClass):
     @staticmethod
     def from_binary(data):
         obj = ResponseHeader()
-        obj.Timestamp = DateTime.from_binary(data)
+        obj.Timestamp = unpack_uatype('DateTime', data)
         obj.RequestHandle = unpack_uatype('UInt32', data)
         obj.ServiceResult = StatusCode.from_binary(data)
         obj.ServiceDiagnostics = DiagnosticInfo.from_binary(data)
@@ -1208,7 +1210,7 @@ class ChannelSecurityToken(FrozenClass):
     def __init__(self):
         self.ChannelId = 0
         self.TokenId = 0
-        self.CreatedAt = DateTime()
+        self.CreatedAt = datetime.now()
         self.RevisedLifetime = 0
         self._freeze()
     
@@ -1216,7 +1218,7 @@ class ChannelSecurityToken(FrozenClass):
         packet = []
         packet.append(pack_uatype('UInt32', self.ChannelId))
         packet.append(pack_uatype('UInt32', self.TokenId))
-        packet.append(self.CreatedAt.to_binary())
+        packet.append(pack_uatype('DateTime', self.CreatedAt))
         packet.append(pack_uatype('UInt32', self.RevisedLifetime))
         return b''.join(packet)
         
@@ -1225,7 +1227,7 @@ class ChannelSecurityToken(FrozenClass):
         obj = ChannelSecurityToken()
         obj.ChannelId = unpack_uatype('UInt32', data)
         obj.TokenId = unpack_uatype('UInt32', data)
-        obj.CreatedAt = DateTime.from_binary(data)
+        obj.CreatedAt = unpack_uatype('DateTime', data)
         obj.RevisedLifetime = unpack_uatype('UInt32', data)
         return obj
     
@@ -3435,14 +3437,14 @@ class ViewDescription(FrozenClass):
     '''
     def __init__(self):
         self.ViewId = NodeId()
-        self.Timestamp = DateTime()
+        self.Timestamp = datetime.now()
         self.ViewVersion = 0
         self._freeze()
     
     def to_binary(self):
         packet = []
         packet.append(self.ViewId.to_binary())
-        packet.append(self.Timestamp.to_binary())
+        packet.append(pack_uatype('DateTime', self.Timestamp))
         packet.append(pack_uatype('UInt32', self.ViewVersion))
         return b''.join(packet)
         
@@ -3450,7 +3452,7 @@ class ViewDescription(FrozenClass):
     def from_binary(data):
         obj = ViewDescription()
         obj.ViewId = NodeId.from_binary(data)
-        obj.Timestamp = DateTime.from_binary(data)
+        obj.Timestamp = unpack_uatype('DateTime', data)
         obj.ViewVersion = unpack_uatype('UInt32', data)
         return obj
     
@@ -4364,7 +4366,7 @@ class SupportedProfile(FrozenClass):
         self.OrganizationUri = ''
         self.ProfileId = ''
         self.ComplianceTool = ''
-        self.ComplianceDate = DateTime()
+        self.ComplianceDate = datetime.now()
         self.ComplianceLevel = 0
         self.UnsupportedUnitIds = []
         self._freeze()
@@ -4374,7 +4376,7 @@ class SupportedProfile(FrozenClass):
         packet.append(pack_uatype('String', self.OrganizationUri))
         packet.append(pack_uatype('String', self.ProfileId))
         packet.append(pack_uatype('String', self.ComplianceTool))
-        packet.append(self.ComplianceDate.to_binary())
+        packet.append(pack_uatype('DateTime', self.ComplianceDate))
         packet.append(pack_uatype('UInt32', self.ComplianceLevel))
         packet.append(struct.pack('<i', len(self.UnsupportedUnitIds)))
         for fieldname in self.UnsupportedUnitIds:
@@ -4387,7 +4389,7 @@ class SupportedProfile(FrozenClass):
         obj.OrganizationUri = unpack_uatype('String', data)
         obj.ProfileId = unpack_uatype('String', data)
         obj.ComplianceTool = unpack_uatype('String', data)
-        obj.ComplianceDate = DateTime.from_binary(data)
+        obj.ComplianceDate = unpack_uatype('DateTime', data)
         obj.ComplianceLevel = unpack_uatype('UInt32', data)
         obj.UnsupportedUnitIds = unpack_uatype_array('String', data)
         return obj
@@ -4412,9 +4414,9 @@ class SoftwareCertificate(FrozenClass):
         self.VendorProductCertificate = b''
         self.SoftwareVersion = ''
         self.BuildNumber = ''
-        self.BuildDate = DateTime()
+        self.BuildDate = datetime.now()
         self.IssuedBy = ''
-        self.IssueDate = DateTime()
+        self.IssueDate = datetime.now()
         self.SupportedProfiles = []
         self._freeze()
     
@@ -4426,9 +4428,9 @@ class SoftwareCertificate(FrozenClass):
         packet.append(pack_uatype('ByteString', self.VendorProductCertificate))
         packet.append(pack_uatype('String', self.SoftwareVersion))
         packet.append(pack_uatype('String', self.BuildNumber))
-        packet.append(self.BuildDate.to_binary())
+        packet.append(pack_uatype('DateTime', self.BuildDate))
         packet.append(pack_uatype('String', self.IssuedBy))
-        packet.append(self.IssueDate.to_binary())
+        packet.append(pack_uatype('DateTime', self.IssueDate))
         packet.append(struct.pack('<i', len(self.SupportedProfiles)))
         for fieldname in self.SupportedProfiles:
             packet.append(fieldname.to_binary())
@@ -4443,9 +4445,9 @@ class SoftwareCertificate(FrozenClass):
         obj.VendorProductCertificate = unpack_uatype('ByteString', data)
         obj.SoftwareVersion = unpack_uatype('String', data)
         obj.BuildNumber = unpack_uatype('String', data)
-        obj.BuildDate = DateTime.from_binary(data)
+        obj.BuildDate = unpack_uatype('DateTime', data)
         obj.IssuedBy = unpack_uatype('String', data)
-        obj.IssueDate = DateTime.from_binary(data)
+        obj.IssueDate = unpack_uatype('DateTime', data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -5509,8 +5511,8 @@ class ReadEventDetails(FrozenClass):
         self.Encoding = 1
         self.BodyLength = 0
         self.NumValuesPerNode = 0
-        self.StartTime = DateTime()
-        self.EndTime = DateTime()
+        self.StartTime = datetime.now()
+        self.EndTime = datetime.now()
         self.Filter = EventFilter()
         self._freeze()
     
@@ -5520,8 +5522,8 @@ class ReadEventDetails(FrozenClass):
         packet.append(self.TypeId.to_binary())
         packet.append(pack_uatype('UInt8', self.Encoding))
         body.append(pack_uatype('UInt32', self.NumValuesPerNode))
-        body.append(self.StartTime.to_binary())
-        body.append(self.EndTime.to_binary())
+        body.append(pack_uatype('DateTime', self.StartTime))
+        body.append(pack_uatype('DateTime', self.EndTime))
         body.append(self.Filter.to_binary())
         body = b''.join(body)
         packet.append(struct.pack('<i', len(body)))
@@ -5535,8 +5537,8 @@ class ReadEventDetails(FrozenClass):
         obj.Encoding = unpack_uatype('UInt8', data)
         obj.BodyLength = unpack_uatype('Int32', data)
         obj.NumValuesPerNode = unpack_uatype('UInt32', data)
-        obj.StartTime = DateTime.from_binary(data)
-        obj.EndTime = DateTime.from_binary(data)
+        obj.StartTime = unpack_uatype('DateTime', data)
+        obj.EndTime = unpack_uatype('DateTime', data)
         obj.Filter = EventFilter.from_binary(data)
         return obj
     
@@ -5559,8 +5561,8 @@ class ReadRawModifiedDetails(FrozenClass):
         self.Encoding = 1
         self.BodyLength = 0
         self.IsReadModified = True
-        self.StartTime = DateTime()
-        self.EndTime = DateTime()
+        self.StartTime = datetime.now()
+        self.EndTime = datetime.now()
         self.NumValuesPerNode = 0
         self.ReturnBounds = True
         self._freeze()
@@ -5571,8 +5573,8 @@ class ReadRawModifiedDetails(FrozenClass):
         packet.append(self.TypeId.to_binary())
         packet.append(pack_uatype('UInt8', self.Encoding))
         body.append(pack_uatype('Boolean', self.IsReadModified))
-        body.append(self.StartTime.to_binary())
-        body.append(self.EndTime.to_binary())
+        body.append(pack_uatype('DateTime', self.StartTime))
+        body.append(pack_uatype('DateTime', self.EndTime))
         body.append(pack_uatype('UInt32', self.NumValuesPerNode))
         body.append(pack_uatype('Boolean', self.ReturnBounds))
         body = b''.join(body)
@@ -5587,8 +5589,8 @@ class ReadRawModifiedDetails(FrozenClass):
         obj.Encoding = unpack_uatype('UInt8', data)
         obj.BodyLength = unpack_uatype('Int32', data)
         obj.IsReadModified = unpack_uatype('Boolean', data)
-        obj.StartTime = DateTime.from_binary(data)
-        obj.EndTime = DateTime.from_binary(data)
+        obj.StartTime = unpack_uatype('DateTime', data)
+        obj.EndTime = unpack_uatype('DateTime', data)
         obj.NumValuesPerNode = unpack_uatype('UInt32', data)
         obj.ReturnBounds = unpack_uatype('Boolean', data)
         return obj
@@ -5612,8 +5614,8 @@ class ReadProcessedDetails(FrozenClass):
         self.TypeId = FourByteNodeId(ObjectIds.ReadProcessedDetails_Encoding_DefaultBinary)
         self.Encoding = 1
         self.BodyLength = 0
-        self.StartTime = DateTime()
-        self.EndTime = DateTime()
+        self.StartTime = datetime.now()
+        self.EndTime = datetime.now()
         self.ProcessingInterval = 0
         self.AggregateType = []
         self.AggregateConfiguration = AggregateConfiguration()
@@ -5624,8 +5626,8 @@ class ReadProcessedDetails(FrozenClass):
         body = []
         packet.append(self.TypeId.to_binary())
         packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(self.StartTime.to_binary())
-        body.append(self.EndTime.to_binary())
+        body.append(pack_uatype('DateTime', self.StartTime))
+        body.append(pack_uatype('DateTime', self.EndTime))
         body.append(pack_uatype('Double', self.ProcessingInterval))
         body.append(struct.pack('<i', len(self.AggregateType)))
         for fieldname in self.AggregateType:
@@ -5642,8 +5644,8 @@ class ReadProcessedDetails(FrozenClass):
         obj.TypeId = NodeId.from_binary(data)
         obj.Encoding = unpack_uatype('UInt8', data)
         obj.BodyLength = unpack_uatype('Int32', data)
-        obj.StartTime = DateTime.from_binary(data)
-        obj.EndTime = DateTime.from_binary(data)
+        obj.StartTime = unpack_uatype('DateTime', data)
+        obj.EndTime = unpack_uatype('DateTime', data)
         obj.ProcessingInterval = unpack_uatype('Double', data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
@@ -5682,7 +5684,7 @@ class ReadAtTimeDetails(FrozenClass):
         packet.append(pack_uatype('UInt8', self.Encoding))
         body.append(struct.pack('<i', len(self.ReqTimes)))
         for fieldname in self.ReqTimes:
-            body.append(fieldname.to_binary())
+            body.append(pack_uatype('DateTime', fieldname))
         body.append(pack_uatype('Boolean', self.UseSimpleBounds))
         body = b''.join(body)
         packet.append(struct.pack('<i', len(body)))
@@ -5695,10 +5697,7 @@ class ReadAtTimeDetails(FrozenClass):
         obj.TypeId = NodeId.from_binary(data)
         obj.Encoding = unpack_uatype('UInt8', data)
         obj.BodyLength = unpack_uatype('Int32', data)
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.ReqTimes.append(DateTime.from_binary(data))
+        obj.ReqTimes = unpack_uatype_array('DateTime', data)
         obj.UseSimpleBounds = unpack_uatype('Boolean', data)
         return obj
     
@@ -5743,14 +5742,14 @@ class ModificationInfo(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.ModificationTime = DateTime()
+        self.ModificationTime = datetime.now()
         self.UpdateType = 0
         self.UserName = ''
         self._freeze()
     
     def to_binary(self):
         packet = []
-        packet.append(self.ModificationTime.to_binary())
+        packet.append(pack_uatype('DateTime', self.ModificationTime))
         packet.append(pack_uatype('UInt32', self.UpdateType))
         packet.append(pack_uatype('String', self.UserName))
         return b''.join(packet)
@@ -5758,7 +5757,7 @@ class ModificationInfo(FrozenClass):
     @staticmethod
     def from_binary(data):
         obj = ModificationInfo()
-        obj.ModificationTime = DateTime.from_binary(data)
+        obj.ModificationTime = unpack_uatype('DateTime', data)
         obj.UpdateType = unpack_uatype('UInt32', data)
         obj.UserName = unpack_uatype('String', data)
         return obj
@@ -6231,16 +6230,16 @@ class DeleteRawModifiedDetails(FrozenClass):
     def __init__(self):
         self.NodeId = NodeId()
         self.IsDeleteModified = True
-        self.StartTime = DateTime()
-        self.EndTime = DateTime()
+        self.StartTime = datetime.now()
+        self.EndTime = datetime.now()
         self._freeze()
     
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
         packet.append(pack_uatype('Boolean', self.IsDeleteModified))
-        packet.append(self.StartTime.to_binary())
-        packet.append(self.EndTime.to_binary())
+        packet.append(pack_uatype('DateTime', self.StartTime))
+        packet.append(pack_uatype('DateTime', self.EndTime))
         return b''.join(packet)
         
     @staticmethod
@@ -6248,8 +6247,8 @@ class DeleteRawModifiedDetails(FrozenClass):
         obj = DeleteRawModifiedDetails()
         obj.NodeId = NodeId.from_binary(data)
         obj.IsDeleteModified = unpack_uatype('Boolean', data)
-        obj.StartTime = DateTime.from_binary(data)
-        obj.EndTime = DateTime.from_binary(data)
+        obj.StartTime = unpack_uatype('DateTime', data)
+        obj.EndTime = unpack_uatype('DateTime', data)
         return obj
     
     def __str__(self):
@@ -6273,17 +6272,14 @@ class DeleteAtTimeDetails(FrozenClass):
         packet.append(self.NodeId.to_binary())
         packet.append(struct.pack('<i', len(self.ReqTimes)))
         for fieldname in self.ReqTimes:
-            packet.append(fieldname.to_binary())
+            packet.append(pack_uatype('DateTime', fieldname))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = DeleteAtTimeDetails()
         obj.NodeId = NodeId.from_binary(data)
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.ReqTimes.append(DateTime.from_binary(data))
+        obj.ReqTimes = unpack_uatype_array('DateTime', data)
         return obj
     
     def __str__(self):
@@ -6906,7 +6902,7 @@ class AggregateFilter(FrozenClass):
         self.TypeId = FourByteNodeId(ObjectIds.AggregateFilter_Encoding_DefaultBinary)
         self.Encoding = 1
         self.BodyLength = 0
-        self.StartTime = DateTime()
+        self.StartTime = datetime.now()
         self.AggregateType = NodeId()
         self.ProcessingInterval = 0
         self.AggregateConfiguration = AggregateConfiguration()
@@ -6917,7 +6913,7 @@ class AggregateFilter(FrozenClass):
         body = []
         packet.append(self.TypeId.to_binary())
         packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(self.StartTime.to_binary())
+        body.append(pack_uatype('DateTime', self.StartTime))
         body.append(self.AggregateType.to_binary())
         body.append(pack_uatype('Double', self.ProcessingInterval))
         body.append(self.AggregateConfiguration.to_binary())
@@ -6932,7 +6928,7 @@ class AggregateFilter(FrozenClass):
         obj.TypeId = NodeId.from_binary(data)
         obj.Encoding = unpack_uatype('UInt8', data)
         obj.BodyLength = unpack_uatype('Int32', data)
-        obj.StartTime = DateTime.from_binary(data)
+        obj.StartTime = unpack_uatype('DateTime', data)
         obj.AggregateType = NodeId.from_binary(data)
         obj.ProcessingInterval = unpack_uatype('Double', data)
         obj.AggregateConfiguration = AggregateConfiguration.from_binary(data)
@@ -7046,7 +7042,7 @@ class AggregateFilterResult(FrozenClass):
         self.TypeId = FourByteNodeId(ObjectIds.AggregateFilterResult_Encoding_DefaultBinary)
         self.Encoding = 1
         self.BodyLength = 0
-        self.RevisedStartTime = DateTime()
+        self.RevisedStartTime = datetime.now()
         self.RevisedProcessingInterval = 0
         self.RevisedAggregateConfiguration = AggregateConfiguration()
         self._freeze()
@@ -7056,7 +7052,7 @@ class AggregateFilterResult(FrozenClass):
         body = []
         packet.append(self.TypeId.to_binary())
         packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(self.RevisedStartTime.to_binary())
+        body.append(pack_uatype('DateTime', self.RevisedStartTime))
         body.append(pack_uatype('Double', self.RevisedProcessingInterval))
         body.append(self.RevisedAggregateConfiguration.to_binary())
         body = b''.join(body)
@@ -7070,7 +7066,7 @@ class AggregateFilterResult(FrozenClass):
         obj.TypeId = NodeId.from_binary(data)
         obj.Encoding = unpack_uatype('UInt8', data)
         obj.BodyLength = unpack_uatype('Int32', data)
-        obj.RevisedStartTime = DateTime.from_binary(data)
+        obj.RevisedStartTime = unpack_uatype('DateTime', data)
         obj.RevisedProcessingInterval = unpack_uatype('Double', data)
         obj.RevisedAggregateConfiguration = AggregateConfiguration.from_binary(data)
         return obj
@@ -8332,14 +8328,14 @@ class NotificationMessage(FrozenClass):
     '''
     def __init__(self):
         self.SequenceNumber = 0
-        self.PublishTime = DateTime()
+        self.PublishTime = datetime.now()
         self.NotificationData = []
         self._freeze()
     
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SequenceNumber))
-        packet.append(self.PublishTime.to_binary())
+        packet.append(pack_uatype('DateTime', self.PublishTime))
         packet.append(struct.pack('<i', len(self.NotificationData)))
         for fieldname in self.NotificationData:
             packet.append(fieldname.to_binary())
@@ -8349,7 +8345,7 @@ class NotificationMessage(FrozenClass):
     def from_binary(data):
         obj = NotificationMessage()
         obj.SequenceNumber = unpack_uatype('UInt32', data)
-        obj.PublishTime = DateTime.from_binary(data)
+        obj.PublishTime = unpack_uatype('DateTime', data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -9134,7 +9130,7 @@ class ScalarTestType(FrozenClass):
         self.Float = 0
         self.Double = 0
         self.String = ''
-        self.DateTime = DateTime()
+        self.DateTime = datetime.now()
         self.Guid = Guid()
         self.ByteString = b''
         self.XmlElement = XmlElement()
@@ -9163,7 +9159,7 @@ class ScalarTestType(FrozenClass):
         packet.append(pack_uatype('Float', self.Float))
         packet.append(pack_uatype('Double', self.Double))
         packet.append(pack_uatype('String', self.String))
-        packet.append(self.DateTime.to_binary())
+        packet.append(pack_uatype('DateTime', self.DateTime))
         packet.append(self.Guid.to_binary())
         packet.append(pack_uatype('ByteString', self.ByteString))
         packet.append(self.XmlElement.to_binary())
@@ -9193,7 +9189,7 @@ class ScalarTestType(FrozenClass):
         obj.Float = unpack_uatype('Float', data)
         obj.Double = unpack_uatype('Double', data)
         obj.String = unpack_uatype('String', data)
-        obj.DateTime = DateTime.from_binary(data)
+        obj.DateTime = unpack_uatype('DateTime', data)
         obj.Guid = Guid.from_binary(data)
         obj.ByteString = unpack_uatype('ByteString', data)
         obj.XmlElement = XmlElement.from_binary(data)
@@ -9306,7 +9302,7 @@ class ArrayTestType(FrozenClass):
             packet.append(pack_uatype('String', fieldname))
         packet.append(struct.pack('<i', len(self.DateTimes)))
         for fieldname in self.DateTimes:
-            packet.append(fieldname.to_binary())
+            packet.append(pack_uatype('DateTime', fieldname))
         packet.append(struct.pack('<i', len(self.Guids)))
         for fieldname in self.Guids:
             packet.append(fieldname.to_binary())
@@ -9362,10 +9358,7 @@ class ArrayTestType(FrozenClass):
         obj.Floats = unpack_uatype_array('Float', data)
         obj.Doubles = unpack_uatype_array('Double', data)
         obj.Strings = unpack_uatype_array('String', data)
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.DateTimes.append(DateTime.from_binary(data))
+        obj.DateTimes = unpack_uatype_array('DateTime', data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -9711,7 +9704,7 @@ class BuildInfo(FrozenClass):
         self.ProductName = ''
         self.SoftwareVersion = ''
         self.BuildNumber = ''
-        self.BuildDate = DateTime()
+        self.BuildDate = datetime.now()
         self._freeze()
     
     def to_binary(self):
@@ -9721,7 +9714,7 @@ class BuildInfo(FrozenClass):
         packet.append(pack_uatype('String', self.ProductName))
         packet.append(pack_uatype('String', self.SoftwareVersion))
         packet.append(pack_uatype('String', self.BuildNumber))
-        packet.append(self.BuildDate.to_binary())
+        packet.append(pack_uatype('DateTime', self.BuildDate))
         return b''.join(packet)
         
     @staticmethod
@@ -9732,7 +9725,7 @@ class BuildInfo(FrozenClass):
         obj.ProductName = unpack_uatype('String', data)
         obj.SoftwareVersion = unpack_uatype('String', data)
         obj.BuildNumber = unpack_uatype('String', data)
-        obj.BuildDate = DateTime.from_binary(data)
+        obj.BuildDate = unpack_uatype('DateTime', data)
         return obj
     
     def __str__(self):
@@ -9939,8 +9932,8 @@ class ServerStatusDataType(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.StartTime = DateTime()
-        self.CurrentTime = DateTime()
+        self.StartTime = datetime.now()
+        self.CurrentTime = datetime.now()
         self.State = 0
         self.BuildInfo = BuildInfo()
         self.SecondsTillShutdown = 0
@@ -9949,8 +9942,8 @@ class ServerStatusDataType(FrozenClass):
     
     def to_binary(self):
         packet = []
-        packet.append(self.StartTime.to_binary())
-        packet.append(self.CurrentTime.to_binary())
+        packet.append(pack_uatype('DateTime', self.StartTime))
+        packet.append(pack_uatype('DateTime', self.CurrentTime))
         packet.append(pack_uatype('UInt32', self.State))
         packet.append(self.BuildInfo.to_binary())
         packet.append(pack_uatype('UInt32', self.SecondsTillShutdown))
@@ -9960,8 +9953,8 @@ class ServerStatusDataType(FrozenClass):
     @staticmethod
     def from_binary(data):
         obj = ServerStatusDataType()
-        obj.StartTime = DateTime.from_binary(data)
-        obj.CurrentTime = DateTime.from_binary(data)
+        obj.StartTime = unpack_uatype('DateTime', data)
+        obj.CurrentTime = unpack_uatype('DateTime', data)
         obj.State = unpack_uatype('UInt32', data)
         obj.BuildInfo = BuildInfo.from_binary(data)
         obj.SecondsTillShutdown = unpack_uatype('UInt32', data)
@@ -9990,8 +9983,8 @@ class SessionDiagnosticsDataType(FrozenClass):
         self.LocaleIds = []
         self.ActualSessionTimeout = 0
         self.MaxResponseMessageSize = 0
-        self.ClientConnectionTime = DateTime()
-        self.ClientLastContactTime = DateTime()
+        self.ClientConnectionTime = datetime.now()
+        self.ClientLastContactTime = datetime.now()
         self.CurrentSubscriptionsCount = 0
         self.CurrentMonitoredItemsCount = 0
         self.CurrentPublishRequestsInQueue = 0
@@ -10039,8 +10032,8 @@ class SessionDiagnosticsDataType(FrozenClass):
             packet.append(pack_uatype('String', fieldname))
         packet.append(pack_uatype('Double', self.ActualSessionTimeout))
         packet.append(pack_uatype('UInt32', self.MaxResponseMessageSize))
-        packet.append(self.ClientConnectionTime.to_binary())
-        packet.append(self.ClientLastContactTime.to_binary())
+        packet.append(pack_uatype('DateTime', self.ClientConnectionTime))
+        packet.append(pack_uatype('DateTime', self.ClientLastContactTime))
         packet.append(pack_uatype('UInt32', self.CurrentSubscriptionsCount))
         packet.append(pack_uatype('UInt32', self.CurrentMonitoredItemsCount))
         packet.append(pack_uatype('UInt32', self.CurrentPublishRequestsInQueue))
@@ -10087,8 +10080,8 @@ class SessionDiagnosticsDataType(FrozenClass):
         obj.LocaleIds = unpack_uatype_array('String', data)
         obj.ActualSessionTimeout = unpack_uatype('Double', data)
         obj.MaxResponseMessageSize = unpack_uatype('UInt32', data)
-        obj.ClientConnectionTime = DateTime.from_binary(data)
-        obj.ClientLastContactTime = DateTime.from_binary(data)
+        obj.ClientConnectionTime = unpack_uatype('DateTime', data)
+        obj.ClientLastContactTime = unpack_uatype('DateTime', data)
         obj.CurrentSubscriptionsCount = unpack_uatype('UInt32', data)
         obj.CurrentMonitoredItemsCount = unpack_uatype('UInt32', data)
         obj.CurrentPublishRequestsInQueue = unpack_uatype('UInt32', data)
@@ -10673,13 +10666,13 @@ class ProgramDiagnosticDataType(FrozenClass):
     def __init__(self):
         self.CreateSessionId = NodeId()
         self.CreateClientName = ''
-        self.InvocationCreationTime = DateTime()
-        self.LastTransitionTime = DateTime()
+        self.InvocationCreationTime = datetime.now()
+        self.LastTransitionTime = datetime.now()
         self.LastMethodCall = ''
         self.LastMethodSessionId = NodeId()
         self.LastMethodInputArguments = []
         self.LastMethodOutputArguments = []
-        self.LastMethodCallTime = DateTime()
+        self.LastMethodCallTime = datetime.now()
         self.LastMethodReturnStatus = StatusResult()
         self._freeze()
     
@@ -10687,8 +10680,8 @@ class ProgramDiagnosticDataType(FrozenClass):
         packet = []
         packet.append(self.CreateSessionId.to_binary())
         packet.append(pack_uatype('String', self.CreateClientName))
-        packet.append(self.InvocationCreationTime.to_binary())
-        packet.append(self.LastTransitionTime.to_binary())
+        packet.append(pack_uatype('DateTime', self.InvocationCreationTime))
+        packet.append(pack_uatype('DateTime', self.LastTransitionTime))
         packet.append(pack_uatype('String', self.LastMethodCall))
         packet.append(self.LastMethodSessionId.to_binary())
         packet.append(struct.pack('<i', len(self.LastMethodInputArguments)))
@@ -10697,7 +10690,7 @@ class ProgramDiagnosticDataType(FrozenClass):
         packet.append(struct.pack('<i', len(self.LastMethodOutputArguments)))
         for fieldname in self.LastMethodOutputArguments:
             packet.append(fieldname.to_binary())
-        packet.append(self.LastMethodCallTime.to_binary())
+        packet.append(pack_uatype('DateTime', self.LastMethodCallTime))
         packet.append(self.LastMethodReturnStatus.to_binary())
         return b''.join(packet)
         
@@ -10706,8 +10699,8 @@ class ProgramDiagnosticDataType(FrozenClass):
         obj = ProgramDiagnosticDataType()
         obj.CreateSessionId = NodeId.from_binary(data)
         obj.CreateClientName = unpack_uatype('String', data)
-        obj.InvocationCreationTime = DateTime.from_binary(data)
-        obj.LastTransitionTime = DateTime.from_binary(data)
+        obj.InvocationCreationTime = unpack_uatype('DateTime', data)
+        obj.LastTransitionTime = unpack_uatype('DateTime', data)
         obj.LastMethodCall = unpack_uatype('String', data)
         obj.LastMethodSessionId = NodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
@@ -10718,7 +10711,7 @@ class ProgramDiagnosticDataType(FrozenClass):
         if length != -1:
             for _ in range(0, length):
                 obj.LastMethodOutputArguments.append(Argument.from_binary(data))
-        obj.LastMethodCallTime = DateTime.from_binary(data)
+        obj.LastMethodCallTime = unpack_uatype('DateTime', data)
         obj.LastMethodReturnStatus = StatusResult.from_binary(data)
         return obj
     
@@ -10742,14 +10735,14 @@ class Annotation(FrozenClass):
     def __init__(self):
         self.Message = ''
         self.UserName = ''
-        self.AnnotationTime = DateTime()
+        self.AnnotationTime = datetime.now()
         self._freeze()
     
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.Message))
         packet.append(pack_uatype('String', self.UserName))
-        packet.append(self.AnnotationTime.to_binary())
+        packet.append(pack_uatype('DateTime', self.AnnotationTime))
         return b''.join(packet)
         
     @staticmethod
@@ -10757,7 +10750,7 @@ class Annotation(FrozenClass):
         obj = Annotation()
         obj.Message = unpack_uatype('String', data)
         obj.UserName = unpack_uatype('String', data)
-        obj.AnnotationTime = DateTime.from_binary(data)
+        obj.AnnotationTime = unpack_uatype('DateTime', data)
         return obj
     
     def __str__(self):
