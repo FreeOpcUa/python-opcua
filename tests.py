@@ -10,9 +10,10 @@ except ImportError:
     from Queue import Queue
 import time
 from threading import Condition
-from opcua import uaprotocol as ua
-from opcua.client import Client
-from opcua.server import Server
+
+from opcua import ua
+from opcua import Client
+from opcua import Server
 
 port_num1 = 48410
 port_num2 = 48430

@@ -7,3 +7,4 @@ import opcua.uaprotocol as ua
 from opcua.node import Node
 from opcua.subscription import Subscription
 from opcua.client import Client
+from opcua.server import Server
