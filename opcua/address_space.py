@@ -3,11 +3,16 @@ import logging
 
 from opcua import ua
 
+class DataChangeCallbackData(object):
+    def __init__(self):
+        self.callback = None
+        self.client_handle = None
+
 class AttributeValue(object):
     def __init__(self, value):
         self.value = value
         self.value_callback = None 
-        self.datachange_callback = None 
+        self.datachange_callbacks = {} 
 
     def __str__(self):
         return "AttributeValue({})".format(self.value)
@@ -28,6 +33,8 @@ class AddressSpace(object):
         self.logger = logging.getLogger(__name__)
         self._nodes = {}
         self._lock = RLock() #FIXME: should use multiple reader, one writter pattern
+        self._datachange_callback_counter = 200
+        self._handle_to_attribute_map = {}
 
 
     def add_nodes(self, addnodeitems):
@@ -144,9 +151,38 @@ class AddressSpace(object):
                 return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
             attval = node.attributes[attr]
             attval.value = value
-            if attval.datachange_callback:
+            if attval.value_callback:
                 return attval.value_callback(nodeid, attr, value)
+            for k, v in attval.datachange_callbacks.items():
+                try:
+                    v(k, value)
+                except Exception as ex:
+                    self.logger.warn("Error calling datachange callback %s, %s, %s", k, v, ex)
             return ua.StatusCode()
+
+    def add_datachange_callback(self, nodeid, attr, callback):
+        with self._lock:
+            self.logger.debug("set attr callback: %s %s %s", nodeid, attr, callback)
+            if not nodeid in self._nodes:
+                return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown), 0
+            node = self._nodes[nodeid]
+            if not attr in node.attributes:
+                return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid), 0
+            attval = node.attributes[attr]
+            self._datachange_callback_counter += 1
+            handle = self._datachange_callback_counter
+            #cb = DataChangeCallbackData()
+            #cb.callback = callback
+            #cb.client_handle = handle
+            attval.datachange_callbacks[handle] = callback
+            self._handle_to_attribute_map[handle] = (nodeid, attr)
+            return ua.StatusCode(), handle
+
+    def delete_datachange_callback(self, handle):
+        nodeid, attr = self._handle_to_attribute_map.pop(handle)
+        self._nodes[nodeid].attributes[attr].datachange_callbacks.pop(handle)
+        
+
 
     def _add_nodeattributes(self, item, nodedata):
         item = ua.downcast_extobject(item)

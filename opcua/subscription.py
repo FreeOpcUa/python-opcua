@@ -89,6 +89,7 @@ class Subscription(object):
 
         results = self.server.create_monitored_items(params)
         result = results[0]
+        print(result)
         result.StatusCode.check()
         
         data = SubscriptionItemData()

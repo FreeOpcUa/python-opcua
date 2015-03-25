@@ -245,9 +245,6 @@ class UAProcessor(object):
 
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
-
-
-
         else:
             self.logger.warning("Uknown message received %s", typeid)
             sf = ua.ServiceFault()
