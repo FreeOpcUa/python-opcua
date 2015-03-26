@@ -7,10 +7,7 @@ import opcua.uatypes as uatypes
 import opcua.utils as utils
 from opcua.object_ids import ObjectIds
 
-logger = logging.getLogger(__name__)
-
-
-
+logger = logging.getLogger('opcua.uaprotocol')
 
 
 class SocketClosedException(Exception):

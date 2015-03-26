@@ -23,9 +23,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.WARN)
     logger = logging.getLogger("opcua.address_space")
     #logger = logging.getLogger("opcua.internal_server")
-    logger = logging.getLogger("SubscriptionManager")
-    logger.setLevel(logging.DEBUG)
-    logger = logging.getLogger("Subscription")
+    logger = logging.getLogger("opcua.subscription_server")
     logger.setLevel(logging.DEBUG)
 
     # now setup our server and start it

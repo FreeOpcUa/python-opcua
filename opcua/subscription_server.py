@@ -12,7 +12,7 @@ from opcua import ua
 class SubscriptionManager(Thread):
     def __init__(self, aspace):
         Thread.__init__(self)
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = logging.getLogger(__name__)
         self.loop = None
         self.aspace = aspace
         self.subscriptions = {}
@@ -20,20 +20,18 @@ class SubscriptionManager(Thread):
         self._cond = Condition()
 
     def start(self):
-        print("start internal")
         Thread.start(self)
         with self._cond:
             self._cond.wait()
-        print("start internal finished")
 
     def run(self):
-        self.logger.warn("Starting subscription thread")
+        self.logger.debug("Starting subscription thread")
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
         with self._cond:
             self._cond.notify_all()
         self.loop.run_forever()
-        print("LOOP", self.loop)
+        self.logger.debug("subsription thread ended")
 
     def add_task(self, coro):
         """
@@ -58,7 +56,7 @@ class SubscriptionManager(Thread):
         result.RevisedLifetimeCount = params.RequestedLifetimeCount
         result.RevisedMaxKeepAliveCount = params.RequestedMaxKeepAliveCount
 
-        sub = Subscription(self, result, self.aspace, callback)
+        sub = InternalSubscription(self, result, self.aspace, callback)
         sub.start()
         self.subscriptions[result.SubscriptionId] = sub
 
@@ -74,7 +72,7 @@ class SubscriptionManager(Thread):
         return res
 
     def publish(self, acks):
-        self.logger.warn("publish request with acks %s", acks)
+        self.logger.info("publish request with acks %s", acks)
 
     def create_monitored_items(self, params):
         self.logger.info("create monitored items")
@@ -97,9 +95,9 @@ class MonitoredItemData(object):
         self.mode = None
             
 
-class Subscription(object):
+class InternalSubscription(object):
     def __init__(self, manager, data, addressspace, callback):
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = logging.getLogger(__name__)
         self.aspace = addressspace
         self.manager = manager
         self.data = data
@@ -123,7 +121,7 @@ class Subscription(object):
             yield from asyncio.sleep(1)
 
     def publish_results(self): 
-        print("looking for results and publishing")
+        self.logger.debug("looking for results and publishing")
 
     def create_monitored_items(self, params):
         results = []
@@ -158,7 +156,7 @@ class Subscription(object):
         return result
 
     def datachange_callback(self, handle, value):
-        self.logger.warn("subscription %s: datachange callback called with %s, %s", self, handle, value)
+        self.logger.info("subscription %s: datachange callback called with %s, %s", self, handle, value)
 
 
 

@@ -38,7 +38,7 @@ class Session(object):
 
 class InternalServer(object):
     def __init__(self):
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = logging.getLogger(__name__)
         self.endpoints = []
         self.sessions = {}
         self._channel_id_counter = 5

@@ -1,6 +1,7 @@
 """
 implement ua datatypes
 """
+import logging
 from enum import Enum
 from datetime import datetime, timedelta, tzinfo
 from calendar import timegm
@@ -9,6 +10,8 @@ import uuid
 import struct 
 
 import opcua.status_code as status_code
+
+logger = logging.getLogger('opcua.uaprotocol')
 
 #types that will packed and unpacked directly using struct (string, bytes and datetime are handles as special cases
 UaTypes = ("Boolean", "SByte", "Byte", "Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double")

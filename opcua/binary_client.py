@@ -25,7 +25,7 @@ class BinaryClient(object):
     uaprotocol_auto.py and uaprotocol_hand.py
     """
     def __init__(self):
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = logging.getLogger(__name__)
         self._socket = None
         self._do_stop = False
         self._security_token = ua.ChannelSecurityToken() 

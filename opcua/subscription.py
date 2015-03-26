@@ -16,7 +16,7 @@ class SubscriptionItemData():
 
 class Subscription(object):
     def __init__(self, server, params, handler):
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = logging.getLogger(__name__)
         self.server = server
         self._client_handle = 200
         self._handler = handler

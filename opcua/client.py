@@ -18,7 +18,7 @@ class KeepAlive(Thread):
     """
     def __init__(self, client, timeout):
         Thread.__init__(self)
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = logging.getLogger(__name__)
         if timeout == 0: # means no timeout bu we do not trust such servers
             timeout = 360000
         self.timeout = timeout
@@ -63,7 +63,7 @@ class Client(object):
         if you are unsure of url, write at least hostname and port
         and call get_endpoints
         """
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = logging.getLogger(__name__)
         self.server_url = urlparse(url)
         self.name = "Pure Python Client" 
         self.description = self.name 
