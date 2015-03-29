@@ -6,7 +6,7 @@ try:
     import socketserver
 except ImportError:
     import SocketServer as socketserver
-from threading import Thread, Lock
+from threading import Thread
 
 from opcua import ua
 from opcua.uaprocessor import UAProcessor
@@ -47,7 +47,7 @@ class UAHandler(socketserver.BaseRequestHandler):
     """
 
     def handle(self):
-        processor = UAProcessor(self.server.internal_server, self.request)
+        processor = UAProcessor(self.server.internal_server.create_session(self.client_address), self.request)
         try:
             processor.loop()
         except ua.SocketClosedException as ex:

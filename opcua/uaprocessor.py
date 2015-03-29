@@ -5,14 +5,19 @@ from threading import Lock
 from opcua import ua
 from opcua import utils
 
+class PublishRequestData(object):
+    def __init__(self):
+        self.hdr = None
+        self.algohdr = None
+        self.seqhdr = None
+
 class UAProcessor(object):
-    def __init__(self, internal_server, socket):
+    def __init__(self, session, socket):
         self.logger = logging.getLogger(__name__)
-        self.iserver = internal_server
+        self.session = session
         self.socket = socket
-        self.channel = None
         self._lock = Lock()
-        self.session = None
+        self._publishdata_queue = []
 
     def loop(self):
         #first we want a hello message
@@ -45,7 +50,7 @@ class UAProcessor(object):
         with self._lock:
             response.ResponseHeader.RequestHandle = requesthandle
             seqhdr.SequenceNumber += 1
-            hdr = ua.Header(msgtype, ua.ChunkType.Single, self.channel.SecurityToken.ChannelId)
+            hdr = ua.Header(msgtype, ua.ChunkType.Single, self.session.channel.SecurityToken.ChannelId)
             self.write_socket(hdr, algohdr, seqhdr, response)
 
     def write_socket(self, hdr, *args):
@@ -73,19 +78,30 @@ class UAProcessor(object):
         seqhdr = ua.SequenceHeader.from_binary(body)
         request = ua.OpenSecureChannelRequest.from_binary(body)
 
-        self.channel = self.iserver.open_secure_channel(request.Parameters, self.channel)
+        channel = self.session.open_secure_channel(request.Parameters)
         #send response
         response = ua.OpenSecureChannelResponse()
-        response.Parameters = self.channel
+        response.Parameters = channel
         self.send_response(request.RequestHeader.RequestHandle, algohdr, seqhdr, response, ua.MessageType.SecureOpen)
+
+    def forward_publish_response(self, result):
+        self.logger.info("forward publish response %s", result)
+        if len(self._publishdata_queue == 0):
+            self.logger.warning("Error server wants to send publish answer but no publish request is available")
+            return
+        response = ua.PublishResponse()
+        response.Parameters = result
+
+        requestdata = self._publishdata_queue.pop(-1)
+        self.send_response(requestdata.requesthdr.RequestHandle, requestdata.algohdr, requestdata.seqhdr, response)
 
     def process_body(self, header, body):
         if header.MessageType == ua.MessageType.SecureOpen:
             self.open_secure_channel(body)
 
         elif header.MessageType == ua.MessageType.SecureClose:
-            if not self.channel or header.ChannelId != self.channel.SecurityToken.ChannelId:
-                self.logger.warning("Request to close channel %s which was not issued, current channel is %s", header.ChannelId, self.channel)
+            if not self.session.channel or header.ChannelId != self.session.channel.SecurityToken.ChannelId:
+                self.logger.warning("Request to close channel %s which was not issued, current channel is %s", header.ChannelId, self.session.channel)
                 return False
 
         elif header.MessageType == ua.MessageType.SecureMessage:
@@ -104,17 +120,17 @@ class UAProcessor(object):
             self.logger.info("Create session request")
             params = ua.CreateSessionParameters.from_binary(body)
 
-            self.session = self.iserver.create_session(params)
+            sessiondata = self.session.create_session(params)
 
             response = ua.CreateSessionResponse()
-            response.Parameters = self.session 
+            response.Parameters = sessiondata
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.CloseSessionRequest_Encoding_DefaultBinary):
             self.logger.info("Close session request")
             deletesubs = ua.unpack_uatype('Boolean', body)
             
-            self.iserver.close_session(self.session, deletesubs)
+            self.session.close_session(deletesubs)
 
             response = ua.CloseSessionResponse()
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
@@ -123,7 +139,7 @@ class UAProcessor(object):
             self.logger.info("Activate session request")
             params = ua.ActivateSessionParameters.from_binary(body) 
             
-            result = self.iserver.activate_session(self.session, params)
+            result = self.session.activate_session(params)
 
             response = ua.ActivateSessionResponse()
             response.Parameters = result
@@ -133,7 +149,7 @@ class UAProcessor(object):
             self.logger.info("Read request")
             params = ua.ReadParameters.from_binary(body) 
             
-            results = self.iserver.read(params)
+            results = self.session.read(params)
 
             response = ua.ReadResponse()
             response.Results = results
@@ -143,7 +159,7 @@ class UAProcessor(object):
             self.logger.info("Write request")
             params = ua.WriteParameters.from_binary(body) 
             
-            results = self.iserver.write(params)
+            results = self.session.write(params)
 
             response = ua.WriteResponse()
             response.Results = results
@@ -153,7 +169,7 @@ class UAProcessor(object):
             self.logger.info("Browse request")
             params = ua.BrowseParameters.from_binary(body) 
             
-            results = self.iserver.browse(params)
+            results = self.session.browse(params)
 
             response = ua.BrowseResponse()
             response.Results = results
@@ -163,7 +179,7 @@ class UAProcessor(object):
             self.logger.info("get endpoints request")
             params = ua.GetEndpointsParameters.from_binary(body) 
             
-            endpoints = self.iserver.get_endpoints(params)
+            endpoints = self.session.get_endpoints(params)
 
             response = ua.GetEndpointsResponse()
             response.Endpoints = endpoints
@@ -174,7 +190,7 @@ class UAProcessor(object):
             self.logger.info("translate browsepaths to nodeids request")
             params = ua.TranslateBrowsePathsToNodeIdsParameters.from_binary(body) 
             
-            paths = self.iserver.translate_browsepaths_to_nodeids(params.BrowsePaths)
+            paths = self.session.translate_browsepaths_to_nodeids(params.BrowsePaths)
 
             response = ua.TranslateBrowsePathsToNodeIdsResponse()
             response.Results = paths
@@ -185,12 +201,71 @@ class UAProcessor(object):
             self.logger.info("add nodes request")
             params = ua.AddNodesParameters.from_binary(body) 
             
-            results = self.iserver.add_nodes(params.NodesToAdd)
+            results = self.session.add_nodes(params.NodesToAdd)
 
             response = ua.AddNodesResponse()
             response.Results = results
 
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.CreateSubscriptionRequest_Encoding_DefaultBinary):
+            self.logger.info("create subscription request")
+            params = ua.CreateSubscriptionParameters.from_binary(body) 
+            
+            result = self.session.create_subscription(params, self.forward_publish_response)
+
+            response = ua.CreateSubscriptionResponse()
+            response.Parameters = result
+
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary):
+            self.logger.info("delete subscriptions request")
+            params = ua.DeleteSubscriptionsParameters.from_binary(body) 
+            
+            results = self.session.delete_subscriptions(params.SubscriptionIds)
+
+            response = ua.DeleteSubscriptionsResponse()
+            response.Results = results
+
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.CreateMonitoredItemsRequest_Encoding_DefaultBinary):
+            self.logger.info("create monitored items request")
+            params = ua.CreateMonitoredItemsParameters.from_binary(body) 
+            
+            results = self.session.create_monitored_items(params)
+
+            response = ua.CreateMonitoredItemsResponse()
+            response.Results = results
+
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.DeleteMonitoredItemsRequest_Encoding_DefaultBinary):
+            self.logger.info("delete monitored items request")
+            params = ua.DeleteMonitoredItemsParameters.from_binary(body) 
+            
+            results = self.session.delete_monitored_items(params)
+
+            response = ua.DeleteMonitoredItemsResponse()
+            response.Results = results
+
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.PublishRequest_Encoding_DefaultBinary):
+            self.logger.info("publish request")
+            
+            acks = ua.unpack_array("Int32", body)
+            
+            data = PublishRequestData()
+            data.hdr = requesthdr
+            data.seqhdr = seqhdr
+            data.algohdr = algohdr
+            self._publishdata_queue.append(requesthdr) # will be used to send publish answers from server
+            self.session.publish(acks)
+
+
+
 
         else:
             self.logger.warning("Uknown message received %s", typeid)

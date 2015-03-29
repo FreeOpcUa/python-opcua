@@ -77,7 +77,7 @@ class Server(object):
         """
         Get node using NodeId object or a string representing a NodeId
         """
-        return Node(self.iserver, nodeid)
+        return Node(self.iserver.isession, nodeid)
 
     def create_subscription(self, period, handler):
         """
@@ -92,7 +92,7 @@ class Server(object):
         params.MaxNotificationsPerPublish = 0
         params.PublishingEnabled = True
         params.Priority = 0
-        return Subscription(self.iserver, params, handler)
+        return Subscription(self.iserver.isession, params, handler)
 
 
 

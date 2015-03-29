@@ -89,7 +89,6 @@ class Subscription(object):
 
         results = self.server.create_monitored_items(params)
         result = results[0]
-        print(result)
         result.StatusCode.check()
         
         data = SubscriptionItemData()
@@ -100,5 +99,12 @@ class Subscription(object):
         self._monitoreditems_map[mparams.ClientHandle] = data
 
         return result.MonitoredItemId
+
+    def unsubscribe(self, handle):
+        params = ua.DeleteMonitoredItemsParameters()
+        params.SubscriptionId = self.subscription_id
+        params.MonitoredItemIds = [handle]
+        results = self.server.delete_monitored_items(params)
+        results[0].check()
         
 

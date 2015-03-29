@@ -157,10 +157,16 @@ def unpack_string(data):
     #return str(b)
     return b.decode("utf-8")
 
-def unpack_array(data, uatype):
-    raise NotImplementedError
+def unpack_array(uatype, data):
+    length = struct.unpack('<i', data.read(4))[0]
+    array = []
+    if length != -1:
+        for _ in range(0, length):
+            array.append(unpack_uatype(uatype, data))
+    return array
 
 def unpack_object_array(objclass, data):
+    print("DEPRECATED, unpack_objects_array is deprecated, use unpack_array")
     length = struct.unpack('<i', data.read(4))[0]
     array = []
     if length != -1:

@@ -319,7 +319,7 @@ class BinaryClient(object):
     def delete_subscriptions(self, subscriptionids):
         self.logger.info("delete_subscription")
         request = ua.DeleteSubscriptionsRequest()
-        request.SubscriptionIds = subscriptionids
+        request.Parameters.SubscriptionIds = subscriptionids
         data = self._send_request(request)
         response = ua.DeleteSubscriptionsResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
@@ -345,13 +345,24 @@ class BinaryClient(object):
 
 
     def create_monitored_items(self, params):
-        self.logger.info("subscribe_data_change")
+        self.logger.info("create_monitored_items")
         request = ua.CreateMonitoredItemsRequest()
         request.Parameters = params
         data = self._send_request(request)
         response = ua.CreateMonitoredItemsResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
+
+    def delete_monitored_items(self, params):
+        self.logger.info("delete_monitored_items")
+        request = ua.DeleteMonitoredItemsRequest()
+        request.Parameters = params
+        data = self._send_request(request)
+        response = ua.DeleteMonitoredItemsResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
+
+
 
     def add_nodes(self, nodestoadd):
         self.logger.info("add_nodes")

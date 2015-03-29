@@ -7851,16 +7851,20 @@ class DeleteMonitoredItemsRequest(FrozenClass):
     
     __repr__ = __str__
     
-class DeleteMonitoredItemsResult(FrozenClass):
+class DeleteMonitoredItemsResponse(FrozenClass):
     '''
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.DeleteMonitoredItemsResponse_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze()
     
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.Results)))
         for fieldname in self.Results:
             packet.append(fieldname.to_binary())
@@ -7871,7 +7875,9 @@ class DeleteMonitoredItemsResult(FrozenClass):
         
     @staticmethod
     def from_binary(data):
-        obj = DeleteMonitoredItemsResult()
+        obj = DeleteMonitoredItemsResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -7883,39 +7889,10 @@ class DeleteMonitoredItemsResult(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'DeleteMonitoredItemsResult(' + 'Results:' + str(self.Results) + ', '  + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
-    __repr__ = __str__
-    
-class DeleteMonitoredItemsResponse(FrozenClass):
-    '''
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.DeleteMonitoredItemsResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = DeleteMonitoredItemsResult()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteMonitoredItemsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = DeleteMonitoredItemsResult.from_binary(data)
-        return obj
-    
-    def __str__(self):
         return 'DeleteMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
     
     __repr__ = __str__
     
@@ -9035,19 +9012,15 @@ class TransferSubscriptionsResponse(FrozenClass):
     
     __repr__ = __str__
     
-class DeleteSubscriptionsRequest(FrozenClass):
+class DeleteSubscriptionsParameters(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary)
-        self.RequestHeader = RequestHeader()
         self.SubscriptionIds = []
         self._freeze()
     
     def to_binary(self):
         packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
         packet.append(struct.pack('<i', len(self.SubscriptionIds)))
         for fieldname in self.SubscriptionIds:
             packet.append(pack_uatype('UInt32', fieldname))
@@ -9055,16 +9028,43 @@ class DeleteSubscriptionsRequest(FrozenClass):
         
     @staticmethod
     def from_binary(data):
+        obj = DeleteSubscriptionsParameters()
+        obj.SubscriptionIds = unpack_uatype_array('UInt32', data)
+        return obj
+    
+    def __str__(self):
+        return 'DeleteSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
+    
+    __repr__ = __str__
+    
+class DeleteSubscriptionsRequest(FrozenClass):
+    '''
+    '''
+    def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary)
+        self.RequestHeader = RequestHeader()
+        self.Parameters = DeleteSubscriptionsParameters()
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.RequestHeader.to_binary())
+        packet.append(self.Parameters.to_binary())
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
         obj = DeleteSubscriptionsRequest()
         obj.TypeId = NodeId.from_binary(data)
         obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.SubscriptionIds = unpack_uatype_array('UInt32', data)
+        obj.Parameters = DeleteSubscriptionsParameters.from_binary(data)
         return obj
     
     def __str__(self):
         return 'DeleteSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'RequestHeader:' + str(self.RequestHeader) + ', '  + \
-             'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
+             'Parameters:' + str(self.Parameters) + ')'
     
     __repr__ = __str__
     

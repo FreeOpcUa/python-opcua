@@ -1,4 +1,5 @@
 import logging
+import time
 
 from opcua import Client
 from opcua import uaprotocol as ua
@@ -33,11 +34,14 @@ if __name__ == "__main__":
         #var.set_value(ua.Variant([23], ua.VariantType.Int64))
         state = root.get_child(["0:Objects", "0:Server"])
         print(state)
-        #myvar = root.get_child(["0:Objects", "2:NewObject", "2:MyVariable"])
-        #print("yvar is: ", myvar)
-        #handler = SubHandler()
-        #sub = client.create_subscription(500, handler)
-        #sub.subscribe_data_change(myvar)
+        myvar = root.get_child(["0:Objects", "2:NewObject", "2:MyVariable"])
+        print("yvar is: ", myvar)
+        handler = SubHandler()
+        sub = client.create_subscription(500, handler)
+        handle = sub.subscribe_data_change(myvar)
+        time.sleep(0.1)
+        sub.unsubscribe(handle)
+        sub.delete()
         embed()
     finally:
         client.disconnect()

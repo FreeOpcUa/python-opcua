@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+import logging
 import io
 import sys
 from datetime import datetime, timedelta
@@ -202,16 +203,16 @@ class CommonTests(object):
         self.assertEqual(ua.QualifiedName('Objects', 0), objects.get_name())
         nid = ua.NodeId(85, 0) 
         self.assertEqual(nid, objects.nodeid)
-
-    #def test_create_delete_subscription(self):
-        #o = self.opc.get_objects_node()
-        #v = o.add_variable(3, 'SubscriptionVariable', [1, 2, 3])
-        #sub = self.opc.create_subscription(100, sclt)
-        #handle = sub.subscribe_data_change(v)
-        #time.sleep(0.1)
-        #sub.unsubscribe(handle)
-        #sub.delete()
-
+    '''
+    def test_create_delete_subscription(self):
+        o = self.opc.get_objects_node()
+        v = o.add_variable(3, 'SubscriptionVariable', [1, 2, 3])
+        sub = self.opc.create_subscription(100, sclt)
+        handle = sub.subscribe_data_change(v)
+        time.sleep(0.1)
+        sub.unsubscribe(handle)
+        sub.delete()
+    '''
     #def test_subscribe_events(self):
         #sub = self.opc.create_subscription(100, sclt)
         #handle = sub.subscribe_events()
@@ -360,7 +361,6 @@ class CommonTests(object):
     def test_add_exception(self):
         objects = self.opc.get_objects_node()
         o = objects.add_object('ns=2;i=103;', '2:AddReadObject')
-        #with self.assertRaises(RuntimeError):
         with self.assertRaises(Exception):
             o2 = objects.add_object('ns=2;i=103;', '2:AddReadObject')
 
@@ -374,7 +374,7 @@ class CommonTests(object):
     def test_read_server_state(self):
         statenode = self.opc.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_State))
         state = statenode.get_value()
-        #self.assertEqual(state, 0)
+        self.assertEqual(state, 0)
 
     def test_array_value(self):
         o = self.opc.get_objects_node()
@@ -498,6 +498,7 @@ class TestServer(unittest.TestCase, CommonTests):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     globalserver = ServerProcess() #server process will be started by client tests
     try:
         sclt = SubHandler()

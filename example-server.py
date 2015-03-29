@@ -33,8 +33,8 @@ if __name__ == "__main__":
     root = server.get_root_node()
     objects = server.get_objects_node()
     myfolder = objects.add_folder(2, "myfolder")
-    myvar = myfolder.add_variable(2, "myvar", 6.7)
-    myobj = myfolder.add_object(2, "myobj")
+    myobj = objects.add_object(2, "NewObject")
+    myvar = myobj.add_variable(2, "MyVariable", 6.7)
     myarrayvar = myobj.add_variable(2, "myarrayvar", [6.7, 7.9])
     myprop = myobj.add_property(2, "myproperty", "I am a property")
 
@@ -42,8 +42,11 @@ if __name__ == "__main__":
     print("Available loggers are: ", logging.Logger.manager.loggerDict.keys())
     try:
         handler = SubHandler()
-        sub = server.create_subscription(500, handler)
-        sub.subscribe_data_change(myvar)
+        #sub = server.create_subscription(500, handler)
+        #handle = sub.subscribe_data_change(myvar)
+        #time.sleep(0.1)
+        #sub.unsubscribe(handle)
+        #sub.delete()
         embed()
     finally:
         server.stop()

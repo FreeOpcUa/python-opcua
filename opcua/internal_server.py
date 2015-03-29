@@ -5,7 +5,8 @@ Internal server implementing opcu-ua interface. can be used on server side or to
 from datetime import datetime
 import uuid
 import logging
-from threading import RLock, Timer
+from threading import Timer
+from enum import Enum
 
 from opcua import ua
 from opcua import utils
@@ -20,27 +21,17 @@ from opcua.standard_address_space_part10 import create_standard_address_space_Pa
 from opcua.standard_address_space_part11 import create_standard_address_space_Part11
 from opcua.standard_address_space_part13 import create_standard_address_space_Part13
 from opcua.subscription_server import SubscriptionManager
-
-class Session(object):
-    _counter = 10
-    _auth_counter = 1000
-    def __init__(self):
-        self.session_id = ua.NodeId(self._counter)
-        Session._counter += 1
-        self.authentication_token = ua.NodeId(self._auth_counter)
-        Session._auth_counter += 1
-        self.nonce = utils.create_nonce() 
-
-    def __str__(self):
-        return "InternalSession(id:{}, auth_token:{})".format(self.session_id, self.authentication_token)
-  
-
+ 
+class SessionState(Enum):
+    Init = 0
+    Created = 1
+    Activated = 2
+    Closed = 3
 
 class InternalServer(object):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.endpoints = []
-        self.sessions = {}
         self._channel_id_counter = 5
         self.aspace = AddressSpace()
         create_standard_address_space_Part3(self.aspace)
@@ -51,18 +42,16 @@ class InternalServer(object):
         create_standard_address_space_Part10(self.aspace)
         create_standard_address_space_Part11(self.aspace)
         create_standard_address_space_Part13(self.aspace)
-        self.channels = {}
-        self._lock = RLock()
-        #set some node values expected by some clients
-        self.current_time_node = Node(self, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
-        self._stopev = False
         self.submanager = SubscriptionManager(self.aspace)
+        self.isession = InternalSession(self, self.aspace, self.submanager, "Internal") #used internaly
+        self._stopev = False
         self._timer = None
+        self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
 
     def start(self): 
         self.logger.info("starting internal server")
-        Node(self, ua.NodeId(ua.ObjectIds.Server_ServerStatus_State)).set_value(0)
-        Node(self, ua.NodeId(ua.ObjectIds.Server_ServerStatus_StartTime)).set_value(datetime.now())
+        Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_State)).set_value(0)
+        Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_StartTime)).set_value(datetime.now())
         # set time every seconds, seems to be expected by some clients, maybe we should disable it for performance reason??
         self._set_current_time()
         self.submanager.start()
@@ -79,70 +68,92 @@ class InternalServer(object):
         self._timer = Timer(1, self._set_current_time)
         self._timer.start()
 
-    def open_secure_channel(self, params, currentchannel=None):
-        self.logger.info("open secure channel")
-        with self._lock:
-            if params.RequestType == ua.SecurityTokenRequestType.Issue:
-                channel = ua.OpenSecureChannelResult()
-                channel.SecurityToken.TokenId = 13 #random value
-                channel.SecurityToken.ChannelId = self._channel_id_counter
-                channel.SecurityToken.RevisedLifetime = params.RequestedLifetime 
-                self._channel_id_counter += 1
-            else:
-                channel = self.channels[currentchannel.SecurityToken.ChannelId]
-            channel.SecurityToken.TokenId += 1
-            channel.SecurityToken.CreatedAt = datetime.now()
-            channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
-            channel.ServerNonce = uuid.uuid4().bytes + uuid.uuid4().bytes
-            self.channels[channel.SecurityToken.ChannelId] = channel
-            return channel
+    def create_session(self, name):
+        return InternalSession(self, self.aspace, self.submanager, name)
+    
+    def get_new_channel_id(self):
+        self._channel_id_counter += 1
+        return self._channel_id_counter
 
     def add_endpoint(self, endpoint):
-        with self._lock:
-            self.endpoints.append(endpoint)
+        self.endpoints.append(endpoint)
 
     def get_endpoints(self, params=None):
         self.logger.info("get endpoint")
         #FIXME check params
-        with self._lock:
-            return self.endpoints[:]
+        return self.endpoints[:]
+
+
+class InternalSession(object):
+    _counter = 10
+    _auth_counter = 1000
+    def __init__(self, internal_server, aspace, submgr, name):
+        self.logger = logging.getLogger(__name__)
+        self.iserver = internal_server
+        self.aspace = aspace
+        self.submgr = submgr
+        self.name = name
+        self.state = SessionState.Init
+        self.session_id = ua.NodeId(self._counter)
+        InternalSession._counter += 1
+        self.authentication_token = ua.NodeId(self._auth_counter)
+        InternalSession._auth_counter += 1
+        self.nonce = utils.create_nonce() 
+        self.subscriptions = []
+        self.channel = None
+        self.logger.warning("Created internal session %s", self.name)
+
+    def __str__(self):
+        return "InternalSession(name:{}, id:{}, auth_token:{})".format(self.name, self.session_id, self.authentication_token)
+ 
+    def open_secure_channel(self, params):
+        self.logger.info("open secure channel")
+        if params.RequestType == ua.SecurityTokenRequestType.Issue:
+            self.channel = ua.OpenSecureChannelResult()
+            self.channel.SecurityToken.TokenId = 13 #random value
+            self.channel.SecurityToken.ChannelId = self.iserver.get_new_channel_id()
+            self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime 
+        self.channel.SecurityToken.TokenId += 1
+        self.channel.SecurityToken.CreatedAt = datetime.now()
+        self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
+        self.channel.ServerNonce = uuid.uuid4().bytes + uuid.uuid4().bytes
+        return self.channel
+
+    def get_endpoints(self, params=None):
+        return self.iserver.get_endpoints(params)
 
     def create_session(self, params):
         self.logger.info("create session")
-        with self._lock:
-            session = Session()
-            self.sessions[session.session_id] = session
-            self.logger.info("Create session request, created session: %s", session)
+        self.logger.info("Create session request, created session: %s", self.session_id)
 
-            result = ua.CreateSessionResult()
-            result.SessionId = session.session_id
-            result.AuthenticationToken = session.authentication_token 
-            result.RevisedSessionTimeout = params.RequestedSessionTimeout
-            result.MaxRequestMessageSize = 65536
-            result.ServerNonce = session.nonce
-            result.ServerEndpoints = self.endpoints[:]
+        result = ua.CreateSessionResult()
+        result.SessionId = self.session_id
+        result.AuthenticationToken = self.authentication_token 
+        result.RevisedSessionTimeout = params.RequestedSessionTimeout
+        result.MaxRequestMessageSize = 65536
+        result.ServerNonce = self.nonce
+        result.ServerEndpoints = self.get_endpoints()
 
-            return result
+        self.state = SessionState.Created
 
-    def close_session(self, session, delete_subs):
+        return result
+
+    def close_session(self, delete_subs):
         self.logger.info("close session")
-        with self._lock:
-            if not session.SessionId in self.sessions:
-                self.logger.warn("session id %s is invalid: available sessions are %s", session.SessionId, self.sessions)
-                return
-            self.sessions.pop(session.SessionId)
+        self.state = SessionState.Closed
+        self.delete_subscriptions(self.subscriptions)
 
-    def activate_session(self, session, params):
+    def activate_session(self, params):
         self.logger.info("activate session")
-        with self._lock:
-            result = ua.ActivateSessionResult()
-            if not session:
-                result.Results = [ua.StatusCode(ua.StatusCodes.BadSessionIdInvalid)]
-                return result
-            result.ServerNonce = self.sessions[session.SessionId].nonce
-            for _ in params.ClientSoftwareCertificates:
-                result.Results.append(ua.StatusCode())
+        result = ua.ActivateSessionResult()
+        if not self.state == SessionState.Created:
+            result.Results = [ua.StatusCode(ua.StatusCodes.BadSessionIdInvalid)]
             return result
+        result.ServerNonce = self.nonce
+        for _ in params.ClientSoftwareCertificates:
+            result.Results.append(ua.StatusCode())
+        self.state = SessionState.Activated
+        return result
 
     def read(self, params):
         return self.aspace.read(params)
@@ -160,14 +171,24 @@ class InternalServer(object):
         return self.aspace.add_nodes(params)
 
     def create_subscription(self, params, callback):
-        return self.submanager.create_subscription(params, callback)
+        result = self.submgr.create_subscription(params, callback)
+        self.subscriptions.append(result.SubscriptionId)
+        return result
 
     def create_monitored_items(self, params):
-        return self.submanager.create_monitored_items(params)
+        return self.submgr.create_monitored_items(params)
 
+    def delete_subscriptions(self, ids):
+        for i in ids:
+            self.subscriptions.remove(i)
+        return self.submgr.delete_subscriptions(ids)
+
+    def delete_monitored_items(self, params):
+        return self.submgr.delete_monitored_items(params)
+ 
     def publish(self, acks=None):
         if acks is None:
             acks = []
-        return self.submanager.publish(acks)
+        return self.submgr.publish(acks)
 
 
