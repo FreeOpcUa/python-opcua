@@ -23,10 +23,9 @@ from opcua.standard_address_space_part13 import create_standard_address_space_Pa
 from opcua.subscription_server import SubscriptionManager
  
 class SessionState(Enum):
-    Init = 0
-    Created = 1
-    Activated = 2
-    Closed = 3
+    Created = 0
+    Activated = 1
+    Closed = 2
 
 class InternalServer(object):
     def __init__(self):
@@ -68,9 +67,6 @@ class InternalServer(object):
         self._timer = Timer(1, self._set_current_time)
         self._timer.start()
 
-    def create_session(self, name):
-        return InternalSession(self, self.aspace, self.submanager, name)
-    
     def get_new_channel_id(self):
         self._channel_id_counter += 1
         return self._channel_id_counter
@@ -82,7 +78,9 @@ class InternalServer(object):
         self.logger.info("get endpoint")
         #FIXME check params
         return self.endpoints[:]
-
+    
+    def create_session(self, name):
+        return InternalSession(self, self.aspace, self.submanager, name)
 
 class InternalSession(object):
     _counter = 10
@@ -93,7 +91,7 @@ class InternalSession(object):
         self.aspace = aspace
         self.submgr = submgr
         self.name = name
-        self.state = SessionState.Init
+        self.state = SessionState.Created
         self.session_id = ua.NodeId(self._counter)
         InternalSession._counter += 1
         self.authentication_token = ua.NodeId(self._auth_counter)
@@ -106,25 +104,11 @@ class InternalSession(object):
     def __str__(self):
         return "InternalSession(name:{}, id:{}, auth_token:{})".format(self.name, self.session_id, self.authentication_token)
  
-    def open_secure_channel(self, params):
-        self.logger.info("open secure channel")
-        if params.RequestType == ua.SecurityTokenRequestType.Issue:
-            self.channel = ua.OpenSecureChannelResult()
-            self.channel.SecurityToken.TokenId = 13 #random value
-            self.channel.SecurityToken.ChannelId = self.iserver.get_new_channel_id()
-            self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime 
-        self.channel.SecurityToken.TokenId += 1
-        self.channel.SecurityToken.CreatedAt = datetime.now()
-        self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
-        self.channel.ServerNonce = uuid.uuid4().bytes + uuid.uuid4().bytes
-        return self.channel
-
     def get_endpoints(self, params=None):
         return self.iserver.get_endpoints(params)
 
     def create_session(self, params):
-        self.logger.info("create session")
-        self.logger.info("Create session request, created session: %s", self.session_id)
+        self.logger.info("Create session request")
 
         result = ua.CreateSessionResult()
         result.SessionId = self.session_id
@@ -134,12 +118,13 @@ class InternalSession(object):
         result.ServerNonce = self.nonce
         result.ServerEndpoints = self.get_endpoints()
 
-        self.state = SessionState.Created
-
         return result
 
+
+
+
     def close_session(self, delete_subs):
-        self.logger.info("close session")
+        self.logger.info("close session %s", self.session_id)
         self.state = SessionState.Closed
         self.delete_subscriptions(self.subscriptions)
 

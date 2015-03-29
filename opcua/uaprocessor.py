@@ -1,6 +1,8 @@
 
 import logging
 from threading import Lock
+import uuid
+from datetime import datetime
 
 from opcua import ua
 from opcua import utils
@@ -12,9 +14,12 @@ class PublishRequestData(object):
         self.seqhdr = None
 
 class UAProcessor(object):
-    def __init__(self, session, socket):
+    def __init__(self, internal_server, socket, name):
         self.logger = logging.getLogger(__name__)
-        self.session = session
+        self.iserver = internal_server
+        self.name = name
+        self.session = None
+        self.channel = None
         self.socket = socket
         self._lock = Lock()
         self._publishdata_queue = []
@@ -50,7 +55,7 @@ class UAProcessor(object):
         with self._lock:
             response.ResponseHeader.RequestHandle = requesthandle
             seqhdr.SequenceNumber += 1
-            hdr = ua.Header(msgtype, ua.ChunkType.Single, self.session.channel.SecurityToken.ChannelId)
+            hdr = ua.Header(msgtype, ua.ChunkType.Single, self.channel.SecurityToken.ChannelId)
             self.write_socket(hdr, algohdr, seqhdr, response)
 
     def write_socket(self, hdr, *args):
@@ -78,7 +83,7 @@ class UAProcessor(object):
         seqhdr = ua.SequenceHeader.from_binary(body)
         request = ua.OpenSecureChannelRequest.from_binary(body)
 
-        channel = self.session.open_secure_channel(request.Parameters)
+        channel = self._open_secure_channel(request.Parameters)
         #send response
         response = ua.OpenSecureChannelResponse()
         response.Parameters = channel
@@ -100,8 +105,8 @@ class UAProcessor(object):
             self.open_secure_channel(body)
 
         elif header.MessageType == ua.MessageType.SecureClose:
-            if not self.session.channel or header.ChannelId != self.session.channel.SecurityToken.ChannelId:
-                self.logger.warning("Request to close channel %s which was not issued, current channel is %s", header.ChannelId, self.session.channel)
+            if not self.channel or header.ChannelId != self.channel.SecurityToken.ChannelId:
+                self.logger.warning("Request to close channel %s which was not issued, current channel is %s", header.ChannelId, self.channel)
                 return False
 
         elif header.MessageType == ua.MessageType.SecureMessage:
@@ -119,8 +124,9 @@ class UAProcessor(object):
         if typeid == ua.NodeId(ua.ObjectIds.CreateSessionRequest_Encoding_DefaultBinary):
             self.logger.info("Create session request")
             params = ua.CreateSessionParameters.from_binary(body)
-
-            sessiondata = self.session.create_session(params)
+            
+            self.session = self.iserver.create_session(self.name)#create the session on server
+            sessiondata = self.session.create_session(params)#get a session creation result to send back
 
             response = ua.CreateSessionResponse()
             response.Parameters = sessiondata
@@ -179,7 +185,7 @@ class UAProcessor(object):
             self.logger.info("get endpoints request")
             params = ua.GetEndpointsParameters.from_binary(body) 
             
-            endpoints = self.session.get_endpoints(params)
+            endpoints = self.iserver.get_endpoints(params)
 
             response = ua.GetEndpointsResponse()
             response.Endpoints = endpoints
@@ -272,5 +278,18 @@ class UAProcessor(object):
             sf = ua.ServiceFault()
             sf.ResponseHeader.ServiceResult = ua.StatusCode(ua.StatusCodes.BadNotImplemented)
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, sf)
+
+    def _open_secure_channel(self, params):
+        self.logger.info("open secure channel")
+        if params.RequestType == ua.SecurityTokenRequestType.Issue:
+            self.channel = ua.OpenSecureChannelResult()
+            self.channel.SecurityToken.TokenId = 13 #random value
+            self.channel.SecurityToken.ChannelId = self.iserver.get_new_channel_id()
+            self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime 
+        self.channel.SecurityToken.TokenId += 1
+        self.channel.SecurityToken.CreatedAt = datetime.now()
+        self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
+        self.channel.ServerNonce = uuid.uuid4().bytes + uuid.uuid4().bytes
+        return self.channel
 
 

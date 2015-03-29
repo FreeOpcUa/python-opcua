@@ -47,7 +47,7 @@ class UAHandler(socketserver.BaseRequestHandler):
     """
 
     def handle(self):
-        processor = UAProcessor(self.server.internal_server.create_session(self.client_address), self.request)
+        processor = UAProcessor(self.server.internal_server, self.request, self.client_address)
         try:
             processor.loop()
         except ua.SocketClosedException as ex:
