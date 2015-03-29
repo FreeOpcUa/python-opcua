@@ -180,7 +180,8 @@ class InternalSession(object):
 
     def delete_subscriptions(self, ids):
         for i in ids:
-            self.subscriptions.remove(i)
+            if i in self.subscriptions:
+                self.subscriptions.remove(i)
         return self.submgr.delete_subscriptions(ids)
 
     def delete_monitored_items(self, params):

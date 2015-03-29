@@ -203,7 +203,7 @@ class CommonTests(object):
         self.assertEqual(ua.QualifiedName('Objects', 0), objects.get_name())
         nid = ua.NodeId(85, 0) 
         self.assertEqual(nid, objects.nodeid)
-    '''
+    
     def test_create_delete_subscription(self):
         o = self.opc.get_objects_node()
         v = o.add_variable(3, 'SubscriptionVariable', [1, 2, 3])
@@ -212,7 +212,7 @@ class CommonTests(object):
         time.sleep(0.1)
         sub.unsubscribe(handle)
         sub.delete()
-    '''
+    
     #def test_subscribe_events(self):
         #sub = self.opc.create_subscription(100, sclt)
         #handle = sub.subscribe_events()
@@ -498,7 +498,7 @@ class TestServer(unittest.TestCase, CommonTests):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.WARN)
     globalserver = ServerProcess() #server process will be started by client tests
     try:
         sclt = SubHandler()

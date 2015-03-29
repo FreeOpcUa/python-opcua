@@ -83,9 +83,12 @@ class SubscriptionManager(Thread):
         with self._lock:
             res = []
             for i in ids:
-                sub = self.subscriptions.pop(i)
-                sub.stop()
-                res.append(ua.StatusCode())
+                if not i in self.subscriptions:
+                    res.append(ua.StatusCode(ua.StatusCodes.BadSubscriptionsIdInvalid))
+                else:
+                    sub = self.subscriptions.pop(i)
+                    sub.stop()
+                    res.append(ua.StatusCode())
             return res
 
     def publish(self, acks):
