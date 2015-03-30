@@ -120,13 +120,10 @@ class InternalSession(object):
 
         return result
 
-
-
-
     def close_session(self, delete_subs):
-        self.logger.info("close session %s", self.session_id)
+        self.logger.info("close session %s with subscriptions %s", self, self.subscriptions)
         self.state = SessionState.Closed
-        self.delete_subscriptions(self.subscriptions)
+        self.delete_subscriptions(self.subscriptions[:])
 
     def activate_session(self, params):
         self.logger.info("activate session")

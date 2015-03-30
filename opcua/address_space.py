@@ -158,6 +158,7 @@ class AddressSpace(object):
                     v(k, value)
                 except Exception as ex:
                     self.logger.warn("Error calling datachange callback %s, %s, %s", k, v, ex)
+                    print(ex)
             return ua.StatusCode()
 
     def add_datachange_callback(self, nodeid, attr, callback):

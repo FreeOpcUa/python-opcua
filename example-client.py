@@ -40,8 +40,8 @@ if __name__ == "__main__":
         sub = client.create_subscription(500, handler)
         handle = sub.subscribe_data_change(myvar)
         time.sleep(0.1)
-        sub.unsubscribe(handle)
-        sub.delete()
+        #sub.unsubscribe(handle)
+        #sub.delete()
         embed()
     finally:
         client.disconnect()
