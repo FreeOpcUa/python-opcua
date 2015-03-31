@@ -1,6 +1,8 @@
 """
 server side implementation of subscriptions
 """
+import sys
+import traceback
 from threading import RLock, Thread, Condition
 from concurrent.futures import Future
 import logging
@@ -61,7 +63,7 @@ class SubscriptionManager(Thread):
         self.loop.call_soon_threadsafe(self.loop.stop)
 
     def create_subscription(self, params, callback):
-        self.logger.info("create subscription")
+        self.logger.info("create subscription with callback: %s", callback)
         with self._lock:
             result = ua.CreateSubscriptionResult()
             self._sub_id_counter += 1
@@ -145,7 +147,7 @@ class InternalSubscription(object):
         self._keep_alive_count = 0
 
     def __str__(self):
-        return "Subscription(id:%s)".format(self.data.SubscriptionId)
+        return "Subscription(id:{})".format(self.data.SubscriptionId)
 
     def start(self):
         self.logger.debug("starting subscription %s", self.data.SubscriptionId)
@@ -167,7 +169,17 @@ class InternalSubscription(object):
             #if self._keep_alive_count > self.data.RevisedLifetimeCount:
                 #self.logger.warn("Subscription %s has expired, keep alive count(%s) > lifetime count (%s)", self.data.SubscriptionId, self._keep_alive_count, self.data.RevisedLifetimeCount)
                 #return
-            self.publish_results()
+            try:
+                self.publish_results()
+            except Exception as ex: #we catch everythin since it seems exceptions are lost in loop
+                print("Exception in {} code:".format(self))
+                print('-'*60)
+                try:
+                    traceback.print_exc(file=sys.stderr)
+                except Exception as ex:
+                    print("RRRRR", ex)
+                print('-'*60)
+                #self.logger.warn("Exception in %s loop: %s", self, ex)
             yield from asyncio.sleep(1)
 
     def has_published_results(self):
@@ -194,7 +206,6 @@ class InternalSubscription(object):
             notif.MonitoredItems = self._triggered_datachanges[:]
             self._triggered_datachanges.clear() 
             self.logger.debug("sending datachanges nontification with %s events", len(notif.MonitoredItems))
-            print(self._triggered_datachanges)
             result.NotificationMessage.NotificationData.append(notif)
         if self._triggered_events:
             notif = ua.EventNotificationList()
@@ -207,7 +218,7 @@ class InternalSubscription(object):
         result.NotificationMessage.SequenceNumber = self._notification_seq
         self._notification_seq += 1
         result.MoreNotifications = False
-        result.AvailableSequenceNumbers = self._not_acknowledged_results[:]
+        result.AvailableSequenceNumbers = [res.NotificationMessage.SequenceNumber for res in self._not_acknowledged_results]
         self._not_acknowledged_results.append(result)
         return result
 

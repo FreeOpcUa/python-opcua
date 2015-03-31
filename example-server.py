@@ -22,6 +22,8 @@ if __name__ == "__main__":
     #optional setup logging
     logging.basicConfig(level=logging.WARN)
     #logger = logging.getLogger("opcua.address_space")
+    logger = logging.getLogger("asyncio")
+    logger.setLevel(logging.DEBUG)
     logger = logging.getLogger("opcua.internal_server")
     logger.setLevel(logging.DEBUG)
     logger = logging.getLogger("opcua.subscription_server")
@@ -43,8 +45,8 @@ if __name__ == "__main__":
     print("Available loggers are: ", logging.Logger.manager.loggerDict.keys())
     try:
         handler = SubHandler()
-        sub = server.create_subscription(500, handler)
-        handle = sub.subscribe_data_change(myvar)
+        #sub = server.create_subscription(500, handler)
+        #handle = sub.subscribe_data_change(myvar)
         #time.sleep(0.1)
         #sub.unsubscribe(handle)
         #sub.delete()

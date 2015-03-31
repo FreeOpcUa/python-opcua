@@ -9,7 +9,7 @@ from opcua import utils
 
 class PublishRequestData(object):
     def __init__(self):
-        self.hdr = None
+        self.requesthdr = None
         self.algohdr = None
         self.seqhdr = None
 
@@ -91,7 +91,7 @@ class UAProcessor(object):
 
     def forward_publish_response(self, result):
         self.logger.info("forward publish response %s", result)
-        if len(self._publishdata_queue == 0):
+        if len(self._publishdata_queue) == 0:
             self.logger.warning("Error server wants to send publish answer but no publish request is available")
             return
         response = ua.PublishResponse()
@@ -264,10 +264,10 @@ class UAProcessor(object):
             acks = ua.unpack_array("Int32", body)
             
             data = PublishRequestData()
-            data.hdr = requesthdr
+            data.requesthdr = requesthdr
             data.seqhdr = seqhdr
             data.algohdr = algohdr
-            self._publishdata_queue.append(requesthdr) # will be used to send publish answers from server
+            self._publishdata_queue.append(data) # will be used to send publish answers from server
             self.session.publish(acks)
 
 
