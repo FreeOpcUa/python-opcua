@@ -148,7 +148,10 @@ class UAProcessor(object):
             self.logger.info("Activate session request")
             params = ua.ActivateSessionParameters.from_binary(body) 
             
-            result = self.session.activate_session(params)
+            if not self.session:
+                result = ua.StatusCode(ua.StatusCodes.BadSessionIdInvalid)
+            else:
+                result = self.session.activate_session(params)
 
             response = ua.ActivateSessionResponse()
             response.Parameters = result
