@@ -23,6 +23,7 @@ class UAProcessor(object):
         self.socket = socket
         self._lock = Lock()
         self._publishdata_queue = []
+        self._seq_number = 1
 
     def loop(self):
         #first we want a hello message
@@ -54,8 +55,10 @@ class UAProcessor(object):
     def send_response(self, requesthandle, algohdr, seqhdr, response, msgtype=ua.MessageType.SecureMessage):
         with self._lock:
             response.ResponseHeader.RequestHandle = requesthandle
-            seqhdr.SequenceNumber += 1
+            seqhdr.SequenceNumber = self._seq_number
+            self._seq_number += 1
             hdr = ua.Header(msgtype, ua.ChunkType.Single, self.channel.SecurityToken.ChannelId)
+            algohdr.TokenId = self.channel.SecurityToken.TokenId 
             self.write_socket(hdr, algohdr, seqhdr, response)
 
     def write_socket(self, hdr, *args):
@@ -97,7 +100,7 @@ class UAProcessor(object):
         response = ua.PublishResponse()
         response.Parameters = result
 
-        requestdata = self._publishdata_queue.pop(-1)
+        requestdata = self._publishdata_queue.pop(0)
         self.send_response(requestdata.requesthdr.RequestHandle, requestdata.algohdr, requestdata.seqhdr, response)
 
     def process_body(self, header, body):
