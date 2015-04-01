@@ -104,7 +104,19 @@ class SubscriptionManager(Thread):
                     response.StatusCode = ua.StatusCode(ua.StatusCodes.BadSubscriptionIdInvalid)
                     res.append(response)
                 return res
-            return self.subscriptions[params.SubscriptionId].create_monitored_items(params)
+        return self.subscriptions[params.SubscriptionId].create_monitored_items(params)
+
+    def modify_monitored_items(self, params):
+        self.logger.info("modify monitored items")
+        with self._lock:
+            if not params.SubscriptionId in self.subscriptions:
+                res = []
+                for _ in params.ItemsToModify:
+                    result = ua.MonitoredItemModifyResult()
+                    result.StatusCode = ua.StatusCode(ua.StatusCodes.BadSubscriptionIdInvalid)
+                    res.append(result)
+                return res
+        return self.subscriptions[params.SubscriptionId].modify_monitored_items(params)
 
     def delete_monitored_items(self, params):
         self.logger.info("delete monitored items")
@@ -114,7 +126,7 @@ class SubscriptionManager(Thread):
                 for _ in params.MonitoredItemIds:
                     res.append(ua.StatusCode(ua.StatusCodes.BadSubscriptionIdInvalid))
                 return res
-            return self.subscriptions[params.SubscriptionId].delete_monitored_items(params)
+        return self.subscriptions[params.SubscriptionId].delete_monitored_items(params.MonitoredItemIds)
 
 
 
@@ -174,10 +186,7 @@ class InternalSubscription(object):
             except Exception as ex: #we catch everythin since it seems exceptions are lost in loop
                 print("Exception in {} code:".format(self))
                 print('-'*60)
-                try:
-                    traceback.print_exc(file=sys.stderr)
-                except Exception as ex:
-                    print("RRRRR", ex)
+                traceback.print_exc(file=sys.stderr)
                 print('-'*60)
                 #self.logger.warn("Exception in %s loop: %s", self, ex)
             yield from asyncio.sleep(1)
@@ -228,10 +237,32 @@ class InternalSubscription(object):
             results.append(self._create_monitored_item(item))
         return results
 
+    def modify_monitored_items(self, params):
+        results = []
+        for item in params.ItemsToModify:
+            results.append(self._modify_monitored_item(item))
+        return results
+
+
     def trigger_datachange(self, handle, nodeid, attr):
         self.logger.debug("triggering datachange for handle %s, nodeid %s, and attribute %s", handle, nodeid, attr)
         variant = self.aspace.get_attribute_value(nodeid, attr)
         self.datachange_callback(handle, variant)
+
+    def _modify_monitored_item(self, params):
+        with self._lock:
+            for _, mdata in self._monitored_datachange.items():
+                result = ua.MonitoredItemCreateResult()
+                if mdata.monitored_item_id == params.MonitoredItemId:
+                    result.RevisedSamplingInterval = self.data.RevisedPublishingInterval
+                    result.RevisedQueueSize = params.RequestedParameters.QueueSize #FIXME check and use value
+                    result.FilterResult = params.RequestedParameters.Filter
+                    mdata.parameters = result
+                    return result
+            #FIXME modify event subscriptions
+            result = ua.MonitoredItemCreateResult()
+            result.StatusCode(ua.StatusCodes.BadMonitoredItemIdInvalid)
+            return result
 
     def _create_monitored_item(self, params):
         with self._lock:

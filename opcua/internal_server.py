@@ -160,6 +160,9 @@ class InternalSession(object):
     def create_monitored_items(self, params):
         return self.submgr.create_monitored_items(params)
 
+    def modify_monitored_items(self, params):
+        return self.submgr.modify_monitored_items(params)
+
     def delete_subscriptions(self, ids):
         for i in ids:
             if i in self.subscriptions:

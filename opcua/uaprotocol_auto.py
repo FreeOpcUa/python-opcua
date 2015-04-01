@@ -7306,14 +7306,12 @@ class MonitoredItemModifyRequest(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.MonitoredItemModifyRequest_Encoding_DefaultBinary)
         self.MonitoredItemId = 0
         self.RequestedParameters = MonitoringParameters()
         self._freeze()
     
     def to_binary(self):
         packet = []
-        packet.append(self.TypeId.to_binary())
         packet.append(pack_uatype('UInt32', self.MonitoredItemId))
         packet.append(self.RequestedParameters.to_binary())
         return b''.join(packet)
@@ -7321,14 +7319,12 @@ class MonitoredItemModifyRequest(FrozenClass):
     @staticmethod
     def from_binary(data):
         obj = MonitoredItemModifyRequest()
-        obj.TypeId = NodeId.from_binary(data)
         obj.MonitoredItemId = unpack_uatype('UInt32', data)
         obj.RequestedParameters = MonitoringParameters.from_binary(data)
         return obj
     
     def __str__(self):
-        return 'MonitoredItemModifyRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'MonitoredItemId:' + str(self.MonitoredItemId) + ', '  + \
+        return 'MonitoredItemModifyRequest(' + 'MonitoredItemId:' + str(self.MonitoredItemId) + ', '  + \
              'RequestedParameters:' + str(self.RequestedParameters) + ')'
     
     __repr__ = __str__
@@ -7435,16 +7431,20 @@ class ModifyMonitoredItemsRequest(FrozenClass):
     
     __repr__ = __str__
     
-class ModifyMonitoredItemsResult(FrozenClass):
+class ModifyMonitoredItemsResponse(FrozenClass):
     '''
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.ModifyMonitoredItemsResponse_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze()
     
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.Results)))
         for fieldname in self.Results:
             packet.append(fieldname.to_binary())
@@ -7455,7 +7455,9 @@ class ModifyMonitoredItemsResult(FrozenClass):
         
     @staticmethod
     def from_binary(data):
-        obj = ModifyMonitoredItemsResult()
+        obj = ModifyMonitoredItemsResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -7467,39 +7469,10 @@ class ModifyMonitoredItemsResult(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'ModifyMonitoredItemsResult(' + 'Results:' + str(self.Results) + ', '  + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
-    __repr__ = __str__
-    
-class ModifyMonitoredItemsResponse(FrozenClass):
-    '''
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.ModifyMonitoredItemsResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = ModifyMonitoredItemsResult()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = ModifyMonitoredItemsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = ModifyMonitoredItemsResult.from_binary(data)
-        return obj
-    
-    def __str__(self):
         return 'ModifyMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
     
     __repr__ = __str__
     

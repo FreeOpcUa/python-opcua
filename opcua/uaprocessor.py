@@ -149,13 +149,17 @@ class UAProcessor(object):
             params = ua.ActivateSessionParameters.from_binary(body) 
             
             if not self.session:
-                result = ua.StatusCode(ua.StatusCodes.BadSessionIdInvalid)
+                #result = ua.ActivateSessionResult()
+                #result.Results.append(ua.StatusCode(ua.StatusCodes.BadSessionIdInvalid))
+                response = ua.ServiceFault()
+                response.ResponseHeader.ServiceResult = ua.StatusCode(ua.StatusCodes.BadSessionIdInvalid)
+                self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
             else:
                 result = self.session.activate_session(params)
 
-            response = ua.ActivateSessionResponse()
-            response.Parameters = result
-            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+                response = ua.ActivateSessionResponse()
+                response.Parameters = result
+                self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.ReadRequest_Encoding_DefaultBinary):
             self.logger.info("Read request")
@@ -244,14 +248,25 @@ class UAProcessor(object):
 
         elif typeid == ua.NodeId(ua.ObjectIds.CreateMonitoredItemsRequest_Encoding_DefaultBinary):
             self.logger.info("create monitored items request")
-            params = ua.CreateMonitoredItemsParameters.from_binary(body) 
-            
+            params = ua.CreateMonitoredItemsParameters.from_binary(body)
             results = self.session.create_monitored_items(params)
 
             response = ua.CreateMonitoredItemsResponse()
             response.Results = results
 
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.ModifyMonitoredItemsRequest_Encoding_DefaultBinary):
+            self.logger.info("modify monitored items request")
+            params = ua.ModifyMonitoredItemsParameters.from_binary(body) 
+            results = self.session.modify_monitored_items(params)
+
+            response = ua.ModifyMonitoredItemsResponse()
+            response.Results = results
+
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+
 
         elif typeid == ua.NodeId(ua.ObjectIds.DeleteMonitoredItemsRequest_Encoding_DefaultBinary):
             self.logger.info("delete monitored items request")
@@ -266,6 +281,9 @@ class UAProcessor(object):
 
         elif typeid == ua.NodeId(ua.ObjectIds.PublishRequest_Encoding_DefaultBinary):
             self.logger.info("publish request")
+
+            if not self.session:
+                return
             
             acks = ua.unpack_array("Int32", body)
             
