@@ -189,7 +189,7 @@ class InternalSubscription(object):
                 traceback.print_exc(file=sys.stderr)
                 print('-'*60)
                 #self.logger.warn("Exception in %s loop: %s", self, ex)
-            yield from asyncio.sleep(1)
+            yield from asyncio.sleep(self.data.RevisedPublishingInterval/1000)
 
     def has_published_results(self):
         if self._startup or self._triggered_datachanges or self._triggered_events:

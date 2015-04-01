@@ -38,14 +38,14 @@ class MySubHandler():
         self.node = None
         self.handle = None
         self.attribute = None
-        self.Value = None
+        self.value = None
         self.ev = None
         return self.cond
 
     def data_change(self, handle, node, val, attr):
         self.handle = handle
         self.node = node
-        self.Value = val
+        self.value = val
         self.attribute = attr
         with self.cond:
             self.cond.notify_all()
@@ -388,6 +388,45 @@ class CommonTests(object):
         v.set_value([1])
         val = v.get_value()
         self.assertEqual([1], val) 
+
+    def test_subscription_data_change(self):
+        '''
+        test subscriptions. This is far too complicated for
+        a unittest but, setting up subscriptions requires a lot
+        of code, so when we first set it up, it is best 
+        to test as many things as possible
+        '''
+        msclt = MySubHandler()
+        cond = msclt.setup()
+
+        o = self.opc.get_objects_node()
+
+        # subscribe to a variable
+        startv1 = [1, 2, 3]
+        v1 = o.add_variable(3, 'SubscriptionVariableV1', startv1)
+        sub = self.opc.create_subscription(100, msclt)
+        handle1 = sub.subscribe_data_change(v1)
+
+        # Now check we get the start value
+        with cond:
+            ret = cond.wait(0.5)
+        if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
+        else: pass # XXX
+        self.assertEqual(msclt.value, startv1)
+        self.assertEqual(msclt.node, v1)
+
+        # modify v1 and check we get value 
+        v1.set_value([5])
+        with cond:
+            ret = cond.wait(0.5)
+        if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
+        else: pass # XXX
+        self.assertEqual(msclt.node, v1)
+        self.assertEqual(msclt.value, [5])
+
+        sub.unsubscribe(handle1)
+        sub.delete()
+
 
 
 
