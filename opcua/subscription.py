@@ -3,6 +3,7 @@ high level interface to subscriptions
 """
 import io
 import logging
+from threading import RLock
 
 import opcua.uaprotocol as ua
 
@@ -22,6 +23,7 @@ class Subscription(object):
         self._handler = handler
         self.parameters = params #move to data class
         self._monitoreditems_map = {}
+        self._lock = RLock()
         response = self.server.create_subscription(params, self.publish_callback)
         self.subscription_id = response.SubscriptionId #move to data class
         self.server.publish()

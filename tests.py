@@ -433,7 +433,7 @@ class CommonTests(object):
         else: pass # XXX
         self.assertEqual(msclt.node, server_time_node)
         delta = datetime.now() - msclt.value 
-        self.assertTrue(delta < timedelta(seconds=0.5))
+        self.assertTrue(delta < timedelta(seconds=1))
 
         sub.unsubscribe(handle)
         sub.delete()

@@ -98,7 +98,6 @@ class Node(object):
             if type(item) == ua.QualifiedName:
                 el.TargetName = item
             else:
-                print(item, type(item))
                 el.TargetName = ua.QualifiedName.from_string(item)
             rpath.Elements.append(el)
         bpath = ua.BrowsePath()

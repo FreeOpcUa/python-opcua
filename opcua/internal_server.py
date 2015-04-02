@@ -5,7 +5,7 @@ Internal server implementing opcu-ua interface. can be used on server side or to
 from datetime import datetime
 import uuid
 import logging
-from threading import Timer
+from threading import Timer, Lock
 from enum import Enum
 
 from opcua import ua
@@ -98,8 +98,8 @@ class InternalSession(object):
         InternalSession._auth_counter += 1
         self.nonce = utils.create_nonce() 
         self.subscriptions = []
-        self.channel = None
         self.logger.warning("Created internal session %s", self.name)
+        self._lock = Lock()
 
     def __str__(self):
         return "InternalSession(name:{}, id:{}, auth_token:{})".format(self.name, self.session_id, self.authentication_token)
@@ -154,7 +154,8 @@ class InternalSession(object):
 
     def create_subscription(self, params, callback):
         result = self.submgr.create_subscription(params, callback)
-        self.subscriptions.append(result.SubscriptionId)
+        with self._lock:
+            self.subscriptions.append(result.SubscriptionId)
         return result
 
     def create_monitored_items(self, params):
@@ -165,8 +166,9 @@ class InternalSession(object):
 
     def delete_subscriptions(self, ids):
         for i in ids:
-            if i in self.subscriptions:
-                self.subscriptions.remove(i)
+            with self._lock:
+                if i in self.subscriptions:
+                    self.subscriptions.remove(i)
         return self.submgr.delete_subscriptions(ids)
 
     def delete_monitored_items(self, params):

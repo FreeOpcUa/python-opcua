@@ -106,10 +106,8 @@ class AddressSpace(object):
     def _add_reference(self, addref):
         with self._lock:
             if not addref.SourceNodeId in self._nodes:
-                #print("add_reference: source node %s does not exists", addref.SourceNodeId)
                 return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
             if not addref.TargetNodeId in self._nodes:
-                #print("add_reference: target node %s does not exists", addref.TargetNodeId)
                 return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
             rdesc = ua.ReferenceDescription()
             rdesc.ReferenceTypeId = addref.ReferenceTypeId
@@ -158,7 +156,7 @@ class AddressSpace(object):
                     v(k, value)
                 except Exception as ex:
                     self.logger.warn("Error calling datachange callback %s, %s, %s", k, v, ex)
-                    print(ex)
+                    print(ex)#seems exception is truncated!?!?
             return ua.StatusCode()
 
     def add_datachange_callback(self, nodeid, attr, callback):

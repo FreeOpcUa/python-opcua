@@ -1,8 +1,6 @@
 """
 server side implementation of subscriptions
 """
-import sys
-import traceback
 from threading import RLock, Thread, Condition
 from concurrent.futures import Future
 import logging
@@ -23,8 +21,8 @@ class SubscriptionManager(Thread):
         self._lock = RLock()
 
     def start(self):
-        Thread.start(self)
         with self._cond:
+            Thread.start(self)
             self._cond.wait()
 
     def run(self):
@@ -34,7 +32,7 @@ class SubscriptionManager(Thread):
         with self._cond:
             self._cond.notify_all()
         self.loop.run_forever()
-        self.logger.debug("subsription thread ended")
+        self.logger.debug("subscription thread ended")
 
     def _add_task(self, future, coro):
         task = self.loop.create_task(coro)
@@ -64,13 +62,13 @@ class SubscriptionManager(Thread):
 
     def create_subscription(self, params, callback):
         self.logger.info("create subscription with callback: %s", callback)
+        result = ua.CreateSubscriptionResult()
+        result.RevisedPublishingInterval = params.RequestedPublishingInterval
+        result.RevisedLifetimeCount = params.RequestedLifetimeCount
+        result.RevisedMaxKeepAliveCount = params.RequestedMaxKeepAliveCount
         with self._lock:
-            result = ua.CreateSubscriptionResult()
             self._sub_id_counter += 1
             result.SubscriptionId = self._sub_id_counter
-            result.RevisedPublishingInterval = params.RequestedPublishingInterval
-            result.RevisedLifetimeCount = params.RequestedLifetimeCount
-            result.RevisedMaxKeepAliveCount = params.RequestedMaxKeepAliveCount
 
             sub = InternalSubscription(self, result, self.aspace, callback)
             sub.start()
@@ -80,16 +78,16 @@ class SubscriptionManager(Thread):
 
     def delete_subscriptions(self, ids):
         self.logger.info("delete subscriptions: %s", ids)
-        with self._lock:
-            res = []
-            for i in ids:
+        res = []
+        for i in ids:
+            with self._lock:
                 if not i in self.subscriptions:
                     res.append(ua.StatusCode(ua.StatusCodes.BadSubscriptionIdInvalid))
                 else:
                     sub = self.subscriptions.pop(i)
                     sub.stop()
                     res.append(ua.StatusCode())
-            return res
+        return res
 
     def publish(self, acks):
         self.logger.info("publish request with acks %s", acks)
@@ -104,7 +102,7 @@ class SubscriptionManager(Thread):
                     response.StatusCode = ua.StatusCode(ua.StatusCodes.BadSubscriptionIdInvalid)
                     res.append(response)
                 return res
-        return self.subscriptions[params.SubscriptionId].create_monitored_items(params)
+            return self.subscriptions[params.SubscriptionId].create_monitored_items(params)
 
     def modify_monitored_items(self, params):
         self.logger.info("modify monitored items")
@@ -116,7 +114,7 @@ class SubscriptionManager(Thread):
                     result.StatusCode = ua.StatusCode(ua.StatusCodes.BadSubscriptionIdInvalid)
                     res.append(result)
                 return res
-        return self.subscriptions[params.SubscriptionId].modify_monitored_items(params)
+            return self.subscriptions[params.SubscriptionId].modify_monitored_items(params)
 
     def delete_monitored_items(self, params):
         self.logger.info("delete monitored items")
@@ -126,7 +124,7 @@ class SubscriptionManager(Thread):
                 for _ in params.MonitoredItemIds:
                     res.append(ua.StatusCode(ua.StatusCodes.BadSubscriptionIdInvalid))
                 return res
-        return self.subscriptions[params.SubscriptionId].delete_monitored_items(params.MonitoredItemIds)
+            return self.subscriptions[params.SubscriptionId].delete_monitored_items(params.MonitoredItemIds)
 
 
 
@@ -163,7 +161,7 @@ class InternalSubscription(object):
 
     def start(self):
         self.logger.debug("starting subscription %s", self.data.SubscriptionId)
-        self.task = self.manager.add_task(self.subscription_loop())
+        self.task = self.manager.add_task(self._subscription_loop())
     
     def stop(self):
         self.logger.debug("stopping subscription %s", self.data.SubscriptionId)
@@ -174,7 +172,7 @@ class InternalSubscription(object):
         self.delete_monitored_items([mdata.monitored_item_id for mdata in self._monitored_datachange.values()])
 
     @asyncio.coroutine
-    def subscription_loop(self):
+    def _subscription_loop(self):
         self.logger.debug("%s loop running", self)
         while True:
             #test disabled we do not check that one since we do not care about not received results
@@ -184,30 +182,27 @@ class InternalSubscription(object):
             try:
                 self.publish_results()
             except Exception as ex: #we catch everythin since it seems exceptions are lost in loop
-                print("Exception in {} code:".format(self))
-                print('-'*60)
-                traceback.print_exc(file=sys.stderr)
-                print('-'*60)
-                #self.logger.warn("Exception in %s loop: %s", self, ex)
+                self.logger.exception("Exception in %s loop", self)
             yield from asyncio.sleep(self.data.RevisedPublishingInterval/1000)
 
     def has_published_results(self):
-        if self._startup or self._triggered_datachanges or self._triggered_events:
-            return True
-        if self._keep_alive_count > self.data.RevisedMaxKeepAliveCount:
-            self.logger.debug("keep alive count %s is > than max keep alive count %s, sending publish event", self._keep_alive_count, self.data.RevisedMaxKeepAliveCount)
-            return True
-        self._keep_alive_count += 1
-        print("no publish result")
-        return False
+        with self._lock:
+            if self._startup or self._triggered_datachanges or self._triggered_events:
+                return True
+            if self._keep_alive_count > self.data.RevisedMaxKeepAliveCount:
+                self.logger.debug("keep alive count %s is > than max keep alive count %s, sending publish event", self._keep_alive_count, self.data.RevisedMaxKeepAliveCount)
+                return True
+            self._keep_alive_count += 1
+            return False
 
     def publish_results(self): 
         #self.logger.debug("looking for results and publishing")
-        if self.has_published_results(): #FIXME: should I pop a publish request here? or I do not care?
-            result = self.pop_publish_result()
-            self.callback(result)
+        with self._lock:
+            if self.has_published_results(): #FIXME: should I pop a publish request here? or I do not care?
+                result = self._pop_publish_result()
+                self.callback(result)
 
-    def pop_publish_result(self):
+    def _pop_publish_result(self):
         result = ua.PublishResult()
         result.SubscriptionId = self.data.SubscriptionId
         if self._triggered_datachanges:
@@ -326,12 +321,13 @@ class InternalSubscription(object):
     def datachange_callback(self, handle, value):
         self.logger.info("subscription %s: datachange callback called with %s, %s", self, handle, value.Value)
         event = ua.MonitoredItemNotification()
-        mdata = self._monitored_datachange[handle]
-        #event.monitored_item_id = mdata.monitored_item_id
-        #event.monitored_item_notification.ClientHandle = mdata.client_handle
-        event.ClientHandle = mdata.client_handle
-        event.Value = value
-        self._triggered_datachanges.append(event)
+        with self._lock:
+            mdata = self._monitored_datachange[handle]
+            #event.monitored_item_id = mdata.monitored_item_id
+            #event.monitored_item_notification.ClientHandle = mdata.client_handle
+            event.ClientHandle = mdata.client_handle
+            event.Value = value
+            self._triggered_datachanges.append(event)
 
 
 

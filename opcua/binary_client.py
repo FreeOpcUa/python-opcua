@@ -324,7 +324,7 @@ class BinaryClient(object):
         try:
             self._publishcallbacks[response.Parameters.SubscriptionId](response.Parameters)
         except Exception as ex: #we call client code, catch everything!
-            self.logger.warning("exception while calling user callback: %s", ex)
+            self.logger.exception("Exception while calling user callback")
 
 
     def create_monitored_items(self, params):

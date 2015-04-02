@@ -1,7 +1,6 @@
 
 import logging
 from threading import Lock
-import uuid
 from datetime import datetime
 
 from opcua import ua
@@ -21,25 +20,27 @@ class UAProcessor(object):
         self.session = None
         self.channel = None
         self.socket = socket
-        self._lock = Lock()
+        self._socketlock = Lock()
+        self._datalock = Lock()
         self._publishdata_queue = []
         self._seq_number = 1
 
     def loop(self):
         #first we want a hello message
-        header = ua.Header.from_stream(self.socket)
-        body = self.receive_body(header.body_size)
-        if header.MessageType != ua.MessageType.Hello:
+        while True:
+            header = ua.Header.from_stream(self.socket)
+            body = self._receive_body(header.body_size)
+            if header.MessageType == ua.MessageType.Hello:
+                break
             self.logger.warning("received a message which is not a hello, sending back an error message %s", header)
             hdr = ua.Header(ua.MessageType.Error, ua.ChunkType.Single)
-            self.write_socket(hdr)
-            return
+            self._write_socket(hdr)
         hello = ua.Hello.from_binary(body)
         hdr = ua.Header(ua.MessageType.Acknowledge, ua.ChunkType.Single)
         ack = ua.Acknowledge()
         ack.ReceivebufferSize = hello.ReceiveBufferSize
         ack.SendbufferSize = hello.SendBufferSize
-        self.write_socket(hdr, ack)
+        self._write_socket(hdr, ack)
 
         while True:
             header = ua.Header.from_stream(self.socket)
@@ -48,20 +49,20 @@ class UAProcessor(object):
             if header.MessageType == ua.MessageType.Error:
                 self.logger.warning("Received an error message type")
                 return
-            body = self.receive_body(header.body_size)
+            body = self._receive_body(header.body_size)
             if not self.process_body(header, body):
                 break
 
     def send_response(self, requesthandle, algohdr, seqhdr, response, msgtype=ua.MessageType.SecureMessage):
-        with self._lock:
+        with self._socketlock:
             response.ResponseHeader.RequestHandle = requesthandle
             seqhdr.SequenceNumber = self._seq_number
             self._seq_number += 1
             hdr = ua.Header(msgtype, ua.ChunkType.Single, self.channel.SecurityToken.ChannelId)
             algohdr.TokenId = self.channel.SecurityToken.TokenId 
-            self.write_socket(hdr, algohdr, seqhdr, response)
+            self._write_socket(hdr, algohdr, seqhdr, response)
 
-    def write_socket(self, hdr, *args):
+    def _write_socket(self, hdr, *args):
         alle = []
         for arg in args:
             data = arg.to_binary()
@@ -72,9 +73,9 @@ class UAProcessor(object):
         self.logger.info("writting %s bytes to socket, with header %s ", len(alle), hdr)
         #self.logger.info("writting data %s", hdr, [i for i in args])
         #self.logger.debug("data: %s", alle)
-        self.socket.send(alle)
+        self.socket.sendall(alle)
 
-    def receive_body(self, size):
+    def _receive_body(self, size):
         self.logger.debug("reading body of message (%s bytes)", size)
         data = self.socket.recv(size)
         if size != len(data):
@@ -94,13 +95,14 @@ class UAProcessor(object):
 
     def forward_publish_response(self, result):
         self.logger.info("forward publish response %s", result)
-        if len(self._publishdata_queue) == 0:
-            self.logger.warning("Error server wants to send publish answer but no publish request is available")
-            return
+        with self._datalock:
+            if len(self._publishdata_queue) == 0:
+                self.logger.warning("Error server wants to send publish answer but no publish request is available")
+                return
+            requestdata = self._publishdata_queue.pop(0)
         response = ua.PublishResponse()
         response.Parameters = result
 
-        requestdata = self._publishdata_queue.pop(0)
         self.send_response(requestdata.requesthdr.RequestHandle, requestdata.algohdr, requestdata.seqhdr, response)
 
     def process_body(self, header, body):
@@ -291,11 +293,9 @@ class UAProcessor(object):
             data.requesthdr = requesthdr
             data.seqhdr = seqhdr
             data.algohdr = algohdr
-            self._publishdata_queue.append(data) # will be used to send publish answers from server
+            with self._datalock:
+                self._publishdata_queue.append(data) # will be used to send publish answers from server
             self.session.publish(acks)
-
-
-
 
         else:
             self.logger.warning("Uknown message received %s", typeid)
@@ -313,7 +313,7 @@ class UAProcessor(object):
         self.channel.SecurityToken.TokenId += 1
         self.channel.SecurityToken.CreatedAt = datetime.now()
         self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
-        self.channel.ServerNonce = uuid.uuid4().bytes + uuid.uuid4().bytes
+        self.channel.ServerNonce = utils.create_nonce()
         return self.channel
 
 
