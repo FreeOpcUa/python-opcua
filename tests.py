@@ -79,22 +79,15 @@ class Unit(unittest.TestCase):
     def test_expandednodeid(self):
         nid = ua.ExpandedNodeId()
         self.assertEqual(nid.NodeIdType, ua.NodeIdType.TwoByte) 
-        print(nid.to_binary())
+        nid2 = ua.ExpandedNodeId.from_binary(ua.utils.Buffer(nid.to_binary()))
+        self.assertEqual(nid, nid2)
 
     def test_extension_object(self):
         obj = ua.ExtensionObject()
-        d = obj.to_binary()
-        print(d)
+        obj2 = ua.ExtensionObject.from_binary(ua.utils.Buffer(obj.to_binary()))
+        self.assertEqual(obj2.TypeId, obj2.TypeId)
+        self.assertEqual(obj2.Body, obj2.Body)
     
-    def test_qualified_name(self):
-        qn = ua.QualifiedName("Root", 0)
-        print(qn)
-        qn.to_binary()
-
-    def test_variant(self):
-        qn = ua.QualifiedName("Root", 0)
-        v = Variant
-
     def test_datetime(self):
         now = datetime.now()
         epch = ua.datetime_to_win_epoch(now)
@@ -103,9 +96,7 @@ class Unit(unittest.TestCase):
 
         epch = 128930364000001000
         dt = ua.win_epoch_to_datetime(epch)
-        print("dt", dt)
         epch2 = ua.datetime_to_win_epoch(dt)
-        print("epch2", epch2)
         self.assertEqual(epch, epch2)
 
     def test_equal_nodeid(self):
@@ -427,6 +418,26 @@ class CommonTests(object):
         sub.unsubscribe(handle1)
         sub.delete()
 
+    def test_subscribe_server_time(self):
+        msclt = MySubHandler()
+        cond = msclt.setup()
+
+        server_time_node = self.opc.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
+
+        sub = self.opc.create_subscription(200, msclt)
+        handle = sub.subscribe_data_change(server_time_node)
+
+        with cond:
+            ret = cond.wait(0.5)
+        if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
+        else: pass # XXX
+        self.assertEqual(msclt.node, server_time_node)
+        delta = datetime.now() - msclt.value 
+        self.assertTrue(delta < timedelta(seconds=0.5))
+
+        sub.unsubscribe(handle)
+        sub.delete()
+
 
 
 
@@ -490,7 +501,7 @@ class TestClient(unittest.TestCase, CommonTests):
         # new one before this one is really stopped
         self.srv.join()
 
-
+"""
 
 class TestServer(unittest.TestCase, CommonTests):
     '''
@@ -532,7 +543,7 @@ class TestServer(unittest.TestCase, CommonTests):
         self.assertEqual(idx, myid.NamespaceIndex) 
         #self.assertEqual(uri, myid.Namespace_uri) #FIXME: should return uri!!!
 '''
-
+"""
 
 
 
