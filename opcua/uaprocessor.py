@@ -77,7 +77,7 @@ class UAProcessor(object):
 
     def _receive_body(self, size):
         self.logger.debug("reading body of message (%s bytes)", size)
-        data = self.socket.recv(size)
+        data = ua.utils.recv_all(self.socket, size)
         if size != len(data):
             raise Exception("Error, did not received expected number of bytes, got {}, asked for {}".format(len(data), size))
         return utils.Buffer(data)
@@ -117,7 +117,7 @@ class UAProcessor(object):
         elif header.MessageType == ua.MessageType.SecureMessage:
             algohdr = ua.SymmetricAlgorithmHeader.from_binary(body)
             seqhdr = ua.SequenceHeader.from_binary(body)
-            self.process_message(algohdr, seqhdr, body)
+            return self.process_message(algohdr, seqhdr, body)
 
         else:
             self.logger.warning("Unsupported message type: %s", header.MessageType)
@@ -297,11 +297,20 @@ class UAProcessor(object):
                 self._publishdata_queue.append(data) # will be used to send publish answers from server
             self.session.publish(acks)
 
+        elif typeid == ua.NodeId(ua.ObjectIds.CloseSecureChannelRequest_Encoding_DefaultBinary):
+            self.logger.info("close secure channel request")
+            response = ua.CloseSecureChannelResponse()
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+            self.channel = None
+            return False
+ 
         else:
             self.logger.warning("Uknown message received %s", typeid)
             sf = ua.ServiceFault()
             sf.ResponseHeader.ServiceResult = ua.StatusCode(ua.StatusCodes.BadNotImplemented)
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, sf)
+
+        return True
 
     def _open_secure_channel(self, params):
         self.logger.info("open secure channel")
