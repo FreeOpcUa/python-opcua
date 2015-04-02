@@ -1,19 +1,14 @@
 """
 Low level binary client
 """
-#import io
+
 import logging
 import socket
-from threading import Thread, Condition, Lock
+from threading import Thread, Lock
+from concurrent.futures import Future
 
 import opcua.uaprotocol as ua
 import opcua.utils as utils
-
-class RequestCallback(object):
-    def __init__(self):
-        self.condition = Condition()
-        self.data = None
-        self.callback = None
 
 
 class BinaryClient(object):
@@ -56,15 +51,15 @@ class BinaryClient(object):
             hdr = ua.Header(ua.MessageType.SecureMessage, ua.ChunkType.Single, self._security_token.ChannelId)
             symhdr = self._create_sym_algo_header()
             seqhdr = self._create_sequence_header()
-            rcall = RequestCallback()
-            rcall.callback = callback
-            self._callbackmap[seqhdr.RequestId] = rcall
+            future = Future()
+            if callback:
+                future.add_done_callback(callback)
+            self._callbackmap[seqhdr.RequestId] = future
             self._write_socket(hdr, symhdr, seqhdr, request)
         if not callback:
-            with rcall.condition:
-                rcall.condition.wait()
-                self._check_answer(rcall.data, " in response to " + request.__class__.__name__)
-                return rcall.data
+            data = future.result()
+            self._check_answer(data, " in response to " + request.__class__.__name__)
+            return data
 
     def _check_answer(self, data, context):
         data = data.copy(50)#FIXME check max length nodeid + responseheader
@@ -81,7 +76,6 @@ class BinaryClient(object):
                 self._receive()
             except ua.SocketClosedException:
                 self.logger.info("Socket has closed connection")
-                #FIXME: should we wake up all waiting conditions here??
                 break
         self.logger.info("Thread ended")
 
@@ -96,7 +90,6 @@ class BinaryClient(object):
         data = utils.recv_all(self._socket, size)
         if size != len(data):
             raise Exception("Error, did not received expected number of bytes, got {}, asked for {}".format(len(data), size))
-        #return io.BytesIO(data)
         return utils.Buffer(data)
 
     def _receive(self):
@@ -126,15 +119,10 @@ class BinaryClient(object):
         self._call_callback(seqhdr.RequestId, body)
 
     def _call_callback(self, request_id, body):
-        rcall = self._callbackmap.pop(request_id, None)
-        if rcall is None:
-            raise Exception("No callback object found for request: {}, callbacks in list are {}".format(request_id, self._callbackmap.keys()))
-        rcall.condition.acquire()
-        rcall.data = body
-        rcall.condition.notify_all()
-        rcall.condition.release()
-        if rcall.callback:
-            rcall.callback(rcall)
+        future = self._callbackmap.pop(request_id, None)
+        if future is None:
+            raise Exception("No future object found for request: {}, callbacks in list are {}".format(request_id, self._callbackmap.keys()))
+        future.set_result(body)
 
     def _write_socket(self, hdr, *args):
         alle = []
@@ -190,11 +178,9 @@ class BinaryClient(object):
         hello.EndpointUrl = url
         header = ua.Header(ua.MessageType.Hello, ua.ChunkType.Single)
         self._write_socket(header, hello)
-        rcall = RequestCallback()
-        self._callbackmap[0] = rcall
-        with rcall.condition:
-            rcall.condition.wait()
-        return ua.Acknowledge.from_binary(rcall.data)
+        future = Future()
+        self._callbackmap[0] = future
+        return ua.Acknowledge.from_binary(future.result())
  
     def open_secure_channel(self, params):
         self.logger.info("open_secure_channel")
@@ -207,13 +193,10 @@ class BinaryClient(object):
         seqhdr = self._create_sequence_header()
         self._write_socket(hdr, asymhdr, seqhdr, request)
 
-        rcall = RequestCallback()
-        self._callbackmap[seqhdr.RequestId] = rcall
-        with rcall.condition:
-            rcall.condition.wait()
-            #FICME: could copy data here ....
+        future = Future()
+        self._callbackmap[seqhdr.RequestId] = future
 
-        response = ua.OpenSecureChannelResponse.from_binary(rcall.data)
+        response = ua.OpenSecureChannelResponse.from_binary(future.result())
         response.ResponseHeader.ServiceResult.check()
         self._security_token = response.Parameters.SecurityToken
         return response.Parameters
@@ -335,9 +318,9 @@ class BinaryClient(object):
         request.SubscriptionAcknowledgements = acks
         self._send_request(request, self._call_publish_callback, timeout=0)
 
-    def _call_publish_callback(self, rcall):
+    def _call_publish_callback(self, future):
         self.logger.info("call_publish_callback")
-        response = ua.PublishResponse.from_binary(rcall.data)
+        response = ua.PublishResponse.from_binary(future.result())
         try:
             self._publishcallbacks[response.Parameters.SubscriptionId](response.Parameters)
         except Exception as ex: #we call client code, catch everything!
