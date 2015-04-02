@@ -14,6 +14,7 @@ Client: what works:
 * creating subscriptions
 * subscribing to items for data change
 * adding nodes
+* tested servers: freeopcua C++, freeopcua Python, prosys
 
 Client: what is not implemented yet 
 * method call
@@ -33,11 +34,12 @@ Server: what works:
 * gettings nodes by path and nodeids
 * autogenerate addres space from spec
 * adding nodes to address space
-* tested client: freeopcua C++ , freeopcua Python, uaexpert
+* tested client: freeopcua C++, freeopcua Python, uaexpert, prosys
+* datachange subscriptions
 
 Server: what is not implemented
+* event, status subscriptions
 * security (users, certificates, etc)
-* subscriptions
 * methods
 * removing nodes 
 
@@ -85,5 +87,6 @@ Example server code:
     objects = server.get_objects_node()
     myfolder = objects.add_folder(2, "myfolder")
     myvar = myfolder.add_variable(2, "myvar", 6.7)
+    ...
 ```
 
