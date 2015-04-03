@@ -119,9 +119,10 @@ class BinaryClient(object):
         self._call_callback(seqhdr.RequestId, body)
 
     def _call_callback(self, request_id, body):
-        future = self._callbackmap.pop(request_id, None)
-        if future is None:
-            raise Exception("No future object found for request: {}, callbacks in list are {}".format(request_id, self._callbackmap.keys()))
+        with self._lock:
+            future = self._callbackmap.pop(request_id, None)
+            if future is None:
+                raise Exception("No future object found for request: {}, callbacks in list are {}".format(request_id, self._callbackmap.keys()))
         future.set_result(body)
 
     def _write_socket(self, hdr, *args):
@@ -177,9 +178,10 @@ class BinaryClient(object):
         hello = ua.Hello()
         hello.EndpointUrl = url
         header = ua.Header(ua.MessageType.Hello, ua.ChunkType.Single)
-        self._write_socket(header, hello)
         future = Future()
-        self._callbackmap[0] = future
+        with self._lock:
+            self._callbackmap[0] = future
+        self._write_socket(header, hello)
         return ua.Acknowledge.from_binary(future.result())
  
     def open_secure_channel(self, params):
@@ -191,10 +193,11 @@ class BinaryClient(object):
         hdr = ua.Header(ua.MessageType.SecureOpen, ua.ChunkType.Single, self._security_token.ChannelId)
         asymhdr = ua.AsymmetricAlgorithmHeader()
         seqhdr = self._create_sequence_header()
-        self._write_socket(hdr, asymhdr, seqhdr, request)
 
         future = Future()
-        self._callbackmap[seqhdr.RequestId] = future
+        with self._lock:
+            self._callbackmap[seqhdr.RequestId] = future
+        self._write_socket(hdr, asymhdr, seqhdr, request)
 
         response = ua.OpenSecureChannelResponse.from_binary(future.result())
         response.ResponseHeader.ServiceResult.check()

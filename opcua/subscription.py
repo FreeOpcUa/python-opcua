@@ -2,6 +2,7 @@
 high level interface to subscriptions
 """
 import io
+import time
 import logging
 from threading import RLock
 
@@ -24,6 +25,7 @@ class Subscription(object):
         self.parameters = params #move to data class
         self._monitoreditems_map = {}
         self._lock = RLock()
+        self.subscription_id = None
         response = self.server.create_subscription(params, self.publish_callback)
         self.subscription_id = response.SubscriptionId #move to data class
         self.server.publish()
@@ -35,6 +37,9 @@ class Subscription(object):
 
     def publish_callback(self, publishresult):
         self.logger.info("Publish callback called with result: %s", publishresult)
+        while self.subscription_id is None:
+            time.sleep(0.01)
+
         for notif in publishresult.NotificationMessage.NotificationData:
             if notif.TypeId == ua.FourByteNodeId(ua.ObjectIds.DataChangeNotification_Encoding_DefaultBinary):
                 datachange = ua.DataChangeNotification.from_binary(io.BytesIO(notif.to_binary()))

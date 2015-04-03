@@ -175,6 +175,7 @@ class InternalSubscription(object):
     def _subscription_loop(self):
         self.logger.debug("%s loop running", self)
         while True:
+            yield from asyncio.sleep(self.data.RevisedPublishingInterval/1000)
             #test disabled we do not check that one since we do not care about not received results
             #if self._keep_alive_count > self.data.RevisedLifetimeCount:
                 #self.logger.warn("Subscription %s has expired, keep alive count(%s) > lifetime count (%s)", self.data.SubscriptionId, self._keep_alive_count, self.data.RevisedLifetimeCount)
@@ -183,7 +184,6 @@ class InternalSubscription(object):
                 self.publish_results()
             except Exception as ex: #we catch everythin since it seems exceptions are lost in loop
                 self.logger.exception("Exception in %s loop", self)
-            yield from asyncio.sleep(self.data.RevisedPublishingInterval/1000)
 
     def has_published_results(self):
         with self._lock:
