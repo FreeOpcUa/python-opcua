@@ -185,13 +185,13 @@ class CommonTests(object):
 
     def test_root(self):
         root = self.opc.get_root_node()
-        self.assertEqual(ua.QualifiedName('Root', 0), root.get_name())
+        self.assertEqual(ua.QualifiedName('Root', 0), root.get_browse_name())
         nid = ua.NodeId(84, 0) 
         self.assertEqual(nid, root.nodeid)
 
     def test_objects(self):
         objects = self.opc.get_objects_node()
-        self.assertEqual(ua.QualifiedName('Objects', 0), objects.get_name())
+        self.assertEqual(ua.QualifiedName('Objects', 0), objects.get_browse_name())
         nid = ua.NodeId(85, 0) 
         self.assertEqual(nid, objects.nodeid)
     
@@ -242,13 +242,13 @@ class CommonTests(object):
         #sub.delete()
 
 
-    #def test_get_NamespaceIndex(self):
-        #idx = self.opc.get_NamespaceIndex('http://freeua.github.io')
+    #def test_get_browse_namespaceIndex(self):
+        #idx = self.opc.get_browse_namespaceIndex('http://freeua.github.io')
         #self.assertEqual(idx, 1) 
 
     #def test_use_namespace(self):
         #root = self.opc.get_root_node()
-        #idx = self.opc.get_NamespaceIndex('http://freeua.github.io')
+        #idx = self.opc.get_browse_namespaceIndex('http://freeua.github.io')
         #o = root.add_object(idx, 'test_namespace')
         #self.assertEqual(idx, o.nodeid.NamespaceIndex) 
         #o2 = root.get_child('{}:test_namespace'.format(idx))
@@ -286,7 +286,7 @@ class CommonTests(object):
         nid = ua.NodeId(888, 3)
         qn = ua.QualifiedName('numericnodefromstring', 3) 
         self.assertEqual(nid, v.nodeid)
-        self.assertEqual(qn, v.get_name())
+        self.assertEqual(qn, v.get_browse_name())
 
     def test_add_string_variable(self):
         objects = self.opc.get_objects_node()
@@ -294,7 +294,7 @@ class CommonTests(object):
         nid = ua.NodeId('stringid', 3) 
         qn = ua.QualifiedName('stringnodefromstring', 3) 
         self.assertEqual(nid, v.nodeid)
-        self.assertEqual(qn, v.get_name())
+        self.assertEqual(qn, v.get_browse_name())
 
     def test_add_string_array_variable(self):
         objects = self.opc.get_objects_node()
@@ -302,7 +302,7 @@ class CommonTests(object):
         nid = ua.NodeId('stringarrayid', 3) 
         qn = ua.QualifiedName('stringarray', 9) 
         self.assertEqual(nid, v.nodeid)
-        self.assertEqual(qn, v.get_name())
+        self.assertEqual(qn, v.get_browse_name())
         val = v.get_value()
         self.assertEqual(['l', 'b'], val)
 
@@ -312,7 +312,7 @@ class CommonTests(object):
         qn = ua.QualifiedName('AddNodeVar1', 3)
         v1 = objects.add_variable(nid, qn, 0)
         self.assertEqual(nid, v1.nodeid)
-        self.assertEqual(qn, v1.get_name())
+        self.assertEqual(qn, v1.get_browse_name())
 
     def test_add_string_node(self):
         objects = self.opc.get_objects_node()
@@ -320,7 +320,7 @@ class CommonTests(object):
         nid = ua.NodeId('AddNodeVar2Id', 3)
         v2 = objects.add_variable(nid, qn, 0)
         self.assertEqual(nid, v2.nodeid)
-        self.assertEqual(qn, v2.get_name())
+        self.assertEqual(qn, v2.get_browse_name())
 
     def test_add_find_node_(self):
         objects = self.opc.get_objects_node()
@@ -341,7 +341,7 @@ class CommonTests(object):
         nid = ua.NodeId(102, 2)
         self.assertEqual(o.nodeid, nid)
         qn = ua.QualifiedName('AddReadObject', 2)
-        self.assertEqual(o.get_name(), qn)
+        self.assertEqual(o.get_browse_name(), qn)
 
     def test_simple_value(self):
         o = self.opc.get_objects_node()
@@ -438,6 +438,13 @@ class CommonTests(object):
         sub.unsubscribe(handle)
         sub.delete()
 
+    def test_use_namespace(self):
+        idx = self.opc.get_namespace_index("urn:freeopcua:python:server")
+        self.assertEqual(idx, 1) 
+        root = self.opc.get_root_node()
+        myvar = root.add_variable(idx, 'var_in_custom_namespace', [5])
+        myid = myvar.nodeid
+        self.assertEqual(idx, myid.NamespaceIndex) 
 
 
 
@@ -501,7 +508,7 @@ class TestClient(unittest.TestCase, CommonTests):
         # new one before this one is really stopped
         self.srv.join()
 
-"""
+
 
 class TestServer(unittest.TestCase, CommonTests):
     '''
@@ -527,11 +534,11 @@ class TestServer(unittest.TestCase, CommonTests):
         self.assertTrue(v in childs)
         self.assertTrue(p in childs)
 
-'''
+
     def test_register_namespace(self):
         uri = 'http://mycustom.Namespace.com'
         idx1 = self.opc.register_namespace(uri)
-        idx2 = self.opc.get_NamespaceIndex(uri)
+        idx2 = self.opc.get_namespace_index(uri)
         self.assertEqual(idx1, idx2) 
 
     def test_register_use_namespace(self):
@@ -541,9 +548,8 @@ class TestServer(unittest.TestCase, CommonTests):
         myvar = root.add_variable(idx, 'var_in_custom_namespace', [5])
         myid = myvar.nodeid
         self.assertEqual(idx, myid.NamespaceIndex) 
-        #self.assertEqual(uri, myid.Namespace_uri) #FIXME: should return uri!!!
-'''
-"""
+
+
 
 
 

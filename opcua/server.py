@@ -30,8 +30,14 @@ class Server(object):
     def set_endpoint(self, url):
         self.endpoint = urlparse(url)
 
-    def _set_endpoints(self):
+    def _setup_server_nodes(self):
         #to be called just before starting server since it needs all parameters to be setup
+        self._set_endpoints()
+        self.register_namespace(self.server_uri)
+        sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
+        sa_node.set_value([self.server_uri])
+
+    def _set_endpoints(self):
         idtoken = ua.UserTokenPolicy()
         idtoken.PolicyId = 'anonymous'
         idtoken.TokenType = ua.UserTokenType.Anonymous
@@ -58,7 +64,7 @@ class Server(object):
 
     def start(self):
         self.iserver.start()
-        self._set_endpoints()
+        self._setup_server_nodes()
         self.bserver = BinaryServer(self.iserver, self.endpoint.hostname, self.endpoint.port)
         self.bserver.start()
 
@@ -93,6 +99,21 @@ class Server(object):
         params.PublishingEnabled = True
         params.Priority = 0
         return Subscription(self.iserver.isession, params, handler)
+
+    def get_namespace_array(self):
+        ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
+        return ns_node.get_value()
+
+    def register_namespace(self, uri):
+        ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
+        uries = ns_node.get_value()
+        uries.append(uri)
+        ns_node.set_value(uries)
+        return (len(uries)-1)
+
+    def get_namespace_index(self, uri):
+        uries = self.get_namespace_array()
+        return uries.index(uri)
 
 
 

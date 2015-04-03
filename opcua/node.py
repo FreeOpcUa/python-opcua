@@ -7,8 +7,8 @@ import opcua.uaprotocol as ua
 
 class Node(object):
     """
-    High level node object, to access node attribute 
-    and browse address space
+    High level node object, to access node attribute,
+    browse and populate address space
     """
     def __init__(self, server, nodeid):
         self.server = server
@@ -28,19 +28,27 @@ class Node(object):
         return "Node({})".format(self.nodeid)
     __repr__ = __str__
 
-    def get_name(self):
+    def get_browse_name(self):
         result = self.get_attribute(ua.AttributeIds.BrowseName)
         return result.Value
 
-    def get_value(self):
-        result = self.get_attribute(ua.AttributeIds.Value)
+    def get_display_name(self):
+        result = self.get_attribute(ua.AttributeIds.DisplayName)
         return result.Value
 
-    def _value(self):
+    def get_value(self):
+        """
+        Get value of a node. Only variables(properties) have values. 
+        An exception will be generated for other node types.
+        """
         result = self.get_attribute(ua.AttributeIds.Value)
         return result.Value
 
     def set_value(self, value, varianttype=None):
+        """
+        Set value of a node. Only variables(properties) have values. 
+        An exception will be generated for other node types.
+        """
         variant = None
         if type(value) == ua.Variant:
             variant = value
@@ -49,6 +57,9 @@ class Node(object):
         self.set_attribute(ua.AttributeIds.Value, ua.DataValue(variant))
 
     def set_attribute(self, attributeid, datavalue):
+        """
+        Set an attribute of a node
+        """
         attr = ua.WriteValue()
         attr.NodeId = self.nodeid
         attr.AttributeId = attributeid
@@ -59,6 +70,9 @@ class Node(object):
         result[0].check()
 
     def get_attribute(self, attr):
+        """
+        Get an attribute of a node
+        """
         rv = ua.ReadValueId()
         rv.NodeId = self.nodeid
         rv.AttributeId = attr
@@ -68,10 +82,31 @@ class Node(object):
         result[0].StatusCode.check()
         return result[0].Value
 
-    def get_children(self):
+    def get_children(self, refs=ua.ObjectIds.HierarchicalReferences):
+        """
+        Get all children of a node. By default hierarchical references are returnes.
+        Other types may be given:
+        References = 31
+        NonHierarchicalReferences = 32
+        HierarchicalReferences = 33
+        HasChild = 34
+        Organizes = 35
+        HasEventSource = 36
+        HasModellingRule = 37
+        HasEncoding = 38
+        HasDescription = 39
+        HasTypeDefinition = 40
+        GeneratesEvent = 41
+        Aggregates = 44
+        HasSubtype = 45
+        HasProperty = 46
+        HasComponent = 47
+        HasNotifier = 48
+        HasOrderedComponent = 49
+        """
         desc = ua.BrowseDescription()
         desc.BrowseDirection = ua.BrowseDirection.Forward
-        desc.ReferenceTypeId = ua.TwoByteNodeId(ua.ObjectIds.References)
+        desc.ReferenceTypeId = ua.TwoByteNodeId(refs)
         desc.IncludeSubtypes = True
         desc.NodeClassMask = ua.NodeClass.Unspecified
         desc.ResultMask = ua.BrowseResultMask.None_
@@ -87,6 +122,14 @@ class Node(object):
         return nodes
 
     def get_child(self, path):
+        """
+        get a child specified by its path from this node.
+        A path might be:
+        * a string representing a qualified name.
+        * a qualified name
+        * a list of string
+        * a list of qualified names
+        """
         if type(path) not in (list, tuple):
             path = [path]
         rpath = ua.RelativePath()
@@ -138,6 +181,8 @@ class Node(object):
     def add_object(self, *args):
         """
         create a child node object
+        arguments are nodeid, browsename
+        or namespace index, name
         """
         nodeid, qname = self._parse_add_args(*args)
         return self._add_object(nodeid, qname)
@@ -210,7 +255,36 @@ class Node(object):
         results = self.server.add_nodes([node])
         results[0].StatusCode.check()
         return Node(self.server, nodeid)
-     
+
+    def add_method(self, *args):
+        """
+        create a child method object
+        """
+        nodeid, qname = self._parse_add_args(*args)
+        return self._add_object(nodeid, qname)
+    
+    def _add_method(self, nodeid, qname):
+        node = ua.AddNodesItem()
+        node.RequestedNewNodeId = nodeid 
+        node.BrowseName = qname 
+        node.NodeClass = ua.NodeClass.Object
+        node.ParentNodeId = self.nodeid 
+        node.ReferenceTypeId = ua.NodeId.from_string("i=35")
+        node.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseObjectType)
+        attrs = ua.MethodAttributes()
+        attrs.Description = ua.LocalizedText(qname.Name)
+        attrs.DisplayName = ua.LocalizedText(qname.Name)
+        attrs.WriteMask = 0
+        attrs.UserWriteMask = 0
+        self.Executable = True
+        self.UserExecutable = True
+        node.NodeAttributes = attrs
+        results = self.server.add_nodes([node])
+        results[0].StatusCode.check()
+        return Node(self.server, nodeid)
+
+
+
     def _vtype_to_uatype(self, vtype):
         return eval("ua.NodeId(ua.ObjectIds.{})".format(vtype.name))
 

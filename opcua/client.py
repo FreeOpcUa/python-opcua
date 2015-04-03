@@ -214,6 +214,15 @@ class Client(object):
         params.Priority = 0
         return Subscription(self.bclient, params, handler)
 
+    def get_namespace_array(self):
+        ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
+        return ns_node.get_value()
+
+    def get_namespace_index(self, uri):
+        uries = self.get_namespace_array()
+        return uries.index(uri)
+
+
 
 
 

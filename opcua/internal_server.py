@@ -46,6 +46,9 @@ class InternalServer(object):
         self._stopev = False
         self._timer = None
         self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
+        uries = ["http://opcfoundation.org/UA/"]
+        ns_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
+        ns_node.set_value(uries)
 
     def start(self): 
         self.logger.info("starting internal server")
