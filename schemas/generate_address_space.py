@@ -81,6 +81,9 @@ class CodeGenerator(object):
             elif child.tag[51:] == 'UADataType':
                 node = self.parse_node(child)
                 self.make_datatype_code(node)
+            elif child.tag[51:] == 'UAMethod':
+                node = self.parse_node(child)
+                self.make_method_code(node)
             elif child.tag[51:] == 'Aliases':
                 for el in child:
                     self.aliases[el.attrib["Alias"]] = el.text
@@ -271,6 +274,22 @@ def create_standard_address_space_%s(server):
         if obj.value and len(obj.value) == 1: self.writecode(indent, 'attrs.Value = {}'.format(obj.value[0]))
         if obj.rank: self.writecode(indent, 'attrs.ValueRank = {}'.format(obj.rank))
         if obj.abstract: self.writecode(indent, 'attrs.IsAbstract = {}'.format(obj.abstract))
+        if obj.dimensions: self.writecode(indent, 'attrs.ArrayDimensions = {}'.format(self.to_vector(obj.dimensions)))
+        self.writecode(indent, 'node.NodeAttributes = attrs')
+        self.writecode(indent, 'server.add_nodes([node])')
+        self.make_refs_code(obj, indent)
+
+
+    def make_method_code(self, obj):
+        indent = "   "
+        self.writecode(indent)
+        self.make_node_code(obj, indent)
+        self.writecode(indent, 'attrs = ua.MethodAttributes()')
+        if obj.desc: self.writecode(indent, 'attrs.Description = ua.LocalizedText("{}")'.format(obj.desc))
+        self.writecode(indent, 'attrs.DisplayName = ua.LocalizedText("{}")'.format(obj.displayname))
+        if obj.accesslevel: self.writecode(indent, 'attrs.AccessLevel = {}'.format(obj.accesslevel))
+        if obj.useraccesslevel: self.writecode(indent, 'attrs.UserAccessLevel = {}'.format(obj.useraccesslevel))
+        if obj.minsample: self.writecode(indent, 'attrs.MinimumSamplingInterval = {}'.format(obj.minsample))
         if obj.dimensions: self.writecode(indent, 'attrs.ArrayDimensions = {}'.format(self.to_vector(obj.dimensions)))
         self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')

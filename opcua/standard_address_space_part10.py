@@ -1737,6 +1737,111 @@ def create_standard_address_space_Part10(server):
     server.add_references(refs)
    
     node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=2426")
+    node.BrowseName = ua.QualifiedName.from_string("Start")
+    node.NodeClass = ua.NodeClass.Method
+    node.ParentNodeId = ua.NodeId.from_string("i=2391")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=47")
+    attrs = ua.MethodAttributes()
+    attrs.Description = ua.LocalizedText("Causes the Program to transition from the Ready state to the Running state.")
+    attrs.DisplayName = ua.LocalizedText("Start")
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2426")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=2427")
+    node.BrowseName = ua.QualifiedName.from_string("Suspend")
+    node.NodeClass = ua.NodeClass.Method
+    node.ParentNodeId = ua.NodeId.from_string("i=2391")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=47")
+    attrs = ua.MethodAttributes()
+    attrs.Description = ua.LocalizedText("Causes the Program to transition from the Running state to the Suspended state.")
+    attrs.DisplayName = ua.LocalizedText("Suspend")
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2427")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=2428")
+    node.BrowseName = ua.QualifiedName.from_string("Resume")
+    node.NodeClass = ua.NodeClass.Method
+    node.ParentNodeId = ua.NodeId.from_string("i=2391")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=47")
+    attrs = ua.MethodAttributes()
+    attrs.Description = ua.LocalizedText("Causes the Program to transition from the Suspended state to the Running state.")
+    attrs.DisplayName = ua.LocalizedText("Resume")
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2428")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=2429")
+    node.BrowseName = ua.QualifiedName.from_string("Halt")
+    node.NodeClass = ua.NodeClass.Method
+    node.ParentNodeId = ua.NodeId.from_string("i=2391")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=47")
+    attrs = ua.MethodAttributes()
+    attrs.Description = ua.LocalizedText("Causes the Program to transition from the Ready, Running or Suspended state to the Halted state.")
+    attrs.DisplayName = ua.LocalizedText("Halt")
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2429")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=2430")
+    node.BrowseName = ua.QualifiedName.from_string("Reset")
+    node.NodeClass = ua.NodeClass.Method
+    node.ParentNodeId = ua.NodeId.from_string("i=2391")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=47")
+    attrs = ua.MethodAttributes()
+    attrs.Description = ua.LocalizedText("Causes the Program to transition from the Halted state to the Ready state.")
+    attrs.DisplayName = ua.LocalizedText("Reset")
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2430")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
     node.RequestedNewNodeId = ua.NodeId.from_string("i=2378")
     node.BrowseName = ua.QualifiedName.from_string("ProgramTransitionEventType")
     node.NodeClass = ua.NodeClass.ObjectType
