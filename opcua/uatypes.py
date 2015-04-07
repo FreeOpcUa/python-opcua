@@ -443,48 +443,6 @@ class QualifiedName(object):
     
     __repr__ = __str__
 
-'''
-class DateTime(object):
-    def __init__(self, data=None):
-        if data is None:
-            self.data = datetime_to_win_epoch(datetime.now()) 
-        else:
-            self.data = data
-
-    @staticmethod
-    def now():
-        return DateTime.from_datetime(datetime.now())
-
-    @staticmethod
-    def from_datetime(pydt):
-        dt = DateTime()
-        dt.data = datetime_to_win_epoch(pydt) 
-        return dt
-
-    def to_binary(self):
-        return struct.pack("<d", self.data)
-    
-    @staticmethod
-    def from_binary(data):
-        #print("Generating DateTime from {}", data)
-        d = DateTime()
-        d.data = struct.unpack("<d", data.read(8))[0]
-        return d
-
-    @staticmethod
-    def from_time_t(data):
-        return DateTime.from_datetime(datetime.fromtimestamp(data))
-    
-    def to_time_t(self):
-        epoch = datetime.utcfromtimestamp(0)
-        delta = self.win_epoch_to_datetime(self.data)() - epoch
-        return delta.total_seconds()
-
-    def __str__(self):
-        return "Datetime({})".format(win_epoch_to_datetime(self.data).isoformat())
-    __repr__ = __str__
-'''
-
 
 class VariantType(Enum):
     '''
