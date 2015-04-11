@@ -292,40 +292,6 @@ class ExceptionDeviationFormat(object):
     PercentOfEURange = 3
     Unknown = 4
 
-class ExtensionObject(FrozenClass):
-    '''
-    '''
-    def __init__(self):
-        self.TypeId = NodeId()
-        self.Encoding = 0
-        self.Body = b''
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        if self.Body: self.Encoding |= (1 << 0)
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        if self.Body: 
-            packet.append(pack_uatype('ByteString', self.Body))
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = ExtensionObject()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        if obj.Encoding & (1 << 0):
-            obj.Body = unpack_uatype('ByteString', data)
-        return obj
-    
-    def __str__(self):
-        return 'ExtensionObject(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'Body:' + str(self.Body) + ')'
-    
-    __repr__ = __str__
-    
 class XmlElement(FrozenClass):
     '''
     An XML element encoded as a UTF-8 string.
@@ -419,44 +385,6 @@ class DiagnosticInfo(FrozenClass):
              'AdditionalInfo:' + str(self.AdditionalInfo) + ', '  + \
              'InnerStatusCode:' + str(self.InnerStatusCode) + ', '  + \
              'InnerDiagnosticInfo:' + str(self.InnerDiagnosticInfo) + ')'
-    
-    __repr__ = __str__
-    
-class LocalizedText(FrozenClass):
-    '''
-    A string qualified with a namespace index.
-    '''
-    def __init__(self):
-        self.Encoding = 0
-        self.Locale = b''
-        self.Text = b''
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        if self.Locale: self.Encoding |= (1 << 0)
-        if self.Text: self.Encoding |= (1 << 1)
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        if self.Locale: 
-            packet.append(pack_uatype('CharArray', self.Locale))
-        if self.Text: 
-            packet.append(pack_uatype('CharArray', self.Text))
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = LocalizedText()
-        obj.Encoding = unpack_uatype('UInt8', data)
-        if obj.Encoding & (1 << 0):
-            obj.Locale = unpack_uatype('CharArray', data)
-        if obj.Encoding & (1 << 1):
-            obj.Text = unpack_uatype('CharArray', data)
-        return obj
-    
-    def __str__(self):
-        return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', '  + \
-             'Locale:' + str(self.Locale) + ', '  + \
-             'Text:' + str(self.Text) + ')'
     
     __repr__ = __str__
     
@@ -6489,16 +6417,18 @@ class HistoryUpdateResponse(FrozenClass):
     
     __repr__ = __str__
     
-class CallMethodParameters(FrozenClass):
+class CallMethodRequest(FrozenClass):
     '''
     '''
     def __init__(self):
+        self.ObjectId = NodeId()
         self.MethodId = NodeId()
         self.InputArguments = []
         self._freeze()
     
     def to_binary(self):
         packet = []
+        packet.append(self.ObjectId.to_binary())
         packet.append(self.MethodId.to_binary())
         packet.append(struct.pack('<i', len(self.InputArguments)))
         for fieldname in self.InputArguments:
@@ -6507,7 +6437,8 @@ class CallMethodParameters(FrozenClass):
         
     @staticmethod
     def from_binary(data):
-        obj = CallMethodParameters()
+        obj = CallMethodRequest()
+        obj.ObjectId = NodeId.from_binary(data)
         obj.MethodId = NodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
@@ -6516,39 +6447,9 @@ class CallMethodParameters(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'CallMethodParameters(' + 'MethodId:' + str(self.MethodId) + ', '  + \
+        return 'CallMethodRequest(' + 'ObjectId:' + str(self.ObjectId) + ', '  + \
+             'MethodId:' + str(self.MethodId) + ', '  + \
              'InputArguments:' + str(self.InputArguments) + ')'
-    
-    __repr__ = __str__
-    
-class CallMethodRequest(FrozenClass):
-    '''
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.CallMethodRequest_Encoding_DefaultBinary)
-        self.ObjectId = NodeId()
-        self.Parameters = CallMethodParameters()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ObjectId.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = CallMethodRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ObjectId = NodeId.from_binary(data)
-        obj.Parameters = CallMethodParameters.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'CallMethodRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ObjectId:' + str(self.ObjectId) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
     
     __repr__ = __str__
     
@@ -6661,16 +6562,20 @@ class CallRequest(FrozenClass):
     
     __repr__ = __str__
     
-class CallResult(FrozenClass):
+class CallResponse(FrozenClass):
     '''
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.CallResponse_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze()
     
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.Results)))
         for fieldname in self.Results:
             packet.append(fieldname.to_binary())
@@ -6681,7 +6586,9 @@ class CallResult(FrozenClass):
         
     @staticmethod
     def from_binary(data):
-        obj = CallResult()
+        obj = CallResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -6693,39 +6600,10 @@ class CallResult(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'CallResult(' + 'Results:' + str(self.Results) + ', '  + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
-    __repr__ = __str__
-    
-class CallResponse(FrozenClass):
-    '''
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.CallResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = CallResult()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = CallResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = CallResult.from_binary(data)
-        return obj
-    
-    def __str__(self):
         return 'CallResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'Results:' + str(self.Results) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
     
     __repr__ = __str__
     
@@ -8594,19 +8472,15 @@ class SubscriptionAcknowledgement(FrozenClass):
     
     __repr__ = __str__
     
-class PublishRequest(FrozenClass):
+class PublishParameters(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.PublishRequest_Encoding_DefaultBinary)
-        self.RequestHeader = RequestHeader()
         self.SubscriptionAcknowledgements = []
         self._freeze()
     
     def to_binary(self):
         packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
         packet.append(struct.pack('<i', len(self.SubscriptionAcknowledgements)))
         for fieldname in self.SubscriptionAcknowledgements:
             packet.append(fieldname.to_binary())
@@ -8614,9 +8488,7 @@ class PublishRequest(FrozenClass):
         
     @staticmethod
     def from_binary(data):
-        obj = PublishRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj = PublishParameters()
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -8624,9 +8496,38 @@ class PublishRequest(FrozenClass):
         return obj
     
     def __str__(self):
+        return 'PublishParameters(' + 'SubscriptionAcknowledgements:' + str(self.SubscriptionAcknowledgements) + ')'
+    
+    __repr__ = __str__
+    
+class PublishRequest(FrozenClass):
+    '''
+    '''
+    def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.PublishRequest_Encoding_DefaultBinary)
+        self.RequestHeader = RequestHeader()
+        self.Parameters = PublishParameters()
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.RequestHeader.to_binary())
+        packet.append(self.Parameters.to_binary())
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = PublishRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = PublishParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
         return 'PublishRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'RequestHeader:' + str(self.RequestHeader) + ', '  + \
-             'SubscriptionAcknowledgements:' + str(self.SubscriptionAcknowledgements) + ')'
+             'Parameters:' + str(self.Parameters) + ')'
     
     __repr__ = __str__
     
@@ -8774,43 +8675,20 @@ class RepublishRequest(FrozenClass):
     
     __repr__ = __str__
     
-class RepublishResult(FrozenClass):
-    '''
-    '''
-    def __init__(self):
-        self.NotificationMessage = NotificationMessage()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.NotificationMessage.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = RepublishResult()
-        obj.NotificationMessage = NotificationMessage.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'RepublishResult(' + 'NotificationMessage:' + str(self.NotificationMessage) + ')'
-    
-    __repr__ = __str__
-    
 class RepublishResponse(FrozenClass):
     '''
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RepublishResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-        self.Parameters = RepublishResult()
+        self.NotificationMessage = NotificationMessage()
         self._freeze()
     
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
+        packet.append(self.NotificationMessage.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -8818,13 +8696,13 @@ class RepublishResponse(FrozenClass):
         obj = RepublishResponse()
         obj.TypeId = NodeId.from_binary(data)
         obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = RepublishResult.from_binary(data)
+        obj.NotificationMessage = NotificationMessage.from_binary(data)
         return obj
     
     def __str__(self):
         return 'RepublishResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'NotificationMessage:' + str(self.NotificationMessage) + ')'
     
     __repr__ = __str__
     

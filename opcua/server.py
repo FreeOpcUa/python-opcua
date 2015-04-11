@@ -18,8 +18,7 @@ from opcua import Node, Subscription
 class Server(object):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.endpoint = None
-        self.name = None
+        self.endpoint = "opc.tcp://localhost:4841/freeopcua/server/"
         self.server_uri = "urn:freeopcua:python:server"
         self.product_uri = "urn:freeopcua.github.no:python:server"
         self.name = "FreeOpcUa Python Server"
@@ -47,6 +46,7 @@ class Server(object):
         appdesc.ApplicationUri = self.server_uri 
         appdesc.ApplicationType = ua.ApplicationType.Server
         appdesc.ProductUri = self.product_uri 
+        appdesc.DiscoveryUrls.append(self.endpoint.geturl())
 
         edp = ua.EndpointDescription()
         edp.EndpointUrl = self.endpoint.geturl()

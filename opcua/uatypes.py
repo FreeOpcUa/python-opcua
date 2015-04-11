@@ -10,6 +10,7 @@ import uuid
 import struct 
 
 import opcua.status_code as status_code
+from opcua.object_ids import ObjectIds
 
 logger = logging.getLogger('opcua.uaprotocol')
 
@@ -157,23 +158,6 @@ def unpack_string(data):
     #return str(b)
     return b.decode("utf-8")
 
-def unpack_array(uatype, data):
-    length = struct.unpack('<i', data.read(4))[0]
-    array = []
-    if length != -1:
-        for _ in range(0, length):
-            array.append(unpack_uatype(uatype, data))
-    return array
-
-def unpack_object_array(objclass, data):
-    print("DEPRECATED, unpack_objects_array is deprecated, use unpack_array")
-    length = struct.unpack('<i', data.read(4))[0]
-    array = []
-    if length != -1:
-        for _ in range(0, length):
-            array.append(objclass.from_binary(data))
-    return array
- 
 def test_bit(data, offset):
     mask = 1 << offset
     return data & mask
@@ -444,6 +428,93 @@ class QualifiedName(object):
     __repr__ = __str__
 
 
+class LocalizedText(FrozenClass):
+    '''
+    A string qualified with a namespace index.
+    '''
+    def __init__(self, text=""):
+        self.Encoding = 0
+        self.Text = text.encode()
+        if self.Text: self.Encoding |= (1 << 1)
+        self.Locale = b''
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        if self.Locale: self.Encoding |= (1 << 0)
+        if self.Text: self.Encoding |= (1 << 1)
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        if self.Locale: 
+            packet.append(pack_uatype('CharArray', self.Locale))
+        if self.Text: 
+            packet.append(pack_uatype('CharArray', self.Text))
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = LocalizedText()
+        obj.Encoding = unpack_uatype('UInt8', data)
+        if obj.Encoding & (1 << 0):
+            obj.Locale = unpack_uatype('CharArray', data)
+        if obj.Encoding & (1 << 1):
+            obj.Text = unpack_uatype('CharArray', data)
+        return obj
+    
+    def __str__(self):
+        return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', '  + \
+             'Locale:' + str(self.Locale) + ', '  + \
+             'Text:' + str(self.Text) + ')'
+
+    def __eq__(self, other):
+        if isinstance(other, LocalizedText) and self.Locale == other.Locale and self.Text == other.Text:
+            return True
+        return False
+
+
+class ExtensionObject(FrozenClass):
+    '''
+    '''
+    def __init__(self):
+        self.TypeId = NodeId()
+        self.Encoding = 0
+        self.Body = b''
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        if self.Body: self.Encoding |= (1 << 0)
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        if self.Body: 
+            packet.append(pack_uatype('ByteString', self.Body))
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = ExtensionObject()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        if obj.Encoding & (1 << 0):
+            obj.Body = unpack_uatype('ByteString', data)
+        return obj
+
+    @staticmethod
+    def from_object(obj):
+        ext = ExtensionObject()
+        code = "ObjectIds.{}_Encoding_DefaultBinary".format(obj.__class__.__name__)
+        oid = eval(code)
+        ext.TypeId = FourByteNodeId(oid)
+        ext.Body = obj.to_binary()
+        return ext
+
+    def __str__(self):
+        return 'ExtensionObject(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ')'
+    
+    __repr__ = __str__
+
+
 class VariantType(Enum):
     '''
     The possible types of a variant.
@@ -507,6 +578,8 @@ class Variant(object):
             return VariantType.ByteString
         elif type(val) == datetime:
             return VariantType.DateTime
+        elif type(val) == ExtensionObject:
+            return VariantType.ExtensionObject
         else:
             raise Exception("Could not guess UA type of {} with type {}, specify UA type".format(val, type(val)))
 

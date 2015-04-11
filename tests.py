@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 import logging
+import math
 import io
 import sys
 from datetime import datetime, timedelta
@@ -186,6 +187,7 @@ class CommonTests(object):
     def test_root(self):
         root = self.opc.get_root_node()
         self.assertEqual(ua.QualifiedName('Root', 0), root.get_browse_name())
+        self.assertEqual(ua.LocalizedText('Root'), root.get_display_name())
         nid = ua.NodeId(84, 0) 
         self.assertEqual(nid, root.nodeid)
 
@@ -446,13 +448,41 @@ class CommonTests(object):
         myid = myvar.nodeid
         self.assertEqual(idx, myid.NamespaceIndex) 
 
+    def test_method(self):
+        o = self.opc.get_objects_node()
+        m = o.get_child("2:ServerMethod")
+        result = o.call_method(m, [ua.Variant(2.1)])
+        self.assertEqual(result, [ua.Variant(4.2)])
 
+    def test_method_array(self):
+        o = self.opc.get_objects_node()
+        m = o.get_child("2:ServerMethodArray")
+        result = o.call_method(m, [ua.Variant("sin"), ua.Variant(math.pi), ])
+        self.assertTrue(result[0].Value < 0.01)
+
+
+
+
+def add_server_methods(srv):
+    def func(parent, variant):
+        variant.Value *= 2
+        return [variant]
+    o = srv.get_objects_node()
+    v = o.add_method(ua.NodeId("ServerMethod", 2), ua.QualifiedName('ServerMethod', 2), func, [ua.VariantType.Int64], [ua.VariantType.Int64])
+
+    def func2(parent, methodname, variant):
+        print("method name is: ", methodname)
+        val = math.sin(variant.Value)
+        res = ua.Variant(val)
+        return [res]
+    o = srv.get_objects_node()
+    v = o.add_method(ua.NodeId("ServerMethodArray", 2), ua.QualifiedName('ServerMethodArray', 2), func2, [ua.VariantType.String, ua.VariantType.Int64], [ua.VariantType.Int64])
 
 
 
 class ServerProcess(Thread):
     '''
-    Start a server in another process
+    Start a server in another process/thread
     '''
     def __init__(self):
         Thread.__init__(self)
@@ -463,6 +493,9 @@ class ServerProcess(Thread):
     def run(self):
         self.srv = Server()
         self.srv.set_endpoint('opc.tcp://localhost:%d' % port_num1)
+
+        add_server_methods(self.srv)
+
         self.srv.start()
         self.started.set()
         while not self._exit.is_set():
@@ -519,6 +552,7 @@ class TestServer(unittest.TestCase, CommonTests):
     def setUpClass(self):
         self.srv = Server()
         self.srv.set_endpoint('opc.tcp://localhost:%d' % port_num2)
+        add_server_methods(self.srv)
         self.srv.start()
         self.opc = self.srv 
 
@@ -548,6 +582,15 @@ class TestServer(unittest.TestCase, CommonTests):
         myvar = root.add_variable(idx, 'var_in_custom_namespace', [5])
         myid = myvar.nodeid
         self.assertEqual(idx, myid.NamespaceIndex) 
+
+    def test_server_method(self):
+        def func(parent, variant):
+            variant.Value *= 2
+            return [variant]
+        o = self.opc.get_objects_node()
+        v = o.add_method(3, 'Method1', func, [ua.VariantType.Int64], [ua.VariantType.Int64])
+        result = o.call_method(v, [ua.Variant(2.1)])
+        self.assertEqual(result, [ua.Variant(4.2)])
 
 
 

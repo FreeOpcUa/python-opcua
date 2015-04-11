@@ -318,7 +318,7 @@ class BinaryClient(object):
         if  acks is None:
             acks = []
         request = ua.PublishRequest()
-        request.SubscriptionAcknowledgements = acks
+        request.Parameters.SubscriptionAcknowledgements = acks
         self._send_request(request, self._call_publish_callback, timeout=0)
 
     def _call_publish_callback(self, future):
@@ -348,14 +348,20 @@ class BinaryClient(object):
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
-
-
     def add_nodes(self, nodestoadd):
         self.logger.info("add_nodes")
         request = ua.AddNodesRequest()
         request.Parameters.NodesToAdd = nodestoadd
         data = self._send_request(request)
         response = ua.AddNodesResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
+    
+    def call(self, methodstocall):
+        request = ua.CallRequest()
+        request.Parameters.MethodsToCall = methodstocall 
+        data = self._send_request(request)
+        response = ua.CallResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 

@@ -3,7 +3,6 @@ Internal server implementing opcu-ua interface. can be used on server side or to
 """
 
 from datetime import datetime
-import uuid
 import logging
 from threading import Timer, Lock
 from enum import Enum
@@ -155,6 +154,12 @@ class InternalSession(object):
     def add_nodes(self, params):
         return self.aspace.add_nodes(params)
 
+    def add_method_callback(self, methodid, callback):
+        return self.aspace.add_method_callback(methodid, callback)
+
+    def call(self, params):
+        return self.aspace.call(params)
+
     def create_subscription(self, params, callback):
         result = self.submgr.create_subscription(params, callback)
         with self._lock:
@@ -166,6 +171,9 @@ class InternalSession(object):
 
     def modify_monitored_items(self, params):
         return self.submgr.modify_monitored_items(params)
+
+    def republish(self, params):
+        return self.submgr.republish(params)
 
     def delete_subscriptions(self, ids):
         for i in ids:

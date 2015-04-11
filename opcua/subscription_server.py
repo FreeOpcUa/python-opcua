@@ -90,6 +90,10 @@ class SubscriptionManager(Thread):
         return res
 
     def publish(self, acks):
+        for ack in acks:
+            with self._lock:
+                if ack.SubscriptionId in self.subscriptions:
+                    self.subscriptions[ack.SubscriptionId].publish(ack.SequenceNumber)
         self.logger.info("publish request with acks %s", acks)
 
     def create_monitored_items(self, params):
@@ -126,6 +130,14 @@ class SubscriptionManager(Thread):
                 return res
             return self.subscriptions[params.SubscriptionId].delete_monitored_items(params.MonitoredItemIds)
 
+    def republish(self, params):
+        with self._lock:
+            if not params.SubscriptionId in self.subscriptions:
+                #what should I do?
+                return ua.NotificationMessage()
+            return self.subscriptions[params.SubscriptionId].republish(params.RetransmitSequenceNumber)
+
+
 
 
 class MonitoredItemData(object):
@@ -151,10 +163,14 @@ class InternalSubscription(object):
         self._lock = RLock()
         self._triggered_datachanges = []
         self._triggered_events = []
+        self._triggered_statuschanges = []
         self._notification_seq = 1
-        self._not_acknowledged_results = []
+        self._not_acknowledged_results = {}
         self._startup = True 
         self._keep_alive_count = 0
+        self._publish_cyles_count = 0
+        
+
 
     def __str__(self):
         return "Subscription(id:{})".format(self.data.SubscriptionId)
@@ -176,12 +192,10 @@ class InternalSubscription(object):
         self.logger.debug("%s loop running", self)
         while True:
             yield from asyncio.sleep(self.data.RevisedPublishingInterval/1000)
-            #test disabled we do not check that one since we do not care about not received results
-            #if self._keep_alive_count > self.data.RevisedLifetimeCount:
-                #self.logger.warn("Subscription %s has expired, keep alive count(%s) > lifetime count (%s)", self.data.SubscriptionId, self._keep_alive_count, self.data.RevisedLifetimeCount)
-                #return
             try:
-                self.publish_results()
+                expired = self.publish_results()
+                if expired:
+                    self.stop()
             except Exception as ex: #we catch everythin since it seems exceptions are lost in loop
                 self.logger.exception("Exception in %s loop", self)
 
@@ -196,11 +210,18 @@ class InternalSubscription(object):
             return False
 
     def publish_results(self): 
-        #self.logger.debug("looking for results and publishing")
+        expired = False
+        if self._publish_cyles_count > self.data.RevisedLifetimeCount:
+            self.logger.warn("Subscription %s has expired, publish cycle count(%s) > lifetime count (%s)", self, self._publish_cycles_count, self.data.RevisedLifetimeCount)
+            #FIXME this will never be send since we do not have publish request anyway
+            self.trigger_statuschange(ua.StatusCode(ua.StatusCodes.BadTimeout)) 
+            expired = True
         with self._lock:
-            if self.has_published_results(): #FIXME: should I pop a publish request here? or I do not care?
+            if self.has_published_results(): #FIXME: should we pop a publish request here? or we do not care?
+                self._publish_cyles_count += 1
                 result = self._pop_publish_result()
                 self.callback(result)
+        return expired
 
     def _pop_publish_result(self):
         result = ua.PublishResult()
@@ -216,15 +237,38 @@ class InternalSubscription(object):
             notif.Events = self._triggered_events[:]
             self._triggered_events.clear()
             result.NotificationMessage.NotificationData.append(notif)
-        #FIXME: add statuschaneg events
+        if self._triggered_statuschanges:
+            notif = ua.StatusChangeNotification()
+            notif.Status = self._triggered_statuschanges.pop(0)
+            result.NotificationMessage.NotificationData.append(notif)
         self._keep_alive_count = 0
         self._startup = False
         result.NotificationMessage.SequenceNumber = self._notification_seq
         self._notification_seq += 1
         result.MoreNotifications = False
-        result.AvailableSequenceNumbers = [res.NotificationMessage.SequenceNumber for res in self._not_acknowledged_results]
-        self._not_acknowledged_results.append(result)
+        result.AvailableSequenceNumbers = list(self._not_acknowledged_results.keys())
+        self._not_acknowledged_results[result.NotificationMessage.SequenceNumber] = result
         return result
+    
+    def trigger_statuschange(self, code):
+        self._triggered_statuschanges.append(code)
+
+    def publish(self, nb):
+        with self._lock:
+            self._publish_cyles_count = 0
+            if nb in self._not_acknowledged_results:
+                self._not_acknowledged_results.pop(nb)
+
+    def republish(self, nb):
+        self.logger.info("re-publish request for ack %s in subscription %s", nb, self)
+        with self._lock:
+            if nb in self._not_acknowledged_results:
+                self.logger.info("re-publishing ack %s in subscription %s", nb, self)
+                return self._not_acknowledged_results[nb].NotificationMessage
+            else:
+                self.logger.info("Error request to re-published non existing ack %s in subscription %s", nb, self)
+                return ua.NotificationMessage()
+
 
     def create_monitored_items(self, params):
         results = []
@@ -296,7 +340,6 @@ class InternalSubscription(object):
                     results.append(ua.StatusCode())
                 elif self._delete_monitored_datachange(mid):
                     results.append(ua.StatusCode())
-                    #FIXME add statuschange
                 else:
                     results.append(ua.StatusCode(ua.StatusCodes.BadMonitoredItemIdInvalid))
             return results
@@ -306,7 +349,7 @@ class InternalSubscription(object):
             for k, v in self._monitored_events:
                 if v == mid:
                     self._monitored_events.pop(k)
-                    #FIXME we may need to remove events in queue, or we do not care ?
+                    #we do not remove events in queue, or should we care?
                     return True
             return False
 
@@ -323,8 +366,6 @@ class InternalSubscription(object):
         event = ua.MonitoredItemNotification()
         with self._lock:
             mdata = self._monitored_datachange[handle]
-            #event.monitored_item_id = mdata.monitored_item_id
-            #event.monitored_item_notification.ClientHandle = mdata.client_handle
             event.ClientHandle = mdata.client_handle
             event.Value = value
             self._triggered_datachanges.append(event)

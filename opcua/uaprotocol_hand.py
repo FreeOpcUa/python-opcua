@@ -19,13 +19,8 @@ def get_bytes_from_sock(sock, size):
         raise SocketClosedException("Server socket has closed")
     return io.BytesIO(data)
 
-class LocalizedText(auto.LocalizedText):
-    def __init__(self, text=""):
-        auto.LocalizedText.__init__(self)
-        self.Text = text.encode()
 
-
-class Hello(object):
+class Hello(uatypes.FrozenClass):
     def __init__(self):
         self.ProtocolVersion = 0
         self.ReceiveBufferSize = 65536
@@ -33,6 +28,7 @@ class Hello(object):
         self.MaxMessageSize = 0
         self.MaxChunkCount = 0
         self.EndpointUrl = ""
+        self._freeze()
 
     def to_binary(self):
         b = []
@@ -74,12 +70,13 @@ class ChunkType(object):
  
 
 
-class Header(object):
+class Header(uatypes.FrozenClass):
     def __init__(self, msgType=None, chunkType=None, channelid=0):
         self.MessageType = msgType
         self.ChunkType = chunkType
         self.ChannelId = channelid
         self.body_size = 0
+        self._freeze()
 
     def add_size(self, size):
         self.body_size += size
@@ -114,10 +111,11 @@ class Header(object):
     __repr__ = __str__
 
 
-class ErrorMessage(object):
+class ErrorMessage(uatypes.FrozenClass):
     def __init__(self):
         self.Error = uatypes.StatusCode()
         self.Reason = ""
+        self._freeze()
 
     def to_binary(self):
         b = []
@@ -137,13 +135,14 @@ class ErrorMessage(object):
     __repr__ = __str__
 
 
-class Acknowledge:
+class Acknowledge(uatypes.FrozenClass):
     def __init__(self):
         self.ProtocolVersion = 0
         self.ReceiveBufferSize = 65536
         self.SendBufferSize = 65536
         self.MaxMessageSize = 0 #No limits
         self.MaxChunkCount = 0 #No limits
+        self._freeze()
 
     def to_binary(self):
         b = []
@@ -166,25 +165,12 @@ class Acknowledge:
         ack.MaxChunkCount = struct.unpack("<I", data.read(4))[0]
         return ack
 
-
-class Error:
-    def __init__(self):
-        self.Code = None
-        self.Reason = None
-
-    @staticmethod
-    def from_binary(data):
-        obj = Error()
-        obj.Code = struct.unpack("<I", data.read(4))[0]
-        size = struct.unpack("<i", data.read(4))[0]
-        obj.Reason = struct.unpack("<{}s".format(size), data.read(size))[0]
-
-
-class AsymmetricAlgorithmHeader:
+class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
     def __init__(self):
         self.SecurityPolicyURI = "http://opcfoundation.org/UA/SecurityPolicy#None"
         self.SenderCertificate = b""
         self.ReceiverCertificateThumbPrint = b""
+        self._freeze()
 
     def to_binary(self):
         b = []
@@ -206,9 +192,10 @@ class AsymmetricAlgorithmHeader:
     __repr__ = __str__
 
 
-class SymmetricAlgorithmHeader:
+class SymmetricAlgorithmHeader(uatypes.FrozenClass):
     def __init__(self):
         self.TokenId = 0
+        self._freeze()
 
     @staticmethod
     def from_binary(data):
@@ -224,10 +211,11 @@ class SymmetricAlgorithmHeader:
     __repr__ = __str__
 
 
-class SequenceHeader:
+class SequenceHeader(uatypes.FrozenClass):
     def __init__(self):
         self.SequenceNumber = None
         self.RequestId = None
+        self._freeze()
 
     @staticmethod
     def from_binary(data):
@@ -300,6 +288,6 @@ def downcast_extobject(item):
     objectidname = ObjectIdsInv[item.TypeId.Identifier]
     classname = objectidname.split("_")[0]
     cmd = "{}.from_binary(utils.Buffer(item.to_binary()))".format(classname)
-    #logger.debug("running %s", cmd)
     return eval(cmd)
+
 

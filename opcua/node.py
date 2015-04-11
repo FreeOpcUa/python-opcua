@@ -225,7 +225,7 @@ class Node(object):
         return self._add_variable(nodeid, qname, val, isproperty=False)
 
     def _to_variant(self, val, vtype=None):
-        if type(val) is ua.Variant:
+        if isinstance(val, ua.Variant):
             return val
         else:
             return ua.Variant(val, vtype)
@@ -245,7 +245,7 @@ class Node(object):
         attrs = ua.VariableAttributes()
         attrs.Description = ua.LocalizedText(qname.Name)
         attrs.DisplayName = ua.LocalizedText(qname.Name)
-        attrs.DataType = self._vtype_to_uatype(val.VariantType)
+        attrs.DataType = self._guess_uatype(val)
         attrs.Value = val
         attrs.ValueRank = 0 
         attrs.WriteMask = 0
@@ -259,34 +259,95 @@ class Node(object):
     def add_method(self, *args):
         """
         create a child method object
+        This is only possible on server side!!
+        args are nodeid, browsename, method_to_be_called, [input argument types], [output argument types]
+        or idx, name, method_to_be_called, [input argument types], [output argument types]
+        if argument types is specified, child nodes advertising what arguments the method uses and returns will be created
+        a callback is a method accepting the nodeid of the parent as first argument and variants after. returns a list of variants
         """
-        nodeid, qname = self._parse_add_args(*args)
-        return self._add_object(nodeid, qname)
+        nodeid, qname = self._parse_add_args(*args[:2])
+        callback = args[2]
+        if len(args) > 3:
+            inputs = args[3] 
+        if len(args) > 4:
+            outputs = args[4] 
+        return self._add_method(nodeid, qname, callback, inputs, outputs)
     
-    def _add_method(self, nodeid, qname):
+    def _add_method(self, nodeid, qname, callback, inputs, outputs):
         node = ua.AddNodesItem()
         node.RequestedNewNodeId = nodeid 
         node.BrowseName = qname 
-        node.NodeClass = ua.NodeClass.Object
+        node.NodeClass = ua.NodeClass.Method
         node.ParentNodeId = self.nodeid 
-        node.ReferenceTypeId = ua.NodeId.from_string("i=35")
-        node.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseObjectType)
+        node.ReferenceTypeId = ua.NodeId.from_string("i=47")
+        #node.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseObjectType)
         attrs = ua.MethodAttributes()
         attrs.Description = ua.LocalizedText(qname.Name)
         attrs.DisplayName = ua.LocalizedText(qname.Name)
         attrs.WriteMask = 0
         attrs.UserWriteMask = 0
-        self.Executable = True
-        self.UserExecutable = True
+        attrs.Executable = True
+        attrs.UserExecutable = True
         node.NodeAttributes = attrs
         results = self.server.add_nodes([node])
         results[0].StatusCode.check()
-        return Node(self.server, nodeid)
+        method = Node(self.server, nodeid)
+        if inputs:
+            method.add_property(qname.NamespaceIndex, "InputArguments", [self._vtype_to_argument(vtype) for vtype in inputs])
+        if outputs:
+            method.add_property(qname.NamespaceIndex, "OutputArguments", [self._vtype_to_argument(vtype) for vtype in inputs])
+        self.server.add_method_callback(method.nodeid, callback)
+        return method
+        
 
+    def call_method(self, methodid, arguments):
+        """
+        Call an OPC-UA method. methodid is browse name of child method or the 
+        nodeid of method as a NodeId object 
+        arguments is a list of variants which may be of different type
+        returns a list of variants which are output of the method 
+        """
+        if type(methodid) is str:
+            methodid = self.get_child(methodid).nodeid
+        elif type(methodid) is Node:
+            methodid = methodid.nodeid
+        request = ua.CallMethodRequest()
+        request.ObjectId = self.nodeid
+        request.MethodId = methodid
+        request.InputArguments = arguments
+        methodstocall = [request]
+        results = self.server.call(methodstocall)
+        res = results[0]
+        arguments = res.InputArgumentResults
+        #if len(res.OutputArguments) == 0:
+            #return None
+        #elif len(res.OutputArguments) == 1:
+            #return res.OutputArguments[0]
+        #else:
+        res.StatusCode.check()
+        return res.OutputArguments
 
+    def _vtype_to_argument(self, vtype):
+        arg = ua.Argument()
+        v = ua.Variant(None, vtype)
+        arg.DataType = self._guess_uatype(v)
+        return ua.ExtensionObject.from_object(arg)
 
-    def _vtype_to_uatype(self, vtype):
-        return eval("ua.NodeId(ua.ObjectIds.{})".format(vtype.name))
+    def _guess_uatype(self, variant):
+        if variant.VariantType == ua.VariantType.ExtensionObject:
+            if variant.Value is None:
+                raise Exception("Cannot guess DataType from Null ExtensionObject")
+            if type(variant.Value) in (list, tuple):
+                if len(variant.Value) == 0:
+                    raise Exception("Cannot guess DataType from Null ExtensionObject")
+                extobj = variant.Value[0]
+            else:
+                extobj = variant.Value
+            objectidname = ua.ObjectIdsInv[extobj.TypeId.Identifier]
+            classname = objectidname.split("_")[0]
+            return eval("ua.NodeId(ua.ObjectIds.{})".format(classname))
+        else:
+            return eval("ua.NodeId(ua.ObjectIds.{})".format(variant.VariantType.name))
 
     def _parse_add_args(self, *args):
         if type(args[0]) is ua.NodeId:

@@ -20,7 +20,6 @@ Client: what works:
 Client: what is not implemented yet 
 * removing nodes 
 * subscribing to events
-* subscribing to status change
 * adding missing modify methods
 * certificate handling
 * user and password 
@@ -36,11 +35,11 @@ Server: what works:
 * adding nodes to address space
 * tested client: freeopcua C++, freeopcua Python, uaexpert, prosys
 * datachange subscriptions
+* methods
 
 Server: what is not implemented
-* event, status subscriptions
+* events
 * security (users, certificates, etc)
-* methods
 * removing nodes 
 
 Example client code:
@@ -89,4 +88,16 @@ Example server code:
     myvar = myfolder.add_variable(2, "myvar", 6.7)
     ...
 ```
+
+# Development
+
+## Running tests:
+
+python tests.py
+
+## Coverage
+
+coverage run tests.py  
+coverage html  
+firefox htmlcov/index.html  
 

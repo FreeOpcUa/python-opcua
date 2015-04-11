@@ -23,6 +23,7 @@ class NodeData(object):
         self.nodeid = nodeid
         self.attributes = {}
         self.references = []
+        self.call = None
 
     def __str__(self):
         return "NodeData(id:{}, attrs:{}, refs:{})".format(self.nodeid, self.attributes, self.references)
@@ -155,8 +156,7 @@ class AddressSpace(object):
                 try:
                     v(k, value)
                 except Exception as ex:
-                    self.logger.warn("Error calling datachange callback %s, %s, %s", k, v, ex)
-                    print(ex)#seems exception is truncated!?!?
+                    self.logger.exception("Error calling datachange callback %s, %s, %s", k, v, ex)
             return ua.StatusCode()
 
     def add_datachange_callback(self, nodeid, attr, callback):
@@ -335,8 +335,34 @@ class AddressSpace(object):
                 #FIXME: here we should check other arguments!!
                 if ref.BrowseName == el.TargetName:
                     return ref.NodeId
-            self.logger.warning("element %s was not found in node %s", el, nodeid)
+            self.logger.info("element %s was not found in node %s", el, nodeid)
             return None
+
+    def add_method_callback(self, methodid, callback):
+        node = self._nodes[methodid]
+        node.call = callback
+
+    def call(self, methods):
+        results = []
+        for method in methods:
+            res = ua.CallMethodResult()
+            if method.ObjectId not in self._nodes or method.MethodId not in self._nodes: 
+                res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
+            else:
+                node = self._nodes[method.MethodId]
+                if node.call is None:
+                    res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNothingToDo)
+                else:
+                    try:
+                        res.OutputArguments = node.call(method.ObjectId, *method.InputArguments)
+                        for _ in method.InputArguments:
+                            res.InputArgumentResults.append(ua.StatusCode())
+                    except Exception:
+                        self.logger.exception("Error executing method call %s, an exception was raised: ", method)
+                        res.StatusCode = ua.StatusCode(ua.StatusCodes.BadUnexpectedError)
+                results.append(res)
+            return results
+                    
             
 
 

@@ -16,6 +16,15 @@ class SubHandler(object):
         print("Python: New event", handle, event)
 
 
+def func(parent, var):
+    print("Got var: ", var)
+    var.Value *= 2
+    print(var)
+    return [ua.Variant(True)]
+
+def func2(parent):
+    return [ua.Variant(78.90)]
+
 
 
 if __name__ == "__main__":
@@ -24,8 +33,8 @@ if __name__ == "__main__":
     #logger = logging.getLogger("opcua.address_space")
     #logger = logging.getLogger("opcua.internal_server")
     #logger.setLevel(logging.DEBUG)
-    #logger = logging.getLogger("opcua.subscription_server")
-    #logger.setLevel(logging.DEBUG)
+    logger = logging.getLogger("opcua.subscription_server")
+    logger.setLevel(logging.DEBUG)
 
 
     # now setup our server 
@@ -46,6 +55,7 @@ if __name__ == "__main__":
     myvar = myobj.add_variable(idx, "MyVariable", 6.7)
     myarrayvar = myobj.add_variable(idx, "myarrayvar", [6.7, 7.9])
     myprop = myobj.add_property(idx, "myproperty", "I am a property")
+    mymethod = myobj.add_method(idx, "mymethod", func2, [ua.VariantType.Int64], [ua.VariantType.Boolean])
     
     # starting!
     server.start()
@@ -53,8 +63,8 @@ if __name__ == "__main__":
     try:
         handler = SubHandler()
         #enable following if you want to subscribe to nodes on server side
-        #sub = server.create_subscription(500, handler)
-        #handle = sub.subscribe_data_change(myvar)
+        sub = server.create_subscription(500, handler)
+        handle = sub.subscribe_data_change(myvar)
         #time.sleep(0.1)
         #sub.unsubscribe(handle)
         #sub.delete()

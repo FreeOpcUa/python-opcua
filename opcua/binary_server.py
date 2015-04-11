@@ -25,7 +25,7 @@ class BinaryServer(Thread):
         self.iserver = internal_server
 
     def run(self):
-        logger.info("Starting server on %s:%s", self.hostname, self.port)
+        logger.warning("Listening on %s:%s", self.hostname, self.port)
         socketserver.TCPServer.allow_reuse_address = True #get rid of address already in used warning
         self.socket_server = ThreadingTCPServer((self.hostname, self.port), UAHandler)
         #self.socket_server.daemon_threads = True # this will force a shutdown of all threads, maybe too hard

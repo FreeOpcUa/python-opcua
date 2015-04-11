@@ -38,8 +38,8 @@ class UAProcessor(object):
         hello = ua.Hello.from_binary(body)
         hdr = ua.Header(ua.MessageType.Acknowledge, ua.ChunkType.Single)
         ack = ua.Acknowledge()
-        ack.ReceivebufferSize = hello.ReceiveBufferSize
-        ack.SendbufferSize = hello.SendBufferSize
+        ack.ReceiveBufferSize = hello.ReceiveBufferSize
+        ack.SendBufferSize = hello.SendBufferSize
         self._write_socket(hdr, ack)
 
         while True:
@@ -59,7 +59,8 @@ class UAProcessor(object):
             seqhdr.SequenceNumber = self._seq_number
             self._seq_number += 1
             hdr = ua.Header(msgtype, ua.ChunkType.Single, self.channel.SecurityToken.ChannelId)
-            algohdr.TokenId = self.channel.SecurityToken.TokenId 
+            if type(algohdr) is ua.SymmetricAlgorithmHeader:
+                algohdr.TokenId = self.channel.SecurityToken.TokenId 
             self._write_socket(hdr, algohdr, seqhdr, response)
 
     def _write_socket(self, hdr, *args):
@@ -268,8 +269,6 @@ class UAProcessor(object):
 
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
-
-
         elif typeid == ua.NodeId(ua.ObjectIds.DeleteMonitoredItemsRequest_Encoding_DefaultBinary):
             self.logger.info("delete monitored items request")
             params = ua.DeleteMonitoredItemsParameters.from_binary(body) 
@@ -285,9 +284,9 @@ class UAProcessor(object):
             self.logger.info("publish request")
 
             if not self.session:
-                return
+                return False
             
-            acks = ua.unpack_array("Int32", body)
+            params = ua.PublishParameters.from_binary(body) 
             
             data = PublishRequestData()
             data.requesthdr = requesthdr
@@ -295,7 +294,18 @@ class UAProcessor(object):
             data.algohdr = algohdr
             with self._datalock:
                 self._publishdata_queue.append(data) # will be used to send publish answers from server
-            self.session.publish(acks)
+            self.session.publish(params.SubscriptionAcknowledgements)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.RepublishRequest_Encoding_DefaultBinary):
+            self.logger.info("re-publish request")
+
+            params = ua.RepublishParameters.from_binary(body) 
+            msg = self.session.republish(params)
+
+            response = ua.RepublishResponse()
+            response.NotificationMessage = msg
+
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.CloseSecureChannelRequest_Encoding_DefaultBinary):
             self.logger.info("close secure channel request")
@@ -304,6 +314,18 @@ class UAProcessor(object):
             self.channel = None
             return False
  
+        elif typeid == ua.NodeId(ua.ObjectIds.CallRequest_Encoding_DefaultBinary):
+            self.logger.info("call request")
+
+            params = ua.CallParameters.from_binary(body) 
+            
+            results = self.session.call(params.MethodsToCall)
+
+            response = ua.CallResponse()
+            response.Results = results
+
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
         else:
             self.logger.warning("Uknown message received %s", typeid)
             sf = ua.ServiceFault()
@@ -311,6 +333,9 @@ class UAProcessor(object):
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, sf)
 
         return True
+
+
+
 
     def _open_secure_channel(self, params):
         self.logger.info("open secure channel")
