@@ -300,17 +300,25 @@ class Node(object):
         return method
         
 
-    def call_method(self, methodid, arguments):
+    def call_method(self, methodid, *args):
         """
         Call an OPC-UA method. methodid is browse name of child method or the 
         nodeid of method as a NodeId object 
-        arguments is a list of variants which may be of different type
+        arguments are variants or python object convertible to variants.
+        which may be of different types
         returns a list of variants which are output of the method 
         """
         if type(methodid) is str:
             methodid = self.get_child(methodid).nodeid
         elif type(methodid) is Node:
             methodid = methodid.nodeid
+
+        arguments = []
+        for arg in args:
+            if not isinstance(arg, ua.Variant):
+                arg = ua.Variant(arg)
+            arguments.append(arg)
+
         request = ua.CallMethodRequest()
         request.ObjectId = self.nodeid
         request.MethodId = methodid
@@ -318,14 +326,13 @@ class Node(object):
         methodstocall = [request]
         results = self.server.call(methodstocall)
         res = results[0]
-        arguments = res.InputArgumentResults
-        #if len(res.OutputArguments) == 0:
-            #return None
-        #elif len(res.OutputArguments) == 1:
-            #return res.OutputArguments[0]
-        #else:
         res.StatusCode.check()
-        return res.OutputArguments
+        if len(res.OutputArguments) == 0:
+            return None
+        elif len(res.OutputArguments) == 1:
+            return res.OutputArguments[0].Value
+        else:
+            return [var.Value for var in res.OutputArguments]
 
     def _vtype_to_argument(self, vtype):
         arg = ua.Argument()

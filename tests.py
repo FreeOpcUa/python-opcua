@@ -16,6 +16,7 @@ from threading import Condition
 from opcua import ua
 from opcua import Client
 from opcua import Server
+from opcua import uamethod
 
 port_num1 = 48410
 port_num2 = 48430
@@ -451,32 +452,47 @@ class CommonTests(object):
     def test_method(self):
         o = self.opc.get_objects_node()
         m = o.get_child("2:ServerMethod")
-        result = o.call_method(m, [ua.Variant(2.1)])
-        self.assertEqual(result, [ua.Variant(4.2)])
+        result = o.call_method("2:ServerMethod", 2.1)
+        self.assertEqual(result, 4.2)
 
     def test_method_array(self):
         o = self.opc.get_objects_node()
         m = o.get_child("2:ServerMethodArray")
-        result = o.call_method(m, [ua.Variant("sin"), ua.Variant(math.pi), ])
-        self.assertTrue(result[0].Value < 0.01)
+        result = o.call_method(m, "sin", ua.Variant(math.pi))
+        self.assertTrue(result < 0.01)
+
+    def test_method_array2(self):
+        o = self.opc.get_objects_node()
+        m = o.get_child("2:ServerMethodArray2")
+        result = o.call_method(m, [1.1, 3.4, 9])
+        self.assertEqual(result, [2.2, 6.8, 18])
+
 
 
 
 
 def add_server_methods(srv):
-    def func(parent, variant):
-        variant.Value *= 2
-        return [variant]
+    @uamethod
+    def func(parent, value):
+        return value * 2
+
     o = srv.get_objects_node()
     v = o.add_method(ua.NodeId("ServerMethod", 2), ua.QualifiedName('ServerMethod', 2), func, [ua.VariantType.Int64], [ua.VariantType.Int64])
 
-    def func2(parent, methodname, variant):
-        print("method name is: ", methodname)
-        val = math.sin(variant.Value)
-        res = ua.Variant(val)
-        return [res]
+
+    @uamethod
+    def func2(parent, methodname, value):
+        return math.sin(value)
+
     o = srv.get_objects_node()
     v = o.add_method(ua.NodeId("ServerMethodArray", 2), ua.QualifiedName('ServerMethodArray', 2), func2, [ua.VariantType.String, ua.VariantType.Int64], [ua.VariantType.Int64])
+
+    @uamethod
+    def func3(parent, mylist):
+        return [i * 2 for i in mylist]
+
+    o = srv.get_objects_node()
+    v = o.add_method(ua.NodeId("ServerMethodArray2", 2), ua.QualifiedName('ServerMethodArray2', 2), func3, [ua.VariantType.Int64], [ua.VariantType.Int64])
 
 
 
@@ -589,8 +605,8 @@ class TestServer(unittest.TestCase, CommonTests):
             return [variant]
         o = self.opc.get_objects_node()
         v = o.add_method(3, 'Method1', func, [ua.VariantType.Int64], [ua.VariantType.Int64])
-        result = o.call_method(v, [ua.Variant(2.1)])
-        self.assertEqual(result, [ua.Variant(4.2)])
+        result = o.call_method(v, ua.Variant(2.1))
+        self.assertEqual(result, 4.2)
 
 
 

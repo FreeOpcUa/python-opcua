@@ -1,7 +1,7 @@
 import time
 import logging
-from opcua import ua
-from opcua.server import Server
+
+from opcua import ua, uamethod, Server
 
 from IPython import embed
 
@@ -15,16 +15,16 @@ class SubHandler(object):
     def event(self, handle, event):
         print("Python: New event", handle, event)
 
-
-def func(parent, var):
-    print("Got var: ", var)
-    var.Value *= 2
-    print(var)
-    return [ua.Variant(True)]
-
-def func2(parent):
+#method to be exposed through server
+def func(parent):
     return [ua.Variant(78.90)]
 
+#method to be exposed through server
+# uses a decorator to automatically convert to and from variants
+@uamethod
+def multiply(parent, x, y):
+    print("OKOK", x, y)
+    return x*y
 
 
 if __name__ == "__main__":
@@ -56,6 +56,7 @@ if __name__ == "__main__":
     myarrayvar = myobj.add_variable(idx, "myarrayvar", [6.7, 7.9])
     myprop = myobj.add_property(idx, "myproperty", "I am a property")
     mymethod = myobj.add_method(idx, "mymethod", func2, [ua.VariantType.Int64], [ua.VariantType.Boolean])
+    multiply_node = myobj.add_method(idx, "multiply", multiply, [ua.VariantType.Int64, ua.VariantType.Int64], [ua.VariantType.Int64])
     
     # starting!
     server.start()

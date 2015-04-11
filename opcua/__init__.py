@@ -8,3 +8,22 @@ from opcua.node import Node
 from opcua.subscription import Subscription
 from opcua.client import Client
 from opcua.server import Server
+
+
+def uamethod(func):
+    """
+    Method decorator to automatically convert 
+    arguments and output to and from variants
+    """
+    def wrapper(parent, *args):
+        result = func(parent, *[arg.Value for arg in args])
+        return to_variant(result)
+    return wrapper
+
+def to_variant(*args):
+    uaargs = []
+    for arg in args:
+        uaargs.append(ua.Variant(arg))
+    return uaargs
+
+

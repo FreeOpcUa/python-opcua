@@ -27,7 +27,7 @@ if __name__ == "__main__":
         root = client.get_root_node()
         print(root)
         print(root.get_children())
-        print(root.get_name())
+        print(root.get_browse_name())
         #var = client.get_node(ua.NodeId(1002, 2))
         #print(var)
         #print(var.get_value())
@@ -35,6 +35,7 @@ if __name__ == "__main__":
         state = root.get_child(["0:Objects", "0:Server"])
         print(state)
         myvar = root.get_child(["0:Objects", "2:NewObject", "2:MyVariable"])
+        obj = root.get_child(["0:Objects", "2:NewObject"])
         print("yvar is: ", myvar)
         handler = SubHandler()
         sub = client.create_subscription(500, handler)
@@ -42,6 +43,11 @@ if __name__ == "__main__":
         time.sleep(0.1)
         #sub.unsubscribe(handle)
         #sub.delete()
+        
+        #calling a method on server
+        res = obj.call_method("2:multiply", 3, "klk")
+        print("method result is: ", res)
+
         embed()
     finally:
         client.disconnect()

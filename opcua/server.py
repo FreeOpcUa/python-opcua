@@ -26,15 +26,17 @@ class Server(object):
         self.iserver = InternalServer()
         self.bserver = None
 
+        #setup some expected values
+        self.register_namespace(self.server_uri)
+        sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
+        sa_node.set_value([self.server_uri])
+
     def set_endpoint(self, url):
         self.endpoint = urlparse(url)
 
     def _setup_server_nodes(self):
         #to be called just before starting server since it needs all parameters to be setup
         self._set_endpoints()
-        self.register_namespace(self.server_uri)
-        sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
-        sa_node.set_value([self.server_uri])
 
     def _set_endpoints(self):
         idtoken = ua.UserTokenPolicy()
