@@ -34,6 +34,9 @@ class Server(object):
     def set_endpoint(self, url):
         self.endpoint = urlparse(url)
 
+    def get_endpoints(self):
+        return self.iserver.get_endpoints()
+
     def _setup_server_nodes(self):
         #to be called just before starting server since it needs all parameters to be setup
         self._set_endpoints()

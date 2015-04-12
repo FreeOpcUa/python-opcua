@@ -245,22 +245,15 @@ class CommonTests(object):
         #sub.delete()
 
 
-    #def test_get_browse_namespaceIndex(self):
-        #idx = self.opc.get_browse_namespaceIndex('http://freeua.github.io')
-        #self.assertEqual(idx, 1) 
-
-    #def test_use_namespace(self):
-        #root = self.opc.get_root_node()
-        #idx = self.opc.get_browse_namespaceIndex('http://freeua.github.io')
-        #o = root.add_object(idx, 'test_namespace')
-        #self.assertEqual(idx, o.nodeid.NamespaceIndex) 
-        #o2 = root.get_child('{}:test_namespace'.format(idx))
-        #self.assertEqual(o, o2) 
-
-    def test_non_existing_node(self):
+    def test_non_existing_path(self):
         root = self.opc.get_root_node()
         with self.assertRaises(Exception):
             server_time_node = root.get_child(['0:Objects', '0:Server', '0:nonexistingnode'])
+
+    def test_bad_attribute(self):
+        root = self.opc.get_root_node()
+        with self.assertRaises(Exception):
+            root.set_value(99)
 
     def test_get_node_by_nodeid(self):
         root = self.opc.get_root_node()
@@ -370,6 +363,18 @@ class CommonTests(object):
         state = statenode.get_value()
         self.assertEqual(state, 0)
 
+    def test_bad_node(self):
+        bad = self.opc.get_node(ua.NodeId(999, 999))
+        with self.assertRaises(Exception):
+            bad.get_browse_name()
+        with self.assertRaises(Exception):
+            bad.set_value(89)
+        with self.assertRaises(Exception):
+            bad.add_object(0, "myobj" )
+        with self.assertRaises(Exception):
+            bad.get_child(0, "myobj" )
+
+
     def test_array_value(self):
         o = self.opc.get_objects_node()
         v = o.add_variable(3, 'VariableArrayValue', [1, 2, 3])
@@ -418,8 +423,14 @@ class CommonTests(object):
         self.assertEqual(msclt.node, v1)
         self.assertEqual(msclt.value, [5])
 
+        with self.assertRaises(Exception):
+            sub.unsubscribe(999)# non existing handle
         sub.unsubscribe(handle1)
+        with self.assertRaises(Exception):
+            sub.unsubscribe(handle1) # second try should fail
         sub.delete()
+        with self.assertRaises(Exception):
+            sub.unsubscribe(handle1) # sub does not exist anymore
 
     def test_subscribe_server_time(self):
         msclt = MySubHandler()
@@ -454,6 +465,11 @@ class CommonTests(object):
         m = o.get_child("2:ServerMethod")
         result = o.call_method("2:ServerMethod", 2.1)
         self.assertEqual(result, 4.2)
+        with self.assertRaises(Exception):
+            #FIXME: we should raise a more precise exception
+            result = o.call_method("2:ServerMethod", 2.1, 89, 9)
+        with self.assertRaises(Exception):
+            result = o.call_method(ua.NodeId(999), 2.1) #non existing method
 
     def test_method_array(self):
         o = self.opc.get_objects_node()
@@ -466,6 +482,20 @@ class CommonTests(object):
         m = o.get_child("2:ServerMethodArray2")
         result = o.call_method(m, [1.1, 3.4, 9])
         self.assertEqual(result, [2.2, 6.8, 18])
+
+    def test_add_nodes(self):
+        objects = self.opc.get_objects_node()
+        f = objects.add_folder(3, 'MyFolder')
+        v = f.add_variable(3, 'MyVariable', 6)
+        p = f.add_property(3, 'MyProperty', 10)
+        childs = f.get_children()
+        self.assertTrue(v in childs)
+        self.assertTrue(p in childs)
+
+    def test_get_endpoints(self):
+        endpoints = self.opc.get_endpoints()
+        self.assertTrue(len(endpoints) > 0)
+        self.assertTrue(endpoints[0].EndpointUrl.startswith("opc.tcp://localhost"))
 
 
 
@@ -557,6 +587,12 @@ class TestClient(unittest.TestCase, CommonTests):
         # new one before this one is really stopped
         self.srv.join()
 
+    def test_service_fault(self):
+        request = ua.ReadRequest()
+        request.TypeId = ua.FourByteNodeId(999) # bad type!
+        with self.assertRaises(Exception):
+            self.clt.bclient._send_request(request)
+
 
 
 class TestServer(unittest.TestCase, CommonTests):
@@ -575,14 +611,6 @@ class TestServer(unittest.TestCase, CommonTests):
     @classmethod
     def tearDownClass(self):
         self.srv.stop()
-    def test_add_nodes(self):
-        objects = self.opc.get_objects_node()
-        f = objects.add_folder(3, 'MyFolder')
-        v = f.add_variable(3, 'MyVariable', 6)
-        p = f.add_property(3, 'MyProperty', 10)
-        childs = f.get_children()
-        self.assertTrue(v in childs)
-        self.assertTrue(p in childs)
 
 
     def test_register_namespace(self):
