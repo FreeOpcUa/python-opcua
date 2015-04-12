@@ -358,7 +358,8 @@ class InternalSubscription(object):
             for k, v in self._monitored_datachange.items():
                 if v.monitored_item_id == mid:
                     self._monitored_datachange.pop(k)
-                return True
+                    self.aspace.delete_datachange_callback(k)
+                    return True
             return False
 
     def datachange_callback(self, handle, value):

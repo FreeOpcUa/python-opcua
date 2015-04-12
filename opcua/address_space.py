@@ -3,11 +3,6 @@ import logging
 
 from opcua import ua
 
-class DataChangeCallbackData(object):
-    def __init__(self):
-        self.callback = None
-        self.client_handle = None
-
 class AttributeValue(object):
     def __init__(self, value):
         self.value = value
@@ -170,9 +165,6 @@ class AddressSpace(object):
             attval = node.attributes[attr]
             self._datachange_callback_counter += 1
             handle = self._datachange_callback_counter
-            #cb = DataChangeCallbackData()
-            #cb.callback = callback
-            #cb.client_handle = handle
             attval.datachange_callbacks[handle] = callback
             self._handle_to_attribute_map[handle] = (nodeid, attr)
             return ua.StatusCode(), handle

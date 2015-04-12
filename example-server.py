@@ -16,8 +16,8 @@ class SubHandler(object):
         print("Python: New event", handle, event)
 
 #method to be exposed through server
-def func(parent):
-    return [ua.Variant(78.90)]
+def func(parent, variant):
+    return [variant.Value * 2]
 
 #method to be exposed through server
 # uses a decorator to automatically convert to and from variants
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     myvar = myobj.add_variable(idx, "MyVariable", 6.7)
     myarrayvar = myobj.add_variable(idx, "myarrayvar", [6.7, 7.9])
     myprop = myobj.add_property(idx, "myproperty", "I am a property")
-    mymethod = myobj.add_method(idx, "mymethod", func2, [ua.VariantType.Int64], [ua.VariantType.Boolean])
+    mymethod = myobj.add_method(idx, "mymethod", func, [ua.VariantType.Int64], [ua.VariantType.Boolean])
     multiply_node = myobj.add_method(idx, "multiply", multiply, [ua.VariantType.Int64, ua.VariantType.Int64], [ua.VariantType.Int64])
     
     # starting!
