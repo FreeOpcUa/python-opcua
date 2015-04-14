@@ -464,6 +464,7 @@ class LocalizedText(FrozenClass):
         return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', '  + \
              'Locale:' + str(self.Locale) + ', '  + \
              'Text:' + str(self.Text) + ')'
+    __repr__ = __str__
 
     def __eq__(self, other):
         if isinstance(other, LocalizedText) and self.Locale == other.Locale and self.Text == other.Text:
@@ -547,9 +548,18 @@ class VariantType(Enum):
     DiagnosticInfo = 25
 
 class Variant(object):
+    """
+    Create an OPC-UA Variant object.
+    if no argument a Null Variant is created.
+    if not variant type is given, attemps to guess type from python type
+    if a variant is given as value, the new objects becomes a copy of the argument
+    """
     def __init__(self, value=None, varianttype=None):
         self.Encoding = 0
         self.Value = value
+        if isinstance(value, Variant):
+            self.Value = value.Value
+            self.VariantType = value.VariantType
         if varianttype is None:
             if type(self.Value) in (list, tuple):
                 if len(self.Value) == 0:

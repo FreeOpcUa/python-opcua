@@ -4603,37 +4603,22 @@ class ElementOperand(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.ElementOperand_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.Index = 0
         self._freeze()
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(pack_uatype('UInt32', self.Index))
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+        packet.append(pack_uatype('UInt32', self.Index))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ElementOperand()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.Index = unpack_uatype('UInt32', data)
         return obj
     
     def __str__(self):
-        return 'ElementOperand(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'Index:' + str(self.Index) + ')'
+        return 'ElementOperand(' + 'Index:' + str(self.Index) + ')'
     
     __repr__ = __str__
     
@@ -4641,37 +4626,22 @@ class LiteralOperand(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.LiteralOperand_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.Value = Variant()
         self._freeze()
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(self.Value.to_binary())
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+        packet.append(self.Value.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = LiteralOperand()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.Value = Variant.from_binary(data)
         return obj
     
     def __str__(self):
-        return 'LiteralOperand(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'Value:' + str(self.Value) + ')'
+        return 'LiteralOperand(' + 'Value:' + str(self.Value) + ')'
     
     __repr__ = __str__
     
@@ -4679,9 +4649,6 @@ class AttributeOperand(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.AttributeOperand_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.NodeId = NodeId()
         self.Alias = ''
         self.BrowsePath = RelativePath()
@@ -4691,25 +4658,16 @@ class AttributeOperand(FrozenClass):
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(self.NodeId.to_binary())
-        body.append(pack_uatype('String', self.Alias))
-        body.append(self.BrowsePath.to_binary())
-        body.append(pack_uatype('UInt32', self.AttributeId))
-        body.append(pack_uatype('String', self.IndexRange))
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+        packet.append(self.NodeId.to_binary())
+        packet.append(pack_uatype('String', self.Alias))
+        packet.append(self.BrowsePath.to_binary())
+        packet.append(pack_uatype('UInt32', self.AttributeId))
+        packet.append(pack_uatype('String', self.IndexRange))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = AttributeOperand()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.NodeId = NodeId.from_binary(data)
         obj.Alias = unpack_uatype('String', data)
         obj.BrowsePath = RelativePath.from_binary(data)
@@ -4718,10 +4676,7 @@ class AttributeOperand(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'AttributeOperand(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'NodeId:' + str(self.NodeId) + ', '  + \
+        return 'AttributeOperand(' + 'NodeId:' + str(self.NodeId) + ', '  + \
              'Alias:' + str(self.Alias) + ', '  + \
              'BrowsePath:' + str(self.BrowsePath) + ', '  + \
              'AttributeId:' + str(self.AttributeId) + ', '  + \
@@ -4733,9 +4688,6 @@ class SimpleAttributeOperand(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.SimpleAttributeOperand_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.TypeDefinitionId = NodeId()
         self.BrowsePath = []
         self.AttributeId = 0
@@ -4744,26 +4696,17 @@ class SimpleAttributeOperand(FrozenClass):
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(self.TypeDefinitionId.to_binary())
-        body.append(struct.pack('<i', len(self.BrowsePath)))
+        packet.append(self.TypeDefinitionId.to_binary())
+        packet.append(struct.pack('<i', len(self.BrowsePath)))
         for fieldname in self.BrowsePath:
-            body.append(fieldname.to_binary())
-        body.append(pack_uatype('UInt32', self.AttributeId))
-        body.append(pack_uatype('String', self.IndexRange))
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+            packet.append(fieldname.to_binary())
+        packet.append(pack_uatype('UInt32', self.AttributeId))
+        packet.append(pack_uatype('String', self.IndexRange))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = SimpleAttributeOperand()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.TypeDefinitionId = NodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
@@ -4774,10 +4717,7 @@ class SimpleAttributeOperand(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'SimpleAttributeOperand(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'TypeDefinitionId:' + str(self.TypeDefinitionId) + ', '  + \
+        return 'SimpleAttributeOperand(' + 'TypeDefinitionId:' + str(self.TypeDefinitionId) + ', '  + \
              'BrowsePath:' + str(self.BrowsePath) + ', '  + \
              'AttributeId:' + str(self.AttributeId) + ', '  + \
              'IndexRange:' + str(self.IndexRange) + ')'
@@ -5401,33 +5341,19 @@ class HistoryReadDetails(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.HistoryReadDetails_Encoding_DefaultBinary)
-        self.Encoding = 0
-        self.Body = b''
         self._freeze()
     
     def to_binary(self):
         packet = []
-        if self.Body: self.Encoding |= (1 << 0)
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        if self.Body: 
-            packet.append(pack_uatype('ByteString', self.Body))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = HistoryReadDetails()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        if obj.Encoding & (1 << 0):
-            obj.Body = unpack_uatype('ByteString', data)
         return obj
     
     def __str__(self):
-        return 'HistoryReadDetails(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'Body:' + str(self.Body) + ')'
+        return 'HistoryReadDetails(' +  + ')'
     
     __repr__ = __str__
     
@@ -5435,9 +5361,6 @@ class ReadEventDetails(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.ReadEventDetails_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.NumValuesPerNode = 0
         self.StartTime = datetime.now()
         self.EndTime = datetime.now()
@@ -5446,24 +5369,15 @@ class ReadEventDetails(FrozenClass):
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(pack_uatype('UInt32', self.NumValuesPerNode))
-        body.append(pack_uatype('DateTime', self.StartTime))
-        body.append(pack_uatype('DateTime', self.EndTime))
-        body.append(self.Filter.to_binary())
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+        packet.append(pack_uatype('UInt32', self.NumValuesPerNode))
+        packet.append(pack_uatype('DateTime', self.StartTime))
+        packet.append(pack_uatype('DateTime', self.EndTime))
+        packet.append(self.Filter.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ReadEventDetails()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.NumValuesPerNode = unpack_uatype('UInt32', data)
         obj.StartTime = unpack_uatype('DateTime', data)
         obj.EndTime = unpack_uatype('DateTime', data)
@@ -5471,10 +5385,7 @@ class ReadEventDetails(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'ReadEventDetails(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', '  + \
+        return 'ReadEventDetails(' + 'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', '  + \
              'StartTime:' + str(self.StartTime) + ', '  + \
              'EndTime:' + str(self.EndTime) + ', '  + \
              'Filter:' + str(self.Filter) + ')'
@@ -5485,9 +5396,6 @@ class ReadRawModifiedDetails(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.ReadRawModifiedDetails_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.IsReadModified = True
         self.StartTime = datetime.now()
         self.EndTime = datetime.now()
@@ -5497,25 +5405,16 @@ class ReadRawModifiedDetails(FrozenClass):
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(pack_uatype('Boolean', self.IsReadModified))
-        body.append(pack_uatype('DateTime', self.StartTime))
-        body.append(pack_uatype('DateTime', self.EndTime))
-        body.append(pack_uatype('UInt32', self.NumValuesPerNode))
-        body.append(pack_uatype('Boolean', self.ReturnBounds))
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+        packet.append(pack_uatype('Boolean', self.IsReadModified))
+        packet.append(pack_uatype('DateTime', self.StartTime))
+        packet.append(pack_uatype('DateTime', self.EndTime))
+        packet.append(pack_uatype('UInt32', self.NumValuesPerNode))
+        packet.append(pack_uatype('Boolean', self.ReturnBounds))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ReadRawModifiedDetails()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.IsReadModified = unpack_uatype('Boolean', data)
         obj.StartTime = unpack_uatype('DateTime', data)
         obj.EndTime = unpack_uatype('DateTime', data)
@@ -5524,10 +5423,7 @@ class ReadRawModifiedDetails(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'ReadRawModifiedDetails(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'IsReadModified:' + str(self.IsReadModified) + ', '  + \
+        return 'ReadRawModifiedDetails(' + 'IsReadModified:' + str(self.IsReadModified) + ', '  + \
              'StartTime:' + str(self.StartTime) + ', '  + \
              'EndTime:' + str(self.EndTime) + ', '  + \
              'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', '  + \
@@ -5539,9 +5435,6 @@ class ReadProcessedDetails(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.ReadProcessedDetails_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.StartTime = datetime.now()
         self.EndTime = datetime.now()
         self.ProcessingInterval = 0
@@ -5551,27 +5444,18 @@ class ReadProcessedDetails(FrozenClass):
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(pack_uatype('DateTime', self.StartTime))
-        body.append(pack_uatype('DateTime', self.EndTime))
-        body.append(pack_uatype('Double', self.ProcessingInterval))
-        body.append(struct.pack('<i', len(self.AggregateType)))
+        packet.append(pack_uatype('DateTime', self.StartTime))
+        packet.append(pack_uatype('DateTime', self.EndTime))
+        packet.append(pack_uatype('Double', self.ProcessingInterval))
+        packet.append(struct.pack('<i', len(self.AggregateType)))
         for fieldname in self.AggregateType:
-            body.append(fieldname.to_binary())
-        body.append(self.AggregateConfiguration.to_binary())
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+            packet.append(fieldname.to_binary())
+        packet.append(self.AggregateConfiguration.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ReadProcessedDetails()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.StartTime = unpack_uatype('DateTime', data)
         obj.EndTime = unpack_uatype('DateTime', data)
         obj.ProcessingInterval = unpack_uatype('Double', data)
@@ -5583,10 +5467,7 @@ class ReadProcessedDetails(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'ReadProcessedDetails(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'StartTime:' + str(self.StartTime) + ', '  + \
+        return 'ReadProcessedDetails(' + 'StartTime:' + str(self.StartTime) + ', '  + \
              'EndTime:' + str(self.EndTime) + ', '  + \
              'ProcessingInterval:' + str(self.ProcessingInterval) + ', '  + \
              'AggregateType:' + str(self.AggregateType) + ', '  + \
@@ -5598,42 +5479,27 @@ class ReadAtTimeDetails(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.ReadAtTimeDetails_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.ReqTimes = []
         self.UseSimpleBounds = True
         self._freeze()
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(struct.pack('<i', len(self.ReqTimes)))
+        packet.append(struct.pack('<i', len(self.ReqTimes)))
         for fieldname in self.ReqTimes:
-            body.append(pack_uatype('DateTime', fieldname))
-        body.append(pack_uatype('Boolean', self.UseSimpleBounds))
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+            packet.append(pack_uatype('DateTime', fieldname))
+        packet.append(pack_uatype('Boolean', self.UseSimpleBounds))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = ReadAtTimeDetails()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.ReqTimes = unpack_uatype_array('DateTime', data)
         obj.UseSimpleBounds = unpack_uatype('Boolean', data)
         return obj
     
     def __str__(self):
-        return 'ReadAtTimeDetails(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'ReqTimes:' + str(self.ReqTimes) + ', '  + \
+        return 'ReadAtTimeDetails(' + 'ReqTimes:' + str(self.ReqTimes) + ', '  + \
              'UseSimpleBounds:' + str(self.UseSimpleBounds) + ')'
     
     __repr__ = __str__
@@ -6611,33 +6477,19 @@ class MonitoringFilter(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.MonitoringFilter_Encoding_DefaultBinary)
-        self.Encoding = 0
-        self.Body = b''
         self._freeze()
     
     def to_binary(self):
         packet = []
-        if self.Body: self.Encoding |= (1 << 0)
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        if self.Body: 
-            packet.append(pack_uatype('ByteString', self.Body))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = MonitoringFilter()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        if obj.Encoding & (1 << 0):
-            obj.Body = unpack_uatype('ByteString', data)
         return obj
     
     def __str__(self):
-        return 'MonitoringFilter(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'Body:' + str(self.Body) + ')'
+        return 'MonitoringFilter(' +  + ')'
     
     __repr__ = __str__
     
@@ -6645,9 +6497,6 @@ class DataChangeFilter(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.DataChangeFilter_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.Trigger = 0
         self.DeadbandType = 0
         self.DeadbandValue = 0
@@ -6655,33 +6504,21 @@ class DataChangeFilter(FrozenClass):
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(pack_uatype('UInt32', self.Trigger))
-        body.append(pack_uatype('UInt32', self.DeadbandType))
-        body.append(pack_uatype('Double', self.DeadbandValue))
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+        packet.append(pack_uatype('UInt32', self.Trigger))
+        packet.append(pack_uatype('UInt32', self.DeadbandType))
+        packet.append(pack_uatype('Double', self.DeadbandValue))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = DataChangeFilter()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.Trigger = unpack_uatype('UInt32', data)
         obj.DeadbandType = unpack_uatype('UInt32', data)
         obj.DeadbandValue = unpack_uatype('Double', data)
         return obj
     
     def __str__(self):
-        return 'DataChangeFilter(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'Trigger:' + str(self.Trigger) + ', '  + \
+        return 'DataChangeFilter(' + 'Trigger:' + str(self.Trigger) + ', '  + \
              'DeadbandType:' + str(self.DeadbandType) + ', '  + \
              'DeadbandValue:' + str(self.DeadbandValue) + ')'
     
@@ -6691,33 +6528,21 @@ class EventFilter(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.EventFilter_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.SelectClauses = []
         self.WhereClause = ContentFilter()
         self._freeze()
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(struct.pack('<i', len(self.SelectClauses)))
+        packet.append(struct.pack('<i', len(self.SelectClauses)))
         for fieldname in self.SelectClauses:
-            body.append(fieldname.to_binary())
-        body.append(self.WhereClause.to_binary())
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+            packet.append(fieldname.to_binary())
+        packet.append(self.WhereClause.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = EventFilter()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -6726,10 +6551,7 @@ class EventFilter(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'EventFilter(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'SelectClauses:' + str(self.SelectClauses) + ', '  + \
+        return 'EventFilter(' + 'SelectClauses:' + str(self.SelectClauses) + ', '  + \
              'WhereClause:' + str(self.WhereClause) + ')'
     
     __repr__ = __str__
@@ -6777,9 +6599,6 @@ class AggregateFilter(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.AggregateFilter_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.StartTime = datetime.now()
         self.AggregateType = NodeId()
         self.ProcessingInterval = 0
@@ -6788,24 +6607,15 @@ class AggregateFilter(FrozenClass):
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(pack_uatype('DateTime', self.StartTime))
-        body.append(self.AggregateType.to_binary())
-        body.append(pack_uatype('Double', self.ProcessingInterval))
-        body.append(self.AggregateConfiguration.to_binary())
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+        packet.append(pack_uatype('DateTime', self.StartTime))
+        packet.append(self.AggregateType.to_binary())
+        packet.append(pack_uatype('Double', self.ProcessingInterval))
+        packet.append(self.AggregateConfiguration.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = AggregateFilter()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.StartTime = unpack_uatype('DateTime', data)
         obj.AggregateType = NodeId.from_binary(data)
         obj.ProcessingInterval = unpack_uatype('Double', data)
@@ -6813,10 +6623,7 @@ class AggregateFilter(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'AggregateFilter(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'StartTime:' + str(self.StartTime) + ', '  + \
+        return 'AggregateFilter(' + 'StartTime:' + str(self.StartTime) + ', '  + \
              'AggregateType:' + str(self.AggregateType) + ', '  + \
              'ProcessingInterval:' + str(self.ProcessingInterval) + ', '  + \
              'AggregateConfiguration:' + str(self.AggregateConfiguration) + ')'
@@ -6827,33 +6634,19 @@ class MonitoringFilterResult(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.MonitoringFilterResult_Encoding_DefaultBinary)
-        self.Encoding = 0
-        self.Body = b''
         self._freeze()
     
     def to_binary(self):
         packet = []
-        if self.Body: self.Encoding |= (1 << 0)
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        if self.Body: 
-            packet.append(pack_uatype('ByteString', self.Body))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = MonitoringFilterResult()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        if obj.Encoding & (1 << 0):
-            obj.Body = unpack_uatype('ByteString', data)
         return obj
     
     def __str__(self):
-        return 'MonitoringFilterResult(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'Body:' + str(self.Body) + ')'
+        return 'MonitoringFilterResult(' +  + ')'
     
     __repr__ = __str__
     
@@ -6861,9 +6654,6 @@ class EventFilterResult(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.EventFilterResult_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.SelectClauseResults = []
         self.SelectClauseDiagnosticInfos = []
         self.WhereClauseResult = ContentFilterResult()
@@ -6871,27 +6661,18 @@ class EventFilterResult(FrozenClass):
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(struct.pack('<i', len(self.SelectClauseResults)))
+        packet.append(struct.pack('<i', len(self.SelectClauseResults)))
         for fieldname in self.SelectClauseResults:
-            body.append(fieldname.to_binary())
-        body.append(struct.pack('<i', len(self.SelectClauseDiagnosticInfos)))
+            packet.append(fieldname.to_binary())
+        packet.append(struct.pack('<i', len(self.SelectClauseDiagnosticInfos)))
         for fieldname in self.SelectClauseDiagnosticInfos:
-            body.append(fieldname.to_binary())
-        body.append(self.WhereClauseResult.to_binary())
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+            packet.append(fieldname.to_binary())
+        packet.append(self.WhereClauseResult.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = EventFilterResult()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -6904,10 +6685,7 @@ class EventFilterResult(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'EventFilterResult(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'SelectClauseResults:' + str(self.SelectClauseResults) + ', '  + \
+        return 'EventFilterResult(' + 'SelectClauseResults:' + str(self.SelectClauseResults) + ', '  + \
              'SelectClauseDiagnosticInfos:' + str(self.SelectClauseDiagnosticInfos) + ', '  + \
              'WhereClauseResult:' + str(self.WhereClauseResult) + ')'
     
@@ -6917,9 +6695,6 @@ class AggregateFilterResult(FrozenClass):
     '''
     '''
     def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.AggregateFilterResult_Encoding_DefaultBinary)
-        self.Encoding = 1
-        self.BodyLength = 0
         self.RevisedStartTime = datetime.now()
         self.RevisedProcessingInterval = 0
         self.RevisedAggregateConfiguration = AggregateConfiguration()
@@ -6927,33 +6702,21 @@ class AggregateFilterResult(FrozenClass):
     
     def to_binary(self):
         packet = []
-        body = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        body.append(pack_uatype('DateTime', self.RevisedStartTime))
-        body.append(pack_uatype('Double', self.RevisedProcessingInterval))
-        body.append(self.RevisedAggregateConfiguration.to_binary())
-        body = b''.join(body)
-        packet.append(struct.pack('<i', len(body)))
-        packet.append(body)
+        packet.append(pack_uatype('DateTime', self.RevisedStartTime))
+        packet.append(pack_uatype('Double', self.RevisedProcessingInterval))
+        packet.append(self.RevisedAggregateConfiguration.to_binary())
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = AggregateFilterResult()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        obj.BodyLength = unpack_uatype('Int32', data)
         obj.RevisedStartTime = unpack_uatype('DateTime', data)
         obj.RevisedProcessingInterval = unpack_uatype('Double', data)
         obj.RevisedAggregateConfiguration = AggregateConfiguration.from_binary(data)
         return obj
     
     def __str__(self):
-        return 'AggregateFilterResult(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'BodyLength:' + str(self.BodyLength) + ', '  + \
-             'RevisedStartTime:' + str(self.RevisedStartTime) + ', '  + \
+        return 'AggregateFilterResult(' + 'RevisedStartTime:' + str(self.RevisedStartTime) + ', '  + \
              'RevisedProcessingInterval:' + str(self.RevisedProcessingInterval) + ', '  + \
              'RevisedAggregateConfiguration:' + str(self.RevisedAggregateConfiguration) + ')'
     

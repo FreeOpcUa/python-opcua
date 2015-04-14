@@ -6,6 +6,7 @@ import opcua.uaprotocol_auto as auto
 import opcua.uatypes as uatypes 
 import opcua.utils as utils
 from opcua.object_ids import ObjectIds
+from opcua.attribute_ids import AttributeIds
 
 logger = logging.getLogger('opcua.uaprotocol')
 
@@ -283,6 +284,7 @@ class ViewAttributes(auto.ViewAttributes):
         self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.ContainsNoLoops | ana.EventNotifier 
 
 ObjectIdsInv = {v: k for k, v in ObjectIds.__dict__.items()}
+AttributeIdsInv = {v: k for k, v in AttributeIds.__dict__.items()}
 
 def downcast_extobject(item):
     objectidname = ObjectIdsInv[item.TypeId.Identifier]

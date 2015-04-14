@@ -12,7 +12,7 @@ except ImportError:
 from opcua import ua
 from opcua.binary_server import BinaryServer
 from opcua.internal_server import InternalServer
-from opcua import Node, Subscription
+from opcua import Node, Subscription, ObjectIds, Event
 
 
 class Server(object):
@@ -79,10 +79,10 @@ class Server(object):
 
 
     def get_root_node(self):
-        return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.RootFolder))
+        return self.get_node(ua.TwoByteNodeId(ObjectIds.RootFolder))
 
     def get_objects_node(self):
-        return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.ObjectsFolder))
+        return self.get_node(ua.TwoByteNodeId(ObjectIds.ObjectsFolder))
 
     def get_node(self, nodeid):
         """
@@ -119,6 +119,9 @@ class Server(object):
     def get_namespace_index(self, uri):
         uries = self.get_namespace_array()
         return uries.index(uri)
+
+    def get_event_object(self, etype=ObjectIds.BaseEventType, source=ObjectIds.Server):
+        return Event(self.iserver.isession, etype, source)
 
 
 

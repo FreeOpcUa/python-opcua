@@ -137,6 +137,10 @@ class SubscriptionManager(Thread):
                 return ua.NotificationMessage()
             return self.subscriptions[params.SubscriptionId].republish(params.RetransmitSequenceNumber)
 
+    def trigger_event(self, event):
+        with self._lock:
+            for sid, sub in self.subscriptions.items():
+                sub.trigger_event(event)
 
 
 
@@ -159,7 +163,7 @@ class InternalSubscription(object):
         self.task = None
         self._monitored_item_counter = 111
         self._monitored_events = {}
-        self._monitored_datachange = {}
+        self._monitored_items = {}
         self._lock = RLock()
         self._triggered_datachanges = []
         self._triggered_events = []
@@ -168,7 +172,7 @@ class InternalSubscription(object):
         self._not_acknowledged_results = {}
         self._startup = True 
         self._keep_alive_count = 0
-        self._publish_cyles_count = 0
+        self._publish_cycles_count = 0
         
 
 
@@ -185,7 +189,7 @@ class InternalSubscription(object):
         self.delete_all_monitored_items()
 
     def delete_all_monitored_items(self):
-        self.delete_monitored_items([mdata.monitored_item_id for mdata in self._monitored_datachange.values()])
+        self.delete_monitored_items([mdata.monitored_item_id for mdata in self._monitored_items.values()])
 
     @asyncio.coroutine
     def _subscription_loop(self):
@@ -211,14 +215,14 @@ class InternalSubscription(object):
 
     def publish_results(self): 
         expired = False
-        if self._publish_cyles_count > self.data.RevisedLifetimeCount:
+        if self._publish_cycles_count > self.data.RevisedLifetimeCount:
             self.logger.warn("Subscription %s has expired, publish cycle count(%s) > lifetime count (%s)", self, self._publish_cycles_count, self.data.RevisedLifetimeCount)
             #FIXME this will never be send since we do not have publish request anyway
             self.trigger_statuschange(ua.StatusCode(ua.StatusCodes.BadTimeout)) 
             expired = True
         with self._lock:
             if self.has_published_results(): #FIXME: should we pop a publish request here? or we do not care?
-                self._publish_cyles_count += 1
+                self._publish_cycles_count += 1
                 result = self._pop_publish_result()
                 self.callback(result)
         return expired
@@ -255,7 +259,7 @@ class InternalSubscription(object):
 
     def publish(self, nb):
         with self._lock:
-            self._publish_cyles_count = 0
+            self._publish_cycles_count = 0
             if nb in self._not_acknowledged_results:
                 self._not_acknowledged_results.pop(nb)
 
@@ -282,7 +286,6 @@ class InternalSubscription(object):
             results.append(self._modify_monitored_item(item))
         return results
 
-
     def trigger_datachange(self, handle, nodeid, attr):
         self.logger.debug("triggering datachange for handle %s, nodeid %s, and attribute %s", handle, nodeid, attr)
         variant = self.aspace.get_attribute_value(nodeid, attr)
@@ -290,11 +293,11 @@ class InternalSubscription(object):
 
     def _modify_monitored_item(self, params):
         with self._lock:
-            for _, mdata in self._monitored_datachange.items():
+            for _, mdata in self._monitored_items.items():
                 result = ua.MonitoredItemCreateResult()
                 if mdata.monitored_item_id == params.MonitoredItemId:
                     result.RevisedSamplingInterval = self.data.RevisedPublishingInterval
-                    result.RevisedQueueSize = params.RequestedParameters.QueueSize #FIXME check and use value
+                    result.RevisedQueueSize = ua.downcast_extobject(params.RequestedParameters.QueueSize) #FIXME check and use value
                     result.FilterResult = params.RequestedParameters.Filter
                     mdata.parameters = result
                     return result
@@ -324,7 +327,7 @@ class InternalSubscription(object):
             mdata.client_handle = params.RequestedParameters.ClientHandle
             mdata.callback_handle = handle
             mdata.monitored_item_id = result.MonitoredItemId 
-            self._monitored_datachange[handle] = mdata
+            self._monitored_items[handle] = mdata
 
             #force event generation
             self.trigger_datachange(handle, params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
@@ -338,7 +341,7 @@ class InternalSubscription(object):
             for mid in ids:
                 if self._delete_monitored_event(mid):
                     results.append(ua.StatusCode())
-                elif self._delete_monitored_datachange(mid):
+                elif self._delete_monitored_items(mid):
                     results.append(ua.StatusCode())
                 else:
                     results.append(ua.StatusCode(ua.StatusCodes.BadMonitoredItemIdInvalid))
@@ -353,11 +356,11 @@ class InternalSubscription(object):
                     return True
             return False
 
-    def _delete_monitored_datachange(self, mid):
+    def _delete_monitored_items(self, mid):
         with self._lock:
-            for k, v in self._monitored_datachange.items():
+            for k, v in self._monitored_items.items():
                 if v.monitored_item_id == mid:
-                    self._monitored_datachange.pop(k)
+                    self._monitored_items.pop(k)
                     self.aspace.delete_datachange_callback(k)
                     return True
             return False
@@ -366,10 +369,42 @@ class InternalSubscription(object):
         self.logger.info("subscription %s: datachange callback called with %s, %s", self, handle, value.Value)
         event = ua.MonitoredItemNotification()
         with self._lock:
-            mdata = self._monitored_datachange[handle]
+            mdata = self._monitored_items[handle]
             event.ClientHandle = mdata.client_handle
             event.Value = value
             self._triggered_datachanges.append(event)
+
+    def trigger_event(self, event):
+        with self._lock:
+            if not event.SourceNode in self._monitored_events:
+                self.logger.debug("%s has not subscription for events from node: %s", self, event.SourceNode)
+                return False
+            mid = self._monitored_events[event.SourceNode]
+            if not mid in self._monitored_items:
+                self.logger.debug("Could not find monitored items for id %s for event %s in subscription %s", mid, event, self)
+                return False
+            item = self._monitored_items[mid]
+            fieldlist = ua.EventFieldList()
+            fieldlist.ClientHandle = item.client_handle
+            fieldlist.EventFields = self._get_event_fields(item.parameters.FilterResult.Event, event)
+            self._triggered_events.append(fieldlist)
+            return True
+
+    def _get_event_fields(self, evfilter, event):
+        fields = []
+        for sattr in evfilter.SelectClauseResults:
+            try:
+                if not sattr.BrowsePath:
+                    val = getattr(event, ua.AttributeIdsInv[sattr.Attribute])
+                    fields.append(ua.Variant(val))
+                else:
+                    name = sattr.BrowsePath[0].Name
+                    val = getattr(event, name)
+                    fields.append(ua.Variant(val))
+            except AttributeError:
+                fields.append(ua.Variant())
+        return fields
+
 
 
 

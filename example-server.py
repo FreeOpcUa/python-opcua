@@ -1,7 +1,7 @@
 import time
 import logging
 
-from opcua import ua, uamethod, Server
+from opcua import ua, uamethod, Server, Event, ObjectIds
 
 from IPython import embed
 
@@ -57,6 +57,10 @@ if __name__ == "__main__":
     myprop = myobj.add_property(idx, "myproperty", "I am a property")
     mymethod = myobj.add_method(idx, "mymethod", func, [ua.VariantType.Int64], [ua.VariantType.Boolean])
     multiply_node = myobj.add_method(idx, "multiply", multiply, [ua.VariantType.Int64, ua.VariantType.Int64], [ua.VariantType.Int64])
+
+    #creating an event object
+    myevent = server.get_event_object(ObjectIds.BaseEventType)
+    print("My event is", myevent)
     
     # starting!
     server.start()
