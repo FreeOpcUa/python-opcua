@@ -29,11 +29,32 @@ class Node(object):
     __repr__ = __str__
 
     def get_browse_name(self):
+        """
+        Get browse name of a node. A browse name is a QualifiedName object
+        composed of a string(name) and a namespace index.
+        """
         result = self.get_attribute(ua.AttributeIds.BrowseName)
         return result.Value
 
     def get_display_name(self):
+        """
+        get description attribute of node
+        """
         result = self.get_attribute(ua.AttributeIds.DisplayName)
+        return result.Value
+
+    def get_node_class(self):
+        """
+        get node class attribute of node
+        """
+        result = self.get_attribute(ua.AttributeIds.NodeClass)
+        return result.Value
+
+    def get_description(self):
+        """
+        get description attribute class of node
+        """
+        result = self.get_attribute(ua.AttributeIds.Description)
         return result.Value
 
     def get_value(self):
@@ -82,10 +103,10 @@ class Node(object):
         result[0].StatusCode.check()
         return result[0].Value
 
-    def get_children(self, refs=ua.ObjectIds.HierarchicalReferences):
+    def get_children(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified):
         """
-        Get all children of a node. By default hierarchical references are returnes.
-        Other types may be given:
+        Get all children of a node. By default hierarchical references and all node classes are returned.
+        Other reference types may be given:
         References = 31
         NonHierarchicalReferences = 32
         HierarchicalReferences = 33
@@ -104,22 +125,26 @@ class Node(object):
         HasNotifier = 48
         HasOrderedComponent = 49
         """
+        references = self.get_children_descriptions(refs, nodeclassmask)
+        nodes = []
+        for desc in references:
+            node = Node(self.server, desc.NodeId)
+            nodes.append(node)
+        return nodes
+
+    def get_children_descriptions(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
         desc = ua.BrowseDescription()
         desc.BrowseDirection = ua.BrowseDirection.Forward
         desc.ReferenceTypeId = ua.TwoByteNodeId(refs)
-        desc.IncludeSubtypes = True
-        desc.NodeClassMask = ua.NodeClass.Unspecified
-        desc.ResultMask = ua.BrowseResultMask.None_
+        desc.IncludeSubtypes = includesubtypes
+        desc.NodeClassMask = nodeclassmask
+        desc.ResultMask = ua.BrowseResultMask.All
  
         desc.NodeId = self.nodeid
         params = ua.BrowseParameters()
         params.NodesToBrowse.append(desc)
         results = self.server.browse(params)
-        nodes = []
-        for desc in results[0].References:
-            node = Node(self.server, desc.NodeId)
-            nodes.append(node)
-        return nodes
+        return results[0].References
 
     def get_child(self, path):
         """
