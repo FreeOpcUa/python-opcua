@@ -34,16 +34,16 @@ class Event(object):
         else:
             self.SourceNode = ua.NodeId(source)
 
-
         #set some default values for attributes from BaseEventType, thus that all event must have
         self.EventId = uuid.uuid4().bytes
         self.EventType = self.node.nodeid
         self.LocaleTime = datetime.now()
         self.ReceiveTime = datetime.now()
         self.Time = datetime.now()
-        #self.Message = ua.LocalizedText()
-        #self.Severity = ua.Variant(1, ua.VariantType.Uint16)
-        #self.SourceNeame = "Server"
+        self.Message = ua.LocalizedText()
+        self.Severity = ua.Variant(1, ua.VariantType.UInt16)
+        self.SourceNeame = "Server"
+
         #og set some node attributed we also are expected to have
         self.BrowseName = self.node.get_browse_name()
         self.DisplayName = self.node.get_display_name()

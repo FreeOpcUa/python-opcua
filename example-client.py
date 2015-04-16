@@ -41,6 +41,7 @@ if __name__ == "__main__":
         sub = client.create_subscription(500, handler)
         handle = sub.subscribe_data_change(myvar)
         time.sleep(0.1)
+        sub.subscribe_events()
         #sub.unsubscribe(handle)
         #sub.delete()
         

@@ -132,6 +132,13 @@ class Node(object):
             nodes.append(node)
         return nodes
 
+    def get_properties(self):
+        """
+        return properties of node.
+        properties are child nodes with a reference of type HasProperty and a NodeClass of Variable
+        """
+        return self.get_children(refs=ua.ObjectIds.HasProperty, nodeclassmask=ua.NodeClass.Variable)
+
     def get_children_descriptions(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
         desc = ua.BrowseDescription()
         desc.BrowseDirection = ua.BrowseDirection.Forward

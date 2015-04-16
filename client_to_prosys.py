@@ -45,11 +45,11 @@ if __name__ == "__main__":
 
         handler = SubHandler()
         sub = client.create_subscription(500, handler)
-        #sub.subscribe_data_change(var)
+        sub.subscribe_data_change(var)
 
         device = objects.get_child(["2:MyObjects", "2:MyDevice"])
         method = device.get_child("2:MyMethod")
-        result = device.call_method(method, [ua.Variant("sin"), ua.Variant(180, ua.VariantType.Double)])
+        result = device.call_method(method, ua.Variant("sin"), ua.Variant(180, ua.VariantType.Double))
         print("Mehtod result is: ", result)
 
 

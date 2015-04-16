@@ -557,18 +557,17 @@ class Variant(object):
     def __init__(self, value=None, varianttype=None):
         self.Encoding = 0
         self.Value = value
+        self.VariantType = varianttype
         if isinstance(value, Variant):
             self.Value = value.Value
             self.VariantType = value.VariantType
-        if varianttype is None:
+        if self.VariantType is None:
             if type(self.Value) in (list, tuple):
                 if len(self.Value) == 0:
                     raise Exception("could not guess UA variable type")
                 self.VariantType = self._guess_type(self.Value[0])
             else:
                 self.VariantType = self._guess_type(self.Value)
-        else:
-            self.VariantType = varianttype
 
     def __eq__(self, other):
         if isinstance(other, Variant) and self.VariantType == other.VariantType and self.Value == other.Value:
@@ -590,6 +589,8 @@ class Variant(object):
             return VariantType.DateTime
         elif type(val) == ExtensionObject:
             return VariantType.ExtensionObject
+        elif type(val) == Variant:
+            return VariantType.Variant
         else:
             raise Exception("Could not guess UA type of {} with type {}, specify UA type".format(val, type(val)))
 

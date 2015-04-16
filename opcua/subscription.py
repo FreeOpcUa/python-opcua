@@ -6,7 +6,10 @@ import time
 import logging
 from threading import RLock
 
-import opcua.uaprotocol as ua
+from opcua import ua
+from opcua import Node
+from opcua import ObjectIds
+from opcua import AttributeIds
 
 
 class SubscriptionItemData():
@@ -15,6 +18,7 @@ class SubscriptionItemData():
         self.client_handle = None
         self.server_handle = None
         self.attribute = None
+        self.mfilter = None
 
 class Subscription(object):
     def __init__(self, server, params, handler):
@@ -71,8 +75,35 @@ class Subscription(object):
         print(status)
         self.logger.warn("Not implemented")
 
-
     def subscribe_data_change(self, node, attr=ua.AttributeIds.Value):
+        return self._subscribe(node, attr)
+
+    def _get_node(self, nodeid):
+        if isinstance(nodeid, ua.NodeId):
+            node = Node(self.server, nodeid)
+        elif isinstance(nodeid, Node):
+            node = nodeid
+        else:
+            node = Node(self.server, ua.NodeId(nodeid))
+        return node
+
+    def _get_filter_from_event_type(self, eventtype):
+        eventtype = self._get_node(eventtype)
+        evfilter = ua.EventFilter()
+        for desc in eventtype.get_children_descriptions(refs=ua.ObjectIds.HasProperty, nodeclassmask=ua.NodeClass.Variable):
+            op = ua.SimpleAttributeOperand()
+            op.TypeDefinitionId = eventtype.nodeid
+            op.AttributeId = AttributeIds.Value
+            op.BrowsePath = [desc.BrowseName]
+            evfilter.SelectClauses.append(op)
+        return evfilter
+
+    def subscribe_events(self, sourcenode=ObjectIds.Server, evtype=ObjectIds.BaseEventType):
+        sourcenode = self._get_node(sourcenode)
+        evfilter = self._get_filter_from_event_type(evtype)
+        return self._subscribe(sourcenode, AttributeIds.EventNotifier, evfilter)
+
+    def _subscribe(self, node, attr, mfilter=None):
         rv = ua.ReadValueId()
         rv.NodeId = node.nodeid
         rv.AttributeId = attr
@@ -83,6 +114,8 @@ class Subscription(object):
         mparams.SamplingInterval = self.parameters.RequestedPublishingInterval
         mparams.QueueSize = 1
         mparams.DiscardOldest = True
+        if mfilter:
+            mparams.Filter = mfilter
 
         mir = ua.MonitoredItemCreateRequest() 
         mir.ItemToMonitor = rv
@@ -108,10 +141,14 @@ class Subscription(object):
         return result.MonitoredItemId
 
     def unsubscribe(self, handle):
+        """
+        unsubscribe to datachange or events using the handle returned while subscribing
+        """
         params = ua.DeleteMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
         params.MonitoredItemIds = [handle]
         results = self.server.delete_monitored_items(params)
         results[0].check()
+
         
 

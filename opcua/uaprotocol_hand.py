@@ -286,10 +286,3 @@ class ViewAttributes(auto.ViewAttributes):
 ObjectIdsInv = {v: k for k, v in ObjectIds.__dict__.items()}
 AttributeIdsInv = {v: k for k, v in AttributeIds.__dict__.items()}
 
-def downcast_extobject(item):
-    objectidname = ObjectIdsInv[item.TypeId.Identifier]
-    classname = objectidname.split("_")[0]
-    cmd = "{}.from_binary(utils.Buffer(item.to_binary()))".format(classname)
-    return eval(cmd)
-
-

@@ -139,7 +139,7 @@ class SubscriptionManager(Thread):
 
     def trigger_event(self, event):
         with self._lock:
-            for sid, sub in self.subscriptions.items():
+            for sub in self.subscriptions.values():
                 sub.trigger_event(event)
 
 
@@ -163,6 +163,7 @@ class InternalSubscription(object):
         self.task = None
         self._monitored_item_counter = 111
         self._monitored_events = {}
+        self._monitored_datachange = {}
         self._monitored_items = {}
         self._lock = RLock()
         self._triggered_datachanges = []
@@ -311,26 +312,31 @@ class InternalSubscription(object):
             result = ua.MonitoredItemCreateResult()
             result.RevisedSamplingInterval = self.data.RevisedPublishingInterval
             result.RevisedQueueSize = params.RequestedParameters.QueueSize #FIXME check and use value
-            result.FilterResult = params.RequestedParameters.Filter
+            result.FilterResult = ua.downcast_extobject(params.RequestedParameters.Filter)
             self._monitored_item_counter += 1
             result.MonitoredItemId = self._monitored_item_counter
-            if params.ItemToMonitor.AttributeId == ua.AttributeIds.EventNotifier:
-                self.logger.info("request to subscribe to events for node %s and attribute %s", params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
-                self._monitored_events[params.ItemToMonitor.NodeId] = result.MonitoredItemId
-            else:
-                self.logger.info("request to subscribe to datachange")
-                result.StatusCode, handle = self.aspace.add_datachange_callback(params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId, self.datachange_callback)
+            self.logger.debug("Creating MonitoredItem with id %s", result.MonitoredItemId)
 
             mdata = MonitoredItemData()
             mdata.parameters = result
             mdata.mode = params.MonitoringMode
             mdata.client_handle = params.RequestedParameters.ClientHandle
-            mdata.callback_handle = handle
             mdata.monitored_item_id = result.MonitoredItemId 
-            self._monitored_items[handle] = mdata
 
-            #force event generation
-            self.trigger_datachange(handle, params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+            self._monitored_items[result.MonitoredItemId] = mdata
+
+            if params.ItemToMonitor.AttributeId == ua.AttributeIds.EventNotifier:
+                self.logger.info("request to subscribe to events for node %s and attribute %s", params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+                self._monitored_events[params.ItemToMonitor.NodeId] = result.MonitoredItemId
+            else:
+                self.logger.info("request to subscribe to datachange for node %s and attribute %s", params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+                result.StatusCode, handle = self.aspace.add_datachange_callback(params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId, self.datachange_callback)
+                self.logger.debug("adding callback return status %s and handle %s", result.StatusCode, handle)
+                mdata.callback_handle = handle
+                self._monitored_datachange[handle] = result.MonitoredItemId
+                #force data change event generation
+                self.trigger_datachange(handle, params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+
 
             return result
 
@@ -339,37 +345,27 @@ class InternalSubscription(object):
         with self._lock:
             results = []
             for mid in ids:
-                if self._delete_monitored_event(mid):
-                    results.append(ua.StatusCode())
-                elif self._delete_monitored_items(mid):
-                    results.append(ua.StatusCode())
-                else:
+                if not mid in self._monitored_items:
                     results.append(ua.StatusCode(ua.StatusCodes.BadMonitoredItemIdInvalid))
+                    break
+                for k, v in self._monitored_events.items():
+                    if v == mid:
+                        self._monitored_events.pop(k)
+                        break
+                for k, v in self._monitored_datachange.items():
+                    if v == mid:
+                        self._monitored_datachange.pop(k)
+                        break
+                self._monitored_items.pop(mid)
+                results.append(ua.StatusCode())
             return results
 
-    def _delete_monitored_event(self, mid):
-        with self._lock:
-            for k, v in self._monitored_events:
-                if v == mid:
-                    self._monitored_events.pop(k)
-                    #we do not remove events in queue, or should we care?
-                    return True
-            return False
-
-    def _delete_monitored_items(self, mid):
-        with self._lock:
-            for k, v in self._monitored_items.items():
-                if v.monitored_item_id == mid:
-                    self._monitored_items.pop(k)
-                    self.aspace.delete_datachange_callback(k)
-                    return True
-            return False
-
     def datachange_callback(self, handle, value):
-        self.logger.info("subscription %s: datachange callback called with %s, %s", self, handle, value.Value)
+        self.logger.info("subscription %s: datachange callback called with handle '%s' and value '%s'", self, handle, value.Value)
         event = ua.MonitoredItemNotification()
         with self._lock:
-            mdata = self._monitored_items[handle]
+            mid = self._monitored_datachange[handle]
+            mdata = self._monitored_items[mid]
             event.ClientHandle = mdata.client_handle
             event.Value = value
             self._triggered_datachanges.append(event)
@@ -386,13 +382,13 @@ class InternalSubscription(object):
             item = self._monitored_items[mid]
             fieldlist = ua.EventFieldList()
             fieldlist.ClientHandle = item.client_handle
-            fieldlist.EventFields = self._get_event_fields(item.parameters.FilterResult.Event, event)
+            fieldlist.EventFields = self._get_event_fields(item.parameters.FilterResult, event)
             self._triggered_events.append(fieldlist)
             return True
 
     def _get_event_fields(self, evfilter, event):
         fields = []
-        for sattr in evfilter.SelectClauseResults:
+        for sattr in evfilter.SelectClauses:
             try:
                 if not sattr.BrowsePath:
                     val = getattr(event, ua.AttributeIdsInv[sattr.Attribute])

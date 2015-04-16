@@ -6477,19 +6477,33 @@ class MonitoringFilter(FrozenClass):
     '''
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.MonitoringFilter_Encoding_DefaultBinary)
+        self.Encoding = 0
+        self.Body = b''
         self._freeze()
     
     def to_binary(self):
         packet = []
+        if self.Body: self.Encoding |= (1 << 0)
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        if self.Body: 
+            packet.append(pack_uatype('ByteString', self.Body))
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = MonitoringFilter()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        if obj.Encoding & (1 << 0):
+            obj.Body = unpack_uatype('ByteString', data)
         return obj
     
     def __str__(self):
-        return 'MonitoringFilter(' +  + ')'
+        return 'MonitoringFilter(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'Body:' + str(self.Body) + ')'
     
     __repr__ = __str__
     
@@ -6497,6 +6511,9 @@ class DataChangeFilter(FrozenClass):
     '''
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.DataChangeFilter_Encoding_DefaultBinary)
+        self.Encoding = 1
+        self.BodyLength = 0
         self.Trigger = 0
         self.DeadbandType = 0
         self.DeadbandValue = 0
@@ -6504,21 +6521,33 @@ class DataChangeFilter(FrozenClass):
     
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('UInt32', self.Trigger))
-        packet.append(pack_uatype('UInt32', self.DeadbandType))
-        packet.append(pack_uatype('Double', self.DeadbandValue))
+        body = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        body.append(pack_uatype('UInt32', self.Trigger))
+        body.append(pack_uatype('UInt32', self.DeadbandType))
+        body.append(pack_uatype('Double', self.DeadbandValue))
+        body = b''.join(body)
+        packet.append(struct.pack('<i', len(body)))
+        packet.append(body)
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = DataChangeFilter()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        obj.BodyLength = unpack_uatype('Int32', data)
         obj.Trigger = unpack_uatype('UInt32', data)
         obj.DeadbandType = unpack_uatype('UInt32', data)
         obj.DeadbandValue = unpack_uatype('Double', data)
         return obj
     
     def __str__(self):
-        return 'DataChangeFilter(' + 'Trigger:' + str(self.Trigger) + ', '  + \
+        return 'DataChangeFilter(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'BodyLength:' + str(self.BodyLength) + ', '  + \
+             'Trigger:' + str(self.Trigger) + ', '  + \
              'DeadbandType:' + str(self.DeadbandType) + ', '  + \
              'DeadbandValue:' + str(self.DeadbandValue) + ')'
     
@@ -6528,21 +6557,33 @@ class EventFilter(FrozenClass):
     '''
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.EventFilter_Encoding_DefaultBinary)
+        self.Encoding = 1
+        self.BodyLength = 0
         self.SelectClauses = []
         self.WhereClause = ContentFilter()
         self._freeze()
     
     def to_binary(self):
         packet = []
-        packet.append(struct.pack('<i', len(self.SelectClauses)))
+        body = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        body.append(struct.pack('<i', len(self.SelectClauses)))
         for fieldname in self.SelectClauses:
-            packet.append(fieldname.to_binary())
-        packet.append(self.WhereClause.to_binary())
+            body.append(fieldname.to_binary())
+        body.append(self.WhereClause.to_binary())
+        body = b''.join(body)
+        packet.append(struct.pack('<i', len(body)))
+        packet.append(body)
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = EventFilter()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        obj.BodyLength = unpack_uatype('Int32', data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -6551,7 +6592,10 @@ class EventFilter(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'EventFilter(' + 'SelectClauses:' + str(self.SelectClauses) + ', '  + \
+        return 'EventFilter(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'BodyLength:' + str(self.BodyLength) + ', '  + \
+             'SelectClauses:' + str(self.SelectClauses) + ', '  + \
              'WhereClause:' + str(self.WhereClause) + ')'
     
     __repr__ = __str__
@@ -6599,6 +6643,9 @@ class AggregateFilter(FrozenClass):
     '''
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.AggregateFilter_Encoding_DefaultBinary)
+        self.Encoding = 1
+        self.BodyLength = 0
         self.StartTime = datetime.now()
         self.AggregateType = NodeId()
         self.ProcessingInterval = 0
@@ -6607,15 +6654,24 @@ class AggregateFilter(FrozenClass):
     
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('DateTime', self.StartTime))
-        packet.append(self.AggregateType.to_binary())
-        packet.append(pack_uatype('Double', self.ProcessingInterval))
-        packet.append(self.AggregateConfiguration.to_binary())
+        body = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        body.append(pack_uatype('DateTime', self.StartTime))
+        body.append(self.AggregateType.to_binary())
+        body.append(pack_uatype('Double', self.ProcessingInterval))
+        body.append(self.AggregateConfiguration.to_binary())
+        body = b''.join(body)
+        packet.append(struct.pack('<i', len(body)))
+        packet.append(body)
         return b''.join(packet)
         
     @staticmethod
     def from_binary(data):
         obj = AggregateFilter()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        obj.BodyLength = unpack_uatype('Int32', data)
         obj.StartTime = unpack_uatype('DateTime', data)
         obj.AggregateType = NodeId.from_binary(data)
         obj.ProcessingInterval = unpack_uatype('Double', data)
@@ -6623,7 +6679,10 @@ class AggregateFilter(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'AggregateFilter(' + 'StartTime:' + str(self.StartTime) + ', '  + \
+        return 'AggregateFilter(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'Encoding:' + str(self.Encoding) + ', '  + \
+             'BodyLength:' + str(self.BodyLength) + ', '  + \
+             'StartTime:' + str(self.StartTime) + ', '  + \
              'AggregateType:' + str(self.AggregateType) + ', '  + \
              'ProcessingInterval:' + str(self.ProcessingInterval) + ', '  + \
              'AggregateConfiguration:' + str(self.AggregateConfiguration) + ')'

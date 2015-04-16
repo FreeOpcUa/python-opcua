@@ -24,7 +24,7 @@ OverrideNames = {}#{"RequestHeader": "Header", "ResponseHeader": "Header", "Stat
 #in addition to this list all request and response and descriptions will not inherit
 #NoInherit = ["RequestHeader", "ResponseHeader", "ChannelSecurityToken", "UserTokenPolicy", "SignatureData", "BrowseResult", "ReadValueId", "WriteValue", "BrowsePath", "BrowsePathTarget", "RelativePath", "RelativePathElement", "BrowsePathResult"]#, "ApplicationDescription", "EndpointDescription"
 # many objects are defined as inheriting while inheriting ExtensionObjects while they do not so harcode those who really do
-InheritExtensionObjects = ["UserIdentityToken", "NodeAttributes", "NotificationData"]#"SignatureData"]
+InheritExtensionObjects = ["UserIdentityToken", "NodeAttributes", "NotificationData", "MonitoringFilter"]#"SignatureData"]
 
 
 class Bit(object):
