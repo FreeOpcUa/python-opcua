@@ -60,6 +60,7 @@ if __name__ == "__main__":
 
     #creating an event object
     myevent = server.get_event_object(ObjectIds.BaseEventType)
+    myevent.Message.Text = "This is my event"
     print("My event is", myevent)
     
     # starting!

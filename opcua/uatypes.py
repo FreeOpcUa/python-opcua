@@ -587,12 +587,18 @@ class Variant(object):
             return VariantType.ByteString
         elif type(val) == datetime:
             return VariantType.DateTime
-        elif type(val) == ExtensionObject:
-            return VariantType.ExtensionObject
-        elif type(val) == Variant:
-            return VariantType.Variant
         else:
-            raise Exception("Could not guess UA type of {} with type {}, specify UA type".format(val, type(val)))
+            if isinstance(val, object):
+                code = "VariantType.{}".format(val.__class__.__name__)
+                return eval(code)
+            else:
+
+        #elif type(val) == ExtensionObject:
+            #return VariantType.ExtensionObject
+        #elif type(val) == Variant:
+            #return VariantType.Variant
+        #else:
+                raise Exception("Could not guess UA type of {} with type {}, specify UA type".format(val, type(val)))
 
     def __str__(self):
         return "Variant(val:{},type:{})".format(self.Value, self.VariantType)

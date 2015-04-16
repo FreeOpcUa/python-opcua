@@ -373,8 +373,9 @@ class InternalSubscription(object):
     def trigger_event(self, event):
         with self._lock:
             if not event.SourceNode in self._monitored_events:
-                self.logger.debug("%s has not subscription for events from node: %s", self, event.SourceNode)
+                self.logger.debug("%s has no subscription for events %s from node: %s", self, event, event.SourceNode)
                 return False
+            self.logger.debug("%s has subscription for events %s from node: %s", self, event, event.SourceNode)
             mid = self._monitored_events[event.SourceNode]
             if not mid in self._monitored_items:
                 self.logger.debug("Could not find monitored items for id %s for event %s in subscription %s", mid, event, self)
@@ -382,6 +383,7 @@ class InternalSubscription(object):
             item = self._monitored_items[mid]
             fieldlist = ua.EventFieldList()
             fieldlist.ClientHandle = item.client_handle
+            print("filter is ", item.parameters.FilterResult, " event is ", event)
             fieldlist.EventFields = self._get_event_fields(item.parameters.FilterResult, event)
             self._triggered_events.append(fieldlist)
             return True
@@ -389,6 +391,7 @@ class InternalSubscription(object):
     def _get_event_fields(self, evfilter, event):
         fields = []
         for sattr in evfilter.SelectClauses:
+            print("looking at sattrs", sattr)
             try:
                 if not sattr.BrowsePath:
                     val = getattr(event, ua.AttributeIdsInv[sattr.Attribute])

@@ -10,6 +10,13 @@ from opcua import ua
 from opcua import Node
 from opcua import ObjectIds
 from opcua import AttributeIds
+from opcua import Event
+
+class EventResult():
+    def __str__(self):
+        return "EventResult({})".format([str(k) + ":" + str(v) for k, v in self.__dict__.items()])
+    __repr__ = __str__
+
 
 
 class SubscriptionItemData():
@@ -65,15 +72,34 @@ class Subscription(object):
     def _call_datachange(self, datachange):
         for item in datachange.MonitoredItems:
             data = self._monitoreditems_map[item.ClientHandle]
-            self._handler.data_change(data.server_handle, data.node, item.Value.Value.Value, data.attribute)
+            try:
+                self._handler.data_change(data.server_handle, data.node, item.Value.Value.Value, data.attribute)
+            except Exception:
+                self.logger.exception("Exception calling data change handler")
 
     def _call_event(self, eventlist):
-        print(eventlist)
-        self.logger.warn("Not implemented")
+        for event in eventlist.Events:
+            data = self._monitoreditems_map[event.ClientHandle]
+            try:
+                #fields = {}
+                result = EventResult()
+                for idx, sattr in enumerate(data.mfilter.SelectClauses):
+
+                    if len(sattr.BrowsePath) == 0:
+                        #fields[ua.AttributeIdsInv[sattr.AttributeId]] = event.EventFields[idx].Value
+                        setattr(result, ua.AttributeIdsInv[sattr.AttributeId], event.EventFields[idx].Value)
+                    else:
+                        setattr(result, sattr.BrowsePath[0].Name, event.EventFields[idx].Value)
+                #self._handler.event(data.server_handle, fields)
+                self._handler.event(data.server_handle, result)
+            except Exception:
+                self.logger.exception("Exception calling event handler")
 
     def _call_status(self, status):
-        print(status)
-        self.logger.warn("Not implemented")
+        try:
+            self._handler.status_change(status.Status)
+        except Exception:
+            self.logger.exception("Exception calling status change handler")
 
     def subscribe_data_change(self, node, attr=ua.AttributeIds.Value):
         return self._subscribe(node, attr)
@@ -101,6 +127,7 @@ class Subscription(object):
     def subscribe_events(self, sourcenode=ObjectIds.Server, evtype=ObjectIds.BaseEventType):
         sourcenode = self._get_node(sourcenode)
         evfilter = self._get_filter_from_event_type(evtype)
+        print("EVFILTER is ", evfilter)
         return self._subscribe(sourcenode, AttributeIds.EventNotifier, evfilter)
 
     def _subscribe(self, node, attr, mfilter=None):
@@ -136,6 +163,7 @@ class Subscription(object):
         data.node = node
         data.attribute = attr
         data.server_handle = result.MonitoredItemId
+        data.mfilter = ua.downcast_extobject(result.FilterResult)
         self._monitoreditems_map[mparams.ClientHandle] = data
 
         return result.MonitoredItemId
