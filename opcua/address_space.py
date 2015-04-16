@@ -272,10 +272,12 @@ class AddressSpace(object):
     def _suitable_reftype(self, ref1, ref2, subtypes):
         """
         """
+        if ref1.Identifier == ref2.Identifier:
+            return True
         if not subtypes:
-            return ref1.Identifier == ref2.Identifier
-        oktype = self._get_sub_ref(ref1)
-        return ref2 in oktype
+            return False
+        oktypes = self._get_sub_ref(ref1)
+        return ref2 in oktypes
 
     def _get_sub_ref(self, ref):
         res = []
