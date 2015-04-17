@@ -62,6 +62,7 @@ if __name__ == "__main__":
     # The event object automatically will have members for all events properties
     myevent = server.get_event_object(ObjectIds.BaseEventType)
     myevent.Message.Text = "This is my event"
+    myevent.Severity = 300
     
     # starting!
     server.start()

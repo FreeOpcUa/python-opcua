@@ -42,7 +42,7 @@ class Event(object):
         self.Time = datetime.now()
         self.Message = ua.LocalizedText()
         self.Severity = ua.Variant(1, ua.VariantType.UInt16)
-        self.SourceNeame = "Server"
+        self.SourceName = "Server"
 
         #og set some node attributed we also are expected to have
         self.BrowseName = self.node.get_browse_name()

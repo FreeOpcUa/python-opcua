@@ -16,6 +16,7 @@ Client: what works:
 * gettings nodes by path and nodeids
 * creating subscriptions
 * subscribing to items for data change
+* subscribing to events
 * adding nodes
 * method call
 
@@ -24,7 +25,6 @@ Tested servers: freeopcua C++, freeopcua Python, prosys
 
 Client: what is not implemented yet 
 * removing nodes 
-* subscribing to events
 * adding missing modify methods
 * certificate handling
 * user and password 
@@ -35,13 +35,13 @@ Server: what works:
 * gettings nodes by path and nodeids
 * autogenerate addres space from spec
 * adding nodes to address space
-* datachange subscriptions
+* datachange events
+* events
 * methods
 
 Tested clients: freeopcua C++, freeopcua Python, uaexpert, prosys, quickopc
 
 Server: what is not implemented
-* events
 * security (users, certificates, etc)
 * removing nodes 
 * adding missing modify methods
@@ -92,8 +92,14 @@ Example server code:
     objects = server.get_objects_node()
     myfolder = objects.add_folder(idx, "myfolder")
     myvar = myfolder.add_variable(idx, "myvar", 6.7)
+
+    # creating an event object
+    myevent = server.get_event_object(ObjectIds.BaseEventType)
+    myevent.Message.Text = "This is my event"
+    myevent.Severity = 300
     
     server.start()
+    myevent.trigger()
     ...
 ```
 
