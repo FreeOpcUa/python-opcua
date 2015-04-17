@@ -33,8 +33,8 @@ if __name__ == "__main__":
     #logger = logging.getLogger("opcua.address_space")
     #logger = logging.getLogger("opcua.internal_server")
     #logger.setLevel(logging.DEBUG)
-    logger = logging.getLogger("opcua.subscription_server")
-    logger.setLevel(logging.DEBUG)
+    #logger = logging.getLogger("opcua.subscription_server")
+    #logger.setLevel(logging.DEBUG)
 
 
     # now setup our server 
@@ -58,10 +58,10 @@ if __name__ == "__main__":
     mymethod = myobj.add_method(idx, "mymethod", func, [ua.VariantType.Int64], [ua.VariantType.Boolean])
     multiply_node = myobj.add_method(idx, "multiply", multiply, [ua.VariantType.Int64, ua.VariantType.Int64], [ua.VariantType.Int64])
 
-    #creating an event object
+    # creating an event object
+    # The event object automatically will have members for all events properties
     myevent = server.get_event_object(ObjectIds.BaseEventType)
     myevent.Message.Text = "This is my event"
-    print("My event is", myevent)
     
     # starting!
     server.start()
@@ -71,9 +71,9 @@ if __name__ == "__main__":
         #enable following if you want to subscribe to nodes on server side
         sub = server.create_subscription(500, handler)
         handle = sub.subscribe_data_change(myvar)
-        #time.sleep(0.1)
-        #sub.unsubscribe(handle)
-        #sub.delete()
+        # trigger event, all subscribed clients wil receive it
+        myevent.trigger()
+
         embed()
     finally:
         server.stop()

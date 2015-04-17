@@ -77,12 +77,14 @@ class Server(object):
         self.iserver.stop()
         self.bserver.stop()
 
-
     def get_root_node(self):
         return self.get_node(ua.TwoByteNodeId(ObjectIds.RootFolder))
 
     def get_objects_node(self):
         return self.get_node(ua.TwoByteNodeId(ObjectIds.ObjectsFolder))
+
+    def get_server_node(self):
+        return self.get_node(ua.TwoByteNodeId(ObjectIds.Server))
 
     def get_node(self, nodeid):
         """

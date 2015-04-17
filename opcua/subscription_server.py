@@ -383,7 +383,6 @@ class InternalSubscription(object):
             item = self._monitored_items[mid]
             fieldlist = ua.EventFieldList()
             fieldlist.ClientHandle = item.client_handle
-            print("filter is ", item.parameters.FilterResult, " event is ", event)
             fieldlist.EventFields = self._get_event_fields(item.parameters.FilterResult, event)
             self._triggered_events.append(fieldlist)
             return True
@@ -391,7 +390,6 @@ class InternalSubscription(object):
     def _get_event_fields(self, evfilter, event):
         fields = []
         for sattr in evfilter.SelectClauses:
-            print("looking at sattrs", sattr)
             try:
                 if not sattr.BrowsePath:
                     val = getattr(event, ua.AttributeIdsInv[sattr.Attribute])

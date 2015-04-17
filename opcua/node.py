@@ -17,6 +17,8 @@ class Node(object):
             self.nodeid = nodeid
         elif type(nodeid) in (str, bytes):
             self.nodeid = ua.NodeId.from_string(nodeid)
+        elif isinstance(nodeid, int):
+            self.nodeid = ua.NodeId(nodeid, 0)
         else:
             raise Exception("argument to node must be a NodeId object or a string defining a nodeid found {} of type {}".format(nodeid, type(nodeid)))
     def __eq__(self, other):

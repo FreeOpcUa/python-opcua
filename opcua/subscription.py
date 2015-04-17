@@ -127,7 +127,6 @@ class Subscription(object):
     def subscribe_events(self, sourcenode=ObjectIds.Server, evtype=ObjectIds.BaseEventType):
         sourcenode = self._get_node(sourcenode)
         evfilter = self._get_filter_from_event_type(evtype)
-        print("EVFILTER is ", evfilter)
         return self._subscribe(sourcenode, AttributeIds.EventNotifier, evfilter)
 
     def _subscribe(self, node, attr, mfilter=None):
