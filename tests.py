@@ -18,6 +18,8 @@ from opcua import Client
 from opcua import Server
 from opcua import uamethod
 from opcua import Event
+from opcua import ObjectIds
+from opcua import AttributeIds
 
 port_num1 = 48410
 port_num2 = 48430
@@ -198,7 +200,34 @@ class CommonTests(object):
         self.assertEqual(ua.QualifiedName('Objects', 0), objects.get_browse_name())
         nid = ua.NodeId(85, 0) 
         self.assertEqual(nid, objects.nodeid)
-    
+
+    def test_browse(self):
+        objects = self.opc.get_objects_node()
+        obj = objects.add_object(4, "browsetest")
+        folder = obj.add_folder(4, "folder")
+        prop = obj.add_property(4, "property", 1)
+        prop2 = obj.add_property(4, "property2", 2)
+        var = obj.add_variable(4, "variable", 3)
+        obj2 = obj.add_object(4, "obj")
+        alle = obj.get_children()
+        self.assertTrue(prop in alle)
+        self.assertTrue(prop2 in alle)
+        self.assertTrue(var in alle)
+        self.assertTrue(folder in alle)
+        self.assertFalse(obj in alle)
+        props = obj.get_children(refs=ObjectIds.HasProperty)
+        self.assertTrue(prop in props)
+        self.assertTrue(prop2 in props)
+        self.assertFalse(var in props)
+        self.assertFalse(folder in props)
+        all_vars = obj.get_children(nodeclassmask=ua.NodeClass.Variable)
+        self.assertTrue(prop in all_vars)
+        self.assertTrue(var in all_vars)
+        all_objs = obj.get_children(nodeclassmask=ua.NodeClass.Object)
+        self.assertTrue(folder in all_objs)
+        self.assertTrue(obj2 in all_objs)
+        self.assertFalse(var in all_objs)
+
     def test_create_delete_subscription(self):
         o = self.opc.get_objects_node()
         v = o.add_variable(3, 'SubscriptionVariable', [1, 2, 3])
