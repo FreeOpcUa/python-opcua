@@ -32,6 +32,24 @@ class InternalServer(object):
         self.endpoints = []
         self._channel_id_counter = 5
         self.aspace = AddressSpace()
+        self.load_standard_address_space()
+        self.submanager = SubscriptionManager(self.aspace)
+        # create a session to use on server side
+        self.isession = InternalSession(self, self.aspace, self.submanager, "Internal") 
+        self._stopev = False
+        self._timer = None
+        self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
+        uries = ["http://opcfoundation.org/UA/"]
+        ns_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
+        ns_node.set_value(uries)
+
+    def load_address_space(self, path):
+        self.aspace.load(path)
+
+    def dump_address_space(self, path):
+        self.aspace.dump(path)
+
+    def load_standard_address_space(self):
         create_standard_address_space_Part3(self.aspace)
         create_standard_address_space_Part4(self.aspace)
         create_standard_address_space_Part5(self.aspace)
@@ -40,14 +58,6 @@ class InternalServer(object):
         create_standard_address_space_Part10(self.aspace)
         create_standard_address_space_Part11(self.aspace)
         create_standard_address_space_Part13(self.aspace)
-        self.submanager = SubscriptionManager(self.aspace)
-        self.isession = InternalSession(self, self.aspace, self.submanager, "Internal") #used internaly
-        self._stopev = False
-        self._timer = None
-        self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
-        uries = ["http://opcfoundation.org/UA/"]
-        ns_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
-        ns_node.set_value(uries)
 
     def start(self): 
         self.logger.info("starting internal server")

@@ -1,5 +1,6 @@
 from threading import RLock
 import logging
+import pickle
 
 from opcua import ua
 
@@ -32,6 +33,19 @@ class AddressSpace(object):
         self._datachange_callback_counter = 200
         self._handle_to_attribute_map = {}
 
+    def dump(self, path):
+        """
+        dump address space as binary to file
+        """
+        with open(path, 'wb') as f:
+            pickle.dump(self._nodes, f)
+
+    def load(self, path):
+        """
+        load address space from file, overwritting everything current address space
+        """
+        with open(path, 'rb') as f:
+            self._nodes = pickle.load(f)
 
     def add_nodes(self, addnodeitems):
         results = []
