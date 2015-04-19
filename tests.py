@@ -11,7 +11,7 @@ try:
 except ImportError:
     from Queue import Queue
 import time
-from threading import Condition
+from concurrent.futures import Future
 
 from opcua import ua
 from opcua import Client
@@ -36,29 +36,20 @@ class SubHandler():
 
 class MySubHandler():
     '''
-    More advanced subscription client using conditions, so we can wait for events in tests 
+    More advanced subscription client using Future, so we can wait for events in tests 
     '''
-    def setup(self):
-        self.cond = Condition()
-        self.node = None
-        self.handle = None
-        self.attribute = None
-        self.value = None
-        self.ev = None
-        return self.cond
+    def __init__(self):
+        self.future = Future()
+
+    def reset(self):
+        self.future = Future()
 
     def data_change(self, handle, node, val, attr):
-        self.handle = handle
-        self.node = node
-        self.value = val
-        self.attribute = attr
-        with self.cond:
-            self.cond.notify_all()
+        self.future.set_result((handle, node, val, attr))
 
     def event(self, handle, event):
-        self.ev = event
-        with self.cond:
-            self.cond.notify_all()
+        self.future.set_result((handle, node, val, attr))
+
 
 class Unit(unittest.TestCase):
     '''
@@ -244,9 +235,9 @@ class CommonTests(object):
         sub.unsubscribe(handle)
         sub.delete()
 
-    def test_events(self):
+    def _test_events(self):
         msclt = MySubHandler()
-        cond = msclt.setup()
+        #cond = msclt.setup()
         sub = self.opc.create_subscription(100, msclt)
         handle = sub.subscribe_events()
         
@@ -259,16 +250,17 @@ class CommonTests(object):
         #ev.source_name = "our server node"
         ev.Severity = 500
         ev.trigger()
-        
-        with cond:
-            ret = cond.wait(50000)
-        if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
-        else: pass # python2
-        self.assertIsNot(msclt.ev, None)# we did not receive event
-        self.assertEqual(msclt.ev.Message.Text, msg)
+       
+        clthandle, ev = msclt.future.result()
+        #with cond:
+            #ret = cond.wait(50000)
+        #if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
+        #else: pass # python2
+        self.assertIsNot(ev, None)# we did not receive event
+        self.assertEqual(ev.Message.Text, msg)
         #self.assertEqual(msclt.ev.Time, tid)
-        self.assertEqual(msclt.ev.Severity, 500)
-        self.assertEqual(msclt.ev.SourceNode, self.opc.get_server_node().nodeid)
+        self.assertEqual(ev.Severity, 500)
+        self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
 
         #time.sleep(0.1)
         sub.unsubscribe(handle)
@@ -426,7 +418,7 @@ class CommonTests(object):
         to test as many things as possible
         '''
         msclt = MySubHandler()
-        cond = msclt.setup()
+        #cond = msclt.setup()
 
         o = self.opc.get_objects_node()
 
@@ -437,21 +429,25 @@ class CommonTests(object):
         handle1 = sub.subscribe_data_change(v1)
 
         # Now check we get the start value
-        with cond:
-            ret = cond.wait(0.5)
-        if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
-        else: pass # XXX
-        self.assertEqual(msclt.value, startv1)
-        self.assertEqual(msclt.node, v1)
+        clthandle, node, val, attr = msclt.future.result() 
+        #with cond:
+            #ret = cond.wait(0.5)
+        #if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
+        #else: pass # XXX
+        self.assertEqual(val, startv1)
+        self.assertEqual(node, v1)
+
+        msclt.reset()#reset future object
 
         # modify v1 and check we get value 
         v1.set_value([5])
-        with cond:
-            ret = cond.wait(0.5)
-        if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
-        else: pass # XXX
-        self.assertEqual(msclt.node, v1)
-        self.assertEqual(msclt.value, [5])
+        clthandle, node, val, attr = msclt.future.result() 
+        #with cond:
+            #ret = cond.wait(0.5)
+        #if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
+        #else: pass # XXX
+        self.assertEqual(node, v1)
+        self.assertEqual(val, [5])
 
         with self.assertRaises(Exception):
             sub.unsubscribe(999)# non existing handle
@@ -464,19 +460,15 @@ class CommonTests(object):
 
     def test_subscribe_server_time(self):
         msclt = MySubHandler()
-        cond = msclt.setup()
 
         server_time_node = self.opc.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
 
         sub = self.opc.create_subscription(200, msclt)
         handle = sub.subscribe_data_change(server_time_node)
-
-        with cond:
-            ret = cond.wait(0.5)
-        if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
-        else: pass # XXX
-        self.assertEqual(msclt.node, server_time_node)
-        delta = datetime.now() - msclt.value 
+        
+        clthandle, node, val, attr = msclt.future.result() 
+        self.assertEqual(node, server_time_node)
+        delta = datetime.now() - val 
         self.assertTrue(delta < timedelta(seconds=1))
 
         sub.unsubscribe(handle)
