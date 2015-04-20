@@ -155,7 +155,7 @@ def unpack_bytes(data):
 
 def unpack_string(data):
     b = unpack_bytes(data)
-    #return str(b)
+    #return str(b, "utf-8")
     return b.decode("utf-8")
 
 def test_bit(data, offset):
