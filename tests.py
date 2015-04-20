@@ -48,7 +48,7 @@ class MySubHandler():
         self.future.set_result((handle, node, val, attr))
 
     def event(self, handle, event):
-        self.future.set_result((handle, node, val, attr))
+        self.future.set_result((handle, event))
 
 
 class Unit(unittest.TestCase):
@@ -273,7 +273,7 @@ class CommonTests(object):
         sub.unsubscribe(handle)
         sub.delete()
 
-    def _test_events(self):
+    def test_events(self):
         msclt = MySubHandler()
         #cond = msclt.setup()
         sub = self.opc.create_subscription(100, msclt)

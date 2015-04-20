@@ -137,9 +137,6 @@ def unpack_uatype_array(uatype, data):
             result.append(unpack_uatype(uatype, data))
         return result
 
-
-
-
 def pack_string(string):
     length = len(string)
     if length == 0:
@@ -158,7 +155,8 @@ def unpack_bytes(data):
 
 def unpack_string(data):
     b = unpack_bytes(data)
-    #return str(b, "utf-8")
+    if sys.version_info.major < 3:
+        return str(b)
     return b.decode("utf-8")
 
 def test_bit(data, offset):
