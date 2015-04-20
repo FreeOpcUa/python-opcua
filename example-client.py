@@ -1,6 +1,17 @@
 import logging
 import time
 
+try:
+    from IPython import embed
+except ImportError:
+    import code
+    def embed():
+        vars = globals()
+        vars.update(locals())
+        shell = code.InteractiveConsole(vars)
+        shell.interact()
+
+
 from opcua import Client
 from opcua import uaprotocol as ua
 
@@ -17,7 +28,6 @@ class SubHandler(object):
 
 
 if __name__ == "__main__": 
-    from IPython import embed
     logging.basicConfig(level=logging.WARN)
     #logger = logging.getLogger("KeepAlive")
     #logger.setLevel(logging.DEBUG)

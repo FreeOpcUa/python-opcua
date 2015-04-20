@@ -1,9 +1,19 @@
 import time
 import logging
 
+try:
+    from IPython import embed
+except ImportError:
+    import code
+    def embed():
+        vars = globals()
+        vars.update(locals())
+        shell = code.InteractiveConsole(vars)
+        shell.interact()
+
+
 from opcua import ua, uamethod, Server, Event, ObjectIds
 
-from IPython import embed
 
 class SubHandler(object):
     """
