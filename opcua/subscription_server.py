@@ -3,51 +3,19 @@ server side implementation of subscriptions
 """
 import time
 import sys
-from threading import RLock, Thread, Condition
-from concurrent.futures import Future
+from threading import RLock
 import logging
-try:
-    import asyncio
-except ImportError:
-    import trollius as asyncio
-    from trollius import From
-import functools
 
 from opcua import ua
 
-class SubscriptionManager(Thread):
-    def __init__(self, aspace):
-        Thread.__init__(self)
+class SubscriptionManager(object):
+    def __init__(self, loop, aspace):
         self.logger = logging.getLogger(__name__)
-        self.loop = None
+        self.loop = loop
         self.aspace = aspace
         self.subscriptions = {}
         self._sub_id_counter = 77
-        self._cond = Condition()
         self._lock = RLock()
-
-    def start(self):
-        with self._cond:
-            Thread.start(self)
-            self._cond.wait()
-
-    def run(self):
-        self.logger.debug("Starting subscription thread")
-        self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
-        with self._cond:
-            self._cond.notify_all()
-        self.loop.run_forever()
-        self.logger.debug("subscription thread ended")
-
-    def stop(self):
-        """
-        stop subscription loop, thus the subscription thread
-        """
-        # no need to stop subscriptions, they will stop with loop
-        #for sub in self.subscriptions.values():
-            #sub.stop()
-        self.loop.call_soon_threadsafe(self.loop.stop)
 
     def create_subscription(self, params, callback):
         self.logger.info("create subscription with callback: %s", callback)
@@ -183,8 +151,7 @@ class InternalSubscription(object):
     def _subscription_loop(self):
         #self.logger.debug("%s loop", self)
         if not self._stopev:
-            p = functools.partial(self.manager.loop.call_later, self.data.RevisedPublishingInterval/1000.0, self._sub_loop)
-            self.manager.loop.call_soon_threadsafe(p)
+            self.manager.loop.call_later(self.data.RevisedPublishingInterval/1000.0, self._sub_loop)
 
     def _sub_loop(self):
         self.publish_results()
@@ -336,6 +303,7 @@ class InternalSubscription(object):
                         break
                 for k, v in self._monitored_datachange.items():
                     if v == mid:
+                        self.aspace.delete_datachange_callback(k)
                         self._monitored_datachange.pop(k)
                         break
                 self._monitored_items.pop(mid)

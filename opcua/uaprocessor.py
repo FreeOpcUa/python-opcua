@@ -334,9 +334,6 @@ class UAProcessor(object):
 
         return True
 
-
-
-
     def _open_secure_channel(self, params):
         self.logger.info("open secure channel")
         if params.RequestType == ua.SecurityTokenRequestType.Issue:
