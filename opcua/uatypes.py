@@ -5,6 +5,9 @@ import logging
 from enum import Enum
 from datetime import datetime, timedelta, tzinfo
 from calendar import timegm
+import sys
+if sys.version_info.major > 2:
+    unicode = str
 
 import uuid
 import struct 
@@ -581,7 +584,7 @@ class Variant(object):
             return VariantType.Double
         elif type(val) == int:
             return VariantType.Int64
-        elif type(val) == str:
+        elif type(val) in (str, unicode):
             return VariantType.String
         elif type(val) == bytes:
             return VariantType.ByteString
