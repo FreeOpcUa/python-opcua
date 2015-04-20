@@ -198,6 +198,8 @@ class Guid(object):
         g.uuid = uuid.UUID(bytes=data.read(16))
         return g
 
+    def __eq__(self, other):
+        return isinstance(other, Guid) and self.uuid == other.uuid
 
 class StatusCode(object):
     def __init__(self, value=0):
@@ -275,6 +277,8 @@ class NodeId(object):
             if not el:
                 continue
             k, v = el.split("=")
+            k = k.strip()
+            v = v.strip()
             if k == "ns":
                 namespace = int(v)
             elif k == "i":
@@ -384,6 +388,25 @@ class TwoByteNodeId(NodeId):
 class FourByteNodeId(NodeId):
     def __init__(self, identifier, namespace=0):
         NodeId.__init__(self, identifier, namespace, NodeIdType.FourByte)
+
+class NumericNodeId(NodeId):
+    def __init__(self, identifier, namespace=0):
+        NodeId.__init__(self, identifier, namespace, NodeIdType.Numeric)
+
+class ByteStringNodeId(NodeId):
+    def __init__(self, identifier, namespace=0):
+        NodeId.__init__(self, identifier, namespace, NodeIdType.ByteString)
+
+class GuidNodeId(NodeId):
+    def __init__(self, identifier, namespace=0):
+        NodeId.__init__(self, identifier, namespace, NodeIdType.Guid)
+
+class StringNodeId(NodeId):
+    def __init__(self, identifier, namespace=0):
+        NodeId.__init__(self, identifier, namespace, NodeIdType.String)
+
+
+
 
 ExpandedNodeId = NodeId
 
