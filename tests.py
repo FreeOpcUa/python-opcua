@@ -72,6 +72,34 @@ class Unit(unittest.TestCase):
         self.assertEqual(new_nid.Identifier, 446) 
         self.assertEqual(new_nid.NamespaceIndex, 3) 
 
+        tb = ua.TwoByteNodeId(53)
+        fb = ua.FourByteNodeId(53)
+        n = ua.NumericNodeId(53)
+        n1 = ua.NumericNodeId(53, 0)
+        s = ua.StringNodeId(53, 0)#should we raise an exception???
+        s1 = ua.StringNodeId("53", 0)
+        bs = ua.ByteStringNodeId(b"53", 0)
+        gid = ua.Guid()
+        g = ua.ByteStringNodeId(gid, 0)
+        self.assertEqual(tb, fb) 
+        self.assertEqual(tb, n) 
+        self.assertEqual(tb, n1) 
+        self.assertEqual(n1, fb) 
+        self.assertNotEqual(n1, s) 
+        self.assertNotEqual(s, bs) 
+        self.assertNotEqual(s, g) 
+
+    def test_nodeid_string(self):
+        nid0 = ua.NodeId(45)
+        self.assertEqual(nid0, ua.NodeId.from_string("i=45")) 
+        self.assertEqual(nid0, ua.NodeId.from_string("ns=0;i=45")) 
+        nid = ua.NodeId(45, 10)
+        self.assertEqual(nid, ua.NodeId.from_string("i=45; ns=10"))
+        self.assertNotEqual(nid, ua.NodeId.from_string("i=45; ns=11"))
+        self.assertNotEqual(nid, ua.NodeId.from_string("i=5; ns=10"))
+        # not sure the next one is correct...
+        self.assertEqual(nid, ua.NodeId.from_string("i=45; ns=10; srv=serverid"))
+
     def test_expandednodeid(self):
         nid = ua.ExpandedNodeId()
         self.assertEqual(nid.NodeIdType, ua.NodeIdType.TwoByte) 
@@ -154,6 +182,8 @@ class Unit(unittest.TestCase):
         v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
         self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
+        #commonity method:
+        self.assertEqual(v, ua.Variant(v))
 
     def test_variant_array(self):
         v = ua.Variant([1,2,3,4,5])
@@ -171,6 +201,14 @@ class Unit(unittest.TestCase):
         self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
 
+    def test_text(self):
+        t1 = ua.LocalizedText('Root')
+        t2 = ua.LocalizedText('Root')
+        t3 = ua.LocalizedText('root')
+        self.assertEqual(t1, t2)
+        self.assertNotEqual(t1, t3)
+        t4 = ua.LocalizedText.from_binary(ua.utils.Buffer(t1.to_binary()))
+        self.assertEqual(t1, t4)
 
 class CommonTests(object):
     '''
