@@ -7,6 +7,7 @@ try:
 except ImportError:
     import SocketServer as socketserver
 from threading import Thread
+from threading import Condition
 
 from opcua import ua
 from opcua.uaprocessor import UAProcessor
@@ -23,6 +24,12 @@ class BinaryServer(Thread):
         self.hostname = hostname
         self.port = port
         self.iserver = internal_server
+        self._cond = Condition()
+
+    def start(self):
+        with self._cond:
+            Thread.start(self)
+            self._cond.wait()
 
     def run(self):
         logger.warning("Listening on %s:%s", self.hostname, self.port)
@@ -30,6 +37,8 @@ class BinaryServer(Thread):
         self.socket_server = ThreadingTCPServer((self.hostname, self.port), UAHandler)
         #self.socket_server.daemon_threads = True # this will force a shutdown of all threads, maybe too hard
         self.socket_server.internal_server = self.iserver #allow handler to acces server properties
+        with self._cond:
+            self._cond.notify_all()
         self.socket_server.serve_forever()
 
     def stop(self):
