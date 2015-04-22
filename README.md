@@ -2,6 +2,7 @@ Pure Python OPC-UA Client and Server
 http://freeopcua.github.io/, https://github.com/FreeOpcUa/python-opcua
 
 [![Build Status](https://travis-ci.org/FreeOpcUa/python-opcua.svg?branch=master)](https://travis-ci.org/FreeOpcUa/python-opcua)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/FreeOpcUa/python-opcua/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/FreeOpcUa/python-opcua/?branch=master)
 
 API is similar to the python bindings of freeopcua c++ client and servers. It offers both a low level interface to send and receive all UA defined structures and high level classes allowing to write a server or a client in a few lines.
 
