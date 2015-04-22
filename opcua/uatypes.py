@@ -45,7 +45,12 @@ def datetime_to_win_epoch(dt):
 
 def win_epoch_to_datetime(epch):
     (s, ns100) = divmod(epch - EPOCH_AS_FILETIME, HUNDREDS_OF_NANOSECONDS)
-    dt = datetime.utcfromtimestamp(s)
+    try:
+        # TDA, this generates exceptions on systems where RTC is really off
+        dt = datetime.utcfromtimestamp(s)
+    except:
+        logger.debug("Exception occurred during conversion within 'win_epoch_to_datetime'." )
+        return datetime.now()
     dt = dt.replace(microsecond=(ns100 // 10))
     return dt
 
@@ -611,6 +616,9 @@ class Variant(object):
             return VariantType.ByteString
         elif type(val) == datetime:
             return VariantType.DateTime
+        elif type(val) == bool:
+            # TDA, added this because it was missing and causes exceptions when 'bool' type is used
+            return VariantType.Boolean
         else:
             if isinstance(val, object):
                 code = "VariantType.{}".format(val.__class__.__name__)
