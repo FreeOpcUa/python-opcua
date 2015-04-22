@@ -329,7 +329,7 @@ class Node(object):
         if inputs:
             method.add_property(qname.NamespaceIndex, "InputArguments", [self._vtype_to_argument(vtype) for vtype in inputs])
         if outputs:
-            method.add_property(qname.NamespaceIndex, "OutputArguments", [self._vtype_to_argument(vtype) for vtype in inputs])
+            method.add_property(qname.NamespaceIndex, "OutputArguments", [self._vtype_to_argument(vtype) for vtype in outputs])
         self.server.add_method_callback(method.nodeid, callback)
         return method
         
