@@ -294,21 +294,24 @@ class InternalSubscription(object):
         with self._lock:
             results = []
             for mid in ids:
-                if not mid in self._monitored_items:
-                    results.append(ua.StatusCode(ua.StatusCodes.BadMonitoredItemIdInvalid))
-                    break
-                for k, v in self._monitored_events.items():
-                    if v == mid:
-                        self._monitored_events.pop(k)
-                        break
-                for k, v in self._monitored_datachange.items():
-                    if v == mid:
-                        self.aspace.delete_datachange_callback(k)
-                        self._monitored_datachange.pop(k)
-                        break
-                self._monitored_items.pop(mid)
-                results.append(ua.StatusCode())
+                results.append(self._delete_monitored_items(mid))
             return results
+
+    def _delete_monitored_items(self, mid):
+        if not mid in self._monitored_items:
+            return ua.StatusCode(ua.StatusCodes.BadMonitoredItemIdInvalid)
+        for k, v in self._monitored_events.items():
+            if v == mid:
+                self._monitored_events.pop(k)
+                break
+        for k, v in self._monitored_datachange.items():
+            if v == mid:
+                self.aspace.delete_datachange_callback(k)
+                self._monitored_datachange.pop(k)
+                break
+        self._monitored_items.pop(mid)
+        return ua.StatusCode()
+
 
     def datachange_callback(self, handle, value):
         self.logger.info("subscription %s: datachange callback called with handle '%s' and value '%s'", self, handle, value.Value)

@@ -33,7 +33,7 @@ def func(parent, variant):
 # uses a decorator to automatically convert to and from variants
 @uamethod
 def multiply(parent, x, y):
-    print("OKOK", x, y)
+    print("multiply method call with parameters: ", x, y)
     return x*y
 
 

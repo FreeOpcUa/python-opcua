@@ -104,7 +104,6 @@ class AddressSpace(object):
             result.StatusCode = ua.StatusCode()
             result.AddedNodeId = item.RequestedNewNodeId
 
-
             return result
 
     def add_references(self, refs):
@@ -347,31 +346,35 @@ class AddressSpace(object):
             return None
 
     def add_method_callback(self, methodid, callback):
-        node = self._nodes[methodid]
-        node.call = callback
+        with self._lock:
+            node = self._nodes[methodid]
+            node.call = callback
 
     def call(self, methods):
         results = []
         for method in methods:
-            res = ua.CallMethodResult()
-            if method.ObjectId not in self._nodes or method.MethodId not in self._nodes: 
-                res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
+            with self._lock:
+                results.append(self._call(method))
+        return results
+
+    def _call(self, method):                
+        res = ua.CallMethodResult()
+        if method.ObjectId not in self._nodes or method.MethodId not in self._nodes: 
+            res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
+        else:
+            node = self._nodes[method.MethodId]
+            if node.call is None:
+                res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNothingToDo)
             else:
-                node = self._nodes[method.MethodId]
-                if node.call is None:
-                    res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNothingToDo)
-                else:
-                    try:
-                        res.OutputArguments = node.call(method.ObjectId, *method.InputArguments)
-                        for _ in method.InputArguments:
-                            res.InputArgumentResults.append(ua.StatusCode())
-                    except Exception:
-                        self.logger.exception("Error executing method call %s, an exception was raised: ", method)
-                        res.StatusCode = ua.StatusCode(ua.StatusCodes.BadUnexpectedError)
-                results.append(res)
-            return results
-                    
-            
+                try:
+                    res.OutputArguments = node.call(method.ObjectId, *method.InputArguments)
+                    for _ in method.InputArguments:
+                        res.InputArgumentResults.append(ua.StatusCode())
+                except Exception:
+                    self.logger.exception("Error executing method call %s, an exception was raised: ", method)
+                    res.StatusCode = ua.StatusCode(ua.StatusCodes.BadUnexpectedError)
+        return res
+           
 
 
 

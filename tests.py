@@ -21,8 +21,8 @@ from opcua import Event
 from opcua import ObjectIds
 from opcua import AttributeIds
 
-port_num1 = 48410
-port_num2 = 48430
+port_num1 = 48510
+port_num2 = 48530
 
 class SubHandler():
     '''
