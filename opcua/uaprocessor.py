@@ -178,7 +178,8 @@ class UAProcessor(object):
             self.logger.info("Write request")
             params = ua.WriteParameters.from_binary(body) 
             
-            results = self.session.write(params)
+            #TDA, Changed the method invocation to ensure parameters that are written have write access
+            results = self.session.write_user_writable(params)
 
             response = ua.WriteResponse()
             response.Results = results

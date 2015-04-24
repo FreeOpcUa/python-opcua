@@ -2264,8 +2264,9 @@ class VariableAttributes(FrozenClass):
         self.DataType = NodeId()
         self.ValueRank = 0
         self.ArrayDimensions = []
-        self.AccessLevel = 0
-        self.UserAccessLevel = 0
+        # TDA, setting access level to 'read'.  It is the default in the C++ impl.
+        self.AccessLevel = 1
+        self.UserAccessLevel = 1
         self.MinimumSamplingInterval = 0
         self.Historizing = True
         self._freeze()

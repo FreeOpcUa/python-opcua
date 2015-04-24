@@ -148,6 +148,33 @@ class AddressSpace(object):
                 return attval.value_callback()
             return attval.value
 
+    def set_attribute_value_ex(self, nodeid, attr, value):
+        with self._lock:
+            self.logger.debug("set attr val: %s %s %s", nodeid, attr, value)
+            if not nodeid in self._nodes:
+                return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
+            node = self._nodes[nodeid]
+
+            if not attr in node.attributes:
+                return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
+
+            #TODO: TDA, added these lines to ensure remote client cannot write to non-writable values
+            if (ua.AttributeIds.Value == attr) and \
+                    ((ua.AttributeIds.UserAccessLevel in node.attributes) and
+                         (2 != (node.attributes[ua.AttributeIds.UserAccessLevel].value.Value.Value & 2))):
+                return ua.StatusCode(ua.StatusCodes.BadNotWritable)
+
+            attval = node.attributes[attr]
+            attval.value = value
+            if attval.value_callback:
+                return attval.value_callback(nodeid, attr, value)
+            for k, v in attval.datachange_callbacks.items():
+                try:
+                    v(k, value)
+                except Exception as ex:
+                    self.logger.exception("Error calling datachange callback %s, %s, %s", k, v, ex)
+            return ua.StatusCode()
+
     def set_attribute_value(self, nodeid, attr, value):
         with self._lock:
             self.logger.debug("set attr val: %s %s %s", nodeid, attr, value)
@@ -222,6 +249,13 @@ class AddressSpace(object):
         res = []
         for readvalue in params.NodesToRead:
             res.append(self.get_attribute_value(readvalue.NodeId, readvalue.AttributeId))
+        return res
+
+    def write_user_writable(self, params):
+        self.logger.debug("write %s", params)
+        res = []
+        for writevalue in params.NodesToWrite:
+            res.append(self.set_attribute_value_ex(writevalue.NodeId, writevalue.AttributeId, writevalue.Value))
         return res
 
     def write(self, params):

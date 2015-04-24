@@ -193,6 +193,9 @@ class InternalSession(object):
     def read(self, params):
         return self.aspace.read(params)
 
+    def write_user_writable(self, params):
+        return self.aspace.write_user_writable(params)
+
     def write(self, params):
         return self.aspace.write(params)
 
