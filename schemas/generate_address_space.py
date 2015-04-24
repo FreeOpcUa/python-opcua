@@ -337,6 +337,16 @@ def create_standard_address_space_%s(server):
             self.writecode(indent, "refs.append(ref)")
         self.writecode(indent, 'server.add_references(refs)')
 
+def save_aspace_to_disk():
+    import os.path
+    path = os.path.join("..", "opcua", "binary_address_space.pickle")
+    print("Savind standard address space to:", path)
+    sys.path.append("..")
+    from opcua import address_space
+    from opcua import standard_address_space
+    aspace = address_space.AddressSpace()
+    standard_address_space.fill_address_space(aspace)
+    aspace.dump(path)
 
 if __name__ == "__main__":
     for i in (3, 4, 5, 8, 9, 10, 11, 13):
@@ -344,5 +354,7 @@ if __name__ == "__main__":
         cpppath = "../opcua/standard_address_space_part{}.py".format(str(i))
         c = CodeGenerator(xmlpath, cpppath)
         c.run()
+
+    save_aspace_to_disk()
 
 
