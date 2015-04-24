@@ -386,9 +386,9 @@ class Node(object):
                 extobj = variant.Value
             objectidname = ua.ObjectIdsInv[extobj.TypeId.Identifier]
             classname = objectidname.split("_")[0]
-            return eval("ua.NodeId(ua.ObjectIds.{})".format(classname))
+            return ua.NodeId(getattr(ua.ObjectIds, classname))
         else:
-            return eval("ua.NodeId(ua.ObjectIds.{})".format(variant.VariantType.name))
+            return ua.NodeId(getattr(ua.ObjectIds, variant.VariantType.name))
 
     def _parse_add_args(self, *args):
         if type(args[0]) is ua.NodeId:

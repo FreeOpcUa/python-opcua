@@ -185,55 +185,37 @@ class AddressSpace(object):
     def delete_datachange_callback(self, handle):
         nodeid, attr = self._handle_to_attribute_map.pop(handle)
         self._nodes[nodeid].attributes[attr].datachange_callbacks.pop(handle)
+
+    def _add_node_attr(self, item, nodedata, name, vtype=None):
+        if item.SpecifiedAttributes & getattr(ua.NodeAttributesMask, name):
+            dv = ua.DataValue(ua.Variant(getattr(item, name), vtype))
+            nodedata.attributes[getattr(ua.AttributeIds, name)] = AttributeValue(dv)
         
-
-
     def _add_nodeattributes(self, item, nodedata):
         item = ua.downcast_extobject(item)
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.AccessLevel:
-            nodedata.attributes[ua.AttributeIds.AccessLevel] = AttributeValue(ua.DataValue(ua.Variant(item.AccessLevel, ua.VariantType.Byte)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.ArrayDimensions:
-            nodedata.attributes[ua.AttributeIds.ArrayDimensions] = AttributeValue(ua.DataValue(ua.Variant(item.ArrayDimensions, ua.VariantType.Int32)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.BrowseName:
-            nodedata.attributes[ua.AttributeIds.BrowseName] = AttributeValue(ua.DataValue(ua.Variant(item.BrowseName, ua.VariantType.QualifiedName)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.ContainsNoLoops:
-            nodedata.attributes[ua.AttributeIds.ContainsNoLoops] = AttributeValue(ua.DataValue(ua.Variant(item.ContainsNoLoops, ua.VariantType.Boolean)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.DataType:
-            nodedata.attributes[ua.AttributeIds.DataType] = AttributeValue(ua.DataValue(ua.Variant(item.DataType, ua.VariantType.NodeId)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.Description:
-            nodedata.attributes[ua.AttributeIds.Description] = AttributeValue(ua.DataValue(ua.Variant(item.Description, ua.VariantType.LocalizedText)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.DisplayName:
-            nodedata.attributes[ua.AttributeIds.DisplayName] = AttributeValue(ua.DataValue(ua.Variant(item.DisplayName, ua.VariantType.LocalizedText)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.EventNotifier:
-            nodedata.attributes[ua.AttributeIds.EventNotifier] = AttributeValue(ua.DataValue(ua.Variant(item.EventNotifier, ua.VariantType.Byte)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.Executable:
-            nodedata.attributes[ua.AttributeIds.Executable] = AttributeValue(ua.DataValue(ua.Variant(item.Executable, ua.VariantType.Boolean)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.Historizing:
-            nodedata.attributes[ua.AttributeIds.Historizing] = AttributeValue(ua.DataValue(ua.Variant(item.Historizing, ua.VariantType.Boolean)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.InverseName:
-            nodedata.attributes[ua.AttributeIds.InverseName] = AttributeValue(ua.DataValue(ua.Variant(item.InverseName, ua.VariantType.LocalizedText)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.IsAbstract:
-            nodedata.attributes[ua.AttributeIds.IsAbstract] = AttributeValue(ua.DataValue(ua.Variant(item.IsAbstract, ua.VariantType.Boolean)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.MinimumSamplingInterval:
-            nodedata.attributes[ua.AttributeIds.MinimumSamplingInterval] = AttributeValue(ua.DataValue(ua.Variant(item.MinimumSamplingInterval, ua.VariantType.Double)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.NodeClass:
-            nodedata.attributes[ua.AttributeIds.NodeClass] = AttributeValue(ua.DataValue(ua.Variant(item.NodeClass, ua.VariantType.UInt32)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.NodeId:
-            nodedata.attributes[ua.AttributeIds.NodeId] = AttributeValue(ua.DataValue(ua.Variant(item.NodeId, ua.VariantType.NodeId)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.Symmetric:
-            nodedata.attributes[ua.AttributeIds.Symmetric] = AttributeValue(ua.DataValue(ua.Variant(item.Symmetric, ua.VariantType.Boolean)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.UserAccessLevel:
-            nodedata.attributes[ua.AttributeIds.UserAccessLevel] = AttributeValue(ua.DataValue(ua.Variant(item.UserAccessLevel, ua.VariantType.Byte)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.UserExecutable:
-            nodedata.attributes[ua.AttributeIds.UserExecutable] = AttributeValue(ua.DataValue(ua.Variant(item.UserExecutable, ua.VariantType.Boolean)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.UserWriteMask:
-            nodedata.attributes[ua.AttributeIds.UserWriteMask] = AttributeValue(ua.DataValue(ua.Variant(item.UserWriteMask, ua.VariantType.Byte)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.ValueRank:
-            nodedata.attributes[ua.AttributeIds.ValueRank] = AttributeValue(ua.DataValue(ua.Variant(item.ValueRank, ua.VariantType.Int32)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.WriteMask:
-            nodedata.attributes[ua.AttributeIds.WriteMask] = AttributeValue(ua.DataValue(ua.Variant(item.WriteMask, ua.VariantType.Byte)))
-        if item.SpecifiedAttributes & ua.NodeAttributesMask.Value:
-            nodedata.attributes[ua.AttributeIds.Value] = AttributeValue(ua.DataValue(item.Value))
+        self._add_node_attr(item, nodedata, "AccessLevel",  ua.VariantType.Byte)
+        self._add_node_attr(item, nodedata, "ArrayDimensions",  ua.VariantType.Int32)
+        self._add_node_attr(item, nodedata, "BrowseName",  ua.VariantType.QualifiedName)
+        self._add_node_attr(item, nodedata, "ContainsNoLoops",  ua.VariantType.Boolean)
+        self._add_node_attr(item, nodedata, "DataType",  ua.VariantType.NodeId)
+        self._add_node_attr(item, nodedata, "Description",  ua.VariantType.LocalizedText)
+        self._add_node_attr(item, nodedata, "DisplayName",  ua.VariantType.LocalizedText)
+        self._add_node_attr(item, nodedata, "EventNotifier",  ua.VariantType.Byte)
+        self._add_node_attr(item, nodedata, "Executable",  ua.VariantType.Boolean)
+        self._add_node_attr(item, nodedata, "Historizing",  ua.VariantType.Boolean)
+        self._add_node_attr(item, nodedata, "InverseName",  ua.VariantType.LocalizedText)
+        self._add_node_attr(item, nodedata, "IsAbstract",  ua.VariantType.Boolean)
+        self._add_node_attr(item, nodedata, "MinimumSamplingInterval",  ua.VariantType.Double)
+        self._add_node_attr(item, nodedata, "NodeClass",  ua.VariantType.UInt32)
+        self._add_node_attr(item, nodedata, "NodeId",  ua.VariantType.NodeId)
+        self._add_node_attr(item, nodedata, "Symmetric",  ua.VariantType.Boolean)
+        self._add_node_attr(item, nodedata, "UserAccessLevel",  ua.VariantType.Byte)
+        self._add_node_attr(item, nodedata, "UserExecutable",  ua.VariantType.Byte)
+        self._add_node_attr(item, nodedata, "UserWriteMask",  ua.VariantType.Byte)
+        self._add_node_attr(item, nodedata, "ValueRank",  ua.VariantType.Int32)
+        self._add_node_attr(item, nodedata, "WriteMask",  ua.VariantType.Byte)
+        self._add_node_attr(item, nodedata, "UserWriteMask",  ua.VariantType.Byte)
+        self._add_node_attr(item, nodedata, "Value")
 
     def read(self, params):
         self.logger.debug("read %s", params)
