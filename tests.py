@@ -24,20 +24,26 @@ from opcua import AttributeIds
 port_num1 = 48510
 port_num2 = 48530
 
+
 class SubHandler():
+
     '''
         Dummy subscription client
     '''
+
     def data_change(self, handle, node, val, attr):
-        pass    
+        pass
 
     def event(self, handle, event):
-        pass 
+        pass
+
 
 class MySubHandler():
+
     '''
-    More advanced subscription client using Future, so we can wait for events in tests 
+    More advanced subscription client using Future, so we can wait for events in tests
     '''
+
     def __init__(self):
         self.future = Future()
 
@@ -52,8 +58,9 @@ class MySubHandler():
 
 
 class Unit(unittest.TestCase):
+
     '''
-    Simple unit test that do not need to setup a server or a client 
+    Simple unit test that do not need to setup a server or a client
     '''
 
     def test_guid(self):
@@ -62,37 +69,37 @@ class Unit(unittest.TestCase):
 
     def test_nodeid(self):
         nid = ua.NodeId()
-        self.assertEqual(nid.NodeIdType, ua.NodeIdType.TwoByte) 
+        self.assertEqual(nid.NodeIdType, ua.NodeIdType.TwoByte)
         nid = ua.NodeId(446, 3, ua.NodeIdType.FourByte)
-        self.assertEqual(nid.NodeIdType, ua.NodeIdType.FourByte) 
+        self.assertEqual(nid.NodeIdType, ua.NodeIdType.FourByte)
         d = nid.to_binary()
         new_nid = nid.from_binary(io.BytesIO(d))
-        self.assertEqual(new_nid, nid) 
-        self.assertEqual(new_nid.NodeIdType, ua.NodeIdType.FourByte) 
-        self.assertEqual(new_nid.Identifier, 446) 
-        self.assertEqual(new_nid.NamespaceIndex, 3) 
+        self.assertEqual(new_nid, nid)
+        self.assertEqual(new_nid.NodeIdType, ua.NodeIdType.FourByte)
+        self.assertEqual(new_nid.Identifier, 446)
+        self.assertEqual(new_nid.NamespaceIndex, 3)
 
         tb = ua.TwoByteNodeId(53)
         fb = ua.FourByteNodeId(53)
         n = ua.NumericNodeId(53)
         n1 = ua.NumericNodeId(53, 0)
-        s = ua.StringNodeId(53, 0)#should we raise an exception???
+        s = ua.StringNodeId(53, 0)  # should we raise an exception???
         s1 = ua.StringNodeId("53", 0)
         bs = ua.ByteStringNodeId(b"53", 0)
         gid = ua.Guid()
         g = ua.ByteStringNodeId(gid, 0)
-        self.assertEqual(tb, fb) 
-        self.assertEqual(tb, n) 
-        self.assertEqual(tb, n1) 
-        self.assertEqual(n1, fb) 
-        self.assertNotEqual(n1, s) 
-        self.assertNotEqual(s, bs) 
-        self.assertNotEqual(s, g) 
+        self.assertEqual(tb, fb)
+        self.assertEqual(tb, n)
+        self.assertEqual(tb, n1)
+        self.assertEqual(n1, fb)
+        self.assertNotEqual(n1, s)
+        self.assertNotEqual(s, bs)
+        self.assertNotEqual(s, g)
 
     def test_nodeid_string(self):
         nid0 = ua.NodeId(45)
-        self.assertEqual(nid0, ua.NodeId.from_string("i=45")) 
-        self.assertEqual(nid0, ua.NodeId.from_string("ns=0;i=45")) 
+        self.assertEqual(nid0, ua.NodeId.from_string("i=45"))
+        self.assertEqual(nid0, ua.NodeId.from_string("ns=0;i=45"))
         nid = ua.NodeId(45, 10)
         self.assertEqual(nid, ua.NodeId.from_string("i=45; ns=10"))
         self.assertNotEqual(nid, ua.NodeId.from_string("i=45; ns=11"))
@@ -102,7 +109,7 @@ class Unit(unittest.TestCase):
 
     def test_expandednodeid(self):
         nid = ua.ExpandedNodeId()
-        self.assertEqual(nid.NodeIdType, ua.NodeIdType.TwoByte) 
+        self.assertEqual(nid.NodeIdType, ua.NodeIdType.TwoByte)
         nid2 = ua.ExpandedNodeId.from_binary(ua.utils.Buffer(nid.to_binary()))
         self.assertEqual(nid, nid2)
 
@@ -111,7 +118,7 @@ class Unit(unittest.TestCase):
         obj2 = ua.ExtensionObject.from_binary(ua.utils.Buffer(obj.to_binary()))
         self.assertEqual(obj2.TypeId, obj2.TypeId)
         self.assertEqual(obj2.Body, obj2.Body)
-    
+
     def test_datetime(self):
         now = datetime.now()
         epch = ua.datetime_to_win_epoch(now)
@@ -126,11 +133,11 @@ class Unit(unittest.TestCase):
     def test_equal_nodeid(self):
         nid1 = ua.NodeId(999, 2)
         nid2 = ua.NodeId(999, 2)
-        self.assertTrue(nid1==nid2)
-        self.assertTrue(id(nid1)!=id(nid2))
-    
+        self.assertTrue(nid1 == nid2)
+        self.assertTrue(id(nid1) != id(nid2))
+
     def test_zero_nodeid(self):
-        self.assertEqual(ua.NodeId(), ua.NodeId(0,0))
+        self.assertEqual(ua.NodeId(), ua.NodeId(0, 0))
         self.assertEqual(ua.NodeId(), ua.NodeId.from_string('ns=0;i=0;'))
 
     def test_string_nodeid(self):
@@ -150,25 +157,24 @@ class Unit(unittest.TestCase):
         self.assertEqual(nid.NamespaceIndex, 2)
         self.assertEqual(nid.Identifier, 'PLC1.Manufacturer')
 
-    
     def test_strrepr_nodeid(self):
         nid = ua.NodeId.from_string('ns=2;s=PLC1.Manufacturer;')
         self.assertEqual(nid.to_string(), 'ns=2;s=PLC1.Manufacturer')
         #self.assertEqual(repr(nid), 'ns=2;s=PLC1.Manufacturer;')
-    
+
     def test_qualified_name(self):
         qn = ua.QualifiedName('qname', 2)
         self.assertEqual(qn.NamespaceIndex, 2)
         self.assertEqual(qn.Name, 'qname')
         self.assertEqual(qn.to_string(), '2:qname')
-    
+
     def test_datavalue(self):
         dv = ua.DataValue(123)
         self.assertEqual(dv.Value, ua.Variant(123))
         self.assertEqual(type(dv.Value), ua.Variant)
         dv = ua.DataValue('abc')
         self.assertEqual(dv.Value, ua.Variant('abc'))
-        now = datetime.now() 
+        now = datetime.now()
         dv.source_timestamp = now
 
     def test_variant(self):
@@ -182,13 +188,13 @@ class Unit(unittest.TestCase):
         v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
         self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
-        #commonity method:
+        # commonity method:
         self.assertEqual(v, ua.Variant(v))
 
     def test_variant_array(self):
-        v = ua.Variant([1,2,3,4,5])
+        v = ua.Variant([1, 2, 3, 4, 5])
         self.assertEqual(v.Value[1], 2)
-        #self.assertEqual(v.VarianType, ua.VariantType.Int64) # we do not care, we should aonly test for sutff that matter
+        # self.assertEqual(v.VarianType, ua.VariantType.Int64) # we do not care, we should aonly test for sutff that matter
         v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
         self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
@@ -210,10 +216,12 @@ class Unit(unittest.TestCase):
         t4 = ua.LocalizedText.from_binary(ua.utils.Buffer(t1.to_binary()))
         self.assertEqual(t1, t4)
 
+
 class CommonTests(object):
+
     '''
-    Tests that will be run twice. Once on server side and once on 
-    client side since we have been carefull to have the exact 
+    Tests that will be run twice. Once on server side and once on
+    client side since we have been carefull to have the exact
     same api on server and client side
     '''
 
@@ -221,13 +229,13 @@ class CommonTests(object):
         root = self.opc.get_root_node()
         self.assertEqual(ua.QualifiedName('Root', 0), root.get_browse_name())
         self.assertEqual(ua.LocalizedText('Root'), root.get_display_name())
-        nid = ua.NodeId(84, 0) 
+        nid = ua.NodeId(84, 0)
         self.assertEqual(nid, root.nodeid)
 
     def test_objects(self):
         objects = self.opc.get_objects_node()
         self.assertEqual(ua.QualifiedName('Objects', 0), objects.get_browse_name())
-        nid = ua.NodeId(85, 0) 
+        nid = ua.NodeId(85, 0)
         self.assertEqual(nid, objects.nodeid)
 
     def test_browse(self):
@@ -265,7 +273,7 @@ class CommonTests(object):
         time.sleep(0.1)
         sub.unsubscribe(handle)
         sub.delete()
-    
+
     def test_subscribe_events(self):
         sub = self.opc.create_subscription(100, sclt)
         handle = sub.subscribe_events()
@@ -278,9 +286,9 @@ class CommonTests(object):
         #cond = msclt.setup()
         sub = self.opc.create_subscription(100, msclt)
         handle = sub.subscribe_events()
-        
+
         ev = Event(self.srv.iserver.isession)
-        msg = b"this is my msg " 
+        msg = b"this is my msg "
         ev.Message.Text = msg
         tid = datetime.now()
         ev.Time = tid
@@ -288,22 +296,21 @@ class CommonTests(object):
         #ev.source_name = "our server node"
         ev.Severity = 500
         ev.trigger()
-       
+
         clthandle, ev = msclt.future.result()
-        #with cond:
-            #ret = cond.wait(50000)
-        #if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
-        #else: pass # python2
-        self.assertIsNot(ev, None)# we did not receive event
+        # with cond:
+        #ret = cond.wait(50000)
+        # if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
+        # else: pass # python2
+        self.assertIsNot(ev, None)  # we did not receive event
         self.assertEqual(ev.Message.Text, msg)
         #self.assertEqual(msclt.ev.Time, tid)
         self.assertEqual(ev.Severity, 500)
         self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
 
-        #time.sleep(0.1)
+        # time.sleep(0.1)
         sub.unsubscribe(handle)
         sub.delete()
-
 
     def test_non_existing_path(self):
         root = self.opc.get_root_node()
@@ -334,29 +341,29 @@ class CommonTests(object):
         objects = self.opc.get_objects_node()
         v1 = objects.add_variable(4, "test_datetime", now)
         tid = v1.get_value()
-        self.assertEqual(now, tid) 
+        self.assertEqual(now, tid)
 
     def test_add_numeric_variable(self):
         objects = self.opc.get_objects_node()
         v = objects.add_variable('ns=3;i=888;', '3:numericnodefromstring', 99)
         nid = ua.NodeId(888, 3)
-        qn = ua.QualifiedName('numericnodefromstring', 3) 
+        qn = ua.QualifiedName('numericnodefromstring', 3)
         self.assertEqual(nid, v.nodeid)
         self.assertEqual(qn, v.get_browse_name())
 
     def test_add_string_variable(self):
         objects = self.opc.get_objects_node()
         v = objects.add_variable('ns=3;s=stringid;', '3:stringnodefromstring', [68])
-        nid = ua.NodeId('stringid', 3) 
-        qn = ua.QualifiedName('stringnodefromstring', 3) 
+        nid = ua.NodeId('stringid', 3)
+        qn = ua.QualifiedName('stringnodefromstring', 3)
         self.assertEqual(nid, v.nodeid)
         self.assertEqual(qn, v.get_browse_name())
 
     def test_add_string_array_variable(self):
         objects = self.opc.get_objects_node()
         v = objects.add_variable('ns=3;s=stringarrayid;', '9:stringarray', ['l', 'b'])
-        nid = ua.NodeId('stringarrayid', 3) 
-        qn = ua.QualifiedName('stringarray', 9) 
+        nid = ua.NodeId('stringarrayid', 3)
+        qn = ua.QualifiedName('stringarray', 9)
         self.assertEqual(nid, v.nodeid)
         self.assertEqual(qn, v.get_browse_name())
         val = v.get_value()
@@ -430,10 +437,9 @@ class CommonTests(object):
         with self.assertRaises(Exception):
             bad.set_value(89)
         with self.assertRaises(Exception):
-            bad.add_object(0, "myobj" )
+            bad.add_object(0, "myobj")
         with self.assertRaises(Exception):
-            bad.get_child(0, "myobj" )
-
+            bad.get_child(0, "myobj")
 
     def test_array_value(self):
         o = self.opc.get_objects_node()
@@ -446,13 +452,13 @@ class CommonTests(object):
         v = o.add_variable(3, 'VariableArrayValue', [1, 2, 3])
         v.set_value([1])
         val = v.get_value()
-        self.assertEqual([1], val) 
+        self.assertEqual([1], val)
 
     def test_subscription_data_change(self):
         '''
         test subscriptions. This is far too complicated for
         a unittest but, setting up subscriptions requires a lot
-        of code, so when we first set it up, it is best 
+        of code, so when we first set it up, it is best
         to test as many things as possible
         '''
         msclt = MySubHandler()
@@ -467,34 +473,34 @@ class CommonTests(object):
         handle1 = sub.subscribe_data_change(v1)
 
         # Now check we get the start value
-        clthandle, node, val, attr = msclt.future.result() 
-        #with cond:
-            #ret = cond.wait(0.5)
-        #if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
-        #else: pass # XXX
+        clthandle, node, val, attr = msclt.future.result()
+        # with cond:
+        #ret = cond.wait(0.5)
+        # if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
+        # else: pass # XXX
         self.assertEqual(val, startv1)
         self.assertEqual(node, v1)
 
-        msclt.reset()#reset future object
+        msclt.reset()  # reset future object
 
-        # modify v1 and check we get value 
+        # modify v1 and check we get value
         v1.set_value([5])
-        clthandle, node, val, attr = msclt.future.result() 
-        #with cond:
-            #ret = cond.wait(0.5)
-        #if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
-        #else: pass # XXX
+        clthandle, node, val, attr = msclt.future.result()
+        # with cond:
+        #ret = cond.wait(0.5)
+        # if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
+        # else: pass # XXX
         self.assertEqual(node, v1)
         self.assertEqual(val, [5])
 
         with self.assertRaises(Exception):
-            sub.unsubscribe(999)# non existing handle
+            sub.unsubscribe(999)  # non existing handle
         sub.unsubscribe(handle1)
         with self.assertRaises(Exception):
-            sub.unsubscribe(handle1) # second try should fail
+            sub.unsubscribe(handle1)  # second try should fail
         sub.delete()
         with self.assertRaises(Exception):
-            sub.unsubscribe(handle1) # sub does not exist anymore
+            sub.unsubscribe(handle1)  # sub does not exist anymore
 
     def test_subscribe_server_time(self):
         msclt = MySubHandler()
@@ -503,10 +509,10 @@ class CommonTests(object):
 
         sub = self.opc.create_subscription(200, msclt)
         handle = sub.subscribe_data_change(server_time_node)
-        
-        clthandle, node, val, attr = msclt.future.result() 
+
+        clthandle, node, val, attr = msclt.future.result()
         self.assertEqual(node, server_time_node)
-        delta = datetime.now() - val 
+        delta = datetime.now() - val
         self.assertTrue(delta < timedelta(seconds=1))
 
         sub.unsubscribe(handle)
@@ -514,11 +520,11 @@ class CommonTests(object):
 
     def test_use_namespace(self):
         idx = self.opc.get_namespace_index("urn:freeopcua:python:server")
-        self.assertEqual(idx, 1) 
+        self.assertEqual(idx, 1)
         root = self.opc.get_root_node()
         myvar = root.add_variable(idx, 'var_in_custom_namespace', [5])
         myid = myvar.nodeid
-        self.assertEqual(idx, myid.NamespaceIndex) 
+        self.assertEqual(idx, myid.NamespaceIndex)
 
     def test_method(self):
         o = self.opc.get_objects_node()
@@ -526,10 +532,10 @@ class CommonTests(object):
         result = o.call_method("2:ServerMethod", 2.1)
         self.assertEqual(result, 4.2)
         with self.assertRaises(Exception):
-            #FIXME: we should raise a more precise exception
+            # FIXME: we should raise a more precise exception
             result = o.call_method("2:ServerMethod", 2.1, 89, 9)
         with self.assertRaises(Exception):
-            result = o.call_method(ua.NodeId(999), 2.1) #non existing method
+            result = o.call_method(ua.NodeId(999), 2.1)  # non existing method
 
     def test_method_array(self):
         o = self.opc.get_objects_node()
@@ -558,9 +564,6 @@ class CommonTests(object):
         self.assertTrue(endpoints[0].EndpointUrl.startswith("opc.tcp://localhost"))
 
 
-
-
-
 def add_server_methods(srv):
     @uamethod
     def func(parent, value):
@@ -568,7 +571,6 @@ def add_server_methods(srv):
 
     o = srv.get_objects_node()
     v = o.add_method(ua.NodeId("ServerMethod", 2), ua.QualifiedName('ServerMethod', 2), func, [ua.VariantType.Int64], [ua.VariantType.Int64])
-
 
     @uamethod
     def func2(parent, methodname, value):
@@ -585,18 +587,18 @@ def add_server_methods(srv):
     v = o.add_method(ua.NodeId("ServerMethodArray2", 2), ua.QualifiedName('ServerMethodArray2', 2), func3, [ua.VariantType.Int64], [ua.VariantType.Int64])
 
 
-
 class TestClient(unittest.TestCase, CommonTests):
+
     '''
     Run common tests on client side
-    Of course we need a server so we start a server in another 
+    Of course we need a server so we start a server in another
     process using python Process module
     Tests that can only be run on client side must be defined here
     '''
     @classmethod
     def setUpClass(self):
         # start our own server
-        self.srv = Server() 
+        self.srv = Server()
         self.srv.set_endpoint('opc.tcp://localhost:%d' % port_num1)
         add_server_methods(self.srv)
         self.srv.start()
@@ -614,13 +616,13 @@ class TestClient(unittest.TestCase, CommonTests):
 
     def test_service_fault(self):
         request = ua.ReadRequest()
-        request.TypeId = ua.FourByteNodeId(999) # bad type!
+        request.TypeId = ua.FourByteNodeId(999)  # bad type!
         with self.assertRaises(Exception):
             self.clt.bclient._send_request(request)
 
 
-
 class TestServer(unittest.TestCase, CommonTests):
+
     '''
     Run common tests on server side
     Tests that can only be run on server side must be defined here
@@ -631,18 +633,17 @@ class TestServer(unittest.TestCase, CommonTests):
         self.srv.set_endpoint('opc.tcp://localhost:%d' % port_num2)
         add_server_methods(self.srv)
         self.srv.start()
-        self.opc = self.srv 
+        self.opc = self.srv
 
     @classmethod
     def tearDownClass(self):
         self.srv.stop()
 
-
     def test_register_namespace(self):
         uri = 'http://mycustom.Namespace.com'
         idx1 = self.opc.register_namespace(uri)
         idx2 = self.opc.get_namespace_index(uri)
-        self.assertEqual(idx1, idx2) 
+        self.assertEqual(idx1, idx2)
 
     def test_register_use_namespace(self):
         uri = 'http://my_very_custom.Namespace.com'
@@ -650,7 +651,7 @@ class TestServer(unittest.TestCase, CommonTests):
         root = self.opc.get_root_node()
         myvar = root.add_variable(idx, 'var_in_custom_namespace', [5])
         myid = myvar.nodeid
-        self.assertEqual(idx, myid.NamespaceIndex) 
+        self.assertEqual(idx, myid.NamespaceIndex)
 
     def test_server_method(self):
         def func(parent, variant):
@@ -662,10 +663,8 @@ class TestServer(unittest.TestCase, CommonTests):
         self.assertEqual(result, 4.2)
 
 
-
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARN)
 
     sclt = SubHandler()
     unittest.main(verbosity=3)
-

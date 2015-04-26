@@ -14,10 +14,13 @@ from opcua.uaprocessor import UAProcessor
 
 logger = logging.getLogger(__name__)
 
+
 class BinaryServer(Thread):
+
     """
     Socket server forwarding request to internal server
     """
+
     def __init__(self, internal_server, hostname, port):
         Thread.__init__(self)
         self.socket_server = None
@@ -33,10 +36,10 @@ class BinaryServer(Thread):
 
     def run(self):
         logger.warning("Listening on %s:%s", self.hostname, self.port)
-        socketserver.TCPServer.allow_reuse_address = True #get rid of address already in used warning
+        socketserver.TCPServer.allow_reuse_address = True  # get rid of address already in used warning
         self.socket_server = ThreadingTCPServer((self.hostname, self.port), UAHandler)
-        #self.socket_server.daemon_threads = True # this will force a shutdown of all threads, maybe too hard
-        self.socket_server.internal_server = self.iserver #allow handler to acces server properties
+        # self.socket_server.daemon_threads = True # this will force a shutdown of all threads, maybe too hard
+        self.socket_server.internal_server = self.iserver  # allow handler to acces server properties
         with self._cond:
             self._cond.notify_all()
         self.socket_server.serve_forever()
@@ -47,6 +50,7 @@ class BinaryServer(Thread):
 
 
 class UAHandler(socketserver.BaseRequestHandler):
+
     """
     The RequestHandler class for our server.
 
@@ -65,5 +69,3 @@ class UAHandler(socketserver.BaseRequestHandler):
 
 class ThreadingTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
-
-

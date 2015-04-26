@@ -12,14 +12,16 @@ from opcua import ObjectIds
 from opcua import AttributeIds
 from opcua import Event
 
+
 class EventResult():
+
     def __str__(self):
         return "EventResult({})".format([str(k) + ":" + str(v) for k, v in self.__dict__.items()])
     __repr__ = __str__
 
 
-
 class SubscriptionItemData():
+
     def __init__(self):
         self.node = None
         self.client_handle = None
@@ -27,18 +29,20 @@ class SubscriptionItemData():
         self.attribute = None
         self.mfilter = None
 
+
 class Subscription(object):
+
     def __init__(self, server, params, handler):
         self.logger = logging.getLogger(__name__)
         self.server = server
         self._client_handle = 200
         self._handler = handler
-        self.parameters = params #move to data class
+        self.parameters = params  # move to data class
         self._monitoreditems_map = {}
         self._lock = RLock()
         self.subscription_id = None
         response = self.server.create_subscription(params, self.publish_callback)
-        self.subscription_id = response.SubscriptionId #move to data class
+        self.subscription_id = response.SubscriptionId  # move to data class
         self.server.publish()
         self.server.publish()
 
@@ -63,7 +67,7 @@ class Subscription(object):
                 self._call_status(statuschange)
             else:
                 self.logger.warn("Notification type not supported yet for notification %s", notif)
-        
+
         ack = ua.SubscriptionAcknowledgement()
         ack.SubscriptionId = self.subscription_id
         ack.SequenceNumber = publishresult.NotificationMessage.SequenceNumber
@@ -133,7 +137,7 @@ class Subscription(object):
         rv = ua.ReadValueId()
         rv.NodeId = node.nodeid
         rv.AttributeId = attr
-        #rv.IndexRange //We leave it null, then the entire array is returned
+        # rv.IndexRange //We leave it null, then the entire array is returned
         mparams = ua.MonitoringParameters()
         self._client_handle += 1
         mparams.ClientHandle = self._client_handle
@@ -143,7 +147,7 @@ class Subscription(object):
         if mfilter:
             mparams.Filter = mfilter
 
-        mir = ua.MonitoredItemCreateRequest() 
+        mir = ua.MonitoredItemCreateRequest()
         mir.ItemToMonitor = rv
         mir.MonitoringMode = ua.MonitoringMode.Reporting
         mir.RequestedParameters = mparams
@@ -156,7 +160,7 @@ class Subscription(object):
         results = self.server.create_monitored_items(params)
         result = results[0]
         result.StatusCode.check()
-        
+
         data = SubscriptionItemData()
         data.client_handle = mparams.ClientHandle
         data.node = node
@@ -176,6 +180,3 @@ class Subscription(object):
         params.MonitoredItemIds = [handle]
         results = self.server.delete_monitored_items(params)
         results[0].check()
-
-        
-

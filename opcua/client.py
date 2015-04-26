@@ -1,9 +1,9 @@
-from __future__ import division #support for python2
+from __future__ import division  # support for python2
 from threading import Thread, Condition
 import logging
 try:
     from urllib.parse import urlparse
-except ImportError: #support for python2
+except ImportError:  # support for python2
     from urlparse import urlparse
 
 from opcua import uaprotocol as ua
@@ -12,14 +12,16 @@ from opcua import utils
 
 
 class KeepAlive(Thread):
+
     """
     Used by Client to keep session opened.
     OPCUA defines timeout both for sessions and secure channel
     """
+
     def __init__(self, client, timeout):
         Thread.__init__(self)
         self.logger = logging.getLogger(__name__)
-        if timeout == 0: # means no timeout bu we do not trust such servers
+        if timeout == 0:  # means no timeout bu we do not trust such servers
             timeout = 360000
         self.timeout = timeout
         self.client = client
@@ -31,7 +33,7 @@ class KeepAlive(Thread):
         server_state = self.client.get_node(ua.FourByteNodeId(ua.ObjectIds.Server_ServerStatus_State))
         while not self._dostop:
             with self._cond:
-                self._cond.wait(self.timeout/1000)
+                self._cond.wait(self.timeout / 1000)
             if self._dostop:
                 break
             self.logger.debug("renewing channel")
@@ -48,8 +50,9 @@ class KeepAlive(Thread):
 
 
 class Client(object):
+
     """
-    High level client to connect to an OPC-UA server. 
+    High level client to connect to an OPC-UA server.
     This class makes it easy to connect and browse address space.
     It attemps to expose as much functionality as possible
     but if you want to do to special things you will probably need
@@ -57,6 +60,7 @@ class Client(object):
     which offers a raw OPC-UA interface.
 
     """
+
     def __init__(self, url):
         """
         used url argument to connect to server.
@@ -65,8 +69,8 @@ class Client(object):
         """
         self.logger = logging.getLogger(__name__)
         self.server_url = urlparse(url)
-        self.name = "Pure Python Client" 
-        self.description = self.name 
+        self.name = "Pure Python Client"
+        self.description = self.name
         self.application_uri = "urn:freeopcua:client"
         self.product_uri = "urn:freeopcua.github.no:client"
         self.security_policy_uri = "http://opcfoundation.org/UA/SecurityPolicy#None"
@@ -124,7 +128,7 @@ class Client(object):
         Send OPC-UA hello to server
         """
         ack = self.bclient.send_hello(self.server_url.geturl())
-        #FIXME check ack
+        # FIXME check ack
 
     def open_secure_channel(self, renew=False):
         """
@@ -161,14 +165,14 @@ class Client(object):
         params = ua.CreateSessionParameters()
         params.ClientNonce = utils.create_nonce()
         params.ClientCertificate = b''
-        params.ClientDescription = desc 
+        params.ClientDescription = desc
         params.EndpointUrl = self.server_url.geturl()
         params.SessionName = self.description + " Session" + str(self._session_counter)
         params.RequestedSessionTimeout = 3600000
-        params.MaxResponseMessageSize = 0 #means not max size
+        params.MaxResponseMessageSize = 0  # means not max size
         response = self.bclient.create_session(params)
         self.session_timeout = response.RevisedSessionTimeout
-        self.keepalive = KeepAlive(self, min(self.session_timeout, self.secure_channel_timeout) * 0.7) #0.7 is from spec
+        self.keepalive = KeepAlive(self, min(self.session_timeout, self.secure_channel_timeout) * 0.7)  # 0.7 is from spec
         self.keepalive.start()
         return response
 
@@ -224,8 +228,3 @@ class Client(object):
     def get_namespace_index(self, uri):
         uries = self.get_namespace_array()
         return uries.index(uri)
-
-
-
-
-

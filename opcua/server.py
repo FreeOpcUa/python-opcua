@@ -16,6 +16,7 @@ from opcua import Node, Subscription, ObjectIds, Event
 
 
 class Server(object):
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.endpoint = "opc.tcp://localhost:4841/freeopcua/server/"
@@ -26,7 +27,7 @@ class Server(object):
         self.iserver = InternalServer()
         self.bserver = None
 
-        #setup some expected values
+        # setup some expected values
         self.register_namespace(self.server_uri)
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
         sa_node.set_value([self.server_uri])
@@ -38,7 +39,7 @@ class Server(object):
         return self.iserver.get_endpoints()
 
     def _setup_server_nodes(self):
-        #to be called just before starting server since it needs all parameters to be setup
+        # to be called just before starting server since it needs all parameters to be setup
         self._set_endpoints()
 
     def _set_endpoints(self):
@@ -48,9 +49,9 @@ class Server(object):
 
         appdesc = ua.ApplicationDescription()
         appdesc.ApplicationName = ua.LocalizedText(self.name)
-        appdesc.ApplicationUri = self.server_uri 
+        appdesc.ApplicationUri = self.server_uri
         appdesc.ApplicationType = ua.ApplicationType.Server
-        appdesc.ProductUri = self.product_uri 
+        appdesc.ProductUri = self.product_uri
         appdesc.DiscoveryUrls.append(self.endpoint.geturl())
 
         edp = ua.EndpointDescription()
@@ -116,7 +117,7 @@ class Server(object):
         uries = ns_node.get_value()
         uries.append(uri)
         ns_node.set_value(uries)
-        return (len(uries)-1)
+        return (len(uries) - 1)
 
     def get_namespace_index(self, uri):
         uries = self.get_namespace_array()
@@ -124,8 +125,3 @@ class Server(object):
 
     def get_event_object(self, etype=ObjectIds.BaseEventType, source=ObjectIds.Server):
         return Event(self.iserver.isession, etype, source)
-
-
-
-
-

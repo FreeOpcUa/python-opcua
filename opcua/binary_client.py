@@ -12,6 +12,7 @@ import opcua.utils as utils
 
 
 class BinaryClient(object):
+
     """
     low level OPC-UA client.
     implement all(well..one day) methods defined in opcua spec
@@ -19,11 +20,12 @@ class BinaryClient(object):
     in python most of the structures are defined in
     uaprotocol_auto.py and uaprotocol_hand.py
     """
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self._socket = None
         self._do_stop = False
-        self._security_token = ua.ChannelSecurityToken() 
+        self._security_token = ua.ChannelSecurityToken()
         self._authentication_token = ua.NodeId()
         self._sequence_number = 0
         self._request_id = 0
@@ -43,9 +45,9 @@ class BinaryClient(object):
         self._thread.start()
 
     def _send_request(self, request, callback=None, timeout=1000):
-        #HACK to make sure we can convert our request to binary before increasing request counter etc ...
+        # HACK to make sure we can convert our request to binary before increasing request counter etc ...
         request.to_binary()
-        #END HACK
+        # END HACK
         with self._lock:
             request.RequestHeader = self._create_request_header(timeout)
             hdr = ua.Header(ua.MessageType.SecureMessage, ua.ChunkType.Single, self._security_token.ChannelId)
@@ -62,7 +64,7 @@ class BinaryClient(object):
             return data
 
     def _check_answer(self, data, context):
-        data = data.copy(50)#FIXME check max length nodeid + responseheader
+        data = data.copy(50)  # FIXME check max length nodeid + responseheader
         typeid = ua.NodeId.from_binary(data)
         if typeid == ua.FourByteNodeId(ua.ObjectIds.ServiceFault_Encoding_DefaultBinary):
             self.logger.warning("ServiceFault from server received %s", context)
@@ -159,14 +161,13 @@ class BinaryClient(object):
         hdr.RequestId = self._request_id
         return hdr
 
-
     def connect_socket(self, host, port):
         """
         connect to server socket and start receiving thread
         """
         self.logger.info("opening connection")
         self._socket = socket.create_connection((host, port))
-        self._socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)#nodelay ncessary to avoid packing in one frame, some servers do not like it
+        self._socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)  # nodelay ncessary to avoid packing in one frame, some servers do not like it
         self.start()
 
     def disconnect_socket(self):
@@ -183,7 +184,7 @@ class BinaryClient(object):
             self._callbackmap[0] = future
         self._write_socket(header, hello)
         return ua.Acknowledge.from_binary(future.result())
- 
+
     def open_secure_channel(self, params):
         self.logger.info("open_secure_channel")
         request = ua.OpenSecureChannelRequest()
@@ -229,7 +230,7 @@ class BinaryClient(object):
         request.DeleteSubscriptions = deletesubscriptions
         data = self._send_request(request)
         ua.CloseSessionResponse.from_binary(data)
-        #response.ResponseHeader.ServiceResult.check() #disabled, it seems we sent wrong session Id, but where is the sessionId supposed to be sent???
+        # response.ResponseHeader.ServiceResult.check() #disabled, it seems we sent wrong session Id, but where is the sessionId supposed to be sent???
 
     def browse(self, parameters):
         self.logger.info("browse")
@@ -281,7 +282,7 @@ class BinaryClient(object):
         seqhdr = self._create_sequence_header()
         self._write_socket(hdr, symhdr, seqhdr, request)
 
-        #some servers send a response here, most do not ... so we ignore
+        # some servers send a response here, most do not ... so we ignore
 
     def translate_browsepaths_to_nodeids(self, browsepaths):
         self.logger.info("translate_browsepath_to_nodeid")
@@ -315,7 +316,7 @@ class BinaryClient(object):
 
     def publish(self, acks=None):
         self.logger.info("publish")
-        if  acks is None:
+        if acks is None:
             acks = []
         request = ua.PublishRequest()
         request.Parameters.SubscriptionAcknowledgements = acks
@@ -326,9 +327,8 @@ class BinaryClient(object):
         response = ua.PublishResponse.from_binary(future.result())
         try:
             self._publishcallbacks[response.Parameters.SubscriptionId](response.Parameters)
-        except Exception as ex: #we call client code, catch everything!
+        except Exception as ex:  # we call client code, catch everything!
             self.logger.exception("Exception while calling user callback")
-
 
     def create_monitored_items(self, params):
         self.logger.info("create_monitored_items")
@@ -356,14 +356,11 @@ class BinaryClient(object):
         response = ua.AddNodesResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
-    
+
     def call(self, methodstocall):
         request = ua.CallRequest()
-        request.Parameters.MethodsToCall = methodstocall 
+        request.Parameters.MethodsToCall = methodstocall
         data = self._send_request(request)
         response = ua.CallResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
-
-
-

@@ -4,17 +4,21 @@ import pickle
 
 from opcua import ua
 
+
 class AttributeValue(object):
+
     def __init__(self, value):
         self.value = value
-        self.value_callback = None 
-        self.datachange_callbacks = {} 
+        self.value_callback = None
+        self.datachange_callbacks = {}
 
     def __str__(self):
         return "AttributeValue({})".format(self.value)
     __repr__ = __str__
 
+
 class NodeData(object):
+
     def __init__(self, nodeid):
         self.nodeid = nodeid
         self.attributes = {}
@@ -27,6 +31,7 @@ class NodeData(object):
 
 
 class AttributeService(object):
+
     def __init__(self, aspace):
         self.logger = logging.getLogger(__name__)
         self._aspace = aspace
@@ -45,7 +50,9 @@ class AttributeService(object):
             res.append(self._aspace.set_attribute_value(writevalue.NodeId, writevalue.AttributeId, writevalue.Value))
         return res
 
+
 class ViewService(object):
+
     def __init__(self, aspace):
         self.logger = logging.getLogger(__name__)
         self._aspace = aspace
@@ -132,7 +139,7 @@ class ViewService(object):
             current = nodeid
         target = ua.BrowsePathTarget()
         target.TargetId = current
-        target.RemainingPathIndex = 4294967295 
+        target.RemainingPathIndex = 4294967295
         res.Targets = [target]
         return res
 
@@ -140,7 +147,7 @@ class ViewService(object):
         with self._aspace.lock:
             nodedata = self._aspace.nodes[nodeid]
             for ref in nodedata.references:
-                #FIXME: here we should check other arguments!!
+                # FIXME: here we should check other arguments!!
                 if ref.BrowseName == el.TargetName:
                     return ref.NodeId
             self.logger.info("element %s was not found in node %s", el, nodeid)
@@ -148,6 +155,7 @@ class ViewService(object):
 
 
 class NodeManagementService(object):
+
     def __init__(self, aspace):
         self.logger = logging.getLogger(__name__)
         self._aspace = aspace
@@ -167,19 +175,19 @@ class NodeManagementService(object):
                 result.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdExists)
                 return result
             nodedata = NodeData(item.RequestedNewNodeId)
-            #add common attrs
+            # add common attrs
             nodedata.attributes[ua.AttributeIds.NodeId] = AttributeValue(ua.DataValue(ua.Variant(item.RequestedNewNodeId, ua.VariantType.NodeId)))
             nodedata.attributes[ua.AttributeIds.BrowseName] = AttributeValue(ua.DataValue(ua.Variant(item.BrowseName, ua.VariantType.QualifiedName)))
             nodedata.attributes[ua.AttributeIds.NodeClass] = AttributeValue(ua.DataValue(ua.Variant(item.NodeClass, ua.VariantType.Int32)))
-            #add requested attrs
+            # add requested attrs
             self._add_nodeattributes(item.NodeAttributes, nodedata)
-            
-            #add parent
+
+            # add parent
             if item.ParentNodeId == ua.NodeId():
-                #self.logger.warning("add_node: creating node %s without parent", item.RequestedNewNodeId) 
+                #self.logger.warning("add_node: creating node %s without parent", item.RequestedNewNodeId)
                 pass
             elif not item.ParentNodeId in self._aspace.nodes:
-                #self.logger.warning("add_node: while adding node %s, requested parent node %s does not exists", item.RequestedNewNodeId, item.ParentNodeId) 
+                #self.logger.warning("add_node: while adding node %s, requested parent node %s does not exists", item.RequestedNewNodeId, item.ParentNodeId)
                 result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
                 return result
             else:
@@ -192,11 +200,11 @@ class NodeManagementService(object):
                 desc.TypeDefinition = item.TypeDefinition
                 desc.IsForward = True
                 self._aspace.nodes[item.ParentNodeId].references.append(desc)
-           
-            #now add our node to db
+
+            # now add our node to db
             self._aspace.nodes[item.RequestedNewNodeId] = nodedata
 
-            #add type definition
+            # add type definition
             if item.TypeDefinition != ua.NodeId():
                 addref = ua.AddReferencesItem()
                 addref.SourceNodeId = item.RequestedNewNodeId
@@ -230,10 +238,10 @@ class NodeManagementService(object):
             rdesc.NodeClass = addref.TargetNodeClass
             bname = self._aspace.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.BrowseName).Value.Value
             if bname:
-                rdesc.BrowseName = bname 
+                rdesc.BrowseName = bname
             dname = self._aspace.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.DisplayName).Value.Value
             if dname:
-                rdesc.DisplayName = dname 
+                rdesc.DisplayName = dname
             self._aspace.nodes[addref.SourceNodeId].references.append(rdesc)
             return ua.StatusCode()
 
@@ -241,7 +249,7 @@ class NodeManagementService(object):
         if item.SpecifiedAttributes & getattr(ua.NodeAttributesMask, name):
             dv = ua.DataValue(ua.Variant(getattr(item, name), vtype))
             nodedata.attributes[getattr(ua.AttributeIds, name)] = AttributeValue(dv)
-        
+
     def _add_nodeattributes(self, item, nodedata):
         item = ua.downcast_extobject(item)
         self._add_node_attr(item, nodedata, "AccessLevel", ua.VariantType.Byte)
@@ -270,6 +278,7 @@ class NodeManagementService(object):
 
 
 class MethodService(object):
+
     def __init__(self, aspace):
         self.logger = logging.getLogger(__name__)
         self._aspace = aspace
@@ -281,9 +290,9 @@ class MethodService(object):
                 results.append(self._call(method))
         return results
 
-    def _call(self, method):                
+    def _call(self, method):
         res = ua.CallMethodResult()
-        if method.ObjectId not in self._aspace.nodes or method.MethodId not in self._aspace.nodes: 
+        if method.ObjectId not in self._aspace.nodes or method.MethodId not in self._aspace.nodes:
             res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
         else:
             node = self._aspace.nodes[method.MethodId]
@@ -298,19 +307,21 @@ class MethodService(object):
                     self.logger.exception("Error executing method call %s, an exception was raised: ", method)
                     res.StatusCode = ua.StatusCode(ua.StatusCodes.BadUnexpectedError)
         return res
-           
+
 
 class AddressSpace(object):
+
     """
     The address space object stores all the nodes og the OPC-UA server
     and helper methods.
     It is NOT threadsafe, lock the lock object before reading of modifying
     a node
     """
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.nodes = {}
-        self.lock = RLock() #FIXME: should use multiple reader, one writter pattern
+        self.lock = RLock()  # FIXME: should use multiple reader, one writter pattern
         self._datachange_callback_counter = 200
         self._handle_to_attribute_map = {}
 
@@ -386,13 +397,3 @@ class AddressSpace(object):
         with self.lock:
             node = self.nodes[methodid]
             node.call = callback
-
-
-
-
-
-
-
-            
-            
-

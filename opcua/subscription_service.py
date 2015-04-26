@@ -8,7 +8,9 @@ import logging
 
 from opcua import ua
 
+
 class SubscriptionService(object):
+
     def __init__(self, loop, aspace):
         self.logger = logging.getLogger(__name__)
         self.loop = loop
@@ -90,7 +92,7 @@ class SubscriptionService(object):
     def republish(self, params):
         with self._lock:
             if not params.SubscriptionId in self.subscriptions:
-                #what should I do?
+                # what should I do?
                 return ua.NotificationMessage()
             return self.subscriptions[params.SubscriptionId].republish(params.RetransmitSequenceNumber)
 
@@ -100,17 +102,18 @@ class SubscriptionService(object):
                 sub.trigger_event(event)
 
 
-
 class MonitoredItemData(object):
+
     def __init__(self):
         self.client_handle = None
         self.callback_handle = None
         self.monitored_item_id = None
         self.parameters = None
         self.mode = None
-            
+
 
 class InternalSubscription(object):
+
     def __init__(self, manager, data, addressspace, callback):
         self.logger = logging.getLogger(__name__)
         self.aspace = addressspace
@@ -128,18 +131,18 @@ class InternalSubscription(object):
         self._triggered_statuschanges = []
         self._notification_seq = 1
         self._not_acknowledged_results = {}
-        self._startup = True 
+        self._startup = True
         self._keep_alive_count = 0
         self._publish_cycles_count = 0
         self._stopev = False
-        
+
     def __str__(self):
         return "Subscription(id:{})".format(self.data.SubscriptionId)
 
     def start(self):
         self.logger.debug("starting subscription %s", self.data.SubscriptionId)
         self._subscription_loop()
-    
+
     def stop(self):
         self.logger.debug("stopping subscription %s", self.data.SubscriptionId)
         self._stopev = True
@@ -151,7 +154,7 @@ class InternalSubscription(object):
     def _subscription_loop(self):
         #self.logger.debug("%s loop", self)
         if not self._stopev:
-            self.manager.loop.call_later(self.data.RevisedPublishingInterval/1000.0, self._sub_loop)
+            self.manager.loop.call_later(self.data.RevisedPublishingInterval / 1000.0, self._sub_loop)
 
     def _sub_loop(self):
         self.publish_results()
@@ -167,14 +170,14 @@ class InternalSubscription(object):
             self._keep_alive_count += 1
             return False
 
-    def publish_results(self): 
+    def publish_results(self):
         if self._publish_cycles_count > self.data.RevisedLifetimeCount:
             self.logger.warn("Subscription %s has expired, publish cycle count(%s) > lifetime count (%s)", self, self._publish_cycles_count, self.data.RevisedLifetimeCount)
-            #FIXME this will never be send since we do not have publish request anyway
-            self.trigger_statuschange(ua.StatusCode(ua.StatusCodes.BadTimeout)) 
+            # FIXME this will never be send since we do not have publish request anyway
+            self.trigger_statuschange(ua.StatusCode(ua.StatusCodes.BadTimeout))
             self._stopev = True
         with self._lock:
-            if self.has_published_results(): #FIXME: should we pop a publish request here? or we do not care?
+            if self.has_published_results():  # FIXME: should we pop a publish request here? or we do not care?
                 self._publish_cycles_count += 1
                 result = self._pop_publish_result()
                 self.callback(result)
@@ -185,7 +188,7 @@ class InternalSubscription(object):
         if self._triggered_datachanges:
             notif = ua.DataChangeNotification()
             notif.MonitoredItems = self._triggered_datachanges[:]
-            self._triggered_datachanges = [] 
+            self._triggered_datachanges = []
             self.logger.debug("sending datachanges nontification with %s events", len(notif.MonitoredItems))
             result.NotificationMessage.NotificationData.append(notif)
         if self._triggered_events:
@@ -205,7 +208,7 @@ class InternalSubscription(object):
         result.AvailableSequenceNumbers = list(self._not_acknowledged_results.keys())
         self._not_acknowledged_results[result.NotificationMessage.SequenceNumber] = result
         return result
-    
+
     def trigger_statuschange(self, code):
         self._triggered_statuschanges.append(code)
 
@@ -248,11 +251,11 @@ class InternalSubscription(object):
                 result = ua.MonitoredItemCreateResult()
                 if mdata.monitored_item_id == params.MonitoredItemId:
                     result.RevisedSamplingInterval = self.data.RevisedPublishingInterval
-                    result.RevisedQueueSize = ua.downcast_extobject(params.RequestedParameters.QueueSize) #FIXME check and use value
+                    result.RevisedQueueSize = ua.downcast_extobject(params.RequestedParameters.QueueSize)  # FIXME check and use value
                     result.FilterResult = params.RequestedParameters.Filter
                     mdata.parameters = result
                     return result
-            #FIXME modify event subscriptions
+            # FIXME modify event subscriptions
             result = ua.MonitoredItemCreateResult()
             result.StatusCode(ua.StatusCodes.BadMonitoredItemIdInvalid)
             return result
@@ -261,7 +264,7 @@ class InternalSubscription(object):
         with self._lock:
             result = ua.MonitoredItemCreateResult()
             result.RevisedSamplingInterval = self.data.RevisedPublishingInterval
-            result.RevisedQueueSize = params.RequestedParameters.QueueSize #FIXME check and use value
+            result.RevisedQueueSize = params.RequestedParameters.QueueSize  # FIXME check and use value
             result.FilterResult = ua.downcast_extobject(params.RequestedParameters.Filter)
             self._monitored_item_counter += 1
             result.MonitoredItemId = self._monitored_item_counter
@@ -271,7 +274,7 @@ class InternalSubscription(object):
             mdata.parameters = result
             mdata.mode = params.MonitoringMode
             mdata.client_handle = params.RequestedParameters.ClientHandle
-            mdata.monitored_item_id = result.MonitoredItemId 
+            mdata.monitored_item_id = result.MonitoredItemId
 
             self._monitored_items[result.MonitoredItemId] = mdata
 
@@ -284,7 +287,7 @@ class InternalSubscription(object):
                 self.logger.debug("adding callback return status %s and handle %s", result.StatusCode, handle)
                 mdata.callback_handle = handle
                 self._monitored_datachange[handle] = result.MonitoredItemId
-                #force data change event generation
+                # force data change event generation
                 self.trigger_datachange(handle, params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
 
             return result
@@ -311,7 +314,6 @@ class InternalSubscription(object):
                 break
         self._monitored_items.pop(mid)
         return ua.StatusCode()
-
 
     def datachange_callback(self, handle, value):
         self.logger.info("subscription %s: datachange callback called with handle '%s' and value '%s'", self, handle, value.Value)
@@ -354,9 +356,3 @@ class InternalSubscription(object):
             except AttributeError:
                 fields.append(ua.Variant())
         return fields
-
-
-
-
-
-

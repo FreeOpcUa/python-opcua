@@ -10,7 +10,7 @@ from threading import Thread
 from enum import Enum
 import functools
 try:
-    #we prefer to use bundles asyncio version, otherwise fallback to trollius
+    # we prefer to use bundles asyncio version, otherwise fallback to trollius
     import asyncio
 except ImportError:
     import trollius as asyncio
@@ -30,6 +30,7 @@ from opcua import standard_address_space
 
 
 class ThreadLoop(Thread):
+
     def __init__(self):
         Thread.__init__(self)
         self.logger = logging.getLogger(__name__)
@@ -69,7 +70,9 @@ class SessionState(Enum):
     Activated = 1
     Closed = 2
 
+
 class InternalServer(object):
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.endpoints = []
@@ -81,13 +84,13 @@ class InternalServer(object):
         self.method_service = MethodService(self.aspace)
         self.node_mgt_service = NodeManagementService(self.aspace)
         standard_address_space.fill_address_space(self.node_mgt_service)
-        #standard_address_space.fill_address_space_from_disk(self.aspace)
+        # standard_address_space.fill_address_space_from_disk(self.aspace)
 
         self.loop = ThreadLoop()
         self.subcsription_service = SubscriptionService(self.loop, self.aspace)
 
         # create a session to use on server side
-        self.isession = InternalSession(self, self.aspace, self.subcsription_service, "Internal") 
+        self.isession = InternalSession(self, self.aspace, self.subcsription_service, "Internal")
         self._timer = None
         self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
         uries = ["http://opcfoundation.org/UA/"]
@@ -100,7 +103,7 @@ class InternalServer(object):
     def dump_address_space(self, path):
         self.aspace.dump(path)
 
-    def start(self): 
+    def start(self):
         self.logger.info("starting internal server")
         self.loop.start()
         Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_State)).set_value(0)
@@ -124,15 +127,17 @@ class InternalServer(object):
 
     def get_endpoints(self, params=None):
         self.logger.info("get endpoint")
-        #FIXME check params
+        # FIXME check params
         return self.endpoints[:]
-    
+
     def create_session(self, name):
         return InternalSession(self, self.aspace, self.subcsription_service, name)
+
 
 class InternalSession(object):
     _counter = 10
     _auth_counter = 1000
+
     def __init__(self, internal_server, aspace, submgr, name):
         self.logger = logging.getLogger(__name__)
         self.iserver = internal_server
@@ -144,14 +149,14 @@ class InternalSession(object):
         InternalSession._counter += 1
         self.authentication_token = ua.NodeId(self._auth_counter)
         InternalSession._auth_counter += 1
-        self.nonce = utils.create_nonce() 
+        self.nonce = utils.create_nonce()
         self.subscriptions = []
         self.logger.warning("Created internal session %s", self.name)
         self._lock = Lock()
 
     def __str__(self):
         return "InternalSession(name:{}, id:{}, auth_token:{})".format(self.name, self.session_id, self.authentication_token)
- 
+
     def get_endpoints(self, params=None):
         return self.iserver.get_endpoints(params)
 
@@ -160,7 +165,7 @@ class InternalSession(object):
 
         result = ua.CreateSessionResult()
         result.SessionId = self.session_id
-        result.AuthenticationToken = self.authentication_token 
+        result.AuthenticationToken = self.authentication_token
         result.RevisedSessionTimeout = params.RequestedSessionTimeout
         result.MaxRequestMessageSize = 65536
         result.ServerNonce = self.nonce
@@ -230,10 +235,8 @@ class InternalSession(object):
 
     def delete_monitored_items(self, params):
         return self.subscription_service.delete_monitored_items(params)
- 
+
     def publish(self, acks=None):
         if acks is None:
             acks = []
         return self.subscription_service.publish(acks)
-
-

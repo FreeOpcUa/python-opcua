@@ -3,10 +3,13 @@ import logging
 from opcua import Client
 from opcua import uaprotocol as ua
 
+
 class SubHandler(object):
+
     """
     Client to subscription. It will receive events from server
     """
+
     def data_change(self, handle, node, val, attr):
         print("Python: New data change event", handle, node, val, attr)
 
@@ -14,8 +17,7 @@ class SubHandler(object):
         print("Python: New event", handle, event)
 
 
-
-if __name__ == "__main__": 
+if __name__ == "__main__":
     from IPython import embed
     logging.basicConfig(level=logging.WARN)
     client = Client("opc.tcp://localhost:53530/OPCUA/SimulationServer/")
@@ -33,7 +35,7 @@ if __name__ == "__main__":
         myuint64 = client.get_node("ns=4;s=UInt64")
         myint32 = client.get_node("ns=4;s=Int32")
         myuint32 = client.get_node("ns=4;s=UInt32")
- 
+
         var = client.get_node(ua.NodeId("Random1", 5))
         print("var is: ", var)
         print("value of var is: ", var.get_value())
@@ -41,7 +43,6 @@ if __name__ == "__main__":
         print("setting float value")
         myfloat.set_value(ua.Variant(1.234, ua.VariantType.Float))
         print("reading float value: ", myfloat.get_value())
-
 
         handler = SubHandler()
         sub = client.create_subscription(500, handler)
@@ -51,7 +52,6 @@ if __name__ == "__main__":
         method = device.get_child("2:MyMethod")
         result = device.call_method(method, ua.Variant("sin"), ua.Variant(180, ua.VariantType.Double))
         print("Mehtod result is: ", result)
-
 
         embed()
         client.close_session()

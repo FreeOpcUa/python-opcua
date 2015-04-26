@@ -5,7 +5,6 @@ from opcua.uaprotocol_auto import *
 from opcua.uaprotocol_hand import *
 
 
-
 # FIXME: this is really crappy, should thing about a better implementation
 # maybe never inherit extensionobject and parse only body....
 def downcast_extobject(item):
@@ -15,5 +14,3 @@ def downcast_extobject(item):
     classname = objectidname.split("_")[0]
     cmd = "{}.from_binary(utils.Buffer(item.to_binary()))".format(classname)
     return eval(cmd)
-
-

@@ -10,22 +10,25 @@ if sys.version_info.major > 2:
     unicode = str
 
 import uuid
-import struct 
+import struct
 
 import opcua.status_code as status_code
 from opcua.object_ids import ObjectIds
 
 logger = logging.getLogger('opcua.uaprotocol')
 
-#types that will packed and unpacked directly using struct (string, bytes and datetime are handles as special cases
+# types that will packed and unpacked directly using struct (string, bytes and datetime are handles as special cases
 UaTypes = ("Boolean", "SByte", "Byte", "Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double")
 
 
 EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
 HUNDREDS_OF_NANOSECONDS = 10000000
 
+
 class UTC(tzinfo):
+
     """UTC"""
+
     def utcoffset(self, dt):
         return timedelta(0)
 
@@ -36,12 +39,13 @@ class UTC(tzinfo):
         return timedelta(0)
 
 
-#methods copied from  David Buxton <david@gasmark6.com> sample code
+# methods copied from  David Buxton <david@gasmark6.com> sample code
 def datetime_to_win_epoch(dt):
     if (dt.tzinfo is None) or (dt.tzinfo.utcoffset(dt) is None):
         dt = dt.replace(tzinfo=UTC())
     ft = EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
     return ft + (dt.microsecond * 10)
+
 
 def win_epoch_to_datetime(epch):
     (s, ns100) = divmod(epch - EPOCH_AS_FILETIME, HUNDREDS_OF_NANOSECONDS)
@@ -49,11 +53,10 @@ def win_epoch_to_datetime(epch):
         # TDA, this generates exceptions on systems where RTC is really off
         dt = datetime.utcfromtimestamp(s)
     except:
-        logger.debug("Exception occurred during conversion within 'win_epoch_to_datetime'." )
+        logger.debug("Exception occurred during conversion within 'win_epoch_to_datetime'.")
         return datetime.now()
     dt = dt.replace(microsecond=(ns100 // 10))
     return dt
-
 
 
 def uatype_to_fmt(uatype):
@@ -90,6 +93,7 @@ def uatype_to_fmt(uatype):
     else:
         raise Exception("Error unknown uatype: " + uatype)
 
+
 def pack_uatype_array(uatype, value):
     if value is None:
         return struct.pack("<i", -1)
@@ -98,6 +102,7 @@ def pack_uatype_array(uatype, value):
     for val in value:
         b.append(pack_uatype(uatype, val))
     return b"".join(b)
+
 
 def pack_uatype(uatype, value):
     if uatype == "Null":
@@ -114,6 +119,7 @@ def pack_uatype(uatype, value):
         return struct.pack(fmt, value)
     else:
         return value.to_binary()
+
 
 def unpack_uatype(uatype, data):
     if uatype == "String":
@@ -132,6 +138,7 @@ def unpack_uatype(uatype, data):
         tmp = eval(code)
         return tmp
 
+
 def unpack_uatype_array(uatype, data):
     length = struct.unpack('<i', data.read(4))[0]
     if length == -1:
@@ -142,15 +149,17 @@ def unpack_uatype_array(uatype, data):
             result.append(unpack_uatype(uatype, data))
         return result
 
+
 def pack_string(string):
     length = len(string)
     if length == 0:
-        return struct.pack("<i", -1) 
-    if not type(string) is bytes:
+        return struct.pack("<i", -1)
+    if not isinstance(string, bytes):
         string = string.encode()
     return struct.pack("<i", length) + string
 
 pack_bytes = pack_string
+
 
 def unpack_bytes(data):
     length = struct.unpack("<i", data.read(4))[0]
@@ -158,15 +167,18 @@ def unpack_bytes(data):
         return b''
     return data.read(length)
 
+
 def unpack_string(data):
     b = unpack_bytes(data)
     if sys.version_info.major < 3:
         return str(b)
     return b.decode("utf-8")
 
+
 def test_bit(data, offset):
     mask = 1 << offset
     return data & mask
+
 
 def set_bit(data, offset):
     mask = 1 << offset
@@ -174,11 +186,13 @@ def set_bit(data, offset):
 
 
 class FrozenClass(object):
+
     """
     make it impossible to add members to a class.
     This is a hack since I found out that most bugs are due to misspelling a variable in protocol
     """
     __isfrozen = False
+
     def __setattr__(self, key, value):
         if self.__isfrozen and not hasattr(self, key):
             raise TypeError("Error adding member '{}' to class '{}', class is frozen, members are {}".format(key, self.__class__.__name__, self.__dict__.keys()))
@@ -189,11 +203,12 @@ class FrozenClass(object):
 
 
 class Guid(object):
+
     def __init__(self):
         self.uuid = uuid.uuid4()
 
     def to_binary(self):
-        return self.uuid.bytes 
+        return self.uuid.bytes
 
     @staticmethod
     def from_binary(data):
@@ -204,7 +219,9 @@ class Guid(object):
     def __eq__(self, other):
         return isinstance(other, Guid) and self.uuid == other.uuid
 
+
 class StatusCode(object):
+
     def __init__(self, value=0):
         self.value = value
         self.name, self.doc = status_code.get_name_and_doc(value)
@@ -212,7 +229,7 @@ class StatusCode(object):
     def to_binary(self):
         return struct.pack("<I", self.value)
 
-    @staticmethod 
+    @staticmethod
     def from_binary(data):
         val = struct.unpack("<I", data.read(4))[0]
         sc = StatusCode(val)
@@ -226,6 +243,7 @@ class StatusCode(object):
         return 'StatusCode({})'.format(self.name)
     __repr__ = __str__
 
+
 class NodeIdType(object):
     TwoByte = 0
     FourByte = 1
@@ -236,6 +254,7 @@ class NodeIdType(object):
 
 
 class NodeId(object):
+
     def __init__(self, identifier=None, namespaceidx=0, nodeidtype=None):
         self.Identifier = identifier
         self.NamespaceIndex = namespaceidx
@@ -247,17 +266,17 @@ class NodeId(object):
             self.NodeIdType = NodeIdType.TwoByte
             return
         if self.NodeIdType is None:
-            if type(self.Identifier) == int:
+            if isinstance(self.Identifier, int):
                 self.NodeIdType = NodeIdType.Numeric
-            elif type(self.Identifier) == str:
+            elif isinstance(self.Identifier, str):
                 self.NodeIdType = NodeIdType.String
-            elif type(self.Identifier) == bytes:
+            elif isinstance(self.Identifier, bytes):
                 self.NodeIdType = NodeIdType.ByteString
             else:
                 raise Exception("NodeId: Could not guess type of NodeId, set NodeIdType")
 
     def __key(self):
-        if self.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric):#twobyte, fourbyte and numeric may represent the same node
+        if self.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric):  # twobyte, fourbyte and numeric may represent the same node
             return self.NamespaceIndex, self.Identifier
         else:
             return self.NodeIdType, self.NamespaceIndex, self.Identifier
@@ -307,7 +326,6 @@ class NodeId(object):
         nodeid.ServerIndex = srv
         return nodeid
 
-
     def to_string(self):
         string = ""
         if self.NamespaceIndex != 0:
@@ -318,9 +336,9 @@ class NodeId(object):
         elif self.NodeIdType == NodeIdType.String:
             ntype = "s"
         elif self.NodeIdType == NodeIdType.TwoByte:
-            ntype = "i" 
+            ntype = "i"
         elif self.NodeIdType == NodeIdType.FourByte:
-            ntype = "i" 
+            ntype = "i"
         elif self.NodeIdType == NodeIdType.Guid:
             ntype = "g"
         elif self.NodeIdType == NodeIdType.ByteString:
@@ -330,7 +348,7 @@ class NodeId(object):
             string = "srv=" + str(self.ServerIndex) + string
         if self.NamespaceUri:
             string += "nsu={}".format(self.NamespaceUri)
-        return string 
+        return string
 
     def __str__(self):
         return "NodeId({})".format(self.to_string())
@@ -384,39 +402,52 @@ class NodeId(object):
 
         return nid
 
+
 class TwoByteNodeId(NodeId):
+
     def __init__(self, identifier):
         NodeId.__init__(self, identifier, 0, NodeIdType.TwoByte)
 
+
 class FourByteNodeId(NodeId):
+
     def __init__(self, identifier, namespace=0):
         NodeId.__init__(self, identifier, namespace, NodeIdType.FourByte)
 
+
 class NumericNodeId(NodeId):
+
     def __init__(self, identifier, namespace=0):
         NodeId.__init__(self, identifier, namespace, NodeIdType.Numeric)
 
+
 class ByteStringNodeId(NodeId):
+
     def __init__(self, identifier, namespace=0):
         NodeId.__init__(self, identifier, namespace, NodeIdType.ByteString)
 
+
 class GuidNodeId(NodeId):
+
     def __init__(self, identifier, namespace=0):
         NodeId.__init__(self, identifier, namespace, NodeIdType.Guid)
 
+
 class StringNodeId(NodeId):
+
     def __init__(self, identifier, namespace=0):
         NodeId.__init__(self, identifier, namespace, NodeIdType.String)
 
 
-
-
 ExpandedNodeId = NodeId
 
+
 class QualifiedName(object):
+
     '''
     A string qualified with a namespace index.
     '''
+
     def __init__(self, name="", namespaceidx=0):
         self.NamespaceIndex = namespaceidx
         self.Name = name
@@ -432,14 +463,14 @@ class QualifiedName(object):
             idx = 0
             name = string
         return QualifiedName(name, int(idx))
-    
+
     def to_binary(self):
         packet = []
         fmt = '<H'
         packet.append(struct.pack(fmt, self.NamespaceIndex))
         packet.append(pack_string(self.Name))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
         obj = QualifiedName()
@@ -447,38 +478,43 @@ class QualifiedName(object):
         obj.NamespaceIndex = struct.unpack(fmt, data.read(2))[0]
         obj.Name = unpack_string(data)
         return obj
-    
+
     def __eq__(self, bname):
         return isinstance(bname, QualifiedName) and self.Name == bname.Name and self.NamespaceIndex == bname.NamespaceIndex
 
     def __str__(self):
         return 'QualifiedName({}:{})'.format(self.NamespaceIndex, self.Name)
-    
+
     __repr__ = __str__
 
 
 class LocalizedText(FrozenClass):
+
     '''
     A string qualified with a namespace index.
     '''
+
     def __init__(self, text=""):
         self.Encoding = 0
         self.Text = text.encode()
-        if self.Text: self.Encoding |= (1 << 1)
+        if self.Text:
+            self.Encoding |= (1 << 1)
         self.Locale = b''
         self._freeze()
-    
+
     def to_binary(self):
         packet = []
-        if self.Locale: self.Encoding |= (1 << 0)
-        if self.Text: self.Encoding |= (1 << 1)
+        if self.Locale:
+            self.Encoding |= (1 << 0)
+        if self.Text:
+            self.Encoding |= (1 << 1)
         packet.append(pack_uatype('UInt8', self.Encoding))
-        if self.Locale: 
+        if self.Locale:
             packet.append(pack_uatype('CharArray', self.Locale))
-        if self.Text: 
+        if self.Text:
             packet.append(pack_uatype('CharArray', self.Text))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
         obj = LocalizedText()
@@ -488,11 +524,11 @@ class LocalizedText(FrozenClass):
         if obj.Encoding & (1 << 1):
             obj.Text = unpack_uatype('CharArray', data)
         return obj
-    
+
     def __str__(self):
         return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', '  + \
-             'Locale:' + str(self.Locale) + ', '  + \
-             'Text:' + str(self.Text) + ')'
+            'Locale:' + str(self.Locale) + ', '  + \
+            'Text:' + str(self.Text) + ')'
     __repr__ = __str__
 
     def __eq__(self, other):
@@ -502,23 +538,26 @@ class LocalizedText(FrozenClass):
 
 
 class ExtensionObject(FrozenClass):
+
     '''
     '''
+
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
         self.Body = b''
         self._freeze()
-    
+
     def to_binary(self):
         packet = []
-        if self.Body: self.Encoding |= (1 << 0)
+        if self.Body:
+            self.Encoding |= (1 << 0)
         packet.append(self.TypeId.to_binary())
         packet.append(pack_uatype('UInt8', self.Encoding))
-        if self.Body: 
+        if self.Body:
             packet.append(pack_uatype('ByteString', self.Body))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
         obj = ExtensionObject()
@@ -538,13 +577,14 @@ class ExtensionObject(FrozenClass):
 
     def __str__(self):
         return 'ExtensionObject(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'Body:' + str(self.Body) + ')'
-    
+            'Encoding:' + str(self.Encoding) + ', '  + \
+            'Body:' + str(self.Body) + ')'
+
     __repr__ = __str__
 
 
 class VariantType(Enum):
+
     '''
     The possible types of a variant.
     '''
@@ -575,13 +615,16 @@ class VariantType(Enum):
     Variant = 24
     DiagnosticInfo = 25
 
+
 class Variant(object):
+
     """
     Create an OPC-UA Variant object.
     if no argument a Null Variant is created.
     if not variant type is given, attemps to guess type from python type
     if a variant is given as value, the new objects becomes a copy of the argument
     """
+
     def __init__(self, value=None, varianttype=None):
         self.Encoding = 0
         self.Value = value
@@ -605,17 +648,17 @@ class Variant(object):
     def _guess_type(self, val):
         if val is None:
             return VariantType.Null
-        elif type(val) == float:
+        elif isinstance(val, float):
             return VariantType.Double
-        elif type(val) == int:
+        elif isinstance(val, int):
             return VariantType.Int64
         elif type(val) in (str, unicode):
             return VariantType.String
-        elif type(val) == bytes:
+        elif isinstance(val, bytes):
             return VariantType.ByteString
-        elif type(val) == datetime:
+        elif isinstance(val, datetime):
             return VariantType.DateTime
-        elif type(val) == bool:
+        elif isinstance(val, bool):
             # TDA, added this because it was missing and causes exceptions when 'bool' type is used
             return VariantType.Boolean
         else:
@@ -656,44 +699,52 @@ class Variant(object):
 
 
 class DataValue(object):
+
     '''
     A value with an associated timestamp, and quality.
     Automatically generated from xml , copied and modified here to fix errors in xml spec
     '''
+
     def __init__(self, variant=None):
         self.Encoding = 0
-        if not type(variant) is Variant:
+        if not isinstance(variant, Variant):
             variant = Variant(variant)
         self.Value = variant
         self.StatusCode = StatusCode()
-        self.SourceTimestamp = datetime.now()#DateTime()
+        self.SourceTimestamp = datetime.now()  # DateTime()
         self.SourcePicoseconds = 0
-        self.ServerTimestamp = datetime.now()#DateTime()
+        self.ServerTimestamp = datetime.now()  # DateTime()
         self.ServerPicoseconds = 0
-    
+
     def to_binary(self):
         packet = []
-        if self.Value: self.Encoding |= (1 << 0)
-        if self.StatusCode: self.Encoding |= (1 << 1)
-        if self.SourceTimestamp: self.Encoding |= (1 << 2)
-        if self.ServerTimestamp: self.Encoding |= (1 << 3)
-        if self.SourcePicoseconds: self.Encoding |= (1 << 4)
-        if self.ServerPicoseconds: self.Encoding |= (1 << 5)
+        if self.Value:
+            self.Encoding |= (1 << 0)
+        if self.StatusCode:
+            self.Encoding |= (1 << 1)
+        if self.SourceTimestamp:
+            self.Encoding |= (1 << 2)
+        if self.ServerTimestamp:
+            self.Encoding |= (1 << 3)
+        if self.SourcePicoseconds:
+            self.Encoding |= (1 << 4)
+        if self.ServerPicoseconds:
+            self.Encoding |= (1 << 5)
         packet.append(pack_uatype('UInt8', self.Encoding))
-        if self.Value: 
+        if self.Value:
             packet.append(self.Value.to_binary())
-        if self.StatusCode: 
+        if self.StatusCode:
             packet.append(self.StatusCode.to_binary())
-        if self.SourceTimestamp: 
-            packet.append(pack_uatype('DateTime', self.SourceTimestamp))#self.SourceTimestamp.to_binary())
-        if self.ServerTimestamp: 
-            packet.append(pack_uatype('DateTime', self.ServerTimestamp))#self.ServerTimestamp.to_binary())
-        if self.SourcePicoseconds: 
+        if self.SourceTimestamp:
+            packet.append(pack_uatype('DateTime', self.SourceTimestamp))  # self.SourceTimestamp.to_binary())
+        if self.ServerTimestamp:
+            packet.append(pack_uatype('DateTime', self.ServerTimestamp))  # self.ServerTimestamp.to_binary())
+        if self.SourcePicoseconds:
             packet.append(pack_uatype('UInt16', self.SourcePicoseconds))
-        if self.ServerPicoseconds: 
+        if self.ServerPicoseconds:
             packet.append(pack_uatype('UInt16', self.ServerPicoseconds))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
         obj = DataValue()
@@ -703,27 +754,22 @@ class DataValue(object):
         if obj.Encoding & (1 << 1):
             obj.StatusCode = StatusCode.from_binary(data)
         if obj.Encoding & (1 << 2):
-            obj.SourceTimestamp = unpack_uatype('DateTime', data)#DateTime.from_binary(data)
+            obj.SourceTimestamp = unpack_uatype('DateTime', data)  # DateTime.from_binary(data)
         if obj.Encoding & (1 << 3):
-            obj.ServerTimestamp = unpack_uatype('DateTime', data)#DateTime.from_binary(data)
+            obj.ServerTimestamp = unpack_uatype('DateTime', data)  # DateTime.from_binary(data)
         if obj.Encoding & (1 << 4):
             obj.SourcePicoseconds = unpack_uatype('UInt16', data)
         if obj.Encoding & (1 << 5):
             obj.ServerPicoseconds = unpack_uatype('UInt16', data)
         return obj
-    
+
     def __str__(self):
         return 'DataValue(' + 'Encoding:' + str(self.Encoding) + ', ' + \
-             'Value:' + str(self.Value) + ', ' + \
-             'StatusCode:' + str(self.StatusCode) + ', '  + \
-             'SourceTimestamp:' + str(self.SourceTimestamp) + ', ' + \
-             'ServerTimestamp:' + str(self.ServerTimestamp) + ', ' + \
-             'SourcePicoseconds:' + str(self.SourcePicoseconds) + ', ' + \
-             'ServerPicoseconds:' + str(self.ServerPicoseconds) + ')'
-    
+            'Value:' + str(self.Value) + ', ' + \
+            'StatusCode:' + str(self.StatusCode) + ', '  + \
+            'SourceTimestamp:' + str(self.SourceTimestamp) + ', ' + \
+            'ServerTimestamp:' + str(self.ServerTimestamp) + ', ' + \
+            'SourcePicoseconds:' + str(self.SourcePicoseconds) + ', ' + \
+            'ServerPicoseconds:' + str(self.ServerPicoseconds) + ')'
+
     __repr__ = __str__
-
-
-
-        
-

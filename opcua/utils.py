@@ -3,10 +3,12 @@ import uuid
 
 
 class Buffer(object):
+
     """
     alternative to io.BytesIO making debug easier
     and added a few conveniance methods
     """
+
     def __init__(self, data):
         self.logger = logging.getLogger(__name__)
         self.data = data
@@ -45,8 +47,6 @@ class Buffer(object):
         return self.data[:size]
 
 
-
-
 def recv_all(socket, size):
     """
     Receive up to size bytes from socket
@@ -60,6 +60,6 @@ def recv_all(socket, size):
         size -= len(chunk)
     return data
 
-def create_nonce():
-    return uuid.uuid4().bytes + uuid.uuid4().bytes #seems we need at least 32 bytes not 16 as python gives us...
 
+def create_nonce():
+    return uuid.uuid4().bytes + uuid.uuid4().bytes  # seems we need at least 32 bytes not 16 as python gives us...

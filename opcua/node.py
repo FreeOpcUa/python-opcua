@@ -1,15 +1,18 @@
 """
-High level node object, to access node attribute 
+High level node object, to access node attribute
 and browse address space
 """
 
 import opcua.uaprotocol as ua
 
+
 class Node(object):
+
     """
     High level node object, to access node attribute,
     browse and populate address space
     """
+
     def __init__(self, server, nodeid):
         self.server = server
         self.nodeid = None
@@ -21,6 +24,7 @@ class Node(object):
             self.nodeid = ua.NodeId(nodeid, 0)
         else:
             raise Exception("argument to node must be a NodeId object or a string defining a nodeid found {} of type {}".format(nodeid, type(nodeid)))
+
     def __eq__(self, other):
         if isinstance(other, Node) and self.nodeid == other.nodeid:
             return True
@@ -61,7 +65,7 @@ class Node(object):
 
     def get_value(self):
         """
-        Get value of a node. Only variables(properties) have values. 
+        Get value of a node. Only variables(properties) have values.
         An exception will be generated for other node types.
         """
         result = self.get_attribute(ua.AttributeIds.Value)
@@ -69,11 +73,11 @@ class Node(object):
 
     def set_value(self, value, varianttype=None):
         """
-        Set value of a node. Only variables(properties) have values. 
+        Set value of a node. Only variables(properties) have values.
         An exception will be generated for other node types.
         """
         variant = None
-        if type(value) == ua.Variant:
+        if isinstance(value, ua.Variant):
             variant = value
         else:
             variant = ua.Variant(value, varianttype)
@@ -148,7 +152,7 @@ class Node(object):
         desc.IncludeSubtypes = includesubtypes
         desc.NodeClassMask = nodeclassmask
         desc.ResultMask = ua.BrowseResultMask.All
- 
+
         desc.NodeId = self.nodeid
         params = ua.BrowseParameters()
         params.NodesToBrowse.append(desc)
@@ -172,7 +176,7 @@ class Node(object):
             el.ReferenceTypeId = ua.TwoByteNodeId(ua.ObjectIds.HierarchicalReferences)
             el.IsInverse = False
             el.IncludeSubtypes = True
-            if type(item) == ua.QualifiedName:
+            if isinstance(item, ua.QualifiedName):
                 el.TargetName = item
             else:
                 el.TargetName = ua.QualifiedName.from_string(item)
@@ -183,7 +187,7 @@ class Node(object):
         result = self.server.translate_browsepaths_to_nodeids([bpath])
         result = result[0]
         result.StatusCode.check()
-        #FIXME: seems this method may return several nodes
+        # FIXME: seems this method may return several nodes
         return Node(self.server, result.Targets[0].TargetId)
 
     def add_folder(self, *args):
@@ -194,11 +198,11 @@ class Node(object):
         """
         nodeid, qname = self._parse_add_args(*args)
         return self._add_folder(nodeid, qname)
-    
+
     def _add_folder(self, nodeid, qname):
         node = ua.AddNodesItem()
-        node.RequestedNewNodeId = nodeid 
-        node.BrowseName = qname 
+        node.RequestedNewNodeId = nodeid
+        node.BrowseName = qname
         node.NodeClass = ua.NodeClass.Object
         node.ParentNodeId = self.nodeid
         node.ReferenceTypeId = ua.NodeId.from_string("i=35")
@@ -211,7 +215,7 @@ class Node(object):
         results = self.server.add_nodes([node])
         results[0].StatusCode.check()
         return Node(self.server, nodeid)
- 
+
     def add_object(self, *args):
         """
         create a child node object
@@ -220,13 +224,13 @@ class Node(object):
         """
         nodeid, qname = self._parse_add_args(*args)
         return self._add_object(nodeid, qname)
-    
+
     def _add_object(self, nodeid, qname):
         node = ua.AddNodesItem()
-        node.RequestedNewNodeId = nodeid 
-        node.BrowseName = qname 
+        node.RequestedNewNodeId = nodeid
+        node.BrowseName = qname
         node.NodeClass = ua.NodeClass.Object
-        node.ParentNodeId = self.nodeid 
+        node.ParentNodeId = self.nodeid
         node.ReferenceTypeId = ua.NodeId.from_string("i=35")
         node.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseObjectType)
         attrs = ua.ObjectAttributes()
@@ -247,7 +251,7 @@ class Node(object):
         nodeid, qname = self._parse_add_args(*args[:2])
         val = self._to_variant(*args[2:])
         return self._add_variable(nodeid, qname, val, isproperty=True)
-        
+
     def add_variable(self, *args):
         """
         create a child node variable
@@ -266,10 +270,10 @@ class Node(object):
 
     def _add_variable(self, nodeid, qname, val, isproperty=False):
         node = ua.AddNodesItem()
-        node.RequestedNewNodeId = nodeid 
-        node.BrowseName = qname 
+        node.RequestedNewNodeId = nodeid
+        node.BrowseName = qname
         node.NodeClass = ua.NodeClass.Variable
-        node.ParentNodeId = self.nodeid 
+        node.ParentNodeId = self.nodeid
         if isproperty:
             node.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasProperty)
             node.TypeDefinition = ua.NodeId(ua.ObjectIds.PropertyType)
@@ -281,7 +285,7 @@ class Node(object):
         attrs.DisplayName = ua.LocalizedText(qname.Name)
         attrs.DataType = self._guess_uatype(val)
         attrs.Value = val
-        attrs.ValueRank = 0 
+        attrs.ValueRank = 0
         attrs.WriteMask = 0
         attrs.UserWriteMask = 0
         attrs.Historizing = 0
@@ -302,17 +306,17 @@ class Node(object):
         nodeid, qname = self._parse_add_args(*args[:2])
         callback = args[2]
         if len(args) > 3:
-            inputs = args[3] 
+            inputs = args[3]
         if len(args) > 4:
-            outputs = args[4] 
+            outputs = args[4]
         return self._add_method(nodeid, qname, callback, inputs, outputs)
-    
+
     def _add_method(self, nodeid, qname, callback, inputs, outputs):
         node = ua.AddNodesItem()
-        node.RequestedNewNodeId = nodeid 
-        node.BrowseName = qname 
+        node.RequestedNewNodeId = nodeid
+        node.BrowseName = qname
         node.NodeClass = ua.NodeClass.Method
-        node.ParentNodeId = self.nodeid 
+        node.ParentNodeId = self.nodeid
         node.ReferenceTypeId = ua.NodeId.from_string("i=47")
         #node.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseObjectType)
         attrs = ua.MethodAttributes()
@@ -332,19 +336,18 @@ class Node(object):
             method.add_property(qname.NamespaceIndex, "OutputArguments", [self._vtype_to_argument(vtype) for vtype in outputs])
         self.server.add_method_callback(method.nodeid, callback)
         return method
-        
 
     def call_method(self, methodid, *args):
         """
-        Call an OPC-UA method. methodid is browse name of child method or the 
-        nodeid of method as a NodeId object 
+        Call an OPC-UA method. methodid is browse name of child method or the
+        nodeid of method as a NodeId object
         arguments are variants or python object convertible to variants.
         which may be of different types
-        returns a list of variants which are output of the method 
+        returns a list of variants which are output of the method
         """
-        if type(methodid) is str:
+        if isinstance(methodid, str):
             methodid = self.get_child(methodid).nodeid
-        elif type(methodid) is Node:
+        elif isinstance(methodid, Node):
             methodid = methodid.nodeid
 
         arguments = []
@@ -391,21 +394,20 @@ class Node(object):
             return ua.NodeId(getattr(ua.ObjectIds, variant.VariantType.name))
 
     def _parse_add_args(self, *args):
-        if type(args[0]) is ua.NodeId:
+        if isinstance(args[0], ua.NodeId):
             return args[0], args[1]
-        elif type(args[0]) is str:
+        elif isinstance(args[0], str):
             return ua.NodeId.from_string(args[0]), ua.QualifiedName.from_string(args[1])
-        elif type(args[0]) is int:
+        elif isinstance(args[0], int):
             return generate_nodeid(args[0]), ua.QualifiedName(args[1], args[0])
         else:
             raise TypeError("Add methods takes a nodeid and a qualifiedname as argument, received %s" % args)
 
 
 __nodeid_counter = 2000
+
+
 def generate_nodeid(idx):
     global __nodeid_counter
     __nodeid_counter += 1
     return ua.NodeId(__nodeid_counter, idx)
-        
-
-      

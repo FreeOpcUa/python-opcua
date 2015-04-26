@@ -15,7 +15,7 @@ from opcua.server import Server
 
 def uamethod(func):
     """
-    Method decorator to automatically convert 
+    Method decorator to automatically convert
     arguments and output to and from variants
     """
     def wrapper(parent, *args):
@@ -23,10 +23,9 @@ def uamethod(func):
         return to_variant(result)
     return wrapper
 
+
 def to_variant(*args):
     uaargs = []
     for arg in args:
         uaargs.append(ua.Variant(arg))
     return uaargs
-
-

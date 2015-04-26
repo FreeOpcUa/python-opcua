@@ -1,9 +1,9 @@
 import io
-import struct 
+import struct
 import logging
 
 import opcua.uaprotocol_auto as auto
-import opcua.uatypes as uatypes 
+import opcua.uatypes as uatypes
 import opcua.utils as utils
 from opcua.object_ids import ObjectIds
 from opcua.attribute_ids import AttributeIds
@@ -14,14 +14,16 @@ logger = logging.getLogger('opcua.uaprotocol')
 class SocketClosedException(Exception):
     pass
 
+
 def get_bytes_from_sock(sock, size):
     data = utils.recv_all(sock, size)
-    if len(data) < size: #socket has closed!
+    if len(data) < size:  # socket has closed!
         raise SocketClosedException("Server socket has closed")
     return io.BytesIO(data)
 
 
 class Hello(uatypes.FrozenClass):
+
     def __init__(self):
         self.ProtocolVersion = 0
         self.ReceiveBufferSize = 65536
@@ -53,9 +55,8 @@ class Hello(uatypes.FrozenClass):
         return hello
 
 
-
 class MessageType(object):
-    Invalid = b"INV" #FIXME: check value
+    Invalid = b"INV"  # FIXME: check value
     Hello = b"HEL"
     Acknowledge = b"ACK"
     Error = b"ERR"
@@ -63,15 +64,16 @@ class MessageType(object):
     SecureClose = b"CLO"
     SecureMessage = b"MSG"
 
+
 class ChunkType(object):
-    Invalid = b"0" #FIXME check
+    Invalid = b"0"  # FIXME check
     Single = b"F"
     Intermediate = b"C"
     Final = b"A"
- 
 
 
 class Header(uatypes.FrozenClass):
+
     def __init__(self, msgType=None, chunkType=None, channelid=0):
         self.MessageType = msgType
         self.ChunkType = chunkType
@@ -113,6 +115,7 @@ class Header(uatypes.FrozenClass):
 
 
 class ErrorMessage(uatypes.FrozenClass):
+
     def __init__(self):
         self.Error = uatypes.StatusCode()
         self.Reason = ""
@@ -137,12 +140,13 @@ class ErrorMessage(uatypes.FrozenClass):
 
 
 class Acknowledge(uatypes.FrozenClass):
+
     def __init__(self):
         self.ProtocolVersion = 0
         self.ReceiveBufferSize = 65536
         self.SendBufferSize = 65536
-        self.MaxMessageSize = 0 #No limits
-        self.MaxChunkCount = 0 #No limits
+        self.MaxMessageSize = 0  # No limits
+        self.MaxChunkCount = 0  # No limits
         self._freeze()
 
     def to_binary(self):
@@ -154,8 +158,6 @@ class Acknowledge(uatypes.FrozenClass):
         b.append(struct.pack("<I", self.MaxChunkCount))
         return b"".join(b)
 
-
-
     @staticmethod
     def from_binary(data):
         ack = Acknowledge()
@@ -166,7 +168,9 @@ class Acknowledge(uatypes.FrozenClass):
         ack.MaxChunkCount = struct.unpack("<I", data.read(4))[0]
         return ack
 
+
 class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
+
     def __init__(self):
         self.SecurityPolicyURI = "http://opcfoundation.org/UA/SecurityPolicy#None"
         self.SenderCertificate = b""
@@ -194,6 +198,7 @@ class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
 
 
 class SymmetricAlgorithmHeader(uatypes.FrozenClass):
+
     def __init__(self):
         self.TokenId = 0
         self._freeze()
@@ -213,6 +218,7 @@ class SymmetricAlgorithmHeader(uatypes.FrozenClass):
 
 
 class SequenceHeader(uatypes.FrozenClass):
+
     def __init__(self):
         self.SequenceNumber = None
         self.RequestId = None
@@ -235,54 +241,64 @@ class SequenceHeader(uatypes.FrozenClass):
         return "{}(SequenceNumber:{}, RequestId:{} )".format(self.__class__.__name__, self.SequenceNumber, self.RequestId)
     __repr__ = __str__
 
-###FIXES for missing switchfield in NodeAttributes classes
+# FIXES for missing switchfield in NodeAttributes classes
 ana = auto.NodeAttributesMask
 
+
 class ObjectAttributes(auto.ObjectAttributes):
+
     def __init__(self):
         auto.ObjectAttributes.__init__(self)
         self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.EventNotifier
 
+
 class ObjectTypeAttributes(auto.ObjectTypeAttributes):
+
     def __init__(self):
         auto.ObjectTypeAttributes.__init__(self)
         self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.IsAbstract
 
 
-
-
 class VariableAttributes(auto.VariableAttributes):
+
     def __init__(self):
         auto.VariableAttributes.__init__(self)
-        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.Value | ana.DataType | ana.ValueRank | ana.ArrayDimensions | ana.AccessLevel | ana.UserAccessLevel | ana.MinimumSamplingInterval |ana.Historizing  
+        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.Value | ana.DataType | ana.ValueRank | ana.ArrayDimensions | ana.AccessLevel | ana.UserAccessLevel | ana.MinimumSamplingInterval | ana.Historizing
+
 
 class VariableTypeAttributes(auto.VariableTypeAttributes):
+
     def __init__(self):
         auto.VariableTypeAttributes.__init__(self)
         self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.Value | ana.DataType | ana.ValueRank | ana.ArrayDimensions | ana.IsAbstract
 
+
 class MethodAttributes(auto.MethodAttributes):
+
     def __init__(self):
         auto.MethodAttributes.__init__(self)
-        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.Executable | ana.UserExecutable 
+        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.Executable | ana.UserExecutable
 
 
 class ReferenceTypeAttributes(auto.ReferenceTypeAttributes):
+
     def __init__(self):
         auto.ReferenceTypeAttributes.__init__(self)
-        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.IsAbstract | ana.Symmetric | ana.InverseName 
+        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.IsAbstract | ana.Symmetric | ana.InverseName
+
 
 class DataTypeAttributes(auto.DataTypeAttributes):
+
     def __init__(self):
         auto.DataTypeAttributes.__init__(self)
-        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.IsAbstract 
+        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.IsAbstract
 
 
 class ViewAttributes(auto.ViewAttributes):
+
     def __init__(self):
         auto.ViewAttributes.__init__(self)
-        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.ContainsNoLoops | ana.EventNotifier 
+        self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.ContainsNoLoops | ana.EventNotifier
 
 ObjectIdsInv = {v: k for k, v in ObjectIds.__dict__.items()}
 AttributeIdsInv = {v: k for k, v in AttributeIds.__dict__.items()}
-
