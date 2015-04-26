@@ -4,7 +4,7 @@ Internal server implementing opcu-ua interface. can be used on server side or to
 
 from datetime import datetime
 import logging
-from threading import Timer, Lock
+from threading import Lock
 from threading import Condition
 from threading import Thread
 from enum import Enum
@@ -21,7 +21,11 @@ from opcua import ua
 from opcua import utils
 from opcua import Node
 from opcua.address_space import AddressSpace
-from opcua.subscription_server import SubscriptionManager
+from opcua.address_space import AttributeService
+from opcua.address_space import ViewService
+from opcua.address_space import NodeManagementService
+from opcua.address_space import MethodService
+from opcua.subscription_service import SubscriptionService
 from opcua import standard_address_space
 
 
@@ -70,13 +74,20 @@ class InternalServer(object):
         self.logger = logging.getLogger(__name__)
         self.endpoints = []
         self._channel_id_counter = 5
+
         self.aspace = AddressSpace()
-        standard_address_space.fill_address_space(self.aspace)
+        self.attribute_service = AttributeService(self.aspace)
+        self.view_service = ViewService(self.aspace)
+        self.method_service = MethodService(self.aspace)
+        self.node_mgt_service = NodeManagementService(self.aspace)
+        standard_address_space.fill_address_space(self.node_mgt_service)
         #standard_address_space.fill_address_space_from_disk(self.aspace)
+
         self.loop = ThreadLoop()
-        self.submanager = SubscriptionManager(self.loop, self.aspace)
+        self.subcsription_service = SubscriptionService(self.loop, self.aspace)
+
         # create a session to use on server side
-        self.isession = InternalSession(self, self.aspace, self.submanager, "Internal") 
+        self.isession = InternalSession(self, self.aspace, self.subcsription_service, "Internal") 
         self._timer = None
         self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
         uries = ["http://opcfoundation.org/UA/"]
@@ -117,7 +128,7 @@ class InternalServer(object):
         return self.endpoints[:]
     
     def create_session(self, name):
-        return InternalSession(self, self.aspace, self.submanager, name)
+        return InternalSession(self, self.aspace, self.subcsription_service, name)
 
 class InternalSession(object):
     _counter = 10
@@ -126,7 +137,7 @@ class InternalSession(object):
         self.logger = logging.getLogger(__name__)
         self.iserver = internal_server
         self.aspace = aspace
-        self.submgr = submgr
+        self.subscription_service = submgr
         self.name = name
         self.state = SessionState.Created
         self.session_id = ua.NodeId(self._counter)
@@ -175,54 +186,54 @@ class InternalSession(object):
         return result
 
     def read(self, params):
-        return self.aspace.read(params)
+        return self.iserver.attribute_service.read(params)
 
     def write(self, params):
-        return self.aspace.write(params)
+        return self.iserver.attribute_service.write(params)
 
     def browse(self, params):
-        return self.aspace.browse(params)
+        return self.iserver.view_service.browse(params)
 
     def translate_browsepaths_to_nodeids(self, params):
-        return self.aspace.translate_browsepaths_to_nodeids(params)
+        return self.iserver.view_service.translate_browsepaths_to_nodeids(params)
 
     def add_nodes(self, params):
-        return self.aspace.add_nodes(params)
+        return self.iserver.node_mgt_service.add_nodes(params)
 
     def add_method_callback(self, methodid, callback):
         return self.aspace.add_method_callback(methodid, callback)
 
     def call(self, params):
-        return self.aspace.call(params)
+        return self.iserver.method_service.call(params)
 
     def create_subscription(self, params, callback):
-        result = self.submgr.create_subscription(params, callback)
+        result = self.subscription_service.create_subscription(params, callback)
         with self._lock:
             self.subscriptions.append(result.SubscriptionId)
         return result
 
     def create_monitored_items(self, params):
-        return self.submgr.create_monitored_items(params)
+        return self.subscription_service.create_monitored_items(params)
 
     def modify_monitored_items(self, params):
-        return self.submgr.modify_monitored_items(params)
+        return self.subscription_service.modify_monitored_items(params)
 
     def republish(self, params):
-        return self.submgr.republish(params)
+        return self.subscription_service.republish(params)
 
     def delete_subscriptions(self, ids):
         for i in ids:
             with self._lock:
                 if i in self.subscriptions:
                     self.subscriptions.remove(i)
-        return self.submgr.delete_subscriptions(ids)
+        return self.subscription_service.delete_subscriptions(ids)
 
     def delete_monitored_items(self, params):
-        return self.submgr.delete_monitored_items(params)
+        return self.subscription_service.delete_monitored_items(params)
  
     def publish(self, acks=None):
         if acks is None:
             acks = []
-        return self.submgr.publish(acks)
+        return self.subscription_service.publish(acks)
 
 

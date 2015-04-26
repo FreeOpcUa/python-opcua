@@ -8,7 +8,7 @@ import logging
 
 from opcua import ua
 
-class SubscriptionManager(object):
+class SubscriptionService(object):
     def __init__(self, loop, aspace):
         self.logger = logging.getLogger(__name__)
         self.loop = loop

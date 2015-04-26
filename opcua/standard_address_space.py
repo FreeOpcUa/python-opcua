@@ -13,15 +13,15 @@ from opcua.standard_address_space_part11 import create_standard_address_space_Pa
 from opcua.standard_address_space_part13 import create_standard_address_space_Part13
 
 
-def fill_address_space(aspace):
-    create_standard_address_space_Part3(aspace)
-    create_standard_address_space_Part4(aspace)
-    create_standard_address_space_Part5(aspace)
-    create_standard_address_space_Part8(aspace)
-    create_standard_address_space_Part9(aspace)
-    create_standard_address_space_Part10(aspace)
-    create_standard_address_space_Part11(aspace)
-    create_standard_address_space_Part13(aspace)
+def fill_address_space(nodeservice):
+    create_standard_address_space_Part3(nodeservice)
+    create_standard_address_space_Part4(nodeservice)
+    create_standard_address_space_Part5(nodeservice)
+    create_standard_address_space_Part8(nodeservice)
+    create_standard_address_space_Part9(nodeservice)
+    create_standard_address_space_Part10(nodeservice)
+    create_standard_address_space_Part11(nodeservice)
+    create_standard_address_space_Part13(nodeservice)
 
 def fill_address_space_from_disk(aspace):
     dirname = os.path.dirname(opcua.__file__)

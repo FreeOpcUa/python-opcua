@@ -56,7 +56,7 @@ class Event(object):
     __repr__ = __str__
 
     def trigger(self):
-        self.isession.submgr.trigger_event(self)
+        self.isession.subscription_service.trigger_event(self)
 
     def set_members_from_node(self, node):
         references = node.get_children_descriptions(refs=ua.ObjectIds.HasProperty)
