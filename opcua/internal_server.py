@@ -21,15 +21,8 @@ from opcua import ua
 from opcua import utils
 from opcua import Node
 from opcua.address_space import AddressSpace
-from opcua.standard_address_space_part3 import create_standard_address_space_Part3
-from opcua.standard_address_space_part4 import create_standard_address_space_Part4
-from opcua.standard_address_space_part5 import create_standard_address_space_Part5
-from opcua.standard_address_space_part8 import create_standard_address_space_Part8
-from opcua.standard_address_space_part9 import create_standard_address_space_Part9
-from opcua.standard_address_space_part10 import create_standard_address_space_Part10
-from opcua.standard_address_space_part11 import create_standard_address_space_Part11
-from opcua.standard_address_space_part13 import create_standard_address_space_Part13
 from opcua.subscription_server import SubscriptionManager
+from opcua import standard_address_space
 
 
 class ThreadLoop(Thread):
@@ -78,7 +71,8 @@ class InternalServer(object):
         self.endpoints = []
         self._channel_id_counter = 5
         self.aspace = AddressSpace()
-        self.load_standard_address_space()
+        standard_address_space.fill_address_space(self.aspace)
+        #standard_address_space.fill_address_space_from_disk(self.aspace)
         self.loop = ThreadLoop()
         self.submanager = SubscriptionManager(self.loop, self.aspace)
         # create a session to use on server side
@@ -94,16 +88,6 @@ class InternalServer(object):
 
     def dump_address_space(self, path):
         self.aspace.dump(path)
-
-    def load_standard_address_space(self):
-        create_standard_address_space_Part3(self.aspace)
-        create_standard_address_space_Part4(self.aspace)
-        create_standard_address_space_Part5(self.aspace)
-        create_standard_address_space_Part8(self.aspace)
-        create_standard_address_space_Part9(self.aspace)
-        create_standard_address_space_Part10(self.aspace)
-        create_standard_address_space_Part11(self.aspace)
-        create_standard_address_space_Part13(self.aspace)
 
     def start(self): 
         self.logger.info("starting internal server")
