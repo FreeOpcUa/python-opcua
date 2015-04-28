@@ -62,9 +62,16 @@ class UAHandler(socketserver.BaseRequestHandler):
     def handle(self):
         processor = UAProcessor(self.server.internal_server, self.request, self.client_address)
         try:
-            processor.loop()
-        except ua.SocketClosedException as ex:
-            logger.warning("Client has closed connection: %s", ex)
+            while True:
+                hdr = ua.Header.from_stream(self.request)
+                body = ua.utils.recv_all(self.request, hdr.body_size)
+                ret = processor.process(hdr, ua.utils.Buffer(body))
+                if not ret:
+                    break
+        except ua.SocketClosedException:
+            logger.warn("Server has closed connection")
+        except Exception:
+            logger.exception("Exception raised while parsing message from client, closing")
 
 
 class ThreadingTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):

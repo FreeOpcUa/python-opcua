@@ -17,6 +17,9 @@ class Buffer(object):
         return "Buffer(size:{}, data:{})".format(len(self.data), self.data)
     __repr__ = __str__
 
+    def __len__(self):
+        return len(self.data)
+
     def read(self, size):
         """
         read and pop number of bytes for buffer

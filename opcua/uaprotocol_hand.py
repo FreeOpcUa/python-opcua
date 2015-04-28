@@ -109,6 +109,17 @@ class Header(uatypes.FrozenClass):
             hdr.ChannelId = struct.unpack("<I", data.read(4))[0]
         return hdr
 
+    @staticmethod
+    def from_string(data):
+        hdr = Header()
+        hdr.MessageType = struct.unpack("<3s", data.read(3))[0]
+        hdr.ChunkType = struct.unpack("<c", data.read(1))[0]
+        hdr.body_size = struct.unpack("<I", data.read(4))[0] - 8
+        if hdr.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
+            hdr.body_size -= 4
+            hdr.ChannelId = struct.unpack("<I", data.read(4))[0]
+        return hdr
+
     def __str__(self):
         return "Header(type:{}, body_size:{}, channel:{})".format(self.MessageType, self.body_size, self.ChannelId)
     __repr__ = __str__

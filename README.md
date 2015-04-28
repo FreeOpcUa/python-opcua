@@ -1,4 +1,4 @@
-Pure Python OPC-UA Client and Server  
+Pure Python OPC-UA / IEC 62541 Client and Server  
 http://freeopcua.github.io/, https://github.com/FreeOpcUa/python-opcua
 
 [![Build Status](https://travis-ci.org/FreeOpcUa/python-opcua.svg?branch=master)](https://travis-ci.org/FreeOpcUa/python-opcua)

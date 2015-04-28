@@ -29,34 +29,6 @@ class UAProcessor(object):
         self._publishdata_queue = []
         self._seq_number = 1
 
-    def loop(self):
-        # first we want a hello message
-        while True:
-            header = ua.Header.from_stream(self.socket)
-            body = self._receive_body(header.body_size)
-            if header.MessageType == ua.MessageType.Hello:
-                break
-            self.logger.warning("received a message which is not a hello, sending back an error message %s", header)
-            hdr = ua.Header(ua.MessageType.Error, ua.ChunkType.Single)
-            self._write_socket(hdr)
-        hello = ua.Hello.from_binary(body)
-        hdr = ua.Header(ua.MessageType.Acknowledge, ua.ChunkType.Single)
-        ack = ua.Acknowledge()
-        ack.ReceiveBufferSize = hello.ReceiveBufferSize
-        ack.SendBufferSize = hello.SendBufferSize
-        self._write_socket(hdr, ack)
-
-        while True:
-            header = ua.Header.from_stream(self.socket)
-            if header is None:
-                return
-            if header.MessageType == ua.MessageType.Error:
-                self.logger.warning("Received an error message type")
-                return
-            body = self._receive_body(header.body_size)
-            if not self.process_body(header, body):
-                break
-
     def send_response(self, requesthandle, algohdr, seqhdr, response, msgtype=ua.MessageType.SecureMessage):
         with self._socketlock:
             response.ResponseHeader.RequestHandle = requesthandle
@@ -79,13 +51,6 @@ class UAProcessor(object):
         #self.logger.info("writting data %s", hdr, [i for i in args])
         #self.logger.debug("data: %s", alle)
         self.socket.sendall(alle)
-
-    def _receive_body(self, size):
-        self.logger.debug("reading body of message (%s bytes)", size)
-        data = ua.utils.recv_all(self.socket, size)
-        if size != len(data):
-            raise Exception("Error, did not received expected number of bytes, got {}, asked for {}".format(len(data), size))
-        return utils.Buffer(data)
 
     def open_secure_channel(self, body):
         algohdr = ua.AsymmetricAlgorithmHeader.from_binary(body)
@@ -110,8 +75,19 @@ class UAProcessor(object):
 
         self.send_response(requestdata.requesthdr.RequestHandle, requestdata.algohdr, requestdata.seqhdr, response)
 
-    def process_body(self, header, body):
-        if header.MessageType == ua.MessageType.SecureOpen:
+    def process(self, header, body):
+        if header.MessageType == ua.MessageType.Hello:
+            hello = ua.Hello.from_binary(body)
+            hdr = ua.Header(ua.MessageType.Acknowledge, ua.ChunkType.Single)
+            ack = ua.Acknowledge()
+            ack.ReceiveBufferSize = hello.ReceiveBufferSize
+            ack.SendBufferSize = hello.SendBufferSize
+            self._write_socket(hdr, ack)
+
+        elif header.MessageType == ua.MessageType.Error:
+            self.logger.warning("Received an error message type")
+
+        elif header.MessageType == ua.MessageType.SecureOpen:
             self.open_secure_channel(body)
 
         elif header.MessageType == ua.MessageType.SecureClose:
