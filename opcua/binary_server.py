@@ -60,16 +60,17 @@ class UAHandler(socketserver.BaseRequestHandler):
     """
 
     def handle(self):
-        processor = UAProcessor(self.server.internal_server, self.request, self.client_address)
+        sock = ua.utils.SocketWrapper(self.request)
+        processor = UAProcessor(self.server.internal_server, sock, self.client_address)
         try:
             while True:
-                hdr = ua.Header.from_stream(self.request)
-                body = ua.utils.recv_all(self.request, hdr.body_size)
+                hdr = ua.Header.from_string(sock)
+                body = sock.read(hdr.body_size)
                 ret = processor.process(hdr, ua.utils.Buffer(body))
                 if not ret:
                     break
-        except ua.SocketClosedException:
-            logger.warn("Server has closed connection")
+        except ua.utils.SocketClosedException:
+            logger.warning("Server has closed connection")
         except Exception:
             logger.exception("Exception raised while parsing message from client, closing")
 

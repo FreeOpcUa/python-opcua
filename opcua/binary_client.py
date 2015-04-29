@@ -76,20 +76,20 @@ class BinaryClient(object):
         while not self._do_stop:
             try:
                 self._receive()
-            except ua.SocketClosedException:
+            except ua.utils.SocketClosedException:
                 self.logger.info("Socket has closed connection")
                 break
         self.logger.info("Thread ended")
 
     def _receive_header(self):
         self.logger.debug("Waiting for header")
-        header = ua.Header.from_stream(self._socket)
+        header = ua.Header.from_string(self._socket)
         self.logger.info("received header: %s", header)
         return header
 
     def _receive_body(self, size):
         self.logger.debug("reading body of message (%s bytes)", size)
-        data = utils.recv_all(self._socket, size)
+        data = self._socket.read(size)
         if size != len(data):
             raise Exception("Error, did not received expected number of bytes, got {}, asked for {}".format(len(data), size))
         return utils.Buffer(data)
@@ -138,7 +138,7 @@ class BinaryClient(object):
             alle.append(data)
         alle.insert(0, hdr.to_binary())
         alle = b"".join(alle)
-        self._socket.sendall(alle)
+        self._socket.write(alle)
 
     def _create_request_header(self, timeout=1000):
         hdr = ua.RequestHeader()
@@ -166,14 +166,15 @@ class BinaryClient(object):
         connect to server socket and start receiving thread
         """
         self.logger.info("opening connection")
-        self._socket = socket.create_connection((host, port))
-        self._socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)  # nodelay ncessary to avoid packing in one frame, some servers do not like it
+        sock = socket.create_connection((host, port))
+        sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)  # nodelay ncessary to avoid packing in one frame, some servers do not like it
+        self._socket = utils.SocketWrapper(sock)
         self.start()
 
     def disconnect_socket(self):
         self.logger.info("stop request")
         self._do_stop = True
-        self._socket.shutdown(socket.SHUT_WR)
+        self._socket.socket.shutdown(socket.SHUT_WR)
 
     def send_hello(self, url):
         hello = ua.Hello()

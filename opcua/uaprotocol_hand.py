@@ -10,18 +10,6 @@ from opcua.attribute_ids import AttributeIds
 
 logger = logging.getLogger('opcua.uaprotocol')
 
-
-class SocketClosedException(Exception):
-    pass
-
-
-def get_bytes_from_sock(sock, size):
-    data = utils.recv_all(sock, size)
-    if len(data) < size:  # socket has closed!
-        raise SocketClosedException("Server socket has closed")
-    return io.BytesIO(data)
-
-
 class Hello(uatypes.FrozenClass):
 
     def __init__(self):
@@ -95,19 +83,6 @@ class Header(uatypes.FrozenClass):
         if self.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
             b.append(struct.pack("<I", self.ChannelId))
         return b"".join(b)
-
-    @staticmethod
-    def from_stream(sock):
-        data = get_bytes_from_sock(sock, 8)
-        hdr = Header()
-        hdr.MessageType = struct.unpack("<3s", data.read(3))[0]
-        hdr.ChunkType = struct.unpack("<c", data.read(1))[0]
-        hdr.body_size = struct.unpack("<I", data.read(4))[0] - 8
-        if hdr.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
-            hdr.body_size -= 4
-            data = get_bytes_from_sock(sock, 4)
-            hdr.ChannelId = struct.unpack("<I", data.read(4))[0]
-        return hdr
 
     @staticmethod
     def from_string(data):

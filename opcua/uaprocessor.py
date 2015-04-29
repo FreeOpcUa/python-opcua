@@ -50,7 +50,7 @@ class UAProcessor(object):
         self.logger.info("writting %s bytes to socket, with header %s ", len(alle), hdr)
         #self.logger.info("writting data %s", hdr, [i for i in args])
         #self.logger.debug("data: %s", alle)
-        self.socket.sendall(alle)
+        self.socket.write(alle)
 
     def open_secure_channel(self, body):
         algohdr = ua.AsymmetricAlgorithmHeader.from_binary(body)

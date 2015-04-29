@@ -11,6 +11,7 @@ except ImportError:
 
 from opcua import ua
 from opcua.binary_server import BinaryServer
+#from opcua.binary_server_asyncio import BinaryServer
 from opcua.internal_server import InternalServer
 from opcua import Node, Subscription, ObjectIds, Event
 

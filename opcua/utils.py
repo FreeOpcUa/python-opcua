@@ -49,19 +49,33 @@ class Buffer(object):
             raise Exception("No enough data left in buffer, request for {}, we have {}".format(size, self))
         return self.data[:size]
 
+class SocketClosedException(Exception):
+    pass
 
-def recv_all(socket, size):
+class SocketWrapper(object):
     """
-    Receive up to size bytes from socket
+    wrapper to make it possible to have same api for 
+    normal sockets, socket from asyncio, StringIO, etc....
     """
-    data = b''
-    while size > 0:
-        chunk = socket.recv(size)
-        if not chunk:
-            break
-        data += chunk
-        size -= len(chunk)
-    return data
+    def __init__(self, sock):
+        self.socket = sock
+
+    def read(self, size):
+        """
+        Receive up to size bytes from socket
+        """
+        data = b''
+        while size > 0:
+            chunk = self.socket.recv(size)
+            if not chunk:
+                raise SocketClosedException("Server socket has closed")
+            data += chunk
+            size -= len(chunk)
+        return data
+
+    def write(self, data):
+        self.socket.sendall(data)
+
 
 
 def create_nonce():
