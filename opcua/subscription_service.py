@@ -172,7 +172,7 @@ class InternalSubscription(object):
 
     def publish_results(self):
         if self._publish_cycles_count > self.data.RevisedLifetimeCount:
-            self.logger.warn("Subscription %s has expired, publish cycle count(%s) > lifetime count (%s)", self, self._publish_cycles_count, self.data.RevisedLifetimeCount)
+            self.logger.warning("Subscription %s has expired, publish cycle count(%s) > lifetime count (%s)", self, self._publish_cycles_count, self.data.RevisedLifetimeCount)
             # FIXME this will never be send since we do not have publish request anyway
             self.trigger_statuschange(ua.StatusCode(ua.StatusCodes.BadTimeout))
             self._stopev = True

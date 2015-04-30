@@ -65,19 +65,19 @@ class BinaryServer(object):
                         buf = ua.utils.Buffer(data[:])
                         hdr = ua.Header.from_string(buf)
                         if len(buf) < hdr.body_size:
-                            logger.warn("We did not receive enough data from server, waiting for more")
+                            logger.warning("We did not receive enough data from server, waiting for more")
                             self.data = data
                             return
                         ret = self.processor.process(hdr, buf)
                         if not ret:
-                            logger.warn("processor returned False, we close connection")
+                            logger.warning("processor returned False, we close connection")
                             self.transport.close()
                             return
                         if len(data) <= hdr.packet_size:
                             return
                         data  = data[hdr.packet_size:]
                     except utils.NotEnoughData:
-                        logger.warn("Not a complete packet in data from client, waiting for more data")
+                        logger.warning("Not a complete packet in data from client, waiting for more data")
                         self.data = buf.data
                         break
                     except Exception:
@@ -91,7 +91,7 @@ class BinaryServer(object):
         logger.warning('Listening on %s', self._server.sockets[0].getsockname())
 
     def stop(self):
-        self.logger.warn("Closing asyncio socket server")
+        self.logger.warning("Closing asyncio socket server")
         self._server.close()
         self.loop.run_coro_and_wait(self._server.wait_closed())
 

@@ -66,7 +66,7 @@ class Subscription(object):
                 statuschange = ua.StatusChangeNotification.from_binary(io.BytesIO(notif.to_binary()))
                 self._call_status(statuschange)
             else:
-                self.logger.warn("Notification type not supported yet for notification %s", notif)
+                self.logger.warning("Notification type not supported yet for notification %s", notif)
 
         ack = ua.SubscriptionAcknowledgement()
         ack.SubscriptionId = self.subscription_id
