@@ -140,7 +140,8 @@ class ThreadLoop(threading.Thread):
         self.loop.call_soon_threadsafe(p)
 
     def _create_task(self, future, coro, cb=None):
-        task = self.loop.create_task(coro)
+        #task = self.loop.create_task(coro)
+        task = asyncio.async(coro, loop=self.loop) 
         if cb:
             task.add_done_callback(cb)
         future.set_result(task)
