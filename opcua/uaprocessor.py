@@ -116,6 +116,8 @@ class UAProcessor(object):
 
             response = ua.CreateSessionResponse()
             response.Parameters = sessiondata
+
+            self.logger.info("sending create sesssion response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.CloseSessionRequest_Encoding_DefaultBinary):
@@ -125,6 +127,7 @@ class UAProcessor(object):
             self.session.close_session(deletesubs)
 
             response = ua.CloseSessionResponse()
+            self.logger.info("sending close sesssion response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.ActivateSessionRequest_Encoding_DefaultBinary):
@@ -136,13 +139,17 @@ class UAProcessor(object):
                 # result.Results.append(ua.StatusCode(ua.StatusCodes.BadSessionIdInvalid))
                 response = ua.ServiceFault()
                 response.ResponseHeader.ServiceResult = ua.StatusCode(ua.StatusCodes.BadSessionIdInvalid)
+                self.logger.info("request to activate none existing session, sending service fault response")
                 self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
-            else:
-                result = self.session.activate_session(params)
+                return True
 
-                response = ua.ActivateSessionResponse()
-                response.Parameters = result
-                self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+            result = self.session.activate_session(params)
+
+            response = ua.ActivateSessionResponse()
+            response.Parameters = result
+
+            self.logger.info("sending read response")
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.ReadRequest_Encoding_DefaultBinary):
             self.logger.info("Read request")
@@ -152,6 +159,8 @@ class UAProcessor(object):
 
             response = ua.ReadResponse()
             response.Results = results
+
+            self.logger.info("sending read response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.WriteRequest_Encoding_DefaultBinary):
@@ -162,6 +171,8 @@ class UAProcessor(object):
 
             response = ua.WriteResponse()
             response.Results = results
+
+            self.logger.info("sending write response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.BrowseRequest_Encoding_DefaultBinary):
@@ -172,6 +183,8 @@ class UAProcessor(object):
 
             response = ua.BrowseResponse()
             response.Results = results
+
+            self.logger.info("sending browse response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.GetEndpointsRequest_Encoding_DefaultBinary):
@@ -183,6 +196,7 @@ class UAProcessor(object):
             response = ua.GetEndpointsResponse()
             response.Endpoints = endpoints
 
+            self.logger.info("sending get endpoints response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary):
@@ -194,6 +208,7 @@ class UAProcessor(object):
             response = ua.TranslateBrowsePathsToNodeIdsResponse()
             response.Results = paths
 
+            self.logger.info("sending translate browsepaths to nodeids response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.AddNodesRequest_Encoding_DefaultBinary):
@@ -205,6 +220,7 @@ class UAProcessor(object):
             response = ua.AddNodesResponse()
             response.Results = results
 
+            self.logger.info("sending add node response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.CreateSubscriptionRequest_Encoding_DefaultBinary):
@@ -216,6 +232,7 @@ class UAProcessor(object):
             response = ua.CreateSubscriptionResponse()
             response.Parameters = result
 
+            self.logger.info("sending create subscription response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary):
@@ -227,6 +244,7 @@ class UAProcessor(object):
             response = ua.DeleteSubscriptionsResponse()
             response.Results = results
 
+            self.logger.info("sending delte subscription response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.CreateMonitoredItemsRequest_Encoding_DefaultBinary):
@@ -237,6 +255,7 @@ class UAProcessor(object):
             response = ua.CreateMonitoredItemsResponse()
             response.Results = results
 
+            self.logger.info("sending create monitored items response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.ModifyMonitoredItemsRequest_Encoding_DefaultBinary):
@@ -247,6 +266,7 @@ class UAProcessor(object):
             response = ua.ModifyMonitoredItemsResponse()
             response.Results = results
 
+            self.logger.info("sending modify monitored items response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.DeleteMonitoredItemsRequest_Encoding_DefaultBinary):
@@ -258,6 +278,7 @@ class UAProcessor(object):
             response = ua.DeleteMonitoredItemsResponse()
             response.Results = results
 
+            self.logger.info("sending delete monitored items response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.PublishRequest_Encoding_DefaultBinary):
@@ -275,6 +296,7 @@ class UAProcessor(object):
             with self._datalock:
                 self._publishdata_queue.append(data)  # will be used to send publish answers from server
             self.session.publish(params.SubscriptionAcknowledgements)
+            self.logger.info("publish forward to server")
 
         elif typeid == ua.NodeId(ua.ObjectIds.RepublishRequest_Encoding_DefaultBinary):
             self.logger.info("re-publish request")

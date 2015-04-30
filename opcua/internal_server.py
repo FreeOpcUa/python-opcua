@@ -5,16 +5,7 @@ Internal server implementing opcu-ua interface. can be used on server side or to
 from datetime import datetime
 import logging
 from threading import Lock
-from threading import Condition
-from threading import Thread
 from enum import Enum
-import functools
-try:
-    # we prefer to use bundles asyncio version, otherwise fallback to trollius
-    import asyncio
-except ImportError:
-    import trollius as asyncio
-    from trollius import From
 
 
 from opcua import ua
@@ -27,43 +18,6 @@ from opcua.address_space import NodeManagementService
 from opcua.address_space import MethodService
 from opcua.subscription_service import SubscriptionService
 from opcua import standard_address_space
-
-
-class ThreadLoop(Thread):
-
-    def __init__(self):
-        Thread.__init__(self)
-        self.logger = logging.getLogger(__name__)
-        self.loop = None
-        self._cond = Condition()
-
-    def start(self):
-        with self._cond:
-            Thread.start(self)
-            self._cond.wait()
-
-    def run(self):
-        self.logger.debug("Starting subscription thread")
-        self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
-        with self._cond:
-            self._cond.notify_all()
-        self.loop.run_forever()
-        self.logger.debug("subscription thread ended")
-
-    def stop(self):
-        """
-        stop subscription loop, thus the subscription thread
-        """
-        self.loop.call_soon_threadsafe(self.loop.stop)
-
-    def call_soon(self, callback):
-        self.loop.call_soon_threadsafe(callback)
-
-    def call_later(self, delay, callback):
-        p = functools.partial(self.loop.call_later, delay, callback)
-        self.loop.call_soon_threadsafe(p)
-
 
 class SessionState(Enum):
     Created = 0
@@ -84,9 +38,9 @@ class InternalServer(object):
         self.method_service = MethodService(self.aspace)
         self.node_mgt_service = NodeManagementService(self.aspace)
         standard_address_space.fill_address_space(self.node_mgt_service)
-        # standard_address_space.fill_address_space_from_disk(self.aspace)
+        #standard_address_space.fill_address_space_from_disk(self.aspace)
 
-        self.loop = ThreadLoop()
+        self.loop = utils.ThreadLoop()
         self.subcsription_service = SubscriptionService(self.loop, self.aspace)
 
         # create a session to use on server side

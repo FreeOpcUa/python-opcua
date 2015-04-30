@@ -1,16 +1,10 @@
 #! /usr/bin/env python
+import time
 import logging
 import math
 import io
-import sys
 from datetime import datetime, timedelta
 import unittest
-import threading
-try:
-    from queue import Queue
-except ImportError:
-    from Queue import Queue
-import time
 from concurrent.futures import Future
 
 from opcua import ua
@@ -586,7 +580,6 @@ def add_server_methods(srv):
     o = srv.get_objects_node()
     v = o.add_method(ua.NodeId("ServerMethodArray2", 2), ua.QualifiedName('ServerMethodArray2', 2), func3, [ua.VariantType.Int64], [ua.VariantType.Int64])
 
-
 class TestClient(unittest.TestCase, CommonTests):
 
     '''
@@ -661,6 +654,7 @@ class TestServer(unittest.TestCase, CommonTests):
         v = o.add_method(3, 'Method1', func, [ua.VariantType.Int64], [ua.VariantType.Int64])
         result = o.call_method(v, ua.Variant(2.1))
         self.assertEqual(result, 4.2)
+
 
 
 if __name__ == '__main__':

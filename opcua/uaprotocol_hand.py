@@ -67,6 +67,7 @@ class Header(uatypes.FrozenClass):
         self.ChunkType = chunkType
         self.ChannelId = channelid
         self.body_size = 0
+        self.packet_size = 0
         self._freeze()
 
     def add_size(self, size):
@@ -89,7 +90,8 @@ class Header(uatypes.FrozenClass):
         hdr = Header()
         hdr.MessageType = struct.unpack("<3s", data.read(3))[0]
         hdr.ChunkType = struct.unpack("<c", data.read(1))[0]
-        hdr.body_size = struct.unpack("<I", data.read(4))[0] - 8
+        hdr.packet_size = struct.unpack("<I", data.read(4))[0]
+        hdr.body_size =  hdr.packet_size - 8
         if hdr.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
             hdr.body_size -= 4
             hdr.ChannelId = struct.unpack("<I", data.read(4))[0]

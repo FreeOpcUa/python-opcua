@@ -76,8 +76,8 @@ class Server(object):
         self.bserver.start()
 
     def stop(self):
-        self.iserver.stop()
         self.bserver.stop()
+        self.iserver.stop()
 
     def get_root_node(self):
         return self.get_node(ua.TwoByteNodeId(ObjectIds.RootFolder))
