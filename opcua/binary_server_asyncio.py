@@ -2,14 +2,12 @@
 Socket server forwarding request to internal server
 """
 import logging
-import functools
 try:
     # we prefer to use bundles asyncio version, otherwise fallback to trollius
     import asyncio
 except ImportError:
     import trollius as asyncio
     from trollius import From
-
 
 
 from opcua import ua
@@ -31,6 +29,7 @@ class BinaryServer(object):
     def start(self):
 
         class OPCUAProtocol(asyncio.Protocol):
+
             """
             instanciated for every connection
             defined as internal class since it needs access
@@ -75,8 +74,8 @@ class BinaryServer(object):
                             return
                         if len(data) <= hdr.packet_size:
                             return
-                        data  = data[hdr.packet_size:]
-                    except utils.NotEnoughData:
+                        data = data[hdr.packet_size:]
+                    except ua.utils.NotEnoughData:
                         logger.warning("Not a complete packet in data from client, waiting for more data")
                         self.data = buf.data
                         break
@@ -94,8 +93,3 @@ class BinaryServer(object):
         self.logger.warning("Closing asyncio socket server")
         self._server.close()
         self.loop.run_coro_and_wait(self._server.wait_closed())
-
-
-
-
-

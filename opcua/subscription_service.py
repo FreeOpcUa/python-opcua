@@ -1,10 +1,9 @@
 """
 server side implementation of subscriptions
 """
-import time
-import sys
 from threading import RLock
 import logging
+import copy
 
 from opcua import ua
 
@@ -126,8 +125,8 @@ class InternalSubscription(object):
         self._monitored_datachange = {}
         self._monitored_items = {}
         self._lock = RLock()
-        self._triggered_datachanges = []
-        self._triggered_events = []
+        self._triggered_datachanges = {}
+        self._triggered_events = {}
         self._triggered_statuschanges = []
         self._notification_seq = 1
         self._not_acknowledged_results = {}
@@ -187,14 +186,14 @@ class InternalSubscription(object):
         result.SubscriptionId = self.data.SubscriptionId
         if self._triggered_datachanges:
             notif = ua.DataChangeNotification()
-            notif.MonitoredItems = self._triggered_datachanges[:]
-            self._triggered_datachanges = []
+            notif.MonitoredItems = [item for sublist in self._triggered_datachanges.values() for item in sublist] 
+            self._triggered_datachanges = {}
             self.logger.debug("sending datachanges nontification with %s events", len(notif.MonitoredItems))
             result.NotificationMessage.NotificationData.append(notif)
         if self._triggered_events:
             notif = ua.EventNotificationList()
-            notif.Events = self._triggered_events[:]
-            self._triggered_events = []
+            notif.Events = [item for sublist in self._triggered_events.values() for item in sublist] 
+            self._triggered_events = {}
             result.NotificationMessage.NotificationData.append(notif)
         if self._triggered_statuschanges:
             notif = ua.StatusChangeNotification()
@@ -251,7 +250,7 @@ class InternalSubscription(object):
                 result = ua.MonitoredItemCreateResult()
                 if mdata.monitored_item_id == params.MonitoredItemId:
                     result.RevisedSamplingInterval = self.data.RevisedPublishingInterval
-                    result.RevisedQueueSize = ua.downcast_extobject(params.RequestedParameters.QueueSize)  # FIXME check and use value
+                    result.RevisedQueueSize = ua.downcast_extobject(params.RequestedParameters.QueueSize) 
                     result.FilterResult = params.RequestedParameters.Filter
                     mdata.parameters = result
                     return result
@@ -323,7 +322,13 @@ class InternalSubscription(object):
             mdata = self._monitored_items[mid]
             event.ClientHandle = mdata.client_handle
             event.Value = value
-            self._triggered_datachanges.append(event)
+            if not mid in self._triggered_datachanges:
+                self._triggered_datachanges[mid] = [event]
+                return
+            if mdata.parameters.RevisedQueueSize:
+                if len(self._triggered_datachanges[mid]) >= mdata.parameters.RevisedQueueSize:
+                    self._triggered_datachanges[mid].pop(0)
+            self._triggered_datachanges[mid].append(event)
 
     def trigger_event(self, event):
         with self._lock:
@@ -335,11 +340,20 @@ class InternalSubscription(object):
             if not mid in self._monitored_items:
                 self.logger.debug("Could not find monitored items for id %s for event %s in subscription %s", mid, event, self)
                 return False
-            item = self._monitored_items[mid]
+            mdata = self._monitored_items[mid]
             fieldlist = ua.EventFieldList()
-            fieldlist.ClientHandle = item.client_handle
-            fieldlist.EventFields = self._get_event_fields(item.parameters.FilterResult, event)
-            self._triggered_events.append(fieldlist)
+            fieldlist.ClientHandle = mdata.client_handle
+            fieldlist.EventFields = self._get_event_fields(mdata.parameters.FilterResult, event)
+            if not mid in self._triggered_events:
+                self._triggered_events[mid] = [fieldlist]
+                return True
+            if mdata.parameters.RevisedQueueSize:
+                if len(self._triggered_events[mid]) >= mdata.parameters.RevisedQueueSize:
+                    self._triggered_events[mid].pop(0)
+            self._triggered_events[mid].append(fieldlist)
+            print("\n\n", event)
+            print(fieldlist)
+            print(self._triggered_events[mid])
             return True
 
     def _get_event_fields(self, evfilter, event):
@@ -348,10 +362,12 @@ class InternalSubscription(object):
             try:
                 if not sattr.BrowsePath:
                     val = getattr(event, ua.AttributeIdsInv[sattr.Attribute])
+                    val = copy.deepcopy(val)
                     fields.append(ua.Variant(val))
                 else:
                     name = sattr.BrowsePath[0].Name
                     val = getattr(event, name)
+                    val = copy.deepcopy(val)
                     fields.append(ua.Variant(val))
             except AttributeError:
                 fields.append(ua.Variant())

@@ -328,7 +328,7 @@ class BinaryClient(object):
         response = ua.PublishResponse.from_binary(future.result())
         try:
             self._publishcallbacks[response.Parameters.SubscriptionId](response.Parameters)
-        except Exception as ex:  # we call client code, catch everything!
+        except Exception:  # we call client code, catch everything!
             self.logger.exception("Exception while calling user callback")
 
     def create_monitored_items(self, params):

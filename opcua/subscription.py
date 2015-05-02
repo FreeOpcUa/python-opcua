@@ -75,7 +75,8 @@ class Subscription(object):
 
     def _call_datachange(self, datachange):
         for item in datachange.MonitoredItems:
-            data = self._monitoreditems_map[item.ClientHandle]
+            with self._lock:
+                data = self._monitoreditems_map[item.ClientHandle]
             try:
                 self._handler.data_change(data.server_handle, data.node, item.Value.Value.Value, data.attribute)
             except Exception:
@@ -83,7 +84,8 @@ class Subscription(object):
 
     def _call_event(self, eventlist):
         for event in eventlist.Events:
-            data = self._monitoreditems_map[event.ClientHandle]
+            with self._lock:
+                data = self._monitoreditems_map[event.ClientHandle]
             try:
                 #fields = {}
                 result = EventResult()
@@ -106,7 +108,7 @@ class Subscription(object):
             self.logger.exception("Exception calling status change handler")
 
     def subscribe_data_change(self, node, attr=ua.AttributeIds.Value):
-        return self._subscribe(node, attr)
+        return self._subscribe(node, attr, queuesize=1)
 
     def _get_node(self, nodeid):
         if isinstance(nodeid, ua.NodeId):
@@ -133,7 +135,7 @@ class Subscription(object):
         evfilter = self._get_filter_from_event_type(evtype)
         return self._subscribe(sourcenode, AttributeIds.EventNotifier, evfilter)
 
-    def _subscribe(self, node, attr, mfilter=None):
+    def _subscribe(self, node, attr, mfilter=None, queuesize=0):
         rv = ua.ReadValueId()
         rv.NodeId = node.nodeid
         rv.AttributeId = attr
@@ -142,7 +144,7 @@ class Subscription(object):
         self._client_handle += 1
         mparams.ClientHandle = self._client_handle
         mparams.SamplingInterval = self.parameters.RequestedPublishingInterval
-        mparams.QueueSize = 1
+        mparams.QueueSize = queuesize
         mparams.DiscardOldest = True
         if mfilter:
             mparams.Filter = mfilter
@@ -167,7 +169,8 @@ class Subscription(object):
         data.attribute = attr
         data.server_handle = result.MonitoredItemId
         data.mfilter = ua.downcast_extobject(result.FilterResult)
-        self._monitoreditems_map[mparams.ClientHandle] = data
+        with self._lock:
+            self._monitoreditems_map[mparams.ClientHandle] = data
 
         return result.MonitoredItemId
 
