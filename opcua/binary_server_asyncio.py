@@ -91,5 +91,5 @@ class BinaryServer(object):
 
     def stop(self):
         self.logger.warning("Closing asyncio socket server")
-        self._server.close()
+        self.loop.call_soon(self._server.close)
         self.loop.run_coro_and_wait(self._server.wait_closed())
