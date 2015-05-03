@@ -2,3 +2,5 @@ build*
 MANIFEST
 .idea*
 htmlcov*
+_*
+docs/_*
