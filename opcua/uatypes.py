@@ -255,6 +255,25 @@ class NodeIdType(object):
 
 class NodeId(object):
 
+    """
+    NodeId Object
+
+    Args:
+        identifier: The identifier might be an int, a string, bytes or a Guid
+        namespaceidx(int): The index of the namespace
+        nodeidtype(NodeIdType): The type of the nodeid if it cannor be guess or you want something special like twobyte nodeid or fourbytenodeid
+
+
+    :ivar Identifier:
+    :vartype Identifier: NodeId
+    :ivar NamespaceIndex:
+    :vartype NamespaceIndex: Int
+    :ivar NamespaceUri:
+    :vartype NamespaceUri: String
+    :ivar ServerIndex:
+    :vartype ServerIndex: Int
+    """
+
     def __init__(self, identifier=None, namespaceidx=0, nodeidtype=None):
         self.Identifier = identifier
         self.NamespaceIndex = namespaceidx

@@ -67,6 +67,10 @@ class CodeGenerator(object):
         self.write("'''")
         if obj.doc:
             self.write(obj.doc)
+            self.write("")
+        for field in obj.fields:
+            self.write(":ivar {}: ".format(field.name))
+            self.write(":vartype {}: {} ".format(field.name, field.uatype))
         self.write("'''")
         self.write("def __init__(self):")
         self.iidx += 1

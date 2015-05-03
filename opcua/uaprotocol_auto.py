@@ -295,6 +295,11 @@ class ExceptionDeviationFormat(object):
 class XmlElement(FrozenClass):
     '''
     An XML element encoded as a UTF-8 string.
+    
+    :ivar Length: 
+    :vartype Length: Int32 
+    :ivar Value: 
+    :vartype Value: Char 
     '''
     def __init__(self):
         self.Length = 0
@@ -325,6 +330,21 @@ class XmlElement(FrozenClass):
 class DiagnosticInfo(FrozenClass):
     '''
     A recursive structure containing diagnostic information associated with a status code.
+    
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar SymbolicId: 
+    :vartype SymbolicId: Int32 
+    :ivar NamespaceURI: 
+    :vartype NamespaceURI: Int32 
+    :ivar LocalizedText: 
+    :vartype LocalizedText: Int32 
+    :ivar AdditionalInfo: 
+    :vartype AdditionalInfo: CharArray 
+    :ivar InnerStatusCode: 
+    :vartype InnerStatusCode: StatusCode 
+    :ivar InnerDiagnosticInfo: 
+    :vartype InnerDiagnosticInfo: DiagnosticInfo 
     '''
     def __init__(self):
         self.Encoding = 0
@@ -391,6 +411,17 @@ class DiagnosticInfo(FrozenClass):
 class Argument(FrozenClass):
     '''
     An argument for a method.
+    
+    :ivar Name: 
+    :vartype Name: String 
+    :ivar DataType: 
+    :vartype DataType: NodeId 
+    :ivar ValueRank: 
+    :vartype ValueRank: Int32 
+    :ivar ArrayDimensions: 
+    :vartype ArrayDimensions: UInt32 
+    :ivar Description: 
+    :vartype Description: LocalizedText 
     '''
     def __init__(self):
         self.Name = ''
@@ -433,6 +464,13 @@ class Argument(FrozenClass):
 class EnumValueType(FrozenClass):
     '''
     A mapping between a value of an enumerated type and a name and description.
+    
+    :ivar Value: 
+    :vartype Value: Int64 
+    :ivar DisplayName: 
+    :vartype DisplayName: LocalizedText 
+    :ivar Description: 
+    :vartype Description: LocalizedText 
     '''
     def __init__(self):
         self.Value = 0
@@ -464,6 +502,10 @@ class EnumValueType(FrozenClass):
     
 class TimeZoneDataType(FrozenClass):
     '''
+    :ivar Offset: 
+    :vartype Offset: Int16 
+    :ivar DaylightSavingInOffset: 
+    :vartype DaylightSavingInOffset: Boolean 
     '''
     def __init__(self):
         self.Offset = 0
@@ -492,6 +534,21 @@ class TimeZoneDataType(FrozenClass):
 class ApplicationDescription(FrozenClass):
     '''
     Describes an application and how to find it.
+    
+    :ivar ApplicationUri: 
+    :vartype ApplicationUri: String 
+    :ivar ProductUri: 
+    :vartype ProductUri: String 
+    :ivar ApplicationName: 
+    :vartype ApplicationName: LocalizedText 
+    :ivar ApplicationType: 
+    :vartype ApplicationType: ApplicationType 
+    :ivar GatewayServerUri: 
+    :vartype GatewayServerUri: String 
+    :ivar DiscoveryProfileUri: 
+    :vartype DiscoveryProfileUri: String 
+    :ivar DiscoveryUrls: 
+    :vartype DiscoveryUrls: String 
     '''
     def __init__(self):
         self.ApplicationUri = ''
@@ -542,6 +599,21 @@ class ApplicationDescription(FrozenClass):
 class RequestHeader(FrozenClass):
     '''
     The header passed with every server request.
+    
+    :ivar AuthenticationToken: 
+    :vartype AuthenticationToken: NodeId 
+    :ivar Timestamp: 
+    :vartype Timestamp: DateTime 
+    :ivar RequestHandle: 
+    :vartype RequestHandle: UInt32 
+    :ivar ReturnDiagnostics: 
+    :vartype ReturnDiagnostics: UInt32 
+    :ivar AuditEntryId: 
+    :vartype AuditEntryId: String 
+    :ivar TimeoutHint: 
+    :vartype TimeoutHint: UInt32 
+    :ivar AdditionalHeader: 
+    :vartype AdditionalHeader: ExtensionObject 
     '''
     def __init__(self):
         self.AuthenticationToken = NodeId()
@@ -590,6 +662,19 @@ class RequestHeader(FrozenClass):
 class ResponseHeader(FrozenClass):
     '''
     The header passed with every server response.
+    
+    :ivar Timestamp: 
+    :vartype Timestamp: DateTime 
+    :ivar RequestHandle: 
+    :vartype RequestHandle: UInt32 
+    :ivar ServiceResult: 
+    :vartype ServiceResult: StatusCode 
+    :ivar ServiceDiagnostics: 
+    :vartype ServiceDiagnostics: DiagnosticInfo 
+    :ivar StringTable: 
+    :vartype StringTable: String 
+    :ivar AdditionalHeader: 
+    :vartype AdditionalHeader: ExtensionObject 
     '''
     def __init__(self):
         self.Timestamp = datetime.now()
@@ -636,6 +721,11 @@ class ResponseHeader(FrozenClass):
 class ServiceFault(FrozenClass):
     '''
     The response returned by all services when there is a service level error.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ServiceFault_Encoding_DefaultBinary)
@@ -663,6 +753,12 @@ class ServiceFault(FrozenClass):
     
 class FindServersParameters(FrozenClass):
     '''
+    :ivar EndpointUrl: 
+    :vartype EndpointUrl: String 
+    :ivar LocaleIds: 
+    :vartype LocaleIds: String 
+    :ivar ServerUris: 
+    :vartype ServerUris: String 
     '''
     def __init__(self):
         self.EndpointUrl = ''
@@ -699,6 +795,13 @@ class FindServersParameters(FrozenClass):
 class FindServersRequest(FrozenClass):
     '''
     Finds the servers known to the discovery server.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: FindServersParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.FindServersRequest_Encoding_DefaultBinary)
@@ -730,6 +833,8 @@ class FindServersRequest(FrozenClass):
     
 class FindServersResult(FrozenClass):
     '''
+    :ivar Servers: 
+    :vartype Servers: ApplicationDescription 
     '''
     def __init__(self):
         self.Servers = []
@@ -759,6 +864,13 @@ class FindServersResult(FrozenClass):
 class FindServersResponse(FrozenClass):
     '''
     Finds the servers known to the discovery server.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: FindServersResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.FindServersResponse_Encoding_DefaultBinary)
@@ -791,6 +903,17 @@ class FindServersResponse(FrozenClass):
 class UserTokenPolicy(FrozenClass):
     '''
     Describes a user token that can be used with a server.
+    
+    :ivar PolicyId: 
+    :vartype PolicyId: String 
+    :ivar TokenType: 
+    :vartype TokenType: UserTokenType 
+    :ivar IssuedTokenType: 
+    :vartype IssuedTokenType: String 
+    :ivar IssuerEndpointUrl: 
+    :vartype IssuerEndpointUrl: String 
+    :ivar SecurityPolicyUri: 
+    :vartype SecurityPolicyUri: String 
     '''
     def __init__(self):
         self.PolicyId = ''
@@ -831,6 +954,23 @@ class UserTokenPolicy(FrozenClass):
 class EndpointDescription(FrozenClass):
     '''
     The description of a endpoint that can be used to access a server.
+    
+    :ivar EndpointUrl: 
+    :vartype EndpointUrl: String 
+    :ivar Server: 
+    :vartype Server: ApplicationDescription 
+    :ivar ServerCertificate: 
+    :vartype ServerCertificate: ByteString 
+    :ivar SecurityMode: 
+    :vartype SecurityMode: MessageSecurityMode 
+    :ivar SecurityPolicyUri: 
+    :vartype SecurityPolicyUri: String 
+    :ivar UserIdentityTokens: 
+    :vartype UserIdentityTokens: UserTokenPolicy 
+    :ivar TransportProfileUri: 
+    :vartype TransportProfileUri: String 
+    :ivar SecurityLevel: 
+    :vartype SecurityLevel: Byte 
     '''
     def __init__(self):
         self.EndpointUrl = ''
@@ -887,6 +1027,12 @@ class EndpointDescription(FrozenClass):
     
 class GetEndpointsParameters(FrozenClass):
     '''
+    :ivar EndpointUrl: 
+    :vartype EndpointUrl: String 
+    :ivar LocaleIds: 
+    :vartype LocaleIds: String 
+    :ivar ProfileUris: 
+    :vartype ProfileUris: String 
     '''
     def __init__(self):
         self.EndpointUrl = ''
@@ -923,6 +1069,13 @@ class GetEndpointsParameters(FrozenClass):
 class GetEndpointsRequest(FrozenClass):
     '''
     Gets the endpoints used by the server.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: GetEndpointsParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.GetEndpointsRequest_Encoding_DefaultBinary)
@@ -955,6 +1108,13 @@ class GetEndpointsRequest(FrozenClass):
 class GetEndpointsResponse(FrozenClass):
     '''
     Gets the endpoints used by the server.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Endpoints: 
+    :vartype Endpoints: EndpointDescription 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.GetEndpointsResponse_Encoding_DefaultBinary)
@@ -992,6 +1152,23 @@ class GetEndpointsResponse(FrozenClass):
 class RegisteredServer(FrozenClass):
     '''
     The information required to register a server with a discovery server.
+    
+    :ivar ServerUri: 
+    :vartype ServerUri: String 
+    :ivar ProductUri: 
+    :vartype ProductUri: String 
+    :ivar ServerNames: 
+    :vartype ServerNames: LocalizedText 
+    :ivar ServerType: 
+    :vartype ServerType: ApplicationType 
+    :ivar GatewayServerUri: 
+    :vartype GatewayServerUri: String 
+    :ivar DiscoveryUrls: 
+    :vartype DiscoveryUrls: String 
+    :ivar SemaphoreFilePath: 
+    :vartype SemaphoreFilePath: String 
+    :ivar IsOnline: 
+    :vartype IsOnline: Boolean 
     '''
     def __init__(self):
         self.ServerUri = ''
@@ -1050,6 +1227,8 @@ class RegisteredServer(FrozenClass):
     
 class RegisterServerParameters(FrozenClass):
     '''
+    :ivar Server: 
+    :vartype Server: RegisteredServer 
     '''
     def __init__(self):
         self.Server = RegisteredServer()
@@ -1074,6 +1253,13 @@ class RegisterServerParameters(FrozenClass):
 class RegisterServerRequest(FrozenClass):
     '''
     Registers a server with the discovery server.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: RegisterServerParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServerRequest_Encoding_DefaultBinary)
@@ -1106,6 +1292,11 @@ class RegisterServerRequest(FrozenClass):
 class RegisterServerResponse(FrozenClass):
     '''
     Registers a server with the discovery server.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServerResponse_Encoding_DefaultBinary)
@@ -1134,6 +1325,15 @@ class RegisterServerResponse(FrozenClass):
 class ChannelSecurityToken(FrozenClass):
     '''
     The token that identifies a set of keys for an active secure channel.
+    
+    :ivar ChannelId: 
+    :vartype ChannelId: UInt32 
+    :ivar TokenId: 
+    :vartype TokenId: UInt32 
+    :ivar CreatedAt: 
+    :vartype CreatedAt: DateTime 
+    :ivar RevisedLifetime: 
+    :vartype RevisedLifetime: UInt32 
     '''
     def __init__(self):
         self.ChannelId = 0
@@ -1169,6 +1369,16 @@ class ChannelSecurityToken(FrozenClass):
     
 class OpenSecureChannelParameters(FrozenClass):
     '''
+    :ivar ClientProtocolVersion: 
+    :vartype ClientProtocolVersion: UInt32 
+    :ivar RequestType: 
+    :vartype RequestType: SecurityTokenRequestType 
+    :ivar SecurityMode: 
+    :vartype SecurityMode: MessageSecurityMode 
+    :ivar ClientNonce: 
+    :vartype ClientNonce: ByteString 
+    :ivar RequestedLifetime: 
+    :vartype RequestedLifetime: UInt32 
     '''
     def __init__(self):
         self.ClientProtocolVersion = 0
@@ -1209,6 +1419,13 @@ class OpenSecureChannelParameters(FrozenClass):
 class OpenSecureChannelRequest(FrozenClass):
     '''
     Creates a secure channel with a server.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: OpenSecureChannelParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.OpenSecureChannelRequest_Encoding_DefaultBinary)
@@ -1240,6 +1457,12 @@ class OpenSecureChannelRequest(FrozenClass):
     
 class OpenSecureChannelResult(FrozenClass):
     '''
+    :ivar ServerProtocolVersion: 
+    :vartype ServerProtocolVersion: UInt32 
+    :ivar SecurityToken: 
+    :vartype SecurityToken: ChannelSecurityToken 
+    :ivar ServerNonce: 
+    :vartype ServerNonce: ByteString 
     '''
     def __init__(self):
         self.ServerProtocolVersion = 0
@@ -1272,6 +1495,13 @@ class OpenSecureChannelResult(FrozenClass):
 class OpenSecureChannelResponse(FrozenClass):
     '''
     Creates a secure channel with a server.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: OpenSecureChannelResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.OpenSecureChannelResponse_Encoding_DefaultBinary)
@@ -1304,6 +1534,11 @@ class OpenSecureChannelResponse(FrozenClass):
 class CloseSecureChannelRequest(FrozenClass):
     '''
     Closes a secure channel.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CloseSecureChannelRequest_Encoding_DefaultBinary)
@@ -1332,6 +1567,11 @@ class CloseSecureChannelRequest(FrozenClass):
 class CloseSecureChannelResponse(FrozenClass):
     '''
     Closes a secure channel.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CloseSecureChannelResponse_Encoding_DefaultBinary)
@@ -1360,6 +1600,11 @@ class CloseSecureChannelResponse(FrozenClass):
 class SignedSoftwareCertificate(FrozenClass):
     '''
     A software certificate with a digital signature.
+    
+    :ivar CertificateData: 
+    :vartype CertificateData: ByteString 
+    :ivar Signature: 
+    :vartype Signature: ByteString 
     '''
     def __init__(self):
         self.CertificateData = b''
@@ -1388,6 +1633,11 @@ class SignedSoftwareCertificate(FrozenClass):
 class SignatureData(FrozenClass):
     '''
     A digital signature.
+    
+    :ivar Algorithm: 
+    :vartype Algorithm: String 
+    :ivar Signature: 
+    :vartype Signature: ByteString 
     '''
     def __init__(self):
         self.Algorithm = ''
@@ -1415,6 +1665,22 @@ class SignatureData(FrozenClass):
     
 class CreateSessionParameters(FrozenClass):
     '''
+    :ivar ClientDescription: 
+    :vartype ClientDescription: ApplicationDescription 
+    :ivar ServerUri: 
+    :vartype ServerUri: String 
+    :ivar EndpointUrl: 
+    :vartype EndpointUrl: String 
+    :ivar SessionName: 
+    :vartype SessionName: String 
+    :ivar ClientNonce: 
+    :vartype ClientNonce: ByteString 
+    :ivar ClientCertificate: 
+    :vartype ClientCertificate: ByteString 
+    :ivar RequestedSessionTimeout: 
+    :vartype RequestedSessionTimeout: Double 
+    :ivar MaxResponseMessageSize: 
+    :vartype MaxResponseMessageSize: UInt32 
     '''
     def __init__(self):
         self.ClientDescription = ApplicationDescription()
@@ -1467,6 +1733,13 @@ class CreateSessionParameters(FrozenClass):
 class CreateSessionRequest(FrozenClass):
     '''
     Creates a new session with the server.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: CreateSessionParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateSessionRequest_Encoding_DefaultBinary)
@@ -1498,6 +1771,24 @@ class CreateSessionRequest(FrozenClass):
     
 class CreateSessionResult(FrozenClass):
     '''
+    :ivar SessionId: 
+    :vartype SessionId: NodeId 
+    :ivar AuthenticationToken: 
+    :vartype AuthenticationToken: NodeId 
+    :ivar RevisedSessionTimeout: 
+    :vartype RevisedSessionTimeout: Double 
+    :ivar ServerNonce: 
+    :vartype ServerNonce: ByteString 
+    :ivar ServerCertificate: 
+    :vartype ServerCertificate: ByteString 
+    :ivar ServerEndpoints: 
+    :vartype ServerEndpoints: EndpointDescription 
+    :ivar ServerSoftwareCertificates: 
+    :vartype ServerSoftwareCertificates: SignedSoftwareCertificate 
+    :ivar ServerSignature: 
+    :vartype ServerSignature: SignatureData 
+    :ivar MaxRequestMessageSize: 
+    :vartype MaxRequestMessageSize: UInt32 
     '''
     def __init__(self):
         self.SessionId = NodeId()
@@ -1564,6 +1855,13 @@ class CreateSessionResult(FrozenClass):
 class CreateSessionResponse(FrozenClass):
     '''
     Creates a new session with the server.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: CreateSessionResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateSessionResponse_Encoding_DefaultBinary)
@@ -1596,6 +1894,15 @@ class CreateSessionResponse(FrozenClass):
 class UserIdentityToken(FrozenClass):
     '''
     A base type for a user identity token.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar PolicyId: 
+    :vartype PolicyId: String 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.UserIdentityToken_Encoding_DefaultBinary)
@@ -1635,6 +1942,15 @@ class UserIdentityToken(FrozenClass):
 class AnonymousIdentityToken(FrozenClass):
     '''
     A token representing an anonymous user.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar PolicyId: 
+    :vartype PolicyId: String 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AnonymousIdentityToken_Encoding_DefaultBinary)
@@ -1674,6 +1990,21 @@ class AnonymousIdentityToken(FrozenClass):
 class UserNameIdentityToken(FrozenClass):
     '''
     A token representing a user identified by a user name and password.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar PolicyId: 
+    :vartype PolicyId: String 
+    :ivar UserName: 
+    :vartype UserName: String 
+    :ivar Password: 
+    :vartype Password: ByteString 
+    :ivar EncryptionAlgorithm: 
+    :vartype EncryptionAlgorithm: String 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.UserNameIdentityToken_Encoding_DefaultBinary)
@@ -1725,6 +2056,17 @@ class UserNameIdentityToken(FrozenClass):
 class X509IdentityToken(FrozenClass):
     '''
     A token representing a user identified by an X509 certificate.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar PolicyId: 
+    :vartype PolicyId: String 
+    :ivar CertificateData: 
+    :vartype CertificateData: ByteString 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.X509IdentityToken_Encoding_DefaultBinary)
@@ -1768,6 +2110,19 @@ class X509IdentityToken(FrozenClass):
 class IssuedIdentityToken(FrozenClass):
     '''
     A token representing a user identified by a WS-Security XML token.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar PolicyId: 
+    :vartype PolicyId: String 
+    :ivar TokenData: 
+    :vartype TokenData: ByteString 
+    :ivar EncryptionAlgorithm: 
+    :vartype EncryptionAlgorithm: String 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.IssuedIdentityToken_Encoding_DefaultBinary)
@@ -1814,6 +2169,16 @@ class IssuedIdentityToken(FrozenClass):
     
 class ActivateSessionParameters(FrozenClass):
     '''
+    :ivar ClientSignature: 
+    :vartype ClientSignature: SignatureData 
+    :ivar ClientSoftwareCertificates: 
+    :vartype ClientSoftwareCertificates: SignedSoftwareCertificate 
+    :ivar LocaleIds: 
+    :vartype LocaleIds: String 
+    :ivar UserIdentityToken: 
+    :vartype UserIdentityToken: ExtensionObject 
+    :ivar UserTokenSignature: 
+    :vartype UserTokenSignature: SignatureData 
     '''
     def __init__(self):
         self.ClientSignature = SignatureData()
@@ -1861,6 +2226,13 @@ class ActivateSessionParameters(FrozenClass):
 class ActivateSessionRequest(FrozenClass):
     '''
     Activates a session with the server.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: ActivateSessionParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ActivateSessionRequest_Encoding_DefaultBinary)
@@ -1892,6 +2264,12 @@ class ActivateSessionRequest(FrozenClass):
     
 class ActivateSessionResult(FrozenClass):
     '''
+    :ivar ServerNonce: 
+    :vartype ServerNonce: ByteString 
+    :ivar Results: 
+    :vartype Results: StatusCode 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.ServerNonce = b''
@@ -1934,6 +2312,13 @@ class ActivateSessionResult(FrozenClass):
 class ActivateSessionResponse(FrozenClass):
     '''
     Activates a session with the server.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: ActivateSessionResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ActivateSessionResponse_Encoding_DefaultBinary)
@@ -1966,6 +2351,13 @@ class ActivateSessionResponse(FrozenClass):
 class CloseSessionRequest(FrozenClass):
     '''
     Closes a session with the server.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar DeleteSubscriptions: 
+    :vartype DeleteSubscriptions: Boolean 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CloseSessionRequest_Encoding_DefaultBinary)
@@ -1998,6 +2390,11 @@ class CloseSessionRequest(FrozenClass):
 class CloseSessionResponse(FrozenClass):
     '''
     Closes a session with the server.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CloseSessionResponse_Encoding_DefaultBinary)
@@ -2025,6 +2422,8 @@ class CloseSessionResponse(FrozenClass):
     
 class CancelParameters(FrozenClass):
     '''
+    :ivar RequestHandle: 
+    :vartype RequestHandle: UInt32 
     '''
     def __init__(self):
         self.RequestHandle = 0
@@ -2049,6 +2448,13 @@ class CancelParameters(FrozenClass):
 class CancelRequest(FrozenClass):
     '''
     Cancels an outstanding request.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: CancelParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CancelRequest_Encoding_DefaultBinary)
@@ -2080,6 +2486,8 @@ class CancelRequest(FrozenClass):
     
 class CancelResult(FrozenClass):
     '''
+    :ivar CancelCount: 
+    :vartype CancelCount: UInt32 
     '''
     def __init__(self):
         self.CancelCount = 0
@@ -2104,6 +2512,13 @@ class CancelResult(FrozenClass):
 class CancelResponse(FrozenClass):
     '''
     Cancels an outstanding request.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: CancelResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CancelResponse_Encoding_DefaultBinary)
@@ -2136,6 +2551,23 @@ class CancelResponse(FrozenClass):
 class NodeAttributes(FrozenClass):
     '''
     The base attributes for all nodes.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar SpecifiedAttributes: 
+    :vartype SpecifiedAttributes: UInt32 
+    :ivar DisplayName: 
+    :vartype DisplayName: LocalizedText 
+    :ivar Description: 
+    :vartype Description: LocalizedText 
+    :ivar WriteMask: 
+    :vartype WriteMask: UInt32 
+    :ivar UserWriteMask: 
+    :vartype UserWriteMask: UInt32 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.NodeAttributes_Encoding_DefaultBinary)
@@ -2191,6 +2623,25 @@ class NodeAttributes(FrozenClass):
 class ObjectAttributes(FrozenClass):
     '''
     The attributes for an object node.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar SpecifiedAttributes: 
+    :vartype SpecifiedAttributes: UInt32 
+    :ivar DisplayName: 
+    :vartype DisplayName: LocalizedText 
+    :ivar Description: 
+    :vartype Description: LocalizedText 
+    :ivar WriteMask: 
+    :vartype WriteMask: UInt32 
+    :ivar UserWriteMask: 
+    :vartype UserWriteMask: UInt32 
+    :ivar EventNotifier: 
+    :vartype EventNotifier: Byte 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ObjectAttributes_Encoding_DefaultBinary)
@@ -2250,6 +2701,39 @@ class ObjectAttributes(FrozenClass):
 class VariableAttributes(FrozenClass):
     '''
     The attributes for a variable node.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar SpecifiedAttributes: 
+    :vartype SpecifiedAttributes: UInt32 
+    :ivar DisplayName: 
+    :vartype DisplayName: LocalizedText 
+    :ivar Description: 
+    :vartype Description: LocalizedText 
+    :ivar WriteMask: 
+    :vartype WriteMask: UInt32 
+    :ivar UserWriteMask: 
+    :vartype UserWriteMask: UInt32 
+    :ivar Value: 
+    :vartype Value: Variant 
+    :ivar DataType: 
+    :vartype DataType: NodeId 
+    :ivar ValueRank: 
+    :vartype ValueRank: Int32 
+    :ivar ArrayDimensions: 
+    :vartype ArrayDimensions: UInt32 
+    :ivar AccessLevel: 
+    :vartype AccessLevel: Byte 
+    :ivar UserAccessLevel: 
+    :vartype UserAccessLevel: Byte 
+    :ivar MinimumSamplingInterval: 
+    :vartype MinimumSamplingInterval: Double 
+    :ivar Historizing: 
+    :vartype Historizing: Boolean 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.VariableAttributes_Encoding_DefaultBinary)
@@ -2339,6 +2823,27 @@ class VariableAttributes(FrozenClass):
 class MethodAttributes(FrozenClass):
     '''
     The attributes for a method node.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar SpecifiedAttributes: 
+    :vartype SpecifiedAttributes: UInt32 
+    :ivar DisplayName: 
+    :vartype DisplayName: LocalizedText 
+    :ivar Description: 
+    :vartype Description: LocalizedText 
+    :ivar WriteMask: 
+    :vartype WriteMask: UInt32 
+    :ivar UserWriteMask: 
+    :vartype UserWriteMask: UInt32 
+    :ivar Executable: 
+    :vartype Executable: Boolean 
+    :ivar UserExecutable: 
+    :vartype UserExecutable: Boolean 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.MethodAttributes_Encoding_DefaultBinary)
@@ -2402,6 +2907,25 @@ class MethodAttributes(FrozenClass):
 class ObjectTypeAttributes(FrozenClass):
     '''
     The attributes for an object type node.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar SpecifiedAttributes: 
+    :vartype SpecifiedAttributes: UInt32 
+    :ivar DisplayName: 
+    :vartype DisplayName: LocalizedText 
+    :ivar Description: 
+    :vartype Description: LocalizedText 
+    :ivar WriteMask: 
+    :vartype WriteMask: UInt32 
+    :ivar UserWriteMask: 
+    :vartype UserWriteMask: UInt32 
+    :ivar IsAbstract: 
+    :vartype IsAbstract: Boolean 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ObjectTypeAttributes_Encoding_DefaultBinary)
@@ -2461,6 +2985,33 @@ class ObjectTypeAttributes(FrozenClass):
 class VariableTypeAttributes(FrozenClass):
     '''
     The attributes for a variable type node.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar SpecifiedAttributes: 
+    :vartype SpecifiedAttributes: UInt32 
+    :ivar DisplayName: 
+    :vartype DisplayName: LocalizedText 
+    :ivar Description: 
+    :vartype Description: LocalizedText 
+    :ivar WriteMask: 
+    :vartype WriteMask: UInt32 
+    :ivar UserWriteMask: 
+    :vartype UserWriteMask: UInt32 
+    :ivar Value: 
+    :vartype Value: Variant 
+    :ivar DataType: 
+    :vartype DataType: NodeId 
+    :ivar ValueRank: 
+    :vartype ValueRank: Int32 
+    :ivar ArrayDimensions: 
+    :vartype ArrayDimensions: UInt32 
+    :ivar IsAbstract: 
+    :vartype IsAbstract: Boolean 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.VariableTypeAttributes_Encoding_DefaultBinary)
@@ -2538,6 +3089,29 @@ class VariableTypeAttributes(FrozenClass):
 class ReferenceTypeAttributes(FrozenClass):
     '''
     The attributes for a reference type node.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar SpecifiedAttributes: 
+    :vartype SpecifiedAttributes: UInt32 
+    :ivar DisplayName: 
+    :vartype DisplayName: LocalizedText 
+    :ivar Description: 
+    :vartype Description: LocalizedText 
+    :ivar WriteMask: 
+    :vartype WriteMask: UInt32 
+    :ivar UserWriteMask: 
+    :vartype UserWriteMask: UInt32 
+    :ivar IsAbstract: 
+    :vartype IsAbstract: Boolean 
+    :ivar Symmetric: 
+    :vartype Symmetric: Boolean 
+    :ivar InverseName: 
+    :vartype InverseName: LocalizedText 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ReferenceTypeAttributes_Encoding_DefaultBinary)
@@ -2605,6 +3179,25 @@ class ReferenceTypeAttributes(FrozenClass):
 class DataTypeAttributes(FrozenClass):
     '''
     The attributes for a data type node.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar SpecifiedAttributes: 
+    :vartype SpecifiedAttributes: UInt32 
+    :ivar DisplayName: 
+    :vartype DisplayName: LocalizedText 
+    :ivar Description: 
+    :vartype Description: LocalizedText 
+    :ivar WriteMask: 
+    :vartype WriteMask: UInt32 
+    :ivar UserWriteMask: 
+    :vartype UserWriteMask: UInt32 
+    :ivar IsAbstract: 
+    :vartype IsAbstract: Boolean 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DataTypeAttributes_Encoding_DefaultBinary)
@@ -2664,6 +3257,27 @@ class DataTypeAttributes(FrozenClass):
 class ViewAttributes(FrozenClass):
     '''
     The attributes for a view node.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar SpecifiedAttributes: 
+    :vartype SpecifiedAttributes: UInt32 
+    :ivar DisplayName: 
+    :vartype DisplayName: LocalizedText 
+    :ivar Description: 
+    :vartype Description: LocalizedText 
+    :ivar WriteMask: 
+    :vartype WriteMask: UInt32 
+    :ivar UserWriteMask: 
+    :vartype UserWriteMask: UInt32 
+    :ivar ContainsNoLoops: 
+    :vartype ContainsNoLoops: Boolean 
+    :ivar EventNotifier: 
+    :vartype EventNotifier: Byte 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ViewAttributes_Encoding_DefaultBinary)
@@ -2727,6 +3341,21 @@ class ViewAttributes(FrozenClass):
 class AddNodesItem(FrozenClass):
     '''
     A request to add a node to the server address space.
+    
+    :ivar ParentNodeId: 
+    :vartype ParentNodeId: ExpandedNodeId 
+    :ivar ReferenceTypeId: 
+    :vartype ReferenceTypeId: NodeId 
+    :ivar RequestedNewNodeId: 
+    :vartype RequestedNewNodeId: ExpandedNodeId 
+    :ivar BrowseName: 
+    :vartype BrowseName: QualifiedName 
+    :ivar NodeClass: 
+    :vartype NodeClass: NodeClass 
+    :ivar NodeAttributes: 
+    :vartype NodeAttributes: ExtensionObject 
+    :ivar TypeDefinition: 
+    :vartype TypeDefinition: ExpandedNodeId 
     '''
     def __init__(self):
         self.ParentNodeId = ExpandedNodeId()
@@ -2775,6 +3404,11 @@ class AddNodesItem(FrozenClass):
 class AddNodesResult(FrozenClass):
     '''
     A result of an add node operation.
+    
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar AddedNodeId: 
+    :vartype AddedNodeId: NodeId 
     '''
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -2802,6 +3436,8 @@ class AddNodesResult(FrozenClass):
     
 class AddNodesParameters(FrozenClass):
     '''
+    :ivar NodesToAdd: 
+    :vartype NodesToAdd: AddNodesItem 
     '''
     def __init__(self):
         self.NodesToAdd = []
@@ -2831,6 +3467,13 @@ class AddNodesParameters(FrozenClass):
 class AddNodesRequest(FrozenClass):
     '''
     Adds one or more nodes to the server address space.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: AddNodesParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AddNodesRequest_Encoding_DefaultBinary)
@@ -2863,6 +3506,15 @@ class AddNodesRequest(FrozenClass):
 class AddNodesResponse(FrozenClass):
     '''
     Adds one or more nodes to the server address space.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Results: 
+    :vartype Results: AddNodesResult 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AddNodesResponse_Encoding_DefaultBinary)
@@ -2909,6 +3561,19 @@ class AddNodesResponse(FrozenClass):
 class AddReferencesItem(FrozenClass):
     '''
     A request to add a reference to the server address space.
+    
+    :ivar SourceNodeId: 
+    :vartype SourceNodeId: NodeId 
+    :ivar ReferenceTypeId: 
+    :vartype ReferenceTypeId: NodeId 
+    :ivar IsForward: 
+    :vartype IsForward: Boolean 
+    :ivar TargetServerUri: 
+    :vartype TargetServerUri: String 
+    :ivar TargetNodeId: 
+    :vartype TargetNodeId: ExpandedNodeId 
+    :ivar TargetNodeClass: 
+    :vartype TargetNodeClass: NodeClass 
     '''
     def __init__(self):
         self.SourceNodeId = NodeId()
@@ -2953,6 +3618,13 @@ class AddReferencesItem(FrozenClass):
 class AddReferencesRequest(FrozenClass):
     '''
     Adds one or more references to the server address space.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar ReferencesToAdd: 
+    :vartype ReferencesToAdd: AddReferencesItem 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AddReferencesRequest_Encoding_DefaultBinary)
@@ -2990,6 +3662,15 @@ class AddReferencesRequest(FrozenClass):
 class AddReferencesResponse(FrozenClass):
     '''
     Adds one or more references to the server address space.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Results: 
+    :vartype Results: StatusCode 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AddReferencesResponse_Encoding_DefaultBinary)
@@ -3036,6 +3717,11 @@ class AddReferencesResponse(FrozenClass):
 class DeleteNodesItem(FrozenClass):
     '''
     A request to delete a node to the server address space.
+    
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
+    :ivar DeleteTargetReferences: 
+    :vartype DeleteTargetReferences: Boolean 
     '''
     def __init__(self):
         self.NodeId = NodeId()
@@ -3063,6 +3749,8 @@ class DeleteNodesItem(FrozenClass):
     
 class DeleteNodesParameters(FrozenClass):
     '''
+    :ivar NodesToDelete: 
+    :vartype NodesToDelete: DeleteNodesItem 
     '''
     def __init__(self):
         self.NodesToDelete = []
@@ -3092,6 +3780,13 @@ class DeleteNodesParameters(FrozenClass):
 class DeleteNodesRequest(FrozenClass):
     '''
     Delete one or more nodes from the server address space.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: DeleteNodesParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteNodesRequest_Encoding_DefaultBinary)
@@ -3123,6 +3818,10 @@ class DeleteNodesRequest(FrozenClass):
     
 class DeleteNodesResult(FrozenClass):
     '''
+    :ivar Results: 
+    :vartype Results: StatusCode 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.Results = []
@@ -3161,6 +3860,13 @@ class DeleteNodesResult(FrozenClass):
 class DeleteNodesResponse(FrozenClass):
     '''
     Delete one or more nodes from the server address space.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: DeleteNodesResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteNodesResponse_Encoding_DefaultBinary)
@@ -3193,6 +3899,17 @@ class DeleteNodesResponse(FrozenClass):
 class DeleteReferencesItem(FrozenClass):
     '''
     A request to delete a node from the server address space.
+    
+    :ivar SourceNodeId: 
+    :vartype SourceNodeId: NodeId 
+    :ivar ReferenceTypeId: 
+    :vartype ReferenceTypeId: NodeId 
+    :ivar IsForward: 
+    :vartype IsForward: Boolean 
+    :ivar TargetNodeId: 
+    :vartype TargetNodeId: ExpandedNodeId 
+    :ivar DeleteBidirectional: 
+    :vartype DeleteBidirectional: Boolean 
     '''
     def __init__(self):
         self.SourceNodeId = NodeId()
@@ -3232,6 +3949,8 @@ class DeleteReferencesItem(FrozenClass):
     
 class DeleteReferencesParameters(FrozenClass):
     '''
+    :ivar ReferencesToDelete: 
+    :vartype ReferencesToDelete: DeleteReferencesItem 
     '''
     def __init__(self):
         self.ReferencesToDelete = []
@@ -3261,6 +3980,13 @@ class DeleteReferencesParameters(FrozenClass):
 class DeleteReferencesRequest(FrozenClass):
     '''
     Delete one or more references from the server address space.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: DeleteReferencesParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteReferencesRequest_Encoding_DefaultBinary)
@@ -3292,6 +4018,10 @@ class DeleteReferencesRequest(FrozenClass):
     
 class DeleteReferencesResult(FrozenClass):
     '''
+    :ivar Results: 
+    :vartype Results: StatusCode 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.Results = []
@@ -3330,6 +4060,13 @@ class DeleteReferencesResult(FrozenClass):
 class DeleteReferencesResponse(FrozenClass):
     '''
     Delete one or more references from the server address space.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: DeleteReferencesResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteReferencesResponse_Encoding_DefaultBinary)
@@ -3362,6 +4099,13 @@ class DeleteReferencesResponse(FrozenClass):
 class ViewDescription(FrozenClass):
     '''
     The view to browse.
+    
+    :ivar ViewId: 
+    :vartype ViewId: NodeId 
+    :ivar Timestamp: 
+    :vartype Timestamp: DateTime 
+    :ivar ViewVersion: 
+    :vartype ViewVersion: UInt32 
     '''
     def __init__(self):
         self.ViewId = NodeId()
@@ -3394,6 +4138,19 @@ class ViewDescription(FrozenClass):
 class BrowseDescription(FrozenClass):
     '''
     A request to browse the the references from a node.
+    
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
+    :ivar BrowseDirection: 
+    :vartype BrowseDirection: BrowseDirection 
+    :ivar ReferenceTypeId: 
+    :vartype ReferenceTypeId: NodeId 
+    :ivar IncludeSubtypes: 
+    :vartype IncludeSubtypes: Boolean 
+    :ivar NodeClassMask: 
+    :vartype NodeClassMask: UInt32 
+    :ivar ResultMask: 
+    :vartype ResultMask: UInt32 
     '''
     def __init__(self):
         self.NodeId = NodeId()
@@ -3438,6 +4195,21 @@ class BrowseDescription(FrozenClass):
 class ReferenceDescription(FrozenClass):
     '''
     The description of a reference.
+    
+    :ivar ReferenceTypeId: 
+    :vartype ReferenceTypeId: NodeId 
+    :ivar IsForward: 
+    :vartype IsForward: Boolean 
+    :ivar NodeId: 
+    :vartype NodeId: ExpandedNodeId 
+    :ivar BrowseName: 
+    :vartype BrowseName: QualifiedName 
+    :ivar DisplayName: 
+    :vartype DisplayName: LocalizedText 
+    :ivar NodeClass: 
+    :vartype NodeClass: NodeClass 
+    :ivar TypeDefinition: 
+    :vartype TypeDefinition: ExpandedNodeId 
     '''
     def __init__(self):
         self.ReferenceTypeId = NodeId()
@@ -3486,6 +4258,13 @@ class ReferenceDescription(FrozenClass):
 class BrowseResult(FrozenClass):
     '''
     The result of a browse operation.
+    
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar ContinuationPoint: 
+    :vartype ContinuationPoint: ByteString 
+    :ivar References: 
+    :vartype References: ReferenceDescription 
     '''
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -3522,6 +4301,12 @@ class BrowseResult(FrozenClass):
     
 class BrowseParameters(FrozenClass):
     '''
+    :ivar View: 
+    :vartype View: ViewDescription 
+    :ivar RequestedMaxReferencesPerNode: 
+    :vartype RequestedMaxReferencesPerNode: UInt32 
+    :ivar NodesToBrowse: 
+    :vartype NodesToBrowse: BrowseDescription 
     '''
     def __init__(self):
         self.View = ViewDescription()
@@ -3559,6 +4344,13 @@ class BrowseParameters(FrozenClass):
 class BrowseRequest(FrozenClass):
     '''
     Browse the references for one or more nodes from the server address space.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: BrowseParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.BrowseRequest_Encoding_DefaultBinary)
@@ -3591,6 +4383,15 @@ class BrowseRequest(FrozenClass):
 class BrowseResponse(FrozenClass):
     '''
     Browse the references for one or more nodes from the server address space.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Results: 
+    :vartype Results: BrowseResult 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.BrowseResponse_Encoding_DefaultBinary)
@@ -3636,6 +4437,10 @@ class BrowseResponse(FrozenClass):
     
 class BrowseNextParameters(FrozenClass):
     '''
+    :ivar ReleaseContinuationPoints: 
+    :vartype ReleaseContinuationPoints: Boolean 
+    :ivar ContinuationPoints: 
+    :vartype ContinuationPoints: ByteString 
     '''
     def __init__(self):
         self.ReleaseContinuationPoints = True
@@ -3666,6 +4471,13 @@ class BrowseNextParameters(FrozenClass):
 class BrowseNextRequest(FrozenClass):
     '''
     Continues one or more browse operations.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: BrowseNextParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.BrowseNextRequest_Encoding_DefaultBinary)
@@ -3697,6 +4509,10 @@ class BrowseNextRequest(FrozenClass):
     
 class BrowseNextResult(FrozenClass):
     '''
+    :ivar Results: 
+    :vartype Results: BrowseResult 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.Results = []
@@ -3735,6 +4551,13 @@ class BrowseNextResult(FrozenClass):
 class BrowseNextResponse(FrozenClass):
     '''
     Continues one or more browse operations.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: BrowseNextResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.BrowseNextResponse_Encoding_DefaultBinary)
@@ -3767,6 +4590,15 @@ class BrowseNextResponse(FrozenClass):
 class RelativePathElement(FrozenClass):
     '''
     An element in a relative path.
+    
+    :ivar ReferenceTypeId: 
+    :vartype ReferenceTypeId: NodeId 
+    :ivar IsInverse: 
+    :vartype IsInverse: Boolean 
+    :ivar IncludeSubtypes: 
+    :vartype IncludeSubtypes: Boolean 
+    :ivar TargetName: 
+    :vartype TargetName: QualifiedName 
     '''
     def __init__(self):
         self.ReferenceTypeId = NodeId()
@@ -3803,6 +4635,9 @@ class RelativePathElement(FrozenClass):
 class RelativePath(FrozenClass):
     '''
     A relative path constructed from reference types and browse names.
+    
+    :ivar Elements: 
+    :vartype Elements: RelativePathElement 
     '''
     def __init__(self):
         self.Elements = []
@@ -3832,6 +4667,11 @@ class RelativePath(FrozenClass):
 class BrowsePath(FrozenClass):
     '''
     A request to translate a path into a node id.
+    
+    :ivar StartingNode: 
+    :vartype StartingNode: NodeId 
+    :ivar RelativePath: 
+    :vartype RelativePath: RelativePath 
     '''
     def __init__(self):
         self.StartingNode = NodeId()
@@ -3860,6 +4700,11 @@ class BrowsePath(FrozenClass):
 class BrowsePathTarget(FrozenClass):
     '''
     The target of the translated path.
+    
+    :ivar TargetId: 
+    :vartype TargetId: ExpandedNodeId 
+    :ivar RemainingPathIndex: 
+    :vartype RemainingPathIndex: UInt32 
     '''
     def __init__(self):
         self.TargetId = ExpandedNodeId()
@@ -3888,6 +4733,11 @@ class BrowsePathTarget(FrozenClass):
 class BrowsePathResult(FrozenClass):
     '''
     The result of a translate opearation.
+    
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar Targets: 
+    :vartype Targets: BrowsePathTarget 
     '''
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -3920,6 +4770,8 @@ class BrowsePathResult(FrozenClass):
     
 class TranslateBrowsePathsToNodeIdsParameters(FrozenClass):
     '''
+    :ivar BrowsePaths: 
+    :vartype BrowsePaths: BrowsePath 
     '''
     def __init__(self):
         self.BrowsePaths = []
@@ -3949,6 +4801,13 @@ class TranslateBrowsePathsToNodeIdsParameters(FrozenClass):
 class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
     '''
     Translates one or more paths in the server address space.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: TranslateBrowsePathsToNodeIdsParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary)
@@ -3981,6 +4840,15 @@ class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
 class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
     '''
     Translates one or more paths in the server address space.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Results: 
+    :vartype Results: BrowsePathResult 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsResponse_Encoding_DefaultBinary)
@@ -4026,6 +4894,8 @@ class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
     
 class RegisterNodesParameters(FrozenClass):
     '''
+    :ivar NodesToRegister: 
+    :vartype NodesToRegister: NodeId 
     '''
     def __init__(self):
         self.NodesToRegister = []
@@ -4055,6 +4925,13 @@ class RegisterNodesParameters(FrozenClass):
 class RegisterNodesRequest(FrozenClass):
     '''
     Registers one or more nodes for repeated use within a session.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: RegisterNodesParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterNodesRequest_Encoding_DefaultBinary)
@@ -4086,6 +4963,8 @@ class RegisterNodesRequest(FrozenClass):
     
 class RegisterNodesResult(FrozenClass):
     '''
+    :ivar RegisteredNodeIds: 
+    :vartype RegisteredNodeIds: NodeId 
     '''
     def __init__(self):
         self.RegisteredNodeIds = []
@@ -4115,6 +4994,13 @@ class RegisterNodesResult(FrozenClass):
 class RegisterNodesResponse(FrozenClass):
     '''
     Registers one or more nodes for repeated use within a session.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: RegisterNodesResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterNodesResponse_Encoding_DefaultBinary)
@@ -4146,6 +5032,8 @@ class RegisterNodesResponse(FrozenClass):
     
 class UnregisterNodesParameters(FrozenClass):
     '''
+    :ivar NodesToUnregister: 
+    :vartype NodesToUnregister: NodeId 
     '''
     def __init__(self):
         self.NodesToUnregister = []
@@ -4175,6 +5063,13 @@ class UnregisterNodesParameters(FrozenClass):
 class UnregisterNodesRequest(FrozenClass):
     '''
     Unregisters one or more previously registered nodes.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: UnregisterNodesParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.UnregisterNodesRequest_Encoding_DefaultBinary)
@@ -4207,6 +5102,11 @@ class UnregisterNodesRequest(FrozenClass):
 class UnregisterNodesResponse(FrozenClass):
     '''
     Unregisters one or more previously registered nodes.
+    
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.UnregisterNodesResponse_Encoding_DefaultBinary)
@@ -4234,6 +5134,24 @@ class UnregisterNodesResponse(FrozenClass):
     
 class EndpointConfiguration(FrozenClass):
     '''
+    :ivar OperationTimeout: 
+    :vartype OperationTimeout: Int32 
+    :ivar UseBinaryEncoding: 
+    :vartype UseBinaryEncoding: Boolean 
+    :ivar MaxStringLength: 
+    :vartype MaxStringLength: Int32 
+    :ivar MaxByteStringLength: 
+    :vartype MaxByteStringLength: Int32 
+    :ivar MaxArrayLength: 
+    :vartype MaxArrayLength: Int32 
+    :ivar MaxMessageSize: 
+    :vartype MaxMessageSize: Int32 
+    :ivar MaxBufferSize: 
+    :vartype MaxBufferSize: Int32 
+    :ivar ChannelLifetime: 
+    :vartype ChannelLifetime: Int32 
+    :ivar SecurityTokenLifetime: 
+    :vartype SecurityTokenLifetime: Int32 
     '''
     def __init__(self):
         self.OperationTimeout = 0
@@ -4289,6 +5207,18 @@ class EndpointConfiguration(FrozenClass):
     
 class SupportedProfile(FrozenClass):
     '''
+    :ivar OrganizationUri: 
+    :vartype OrganizationUri: String 
+    :ivar ProfileId: 
+    :vartype ProfileId: String 
+    :ivar ComplianceTool: 
+    :vartype ComplianceTool: String 
+    :ivar ComplianceDate: 
+    :vartype ComplianceDate: DateTime 
+    :ivar ComplianceLevel: 
+    :vartype ComplianceLevel: ComplianceLevel 
+    :ivar UnsupportedUnitIds: 
+    :vartype UnsupportedUnitIds: String 
     '''
     def __init__(self):
         self.OrganizationUri = ''
@@ -4334,6 +5264,26 @@ class SupportedProfile(FrozenClass):
     
 class SoftwareCertificate(FrozenClass):
     '''
+    :ivar ProductName: 
+    :vartype ProductName: String 
+    :ivar ProductUri: 
+    :vartype ProductUri: String 
+    :ivar VendorName: 
+    :vartype VendorName: String 
+    :ivar VendorProductCertificate: 
+    :vartype VendorProductCertificate: ByteString 
+    :ivar SoftwareVersion: 
+    :vartype SoftwareVersion: String 
+    :ivar BuildNumber: 
+    :vartype BuildNumber: String 
+    :ivar BuildDate: 
+    :vartype BuildDate: DateTime 
+    :ivar IssuedBy: 
+    :vartype IssuedBy: String 
+    :ivar IssueDate: 
+    :vartype IssueDate: DateTime 
+    :ivar SupportedProfiles: 
+    :vartype SupportedProfiles: SupportedProfile 
     '''
     def __init__(self):
         self.ProductName = ''
@@ -4398,6 +5348,12 @@ class SoftwareCertificate(FrozenClass):
     
 class QueryDataDescription(FrozenClass):
     '''
+    :ivar RelativePath: 
+    :vartype RelativePath: RelativePath 
+    :ivar AttributeId: 
+    :vartype AttributeId: UInt32 
+    :ivar IndexRange: 
+    :vartype IndexRange: String 
     '''
     def __init__(self):
         self.RelativePath = RelativePath()
@@ -4429,6 +5385,12 @@ class QueryDataDescription(FrozenClass):
     
 class NodeTypeDescription(FrozenClass):
     '''
+    :ivar TypeDefinitionNode: 
+    :vartype TypeDefinitionNode: ExpandedNodeId 
+    :ivar IncludeSubTypes: 
+    :vartype IncludeSubTypes: Boolean 
+    :ivar DataToReturn: 
+    :vartype DataToReturn: QueryDataDescription 
     '''
     def __init__(self):
         self.TypeDefinitionNode = ExpandedNodeId()
@@ -4465,6 +5427,12 @@ class NodeTypeDescription(FrozenClass):
     
 class QueryDataSet(FrozenClass):
     '''
+    :ivar NodeId: 
+    :vartype NodeId: ExpandedNodeId 
+    :ivar TypeDefinitionNode: 
+    :vartype TypeDefinitionNode: ExpandedNodeId 
+    :ivar Values: 
+    :vartype Values: Variant 
     '''
     def __init__(self):
         self.NodeId = ExpandedNodeId()
@@ -4501,6 +5469,14 @@ class QueryDataSet(FrozenClass):
     
 class NodeReference(FrozenClass):
     '''
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
+    :ivar ReferenceTypeId: 
+    :vartype ReferenceTypeId: NodeId 
+    :ivar IsForward: 
+    :vartype IsForward: Boolean 
+    :ivar ReferencedNodeIds: 
+    :vartype ReferencedNodeIds: NodeId 
     '''
     def __init__(self):
         self.NodeId = NodeId()
@@ -4541,6 +5517,10 @@ class NodeReference(FrozenClass):
     
 class ContentFilterElement(FrozenClass):
     '''
+    :ivar FilterOperator: 
+    :vartype FilterOperator: FilterOperator 
+    :ivar FilterOperands: 
+    :vartype FilterOperands: ExtensionObject 
     '''
     def __init__(self):
         self.FilterOperator = 0
@@ -4573,6 +5553,8 @@ class ContentFilterElement(FrozenClass):
     
 class ContentFilter(FrozenClass):
     '''
+    :ivar Elements: 
+    :vartype Elements: ContentFilterElement 
     '''
     def __init__(self):
         self.Elements = []
@@ -4601,6 +5583,8 @@ class ContentFilter(FrozenClass):
     
 class ElementOperand(FrozenClass):
     '''
+    :ivar Index: 
+    :vartype Index: UInt32 
     '''
     def __init__(self):
         self.Index = 0
@@ -4624,6 +5608,8 @@ class ElementOperand(FrozenClass):
     
 class LiteralOperand(FrozenClass):
     '''
+    :ivar Value: 
+    :vartype Value: Variant 
     '''
     def __init__(self):
         self.Value = Variant()
@@ -4647,6 +5633,16 @@ class LiteralOperand(FrozenClass):
     
 class AttributeOperand(FrozenClass):
     '''
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
+    :ivar Alias: 
+    :vartype Alias: String 
+    :ivar BrowsePath: 
+    :vartype BrowsePath: RelativePath 
+    :ivar AttributeId: 
+    :vartype AttributeId: UInt32 
+    :ivar IndexRange: 
+    :vartype IndexRange: String 
     '''
     def __init__(self):
         self.NodeId = NodeId()
@@ -4686,6 +5682,14 @@ class AttributeOperand(FrozenClass):
     
 class SimpleAttributeOperand(FrozenClass):
     '''
+    :ivar TypeDefinitionId: 
+    :vartype TypeDefinitionId: NodeId 
+    :ivar BrowsePath: 
+    :vartype BrowsePath: QualifiedName 
+    :ivar AttributeId: 
+    :vartype AttributeId: UInt32 
+    :ivar IndexRange: 
+    :vartype IndexRange: String 
     '''
     def __init__(self):
         self.TypeDefinitionId = NodeId()
@@ -4726,6 +5730,12 @@ class SimpleAttributeOperand(FrozenClass):
     
 class ContentFilterElementResult(FrozenClass):
     '''
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar OperandStatusCodes: 
+    :vartype OperandStatusCodes: StatusCode 
+    :ivar OperandDiagnosticInfos: 
+    :vartype OperandDiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -4767,6 +5777,10 @@ class ContentFilterElementResult(FrozenClass):
     
 class ContentFilterResult(FrozenClass):
     '''
+    :ivar ElementResults: 
+    :vartype ElementResults: ContentFilterElementResult 
+    :ivar ElementDiagnosticInfos: 
+    :vartype ElementDiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.ElementResults = []
@@ -4804,6 +5818,12 @@ class ContentFilterResult(FrozenClass):
     
 class ParsingResult(FrozenClass):
     '''
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar DataStatusCodes: 
+    :vartype DataStatusCodes: StatusCode 
+    :ivar DataDiagnosticInfos: 
+    :vartype DataDiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -4845,6 +5865,16 @@ class ParsingResult(FrozenClass):
     
 class QueryFirstParameters(FrozenClass):
     '''
+    :ivar View: 
+    :vartype View: ViewDescription 
+    :ivar NodeTypes: 
+    :vartype NodeTypes: NodeTypeDescription 
+    :ivar Filter: 
+    :vartype Filter: ContentFilter 
+    :ivar MaxDataSetsToReturn: 
+    :vartype MaxDataSetsToReturn: UInt32 
+    :ivar MaxReferencesToReturn: 
+    :vartype MaxReferencesToReturn: UInt32 
     '''
     def __init__(self):
         self.View = ViewDescription()
@@ -4889,6 +5919,12 @@ class QueryFirstParameters(FrozenClass):
     
 class QueryFirstRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: QueryFirstParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.QueryFirstRequest_Encoding_DefaultBinary)
@@ -4920,6 +5956,16 @@ class QueryFirstRequest(FrozenClass):
     
 class QueryFirstResult(FrozenClass):
     '''
+    :ivar QueryDataSets: 
+    :vartype QueryDataSets: QueryDataSet 
+    :ivar ContinuationPoint: 
+    :vartype ContinuationPoint: ByteString 
+    :ivar ParsingResults: 
+    :vartype ParsingResults: ParsingResult 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar FilterResult: 
+    :vartype FilterResult: ContentFilterResult 
     '''
     def __init__(self):
         self.QueryDataSets = []
@@ -4974,6 +6020,12 @@ class QueryFirstResult(FrozenClass):
     
 class QueryFirstResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: QueryFirstResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.QueryFirstResponse_Encoding_DefaultBinary)
@@ -5005,6 +6057,10 @@ class QueryFirstResponse(FrozenClass):
     
 class QueryNextParameters(FrozenClass):
     '''
+    :ivar ReleaseContinuationPoint: 
+    :vartype ReleaseContinuationPoint: Boolean 
+    :ivar ContinuationPoint: 
+    :vartype ContinuationPoint: ByteString 
     '''
     def __init__(self):
         self.ReleaseContinuationPoint = True
@@ -5032,6 +6088,12 @@ class QueryNextParameters(FrozenClass):
     
 class QueryNextRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: QueryNextParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.QueryNextRequest_Encoding_DefaultBinary)
@@ -5063,6 +6125,10 @@ class QueryNextRequest(FrozenClass):
     
 class QueryNextResult(FrozenClass):
     '''
+    :ivar QueryDataSets: 
+    :vartype QueryDataSets: QueryDataSet 
+    :ivar RevisedContinuationPoint: 
+    :vartype RevisedContinuationPoint: ByteString 
     '''
     def __init__(self):
         self.QueryDataSets = []
@@ -5095,6 +6161,12 @@ class QueryNextResult(FrozenClass):
     
 class QueryNextResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: QueryNextResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.QueryNextResponse_Encoding_DefaultBinary)
@@ -5126,6 +6198,14 @@ class QueryNextResponse(FrozenClass):
     
 class ReadValueId(FrozenClass):
     '''
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
+    :ivar AttributeId: 
+    :vartype AttributeId: UInt32 
+    :ivar IndexRange: 
+    :vartype IndexRange: String 
+    :ivar DataEncoding: 
+    :vartype DataEncoding: QualifiedName 
     '''
     def __init__(self):
         self.NodeId = NodeId()
@@ -5161,6 +6241,12 @@ class ReadValueId(FrozenClass):
     
 class ReadParameters(FrozenClass):
     '''
+    :ivar MaxAge: 
+    :vartype MaxAge: Double 
+    :ivar TimestampsToReturn: 
+    :vartype TimestampsToReturn: TimestampsToReturn 
+    :ivar NodesToRead: 
+    :vartype NodesToRead: ReadValueId 
     '''
     def __init__(self):
         self.MaxAge = 0
@@ -5197,6 +6283,12 @@ class ReadParameters(FrozenClass):
     
 class ReadRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: ReadParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ReadRequest_Encoding_DefaultBinary)
@@ -5228,6 +6320,14 @@ class ReadRequest(FrozenClass):
     
 class ReadResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Results: 
+    :vartype Results: DataValue 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ReadResponse_Encoding_DefaultBinary)
@@ -5273,6 +6373,14 @@ class ReadResponse(FrozenClass):
     
 class HistoryReadValueId(FrozenClass):
     '''
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
+    :ivar IndexRange: 
+    :vartype IndexRange: String 
+    :ivar DataEncoding: 
+    :vartype DataEncoding: QualifiedName 
+    :ivar ContinuationPoint: 
+    :vartype ContinuationPoint: ByteString 
     '''
     def __init__(self):
         self.NodeId = NodeId()
@@ -5308,6 +6416,12 @@ class HistoryReadValueId(FrozenClass):
     
 class HistoryReadResult(FrozenClass):
     '''
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar ContinuationPoint: 
+    :vartype ContinuationPoint: ByteString 
+    :ivar HistoryData: 
+    :vartype HistoryData: ExtensionObject 
     '''
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -5359,6 +6473,14 @@ class HistoryReadDetails(FrozenClass):
     
 class ReadEventDetails(FrozenClass):
     '''
+    :ivar NumValuesPerNode: 
+    :vartype NumValuesPerNode: UInt32 
+    :ivar StartTime: 
+    :vartype StartTime: DateTime 
+    :ivar EndTime: 
+    :vartype EndTime: DateTime 
+    :ivar Filter: 
+    :vartype Filter: EventFilter 
     '''
     def __init__(self):
         self.NumValuesPerNode = 0
@@ -5394,6 +6516,16 @@ class ReadEventDetails(FrozenClass):
     
 class ReadRawModifiedDetails(FrozenClass):
     '''
+    :ivar IsReadModified: 
+    :vartype IsReadModified: Boolean 
+    :ivar StartTime: 
+    :vartype StartTime: DateTime 
+    :ivar EndTime: 
+    :vartype EndTime: DateTime 
+    :ivar NumValuesPerNode: 
+    :vartype NumValuesPerNode: UInt32 
+    :ivar ReturnBounds: 
+    :vartype ReturnBounds: Boolean 
     '''
     def __init__(self):
         self.IsReadModified = True
@@ -5433,6 +6565,16 @@ class ReadRawModifiedDetails(FrozenClass):
     
 class ReadProcessedDetails(FrozenClass):
     '''
+    :ivar StartTime: 
+    :vartype StartTime: DateTime 
+    :ivar EndTime: 
+    :vartype EndTime: DateTime 
+    :ivar ProcessingInterval: 
+    :vartype ProcessingInterval: Double 
+    :ivar AggregateType: 
+    :vartype AggregateType: NodeId 
+    :ivar AggregateConfiguration: 
+    :vartype AggregateConfiguration: AggregateConfiguration 
     '''
     def __init__(self):
         self.StartTime = datetime.now()
@@ -5477,6 +6619,10 @@ class ReadProcessedDetails(FrozenClass):
     
 class ReadAtTimeDetails(FrozenClass):
     '''
+    :ivar ReqTimes: 
+    :vartype ReqTimes: DateTime 
+    :ivar UseSimpleBounds: 
+    :vartype UseSimpleBounds: Boolean 
     '''
     def __init__(self):
         self.ReqTimes = []
@@ -5506,6 +6652,8 @@ class ReadAtTimeDetails(FrozenClass):
     
 class HistoryData(FrozenClass):
     '''
+    :ivar DataValues: 
+    :vartype DataValues: DataValue 
     '''
     def __init__(self):
         self.DataValues = []
@@ -5534,6 +6682,12 @@ class HistoryData(FrozenClass):
     
 class ModificationInfo(FrozenClass):
     '''
+    :ivar ModificationTime: 
+    :vartype ModificationTime: DateTime 
+    :ivar UpdateType: 
+    :vartype UpdateType: HistoryUpdateType 
+    :ivar UserName: 
+    :vartype UserName: String 
     '''
     def __init__(self):
         self.ModificationTime = datetime.now()
@@ -5565,6 +6719,10 @@ class ModificationInfo(FrozenClass):
     
 class HistoryModifiedData(FrozenClass):
     '''
+    :ivar DataValues: 
+    :vartype DataValues: DataValue 
+    :ivar ModificationInfos: 
+    :vartype ModificationInfos: ModificationInfo 
     '''
     def __init__(self):
         self.DataValues = []
@@ -5602,6 +6760,8 @@ class HistoryModifiedData(FrozenClass):
     
 class HistoryEvent(FrozenClass):
     '''
+    :ivar Events: 
+    :vartype Events: HistoryEventFieldList 
     '''
     def __init__(self):
         self.Events = []
@@ -5630,6 +6790,14 @@ class HistoryEvent(FrozenClass):
     
 class HistoryReadParameters(FrozenClass):
     '''
+    :ivar HistoryReadDetails: 
+    :vartype HistoryReadDetails: ExtensionObject 
+    :ivar TimestampsToReturn: 
+    :vartype TimestampsToReturn: TimestampsToReturn 
+    :ivar ReleaseContinuationPoints: 
+    :vartype ReleaseContinuationPoints: Boolean 
+    :ivar NodesToRead: 
+    :vartype NodesToRead: HistoryReadValueId 
     '''
     def __init__(self):
         self.HistoryReadDetails = ExtensionObject()
@@ -5670,6 +6838,12 @@ class HistoryReadParameters(FrozenClass):
     
 class HistoryReadRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: HistoryReadParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.HistoryReadRequest_Encoding_DefaultBinary)
@@ -5701,6 +6875,14 @@ class HistoryReadRequest(FrozenClass):
     
 class HistoryReadResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Results: 
+    :vartype Results: HistoryReadResult 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.HistoryReadResponse_Encoding_DefaultBinary)
@@ -5746,6 +6928,14 @@ class HistoryReadResponse(FrozenClass):
     
 class WriteValue(FrozenClass):
     '''
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
+    :ivar AttributeId: 
+    :vartype AttributeId: UInt32 
+    :ivar IndexRange: 
+    :vartype IndexRange: String 
+    :ivar Value: 
+    :vartype Value: DataValue 
     '''
     def __init__(self):
         self.NodeId = NodeId()
@@ -5781,6 +6971,8 @@ class WriteValue(FrozenClass):
     
 class WriteParameters(FrozenClass):
     '''
+    :ivar NodesToWrite: 
+    :vartype NodesToWrite: WriteValue 
     '''
     def __init__(self):
         self.NodesToWrite = []
@@ -5809,6 +7001,12 @@ class WriteParameters(FrozenClass):
     
 class WriteRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: WriteParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.WriteRequest_Encoding_DefaultBinary)
@@ -5840,6 +7038,14 @@ class WriteRequest(FrozenClass):
     
 class WriteResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Results: 
+    :vartype Results: StatusCode 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.WriteResponse_Encoding_DefaultBinary)
@@ -5885,6 +7091,8 @@ class WriteResponse(FrozenClass):
     
 class HistoryUpdateDetails(FrozenClass):
     '''
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
     '''
     def __init__(self):
         self.NodeId = NodeId()
@@ -5908,6 +7116,12 @@ class HistoryUpdateDetails(FrozenClass):
     
 class UpdateDataDetails(FrozenClass):
     '''
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
+    :ivar PerformInsertReplace: 
+    :vartype PerformInsertReplace: PerformUpdateType 
+    :ivar UpdateValues: 
+    :vartype UpdateValues: DataValue 
     '''
     def __init__(self):
         self.NodeId = NodeId()
@@ -5944,6 +7158,12 @@ class UpdateDataDetails(FrozenClass):
     
 class UpdateStructureDataDetails(FrozenClass):
     '''
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
+    :ivar PerformInsertReplace: 
+    :vartype PerformInsertReplace: PerformUpdateType 
+    :ivar UpdateValues: 
+    :vartype UpdateValues: DataValue 
     '''
     def __init__(self):
         self.NodeId = NodeId()
@@ -5980,6 +7200,14 @@ class UpdateStructureDataDetails(FrozenClass):
     
 class UpdateEventDetails(FrozenClass):
     '''
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
+    :ivar PerformInsertReplace: 
+    :vartype PerformInsertReplace: PerformUpdateType 
+    :ivar Filter: 
+    :vartype Filter: EventFilter 
+    :ivar EventData: 
+    :vartype EventData: HistoryEventFieldList 
     '''
     def __init__(self):
         self.NodeId = NodeId()
@@ -6020,6 +7248,14 @@ class UpdateEventDetails(FrozenClass):
     
 class DeleteRawModifiedDetails(FrozenClass):
     '''
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
+    :ivar IsDeleteModified: 
+    :vartype IsDeleteModified: Boolean 
+    :ivar StartTime: 
+    :vartype StartTime: DateTime 
+    :ivar EndTime: 
+    :vartype EndTime: DateTime 
     '''
     def __init__(self):
         self.NodeId = NodeId()
@@ -6055,6 +7291,10 @@ class DeleteRawModifiedDetails(FrozenClass):
     
 class DeleteAtTimeDetails(FrozenClass):
     '''
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
+    :ivar ReqTimes: 
+    :vartype ReqTimes: DateTime 
     '''
     def __init__(self):
         self.NodeId = NodeId()
@@ -6084,6 +7324,10 @@ class DeleteAtTimeDetails(FrozenClass):
     
 class DeleteEventDetails(FrozenClass):
     '''
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
+    :ivar EventIds: 
+    :vartype EventIds: ByteString 
     '''
     def __init__(self):
         self.NodeId = NodeId()
@@ -6113,6 +7357,12 @@ class DeleteEventDetails(FrozenClass):
     
 class HistoryUpdateResult(FrozenClass):
     '''
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar OperationResults: 
+    :vartype OperationResults: StatusCode 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -6154,6 +7404,10 @@ class HistoryUpdateResult(FrozenClass):
     
 class HistoryUpdateEventResult(FrozenClass):
     '''
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar EventFilterResult: 
+    :vartype EventFilterResult: EventFilterResult 
     '''
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -6181,6 +7435,8 @@ class HistoryUpdateEventResult(FrozenClass):
     
 class HistoryUpdateParameters(FrozenClass):
     '''
+    :ivar HistoryUpdateDetails: 
+    :vartype HistoryUpdateDetails: ExtensionObject 
     '''
     def __init__(self):
         self.HistoryUpdateDetails = []
@@ -6209,6 +7465,12 @@ class HistoryUpdateParameters(FrozenClass):
     
 class HistoryUpdateRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: HistoryUpdateParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.HistoryUpdateRequest_Encoding_DefaultBinary)
@@ -6240,6 +7502,14 @@ class HistoryUpdateRequest(FrozenClass):
     
 class HistoryUpdateResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Results: 
+    :vartype Results: HistoryUpdateResult 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.HistoryUpdateResponse_Encoding_DefaultBinary)
@@ -6285,6 +7555,12 @@ class HistoryUpdateResponse(FrozenClass):
     
 class CallMethodRequest(FrozenClass):
     '''
+    :ivar ObjectId: 
+    :vartype ObjectId: NodeId 
+    :ivar MethodId: 
+    :vartype MethodId: NodeId 
+    :ivar InputArguments: 
+    :vartype InputArguments: Variant 
     '''
     def __init__(self):
         self.ObjectId = NodeId()
@@ -6321,6 +7597,14 @@ class CallMethodRequest(FrozenClass):
     
 class CallMethodResult(FrozenClass):
     '''
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar InputArgumentResults: 
+    :vartype InputArgumentResults: StatusCode 
+    :ivar InputArgumentDiagnosticInfos: 
+    :vartype InputArgumentDiagnosticInfos: DiagnosticInfo 
+    :ivar OutputArguments: 
+    :vartype OutputArguments: Variant 
     '''
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -6371,6 +7655,8 @@ class CallMethodResult(FrozenClass):
     
 class CallParameters(FrozenClass):
     '''
+    :ivar MethodsToCall: 
+    :vartype MethodsToCall: CallMethodRequest 
     '''
     def __init__(self):
         self.MethodsToCall = []
@@ -6399,6 +7685,12 @@ class CallParameters(FrozenClass):
     
 class CallRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: CallParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CallRequest_Encoding_DefaultBinary)
@@ -6430,6 +7722,14 @@ class CallRequest(FrozenClass):
     
 class CallResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Results: 
+    :vartype Results: CallMethodResult 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CallResponse_Encoding_DefaultBinary)
@@ -6475,6 +7775,12 @@ class CallResponse(FrozenClass):
     
 class MonitoringFilter(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar Body: 
+    :vartype Body: ByteString 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.MonitoringFilter_Encoding_DefaultBinary)
@@ -6509,6 +7815,18 @@ class MonitoringFilter(FrozenClass):
     
 class DataChangeFilter(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar Trigger: 
+    :vartype Trigger: DataChangeTrigger 
+    :ivar DeadbandType: 
+    :vartype DeadbandType: UInt32 
+    :ivar DeadbandValue: 
+    :vartype DeadbandValue: Double 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DataChangeFilter_Encoding_DefaultBinary)
@@ -6555,6 +7873,16 @@ class DataChangeFilter(FrozenClass):
     
 class EventFilter(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar SelectClauses: 
+    :vartype SelectClauses: SimpleAttributeOperand 
+    :ivar WhereClause: 
+    :vartype WhereClause: ContentFilter 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.EventFilter_Encoding_DefaultBinary)
@@ -6602,6 +7930,16 @@ class EventFilter(FrozenClass):
     
 class AggregateConfiguration(FrozenClass):
     '''
+    :ivar UseServerCapabilitiesDefaults: 
+    :vartype UseServerCapabilitiesDefaults: Boolean 
+    :ivar TreatUncertainAsBad: 
+    :vartype TreatUncertainAsBad: Boolean 
+    :ivar PercentDataBad: 
+    :vartype PercentDataBad: Byte 
+    :ivar PercentDataGood: 
+    :vartype PercentDataGood: Byte 
+    :ivar UseSlopedExtrapolation: 
+    :vartype UseSlopedExtrapolation: Boolean 
     '''
     def __init__(self):
         self.UseServerCapabilitiesDefaults = True
@@ -6641,6 +7979,20 @@ class AggregateConfiguration(FrozenClass):
     
 class AggregateFilter(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar StartTime: 
+    :vartype StartTime: DateTime 
+    :ivar AggregateType: 
+    :vartype AggregateType: NodeId 
+    :ivar ProcessingInterval: 
+    :vartype ProcessingInterval: Double 
+    :ivar AggregateConfiguration: 
+    :vartype AggregateConfiguration: AggregateConfiguration 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AggregateFilter_Encoding_DefaultBinary)
@@ -6711,6 +8063,12 @@ class MonitoringFilterResult(FrozenClass):
     
 class EventFilterResult(FrozenClass):
     '''
+    :ivar SelectClauseResults: 
+    :vartype SelectClauseResults: StatusCode 
+    :ivar SelectClauseDiagnosticInfos: 
+    :vartype SelectClauseDiagnosticInfos: DiagnosticInfo 
+    :ivar WhereClauseResult: 
+    :vartype WhereClauseResult: ContentFilterResult 
     '''
     def __init__(self):
         self.SelectClauseResults = []
@@ -6752,6 +8110,12 @@ class EventFilterResult(FrozenClass):
     
 class AggregateFilterResult(FrozenClass):
     '''
+    :ivar RevisedStartTime: 
+    :vartype RevisedStartTime: DateTime 
+    :ivar RevisedProcessingInterval: 
+    :vartype RevisedProcessingInterval: Double 
+    :ivar RevisedAggregateConfiguration: 
+    :vartype RevisedAggregateConfiguration: AggregateConfiguration 
     '''
     def __init__(self):
         self.RevisedStartTime = datetime.now()
@@ -6783,6 +8147,16 @@ class AggregateFilterResult(FrozenClass):
     
 class MonitoringParameters(FrozenClass):
     '''
+    :ivar ClientHandle: 
+    :vartype ClientHandle: UInt32 
+    :ivar SamplingInterval: 
+    :vartype SamplingInterval: Double 
+    :ivar Filter: 
+    :vartype Filter: ExtensionObject 
+    :ivar QueueSize: 
+    :vartype QueueSize: UInt32 
+    :ivar DiscardOldest: 
+    :vartype DiscardOldest: Boolean 
     '''
     def __init__(self):
         self.ClientHandle = 0
@@ -6822,6 +8196,12 @@ class MonitoringParameters(FrozenClass):
     
 class MonitoredItemCreateRequest(FrozenClass):
     '''
+    :ivar ItemToMonitor: 
+    :vartype ItemToMonitor: ReadValueId 
+    :ivar MonitoringMode: 
+    :vartype MonitoringMode: MonitoringMode 
+    :ivar RequestedParameters: 
+    :vartype RequestedParameters: MonitoringParameters 
     '''
     def __init__(self):
         self.ItemToMonitor = ReadValueId()
@@ -6853,6 +8233,16 @@ class MonitoredItemCreateRequest(FrozenClass):
     
 class MonitoredItemCreateResult(FrozenClass):
     '''
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar MonitoredItemId: 
+    :vartype MonitoredItemId: UInt32 
+    :ivar RevisedSamplingInterval: 
+    :vartype RevisedSamplingInterval: Double 
+    :ivar RevisedQueueSize: 
+    :vartype RevisedQueueSize: UInt32 
+    :ivar FilterResult: 
+    :vartype FilterResult: ExtensionObject 
     '''
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -6892,6 +8282,12 @@ class MonitoredItemCreateResult(FrozenClass):
     
 class CreateMonitoredItemsParameters(FrozenClass):
     '''
+    :ivar SubscriptionId: 
+    :vartype SubscriptionId: UInt32 
+    :ivar TimestampsToReturn: 
+    :vartype TimestampsToReturn: TimestampsToReturn 
+    :ivar ItemsToCreate: 
+    :vartype ItemsToCreate: MonitoredItemCreateRequest 
     '''
     def __init__(self):
         self.SubscriptionId = 0
@@ -6928,6 +8324,12 @@ class CreateMonitoredItemsParameters(FrozenClass):
     
 class CreateMonitoredItemsRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: CreateMonitoredItemsParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateMonitoredItemsRequest_Encoding_DefaultBinary)
@@ -6959,6 +8361,14 @@ class CreateMonitoredItemsRequest(FrozenClass):
     
 class CreateMonitoredItemsResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Results: 
+    :vartype Results: MonitoredItemCreateResult 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateMonitoredItemsResponse_Encoding_DefaultBinary)
@@ -7004,6 +8414,10 @@ class CreateMonitoredItemsResponse(FrozenClass):
     
 class MonitoredItemModifyRequest(FrozenClass):
     '''
+    :ivar MonitoredItemId: 
+    :vartype MonitoredItemId: UInt32 
+    :ivar RequestedParameters: 
+    :vartype RequestedParameters: MonitoringParameters 
     '''
     def __init__(self):
         self.MonitoredItemId = 0
@@ -7031,6 +8445,14 @@ class MonitoredItemModifyRequest(FrozenClass):
     
 class MonitoredItemModifyResult(FrozenClass):
     '''
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar RevisedSamplingInterval: 
+    :vartype RevisedSamplingInterval: Double 
+    :ivar RevisedQueueSize: 
+    :vartype RevisedQueueSize: UInt32 
+    :ivar FilterResult: 
+    :vartype FilterResult: ExtensionObject 
     '''
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -7066,6 +8488,12 @@ class MonitoredItemModifyResult(FrozenClass):
     
 class ModifyMonitoredItemsParameters(FrozenClass):
     '''
+    :ivar SubscriptionId: 
+    :vartype SubscriptionId: UInt32 
+    :ivar TimestampsToReturn: 
+    :vartype TimestampsToReturn: TimestampsToReturn 
+    :ivar ItemsToModify: 
+    :vartype ItemsToModify: MonitoredItemModifyRequest 
     '''
     def __init__(self):
         self.SubscriptionId = 0
@@ -7102,6 +8530,12 @@ class ModifyMonitoredItemsParameters(FrozenClass):
     
 class ModifyMonitoredItemsRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: ModifyMonitoredItemsParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ModifyMonitoredItemsRequest_Encoding_DefaultBinary)
@@ -7133,6 +8567,14 @@ class ModifyMonitoredItemsRequest(FrozenClass):
     
 class ModifyMonitoredItemsResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Results: 
+    :vartype Results: MonitoredItemModifyResult 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ModifyMonitoredItemsResponse_Encoding_DefaultBinary)
@@ -7178,6 +8620,12 @@ class ModifyMonitoredItemsResponse(FrozenClass):
     
 class SetMonitoringModeParameters(FrozenClass):
     '''
+    :ivar SubscriptionId: 
+    :vartype SubscriptionId: UInt32 
+    :ivar MonitoringMode: 
+    :vartype MonitoringMode: MonitoringMode 
+    :ivar MonitoredItemIds: 
+    :vartype MonitoredItemIds: UInt32 
     '''
     def __init__(self):
         self.SubscriptionId = 0
@@ -7211,6 +8659,12 @@ class SetMonitoringModeParameters(FrozenClass):
     
 class SetMonitoringModeRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: SetMonitoringModeParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetMonitoringModeRequest_Encoding_DefaultBinary)
@@ -7242,6 +8696,10 @@ class SetMonitoringModeRequest(FrozenClass):
     
 class SetMonitoringModeResult(FrozenClass):
     '''
+    :ivar Results: 
+    :vartype Results: StatusCode 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.Results = []
@@ -7279,6 +8737,12 @@ class SetMonitoringModeResult(FrozenClass):
     
 class SetMonitoringModeResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: SetMonitoringModeResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetMonitoringModeResponse_Encoding_DefaultBinary)
@@ -7310,6 +8774,14 @@ class SetMonitoringModeResponse(FrozenClass):
     
 class SetTriggeringParameters(FrozenClass):
     '''
+    :ivar SubscriptionId: 
+    :vartype SubscriptionId: UInt32 
+    :ivar TriggeringItemId: 
+    :vartype TriggeringItemId: UInt32 
+    :ivar LinksToAdd: 
+    :vartype LinksToAdd: UInt32 
+    :ivar LinksToRemove: 
+    :vartype LinksToRemove: UInt32 
     '''
     def __init__(self):
         self.SubscriptionId = 0
@@ -7349,6 +8821,12 @@ class SetTriggeringParameters(FrozenClass):
     
 class SetTriggeringRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: SetTriggeringParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetTriggeringRequest_Encoding_DefaultBinary)
@@ -7380,6 +8858,14 @@ class SetTriggeringRequest(FrozenClass):
     
 class SetTriggeringResult(FrozenClass):
     '''
+    :ivar AddResults: 
+    :vartype AddResults: StatusCode 
+    :ivar AddDiagnosticInfos: 
+    :vartype AddDiagnosticInfos: DiagnosticInfo 
+    :ivar RemoveResults: 
+    :vartype RemoveResults: StatusCode 
+    :ivar RemoveDiagnosticInfos: 
+    :vartype RemoveDiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.AddResults = []
@@ -7435,6 +8921,12 @@ class SetTriggeringResult(FrozenClass):
     
 class SetTriggeringResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: SetTriggeringResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetTriggeringResponse_Encoding_DefaultBinary)
@@ -7466,6 +8958,10 @@ class SetTriggeringResponse(FrozenClass):
     
 class DeleteMonitoredItemsParameters(FrozenClass):
     '''
+    :ivar SubscriptionId: 
+    :vartype SubscriptionId: UInt32 
+    :ivar MonitoredItemIds: 
+    :vartype MonitoredItemIds: UInt32 
     '''
     def __init__(self):
         self.SubscriptionId = 0
@@ -7495,6 +8991,12 @@ class DeleteMonitoredItemsParameters(FrozenClass):
     
 class DeleteMonitoredItemsRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: DeleteMonitoredItemsParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteMonitoredItemsRequest_Encoding_DefaultBinary)
@@ -7526,6 +9028,14 @@ class DeleteMonitoredItemsRequest(FrozenClass):
     
 class DeleteMonitoredItemsResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Results: 
+    :vartype Results: StatusCode 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteMonitoredItemsResponse_Encoding_DefaultBinary)
@@ -7571,6 +9081,18 @@ class DeleteMonitoredItemsResponse(FrozenClass):
     
 class CreateSubscriptionParameters(FrozenClass):
     '''
+    :ivar RequestedPublishingInterval: 
+    :vartype RequestedPublishingInterval: Double 
+    :ivar RequestedLifetimeCount: 
+    :vartype RequestedLifetimeCount: UInt32 
+    :ivar RequestedMaxKeepAliveCount: 
+    :vartype RequestedMaxKeepAliveCount: UInt32 
+    :ivar MaxNotificationsPerPublish: 
+    :vartype MaxNotificationsPerPublish: UInt32 
+    :ivar PublishingEnabled: 
+    :vartype PublishingEnabled: Boolean 
+    :ivar Priority: 
+    :vartype Priority: Byte 
     '''
     def __init__(self):
         self.RequestedPublishingInterval = 0
@@ -7614,6 +9136,12 @@ class CreateSubscriptionParameters(FrozenClass):
     
 class CreateSubscriptionRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: CreateSubscriptionParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateSubscriptionRequest_Encoding_DefaultBinary)
@@ -7645,6 +9173,14 @@ class CreateSubscriptionRequest(FrozenClass):
     
 class CreateSubscriptionResult(FrozenClass):
     '''
+    :ivar SubscriptionId: 
+    :vartype SubscriptionId: UInt32 
+    :ivar RevisedPublishingInterval: 
+    :vartype RevisedPublishingInterval: Double 
+    :ivar RevisedLifetimeCount: 
+    :vartype RevisedLifetimeCount: UInt32 
+    :ivar RevisedMaxKeepAliveCount: 
+    :vartype RevisedMaxKeepAliveCount: UInt32 
     '''
     def __init__(self):
         self.SubscriptionId = 0
@@ -7680,6 +9216,12 @@ class CreateSubscriptionResult(FrozenClass):
     
 class CreateSubscriptionResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: CreateSubscriptionResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateSubscriptionResponse_Encoding_DefaultBinary)
@@ -7711,6 +9253,18 @@ class CreateSubscriptionResponse(FrozenClass):
     
 class ModifySubscriptionParameters(FrozenClass):
     '''
+    :ivar SubscriptionId: 
+    :vartype SubscriptionId: UInt32 
+    :ivar RequestedPublishingInterval: 
+    :vartype RequestedPublishingInterval: Double 
+    :ivar RequestedLifetimeCount: 
+    :vartype RequestedLifetimeCount: UInt32 
+    :ivar RequestedMaxKeepAliveCount: 
+    :vartype RequestedMaxKeepAliveCount: UInt32 
+    :ivar MaxNotificationsPerPublish: 
+    :vartype MaxNotificationsPerPublish: UInt32 
+    :ivar Priority: 
+    :vartype Priority: Byte 
     '''
     def __init__(self):
         self.SubscriptionId = 0
@@ -7754,6 +9308,12 @@ class ModifySubscriptionParameters(FrozenClass):
     
 class ModifySubscriptionRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: ModifySubscriptionParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ModifySubscriptionRequest_Encoding_DefaultBinary)
@@ -7785,6 +9345,12 @@ class ModifySubscriptionRequest(FrozenClass):
     
 class ModifySubscriptionResult(FrozenClass):
     '''
+    :ivar RevisedPublishingInterval: 
+    :vartype RevisedPublishingInterval: Double 
+    :ivar RevisedLifetimeCount: 
+    :vartype RevisedLifetimeCount: UInt32 
+    :ivar RevisedMaxKeepAliveCount: 
+    :vartype RevisedMaxKeepAliveCount: UInt32 
     '''
     def __init__(self):
         self.RevisedPublishingInterval = 0
@@ -7816,6 +9382,12 @@ class ModifySubscriptionResult(FrozenClass):
     
 class ModifySubscriptionResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: ModifySubscriptionResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ModifySubscriptionResponse_Encoding_DefaultBinary)
@@ -7847,6 +9419,10 @@ class ModifySubscriptionResponse(FrozenClass):
     
 class SetPublishingModeParameters(FrozenClass):
     '''
+    :ivar PublishingEnabled: 
+    :vartype PublishingEnabled: Boolean 
+    :ivar SubscriptionIds: 
+    :vartype SubscriptionIds: UInt32 
     '''
     def __init__(self):
         self.PublishingEnabled = True
@@ -7876,6 +9452,12 @@ class SetPublishingModeParameters(FrozenClass):
     
 class SetPublishingModeRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: SetPublishingModeParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetPublishingModeRequest_Encoding_DefaultBinary)
@@ -7907,6 +9489,10 @@ class SetPublishingModeRequest(FrozenClass):
     
 class SetPublishingModeResult(FrozenClass):
     '''
+    :ivar Results: 
+    :vartype Results: StatusCode 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.Results = []
@@ -7944,6 +9530,12 @@ class SetPublishingModeResult(FrozenClass):
     
 class SetPublishingModeResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: SetPublishingModeResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetPublishingModeResponse_Encoding_DefaultBinary)
@@ -7975,6 +9567,12 @@ class SetPublishingModeResponse(FrozenClass):
     
 class NotificationMessage(FrozenClass):
     '''
+    :ivar SequenceNumber: 
+    :vartype SequenceNumber: UInt32 
+    :ivar PublishTime: 
+    :vartype PublishTime: DateTime 
+    :ivar NotificationData: 
+    :vartype NotificationData: ExtensionObject 
     '''
     def __init__(self):
         self.SequenceNumber = 0
@@ -8011,6 +9609,12 @@ class NotificationMessage(FrozenClass):
     
 class NotificationData(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar Body: 
+    :vartype Body: ByteString 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.NotificationData_Encoding_DefaultBinary)
@@ -8045,6 +9649,16 @@ class NotificationData(FrozenClass):
     
 class DataChangeNotification(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar MonitoredItems: 
+    :vartype MonitoredItems: MonitoredItemNotification 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DataChangeNotification_Encoding_DefaultBinary)
@@ -8097,6 +9711,10 @@ class DataChangeNotification(FrozenClass):
     
 class MonitoredItemNotification(FrozenClass):
     '''
+    :ivar ClientHandle: 
+    :vartype ClientHandle: UInt32 
+    :ivar Value: 
+    :vartype Value: DataValue 
     '''
     def __init__(self):
         self.ClientHandle = 0
@@ -8124,6 +9742,14 @@ class MonitoredItemNotification(FrozenClass):
     
 class EventNotificationList(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar Events: 
+    :vartype Events: EventFieldList 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.EventNotificationList_Encoding_DefaultBinary)
@@ -8167,6 +9793,10 @@ class EventNotificationList(FrozenClass):
     
 class EventFieldList(FrozenClass):
     '''
+    :ivar ClientHandle: 
+    :vartype ClientHandle: UInt32 
+    :ivar EventFields: 
+    :vartype EventFields: Variant 
     '''
     def __init__(self):
         self.ClientHandle = 0
@@ -8199,6 +9829,8 @@ class EventFieldList(FrozenClass):
     
 class HistoryEventFieldList(FrozenClass):
     '''
+    :ivar EventFields: 
+    :vartype EventFields: Variant 
     '''
     def __init__(self):
         self.EventFields = []
@@ -8227,6 +9859,16 @@ class HistoryEventFieldList(FrozenClass):
     
 class StatusChangeNotification(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Encoding: 
+    :vartype Encoding: UInt8 
+    :ivar BodyLength: 
+    :vartype BodyLength: Int32 
+    :ivar Status: 
+    :vartype Status: StatusCode 
+    :ivar DiagnosticInfo: 
+    :vartype DiagnosticInfo: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.StatusChangeNotification_Encoding_DefaultBinary)
@@ -8269,6 +9911,10 @@ class StatusChangeNotification(FrozenClass):
     
 class SubscriptionAcknowledgement(FrozenClass):
     '''
+    :ivar SubscriptionId: 
+    :vartype SubscriptionId: UInt32 
+    :ivar SequenceNumber: 
+    :vartype SequenceNumber: UInt32 
     '''
     def __init__(self):
         self.SubscriptionId = 0
@@ -8296,6 +9942,8 @@ class SubscriptionAcknowledgement(FrozenClass):
     
 class PublishParameters(FrozenClass):
     '''
+    :ivar SubscriptionAcknowledgements: 
+    :vartype SubscriptionAcknowledgements: SubscriptionAcknowledgement 
     '''
     def __init__(self):
         self.SubscriptionAcknowledgements = []
@@ -8324,6 +9972,12 @@ class PublishParameters(FrozenClass):
     
 class PublishRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: PublishParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.PublishRequest_Encoding_DefaultBinary)
@@ -8355,6 +10009,18 @@ class PublishRequest(FrozenClass):
     
 class PublishResult(FrozenClass):
     '''
+    :ivar SubscriptionId: 
+    :vartype SubscriptionId: UInt32 
+    :ivar AvailableSequenceNumbers: 
+    :vartype AvailableSequenceNumbers: UInt32 
+    :ivar MoreNotifications: 
+    :vartype MoreNotifications: Boolean 
+    :ivar NotificationMessage: 
+    :vartype NotificationMessage: NotificationMessage 
+    :ivar Results: 
+    :vartype Results: StatusCode 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.SubscriptionId = 0
@@ -8410,6 +10076,12 @@ class PublishResult(FrozenClass):
     
 class PublishResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: PublishResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.PublishResponse_Encoding_DefaultBinary)
@@ -8441,6 +10113,10 @@ class PublishResponse(FrozenClass):
     
 class RepublishParameters(FrozenClass):
     '''
+    :ivar SubscriptionId: 
+    :vartype SubscriptionId: UInt32 
+    :ivar RetransmitSequenceNumber: 
+    :vartype RetransmitSequenceNumber: UInt32 
     '''
     def __init__(self):
         self.SubscriptionId = 0
@@ -8468,6 +10144,12 @@ class RepublishParameters(FrozenClass):
     
 class RepublishRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: RepublishParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RepublishRequest_Encoding_DefaultBinary)
@@ -8499,6 +10181,12 @@ class RepublishRequest(FrozenClass):
     
 class RepublishResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar NotificationMessage: 
+    :vartype NotificationMessage: NotificationMessage 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RepublishResponse_Encoding_DefaultBinary)
@@ -8530,6 +10218,10 @@ class RepublishResponse(FrozenClass):
     
 class TransferResult(FrozenClass):
     '''
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar AvailableSequenceNumbers: 
+    :vartype AvailableSequenceNumbers: UInt32 
     '''
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -8559,6 +10251,10 @@ class TransferResult(FrozenClass):
     
 class TransferSubscriptionsParameters(FrozenClass):
     '''
+    :ivar SubscriptionIds: 
+    :vartype SubscriptionIds: UInt32 
+    :ivar SendInitialValues: 
+    :vartype SendInitialValues: Boolean 
     '''
     def __init__(self):
         self.SubscriptionIds = []
@@ -8588,6 +10284,12 @@ class TransferSubscriptionsParameters(FrozenClass):
     
 class TransferSubscriptionsRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: TransferSubscriptionsParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TransferSubscriptionsRequest_Encoding_DefaultBinary)
@@ -8619,6 +10321,10 @@ class TransferSubscriptionsRequest(FrozenClass):
     
 class TransferSubscriptionsResult(FrozenClass):
     '''
+    :ivar Results: 
+    :vartype Results: TransferResult 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.Results = []
@@ -8656,6 +10362,12 @@ class TransferSubscriptionsResult(FrozenClass):
     
 class TransferSubscriptionsResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: TransferSubscriptionsResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TransferSubscriptionsResponse_Encoding_DefaultBinary)
@@ -8687,6 +10399,8 @@ class TransferSubscriptionsResponse(FrozenClass):
     
 class DeleteSubscriptionsParameters(FrozenClass):
     '''
+    :ivar SubscriptionIds: 
+    :vartype SubscriptionIds: UInt32 
     '''
     def __init__(self):
         self.SubscriptionIds = []
@@ -8712,6 +10426,12 @@ class DeleteSubscriptionsParameters(FrozenClass):
     
 class DeleteSubscriptionsRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: DeleteSubscriptionsParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary)
@@ -8743,6 +10463,14 @@ class DeleteSubscriptionsRequest(FrozenClass):
     
 class DeleteSubscriptionsResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Results: 
+    :vartype Results: StatusCode 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsResponse_Encoding_DefaultBinary)
@@ -8789,6 +10517,57 @@ class DeleteSubscriptionsResponse(FrozenClass):
 class ScalarTestType(FrozenClass):
     '''
     A complex type containing all possible scalar types used for testing.
+    
+    :ivar Boolean: 
+    :vartype Boolean: Boolean 
+    :ivar SByte: 
+    :vartype SByte: SByte 
+    :ivar Byte: 
+    :vartype Byte: Byte 
+    :ivar Int16: 
+    :vartype Int16: Int16 
+    :ivar UInt16: 
+    :vartype UInt16: UInt16 
+    :ivar Int32: 
+    :vartype Int32: Int32 
+    :ivar UInt32: 
+    :vartype UInt32: UInt32 
+    :ivar Int64: 
+    :vartype Int64: Int64 
+    :ivar UInt64: 
+    :vartype UInt64: UInt64 
+    :ivar Float: 
+    :vartype Float: Float 
+    :ivar Double: 
+    :vartype Double: Double 
+    :ivar String: 
+    :vartype String: String 
+    :ivar DateTime: 
+    :vartype DateTime: DateTime 
+    :ivar Guid: 
+    :vartype Guid: Guid 
+    :ivar ByteString: 
+    :vartype ByteString: ByteString 
+    :ivar XmlElement: 
+    :vartype XmlElement: XmlElement 
+    :ivar NodeId: 
+    :vartype NodeId: NodeId 
+    :ivar ExpandedNodeId: 
+    :vartype ExpandedNodeId: ExpandedNodeId 
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar DiagnosticInfo: 
+    :vartype DiagnosticInfo: DiagnosticInfo 
+    :ivar QualifiedName: 
+    :vartype QualifiedName: QualifiedName 
+    :ivar LocalizedText: 
+    :vartype LocalizedText: LocalizedText 
+    :ivar ExtensionObject: 
+    :vartype ExtensionObject: ExtensionObject 
+    :ivar DataValue: 
+    :vartype DataValue: DataValue 
+    :ivar EnumeratedValue: 
+    :vartype EnumeratedValue: EnumeratedTestType 
     '''
     def __init__(self):
         self.Boolean = True
@@ -8909,6 +10688,57 @@ class ScalarTestType(FrozenClass):
 class ArrayTestType(FrozenClass):
     '''
     A complex type containing all possible array types used for testing.
+    
+    :ivar Booleans: 
+    :vartype Booleans: Boolean 
+    :ivar SBytes: 
+    :vartype SBytes: SByte 
+    :ivar Int16s: 
+    :vartype Int16s: Int16 
+    :ivar UInt16s: 
+    :vartype UInt16s: UInt16 
+    :ivar Int32s: 
+    :vartype Int32s: Int32 
+    :ivar UInt32s: 
+    :vartype UInt32s: UInt32 
+    :ivar Int64s: 
+    :vartype Int64s: Int64 
+    :ivar UInt64s: 
+    :vartype UInt64s: UInt64 
+    :ivar Floats: 
+    :vartype Floats: Float 
+    :ivar Doubles: 
+    :vartype Doubles: Double 
+    :ivar Strings: 
+    :vartype Strings: String 
+    :ivar DateTimes: 
+    :vartype DateTimes: DateTime 
+    :ivar Guids: 
+    :vartype Guids: Guid 
+    :ivar ByteStrings: 
+    :vartype ByteStrings: ByteString 
+    :ivar XmlElements: 
+    :vartype XmlElements: XmlElement 
+    :ivar NodeIds: 
+    :vartype NodeIds: NodeId 
+    :ivar ExpandedNodeIds: 
+    :vartype ExpandedNodeIds: ExpandedNodeId 
+    :ivar StatusCodes: 
+    :vartype StatusCodes: StatusCode 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar QualifiedNames: 
+    :vartype QualifiedNames: QualifiedName 
+    :ivar LocalizedTexts: 
+    :vartype LocalizedTexts: LocalizedText 
+    :ivar ExtensionObjects: 
+    :vartype ExtensionObjects: ExtensionObject 
+    :ivar DataValues: 
+    :vartype DataValues: DataValue 
+    :ivar Variants: 
+    :vartype Variants: Variant 
+    :ivar EnumeratedValues: 
+    :vartype EnumeratedValues: EnumeratedTestType 
     '''
     def __init__(self):
         self.Booleans = []
@@ -9111,6 +10941,10 @@ class ArrayTestType(FrozenClass):
     
 class CompositeTestType(FrozenClass):
     '''
+    :ivar Field1: 
+    :vartype Field1: ScalarTestType 
+    :ivar Field2: 
+    :vartype Field2: ArrayTestType 
     '''
     def __init__(self):
         self.Field1 = ScalarTestType()
@@ -9138,6 +10972,12 @@ class CompositeTestType(FrozenClass):
     
 class TestStackParameters(FrozenClass):
     '''
+    :ivar TestId: 
+    :vartype TestId: UInt32 
+    :ivar Iteration: 
+    :vartype Iteration: Int32 
+    :ivar Input: 
+    :vartype Input: Variant 
     '''
     def __init__(self):
         self.TestId = 0
@@ -9169,6 +11009,12 @@ class TestStackParameters(FrozenClass):
     
 class TestStackRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: TestStackParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TestStackRequest_Encoding_DefaultBinary)
@@ -9200,6 +11046,8 @@ class TestStackRequest(FrozenClass):
     
 class TestStackResult(FrozenClass):
     '''
+    :ivar Output: 
+    :vartype Output: Variant 
     '''
     def __init__(self):
         self.Output = Variant()
@@ -9223,6 +11071,12 @@ class TestStackResult(FrozenClass):
     
 class TestStackResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: TestStackResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TestStackResponse_Encoding_DefaultBinary)
@@ -9254,6 +11108,12 @@ class TestStackResponse(FrozenClass):
     
 class TestStackExParameters(FrozenClass):
     '''
+    :ivar TestId: 
+    :vartype TestId: UInt32 
+    :ivar Iteration: 
+    :vartype Iteration: Int32 
+    :ivar Input: 
+    :vartype Input: CompositeTestType 
     '''
     def __init__(self):
         self.TestId = 0
@@ -9285,6 +11145,12 @@ class TestStackExParameters(FrozenClass):
     
 class TestStackExRequest(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: TestStackExParameters 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TestStackExRequest_Encoding_DefaultBinary)
@@ -9316,6 +11182,8 @@ class TestStackExRequest(FrozenClass):
     
 class TestStackExResult(FrozenClass):
     '''
+    :ivar Output: 
+    :vartype Output: CompositeTestType 
     '''
     def __init__(self):
         self.Output = CompositeTestType()
@@ -9339,6 +11207,12 @@ class TestStackExResult(FrozenClass):
     
 class TestStackExResponse(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: TestStackExResult 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TestStackExResponse_Encoding_DefaultBinary)
@@ -9370,6 +11244,18 @@ class TestStackExResponse(FrozenClass):
     
 class BuildInfo(FrozenClass):
     '''
+    :ivar ProductUri: 
+    :vartype ProductUri: String 
+    :ivar ManufacturerName: 
+    :vartype ManufacturerName: String 
+    :ivar ProductName: 
+    :vartype ProductName: String 
+    :ivar SoftwareVersion: 
+    :vartype SoftwareVersion: String 
+    :ivar BuildNumber: 
+    :vartype BuildNumber: String 
+    :ivar BuildDate: 
+    :vartype BuildDate: DateTime 
     '''
     def __init__(self):
         self.ProductUri = ''
@@ -9413,6 +11299,12 @@ class BuildInfo(FrozenClass):
     
 class RedundantServerDataType(FrozenClass):
     '''
+    :ivar ServerId: 
+    :vartype ServerId: String 
+    :ivar ServiceLevel: 
+    :vartype ServiceLevel: Byte 
+    :ivar ServerState: 
+    :vartype ServerState: ServerState 
     '''
     def __init__(self):
         self.ServerId = ''
@@ -9444,6 +11336,8 @@ class RedundantServerDataType(FrozenClass):
     
 class EndpointUrlListDataType(FrozenClass):
     '''
+    :ivar EndpointUrlList: 
+    :vartype EndpointUrlList: String 
     '''
     def __init__(self):
         self.EndpointUrlList = []
@@ -9469,6 +11363,10 @@ class EndpointUrlListDataType(FrozenClass):
     
 class NetworkGroupDataType(FrozenClass):
     '''
+    :ivar ServerUri: 
+    :vartype ServerUri: String 
+    :ivar NetworkPaths: 
+    :vartype NetworkPaths: EndpointUrlListDataType 
     '''
     def __init__(self):
         self.ServerUri = ''
@@ -9501,6 +11399,14 @@ class NetworkGroupDataType(FrozenClass):
     
 class SamplingIntervalDiagnosticsDataType(FrozenClass):
     '''
+    :ivar SamplingInterval: 
+    :vartype SamplingInterval: Double 
+    :ivar MonitoredItemCount: 
+    :vartype MonitoredItemCount: UInt32 
+    :ivar MaxMonitoredItemCount: 
+    :vartype MaxMonitoredItemCount: UInt32 
+    :ivar DisabledMonitoredItemCount: 
+    :vartype DisabledMonitoredItemCount: UInt32 
     '''
     def __init__(self):
         self.SamplingInterval = 0
@@ -9536,6 +11442,30 @@ class SamplingIntervalDiagnosticsDataType(FrozenClass):
     
 class ServerDiagnosticsSummaryDataType(FrozenClass):
     '''
+    :ivar ServerViewCount: 
+    :vartype ServerViewCount: UInt32 
+    :ivar CurrentSessionCount: 
+    :vartype CurrentSessionCount: UInt32 
+    :ivar CumulatedSessionCount: 
+    :vartype CumulatedSessionCount: UInt32 
+    :ivar SecurityRejectedSessionCount: 
+    :vartype SecurityRejectedSessionCount: UInt32 
+    :ivar RejectedSessionCount: 
+    :vartype RejectedSessionCount: UInt32 
+    :ivar SessionTimeoutCount: 
+    :vartype SessionTimeoutCount: UInt32 
+    :ivar SessionAbortCount: 
+    :vartype SessionAbortCount: UInt32 
+    :ivar CurrentSubscriptionCount: 
+    :vartype CurrentSubscriptionCount: UInt32 
+    :ivar CumulatedSubscriptionCount: 
+    :vartype CumulatedSubscriptionCount: UInt32 
+    :ivar PublishingIntervalCount: 
+    :vartype PublishingIntervalCount: UInt32 
+    :ivar SecurityRejectedRequestsCount: 
+    :vartype SecurityRejectedRequestsCount: UInt32 
+    :ivar RejectedRequestsCount: 
+    :vartype RejectedRequestsCount: UInt32 
     '''
     def __init__(self):
         self.ServerViewCount = 0
@@ -9603,6 +11533,18 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
     
 class ServerStatusDataType(FrozenClass):
     '''
+    :ivar StartTime: 
+    :vartype StartTime: DateTime 
+    :ivar CurrentTime: 
+    :vartype CurrentTime: DateTime 
+    :ivar State: 
+    :vartype State: ServerState 
+    :ivar BuildInfo: 
+    :vartype BuildInfo: BuildInfo 
+    :ivar SecondsTillShutdown: 
+    :vartype SecondsTillShutdown: UInt32 
+    :ivar ShutdownReason: 
+    :vartype ShutdownReason: LocalizedText 
     '''
     def __init__(self):
         self.StartTime = datetime.now()
@@ -9646,6 +11588,92 @@ class ServerStatusDataType(FrozenClass):
     
 class SessionDiagnosticsDataType(FrozenClass):
     '''
+    :ivar SessionId: 
+    :vartype SessionId: NodeId 
+    :ivar SessionName: 
+    :vartype SessionName: String 
+    :ivar ClientDescription: 
+    :vartype ClientDescription: ApplicationDescription 
+    :ivar ServerUri: 
+    :vartype ServerUri: String 
+    :ivar EndpointUrl: 
+    :vartype EndpointUrl: String 
+    :ivar LocaleIds: 
+    :vartype LocaleIds: String 
+    :ivar ActualSessionTimeout: 
+    :vartype ActualSessionTimeout: Double 
+    :ivar MaxResponseMessageSize: 
+    :vartype MaxResponseMessageSize: UInt32 
+    :ivar ClientConnectionTime: 
+    :vartype ClientConnectionTime: DateTime 
+    :ivar ClientLastContactTime: 
+    :vartype ClientLastContactTime: DateTime 
+    :ivar CurrentSubscriptionsCount: 
+    :vartype CurrentSubscriptionsCount: UInt32 
+    :ivar CurrentMonitoredItemsCount: 
+    :vartype CurrentMonitoredItemsCount: UInt32 
+    :ivar CurrentPublishRequestsInQueue: 
+    :vartype CurrentPublishRequestsInQueue: UInt32 
+    :ivar TotalRequestCount: 
+    :vartype TotalRequestCount: ServiceCounterDataType 
+    :ivar UnauthorizedRequestCount: 
+    :vartype UnauthorizedRequestCount: UInt32 
+    :ivar ReadCount: 
+    :vartype ReadCount: ServiceCounterDataType 
+    :ivar HistoryReadCount: 
+    :vartype HistoryReadCount: ServiceCounterDataType 
+    :ivar WriteCount: 
+    :vartype WriteCount: ServiceCounterDataType 
+    :ivar HistoryUpdateCount: 
+    :vartype HistoryUpdateCount: ServiceCounterDataType 
+    :ivar CallCount: 
+    :vartype CallCount: ServiceCounterDataType 
+    :ivar CreateMonitoredItemsCount: 
+    :vartype CreateMonitoredItemsCount: ServiceCounterDataType 
+    :ivar ModifyMonitoredItemsCount: 
+    :vartype ModifyMonitoredItemsCount: ServiceCounterDataType 
+    :ivar SetMonitoringModeCount: 
+    :vartype SetMonitoringModeCount: ServiceCounterDataType 
+    :ivar SetTriggeringCount: 
+    :vartype SetTriggeringCount: ServiceCounterDataType 
+    :ivar DeleteMonitoredItemsCount: 
+    :vartype DeleteMonitoredItemsCount: ServiceCounterDataType 
+    :ivar CreateSubscriptionCount: 
+    :vartype CreateSubscriptionCount: ServiceCounterDataType 
+    :ivar ModifySubscriptionCount: 
+    :vartype ModifySubscriptionCount: ServiceCounterDataType 
+    :ivar SetPublishingModeCount: 
+    :vartype SetPublishingModeCount: ServiceCounterDataType 
+    :ivar PublishCount: 
+    :vartype PublishCount: ServiceCounterDataType 
+    :ivar RepublishCount: 
+    :vartype RepublishCount: ServiceCounterDataType 
+    :ivar TransferSubscriptionsCount: 
+    :vartype TransferSubscriptionsCount: ServiceCounterDataType 
+    :ivar DeleteSubscriptionsCount: 
+    :vartype DeleteSubscriptionsCount: ServiceCounterDataType 
+    :ivar AddNodesCount: 
+    :vartype AddNodesCount: ServiceCounterDataType 
+    :ivar AddReferencesCount: 
+    :vartype AddReferencesCount: ServiceCounterDataType 
+    :ivar DeleteNodesCount: 
+    :vartype DeleteNodesCount: ServiceCounterDataType 
+    :ivar DeleteReferencesCount: 
+    :vartype DeleteReferencesCount: ServiceCounterDataType 
+    :ivar BrowseCount: 
+    :vartype BrowseCount: ServiceCounterDataType 
+    :ivar BrowseNextCount: 
+    :vartype BrowseNextCount: ServiceCounterDataType 
+    :ivar TranslateBrowsePathsToNodeIdsCount: 
+    :vartype TranslateBrowsePathsToNodeIdsCount: ServiceCounterDataType 
+    :ivar QueryFirstCount: 
+    :vartype QueryFirstCount: ServiceCounterDataType 
+    :ivar QueryNextCount: 
+    :vartype QueryNextCount: ServiceCounterDataType 
+    :ivar RegisterNodesCount: 
+    :vartype RegisterNodesCount: ServiceCounterDataType 
+    :ivar UnregisterNodesCount: 
+    :vartype UnregisterNodesCount: ServiceCounterDataType 
     '''
     def __init__(self):
         self.SessionId = NodeId()
@@ -9839,6 +11867,24 @@ class SessionDiagnosticsDataType(FrozenClass):
     
 class SessionSecurityDiagnosticsDataType(FrozenClass):
     '''
+    :ivar SessionId: 
+    :vartype SessionId: NodeId 
+    :ivar ClientUserIdOfSession: 
+    :vartype ClientUserIdOfSession: String 
+    :ivar ClientUserIdHistory: 
+    :vartype ClientUserIdHistory: String 
+    :ivar AuthenticationMechanism: 
+    :vartype AuthenticationMechanism: String 
+    :ivar Encoding: 
+    :vartype Encoding: String 
+    :ivar TransportProtocol: 
+    :vartype TransportProtocol: String 
+    :ivar SecurityMode: 
+    :vartype SecurityMode: MessageSecurityMode 
+    :ivar SecurityPolicyUri: 
+    :vartype SecurityPolicyUri: String 
+    :ivar ClientCertificate: 
+    :vartype ClientCertificate: ByteString 
     '''
     def __init__(self):
         self.SessionId = NodeId()
@@ -9896,6 +11942,10 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
     
 class ServiceCounterDataType(FrozenClass):
     '''
+    :ivar TotalCount: 
+    :vartype TotalCount: UInt32 
+    :ivar ErrorCount: 
+    :vartype ErrorCount: UInt32 
     '''
     def __init__(self):
         self.TotalCount = 0
@@ -9923,6 +11973,10 @@ class ServiceCounterDataType(FrozenClass):
     
 class StatusResult(FrozenClass):
     '''
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar DiagnosticInfo: 
+    :vartype DiagnosticInfo: DiagnosticInfo 
     '''
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -9950,6 +12004,68 @@ class StatusResult(FrozenClass):
     
 class SubscriptionDiagnosticsDataType(FrozenClass):
     '''
+    :ivar SessionId: 
+    :vartype SessionId: NodeId 
+    :ivar SubscriptionId: 
+    :vartype SubscriptionId: UInt32 
+    :ivar Priority: 
+    :vartype Priority: Byte 
+    :ivar PublishingInterval: 
+    :vartype PublishingInterval: Double 
+    :ivar MaxKeepAliveCount: 
+    :vartype MaxKeepAliveCount: UInt32 
+    :ivar MaxLifetimeCount: 
+    :vartype MaxLifetimeCount: UInt32 
+    :ivar MaxNotificationsPerPublish: 
+    :vartype MaxNotificationsPerPublish: UInt32 
+    :ivar PublishingEnabled: 
+    :vartype PublishingEnabled: Boolean 
+    :ivar ModifyCount: 
+    :vartype ModifyCount: UInt32 
+    :ivar EnableCount: 
+    :vartype EnableCount: UInt32 
+    :ivar DisableCount: 
+    :vartype DisableCount: UInt32 
+    :ivar RepublishRequestCount: 
+    :vartype RepublishRequestCount: UInt32 
+    :ivar RepublishMessageRequestCount: 
+    :vartype RepublishMessageRequestCount: UInt32 
+    :ivar RepublishMessageCount: 
+    :vartype RepublishMessageCount: UInt32 
+    :ivar TransferRequestCount: 
+    :vartype TransferRequestCount: UInt32 
+    :ivar TransferredToAltClientCount: 
+    :vartype TransferredToAltClientCount: UInt32 
+    :ivar TransferredToSameClientCount: 
+    :vartype TransferredToSameClientCount: UInt32 
+    :ivar PublishRequestCount: 
+    :vartype PublishRequestCount: UInt32 
+    :ivar DataChangeNotificationsCount: 
+    :vartype DataChangeNotificationsCount: UInt32 
+    :ivar EventNotificationsCount: 
+    :vartype EventNotificationsCount: UInt32 
+    :ivar NotificationsCount: 
+    :vartype NotificationsCount: UInt32 
+    :ivar LatePublishRequestCount: 
+    :vartype LatePublishRequestCount: UInt32 
+    :ivar CurrentKeepAliveCount: 
+    :vartype CurrentKeepAliveCount: UInt32 
+    :ivar CurrentLifetimeCount: 
+    :vartype CurrentLifetimeCount: UInt32 
+    :ivar UnacknowledgedMessageCount: 
+    :vartype UnacknowledgedMessageCount: UInt32 
+    :ivar DiscardedMessageCount: 
+    :vartype DiscardedMessageCount: UInt32 
+    :ivar MonitoredItemCount: 
+    :vartype MonitoredItemCount: UInt32 
+    :ivar DisabledMonitoredItemCount: 
+    :vartype DisabledMonitoredItemCount: UInt32 
+    :ivar MonitoringQueueOverflowCount: 
+    :vartype MonitoringQueueOverflowCount: UInt32 
+    :ivar NextSequenceNumber: 
+    :vartype NextSequenceNumber: UInt32 
+    :ivar EventQueueOverFlowCount: 
+    :vartype EventQueueOverFlowCount: UInt32 
     '''
     def __init__(self):
         self.SessionId = NodeId()
@@ -10093,6 +12209,12 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
     
 class ModelChangeStructureDataType(FrozenClass):
     '''
+    :ivar Affected: 
+    :vartype Affected: NodeId 
+    :ivar AffectedType: 
+    :vartype AffectedType: NodeId 
+    :ivar Verb: 
+    :vartype Verb: Byte 
     '''
     def __init__(self):
         self.Affected = NodeId()
@@ -10124,6 +12246,10 @@ class ModelChangeStructureDataType(FrozenClass):
     
 class SemanticChangeStructureDataType(FrozenClass):
     '''
+    :ivar Affected: 
+    :vartype Affected: NodeId 
+    :ivar AffectedType: 
+    :vartype AffectedType: NodeId 
     '''
     def __init__(self):
         self.Affected = NodeId()
@@ -10151,6 +12277,10 @@ class SemanticChangeStructureDataType(FrozenClass):
     
 class Range(FrozenClass):
     '''
+    :ivar Low: 
+    :vartype Low: Double 
+    :ivar High: 
+    :vartype High: Double 
     '''
     def __init__(self):
         self.Low = 0
@@ -10178,6 +12308,14 @@ class Range(FrozenClass):
     
 class EUInformation(FrozenClass):
     '''
+    :ivar NamespaceUri: 
+    :vartype NamespaceUri: String 
+    :ivar UnitId: 
+    :vartype UnitId: Int32 
+    :ivar DisplayName: 
+    :vartype DisplayName: LocalizedText 
+    :ivar Description: 
+    :vartype Description: LocalizedText 
     '''
     def __init__(self):
         self.NamespaceUri = ''
@@ -10213,6 +12351,10 @@ class EUInformation(FrozenClass):
     
 class ComplexNumberType(FrozenClass):
     '''
+    :ivar Real: 
+    :vartype Real: Float 
+    :ivar Imaginary: 
+    :vartype Imaginary: Float 
     '''
     def __init__(self):
         self.Real = 0
@@ -10240,6 +12382,10 @@ class ComplexNumberType(FrozenClass):
     
 class DoubleComplexNumberType(FrozenClass):
     '''
+    :ivar Real: 
+    :vartype Real: Double 
+    :ivar Imaginary: 
+    :vartype Imaginary: Double 
     '''
     def __init__(self):
         self.Real = 0
@@ -10267,6 +12413,16 @@ class DoubleComplexNumberType(FrozenClass):
     
 class AxisInformation(FrozenClass):
     '''
+    :ivar EngineeringUnits: 
+    :vartype EngineeringUnits: EUInformation 
+    :ivar EURange: 
+    :vartype EURange: Range 
+    :ivar Title: 
+    :vartype Title: LocalizedText 
+    :ivar AxisScaleType: 
+    :vartype AxisScaleType: AxisScaleEnumeration 
+    :ivar AxisSteps: 
+    :vartype AxisSteps: Double 
     '''
     def __init__(self):
         self.EngineeringUnits = EUInformation()
@@ -10308,6 +12464,10 @@ class AxisInformation(FrozenClass):
     
 class XVType(FrozenClass):
     '''
+    :ivar X: 
+    :vartype X: Double 
+    :ivar Value: 
+    :vartype Value: Float 
     '''
     def __init__(self):
         self.X = 0
@@ -10335,6 +12495,26 @@ class XVType(FrozenClass):
     
 class ProgramDiagnosticDataType(FrozenClass):
     '''
+    :ivar CreateSessionId: 
+    :vartype CreateSessionId: NodeId 
+    :ivar CreateClientName: 
+    :vartype CreateClientName: String 
+    :ivar InvocationCreationTime: 
+    :vartype InvocationCreationTime: DateTime 
+    :ivar LastTransitionTime: 
+    :vartype LastTransitionTime: DateTime 
+    :ivar LastMethodCall: 
+    :vartype LastMethodCall: String 
+    :ivar LastMethodSessionId: 
+    :vartype LastMethodSessionId: NodeId 
+    :ivar LastMethodInputArguments: 
+    :vartype LastMethodInputArguments: Argument 
+    :ivar LastMethodOutputArguments: 
+    :vartype LastMethodOutputArguments: Argument 
+    :ivar LastMethodCallTime: 
+    :vartype LastMethodCallTime: DateTime 
+    :ivar LastMethodReturnStatus: 
+    :vartype LastMethodReturnStatus: StatusResult 
     '''
     def __init__(self):
         self.CreateSessionId = NodeId()
@@ -10404,6 +12584,12 @@ class ProgramDiagnosticDataType(FrozenClass):
     
 class Annotation(FrozenClass):
     '''
+    :ivar Message: 
+    :vartype Message: String 
+    :ivar UserName: 
+    :vartype UserName: String 
+    :ivar AnnotationTime: 
+    :vartype AnnotationTime: DateTime 
     '''
     def __init__(self):
         self.Message = ''
