@@ -13,6 +13,7 @@ Using Python > 3.4 the server and client do not require any third party librarie
 
 coveryage.py reports a test coverage of over 90% of code, most of the rest is autogenerate code that is not used yet.
 
+Soe documentation is available at http://python-opcua.readthedocs.org/en/latest/
 
 Client: what works:
 * connection to server, opening channel, session
