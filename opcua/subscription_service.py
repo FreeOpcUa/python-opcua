@@ -65,7 +65,7 @@ class SubscriptionService(object):
                     response.StatusCode = ua.StatusCode(ua.StatusCodes.BadSubscriptionIdInvalid)
                     res.append(response)
                 return res
-            return self.subscriptions[params.SubscriptionId].create_monitored_items(params)
+            return self.subscriptions[params.SubscriptionId].monitored_item_srv.create_monitored_items(params)
 
     def modify_monitored_items(self, params):
         self.logger.info("modify monitored items")
@@ -77,7 +77,7 @@ class SubscriptionService(object):
                     result.StatusCode = ua.StatusCode(ua.StatusCodes.BadSubscriptionIdInvalid)
                     res.append(result)
                 return res
-            return self.subscriptions[params.SubscriptionId].modify_monitored_items(params)
+            return self.subscriptions[params.SubscriptionId].monitored_item_srv.modify_monitored_items(params)
 
     def delete_monitored_items(self, params):
         self.logger.info("delete monitored items")
@@ -87,7 +87,7 @@ class SubscriptionService(object):
                 for _ in params.MonitoredItemIds:
                     res.append(ua.StatusCode(ua.StatusCodes.BadSubscriptionIdInvalid))
                 return res
-            return self.subscriptions[params.SubscriptionId].delete_monitored_items(params.MonitoredItemIds)
+            return self.subscriptions[params.SubscriptionId].monitored_item_srv.delete_monitored_items(params.MonitoredItemIds)
 
     def republish(self, params):
         with self._lock:
@@ -99,6 +99,6 @@ class SubscriptionService(object):
     def trigger_event(self, event):
         with self._lock:
             for sub in self.subscriptions.values():
-                sub.trigger_event(event)
+                sub.monitored_item_srv.trigger_event(event)
 
 
