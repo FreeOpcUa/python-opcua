@@ -65,17 +65,16 @@ class ViewService(object):
         return res
 
     def _browse(self, desc):
-        with self._aspace.lock:
-            res = ua.BrowseResult()
-            if desc.NodeId not in self._aspace.nodes:
-                res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
-                return res
-            node = self._aspace.nodes[desc.NodeId]
-            for ref in node.references:
-                if not self._is_suitable_ref(desc, ref):
-                    continue
-                res.References.append(ref)
+        res = ua.BrowseResult()
+        if desc.NodeId not in self._aspace:
+            res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
             return res
+        node = self._aspace[desc.NodeId]
+        for ref in node.references:
+            if not self._is_suitable_ref(desc, ref):
+                continue
+            res.References.append(ref)
+        return res
 
     def _is_suitable_ref(self, desc, ref):
         if not self._suitable_direction(desc.BrowseDirection, ref.IsForward):
@@ -102,7 +101,7 @@ class ViewService(object):
 
     def _get_sub_ref(self, ref):
         res = []
-        nodedata = self._aspace.nodes[ref]
+        nodedata = self._aspace[ref]
         for ref in nodedata.references:
             if ref.ReferenceTypeId.Identifier == ua.ObjectIds.HasSubtype:
                 res.append(ref.NodeId)
@@ -126,10 +125,9 @@ class ViewService(object):
     def _translate_browsepath_to_nodeid(self, path):
         self.logger.debug("looking at path: %s", path)
         res = ua.BrowsePathResult()
-        with self._aspace.lock:
-            if not path.StartingNode in self._aspace.nodes:
-                res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
-                return res
+        if not path.StartingNode in self._aspace:
+            res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
+            return res
         current = path.StartingNode
         for el in path.RelativePath.Elements:
             nodeid = self._find_element_in_node(el, current)
@@ -144,14 +142,13 @@ class ViewService(object):
         return res
 
     def _find_element_in_node(self, el, nodeid):
-        with self._aspace.lock:
-            nodedata = self._aspace.nodes[nodeid]
-            for ref in nodedata.references:
-                # FIXME: here we should check other arguments!!
-                if ref.BrowseName == el.TargetName:
-                    return ref.NodeId
-            self.logger.info("element %s was not found in node %s", el, nodeid)
-            return None
+        nodedata = self._aspace[nodeid]
+        for ref in nodedata.references:
+            # FIXME: here we should check other arguments!!
+            if ref.BrowseName == el.TargetName:
+                return ref.NodeId
+        self.logger.info("element %s was not found in node %s", el, nodeid)
+        return None
 
 
 class NodeManagementService(object):
@@ -167,57 +164,56 @@ class NodeManagementService(object):
         return results
 
     def _add_node(self, item):
-        with self._aspace.lock:
-            result = ua.AddNodesResult()
+        result = ua.AddNodesResult()
 
-            if item.RequestedNewNodeId in self._aspace.nodes:
-                self.logger.warning("AddNodeItem: node already exists")
-                result.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdExists)
-                return result
-            nodedata = NodeData(item.RequestedNewNodeId)
-            # add common attrs
-            nodedata.attributes[ua.AttributeIds.NodeId] = AttributeValue(ua.DataValue(ua.Variant(item.RequestedNewNodeId, ua.VariantType.NodeId)))
-            nodedata.attributes[ua.AttributeIds.BrowseName] = AttributeValue(ua.DataValue(ua.Variant(item.BrowseName, ua.VariantType.QualifiedName)))
-            nodedata.attributes[ua.AttributeIds.NodeClass] = AttributeValue(ua.DataValue(ua.Variant(item.NodeClass, ua.VariantType.Int32)))
-            # add requested attrs
-            self._add_nodeattributes(item.NodeAttributes, nodedata)
-
-            # add parent
-            if item.ParentNodeId == ua.NodeId():
-                #self.logger.warning("add_node: creating node %s without parent", item.RequestedNewNodeId)
-                pass
-            elif not item.ParentNodeId in self._aspace.nodes:
-                #self.logger.warning("add_node: while adding node %s, requested parent node %s does not exists", item.RequestedNewNodeId, item.ParentNodeId)
-                result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
-                return result
-            else:
-                desc = ua.ReferenceDescription()
-                desc.ReferenceTypeId = item.ReferenceTypeId
-                desc.NodeId = item.RequestedNewNodeId
-                desc.NodeClass = item.NodeClass
-                desc.BrowseName = item.BrowseName
-                desc.DisplayName = ua.LocalizedText(item.BrowseName.Name)
-                desc.TypeDefinition = item.TypeDefinition
-                desc.IsForward = True
-                self._aspace.nodes[item.ParentNodeId].references.append(desc)
-
-            # now add our node to db
-            self._aspace.nodes[item.RequestedNewNodeId] = nodedata
-
-            # add type definition
-            if item.TypeDefinition != ua.NodeId():
-                addref = ua.AddReferencesItem()
-                addref.SourceNodeId = item.RequestedNewNodeId
-                addref.IsForward = True
-                addref.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasTypeDefinition)
-                addref.TargetNodeId = item.TypeDefinition
-                addref.TargetNodeClass = ua.NodeClass.DataType
-                self._add_reference(addref)
-
-            result.StatusCode = ua.StatusCode()
-            result.AddedNodeId = item.RequestedNewNodeId
-
+        if item.RequestedNewNodeId in self._aspace:
+            self.logger.warning("AddNodeItem: node already exists")
+            result.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdExists)
             return result
+        nodedata = NodeData(item.RequestedNewNodeId)
+        # add common attrs
+        nodedata.attributes[ua.AttributeIds.NodeId] = AttributeValue(ua.DataValue(ua.Variant(item.RequestedNewNodeId, ua.VariantType.NodeId)))
+        nodedata.attributes[ua.AttributeIds.BrowseName] = AttributeValue(ua.DataValue(ua.Variant(item.BrowseName, ua.VariantType.QualifiedName)))
+        nodedata.attributes[ua.AttributeIds.NodeClass] = AttributeValue(ua.DataValue(ua.Variant(item.NodeClass, ua.VariantType.Int32)))
+        # add requested attrs
+        self._add_nodeattributes(item.NodeAttributes, nodedata)
+
+        # add parent
+        if item.ParentNodeId == ua.NodeId():
+            #self.logger.warning("add_node: creating node %s without parent", item.RequestedNewNodeId)
+            pass
+        elif not item.ParentNodeId in self._aspace:
+            #self.logger.warning("add_node: while adding node %s, requested parent node %s does not exists", item.RequestedNewNodeId, item.ParentNodeId)
+            result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
+            return result
+        else:
+            desc = ua.ReferenceDescription()
+            desc.ReferenceTypeId = item.ReferenceTypeId
+            desc.NodeId = item.RequestedNewNodeId
+            desc.NodeClass = item.NodeClass
+            desc.BrowseName = item.BrowseName
+            desc.DisplayName = ua.LocalizedText(item.BrowseName.Name)
+            desc.TypeDefinition = item.TypeDefinition
+            desc.IsForward = True
+            self._aspace[item.ParentNodeId].references.append(desc)
+
+        # now add our node to db
+        self._aspace[item.RequestedNewNodeId] = nodedata
+
+        # add type definition
+        if item.TypeDefinition != ua.NodeId():
+            addref = ua.AddReferencesItem()
+            addref.SourceNodeId = item.RequestedNewNodeId
+            addref.IsForward = True
+            addref.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasTypeDefinition)
+            addref.TargetNodeId = item.TypeDefinition
+            addref.TargetNodeClass = ua.NodeClass.DataType
+            self._add_reference(addref)
+
+        result.StatusCode = ua.StatusCode()
+        result.AddedNodeId = item.RequestedNewNodeId
+
+        return result
 
     def add_references(self, refs):
         result = []
@@ -226,24 +222,23 @@ class NodeManagementService(object):
         return result
 
     def _add_reference(self, addref):
-        with self._aspace.lock:
-            if not addref.SourceNodeId in self._aspace.nodes:
-                return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
-            if not addref.TargetNodeId in self._aspace.nodes:
-                return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
-            rdesc = ua.ReferenceDescription()
-            rdesc.ReferenceTypeId = addref.ReferenceTypeId
-            rdesc.IsForward = addref.IsForward
-            rdesc.NodeId = addref.TargetNodeId
-            rdesc.NodeClass = addref.TargetNodeClass
-            bname = self._aspace.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.BrowseName).Value.Value
-            if bname:
-                rdesc.BrowseName = bname
-            dname = self._aspace.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.DisplayName).Value.Value
-            if dname:
-                rdesc.DisplayName = dname
-            self._aspace.nodes[addref.SourceNodeId].references.append(rdesc)
-            return ua.StatusCode()
+        if not addref.SourceNodeId in self._aspace:
+            return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
+        if not addref.TargetNodeId in self._aspace:
+            return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
+        rdesc = ua.ReferenceDescription()
+        rdesc.ReferenceTypeId = addref.ReferenceTypeId
+        rdesc.IsForward = addref.IsForward
+        rdesc.NodeId = addref.TargetNodeId
+        rdesc.NodeClass = addref.TargetNodeClass
+        bname = self._aspace.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.BrowseName).Value.Value
+        if bname:
+            rdesc.BrowseName = bname
+        dname = self._aspace.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.DisplayName).Value.Value
+        if dname:
+            rdesc.DisplayName = dname
+        self._aspace[addref.SourceNodeId].references.append(rdesc)
+        return ua.StatusCode()
 
     def _add_node_attr(self, item, nodedata, name, vtype=None):
         if item.SpecifiedAttributes & getattr(ua.NodeAttributesMask, name):
@@ -286,16 +281,15 @@ class MethodService(object):
     def call(self, methods):
         results = []
         for method in methods:
-            with self._aspace.lock:
-                results.append(self._call(method))
+            results.append(self._call(method))
         return results
 
     def _call(self, method):
         res = ua.CallMethodResult()
-        if method.ObjectId not in self._aspace.nodes or method.MethodId not in self._aspace.nodes:
+        if method.ObjectId not in self._aspace or method.MethodId not in self._aspace:
             res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
         else:
-            node = self._aspace.nodes[method.MethodId]
+            node = self._aspace[method.MethodId]
             if node.call is None:
                 res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNothingToDo)
             else:
@@ -314,39 +308,50 @@ class AddressSpace(object):
     """
     The address space object stores all the nodes og the OPC-UA server
     and helper methods.
-    It is NOT threadsafe, lock the lock object before reading of modifying
-    a node
+    The methods are threadsafe
     """
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.nodes = {}
-        self.lock = RLock()  # FIXME: should use multiple reader, one writter pattern
+        self._nodes = {}
+        self._lock = RLock()  # FIXME: should use multiple reader, one writter pattern
         self._datachange_callback_counter = 200
         self._handle_to_attribute_map = {}
+
+    def __getitem__(self, nodeid):
+        with self._lock:
+            return self._nodes.__getitem__(nodeid)
+
+    def __setitem__(self, nodeid, value):
+        with self._lock:
+            return self._nodes.__setitem__(nodeid, value)
+
+    def __contains__(self, nodeid):
+        with self._lock:
+            return self._nodes.__contains__(nodeid)
 
     def dump(self, path):
         """
         dump address space as binary to file
         """
         with open(path, 'wb') as f:
-            pickle.dump(self.nodes, f)
+            pickle.dump(self._nodes, f)
 
     def load(self, path):
         """
         load address space from file, overwritting everything current address space
         """
         with open(path, 'rb') as f:
-            self.nodes = pickle.load(f)
+            self._nodes = pickle.load(f)
 
     def get_attribute_value(self, nodeid, attr):
-        with self.lock:
+        with self._lock:
             #self.logger.debug("get attr val: %s %s", nodeid, attr)
             dv = ua.DataValue()
-            if not nodeid in self.nodes:
+            if not nodeid in self._nodes:
                 dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
                 return dv
-            node = self.nodes[nodeid]
+            node = self._nodes[nodeid]
             if attr not in node.attributes:
                 dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
                 return dv
@@ -356,11 +361,11 @@ class AddressSpace(object):
             return attval.value
 
     def set_attribute_value(self, nodeid, attr, value):
-        with self.lock:
+        with self._lock:
             self.logger.debug("set attr val: %s %s %s", nodeid, attr, value)
-            if not nodeid in self.nodes:
+            if not nodeid in self._nodes:
                 return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
-            node = self.nodes[nodeid]
+            node = self._nodes[nodeid]
             if not attr in node.attributes:
                 return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
             attval = node.attributes[attr]
@@ -375,11 +380,11 @@ class AddressSpace(object):
             return ua.StatusCode()
 
     def add_datachange_callback(self, nodeid, attr, callback):
-        with self.lock:
+        with self._lock:
             self.logger.debug("set attr callback: %s %s %s", nodeid, attr, callback)
-            if not nodeid in self.nodes:
+            if not nodeid in self._nodes:
                 return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown), 0
-            node = self.nodes[nodeid]
+            node = self._nodes[nodeid]
             if not attr in node.attributes:
                 return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid), 0
             attval = node.attributes[attr]
@@ -390,10 +395,12 @@ class AddressSpace(object):
             return ua.StatusCode(), handle
 
     def delete_datachange_callback(self, handle):
-        nodeid, attr = self._handle_to_attribute_map.pop(handle)
-        self.nodes[nodeid].attributes[attr].datachange_callbacks.pop(handle)
+        with self._lock:
+            nodeid, attr = self._handle_to_attribute_map.pop(handle)
+            self._nodes[nodeid].attributes[attr].datachange_callbacks.pop(handle)
 
     def add_method_callback(self, methodid, callback):
-        with self.lock:
-            node = self.nodes[methodid]
+        with self._lock:
+            node = self._nodes[methodid]
             node.call = callback
+
