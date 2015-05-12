@@ -5,6 +5,12 @@ Pure Python OPC-UA library
 from opcua.binary_client import BinaryClient
 import opcua.uaprotocol as ua
 from opcua.node import Node
+from opcua.node import create_object
+from opcua.node import create_folder
+from opcua.node import create_variable
+from opcua.node import create_property
+from opcua.node import create_method
+from opcua.node import call_method
 from opcua.attribute_ids import AttributeIds
 from opcua.object_ids import ObjectIds
 from opcua.event import Event

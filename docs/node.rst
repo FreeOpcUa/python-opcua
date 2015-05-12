@@ -1,9 +1,11 @@
 
-The Node Object 
+High level functions and Node object 
 =========================================
 
-.. autoclass:: opcua.node.Node
+.. automodule:: opcua.node
+   :member-order: bysource
    :members:
    :undoc-members:
+
 
 
