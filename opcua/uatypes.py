@@ -572,10 +572,10 @@ class ExtensionObject(FrozenClass):
     Any UA object packed as an ExtensionObject
 
 
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar Body: 
-    :vartype Body: bytes 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar Body:
+    :vartype Body: bytes
 
     '''
 
@@ -691,10 +691,10 @@ class Variant(object):
     if not variant type is given, attemps to guess type from python type
     if a variant is given as value, the new objects becomes a copy of the argument
 
-    :ivar Value: 
-    :vartype Value: Any supported type 
-    :ivar VariantType: 
-    :vartype VariantType: VariantType 
+    :ivar Value:
+    :vartype Value: Any supported type
+    :ivar VariantType:
+    :vartype VariantType: VariantType
     """
 
     def __init__(self, value=None, varianttype=None):
@@ -776,18 +776,18 @@ class DataValue(object):
     A value with an associated timestamp, and quality.
     Automatically generated from xml , copied and modified here to fix errors in xml spec
 
-    :ivar Value: 
-    :vartype Value: Variant 
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar SourceTimestamp: 
-    :vartype SourceTimestamp: datetime 
-    :ivar SourcePicoSeconds: 
-    :vartype SourcePicoSeconds: int 
-    :ivar ServerTimestamp: 
-    :vartype ServerTimestamp: datetime 
-    :ivar ServerPicoseconds: 
-    :vartype ServerPicoseconds: int 
+    :ivar Value:
+    :vartype Value: Variant
+    :ivar StatusCode:
+    :vartype StatusCode: StatusCode
+    :ivar SourceTimestamp:
+    :vartype SourceTimestamp: datetime
+    :ivar SourcePicoSeconds:
+    :vartype SourcePicoSeconds: int
+    :ivar ServerTimestamp:
+    :vartype ServerTimestamp: datetime
+    :ivar ServerPicoseconds:
+    :vartype ServerPicoseconds: int
 
     '''
 

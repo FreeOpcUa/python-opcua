@@ -5,6 +5,7 @@ and browse address space
 
 import opcua.uaprotocol as ua
 
+
 def create_folder(parent, *args):
     """
     create a child node folder
@@ -14,6 +15,7 @@ def create_folder(parent, *args):
     nodeid, qname = _parse_add_args(*args)
     return Node(parent.server, _create_folder(parent.server, parent.nodeid, nodeid, qname))
 
+
 def create_object(parent, *args):
     """
     create a child node object
@@ -22,6 +24,7 @@ def create_object(parent, *args):
     """
     nodeid, qname = _parse_add_args(*args)
     return Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname))
+
 
 def create_property(parent, *args):
     """
@@ -33,6 +36,7 @@ def create_property(parent, *args):
     val = _to_variant(*args[2:])
     return Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, val, isproperty=True))
 
+
 def create_variable(parent, *args):
     """
     create a child node variable
@@ -42,6 +46,7 @@ def create_variable(parent, *args):
     nodeid, qname = _parse_add_args(*args[:2])
     val = _to_variant(*args[2:])
     return Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, val, isproperty=False))
+
 
 def create_method(parent, *args):
     """
@@ -59,6 +64,7 @@ def create_method(parent, *args):
     if len(args) > 4:
         outputs = args[4]
     return _create_method(parent, nodeid, qname, callback, inputs, outputs)
+
 
 def call_method(parent, methodid, *args):
     """
@@ -87,7 +93,6 @@ def call_method(parent, methodid, *args):
         return result.OutputArguments[0].Value
     else:
         return [var.Value for var in result.OutputArguments]
-
 
 
 class Node(object):
@@ -281,7 +286,7 @@ class Node(object):
         # FIXME: seems this method may return several nodes
         return Node(self.server, result.Targets[0].TargetId)
 
-    #Convenience legacy methods
+    # Convenience legacy methods
     add_folder = create_folder
     add_property = create_property
     add_object = create_object
@@ -297,6 +302,7 @@ def generate_nodeid(idx):
     global __nodeid_counter
     __nodeid_counter += 1
     return ua.NodeId(__nodeid_counter, idx)
+
 
 def _create_folder(server, parentnodeid, nodeid, qname):
     node = ua.AddNodesItem()
@@ -315,6 +321,7 @@ def _create_folder(server, parentnodeid, nodeid, qname):
     results[0].StatusCode.check()
     return nodeid
 
+
 def _create_object(server, parentnodeid, nodeid, qname):
     node = ua.AddNodesItem()
     node.RequestedNewNodeId = nodeid
@@ -332,11 +339,13 @@ def _create_object(server, parentnodeid, nodeid, qname):
     results[0].StatusCode.check()
     return nodeid
 
+
 def _to_variant(val, vtype=None):
     if isinstance(val, ua.Variant):
         return val
     else:
         return ua.Variant(val, vtype)
+
 
 def _create_variable(server, parentnodeid, nodeid, qname, val, isproperty=False):
     node = ua.AddNodesItem()
@@ -364,6 +373,7 @@ def _create_variable(server, parentnodeid, nodeid, qname, val, isproperty=False)
     results[0].StatusCode.check()
     return nodeid
 
+
 def _create_method(parent, nodeid, qname, callback, inputs, outputs):
     node = ua.AddNodesItem()
     node.RequestedNewNodeId = nodeid
@@ -390,6 +400,7 @@ def _create_method(parent, nodeid, qname, callback, inputs, outputs):
     parent.server.add_method_callback(method.nodeid, callback)
     return nodeid
 
+
 def _call_method(server, parentnodeid, methodid, arguments):
     request = ua.CallMethodRequest()
     request.ObjectId = parentnodeid
@@ -401,11 +412,13 @@ def _call_method(server, parentnodeid, methodid, arguments):
     res.StatusCode.check()
     return res
 
+
 def _vtype_to_argument(vtype):
     arg = ua.Argument()
     v = ua.Variant(None, vtype)
     arg.DataType = _guess_uatype(v)
     return ua.ExtensionObject.from_object(arg)
+
 
 def _guess_uatype(variant):
     if variant.VariantType == ua.VariantType.ExtensionObject:
@@ -423,6 +436,7 @@ def _guess_uatype(variant):
     else:
         return ua.NodeId(getattr(ua.ObjectIds, variant.VariantType.name))
 
+
 def _parse_add_args(*args):
     if isinstance(args[0], ua.NodeId):
         return args[0], args[1]
@@ -432,6 +446,3 @@ def _parse_add_args(*args):
         return generate_nodeid(args[0]), ua.QualifiedName(args[1], args[0])
     else:
         raise TypeError("Add methods takes a nodeid and a qualifiedname as argument, received %s" % args)
-
-
-

@@ -100,5 +100,3 @@ class SubscriptionService(object):
         with self._lock:
             for sub in self.subscriptions.values():
                 sub.monitored_item_srv.trigger_event(event)
-
-

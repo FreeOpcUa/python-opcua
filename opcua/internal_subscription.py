@@ -20,6 +20,7 @@ class MonitoredItemData(object):
 
 
 class MonitoredItemService(object):
+
     """
     implement monitoreditem service for 1 subscription
     """
@@ -36,7 +37,6 @@ class MonitoredItemService(object):
 
     def delete_all_monitored_items(self):
         self.delete_monitored_items([mdata.monitored_item_id for mdata in self._monitored_items.values()])
-
 
     def create_monitored_items(self, params):
         results = []
@@ -61,7 +61,7 @@ class MonitoredItemService(object):
                 result = ua.MonitoredItemCreateResult()
                 if mdata.monitored_item_id == params.MonitoredItemId:
                     result.RevisedSamplingInterval = self.isub.data.RevisedPublishingInterval
-                    result.RevisedQueueSize = ua.downcast_extobject(params.RequestedParameters.QueueSize) 
+                    result.RevisedQueueSize = ua.downcast_extobject(params.RequestedParameters.QueueSize)
                     result.FilterResult = params.RequestedParameters.Filter
                     mdata.parameters = result
                     return result
@@ -255,7 +255,7 @@ class InternalSubscription(object):
     def _pop_triggered_datachanges(self, result):
         if self._triggered_datachanges:
             notif = ua.DataChangeNotification()
-            notif.MonitoredItems = [item for sublist in self._triggered_datachanges.values() for item in sublist] 
+            notif.MonitoredItems = [item for sublist in self._triggered_datachanges.values() for item in sublist]
             self._triggered_datachanges = {}
             self.logger.debug("sending datachanges notification with %s events", len(notif.MonitoredItems))
             result.NotificationMessage.NotificationData.append(notif)
@@ -263,7 +263,7 @@ class InternalSubscription(object):
     def _pop_triggered_events(self, result):
         if self._triggered_events:
             notif = ua.EventNotificationList()
-            notif.Events = [item for sublist in self._triggered_events.values() for item in sublist] 
+            notif.Events = [item for sublist in self._triggered_events.values() for item in sublist]
             self._triggered_events = {}
             result.NotificationMessage.NotificationData.append(notif)
             self.logger.debug("sending event notification with %s events", len(notif.Events))
@@ -292,21 +292,19 @@ class InternalSubscription(object):
                 return ua.NotificationMessage()
 
     def enqueue_datachange_event(self, mid, eventdata, maxsize):
-        self._enqueue_event(mid, eventdata, maxsize, self._triggered_datachanges) 
+        self._enqueue_event(mid, eventdata, maxsize, self._triggered_datachanges)
 
     def enqueue_event(self, mid, eventdata, maxsize):
-        self._enqueue_event(mid, eventdata, maxsize, self._triggered_events) 
+        self._enqueue_event(mid, eventdata, maxsize, self._triggered_events)
 
     def enqueue_statuschange(self, code):
         self._triggered_statuschanges.append(code)
 
     def _enqueue_event(self, mid, eventdata, size, queue):
-        if not mid in queue:
+        if mid not in queue:
             queue[mid] = [eventdata]
             return
         if size != 0:
             if len(queue[mid]) >= size:
                 queue[mid].pop(0)
         queue[mid].append(eventdata)
-
-
