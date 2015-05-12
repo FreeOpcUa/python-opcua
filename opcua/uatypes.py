@@ -222,6 +222,15 @@ class Guid(object):
 
 class StatusCode(object):
 
+    """
+    :ivar value:
+    :vartype value: int
+    :ivar name:
+    :vartype name: string
+    :ivar doc:
+    :vartype doc: string
+    """
+
     def __init__(self, value=0):
         self.value = value
         self.name, self.doc = status_code.get_name_and_doc(value)
@@ -559,6 +568,15 @@ class LocalizedText(FrozenClass):
 class ExtensionObject(FrozenClass):
 
     '''
+
+    Any UA object packed as an ExtensionObject
+
+
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar Body: 
+    :vartype Body: bytes 
+
     '''
 
     def __init__(self):
@@ -606,6 +624,36 @@ class VariantType(Enum):
 
     '''
     The possible types of a variant.
+
+    :ivar Null:
+    :ivar Boolean:
+    :ivar SByte:
+    :ivar Byte:
+    :ivar Int16:
+    :ivar UInt16:
+    :ivar Int32:
+    :ivar UInt32:
+    :ivar Int64:
+    :ivar UInt64:
+    :ivar Float:
+    :ivar Double:
+    :ivar String:
+    :ivar DateTime:
+    :ivar Guid:
+    :ivar ByteString:
+    :ivar XmlElement:
+    :ivar NodeId:
+    :ivar ExpandedNodeId:
+    :ivar StatusCode:
+    :ivar QualifiedName:
+    :ivar LocalizedText:
+    :ivar ExtensionObject:
+    :ivar DataValue:
+    :ivar Variant:
+    :ivar DiagnosticInfo:
+
+
+
     '''
     Null = 0
     Boolean = 1
@@ -642,6 +690,11 @@ class Variant(object):
     if no argument a Null Variant is created.
     if not variant type is given, attemps to guess type from python type
     if a variant is given as value, the new objects becomes a copy of the argument
+
+    :ivar Value: 
+    :vartype Value: Any supported type 
+    :ivar VariantType: 
+    :vartype VariantType: VariantType 
     """
 
     def __init__(self, value=None, varianttype=None):
@@ -722,6 +775,20 @@ class DataValue(object):
     '''
     A value with an associated timestamp, and quality.
     Automatically generated from xml , copied and modified here to fix errors in xml spec
+
+    :ivar Value: 
+    :vartype Value: Variant 
+    :ivar StatusCode: 
+    :vartype StatusCode: StatusCode 
+    :ivar SourceTimestamp: 
+    :vartype SourceTimestamp: datetime 
+    :ivar SourcePicoSeconds: 
+    :vartype SourcePicoSeconds: int 
+    :ivar ServerTimestamp: 
+    :vartype ServerTimestamp: datetime 
+    :ivar ServerPicoseconds: 
+    :vartype ServerPicoseconds: int 
+
     '''
 
     def __init__(self, variant=None):
