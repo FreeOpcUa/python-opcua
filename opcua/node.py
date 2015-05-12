@@ -49,6 +49,13 @@ class Node(object):
         result = self.get_attribute(ua.AttributeIds.DisplayName)
         return result.Value
 
+    def get_data_type(self):
+        """
+        get data type of node
+        """
+        result = self.get_attribute(ua.AttributeIds.DataType)
+        return result.Value
+
     def get_node_class(self):
         """
         get node class attribute of node

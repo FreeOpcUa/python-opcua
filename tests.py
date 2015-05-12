@@ -353,6 +353,27 @@ class CommonTests(object):
         self.assertEqual(nid, v.nodeid)
         self.assertEqual(qn, v.get_browse_name())
 
+
+    def test_null_variable(self):
+        objects = self.opc.get_objects_node()
+        var = objects.add_variable(3, 'nullstring', "a string")
+        var.set_value(None)
+        val = var.get_value()
+        self.assertEqual(val, None)
+        var.set_value("")
+        val = var.get_value()
+        self.assertNotEqual(val, None)
+        self.assertEqual(val, "")
+
+    def test_variable_data_type(self):
+        objects = self.opc.get_objects_node()
+        var = objects.add_variable(3, 'stringfordatatype', "a string")
+        val = var.get_data_type()
+        self.assertEqual(val, ua.NodeId(ua.ObjectIds.String))
+        var = objects.add_variable(3, 'stringarrayfordatatype', ["a", "b"])
+        val = var.get_data_type()
+        self.assertEqual(val, ua.NodeId(ua.ObjectIds.String))
+
     def test_add_string_array_variable(self):
         objects = self.opc.get_objects_node()
         v = objects.add_variable('ns=3;s=stringarrayid;', '9:stringarray', ['l', 'b'])

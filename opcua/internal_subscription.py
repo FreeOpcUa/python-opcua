@@ -20,6 +20,9 @@ class MonitoredItemData(object):
 
 
 class MonitoredItemService(object):
+    """
+    implement monitoreditem service for 1 subscription
+    """
 
     def __init__(self, isub, aspace):
         self.logger = logging.getLogger(__name__ + str(isub.data.SubscriptionId))
