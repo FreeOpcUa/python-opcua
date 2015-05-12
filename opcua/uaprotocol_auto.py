@@ -11,6 +11,14 @@ from opcua.object_ids import ObjectIds
 
 class OpenFileMode(object):
     '''
+    :ivar Read: 
+    :vartype Read: 1 
+    :ivar Write: 
+    :vartype Write: 2 
+    :ivar EraseExisiting: 
+    :vartype EraseExisiting: 4 
+    :ivar Append: 
+    :vartype Append: 8 
     '''
     Read = 1
     Write = 2
@@ -20,6 +28,15 @@ class OpenFileMode(object):
 class IdType(object):
     '''
     The type of identifier used in a node id.
+    
+    :ivar Numeric: 
+    :vartype Numeric: 0 
+    :ivar String: 
+    :vartype String: 1 
+    :ivar Guid: 
+    :vartype Guid: 2 
+    :ivar Opaque: 
+    :vartype Opaque: 3 
     '''
     Numeric = 0
     String = 1
@@ -29,6 +46,25 @@ class IdType(object):
 class NodeClass(object):
     '''
     A mask specifying the class of the node.
+    
+    :ivar Unspecified: 
+    :vartype Unspecified: 0 
+    :ivar Object: 
+    :vartype Object: 1 
+    :ivar Variable: 
+    :vartype Variable: 2 
+    :ivar Method: 
+    :vartype Method: 4 
+    :ivar ObjectType: 
+    :vartype ObjectType: 8 
+    :ivar VariableType: 
+    :vartype VariableType: 16 
+    :ivar ReferenceType: 
+    :vartype ReferenceType: 32 
+    :ivar DataType: 
+    :vartype DataType: 64 
+    :ivar View: 
+    :vartype View: 128 
     '''
     Unspecified = 0
     Object = 1
@@ -43,6 +79,15 @@ class NodeClass(object):
 class ApplicationType(object):
     '''
     The types of applications.
+    
+    :ivar Server: 
+    :vartype Server: 0 
+    :ivar Client: 
+    :vartype Client: 1 
+    :ivar ClientAndServer: 
+    :vartype ClientAndServer: 2 
+    :ivar DiscoveryServer: 
+    :vartype DiscoveryServer: 3 
     '''
     Server = 0
     Client = 1
@@ -52,6 +97,15 @@ class ApplicationType(object):
 class MessageSecurityMode(object):
     '''
     The type of security to use on a message.
+    
+    :ivar Invalid: 
+    :vartype Invalid: 0 
+    :ivar None_: 
+    :vartype None_: 1 
+    :ivar Sign: 
+    :vartype Sign: 2 
+    :ivar SignAndEncrypt: 
+    :vartype SignAndEncrypt: 3 
     '''
     Invalid = 0
     None_ = 1
@@ -61,6 +115,15 @@ class MessageSecurityMode(object):
 class UserTokenType(object):
     '''
     The possible user token types.
+    
+    :ivar Anonymous: 
+    :vartype Anonymous: 0 
+    :ivar UserName: 
+    :vartype UserName: 1 
+    :ivar Certificate: 
+    :vartype Certificate: 2 
+    :ivar IssuedToken: 
+    :vartype IssuedToken: 3 
     '''
     Anonymous = 0
     UserName = 1
@@ -70,6 +133,11 @@ class UserTokenType(object):
 class SecurityTokenRequestType(object):
     '''
     Indicates whether a token if being created or renewed.
+    
+    :ivar Issue: 
+    :vartype Issue: 0 
+    :ivar Renew: 
+    :vartype Renew: 1 
     '''
     Issue = 0
     Renew = 1
@@ -77,6 +145,71 @@ class SecurityTokenRequestType(object):
 class NodeAttributesMask(object):
     '''
     The bits used to specify default attributes for a new node.
+    
+    :ivar None_: 
+    :vartype None_: 0 
+    :ivar AccessLevel: 
+    :vartype AccessLevel: 1 
+    :ivar ArrayDimensions: 
+    :vartype ArrayDimensions: 2 
+    :ivar BrowseName: 
+    :vartype BrowseName: 4 
+    :ivar ContainsNoLoops: 
+    :vartype ContainsNoLoops: 8 
+    :ivar DataType: 
+    :vartype DataType: 16 
+    :ivar Description: 
+    :vartype Description: 32 
+    :ivar DisplayName: 
+    :vartype DisplayName: 64 
+    :ivar EventNotifier: 
+    :vartype EventNotifier: 128 
+    :ivar Executable: 
+    :vartype Executable: 256 
+    :ivar Historizing: 
+    :vartype Historizing: 512 
+    :ivar InverseName: 
+    :vartype InverseName: 1024 
+    :ivar IsAbstract: 
+    :vartype IsAbstract: 2048 
+    :ivar MinimumSamplingInterval: 
+    :vartype MinimumSamplingInterval: 4096 
+    :ivar NodeClass: 
+    :vartype NodeClass: 8192 
+    :ivar NodeId: 
+    :vartype NodeId: 16384 
+    :ivar Symmetric: 
+    :vartype Symmetric: 32768 
+    :ivar UserAccessLevel: 
+    :vartype UserAccessLevel: 65536 
+    :ivar UserExecutable: 
+    :vartype UserExecutable: 131072 
+    :ivar UserWriteMask: 
+    :vartype UserWriteMask: 262144 
+    :ivar ValueRank: 
+    :vartype ValueRank: 524288 
+    :ivar WriteMask: 
+    :vartype WriteMask: 1048576 
+    :ivar Value: 
+    :vartype Value: 2097152 
+    :ivar All: 
+    :vartype All: 4194303 
+    :ivar BaseNode: 
+    :vartype BaseNode: 1335396 
+    :ivar Object: 
+    :vartype Object: 1335524 
+    :ivar ObjectTypeOrDataType: 
+    :vartype ObjectTypeOrDataType: 1337444 
+    :ivar Variable: 
+    :vartype Variable: 4026999 
+    :ivar VariableType: 
+    :vartype VariableType: 3958902 
+    :ivar Method: 
+    :vartype Method: 1466724 
+    :ivar ReferenceType: 
+    :vartype ReferenceType: 1371236 
+    :ivar View: 
+    :vartype View: 1335532 
     '''
     None_ = 0
     AccessLevel = 1
@@ -114,6 +247,53 @@ class NodeAttributesMask(object):
 class AttributeWriteMask(object):
     '''
     Define bits used to indicate which attributes are writeable.
+    
+    :ivar None_: 
+    :vartype None_: 0 
+    :ivar AccessLevel: 
+    :vartype AccessLevel: 1 
+    :ivar ArrayDimensions: 
+    :vartype ArrayDimensions: 2 
+    :ivar BrowseName: 
+    :vartype BrowseName: 4 
+    :ivar ContainsNoLoops: 
+    :vartype ContainsNoLoops: 8 
+    :ivar DataType: 
+    :vartype DataType: 16 
+    :ivar Description: 
+    :vartype Description: 32 
+    :ivar DisplayName: 
+    :vartype DisplayName: 64 
+    :ivar EventNotifier: 
+    :vartype EventNotifier: 128 
+    :ivar Executable: 
+    :vartype Executable: 256 
+    :ivar Historizing: 
+    :vartype Historizing: 512 
+    :ivar InverseName: 
+    :vartype InverseName: 1024 
+    :ivar IsAbstract: 
+    :vartype IsAbstract: 2048 
+    :ivar MinimumSamplingInterval: 
+    :vartype MinimumSamplingInterval: 4096 
+    :ivar NodeClass: 
+    :vartype NodeClass: 8192 
+    :ivar NodeId: 
+    :vartype NodeId: 16384 
+    :ivar Symmetric: 
+    :vartype Symmetric: 32768 
+    :ivar UserAccessLevel: 
+    :vartype UserAccessLevel: 65536 
+    :ivar UserExecutable: 
+    :vartype UserExecutable: 131072 
+    :ivar UserWriteMask: 
+    :vartype UserWriteMask: 262144 
+    :ivar ValueRank: 
+    :vartype ValueRank: 524288 
+    :ivar WriteMask: 
+    :vartype WriteMask: 1048576 
+    :ivar ValueForVariableType: 
+    :vartype ValueForVariableType: 2097152 
     '''
     None_ = 0
     AccessLevel = 1
@@ -142,6 +322,13 @@ class AttributeWriteMask(object):
 class BrowseDirection(object):
     '''
     The directions of the references to return.
+    
+    :ivar Forward: 
+    :vartype Forward: 0 
+    :ivar Inverse: 
+    :vartype Inverse: 1 
+    :ivar Both: 
+    :vartype Both: 2 
     '''
     Forward = 0
     Inverse = 1
@@ -150,6 +337,27 @@ class BrowseDirection(object):
 class BrowseResultMask(object):
     '''
     A bit mask which specifies what should be returned in a browse response.
+    
+    :ivar None_: 
+    :vartype None_: 0 
+    :ivar ReferenceTypeId: 
+    :vartype ReferenceTypeId: 1 
+    :ivar IsForward: 
+    :vartype IsForward: 2 
+    :ivar NodeClass: 
+    :vartype NodeClass: 4 
+    :ivar BrowseName: 
+    :vartype BrowseName: 8 
+    :ivar DisplayName: 
+    :vartype DisplayName: 16 
+    :ivar TypeDefinition: 
+    :vartype TypeDefinition: 32 
+    :ivar All: 
+    :vartype All: 63 
+    :ivar ReferenceTypeInfo: 
+    :vartype ReferenceTypeInfo: 3 
+    :ivar TargetInfo: 
+    :vartype TargetInfo: 60 
     '''
     None_ = 0
     ReferenceTypeId = 1
@@ -164,6 +372,14 @@ class BrowseResultMask(object):
 
 class ComplianceLevel(object):
     '''
+    :ivar Untested: 
+    :vartype Untested: 0 
+    :ivar Partial: 
+    :vartype Partial: 1 
+    :ivar SelfTested: 
+    :vartype SelfTested: 2 
+    :ivar Certified: 
+    :vartype Certified: 3 
     '''
     Untested = 0
     Partial = 1
@@ -172,6 +388,42 @@ class ComplianceLevel(object):
 
 class FilterOperator(object):
     '''
+    :ivar Equals: 
+    :vartype Equals: 0 
+    :ivar IsNull: 
+    :vartype IsNull: 1 
+    :ivar GreaterThan: 
+    :vartype GreaterThan: 2 
+    :ivar LessThan: 
+    :vartype LessThan: 3 
+    :ivar GreaterThanOrEqual: 
+    :vartype GreaterThanOrEqual: 4 
+    :ivar LessThanOrEqual: 
+    :vartype LessThanOrEqual: 5 
+    :ivar Like: 
+    :vartype Like: 6 
+    :ivar Not: 
+    :vartype Not: 7 
+    :ivar Between: 
+    :vartype Between: 8 
+    :ivar InList: 
+    :vartype InList: 9 
+    :ivar And: 
+    :vartype And: 10 
+    :ivar Or: 
+    :vartype Or: 11 
+    :ivar Cast: 
+    :vartype Cast: 12 
+    :ivar InView: 
+    :vartype InView: 13 
+    :ivar OfType: 
+    :vartype OfType: 14 
+    :ivar RelatedTo: 
+    :vartype RelatedTo: 15 
+    :ivar BitwiseAnd: 
+    :vartype BitwiseAnd: 16 
+    :ivar BitwiseOr: 
+    :vartype BitwiseOr: 17 
     '''
     Equals = 0
     IsNull = 1
@@ -194,6 +446,14 @@ class FilterOperator(object):
 
 class TimestampsToReturn(object):
     '''
+    :ivar Source: 
+    :vartype Source: 0 
+    :ivar Server: 
+    :vartype Server: 1 
+    :ivar Both: 
+    :vartype Both: 2 
+    :ivar Neither: 
+    :vartype Neither: 3 
     '''
     Source = 0
     Server = 1
@@ -202,6 +462,14 @@ class TimestampsToReturn(object):
 
 class HistoryUpdateType(object):
     '''
+    :ivar Insert: 
+    :vartype Insert: 1 
+    :ivar Replace: 
+    :vartype Replace: 2 
+    :ivar Update: 
+    :vartype Update: 3 
+    :ivar Delete: 
+    :vartype Delete: 4 
     '''
     Insert = 1
     Replace = 2
@@ -210,6 +478,14 @@ class HistoryUpdateType(object):
 
 class PerformUpdateType(object):
     '''
+    :ivar Insert: 
+    :vartype Insert: 1 
+    :ivar Replace: 
+    :vartype Replace: 2 
+    :ivar Update: 
+    :vartype Update: 3 
+    :ivar Remove: 
+    :vartype Remove: 4 
     '''
     Insert = 1
     Replace = 2
@@ -218,6 +494,12 @@ class PerformUpdateType(object):
 
 class MonitoringMode(object):
     '''
+    :ivar Disabled: 
+    :vartype Disabled: 0 
+    :ivar Sampling: 
+    :vartype Sampling: 1 
+    :ivar Reporting: 
+    :vartype Reporting: 2 
     '''
     Disabled = 0
     Sampling = 1
@@ -225,6 +507,12 @@ class MonitoringMode(object):
 
 class DataChangeTrigger(object):
     '''
+    :ivar Status: 
+    :vartype Status: 0 
+    :ivar StatusValue: 
+    :vartype StatusValue: 1 
+    :ivar StatusValueTimestamp: 
+    :vartype StatusValueTimestamp: 2 
     '''
     Status = 0
     StatusValue = 1
@@ -232,6 +520,12 @@ class DataChangeTrigger(object):
 
 class DeadbandType(object):
     '''
+    :ivar None_: 
+    :vartype None_: 0 
+    :ivar Absolute: 
+    :vartype Absolute: 1 
+    :ivar Percent: 
+    :vartype Percent: 2 
     '''
     None_ = 0
     Absolute = 1
@@ -240,6 +534,13 @@ class DeadbandType(object):
 class EnumeratedTestType(object):
     '''
     A simple enumerated type used for testing.
+    
+    :ivar Red: 
+    :vartype Red: 1 
+    :ivar Yellow: 
+    :vartype Yellow: 4 
+    :ivar Green: 
+    :vartype Green: 5 
     '''
     Red = 1
     Yellow = 4
@@ -247,6 +548,18 @@ class EnumeratedTestType(object):
 
 class RedundancySupport(object):
     '''
+    :ivar None_: 
+    :vartype None_: 0 
+    :ivar Cold: 
+    :vartype Cold: 1 
+    :ivar Warm: 
+    :vartype Warm: 2 
+    :ivar Hot: 
+    :vartype Hot: 3 
+    :ivar Transparent: 
+    :vartype Transparent: 4 
+    :ivar HotAndMirrored: 
+    :vartype HotAndMirrored: 5 
     '''
     None_ = 0
     Cold = 1
@@ -257,6 +570,22 @@ class RedundancySupport(object):
 
 class ServerState(object):
     '''
+    :ivar Running: 
+    :vartype Running: 0 
+    :ivar Failed: 
+    :vartype Failed: 1 
+    :ivar NoConfiguration: 
+    :vartype NoConfiguration: 2 
+    :ivar Suspended: 
+    :vartype Suspended: 3 
+    :ivar Shutdown: 
+    :vartype Shutdown: 4 
+    :ivar Test: 
+    :vartype Test: 5 
+    :ivar CommunicationFault: 
+    :vartype CommunicationFault: 6 
+    :ivar Unknown: 
+    :vartype Unknown: 7 
     '''
     Running = 0
     Failed = 1
@@ -269,6 +598,16 @@ class ServerState(object):
 
 class ModelChangeStructureVerbMask(object):
     '''
+    :ivar NodeAdded: 
+    :vartype NodeAdded: 1 
+    :ivar NodeDeleted: 
+    :vartype NodeDeleted: 2 
+    :ivar ReferenceAdded: 
+    :vartype ReferenceAdded: 4 
+    :ivar ReferenceDeleted: 
+    :vartype ReferenceDeleted: 8 
+    :ivar DataTypeChanged: 
+    :vartype DataTypeChanged: 16 
     '''
     NodeAdded = 1
     NodeDeleted = 2
@@ -278,6 +617,12 @@ class ModelChangeStructureVerbMask(object):
 
 class AxisScaleEnumeration(object):
     '''
+    :ivar Linear: 
+    :vartype Linear: 0 
+    :ivar Log: 
+    :vartype Log: 1 
+    :ivar Ln: 
+    :vartype Ln: 2 
     '''
     Linear = 0
     Log = 1
@@ -285,6 +630,16 @@ class AxisScaleEnumeration(object):
 
 class ExceptionDeviationFormat(object):
     '''
+    :ivar AbsoluteValue: 
+    :vartype AbsoluteValue: 0 
+    :ivar PercentOfRange: 
+    :vartype PercentOfRange: 1 
+    :ivar PercentOfValue: 
+    :vartype PercentOfValue: 2 
+    :ivar PercentOfEURange: 
+    :vartype PercentOfEURange: 3 
+    :ivar Unknown: 
+    :vartype Unknown: 4 
     '''
     AbsoluteValue = 0
     PercentOfRange = 1

@@ -54,6 +54,10 @@ class CodeGenerator(object):
         self.write("'''")
         if enum.doc:
             self.write(enum.doc)
+            self.write("")
+        for val in enum.values:
+            self.write(":ivar {}: ".format(val.name))
+            self.write(":vartype {}: {} ".format(val.name, val.value))
         self.write("'''")
         for val in enum.values:
             self.write("{} = {}".format(val.name, val.value))
