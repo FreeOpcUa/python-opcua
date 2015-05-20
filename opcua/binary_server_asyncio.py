@@ -50,6 +50,7 @@ class BinaryServer(object):
             def connection_lost(self, ex):
                 print('Lost connection from ', self.peername, ex)
                 self.transport.close()
+                self.processor.close()
 
             def data_received(self, data):
                 logger.debug("received %s bytes from socket", len(data))

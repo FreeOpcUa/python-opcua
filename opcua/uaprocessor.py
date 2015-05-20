@@ -348,3 +348,12 @@ class UAProcessor(object):
         self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
         self.channel.ServerNonce = utils.create_nonce()
         return self.channel
+
+    def close(self):
+        """
+        to be called when client has disconnected to ensure we really close
+        everything we should
+        """
+        print("Cleanup up client connection: ", self.name)
+        if self.session:
+            self.session.close_session(True)
