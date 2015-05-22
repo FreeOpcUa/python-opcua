@@ -18,6 +18,32 @@ from opcua import Node, Subscription, ObjectIds, Event
 
 class Server(object):
 
+    """
+    High level Server class
+    Create an opcua server with default values
+    The class is very short. Users are adviced to read the code.
+    Create your own namespace and then populate your server address space 
+    using use the get_root() or get_objects() to get Node objects.
+    and get_event_object() to fire events.
+    Then start server. See example_server.py
+    All methods are threadsafe
+
+
+    :ivar server_uri: 
+    :vartype server_uri: uri 
+    :ivar product_uri: 
+    :vartype product_uri: uri 
+    :ivar name: 
+    :vartype name: string 
+    :ivar default_timeout: timout in milliseconds for sessions and secure channel
+    :vartype default_timeout: int 
+    :ivar iserver: internal server object 
+    :vartype default_timeout: InternalServer 
+    :ivar bserver: binary protocol server 
+    :vartype bserver: BinaryServer 
+
+    """
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.endpoint = "opc.tcp://localhost:4841/freeopcua/server/"
@@ -70,27 +96,42 @@ class Server(object):
         self.name = name
 
     def start(self):
+        """
+        Start to listen on network 
+        """
         self.iserver.start()
         self._setup_server_nodes()
         self.bserver = BinaryServer(self.iserver, self.endpoint.hostname, self.endpoint.port)
         self.bserver.start()
 
     def stop(self):
+        """
+        Stop server  
+        """
         self.bserver.stop()
         self.iserver.stop()
 
     def get_root_node(self):
+        """
+        Get Root node of server. Returns a Node object.
+        """
         return self.get_node(ua.TwoByteNodeId(ObjectIds.RootFolder))
 
     def get_objects_node(self):
+        """
+        Get Objects node of server. Returns a Node object.
+        """
         return self.get_node(ua.TwoByteNodeId(ObjectIds.ObjectsFolder))
 
     def get_server_node(self):
+        """
+        Get Server node of server. Returns a Node object.
+        """
         return self.get_node(ua.TwoByteNodeId(ObjectIds.Server))
 
     def get_node(self, nodeid):
         """
-        Get node using NodeId object or a string representing a NodeId
+        Get a specific node using NodeId object or a string representing a NodeId
         """
         return Node(self.iserver.isession, nodeid)
 
@@ -110,10 +151,16 @@ class Server(object):
         return Subscription(self.iserver.isession, params, handler)
 
     def get_namespace_array(self):
+        """
+        get all namespace defined in server
+        """
         ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         return ns_node.get_value()
 
     def register_namespace(self, uri):
+        """
+        Register a new namespace. Nodes should in custom namespace, not 0.
+        """
         ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         uries = ns_node.get_value()
         uries.append(uri)
@@ -121,8 +168,15 @@ class Server(object):
         return (len(uries) - 1)
 
     def get_namespace_index(self, uri):
+        """
+        get index of a namespace using its uri
+        """
         uries = self.get_namespace_array()
         return uries.index(uri)
 
     def get_event_object(self, etype=ObjectIds.BaseEventType, source=ObjectIds.Server):
+        """
+        Returns an event object using an event type from address space.
+        Use this object to fire events
+        """
         return Event(self.iserver.isession, etype, source)
