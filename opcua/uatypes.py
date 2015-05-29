@@ -486,7 +486,7 @@ class QualifiedName(object):
     @staticmethod
     def from_string(string):
         if ":" in string:
-            idx, name = string.split(":")
+            idx, name = string.split(":", 1)
         else:
             idx = 0
             name = string
