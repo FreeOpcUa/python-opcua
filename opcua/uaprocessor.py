@@ -17,10 +17,11 @@ class PublishRequestData(object):
 
 class UAProcessor(object):
 
-    def __init__(self, internal_server, socket, name):
+    def __init__(self, internal_server, socket):
         self.logger = logging.getLogger(__name__)
         self.iserver = internal_server
-        self.name = name
+        self.name = socket.get_extra_info('peername')
+        self.sockname = socket.get_extra_info('sockname')
         self.session = None
         self.channel = None
         self.socket = socket
@@ -191,7 +192,7 @@ class UAProcessor(object):
             self.logger.info("get endpoints request")
             params = ua.GetEndpointsParameters.from_binary(body)
 
-            endpoints = self.iserver.get_endpoints(params)
+            endpoints = self.iserver.get_endpoints(params, sockname=self.sockname)
 
             response = ua.GetEndpointsResponse()
             response.Endpoints = endpoints

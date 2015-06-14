@@ -576,7 +576,7 @@ class CommonTests(object):
     def test_get_endpoints(self):
         endpoints = self.opc.get_endpoints()
         self.assertTrue(len(endpoints) > 0)
-        self.assertTrue(endpoints[0].EndpointUrl.startswith("opc.tcp://localhost"))
+        self.assertTrue(endpoints[0].EndpointUrl.startswith("opc.tcp://"))
 
 
 def add_server_methods(srv):

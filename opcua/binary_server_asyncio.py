@@ -44,7 +44,7 @@ class BinaryServer(object):
                 self.peername = transport.get_extra_info('peername')
                 print('New connection from {}'.format(self.peername))
                 self.transport = transport
-                self.processor = UAProcessor(self.iserver, self.transport, self.peername)
+                self.processor = UAProcessor(self.iserver, self.transport)
                 self.data = b""
 
             def connection_lost(self, ex):

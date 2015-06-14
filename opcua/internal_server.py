@@ -3,9 +3,14 @@ Internal server implementing opcu-ua interface. can be used on server side or to
 """
 
 from datetime import datetime
+from copy import copy
 import logging
 from threading import Lock
 from enum import Enum
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
 
 
 from opcua import ua
@@ -79,9 +84,18 @@ class InternalServer(object):
     def add_endpoint(self, endpoint):
         self.endpoints.append(endpoint)
 
-    def get_endpoints(self, params=None):
+    def get_endpoints(self, params=None, sockname=None):
         self.logger.info("get endpoint")
-        # FIXME check params
+        if sockname:
+            #return to client the ip address it has access to
+            edps = []
+            for edp in self.endpoints:
+                edp1 = copy(edp)
+                url = urlparse(edp1.EndpointUrl)
+                url = url._replace(netloc=sockname[0] + ":" + str(sockname[1]))
+                edp1.EndpointUrl = url.geturl()
+                edps.append(edp1)
+                return edps
         return self.endpoints[:]
 
     def create_session(self, name):
@@ -111,8 +125,8 @@ class InternalSession(object):
     def __str__(self):
         return "InternalSession(name:{}, id:{}, auth_token:{})".format(self.name, self.session_id, self.authentication_token)
 
-    def get_endpoints(self, params=None):
-        return self.iserver.get_endpoints(params)
+    def get_endpoints(self, params=None, sockname=None):
+        return self.iserver.get_endpoints(params, sockname)
 
     def create_session(self, params):
         self.logger.info("Create session request")
