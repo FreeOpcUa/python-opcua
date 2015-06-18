@@ -172,12 +172,14 @@ class Node(object):
         Set value of a node. Only variables(properties) have values.
         An exception will be generated for other node types.
         """
-        variant = None
-        if isinstance(value, ua.Variant):
-            variant = value
+        datavalue = None
+        if isinstance(value, ua.DataValue):
+            datavalue = value
+        elif isinstance(value, ua.Variant):
+            datavalue = ua.DataValue(value)
         else:
-            variant = ua.Variant(value, varianttype)
-        self.set_attribute(ua.AttributeIds.Value, ua.DataValue(variant))
+            datavalue = ua.DataValue(ua.Variant(value, varianttype))
+        self.set_attribute(ua.AttributeIds.Value, datavalue)
 
     def set_attribute(self, attributeid, datavalue):
         """
