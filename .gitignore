@@ -4,3 +4,5 @@ MANIFEST
 htmlcov*
 _*
 docs/_*
+
+*.pyc
