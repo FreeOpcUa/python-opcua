@@ -98,6 +98,14 @@ class InternalServer(object):
                 return edps
         return self.endpoints[:]
 
+    def find_servers(self, params):
+        #FIXME: implement correctly
+        servers = []
+        for edp in self.endpoints:
+            servers.append(edp.Server)
+        return servers
+        
+
     def create_session(self, name):
         return InternalSession(self, self.aspace, self.subcsription_service, name)
 
@@ -128,7 +136,7 @@ class InternalSession(object):
     def get_endpoints(self, params=None, sockname=None):
         return self.iserver.get_endpoints(params, sockname)
 
-    def create_session(self, params):
+    def create_session(self, params, sockname=None):
         self.logger.info("Create session request")
 
         result = ua.CreateSessionResult()
@@ -137,7 +145,7 @@ class InternalSession(object):
         result.RevisedSessionTimeout = params.RequestedSessionTimeout
         result.MaxRequestMessageSize = 65536
         result.ServerNonce = self.nonce
-        result.ServerEndpoints = self.get_endpoints()
+        result.ServerEndpoints = self.get_endpoints(sockname=sockname)
 
         return result
 

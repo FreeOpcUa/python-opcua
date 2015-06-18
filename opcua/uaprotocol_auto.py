@@ -1186,36 +1186,6 @@ class FindServersRequest(FrozenClass):
     
     __repr__ = __str__
     
-class FindServersResult(FrozenClass):
-    '''
-    :ivar Servers: 
-    :vartype Servers: ApplicationDescription 
-    '''
-    def __init__(self):
-        self.Servers = []
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(struct.pack('<i', len(self.Servers)))
-        for fieldname in self.Servers:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = FindServersResult()
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.Servers.append(ApplicationDescription.from_binary(data))
-        return obj
-    
-    def __str__(self):
-        return 'FindServersResult(' + 'Servers:' + str(self.Servers) + ')'
-    
-    __repr__ = __str__
-    
 class FindServersResponse(FrozenClass):
     '''
     Finds the servers known to the discovery server.
@@ -1224,20 +1194,22 @@ class FindServersResponse(FrozenClass):
     :vartype TypeId: NodeId 
     :ivar ResponseHeader: 
     :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: FindServersResult 
+    :ivar Servers: 
+    :vartype Servers: ApplicationDescription 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.FindServersResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-        self.Parameters = FindServersResult()
+        self.Servers = []
         self._freeze()
     
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
+        packet.append(struct.pack('<i', len(self.Servers)))
+        for fieldname in self.Servers:
+            packet.append(fieldname.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -1245,13 +1217,16 @@ class FindServersResponse(FrozenClass):
         obj = FindServersResponse()
         obj.TypeId = NodeId.from_binary(data)
         obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = FindServersResult.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length != -1:
+            for _ in range(0, length):
+                obj.Servers.append(ApplicationDescription.from_binary(data))
         return obj
     
     def __str__(self):
         return 'FindServersResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'Servers:' + str(self.Servers) + ')'
     
     __repr__ = __str__
     

@@ -108,12 +108,13 @@ class UAProcessor(object):
     def process_message(self, algohdr, seqhdr, body):
         typeid = ua.NodeId.from_binary(body)
         requesthdr = ua.RequestHeader.from_binary(body)
+
         if typeid == ua.NodeId(ua.ObjectIds.CreateSessionRequest_Encoding_DefaultBinary):
             self.logger.info("Create session request")
             params = ua.CreateSessionParameters.from_binary(body)
 
             self.session = self.iserver.create_session(self.name)  # create the session on server
-            sessiondata = self.session.create_session(params)  # get a session creation result to send back
+            sessiondata = self.session.create_session(params, sockname=self.sockname)  # get a session creation result to send back
 
             response = ua.CreateSessionResponse()
             response.Parameters = sessiondata
@@ -199,6 +200,19 @@ class UAProcessor(object):
 
             self.logger.info("sending get endpoints response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+        
+        elif typeid == ua.NodeId(ua.ObjectIds.FindServersRequest_Encoding_DefaultBinary):
+            self.logger.info("find servers request")
+            params = ua.FindServersParameters.from_binary(body)
+
+            servers = self.iserver.find_servers(params)
+
+            response = ua.FindServersResponse()
+            response.Servers = servers
+
+            self.logger.info("sending find servers response")
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
 
         elif typeid == ua.NodeId(ua.ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary):
             self.logger.info("translate browsepaths to nodeids request")
@@ -339,7 +353,7 @@ class UAProcessor(object):
 
     def _open_secure_channel(self, params):
         self.logger.info("open secure channel")
-        if params.RequestType == ua.SecurityTokenRequestType.Issue:
+        if not self.channel or params.RequestType == ua.SecurityTokenRequestType.Issue:
             self.channel = ua.OpenSecureChannelResult()
             self.channel.SecurityToken.TokenId = 13  # random value
             self.channel.SecurityToken.ChannelId = self.iserver.get_new_channel_id()
