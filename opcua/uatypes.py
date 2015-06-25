@@ -220,7 +220,7 @@ class Guid(object):
         return isinstance(other, Guid) and self.uuid == other.uuid
 
 
-class StatusCode(object):
+class StatusCode(FrozenClass):
 
     """
     :ivar value:
@@ -262,7 +262,7 @@ class NodeIdType(object):
     ByteString = 5
 
 
-class NodeId(object):
+class NodeId(FrozenClass):
 
     """
     NodeId Object
@@ -470,7 +470,7 @@ class StringNodeId(NodeId):
 ExpandedNodeId = NodeId
 
 
-class QualifiedName(object):
+class QualifiedName(FrozenClass):
 
     '''
     A string qualified with a namespace index.
@@ -683,7 +683,7 @@ class VariantType(Enum):
     DiagnosticInfo = 25
 
 
-class Variant(object):
+class Variant(FrozenClass):
 
     """
     Create an OPC-UA Variant object.
@@ -770,7 +770,7 @@ class Variant(object):
         return obj
 
 
-class DataValue(object):
+class DataValue(FrozenClass):
 
     '''
     A value with an associated timestamp, and quality.

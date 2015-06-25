@@ -1,6 +1,7 @@
 from threading import RLock
 import logging
 import pickle
+from datetime import datetime
 
 from opcua import ua
 
@@ -243,6 +244,8 @@ class NodeManagementService(object):
     def _add_node_attr(self, item, nodedata, name, vtype=None):
         if item.SpecifiedAttributes & getattr(ua.NodeAttributesMask, name):
             dv = ua.DataValue(ua.Variant(getattr(item, name), vtype))
+            dv.ServerTimestamp = datetime.now()
+            dv.SourceTimestamp = datetime.now()
             nodedata.attributes[getattr(ua.AttributeIds, name)] = AttributeValue(dv)
 
     def _add_nodeattributes(self, item, nodedata):
@@ -347,12 +350,13 @@ class AddressSpace(object):
     def get_attribute_value(self, nodeid, attr):
         with self._lock:
             #self.logger.debug("get attr val: %s %s", nodeid, attr)
-            dv = ua.DataValue()
             if not nodeid in self._nodes:
+                dv = ua.DataValue()
                 dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
                 return dv
             node = self._nodes[nodeid]
             if attr not in node.attributes:
+                dv = ua.DataValue()
                 dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
                 return dv
             attval = node.attributes[attr]
@@ -368,6 +372,11 @@ class AddressSpace(object):
             node = self._nodes[nodeid]
             if not attr in node.attributes:
                 return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
+            if not value.SourceTimestamp:
+                value.SourceTimestamp = datetime.now()
+            if not value.ServerTimestamp:
+                value.ServerTimestamp = datetime.now()
+
             attval = node.attributes[attr]
             attval.value = value
             if attval.value_callback:
