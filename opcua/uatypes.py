@@ -797,10 +797,10 @@ class DataValue(object):
             variant = Variant(variant)
         self.Value = variant
         self.StatusCode = StatusCode()
-        self.SourceTimestamp = datetime.now()  # DateTime()
-        self.SourcePicoseconds = 0
-        self.ServerTimestamp = datetime.now()  # DateTime()
-        self.ServerPicoseconds = 0
+        self.SourceTimestamp = None  # DateTime()
+        self.SourcePicoseconds = None
+        self.ServerTimestamp = None  # DateTime()
+        self.ServerPicoseconds = None
 
     def to_binary(self):
         packet = []
