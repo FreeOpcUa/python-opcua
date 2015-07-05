@@ -456,6 +456,34 @@ class CommonTests(object):
         with self.assertRaises(Exception):
             bad.get_child(0, "myobj")
 
+    def test_value(self):
+        o = self.opc.get_objects_node()
+        var = ua.Variant(1.98, ua.VariantType.Double)
+        v = o.add_variable(3, 'VariableValue', var)
+        val = v.get_value()
+        self.assertEqual(1.98, val)
+
+        dvar = ua.DataValue(var)
+        dv = v.get_data_value()
+        self.assertEqual(ua.DataValue, type(dv))
+        self.assertEqual(dvar.Value, dv.Value)
+        self.assertEqual(dvar.Value, var)
+
+    def test_set_value(self):
+        o = self.opc.get_objects_node()
+        var = ua.Variant(1.98, ua.VariantType.Double)
+        dvar = ua.DataValue(var)
+        v = o.add_variable(3, 'VariableValue', var)
+        v.set_value(var.Value)
+        v1 = v.get_value()
+        self.assertEqual(v1, var.Value)
+        v.set_value(var)
+        v2 = v.get_value()
+        self.assertEqual(v2, var.Value)
+        v.set_data_value(dvar)
+        v3 = v.get_data_value()
+        self.assertEqual(v3.Value, dvar.Value)
+
     def test_array_value(self):
         o = self.opc.get_objects_node()
         v = o.add_variable(3, 'VariableArrayValue', [1, 2, 3])
@@ -528,7 +556,7 @@ class CommonTests(object):
         clthandle, node, val, attr = msclt.future.result()
         self.assertEqual(node, server_time_node)
         delta = datetime.now() - val
-        self.assertTrue(delta < timedelta(seconds=1))
+        self.assertTrue(delta < timedelta(seconds=2))
 
         sub.unsubscribe(handle)
         sub.delete()

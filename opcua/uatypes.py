@@ -50,10 +50,9 @@ def datetime_to_win_epoch(dt):
 def win_epoch_to_datetime(epch):
     (s, ns100) = divmod(epch - EPOCH_AS_FILETIME, HUNDREDS_OF_NANOSECONDS)
     try:
-        # TDA, this generates exceptions on systems where RTC is really off
         dt = datetime.utcfromtimestamp(s)
-    except:
-        logger.debug("Exception occurred during conversion within 'win_epoch_to_datetime'.")
+    except Exception as ex: #FIXME: find out what kind of exceptin is raised!!!
+        logger.debug("Exception occurred during conversion within 'win_epoch_to_datetime'. %s", ex)
         return datetime.now()
     dt = dt.replace(microsecond=(ns100 // 10))
     return dt
@@ -850,12 +849,18 @@ class DataValue(FrozenClass):
         return obj
 
     def __str__(self):
-        return 'DataValue(' + 'Encoding:' + str(self.Encoding) + ', ' + \
-            'Value:' + str(self.Value) + ', ' + \
-            'StatusCode:' + str(self.StatusCode) + ', '  + \
-            'SourceTimestamp:' + str(self.SourceTimestamp) + ', ' + \
-            'ServerTimestamp:' + str(self.ServerTimestamp) + ', ' + \
-            'SourcePicoseconds:' + str(self.SourcePicoseconds) + ', ' + \
-            'ServerPicoseconds:' + str(self.ServerPicoseconds) + ')'
+        s = 'DataValue(Value:{})'.format(self.Value)
+        if self.StatusCode is not None:
+            s += ', StatusCode:{}'.format(self.StatusCode)
+        if self.SourceTimestamp is not None:
+            s += ', SourceTimestamp:{}'.format(self.SourceTimestamp)
+        if self.ServerTimestamp is not None:
+            s += ', ServerTimestamp:{}'.format(self.ServerTimestamp)
+        if self.SourcePicoseconds is not None:
+            s += ', SourcePicoseconds:{}'.format(self.SourcePicoseconds)
+        if self.ServerPicoseconds is not None:
+            s += ', ServerPicoseconds:{}'.format(self.ServerPicoseconds)
+        s += ')'
+        return s
 
     __repr__ = __str__

@@ -129,43 +129,50 @@ class Node(object):
         composed of a string(name) and a namespace index.
         """
         result = self.get_attribute(ua.AttributeIds.BrowseName)
-        return result.Value
+        return result.Value.Value
 
     def get_display_name(self):
         """
         get description attribute of node
         """
         result = self.get_attribute(ua.AttributeIds.DisplayName)
-        return result.Value
+        return result.Value.Value
 
     def get_data_type(self):
         """
         get data type of node
         """
         result = self.get_attribute(ua.AttributeIds.DataType)
-        return result.Value
+        return result.Value.Value
 
     def get_node_class(self):
         """
         get node class attribute of node
         """
         result = self.get_attribute(ua.AttributeIds.NodeClass)
-        return result.Value
+        return result.Value.Value
 
     def get_description(self):
         """
         get description attribute class of node
         """
         result = self.get_attribute(ua.AttributeIds.Description)
-        return result.Value
+        return result.Value.Value
 
     def get_value(self):
         """
-        Get value of a node. Only variables(properties) have values.
+        Get value of a node as a python type. Only variables(properties) have values.
         An exception will be generated for other node types.
         """
-        result = self.get_attribute(ua.AttributeIds.Value)
-        return result.Value
+        result = self.get_data_value()
+        return result.Value.Value
+
+    def get_data_value(self):
+        """
+        Get value of a node as a python type. Only variables(properties) have values.
+        An exception will be generated for other node types.
+        """
+        return self.get_attribute(ua.AttributeIds.Value)
 
     def set_value(self, value, varianttype=None):
         """
@@ -186,6 +193,8 @@ class Node(object):
             datavalue = ua.DataValue(ua.Variant(value, varianttype))
         self.set_attribute(ua.AttributeIds.Value, datavalue)
 
+    set_data_value = set_value
+
     def set_attribute(self, attributeid, datavalue):
         """
         Set an attribute of a node
@@ -201,7 +210,7 @@ class Node(object):
 
     def get_attribute(self, attr):
         """
-        Get an attribute of a node
+        Read one attribute of a node
         """
         rv = ua.ReadValueId()
         rv.NodeId = self.nodeid
@@ -210,7 +219,7 @@ class Node(object):
         params.NodesToRead.append(rv)
         result = self.server.read(params)
         result[0].StatusCode.check()
-        return result[0].Value
+        return result[0]
 
     def get_children(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified):
         """
