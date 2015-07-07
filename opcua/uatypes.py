@@ -155,6 +155,7 @@ def pack_string(string):
         return struct.pack("<i", -1)
     if not isinstance(string, bytes):
         string = string.encode()
+        length = len(string)
     return struct.pack("<i", length) + string
 
 pack_bytes = pack_string
