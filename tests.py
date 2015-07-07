@@ -670,14 +670,27 @@ class AdminTestClient(unittest.TestCase, CommonTests):
         with self.assertRaises(Exception):
             self.clt.bclient._send_request(request)
 
-    def test_ro_objects(self):
+    def test_objects_anonymous(self):
         objects = self.ro_clt.get_objects_node()
         with self.assertRaises(Exception):
             objects.set_attribute(ua.AttributeIds.WriteMask, ua.DataValue(999))
         with self.assertRaises(Exception):
             f = objects.add_folder(3, 'MyFolder')
 
-    def test_ro_variable(self):
+    def test_folder_anonymous(self):
+        objects = self.clt.get_objects_node()
+        f = objects.add_folder(3, 'MyFolderRO')
+        f_ro = self.ro_clt.get_node(f.nodeid)
+        self.assertEqual(f, f_ro)
+        with self.assertRaises(Exception):
+            f2 = f_ro.add_folder(3, 'MyFolder2')
+        f.set_writable(True)
+        f3 = f_ro.add_folder(3, 'MyFolder3')
+        f.set_read_only()
+        with self.assertRaises(Exception):
+            f4 = f_ro.add_folder(3, 'MyFolder4')
+
+    def test_variable_anonymous(self):
         objects = self.clt.get_objects_node()
         v = objects.add_variable(3, 'MyROVariable', 6)
         v.set_value(4) #this should work

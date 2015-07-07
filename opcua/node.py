@@ -203,6 +203,9 @@ class Node(object):
             self.set_attribute(ua.AttributeIds.WriteMask, ua.DataValue(ua.OpenFileMode.Read))
             self.set_attribute(ua.AttributeIds.UserWriteMask, ua.DataValue(ua.OpenFileMode.Read))
 
+    def set_read_only(self):
+        return self.set_writable(False)
+
     def set_attribute(self, attributeid, datavalue):
         """
         Set an attribute of a node
