@@ -12,3 +12,11 @@ OPC-UA Server API
    :members:
    :undoc-members:
 
+.. autoclass:: opcua.binary_server_asyncio.BinaryServer
+   :members:
+   :undoc-members:
+
+.. autoclass:: opcua.binary_server.BinaryServer
+   :members:
+   :undoc-members:
+
