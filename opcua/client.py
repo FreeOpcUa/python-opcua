@@ -169,7 +169,7 @@ class Client(object):
         params.EndpointUrl = self.server_url.geturl()
         params.SessionName = self.description + " Session" + str(self._session_counter)
         params.RequestedSessionTimeout = 3600000
-        params.MaxResponseMessageSize = 0  # means not max size
+        params.MaxResponseMessageSize = 0  # means no max size
         response = self.bclient.create_session(params)
         self.session_timeout = response.RevisedSessionTimeout
         self.keepalive = KeepAlive(self, min(self.session_timeout, self.secure_channel_timeout) * 0.7)  # 0.7 is from spec
@@ -179,8 +179,16 @@ class Client(object):
     def activate_session(self):
         params = ua.ActivateSessionParameters()
         params.LocaleIds.append("en")
-        params.UserIdentityToken = ua.AnonymousIdentityToken()
-        params.UserIdentityToken.PolicyId = b"anonymous"
+        if not self.server_url.username:
+            params.UserIdentityToken = ua.AnonymousIdentityToken()
+            params.UserIdentityToken.PolicyId = b"anonymous"
+        else:
+            params.UserIdentityToken = ua.UserNameIdentityToken()
+            params.UserIdentityToken.UserName = self.server_url.username 
+            if self.server_url.password:
+                params.UserIdentityToken.Password = bytes(self.server_url.password)
+            params.UserIdentityToken.PolicyId = b"user_name"
+            #params.EncryptionAlgorithm = ''
         return self.bclient.activate_session(params)
 
     def close_session(self):

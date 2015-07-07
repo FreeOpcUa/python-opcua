@@ -629,7 +629,7 @@ def add_server_methods(srv):
     o = srv.get_objects_node()
     v = o.add_method(ua.NodeId("ServerMethodArray2", 2), ua.QualifiedName('ServerMethodArray2', 2), func3, [ua.VariantType.Int64], [ua.VariantType.Int64])
 
-class TestClient(unittest.TestCase, CommonTests):
+class AdminTestClient(unittest.TestCase, CommonTests):
 
     '''
     Run common tests on client side
@@ -645,15 +645,23 @@ class TestClient(unittest.TestCase, CommonTests):
         add_server_methods(self.srv)
         self.srv.start()
 
-        # start client
-        self.clt = Client('opc.tcp://localhost:%d' % port_num1)
+        # start admin client
+        self.clt = Client('opc.tcp://admin@localhost:%d' % port_num1)
         self.clt.connect()
         self.opc = self.clt
 
+        # start anonymous client
+        self.ro_clt = Client('opc.tcp://localhost:%d' % port_num1)
+        self.ro_clt.connect()
+
+
+
     @classmethod
     def tearDownClass(self):
+        #stop our clients
+        self.ro_clt.disconnect()
         self.clt.disconnect()
-        # stop the server in its own process
+        # stop the server 
         self.srv.stop()
 
     def test_service_fault(self):
@@ -661,6 +669,30 @@ class TestClient(unittest.TestCase, CommonTests):
         request.TypeId = ua.FourByteNodeId(999)  # bad type!
         with self.assertRaises(Exception):
             self.clt.bclient._send_request(request)
+
+    def test_ro_objects(self):
+        objects = self.ro_clt.get_objects_node()
+        with self.assertRaises(Exception):
+            objects.set_attribute(ua.AttributeIds.WriteMask, ua.DataValue(999))
+        with self.assertRaises(Exception):
+            f = objects.add_folder(3, 'MyFolder')
+
+    def test_ro_variable(self):
+        objects = self.clt.get_objects_node()
+        v = objects.add_variable(3, 'MyROVariable', 6)
+        v.set_value(4) #this should work
+        v_ro = self.ro_clt.get_node(v.nodeid)
+        with self.assertRaises(Exception):
+            v_ro.set_value(2)
+        self.assertEqual(v_ro.get_value(), 4)
+        v.set_writable(True)
+        v_ro.set_value(2) #now it should work
+        self.assertEqual(v_ro.get_value(), 2)
+        v.set_writable(False)
+        with self.assertRaises(Exception):
+            v_ro.set_value(9)
+        self.assertEqual(v_ro.get_value(), 2)
+
 
 
 class TestServer(unittest.TestCase, CommonTests):

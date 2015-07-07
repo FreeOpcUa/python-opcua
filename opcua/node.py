@@ -195,6 +195,14 @@ class Node(object):
 
     set_data_value = set_value
 
+    def set_writable(self, writable=True):
+        if writable:
+            self.set_attribute(ua.AttributeIds.WriteMask, ua.DataValue(ua.OpenFileMode.Write))
+            self.set_attribute(ua.AttributeIds.UserWriteMask, ua.DataValue(ua.OpenFileMode.Write))
+        else:
+            self.set_attribute(ua.AttributeIds.WriteMask, ua.DataValue(ua.OpenFileMode.Read))
+            self.set_attribute(ua.AttributeIds.UserWriteMask, ua.DataValue(ua.OpenFileMode.Read))
+
     def set_attribute(self, attributeid, datavalue):
         """
         Set an attribute of a node
@@ -331,6 +339,8 @@ def _create_folder(server, parentnodeid, nodeid, qname):
     attrs = ua.ObjectAttributes()
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
+    attrs.WriteMask = ua.OpenFileMode.Read
+    attrs.UserWriteMask = ua.OpenFileMode.Read
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     results = server.add_nodes([node])
@@ -350,6 +360,8 @@ def _create_object(server, parentnodeid, nodeid, qname):
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
     attrs.EventNotifier = 0
+    attrs.WriteMask = ua.OpenFileMode.Read
+    attrs.UserWriteMask = ua.OpenFileMode.Read
     node.NodeAttributes = attrs
     results = server.add_nodes([node])
     results[0].StatusCode.check()
@@ -381,8 +393,8 @@ def _create_variable(server, parentnodeid, nodeid, qname, val, isproperty=False)
     attrs.DataType = _guess_uatype(val)
     attrs.Value = val
     attrs.ValueRank = 0
-    attrs.WriteMask = 0
-    attrs.UserWriteMask = 0
+    attrs.WriteMask = ua.OpenFileMode.Read
+    attrs.UserWriteMask = ua.OpenFileMode.Read
     attrs.Historizing = 0
     node.NodeAttributes = attrs
     results = server.add_nodes([node])
@@ -401,8 +413,8 @@ def _create_method(parent, nodeid, qname, callback, inputs, outputs):
     attrs = ua.MethodAttributes()
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
-    attrs.WriteMask = 0
-    attrs.UserWriteMask = 0
+    attrs.WriteMask = ua.OpenFileMode.Read
+    attrs.UserWriteMask = ua.OpenFileMode.Read
     attrs.Executable = True
     attrs.UserExecutable = True
     node.NodeAttributes = attrs

@@ -4,6 +4,7 @@ import pickle
 from datetime import datetime
 
 from opcua import ua
+from opcua.users import User
 
 
 class AttributeValue(object):
@@ -44,10 +45,18 @@ class AttributeService(object):
             res.append(self._aspace.get_attribute_value(readvalue.NodeId, readvalue.AttributeId))
         return res
 
-    def write(self, params):
-        self.logger.debug("write %s", params)
+    def write(self, params, user=User.Admin):
+        self.logger.debug("write %s as user %s", params, user)
         res = []
         for writevalue in params.NodesToWrite:
+            if user != User.Admin:
+                # FIXME: check WriteMask and UserWriteMask!!!
+                al = self._aspace.get_attribute_value(writevalue.NodeId, ua.AttributeIds.WriteMask)
+                ual = self._aspace.get_attribute_value(writevalue.NodeId, ua.AttributeIds.UserWriteMask)
+                # FIXME: very strange to use OpenFileMode for access rights?!?!?
+                if not al.Value.Value & ua.OpenFileMode.Write and not ual.Value.Value & ua.OpenFileMode.Write:
+                    res.append(ua.StatusCode(ua.StatusCodes.BadUserAccessDenied))
+                    continue
             res.append(self._aspace.set_attribute_value(writevalue.NodeId, writevalue.AttributeId, writevalue.Value))
         return res
 
@@ -158,13 +167,13 @@ class NodeManagementService(object):
         self.logger = logging.getLogger(__name__)
         self._aspace = aspace
 
-    def add_nodes(self, addnodeitems):
+    def add_nodes(self, addnodeitems, user=User.Admin):
         results = []
         for item in addnodeitems:
-            results.append(self._add_node(item))
+            results.append(self._add_node(item, user))
         return results
 
-    def _add_node(self, item):
+    def _add_node(self, item, user):
         result = ua.AddNodesResult()
 
         if item.RequestedNewNodeId in self._aspace:
@@ -188,6 +197,15 @@ class NodeManagementService(object):
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
             return result
         else:
+            if user != User.Admin:
+                # FIXME: is checking against WriteMask correct??
+                al = self._aspace.get_attribute_value(item.ParentNodeId, ua.AttributeIds.WriteMask)
+                ual = self._aspace.get_attribute_value(item.ParentNodeId, ua.AttributeIds.UserWriteMask)
+                # FIXME: very strange to use OpenFileMode for access rights?!?!?
+                if not al.Value.Value & ua.OpenFileMode.Write and not ual.Value.Value & ua.OpenFileMode.Write:
+                    result.StatusCode = ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
+                    return result
+
             desc = ua.ReferenceDescription()
             desc.ReferenceTypeId = item.ReferenceTypeId
             desc.NodeId = item.RequestedNewNodeId
