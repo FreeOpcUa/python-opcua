@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# coding: utf-8
 import time
 import logging
 import math
@@ -139,6 +140,17 @@ class Unit(unittest.TestCase):
         self.assertEqual(nid.NamespaceIndex, 1)
         self.assertEqual(nid.Identifier, 'titi')
         self.assertEqual(nid.NodeIdType, ua.NodeIdType.String)
+
+    def test_unicode_string_nodeid(self):
+        nid = ua.NodeId('hëllò', 1)
+        self.assertEqual(nid.NamespaceIndex, 1)
+        self.assertEqual(nid.Identifier, 'hëllò')
+        self.assertEqual(nid.NodeIdType, ua.NodeIdType.String)
+        d = nid.to_binary()
+        new_nid = nid.from_binary(io.BytesIO(d))
+        self.assertEqual(new_nid, nid)
+        self.assertEqual(new_nid.Identifier, 'hëllò')
+        self.assertEqual(new_nid.NodeIdType, ua.NodeIdType.String)
 
     def test_numeric_nodeid(self):
         nid = ua.NodeId(999, 2)
