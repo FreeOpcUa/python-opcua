@@ -99,7 +99,8 @@ class Node(object):
 
     """
     High level node object, to access node attribute,
-    browse and populate address space
+    browse and populate address space.
+    Node objects are usefull as-is but they do not expose the entire possibilities of the OPC-UA protocol. Feel free to look at Node code and
     """
 
     def __init__(self, server, nodeid):
@@ -161,7 +162,7 @@ class Node(object):
 
     def get_value(self):
         """
-        Get value of a node as a python type. Only variables(properties) have values.
+        Get value of a node as a python type. Only variables ( and properties) have values.
         An exception will be generated for other node types.
         """
         result = self.get_data_value()
@@ -169,8 +170,9 @@ class Node(object):
 
     def get_data_value(self):
         """
-        Get value of a node as a python type. Only variables(properties) have values.
+        Get value of a node as a DataValue object. Only variables (and properties) have values.
         An exception will be generated for other node types.
+        DataValue contain a variable value as a variant as well as server and source timestamps
         """
         return self.get_attribute(ua.AttributeIds.Value)
 

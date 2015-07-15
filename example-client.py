@@ -34,26 +34,41 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.WARN)
     #logger = logging.getLogger("KeepAlive")
     # logger.setLevel(logging.DEBUG)
+
     client = Client("opc.tcp://localhost:4841/freeopcua/server/")
+    # client = Client("opc.tcp://admin@localhost:4841/freeopcua/server/") #connect using a user
     try:
         client.connect()
+
+        # client has a few methods to get nodes that should always be in address space such as Root or Objects
         root = client.get_root_node()
-        print(root)
-        print(root.get_children())
-        print(root.get_browse_name())
+        print("Root node is: ", root)
+        objects = client.get_objects_node()
+        print("Objects node is: ", root)
+
+        # and node objects have methods to read and write node attributes as well as browse or populate address space
+        print("Children of root are: ", root.get_children())
+
+        # get a node knowing its node id
         #var = client.get_node(ua.NodeId(1002, 2))
-        # print(var)
-        # print(var.get_value())
-        #var.set_value(ua.Variant([23], ua.VariantType.Int64))
-        state = root.get_child(["0:Objects", "0:Server"])
-        print(state)
+        #print(var)
+        #var.get_data_value() # get value of node as a DataValue object
+        #var.get_value() # get value of node as a python builtin
+        #var.set_value(ua.Variant([23], ua.VariantType.Int64)) #set node value using explicit data type
+        #var.set_value(3.9) # set node value using implicit data type
+
+        # Now getting a variable node using its path
         myvar = root.get_child(["0:Objects", "2:NewObject", "2:MyVariable"])
         obj = root.get_child(["0:Objects", "2:NewObject"])
-        print("yvar is: ", myvar)
+        print("myvar is: ", myvar)
+
+        # subscribing to a variable node
         handler = SubHandler()
         sub = client.create_subscription(500, handler)
         handle = sub.subscribe_data_change(myvar)
         time.sleep(0.1)
+
+        # we can also subscribe to events from server
         sub.subscribe_events()
         # sub.unsubscribe(handle)
         # sub.delete()

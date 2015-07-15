@@ -48,15 +48,15 @@ if __name__ == "__main__":
     # optional setup logging
     logging.basicConfig(level=logging.WARN)
     #logger = logging.getLogger("opcua.address_space")
-    #logger.setLevel(logging.DEBUG)
+    # logger.setLevel(logging.DEBUG)
     #logger = logging.getLogger("opcua.internal_server")
-    #logger.setLevel(logging.DEBUG)
+    # logger.setLevel(logging.DEBUG)
     #logger = logging.getLogger("opcua.binary_server_asyncio")
-    #logger.setLevel(logging.DEBUG)
+    # logger.setLevel(logging.DEBUG)
     #logger = logging.getLogger("opcua.uaprocessor")
-    #logger.setLevel(logging.DEBUG)
+    # logger.setLevel(logging.DEBUG)
     #logger = logging.getLogger("opcua.subscription_service")
-    #logger.setLevel(logging.DEBUG)
+    # logger.setLevel(logging.DEBUG)
 
     # now setup our server
     server = Server()
