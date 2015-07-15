@@ -150,8 +150,8 @@ def unpack_uatype_array(uatype, data):
 
 
 def pack_string(string):
-    if hasattr(string, "encode"):# attempt to convert to bytes anything than can
-        string = string.encode()
+    if type(string) is unicode:
+        string = string.encode('utf-8')
     length = len(string)
     if length == 0:
         return struct.pack("<i", -1)
@@ -523,7 +523,9 @@ class LocalizedText(FrozenClass):
 
     def __init__(self, text=""):
         self.Encoding = 0
-        self.Text = text.encode()
+        self.Text = text
+        if type(self.Text) is unicode:
+            self.Text = self.Text.encode('utf-8')
         if self.Text:
             self.Encoding |= (1 << 1)
         self.Locale = b''
