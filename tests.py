@@ -365,6 +365,18 @@ class CommonTests(object):
         self.assertEqual(nid, v.nodeid)
         self.assertEqual(qn, v.get_browse_name())
 
+    def test_utf8(self):
+        objects = self.opc.get_objects_node()
+        utf_string = "æøå@%&"
+        bn = ua.QualifiedName(utf_string, 3) 
+        nid = ua.NodeId("æølå", 3)
+        val = "æøå"
+        v = objects.add_variable(nid, bn, val)
+        self.assertEqual(nid, v.nodeid)
+        val2 = v.get_value()
+        self.assertEqual(val, val2)
+        bn2 = v.get_browse_name()
+        self.assertEqual(bn, bn2)
 
     def test_null_variable(self):
         objects = self.opc.get_objects_node()
