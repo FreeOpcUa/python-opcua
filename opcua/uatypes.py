@@ -150,12 +150,11 @@ def unpack_uatype_array(uatype, data):
 
 
 def pack_string(string):
+    if hasattr(string, "encode"):# attempt to convert to bytes anything than can
+        string = string.encode()
     length = len(string)
     if length == 0:
         return struct.pack("<i", -1)
-    if not isinstance(string, bytes):
-        string = string.encode()
-        length = len(string)
     return struct.pack("<i", length) + string
 
 pack_bytes = pack_string
