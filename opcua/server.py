@@ -59,6 +59,12 @@ class Server(object):
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
         sa_node.set_value([self.server_uri])
 
+    def allow_remote_admin(self, allow):
+        """
+        Enable or disable the builtin Admin user from network clients
+        """
+        self.iserver.allow_remote_admin = allow
+
     def set_endpoint(self, url):
         self.endpoint = urlparse(url)
 

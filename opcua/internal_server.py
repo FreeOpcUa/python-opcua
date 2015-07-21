@@ -37,6 +37,7 @@ class InternalServer(object):
         self.logger = logging.getLogger(__name__)
         self.endpoints = []
         self._channel_id_counter = 5
+        self.allow_remote_admin = True
 
         self.aspace = AddressSpace()
         self.attribute_service = AttributeService(self.aspace)
@@ -168,7 +169,7 @@ class InternalSession(object):
         self.state = SessionState.Activated
         id_token = ua.downcast_extobject(params.UserIdentityToken)
         if id_token.TypeId == ua.FourByteNodeId(ua.ObjectIds.UserNameIdentityToken_Encoding_DefaultBinary):
-            if id_token.UserName in ("admin", "Admin"):
+            if self.iserver.allow_remote_admin and id_token.UserName in ("admin", "Admin"):
                 self.user = User.Admin
         return result
 
