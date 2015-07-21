@@ -19,7 +19,7 @@ from opcua import ua, uamethod, Server, Event, ObjectIds
 class SubHandler(object):
 
     """
-    Client to subscription. It will receive events from server
+    Subscription Handler. To receive events from server for a subscription
     """
 
     def data_change(self, handle, node, val, attr):
@@ -28,15 +28,15 @@ class SubHandler(object):
     def event(self, handle, event):
         print("Python: New event", handle, event)
 
-# method to be exposed through server
 
+# method to be exposed through server
 
 def func(parent, variant):
     return [variant.Value * 2]
 
+
 # method to be exposed through server
 # uses a decorator to automatically convert to and from variants
-
 
 @uamethod
 def multiply(parent, x, y):
@@ -45,7 +45,7 @@ def multiply(parent, x, y):
 
 
 if __name__ == "__main__":
-    # optional setup logging
+    # optional: setup logging
     logging.basicConfig(level=logging.WARN)
     #logger = logging.getLogger("opcua.address_space")
     # logger.setLevel(logging.DEBUG)
