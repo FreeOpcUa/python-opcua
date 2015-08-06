@@ -159,17 +159,17 @@ class Subscription(object):
         params.ItemsToCreate.append(mir)
         params.TimestampsToReturn = ua.TimestampsToReturn.Neither
 
-        results = self.server.create_monitored_items(params)
-        result = results[0]
-        result.StatusCode.check()
-
-        data = SubscriptionItemData()
-        data.client_handle = mparams.ClientHandle
-        data.node = node
-        data.attribute = attr
-        data.server_handle = result.MonitoredItemId
-        data.mfilter = ua.downcast_extobject(result.FilterResult)
         with self._lock:
+            results = self.server.create_monitored_items(params)
+            result = results[0]
+            result.StatusCode.check()
+    
+            data = SubscriptionItemData()
+            data.client_handle = mparams.ClientHandle
+            data.node = node
+            data.attribute = attr
+            data.server_handle = result.MonitoredItemId
+            data.mfilter = ua.downcast_extobject(result.FilterResult)
             self._monitoreditems_map[mparams.ClientHandle] = data
 
         return result.MonitoredItemId
