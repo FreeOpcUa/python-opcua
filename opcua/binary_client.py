@@ -326,7 +326,7 @@ class BinaryClient(object):
 
     def _call_publish_callback(self, future):
         self.logger.info("call_publish_callback")
-        response = ua.PublishResponse.from_binary(future.result(self.timeout))
+        response = ua.PublishResponse.from_binary(future.result())
         try:
             self._publishcallbacks[response.Parameters.SubscriptionId](response.Parameters)
         except Exception:  # we call client code, catch everything!
