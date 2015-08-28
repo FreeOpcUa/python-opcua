@@ -34,6 +34,7 @@ class BinaryClient(object):
         self._publishcallbacks = {}
         self._thread = None
         self._lock = Lock()
+        self.timeout = 1
 
     def start(self):
         """
@@ -59,7 +60,7 @@ class BinaryClient(object):
             self._callbackmap[seqhdr.RequestId] = future
             self._write_socket(hdr, symhdr, seqhdr, request)
         if not callback:
-            data = future.result()
+            data = future.result(self.timeout)
             self._check_answer(data, " in response to " + request.__class__.__name__)
             return data
 
@@ -184,7 +185,7 @@ class BinaryClient(object):
         with self._lock:
             self._callbackmap[0] = future
         self._write_socket(header, hello)
-        return ua.Acknowledge.from_binary(future.result())
+        return ua.Acknowledge.from_binary(future.result(self.timeout))
 
     def open_secure_channel(self, params):
         self.logger.info("open_secure_channel")
@@ -201,7 +202,7 @@ class BinaryClient(object):
             self._callbackmap[seqhdr.RequestId] = future
         self._write_socket(hdr, asymhdr, seqhdr, request)
 
-        response = ua.OpenSecureChannelResponse.from_binary(future.result())
+        response = ua.OpenSecureChannelResponse.from_binary(future.result(self.timeout))
         response.ResponseHeader.ServiceResult.check()
         self._security_token = response.Parameters.SecurityToken
         return response.Parameters
@@ -325,7 +326,7 @@ class BinaryClient(object):
 
     def _call_publish_callback(self, future):
         self.logger.info("call_publish_callback")
-        response = ua.PublishResponse.from_binary(future.result())
+        response = ua.PublishResponse.from_binary(future.result(self.timeout))
         try:
             self._publishcallbacks[response.Parameters.SubscriptionId](response.Parameters)
         except Exception:  # we call client code, catch everything!
