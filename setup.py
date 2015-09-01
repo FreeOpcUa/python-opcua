@@ -10,7 +10,7 @@ setup (name = "freeopcua",
         url = 'http://freeopcua.github.io/',
         packages = ["opcua"],
         provides = ["opcua"],
-        license = "GNU General Public License v3",
+        license = "GNU Lesser General Public License",
 
         classifiers = [
             "Programming Language :: Python",
