@@ -85,12 +85,11 @@ class BinaryServer(object):
                         self.transport.close()
                         break
 
-        logger.warning("Listening on %s:%s", self.hostname, self.port)
         coro = self.loop.create_server(OPCUAProtocol, self.hostname, self.port)
         self._server = self.loop.run_coro_and_wait(coro)
-        logger.warning('Listening on %s', self._server.sockets[0].getsockname())
+        print('Listening on %s:%s', self._server.sockets[0].getsockname(), self.port)
 
     def stop(self):
-        self.logger.warning("Closing asyncio socket server")
+        print("Closing asyncio socket server")
         self.loop.call_soon(self._server.close)
         self.loop.run_coro_and_wait(self._server.wait_closed())
