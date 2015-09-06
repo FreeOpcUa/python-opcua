@@ -1,7 +1,6 @@
 """
 Generate address space c++ code from xml file specification
 """
-import sys
 import logging
 
 import xml.etree.ElementTree as ET
@@ -66,34 +65,33 @@ class XmlImporter(object):
         tree = ET.parse(xmlpath)
         root = tree.getroot()
         for child in root:
-            if child.tag[51:] == 'UAObject':
-                node = self.parse_node(child)
-                self.make_object_code(node)
-            elif child.tag[51:] == 'UAObjectType':
-                node = self.parse_node(child)
-                self.make_object_type_code(node)
-            elif child.tag[51:] == 'UAVariable':
-                node = self.parse_node(child)
-                self.make_variable_code(node)
-            elif child.tag[51:] == 'UAVariableType':
-                node = self.parse_node(child)
-                self.make_variable_type_code(node)
-            elif child.tag[51:] == 'UAReferenceType':
-                node = self.parse_node(child)
-                self.make_reference_code(node)
-            elif child.tag[51:] == 'UADataType':
-                node = self.parse_node(child)
-                self.make_datatype_code(node)
-            elif child.tag[51:] == 'UAMethod':
-                node = self.parse_node(child)
-                self.make_method_code(node)
-            elif child.tag[51:] == 'Aliases':
-                for el in child:
-                    self.aliases[el.attrib["Alias"]] = el.text
-            else:
-                sys.stderr.write("Not implemented node type: " + child.tag[51:] + "\n")
+            self._parse_child(child)
 
-    def parse_node(self, child):
+    def _parse_child(self, child):
+        name = child.tag[51:]
+        if name == "Aliases":
+            for el in child:
+                self.aliases[el.attrib["Alias"]] = el.text
+        else:
+            node = self._parse_node(child)
+            if name == 'UAObject':
+                self.make_object_code(node)
+            elif name == 'UAObjectType':
+                self.make_object_type_code(node)
+            elif name == 'UAVariable':
+                self.make_variable_code(node)
+            elif name == 'UAVariableType':
+                self.make_variable_type_code(node)
+            elif name == 'UAReferenceType':
+                self.make_reference_code(node)
+            elif name == 'UADataType':
+                self.make_datatype_code(node)
+            elif name == 'UAMethod':
+                self.make_method_code(node)
+            else:
+                self.logger.info("Not implemented node type: %s ", name)
+
+    def _parse_node(self, child):
         obj = ObjectStruct()
         obj.nodetype = child.tag[53:]
         for key, val in child.attrib.items():
@@ -124,55 +122,65 @@ class XmlImporter(object):
             elif key == "Symmetric":
                 obj.symmetric = True if val == "true" else False
             else:
-                sys.stderr.write("Attribute not implemented: " + key + " " + val + "\n")
+                self.logger.info("Attribute not implemented: %s:%s", key, val)
 
         obj.displayname = obj.browsename  # FIXME
         for el in child:
-            tag = el.tag[51:]
+            self._parse_tag(el, obj)
 
-            if tag == "DisplayName":
-                obj.displayname = el.text
-            elif tag == "Description":
-                obj.desc = el.text
-            elif tag == "References":
-                for ref in el:
-                    if ref.attrib["ReferenceType"] == "HasTypeDefinition":
-                        obj.typedef = ref.text
-                    elif "IsForward" in ref.attrib and ref.attrib["IsForward"] == "false":
-                        # if obj.parent:
-                            #sys.stderr.write("Parent is already set with: "+ obj.parent + " " + ref.text + "\n")
-                        obj.parent = ref.text
-                        obj.parentlink = ref.attrib["ReferenceType"]
-                    else:
-                        struct = RefStruct()
-                        if "IsForward" in ref.attrib:
-                            struct.forward = ref.attrib["IsForward"]
-                        struct.target = ref.text
-                        struct.reftype = ref.attrib["ReferenceType"]
-                        obj.refs.append(struct)
-            elif tag == "Value":
-                for val in el:
-                    ntag = val.tag[47:]
-                    obj.valuetype = ntag
-                    if ntag in ("Int32", "UInt32"):
-                        obj.value.append(int(val.text))
-                    elif ntag in ('ByteString', 'String'):
-                        mytext = val.text.replace('\n', '').replace('\r', '')
-                        obj.value.append('b"{}"'.format(mytext))
-                    elif ntag == "ListOfExtensionObject":
-                        pass
-                    elif ntag == "ListOfLocalizedText":
-                        pass
-                    else:
-                        self.logger.warning("Missing type: %s", ntag)
-            elif tag == "InverseName":
-                obj.inversename = el.text
-            elif tag == "Definition":
-                for field in el:
-                    obj.definition.append(field)
-            else:
-                sys.stderr.write("Not implemented tag: " + str(el) + "\n")
         return obj
+
+    def _parse_tag(self, el, obj):
+        tag = el.tag[51:]
+
+        if tag == "DisplayName":
+            obj.displayname = el.text
+        elif tag == "Description":
+            obj.desc = el.text
+        elif tag == "References":
+            self._parse_refs(el, obj)
+        elif tag == "Value":
+            self._parse_value(el, obj)
+        elif tag == "InverseName":
+            obj.inversename = el.text
+        elif tag == "Definition":
+            for field in el:
+                obj.definition.append(field)
+        else:
+            self.logger.info("Not implemented tag: %s", el)
+
+    def _parse_value(self, el, obj):
+        for val in el:
+            ntag = val.tag[47:]
+            obj.valuetype = ntag
+            if ntag in ("Int32", "UInt32"):
+                obj.value.append(int(val.text))
+            elif ntag in ('ByteString', 'String'):
+                mytext = val.text.replace('\n', '').replace('\r', '')
+                obj.value.append('b"{}"'.format(mytext))
+            elif ntag == "ListOfExtensionObject":
+                pass
+            elif ntag == "ListOfLocalizedText":
+                pass
+            else:
+                self.logger.info("Missing type: %s", ntag)
+
+    def _parse_refs(self, el, obj):
+        for ref in el:
+            if ref.attrib["ReferenceType"] == "HasTypeDefinition":
+                obj.typedef = ref.text
+            elif "IsForward" in ref.attrib and ref.attrib["IsForward"] == "false":
+                # if obj.parent:
+                    #sys.stderr.write("Parent is already set with: "+ obj.parent + " " + ref.text + "\n")
+                obj.parent = ref.text
+                obj.parentlink = ref.attrib["ReferenceType"]
+            else:
+                struct = RefStruct()
+                if "IsForward" in ref.attrib:
+                    struct.forward = ref.attrib["IsForward"]
+                struct.target = ref.text
+                struct.reftype = ref.attrib["ReferenceType"]
+                obj.refs.append(struct)
 
     def _get_node(self, obj):
         node = ua.AddNodesItem()
