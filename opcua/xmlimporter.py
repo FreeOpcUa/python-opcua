@@ -2,20 +2,21 @@
 Generate address space c++ code from xml file specification
 """
 import logging
+import re
 
 import xml.etree.ElementTree as ET
 
 from opcua import ua
 
 
-class ObjectStruct(object):
+class NodeData(object):
 
     def __init__(self):
         self.nodetype = None
         self.nodeid = None
         self.browsename = None
         self.displayname = None
-        self.symname = None
+        self.symname = None  # FIXME: this param is never used, why?
         self.parent = None
         self.parentlink = None
         self.desc = ""
@@ -42,8 +43,6 @@ class ObjectStruct(object):
         # datatype
         self.definition = []
 
-        # types
-
 
 class RefStruct(object):
 
@@ -57,6 +56,7 @@ class XmlImporter(object):
 
     def __init__(self, server):
         self.logger = logging.getLogger(__name__)
+        self._retag = re.compile("(\{.*\})(.*)")
         self.server = server
         self.aliases = {}
 
@@ -68,67 +68,68 @@ class XmlImporter(object):
             self._parse_child(child)
 
     def _parse_child(self, child):
-        name = child.tag[51:]
+        name = self._retag.match(child.tag).groups()[1]
         if name == "Aliases":
             for el in child:
                 self.aliases[el.attrib["Alias"]] = el.text
         else:
-            node = self._parse_node(child)
+            node = self._parse_node(name, child)
             if name == 'UAObject':
-                self.make_object_code(node)
+                self.add_object(node)
             elif name == 'UAObjectType':
-                self.make_object_type_code(node)
+                self.add_object_type(node)
             elif name == 'UAVariable':
-                self.make_variable_code(node)
+                self.add_variable(node)
             elif name == 'UAVariableType':
-                self.make_variable_type_code(node)
+                self.add_variable_type(node)
             elif name == 'UAReferenceType':
-                self.make_reference_code(node)
+                self.add_reference(node)
             elif name == 'UADataType':
-                self.make_datatype_code(node)
+                self.add_datatype(node)
             elif name == 'UAMethod':
-                self.make_method_code(node)
+                self.add_method(node)
             else:
                 self.logger.info("Not implemented node type: %s ", name)
 
-    def _parse_node(self, child):
-        obj = ObjectStruct()
-        obj.nodetype = child.tag[53:]
+    def _parse_node(self, name, child):
+        obj = NodeData()
+        obj.nodetype = name 
         for key, val in child.attrib.items():
-            if key == "NodeId":
-                obj.nodeid = val
-            elif key == "BrowseName":
-                obj.browsename = val
-            elif key == "SymbolicName":
-                obj.symname = val
-            elif key == "ParentNodeId":
-                obj.parent = val
-            elif key == "DataType":
-                obj.datatype = val
-            elif key == "IsAbstract":
-                obj.abstract = val
-            elif key == "EventNotifier":
-                obj.eventnotifier = True if val == "true" else False
-            elif key == "ValueRank":
-                obj.rank = int(val)
-            elif key == "ArrayDimensions":
-                obj.dimensions = [int(i) for i in val.split(",")]
-            elif key == "MinimumSamplingInterval":
-                obj.minsample = int(val)
-            elif key == "AccessLevel":
-                obj.accesslevel = int(val)
-            elif key == "UserAccessLevel":
-                obj.useraccesslevel = int(val)
-            elif key == "Symmetric":
-                obj.symmetric = True if val == "true" else False
-            else:
-                self.logger.info("Attribute not implemented: %s:%s", key, val)
-
-        obj.displayname = obj.browsename  # FIXME
+            self._set_attr(key, val, obj)
+        obj.displayname = obj.browsename  # gice a default value to display name
         for el in child:
             self._parse_tag(el, obj)
-
         return obj
+
+    def _set_attr(self, key, val, obj):
+        if key == "NodeId":
+            obj.nodeid = val
+        elif key == "BrowseName":
+            obj.browsename = val
+        elif key == "SymbolicName":
+            obj.symname = val
+        elif key == "ParentNodeId":
+            obj.parent = val
+        elif key == "DataType":
+            obj.datatype = val
+        elif key == "IsAbstract":
+            obj.abstract = val
+        elif key == "EventNotifier":
+            obj.eventnotifier = True if val == "true" else False
+        elif key == "ValueRank":
+            obj.rank = int(val)
+        elif key == "ArrayDimensions":
+            obj.dimensions = [int(i) for i in val.split(",")]
+        elif key == "MinimumSamplingInterval":
+            obj.minsample = int(val)
+        elif key == "AccessLevel":
+            obj.accesslevel = int(val)
+        elif key == "UserAccessLevel":
+            obj.useraccesslevel = int(val)
+        elif key == "Symmetric":
+            obj.symmetric = True if val == "true" else False
+        else:
+            self.logger.info("Attribute not implemented: %s:%s", key, val)
 
     def _parse_tag(self, el, obj):
         tag = el.tag[51:]
@@ -151,19 +152,21 @@ class XmlImporter(object):
 
     def _parse_value(self, el, obj):
         for val in el:
-            ntag = val.tag[47:]
+            ntag = self._retag.match(val.tag).groups()[1]
             obj.valuetype = ntag
             if ntag in ("Int32", "UInt32"):
-                obj.value.append(int(val.text))
+                obj.value = int(val.text)
             elif ntag in ('ByteString', 'String'):
                 mytext = val.text.replace('\n', '').replace('\r', '')
-                obj.value.append('b"{}"'.format(mytext))
+                #obj.value.append('b"{}"'.format(mytext))
+                obj.value = mytext
             elif ntag == "ListOfExtensionObject":
+                self.logger.info("Value type not implemented: %s", ntag)
                 pass
             elif ntag == "ListOfLocalizedText":
-                pass
+                self.logger.info("Value type not implemented: %s", ntag)
             else:
-                self.logger.info("Missing type: %s", ntag)
+                self.logger.info("Value type not implemented: %s", ntag)
 
     def _parse_refs(self, el, obj):
         for ref in el:
@@ -186,10 +189,10 @@ class XmlImporter(object):
         node = ua.AddNodesItem()
         node.RequestedNewNodeId = ua.NodeId.from_string(obj.nodeid)
         node.BrowseName = ua.QualifiedName.from_string(obj.browsename)
-        node.NodeClass = getattr(ua.NodeClass, obj.nodetype)
+        node.NodeClass = getattr(ua.NodeClass, obj.nodetype[2:])
         if obj.parent:
             node.ParentNodeId = ua.NodeId.from_string(obj.parent)
-        if obj.parent:
+        if obj.parentlink:
             node.ReferenceTypeId = self.to_ref_type(obj.parentlink)
         if obj.typedef:
             node.TypeDefinition = ua.NodeId.from_string(obj.typedef)
@@ -205,10 +208,14 @@ class XmlImporter(object):
 
     def to_ref_type(self, nodeid):
         if "=" not in nodeid:
-            nodeid = self.aliases[nodeid]
+            if nodeid in self.aliases:
+                nodeid = self.aliases[nodeid]
+            else:
+                nodeid = "i={}".format(getattr(ua.ObjectIds, nodeid))
+
         return ua.NodeId.from_string(nodeid)
 
-    def make_object_code(self, obj):
+    def add_object(self, obj):
         node = self._get_node(obj)
         attrs = ua.ObjectAttributes()
         if obj.desc:
@@ -219,7 +226,7 @@ class XmlImporter(object):
         self.server.add_nodes([node])
         self._add_refs(obj)
 
-    def make_object_type_code(self, obj):
+    def add_object_type(self, obj):
         node = self._get_node(obj)
         attrs = ua.ObjectTypeAttributes()
         if obj.desc:
@@ -230,15 +237,16 @@ class XmlImporter(object):
         self.server.add_nodes([node])
         self._add_refs(obj)
 
-    def make_variable_code(self, obj):
+    def add_variable(self, obj):
         node = self._get_node(obj)
         attrs = ua.VariableAttributes()
         if obj.desc:
             attrs.Description = ua.LocalizedText(obj.desc)
         attrs.DisplayName = ua.LocalizedText(obj.displayname)
         attrs.DataType = self.to_data_type(obj.datatype)
-        if obj.value and len(obj.value) == 1:
-            attrs.Value = ua.Variant(obj.value[0], getattr(ua.VariantType, obj.valuetype))
+        #if obj.value and len(obj.value) == 1:
+        if obj.value:
+            attrs.Value = ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
         if obj.rank:
             attrs.ValueRank = obj.rank
         if obj.accesslevel:
@@ -253,7 +261,7 @@ class XmlImporter(object):
         self.server.add_nodes([node])
         self._add_refs(obj)
 
-    def make_variable_type_code(self, obj):
+    def add_variable_type(self, obj):
         node = self._get_node(obj)
         attrs = ua.VariableTypeAttributes()
         if obj.desc:
@@ -272,7 +280,7 @@ class XmlImporter(object):
         self.server.add_nodes([node])
         self._add_refs(obj)
 
-    def make_method_code(self, obj):
+    def add_method(self, obj):
         node = self._get_node(obj)
         attrs = ua.MethodAttributes()
         if obj.desc:
@@ -290,7 +298,7 @@ class XmlImporter(object):
         self.server.add_nodes([node])
         self._add_refs(obj)
 
-    def make_reference_code(self, obj):
+    def add_reference(self, obj):
         node = self._get_node(obj)
         attrs = ua.ReferenceTypeAttributes()
         if obj.desc:
@@ -306,7 +314,7 @@ class XmlImporter(object):
         self.server.add_nodes([node])
         self._add_refs(obj)
 
-    def make_datatype_code(self, obj):
+    def add_datatype(self, obj):
         node = self._get_node(obj)
         attrs = ua.DataTypeAttributes()
         if obj.desc:

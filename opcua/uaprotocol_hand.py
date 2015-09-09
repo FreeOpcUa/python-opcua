@@ -252,6 +252,7 @@ class VariableAttributes(auto.VariableAttributes):
     def __init__(self):
         auto.VariableAttributes.__init__(self)
         self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.Value | ana.DataType | ana.ValueRank | ana.ArrayDimensions | ana.AccessLevel | ana.UserAccessLevel | ana.MinimumSamplingInterval | ana.Historizing
+        self.Historizing = False
 
 
 class VariableTypeAttributes(auto.VariableTypeAttributes):
@@ -287,6 +288,7 @@ class ViewAttributes(auto.ViewAttributes):
     def __init__(self):
         auto.ViewAttributes.__init__(self)
         self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.ContainsNoLoops | ana.EventNotifier
+
 
 ObjectIdsInv = {v: k for k, v in ObjectIds.__dict__.items()}
 AttributeIdsInv = {v: k for k, v in AttributeIds.__dict__.items()}

@@ -1,4 +1,3 @@
-import time
 import logging
 
 try:
@@ -71,13 +70,17 @@ if __name__ == "__main__":
     objects = server.get_objects_node()
 
     # populating our address space
-    myfolder = objects.add_folder(idx, "myfolder")
+    myfolder = objects.add_folder(idx, "myEmptyFolder")
     myobj = objects.add_object(idx, "NewObject")
     myvar = myobj.add_variable(idx, "MyVariable", 6.7)
     myarrayvar = myobj.add_variable(idx, "myarrayvar", [6.7, 7.9])
+    myarrayvar = myobj.add_variable(idx, "myStronglytTypedVariable", ua.Variant([], ua.VariantType.UInt32))
     myprop = myobj.add_property(idx, "myproperty", "I am a property")
     mymethod = myobj.add_method(idx, "mymethod", func, [ua.VariantType.Int64], [ua.VariantType.Boolean])
     multiply_node = myobj.add_method(idx, "multiply", multiply, [ua.VariantType.Int64, ua.VariantType.Int64], [ua.VariantType.Int64])
+
+    # import some nodes from xml
+    server.import_xml("custom_nodes.xml")
 
     # creating an event object
     # The event object automatically will have members for all events properties
@@ -89,10 +92,10 @@ if __name__ == "__main__":
     server.start()
     print("Available loggers are: ", logging.Logger.manager.loggerDict.keys())
     try:
-        handler = SubHandler()
         # enable following if you want to subscribe to nodes on server side
-        sub = server.create_subscription(500, handler)
-        handle = sub.subscribe_data_change(myvar)
+        #handler = SubHandler()
+        #sub = server.create_subscription(500, handler)
+        #handle = sub.subscribe_data_change(myvar)
         # trigger event, all subscribed clients wil receive it
         myevent.trigger()
 

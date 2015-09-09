@@ -14,6 +14,7 @@ from opcua import ua
 from opcua.binary_server_asyncio import BinaryServer
 from opcua.internal_server import InternalServer
 from opcua import Node, Subscription, ObjectIds, Event
+from opcua import xmlimporter
 
 
 class Server(object):
@@ -186,3 +187,11 @@ class Server(object):
         Use this object to fire events
         """
         return Event(self.iserver.isession, etype, source)
+
+    def import_xml(self, path):
+        """
+        import nodes defined in xml
+        """
+        importer = xmlimporter.XmlImporter(self.iserver.node_mgt_service)
+        importer.import_xml(path)
+

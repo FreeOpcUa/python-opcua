@@ -773,6 +773,13 @@ class TestServer(unittest.TestCase, CommonTests):
         result = o.call_method(v, ua.Variant(2.1))
         self.assertEqual(result, 4.2)
 
+    def test_xml_import(self):
+        self.srv.import_xml("custom_nodes.xml")
+        o = self.opc.get_objects_node()
+        v = o.get_child(["MyXMLFolder", "MyXMLObject", "MyXMLVariable"])
+        val = v.get_value()
+        self.assertEqual(val, "StringValue")
+
 
 
 if __name__ == '__main__':
