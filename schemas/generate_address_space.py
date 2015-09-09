@@ -344,8 +344,9 @@ def save_aspace_to_disk():
     sys.path.append("..")
     from opcua import address_space
     from opcua import standard_address_space
+    from opcua.address_space import NodeManagementService
     aspace = address_space.AddressSpace()
-    standard_address_space.fill_address_space(aspace)
+    standard_address_space.fill_address_space(NodeManagementService(aspace))
     aspace.dump(path)
 
 if __name__ == "__main__":
