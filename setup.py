@@ -4,13 +4,13 @@ from distutils.command.install_data import install_data
 import sys
 
 if sys.version_info[0] < 3:
-    install_requires = ["enum3.4", "trollius", "futures"]
+    install_requires = ["enum34", "trollius", "futures"]
 else:
     install_requires = []
 
 setup(
         name = "freeopcua", 
-        version = "0.9.8",
+        version = "0.9.9",
         description = "Pure Python OPC-UA client and server library",
         author = "Olivier Roulet-Dubonnet",
         author_email = "olivier.roulet@gmail.com",
