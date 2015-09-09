@@ -3,6 +3,7 @@ Generate address space c++ code from xml file specification
 """
 import logging
 import re
+import sys
 
 import xml.etree.ElementTree as ET
 
@@ -52,44 +53,38 @@ class RefStruct(object):
         self.target = None
 
 
-class XmlImporter(object):
+class XMLParser(object):
 
-    def __init__(self, server):
+    def __init__(self, xmlpath):
         self.logger = logging.getLogger(__name__)
-        self._retag = re.compile("(\{.*\})(.*)")
-        self.server = server
+        self._retag = re.compile(r"(\{.*\})(.*)")
+        self.path = xmlpath
         self.aliases = {}
 
-    def import_xml(self, xmlpath):
-        self.logger.info("Importing XML file {}".format(xmlpath))
-        tree = ET.parse(xmlpath)
-        root = tree.getroot()
-        for child in root:
-            self._parse_child(child)
+        self.tree = ET.parse(xmlpath)
+        self.root = self.tree.getroot()
+        self.iter = None
 
-    def _parse_child(self, child):
-        name = self._retag.match(child.tag).groups()[1]
-        if name == "Aliases":
-            for el in child:
-                self.aliases[el.attrib["Alias"]] = el.text
-        else:
-            node = self._parse_node(name, child)
-            if name == 'UAObject':
-                self.add_object(node)
-            elif name == 'UAObjectType':
-                self.add_object_type(node)
-            elif name == 'UAVariable':
-                self.add_variable(node)
-            elif name == 'UAVariableType':
-                self.add_variable_type(node)
-            elif name == 'UAReferenceType':
-                self.add_reference(node)
-            elif name == 'UADataType':
-                self.add_datatype(node)
-            elif name == 'UAMethod':
-                self.add_method(node)
+    def __iter__(self):
+        self.iter = self.tree.iter()
+        return self
+
+    def __next__(self):
+        while True:
+            if sys.version_info[0] < 3:
+                child = self.iter.next()
             else:
-                self.logger.info("Not implemented node type: %s ", name)
+                child = self.iter.__next__()
+            name = self._retag.match(child.tag).groups()[1]
+            if name == "Aliases":
+                for el in child:
+                    self.aliases[el.attrib["Alias"]] = el.text
+            else:
+                node = self._parse_node(name, child)
+                return node
+
+    def next(self):  # support for python2
+        return self.__next__() 
 
     def _parse_node(self, name, child):
         obj = NodeData()
@@ -132,7 +127,7 @@ class XmlImporter(object):
             self.logger.info("Attribute not implemented: %s:%s", key, val)
 
     def _parse_tag(self, el, obj):
-        tag = el.tag[51:]
+        tag = self._retag.match(el.tag).groups()[1]
 
         if tag == "DisplayName":
             obj.displayname = el.text
@@ -162,7 +157,6 @@ class XmlImporter(object):
                 obj.value = mytext
             elif ntag == "ListOfExtensionObject":
                 self.logger.info("Value type not implemented: %s", ntag)
-                pass
             elif ntag == "ListOfLocalizedText":
                 self.logger.info("Value type not implemented: %s", ntag)
             else:
@@ -184,6 +178,36 @@ class XmlImporter(object):
                 struct.target = ref.text
                 struct.reftype = ref.attrib["ReferenceType"]
                 obj.refs.append(struct)
+
+
+
+class XmlImporter(object):
+
+    def __init__(self, server):
+        self.logger = logging.getLogger(__name__)
+        self.parser = None
+        self.server = server
+
+    def import_xml(self, xmlpath):
+        self.logger.info("Importing XML file {}".format(xmlpath))
+        self.parser = XMLParser(xmlpath)
+        for node in self.parser:
+            if node.nodetype == 'UAObject':
+                self.add_object(node)
+            elif node.nodetype == 'UAObjectType':
+                self.add_object_type(node)
+            elif node.nodetype == 'UAVariable':
+                self.add_variable(node)
+            elif node.nodetype == 'UAVariableType':
+                self.add_variable_type(node)
+            elif node.nodetype == 'UAReferenceType':
+                self.add_reference(node)
+            elif node.nodetype == 'UADataType':
+                self.add_datatype(node)
+            elif node.nodetype == 'UAMethod':
+                self.add_method(node)
+            else:
+                self.logger.info("Not implemented node type: %s ", node.nodetype)
 
     def _get_node(self, obj):
         node = ua.AddNodesItem()
@@ -208,8 +232,8 @@ class XmlImporter(object):
 
     def to_ref_type(self, nodeid):
         if "=" not in nodeid:
-            if nodeid in self.aliases:
-                nodeid = self.aliases[nodeid]
+            if nodeid in self.parser.aliases:
+                nodeid = self.parser.aliases[nodeid]
             else:
                 nodeid = "i={}".format(getattr(ua.ObjectIds, nodeid))
 
