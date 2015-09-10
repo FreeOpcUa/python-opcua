@@ -176,6 +176,3 @@ class XMLParser(object):
                 struct.target = ref.text
                 struct.reftype = ref.attrib["ReferenceType"]
                 obj.refs.append(struct)
-
-
-

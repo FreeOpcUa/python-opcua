@@ -1,26 +1,28 @@
-#temporary hack
+# temporary hack
 from IPython import embed
 
 import struct
 
-import  generate_model as gm
+import generate_model as gm
 
 IgnoredEnums = ["NodeIdType"]
 IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "LocalizedText", "ExtensionObject"]
 
+
 class CodeGenerator(object):
+
     def __init__(self, model, output):
         self.model = model
         self.output_path = output
         self.indent = "    "
-        self.iidx = 0 #indent index
+        self.iidx = 0  # indent index
 
     def run(self):
         print("Writting python protocol code to ", self.output_path)
         self.output_file = open(self.output_path, "w")
         self.make_header()
         for enum in self.model.enums:
-            if not enum.name in IgnoredEnums:
+            if enum.name not in IgnoredEnums:
                 self.generate_enum_code(enum)
         for struct in self.model.structs:
             if struct.name in IgnoredStructs:
@@ -32,7 +34,7 @@ class CodeGenerator(object):
     def write(self, *args):
         args = list(args)
         args.insert(0, self.indent * self.iidx)
-        line = " ".join(args) 
+        line = " ".join(args)
         self.output_file.write(line[1:] + "\n")
 
     def make_header(self):
@@ -79,32 +81,32 @@ class CodeGenerator(object):
         self.write("def __init__(self):")
         self.iidx += 1
 
-        #hack extension object stuff
-        extobj_hack = False 
+        # hack extension object stuff
+        extobj_hack = False
         if "BodyLength" in [f.name for f in obj.fields]:
             extobj_hack = True
 
         for field in obj.fields:
             if extobj_hack and field.name == "Encoding":
                 self.write("self.Encoding = 1")
-            elif field.uatype == obj.name: #help!!! selv referencing class
+            elif field.uatype == obj.name:  # help!!! selv referencing class
                 self.write("self.{} = None".format(field.name))
-            elif not obj.name in ("ExtensionObject") and field.name == "TypeId" :# and ( obj.name.endswith("Request") or obj.name.endswith("Response")):
+            elif not obj.name in ("ExtensionObject") and field.name == "TypeId":  # and ( obj.name.endswith("Request") or obj.name.endswith("Response")):
                 self.write("self.TypeId = FourByteNodeId(ObjectIds.{}_Encoding_DefaultBinary)".format(obj.name))
             else:
                 self.write("self.{} = {}".format(field.name, "[]" if field.length else self.get_default_value(field)))
         self.write("self._freeze()")
         self.iidx = 1
 
-        #serialize code
+        # serialize code
         self.write("")
         self.write("def to_binary(self):")
         self.iidx += 1
 
-        #hack for self referencing classes
-        #for field in obj.fields:
-            #if field.uatype == obj.name: #help!!! selv referencing class
-                #self.write("if self.{name} is None: self.{name} = {uatype}()".format(name=field.name, uatype=field.uatype))
+        # hack for self referencing classes
+        # for field in obj.fields:
+        # if field.uatype == obj.name: #help!!! selv referencing class
+        #self.write("if self.{name} is None: self.{name} = {uatype}()".format(name=field.name, uatype=field.uatype))
 
         self.write("packet = []")
         if extobj_hack:
@@ -115,7 +117,7 @@ class CodeGenerator(object):
                 if field.switchvalue:
                     bit = obj.bits[field.switchfield]
                     #self.write("if self.{}: self.{} |= (value << {})".format(field.name, field.switchfield, field.switchvalue))
-                    mask = '0b' + '0' *(8-bit.length) + '1' * bit.length
+                    mask = '0b' + '0' * (8 - bit.length) + '1' * bit.length
                     self.write("others = self.{} & {}".format(bit.container, mask))
                     self.write("if self.{}: self.{} = ( {} | others )".format(field.name, bit.container, field.switchvalue))
                 else:
@@ -124,7 +126,7 @@ class CodeGenerator(object):
         iidx = self.iidx
         listname = "packet"
         for idx, field in enumerate(obj.fields):
-            #if field.name == "Body" and idx <= (len(obj.fields)-1):
+            # if field.name == "Body" and idx <= (len(obj.fields)-1):
             if field.name == "BodyLength":
                 listname = "body"
                 #self.write("tmp = packet")
@@ -158,21 +160,21 @@ class CodeGenerator(object):
         self.write("")
 
         self.iidx = 1
-        #deserialize
+        # deserialize
         self.write("@staticmethod")
         self.write("def from_binary(data):")
-        self.iidx += 1 
+        self.iidx += 1
         iidx = self.iidx
         self.write("obj = {}()".format(obj.name))
         for idx, field in enumerate(obj.fields):
             self.iidx = iidx
-            #if field.name == "Body" and idx <= (len(obj.fields)-1):
-                #self.write("bodylength = struct.unpack('<i', data.read(4))[0]")
-                #continue
+            # if field.name == "Body" and idx <= (len(obj.fields)-1):
+            #self.write("bodylength = struct.unpack('<i', data.read(4))[0]")
+            # continue
             if field.switchfield:
                 bit = obj.bits[field.switchfield]
                 if field.switchvalue:
-                    mask = '0b' + '0' *(8-bit.length) + '1' * bit.length
+                    mask = '0b' + '0' * (8 - bit.length) + '1' * bit.length
                     self.write("val = obj.{} & {}".format(bit.container, mask))
                     self.write("if val == {}:".format(bit.idx))
                 else:
@@ -200,13 +202,13 @@ class CodeGenerator(object):
 
         self.iidx = 2
         self.write("return obj")
-        
+
         #__str__
         self.iidx = 1
         self.write("")
         self.write("def __str__(self):")
         self.iidx += 1
-        tmp = ["'{name}:' + str(self.{name})".format(name=f.name ) for f in obj.fields]
+        tmp = ["'{name}:' + str(self.{name})".format(name=f.name) for f in obj.fields]
         tmp = " + ', '  + \\\n             ".join(tmp)
         self.write("return '{}(' + {} + ')'".format(obj.name, tmp))
         self.iidx -= 1
@@ -215,7 +217,6 @@ class CodeGenerator(object):
 
         self.iix = 0
 
-    
     def get_default_value(self, field):
         if field.uatype in self.model.enum_list:
             return 0
@@ -226,12 +227,11 @@ class CodeGenerator(object):
         elif field.uatype in ("Boolean"):
             return "True"
         elif field.uatype in ("DateTime"):
-            return "datetime.now()" 
+            return "datetime.now()"
         elif field.uatype in ("Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Double", "Float", "Byte"):
             return 0
         else:
             return field.uatype + "()"
-
 
 
 def fix_names(model):
@@ -254,5 +254,3 @@ if __name__ == "__main__":
     fix_names(model)
     c = CodeGenerator(model, protocolpath)
     c.run()
-
-
