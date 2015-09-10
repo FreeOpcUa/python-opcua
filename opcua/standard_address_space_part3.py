@@ -381,7 +381,7 @@ def create_standard_address_space_Part3(server):
     attrs.DisplayName = ua.LocalizedText("References")
     attrs.InverseName = ua.LocalizedText("References")
     attrs.IsAbstract = true
-    attrs.Symmetric = true
+    attrs.Symmetric = True
     node.NodeAttributes = attrs
     server.add_nodes([node])
    

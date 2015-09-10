@@ -418,7 +418,6 @@ def create_standard_address_space_Part8(server):
     attrs = ua.VariableTypeAttributes()
     attrs.DisplayName = ua.LocalizedText("ArrayItemType")
     attrs.DataType = ua.NodeId(ua.ObjectIds.String)
-    attrs.ValueRank = 0
     attrs.IsAbstract = true
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -680,7 +679,7 @@ def create_standard_address_space_Part8(server):
     attrs.DataType = ua.NodeId(ua.ObjectIds.String)
     attrs.ValueRank = 2
     attrs.IsAbstract = false
-    attrs.ArrayDimensions = [0,0]
+    attrs.ArrayDimensions = [0, 0]
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
@@ -757,7 +756,7 @@ def create_standard_address_space_Part8(server):
     attrs.DataType = ua.NodeId(ua.ObjectIds.String)
     attrs.ValueRank = 3
     attrs.IsAbstract = false
-    attrs.ArrayDimensions = [0,0,0]
+    attrs.ArrayDimensions = [0, 0, 0]
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
@@ -862,7 +861,6 @@ def create_standard_address_space_Part8(server):
     attrs = ua.VariableTypeAttributes()
     attrs.DisplayName = ua.LocalizedText("NDimensionArrayItemType")
     attrs.DataType = ua.NodeId(ua.ObjectIds.String)
-    attrs.ValueRank = 0
     attrs.IsAbstract = false
     node.NodeAttributes = attrs
     server.add_nodes([node])
