@@ -4,5 +4,12 @@ MANIFEST
 htmlcov*
 _*
 docs/_*
-
 *.pyc
+dist
+*.old
+*.swp
+*.swo
+*.log
+t.py
+tmp
+
