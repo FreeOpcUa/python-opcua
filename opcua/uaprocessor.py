@@ -94,7 +94,7 @@ class UAProcessor(object):
         elif header.MessageType == ua.MessageType.SecureClose:
             if not self.channel or header.ChannelId != self.channel.SecurityToken.ChannelId:
                 self.logger.warning("Request to close channel %s which was not issued, current channel is %s", header.ChannelId, self.channel)
-                return False
+            return False
 
         elif header.MessageType == ua.MessageType.SecureMessage:
             algohdr = ua.SymmetricAlgorithmHeader.from_binary(body)
