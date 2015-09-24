@@ -393,6 +393,9 @@ class NodeId(FrozenClass):
         elif self.NodeIdType == NodeIdType.String:
             b.append(struct.pack("<H", self.NamespaceIndex))
             b.append(pack_string(self.Identifier))
+        elif self.NodeIdType == NodeIdType.ByteString:
+            b.append(struct.pack("<H", self.NamespaceIndex))
+            b.append(pack_bytes(self.Identifier))
         else:
             b.append(struct.pack("<H", self.NamespaceIndex))
             b.append(self.Identifier.to_binary())
