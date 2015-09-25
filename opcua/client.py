@@ -74,10 +74,15 @@ class Client(object):
         self.application_uri = "urn:freeopcua:client"
         self.product_uri = "urn:freeopcua.github.no:client"
         self.security_policy_uri = "http://opcfoundation.org/UA/SecurityPolicy#None"
+        self.security_mode = ua.MessageSecurityMode.None_
         self.secure_channel_id = None
         self.default_timeout = 3600000
         self.secure_channel_timeout = self.default_timeout
         self.session_timeout = self.default_timeout
+        self.policy_ids = {
+            ua.UserTokenType.Anonymous: b'anonymous',
+            ua.UserTokenType.UserName: b'user_name',
+        }
         self.bclient = BinaryClient()
         self._nonce = None
         self._session_counter = 1
@@ -139,7 +144,7 @@ class Client(object):
         params.RequestType = ua.SecurityTokenRequestType.Issue
         if renew:
             params.RequestType = ua.SecurityTokenRequestType.Renew
-        params.SecurityMode = ua.MessageSecurityMode.None_
+        params.SecurityMode = self.security_mode
         params.RequestedLifetime = self.secure_channel_timeout
         params.ClientNonce = '\x00'
         result = self.bclient.open_secure_channel(params)
@@ -171,6 +176,11 @@ class Client(object):
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0  # means no max size
         response = self.bclient.create_session(params)
+        for ep in response.ServerEndpoints:
+            if ep.SecurityMode == self.security_mode:
+                # remember PolicyId's: we will use them in activate_session()
+                for token in ep.UserIdentityTokens:
+                    self.policy_ids[token.TokenType] = token.PolicyId
         self.session_timeout = response.RevisedSessionTimeout
         self.keepalive = KeepAlive(self, min(self.session_timeout, self.secure_channel_timeout) * 0.7)  # 0.7 is from spec
         self.keepalive.start()
@@ -181,13 +191,13 @@ class Client(object):
         params.LocaleIds.append("en")
         if not self.server_url.username:
             params.UserIdentityToken = ua.AnonymousIdentityToken()
-            params.UserIdentityToken.PolicyId = b"anonymous"
+            params.UserIdentityToken.PolicyId = self.policy_ids[ua.UserTokenType.Anonymous]
         else:
             params.UserIdentityToken = ua.UserNameIdentityToken()
             params.UserIdentityToken.UserName = self.server_url.username 
             if self.server_url.password:
                 params.UserIdentityToken.Password = bytes(self.server_url.password)
-            params.UserIdentityToken.PolicyId = b"user_name"
+            params.UserIdentityToken.PolicyId = self.policy_ids[ua.UserTokenType.UserName]
             #params.EncryptionAlgorithm = ''
         return self.bclient.activate_session(params)
 
