@@ -83,6 +83,7 @@ class Unit(unittest.TestCase):
         bs = ua.ByteStringNodeId(b"53", 0)
         gid = ua.Guid()
         g = ua.ByteStringNodeId(gid, 0)
+        guid = ua.GuidNodeId(gid)
         self.assertEqual(tb, fb)
         self.assertEqual(tb, n)
         self.assertEqual(tb, n1)
@@ -90,6 +91,13 @@ class Unit(unittest.TestCase):
         self.assertNotEqual(n1, s)
         self.assertNotEqual(s, bs)
         self.assertNotEqual(s, g)
+        self.assertNotEqual(g, guid)
+        self.assertEqual(tb, ua.NodeId.from_binary(ua.utils.Buffer(tb.to_binary())))
+        self.assertEqual(fb, ua.NodeId.from_binary(ua.utils.Buffer(fb.to_binary())))
+        self.assertEqual(n, ua.NodeId.from_binary(ua.utils.Buffer(n.to_binary())))
+        self.assertEqual(s1, ua.NodeId.from_binary(ua.utils.Buffer(s1.to_binary())))
+        self.assertEqual(bs, ua.NodeId.from_binary(ua.utils.Buffer(bs.to_binary())))
+        self.assertEqual(guid, ua.NodeId.from_binary(ua.utils.Buffer(guid.to_binary())))
 
     def test_nodeid_string(self):
         nid0 = ua.NodeId(45)
