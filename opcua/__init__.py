@@ -1,6 +1,7 @@
 """
 Pure Python OPC-UA library
 """
+
 # the order is important! som classes must be overriden
 from opcua.binary_client import BinaryClient
 import opcua.uaprotocol as ua
@@ -17,7 +18,10 @@ from opcua.event import Event
 from opcua.subscription import Subscription
 from opcua.client import Client
 from opcua.server import Server
+from opcua.instanciate import instanciate_node
 
+
+# next we have some methods which should really be moved somewhere else
 
 def uamethod(func):
     """
@@ -35,3 +39,5 @@ def to_variant(*args):
     for arg in args:
         uaargs.append(ua.Variant(arg))
     return uaargs
+
+
