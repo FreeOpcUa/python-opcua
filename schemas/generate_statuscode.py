@@ -15,17 +15,17 @@ if __name__ == "__main__":
     outputfile.write("\n")
 
     outputfile.write("def get_name_and_doc(val):\n")
-    outputfile.write("    if val == 0:\n")
-    outputfile.write("        return 'Good', 'Good'\n")
+    kword = "if"
     inputfile = open("StatusCode.csv")
     for line in inputfile:
         name, val, doc = line.split(",", maxsplit=2)
         doc = doc.strip()
         doc = doc.replace("'", '"')
-        outputfile.write("    elif val == {}:\n".format(val))
+        outputfile.write("    {} val == {}:\n".format(kword, val))
         outputfile.write("        return '{}', '{}'\n".format(name, doc))
+        kword = "elif"
     outputfile.write("    else:\n".format(val))
-    outputfile.write("        raise Exception('Unknown StatusCode value: {}'.format(val))")
+    outputfile.write("        raise Exception('Unknown StatusCode value: {}'.format(val))\n")
 
 
     '''
