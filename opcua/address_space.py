@@ -104,7 +104,7 @@ class ViewService(object):
         """
         if ref1.Identifier == ref2.Identifier:
             return True
-        if not subtypes:
+        if not subtypes and ref2.Identifier == ua.ObjectIds.HasSubtype:
             return False
         oktypes = self._get_sub_ref(ref1)
         return ref2 in oktypes
@@ -197,14 +197,9 @@ class NodeManagementService(object):
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
             return result
         else:
-            if user != User.Admin:
-                # FIXME: is checking against WriteMask correct??
-                al = self._aspace.get_attribute_value(item.ParentNodeId, ua.AttributeIds.WriteMask)
-                ual = self._aspace.get_attribute_value(item.ParentNodeId, ua.AttributeIds.UserWriteMask)
-                # FIXME: very strange to use OpenFileMode for access rights?!?!?
-                if not al.Value.Value & ua.OpenFileMode.Write and not ual.Value.Value & ua.OpenFileMode.Write:
-                    result.StatusCode = ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
-                    return result
+            if not self._is_writable(item.ParentNodeId, user):
+                result.StatusCode = ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
+                return result
 
             desc = ua.ReferenceDescription()
             desc.ReferenceTypeId = item.ReferenceTypeId
@@ -227,24 +222,36 @@ class NodeManagementService(object):
             addref.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasTypeDefinition)
             addref.TargetNodeId = item.TypeDefinition
             addref.TargetNodeClass = ua.NodeClass.DataType
-            self._add_reference(addref)
+            self._add_reference(addref, user)
 
         result.StatusCode = ua.StatusCode()
         result.AddedNodeId = item.RequestedNewNodeId
 
         return result
 
-    def add_references(self, refs):
+    def _is_writable(self, nodeid, user): 
+        if user != User.Admin:
+            # FIXME: is checking against WriteMask correct??
+            al = self._aspace.get_attribute_value(nodeid, ua.AttributeIds.WriteMask)
+            ual = self._aspace.get_attribute_value(nodeid, ua.AttributeIds.UserWriteMask)
+            # FIXME: very strange to use OpenFileMode for access rights?!?!?
+            if not al.Value.Value & ua.OpenFileMode.Write and not ual.Value.Value & ua.OpenFileMode.Write:
+                return False
+        return True
+
+    def add_references(self, refs, user=User.Admin):
         result = []
         for ref in refs:
-            result.append(self._add_reference(ref))
+            result.append(self._add_reference(ref, user))
         return result
 
-    def _add_reference(self, addref):
-        if not addref.SourceNodeId in self._aspace:
+    def _add_reference(self, addref, user):
+        if addref.SourceNodeId not in self._aspace:
             return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
-        if not addref.TargetNodeId in self._aspace:
+        if addref.TargetNodeId not in self._aspace:
             return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
+        if not self._is_writable(addref.SourceNodeId, user):
+            return ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
         rdesc = ua.ReferenceDescription()
         rdesc.ReferenceTypeId = addref.ReferenceTypeId
         rdesc.IsForward = addref.IsForward

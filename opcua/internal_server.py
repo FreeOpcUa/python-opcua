@@ -24,6 +24,8 @@ from opcua.address_space import MethodService
 from opcua.subscription_service import SubscriptionService
 from opcua import standard_address_space
 from opcua.users import User
+from opcua import xmlimporter
+
 
 class SessionState(Enum):
     Created = 0
@@ -44,8 +46,12 @@ class InternalServer(object):
         self.view_service = ViewService(self.aspace)
         self.method_service = MethodService(self.aspace)
         self.node_mgt_service = NodeManagementService(self.aspace)
-        standard_address_space.fill_address_space(self.node_mgt_service)
-        #standard_address_space.fill_address_space_from_disk(self.aspace)
+        standard_address_space.fill_address_space(self.node_mgt_service)  # import address space from code generated from xml
+        #standard_address_space.fill_address_space_from_disk(self.aspace)  # import address space from save db to disc
+
+        # import address space directly from xml, this has preformance impact so disabled
+        #importer = xmlimporter.XmlImporter(self.node_mgt_service)
+        #importer.import_xml("/home/olivier/python-opcua/schemas/Opc.Ua.NodeSet2.xml")
 
         self.loop = utils.ThreadLoop()
         self.subscription_service = SubscriptionService(self.loop, self.aspace)
@@ -187,6 +193,9 @@ class InternalSession(object):
 
     def add_nodes(self, params):
         return self.iserver.node_mgt_service.add_nodes(params, self.user)
+
+    def add_references(self, params):
+        return self.iserver.node_mgt_service.add_references(params, self.user)
 
     def add_method_callback(self, methodid, callback):
         return self.aspace.add_method_callback(methodid, callback)

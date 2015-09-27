@@ -3,7 +3,7 @@ High level node object, to access node attribute
 and browse address space
 """
 
-import opcua.uaprotocol as ua
+from opcua import ua
 
 
 def create_folder(parent, *args):
@@ -224,6 +224,7 @@ class Node(object):
     def get_attribute(self, attr):
         """
         Read one attribute of a node
+        result code from server is checked and an exception is raised in case of error
         """
         rv = ua.ReadValueId()
         rv.NodeId = self.nodeid
@@ -233,6 +234,21 @@ class Node(object):
         result = self.server.read(params)
         result[0].StatusCode.check()
         return result[0]
+
+    def get_attributes(self, attrs):
+        """
+        Read several attributes of a node
+        list of DataValue is returned
+        """
+        params = ua.ReadParameters()
+        for attr in attrs:
+            rv = ua.ReadValueId()
+            rv.NodeId = self.nodeid
+            rv.AttributeId = attr
+            params.NodesToRead.append(rv)
+
+        results = self.server.read(params)
+        return results
 
     def get_children(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified):
         """
@@ -271,6 +287,9 @@ class Node(object):
         return self.get_children(refs=ua.ObjectIds.HasProperty, nodeclassmask=ua.NodeClass.Variable)
 
     def get_children_descriptions(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
+        """
+        return all attributes of child nodes as UA BrowseResult structs
+        """
         desc = ua.BrowseDescription()
         desc.BrowseDirection = ua.BrowseDirection.Forward
         desc.ReferenceTypeId = ua.TwoByteNodeId(refs)
@@ -322,15 +341,6 @@ class Node(object):
     add_variable = create_variable
     add_method = create_method
     call_method = call_method
-
-
-__nodeid_counter = 2000
-
-
-def generate_nodeid(idx):
-    global __nodeid_counter
-    __nodeid_counter += 1
-    return ua.NodeId(__nodeid_counter, idx)
 
 
 def _create_folder(server, parentnodeid, nodeid, qname):
@@ -476,6 +486,6 @@ def _parse_add_args(*args):
     elif isinstance(args[0], str):
         return ua.NodeId.from_string(args[0]), ua.QualifiedName.from_string(args[1])
     elif isinstance(args[0], int):
-        return generate_nodeid(args[0]), ua.QualifiedName(args[1], args[0])
+        return ua.generate_nodeid(args[0]), ua.QualifiedName(args[1], args[0])
     else:
         raise TypeError("Add methods takes a nodeid and a qualifiedname as argument, received %s" % args)

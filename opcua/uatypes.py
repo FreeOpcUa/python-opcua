@@ -244,8 +244,20 @@ class StatusCode(FrozenClass):
         return sc
 
     def check(self):
+        """
+        raise en exception if status code is anything else than 0
+        use is is_good() method if not exception is desired
+        """
         if self.value != 0:
             raise Exception("{}({})".format(self.doc, self.name))
+
+    def is_good(self):
+        """
+        return True if status is Good.
+        """
+        if self.value == 0:
+            return True
+        return False
 
     def __str__(self):
         return 'StatusCode({})'.format(self.name)
@@ -869,3 +881,14 @@ class DataValue(FrozenClass):
         return s
 
     __repr__ = __str__
+
+
+__nodeid_counter = 2000
+
+
+def generate_nodeid(idx):
+    global __nodeid_counter
+    __nodeid_counter += 1
+    return NodeId(__nodeid_counter, idx)
+
+
