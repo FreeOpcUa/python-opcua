@@ -2,6 +2,9 @@
 
 
 class StatusCodes:
+    Good = 0
+    Uncertain = 0x40000000
+    Bad = 0x80000000
     BadUnexpectedError = 0x80010000
     BadInternalError = 0x80020000
     BadOutOfMemory = 0x80030000
@@ -222,7 +225,11 @@ class StatusCodes:
 
 def get_name_and_doc(val):
     if val == 0:
-        return 'Good', 'Good'
+        return 'Good', 'The operation completed successfully.'
+    elif val == 0x40000000:
+        return 'Uncertain', 'The operation completed however its outputs may not be usable.'
+    elif val == 0x80000000:
+        return 'Bad', 'The operation failed.'
     elif val == 0x80010000:
         return 'BadUnexpectedError', 'An unexpected error occurred.'
     elif val == 0x80020000:
