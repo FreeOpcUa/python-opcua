@@ -458,10 +458,8 @@ def _call_method(server, parentnodeid, methodid, arguments):
 
 def _vtype_to_argument(vtype):
     if isinstance(vtype, ua.Argument):
-        print "Recived argument"
-        print vtype
         return ua.ExtensionObject.from_object(vtype)
-    
+
     arg = ua.Argument()
     v = ua.Variant(None, vtype)
     arg.DataType = _guess_uatype(v)
