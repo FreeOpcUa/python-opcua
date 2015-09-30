@@ -139,6 +139,7 @@ class ViewService(object):
             res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
             return res
         current = path.StartingNode
+        # FIXME: Should be more according to the Specs: Part 4 Page 44
         for el in path.RelativePath.Elements:
             nodeid = self._find_element_in_node(el, current)
             if not nodeid:
@@ -155,7 +156,7 @@ class ViewService(object):
         nodedata = self._aspace[nodeid]
         for ref in nodedata.references:
             # FIXME: here we should check other arguments!!
-            if ref.BrowseName == el.TargetName:
+            if ref.BrowseName.Name == el.TargetName.Name:
                 return ref.NodeId
         self.logger.info("element %s was not found in node %s", el, nodeid)
         return None
@@ -229,7 +230,7 @@ class NodeManagementService(object):
 
         return result
 
-    def _is_writable(self, nodeid, user): 
+    def _is_writable(self, nodeid, user):
         if user != User.Admin:
             # FIXME: is checking against WriteMask correct??
             al = self._aspace.get_attribute_value(nodeid, ua.AttributeIds.WriteMask)

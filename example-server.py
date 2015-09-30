@@ -12,7 +12,7 @@ except ImportError:
         shell.interact()
 
 
-from opcua import ua, uamethod, Server, Event, ObjectIds
+from opcua import ua, uamethod, Server, Event, ObjectIds, node
 
 
 class SubHandler(object):
@@ -78,7 +78,27 @@ if __name__ == "__main__":
     myarrayvar = myobj.add_variable(idx, "myStronglytTypedVariable", ua.Variant([], ua.VariantType.UInt32))
     myprop = myobj.add_property(idx, "myproperty", "I am a property")
     mymethod = myobj.add_method(idx, "mymethod", func, [ua.VariantType.Int64], [ua.VariantType.Boolean])
-    multiply_node = myobj.add_method(idx, "multiply", multiply, [ua.VariantType.Int64, ua.VariantType.Int64], [ua.VariantType.Int64])
+
+    inargx = ua.Argument()
+    inargx.Name = "x"
+    inargx.DataType = node._guess_uatype(ua.Variant(None, ua.VariantType.Int64))
+    inargx.ValueRank = -1
+    inargx.ArrayDimensions = []
+    inargx.Description = ua.LocalizedText("First number x")
+    inargy = ua.Argument()
+    inargy.Name = "y"
+    inargy.DataType = node._guess_uatype(ua.Variant(None, ua.VariantType.Int64))
+    inargy.ValueRank = -1
+    inargy.ArrayDimensions = []
+    inargy.Description = ua.LocalizedText("Second number y")
+    outarg = ua.Argument()
+    outarg.Name = "Result"
+    outarg.DataType = node._guess_uatype(ua.Variant(None, ua.VariantType.Int64))
+    outarg.ValueRank = -1
+    outarg.ArrayDimensions = []
+    outarg.Description = ua.LocalizedText("Multiplication result")
+
+    multiply_node = myobj.add_method(idx, "multiply", multiply, [inargx, inargy], [outarg])
 
     # import some nodes from xml
     server.import_xml("custom_nodes.xml")
