@@ -34,6 +34,17 @@ def uamethod(func):
     return wrapper
 
 
+def uamethod_class(func):
+    """
+    Method decorator for class members to automatically convert
+    arguments and output to and from variants
+    """
+    def wrapper(self, parent, *args):
+        result = func(self, parent, *[arg.Value for arg in args])
+        return to_variant(result)
+    return wrapper
+
+
 def to_variant(*args):
     uaargs = []
     for arg in args:
