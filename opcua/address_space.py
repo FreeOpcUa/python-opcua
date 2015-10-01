@@ -139,7 +139,6 @@ class ViewService(object):
             res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
             return res
         current = path.StartingNode
-        # FIXME: Should be more according to the Specs: Part 4 Page 44
         for el in path.RelativePath.Elements:
             nodeid = self._find_element_in_node(el, current)
             if not nodeid:
