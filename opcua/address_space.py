@@ -229,7 +229,7 @@ class NodeManagementService(object):
 
         return result
 
-    def _is_writable(self, nodeid, user): 
+    def _is_writable(self, nodeid, user):
         if user != User.Admin:
             # FIXME: is checking against WriteMask correct??
             al = self._aspace.get_attribute_value(nodeid, ua.AttributeIds.WriteMask)

@@ -290,5 +290,12 @@ class ViewAttributes(auto.ViewAttributes):
         self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.ContainsNoLoops | ana.EventNotifier
 
 
+class Argument(auto.Argument):
+
+    def __init__(self):
+        auto.Argument.__init__(self)
+        self.ValueRank = -2
+
+
 ObjectIdsInv = {v: k for k, v in ObjectIds.__dict__.items()}
 AttributeIdsInv = {v: k for k, v in AttributeIds.__dict__.items()}
