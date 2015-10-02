@@ -736,6 +736,9 @@ class Variant(FrozenClass):
     def _guess_type(self, val):
         if val is None:
             return VariantType.Null
+        elif isinstance(val, bool):
+            # TDA, added this because it was missing and causes exceptions when 'bool' type is used
+            return VariantType.Boolean
         elif isinstance(val, float):
             return VariantType.Double
         elif isinstance(val, int):
@@ -746,9 +749,6 @@ class Variant(FrozenClass):
             return VariantType.ByteString
         elif isinstance(val, datetime):
             return VariantType.DateTime
-        elif isinstance(val, bool):
-            # TDA, added this because it was missing and causes exceptions when 'bool' type is used
-            return VariantType.Boolean
         else:
             if isinstance(val, object):
                 return getattr(VariantType, val.__class__.__name__)
