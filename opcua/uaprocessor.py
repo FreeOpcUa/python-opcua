@@ -200,7 +200,7 @@ class UAProcessor(object):
 
             self.logger.info("sending get endpoints response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
-        
+
         elif typeid == ua.NodeId(ua.ObjectIds.FindServersRequest_Encoding_DefaultBinary):
             self.logger.info("find servers request")
             params = ua.FindServersParameters.from_binary(body)
@@ -212,7 +212,6 @@ class UAProcessor(object):
 
             self.logger.info("sending find servers response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
-
 
         elif typeid == ua.NodeId(ua.ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary):
             self.logger.info("translate browsepaths to nodeids request")

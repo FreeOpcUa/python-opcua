@@ -437,9 +437,9 @@ def _create_method(parent, nodeid, qname, callback, inputs, outputs):
     results[0].StatusCode.check()
     method = Node(parent.server, nodeid)
     if inputs:
-        create_property(method, qname.NamespaceIndex, "InputArguments", [_vtype_to_argument(vtype) for vtype in inputs])
+        create_property(method, ua.generate_nodeid(qname.NamespaceIndex), ua.QualifiedName("InputArguments", 0), [_vtype_to_argument(vtype) for vtype in inputs])
     if outputs:
-        create_property(method, qname.NamespaceIndex, "OutputArguments", [_vtype_to_argument(vtype) for vtype in outputs])
+        create_property(method, ua.generate_nodeid(qname.NamespaceIndex), ua.QualifiedName("OutputArguments", 0), [_vtype_to_argument(vtype) for vtype in outputs])
     parent.server.add_method_callback(method.nodeid, callback)
     return nodeid
 
@@ -457,6 +457,9 @@ def _call_method(server, parentnodeid, methodid, arguments):
 
 
 def _vtype_to_argument(vtype):
+    if isinstance(vtype, ua.Argument):
+        return ua.ExtensionObject.from_object(vtype)
+
     arg = ua.Argument()
     v = ua.Variant(None, vtype)
     arg.DataType = _guess_uatype(v)
