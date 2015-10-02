@@ -29,7 +29,14 @@ def uamethod(func):
     arguments and output to and from variants
     """
     def wrapper(parent, *args):
-        result = func(parent, *[arg.Value for arg in args])
+        if isinstance(parent, ua.NodeId):
+            result = func(parent, *[arg.Value for arg in args])
+        else:
+            self = parent
+            parent = args[0]
+            args = args[1:]
+            result = func(self, parent, *[arg.Value for arg in args])
+
         return to_variant(result)
     return wrapper
 
