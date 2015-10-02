@@ -12,7 +12,7 @@ except ImportError:
         shell.interact()
 
 
-from opcua import ua, uamethod, Server, Event, ObjectIds, node
+from opcua import ua, uamethod, Server, Event, ObjectIds
 
 
 class SubHandler(object):
@@ -85,19 +85,19 @@ if __name__ == "__main__":
 
     inargx = ua.Argument()
     inargx.Name = "x"
-    inargx.DataType = node._guess_uatype(ua.Variant(None, ua.VariantType.Int64))
+    inargx.DataType = ua.NodeId(ObjectIds.Int64)
     inargx.ValueRank = -1
     inargx.ArrayDimensions = []
     inargx.Description = ua.LocalizedText("First number x")
     inargy = ua.Argument()
     inargy.Name = "y"
-    inargy.DataType = node._guess_uatype(ua.Variant(None, ua.VariantType.Int64))
+    inargy.DataType = ua.NodeId(ObjectIds.Int64)
     inargy.ValueRank = -1
     inargy.ArrayDimensions = []
     inargy.Description = ua.LocalizedText("Second number y")
     outarg = ua.Argument()
     outarg.Name = "Result"
-    outarg.DataType = node._guess_uatype(ua.Variant(None, ua.VariantType.Int64))
+    outarg.DataType = ua.NodeId(ObjectIds.Int64)
     outarg.ValueRank = -1
     outarg.ArrayDimensions = []
     outarg.Description = ua.LocalizedText("Multiplication result")
