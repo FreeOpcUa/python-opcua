@@ -716,11 +716,6 @@ class AdminTestClient(unittest.TestCase, CommonTests):
         self.assertEqual(f, f_ro)
         with self.assertRaises(Exception):
             f2 = f_ro.add_folder(3, 'MyFolder2')
-        f.set_writable(True)
-        f3 = f_ro.add_folder(3, 'MyFolder3')
-        f.set_read_only()
-        with self.assertRaises(Exception):
-            f4 = f_ro.add_folder(3, 'MyFolder4')
 
     def test_variable_anonymous(self):
         objects = self.clt.get_objects_node()

@@ -199,11 +199,11 @@ class Node(object):
 
     def set_writable(self, writable=True):
         if writable:
-            self.set_attribute(ua.AttributeIds.WriteMask, ua.DataValue(ua.OpenFileMode.Write))
-            self.set_attribute(ua.AttributeIds.UserWriteMask, ua.DataValue(ua.OpenFileMode.Write))
+            self.set_attribute(ua.AttributeIds.AccessLevel, ua.DataValue(ua.AccessLevelMask.CurrentWrite))
+            self.set_attribute(ua.AttributeIds.UserAccessLevel, ua.DataValue(ua.AccessLevelMask.CurrentWrite))
         else:
-            self.set_attribute(ua.AttributeIds.WriteMask, ua.DataValue(ua.OpenFileMode.Read))
-            self.set_attribute(ua.AttributeIds.UserWriteMask, ua.DataValue(ua.OpenFileMode.Read))
+            self.set_attribute(ua.AttributeIds.AccessLevel, ua.DataValue(ua.AccessLevelMask.CurrentRead))
+            self.set_attribute(ua.AttributeIds.AccessLevel, ua.DataValue(ua.AccessLevelMask.CurrentRead))
 
     def set_read_only(self):
         return self.set_writable(False)

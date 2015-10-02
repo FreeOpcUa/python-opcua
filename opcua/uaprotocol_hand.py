@@ -1,4 +1,3 @@
-import io
 import struct
 import logging
 
@@ -9,6 +8,18 @@ from opcua.object_ids import ObjectIds
 from opcua.attribute_ids import AttributeIds
 
 logger = logging.getLogger('opcua.uaprotocol')
+
+
+class AccessLevelMask(object):
+    """
+    used by AccessLevel and UserAccessLevel
+    """
+    CurrentRead = 0
+    CurrentWrite = 1
+    HistoryRead = 2
+    HistoryWrite = 3
+    SemanticChange = 4
+
 
 class Hello(uatypes.FrozenClass):
 

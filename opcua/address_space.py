@@ -50,11 +50,12 @@ class AttributeService(object):
         res = []
         for writevalue in params.NodesToWrite:
             if user != User.Admin:
-                # FIXME: check WriteMask and UserWriteMask!!!
-                al = self._aspace.get_attribute_value(writevalue.NodeId, ua.AttributeIds.WriteMask)
-                ual = self._aspace.get_attribute_value(writevalue.NodeId, ua.AttributeIds.UserWriteMask)
-                # FIXME: very strange to use OpenFileMode for access rights?!?!?
-                if not al.Value.Value & ua.OpenFileMode.Write and not ual.Value.Value & ua.OpenFileMode.Write:
+                if writevalue.AttributeId != ua.AttributeIds.Value:
+                    res.append(ua.StatusCode(ua.StatusCodes.BadUserAccessDenied))
+                    continue
+                al = self._aspace.get_attribute_value(writevalue.NodeId, ua.AttributeIds.AccessLevel)
+                ual = self._aspace.get_attribute_value(writevalue.NodeId, ua.AttributeIds.UserAccessLevel)
+                if not al.Value.Value & ua.AccessLevelMask.CurrentWrite or not ual.Value.Value & ua.AccessLevelMask.CurrentWrite:
                     res.append(ua.StatusCode(ua.StatusCodes.BadUserAccessDenied))
                     continue
             res.append(self._aspace.set_attribute_value(writevalue.NodeId, writevalue.AttributeId, writevalue.Value))
@@ -197,7 +198,7 @@ class NodeManagementService(object):
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
             return result
         else:
-            if not self._is_writable(item.ParentNodeId, user):
+            if not user == User.Admin:
                 result.StatusCode = ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
                 return result
 
@@ -229,16 +230,6 @@ class NodeManagementService(object):
 
         return result
 
-    def _is_writable(self, nodeid, user): 
-        if user != User.Admin:
-            # FIXME: is checking against WriteMask correct??
-            al = self._aspace.get_attribute_value(nodeid, ua.AttributeIds.WriteMask)
-            ual = self._aspace.get_attribute_value(nodeid, ua.AttributeIds.UserWriteMask)
-            # FIXME: very strange to use OpenFileMode for access rights?!?!?
-            if not al.Value.Value & ua.OpenFileMode.Write and not ual.Value.Value & ua.OpenFileMode.Write:
-                return False
-        return True
-
     def add_references(self, refs, user=User.Admin):
         result = []
         for ref in refs:
@@ -250,7 +241,7 @@ class NodeManagementService(object):
             return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
         if addref.TargetNodeId not in self._aspace:
             return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
-        if not self._is_writable(addref.SourceNodeId, user):
+        if not user == User.Admin:
             return ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
         rdesc = ua.ReferenceDescription()
         rdesc.ReferenceTypeId = addref.ReferenceTypeId
