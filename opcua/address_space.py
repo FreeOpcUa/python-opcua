@@ -155,7 +155,7 @@ class ViewService(object):
         nodedata = self._aspace[nodeid]
         for ref in nodedata.references:
             # FIXME: here we should check other arguments!!
-            if ref.BrowseName.Name == el.TargetName.Name:
+            if ref.BrowseName == el.TargetName:
                 return ref.NodeId
         self.logger.info("element %s was not found in node %s", el, nodeid)
         return None
