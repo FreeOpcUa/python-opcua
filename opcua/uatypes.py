@@ -569,6 +569,10 @@ class LocalizedText(FrozenClass):
             obj.Text = unpack_uatype('CharArray', data)
         return obj
 
+    def to_string(self):
+        # FIXME: use local
+        return self.Text.decode()
+
     def __str__(self):
         return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', '  + \
             'Locale:' + str(self.Locale) + ', '  + \
