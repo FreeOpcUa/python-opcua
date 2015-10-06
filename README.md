@@ -24,12 +24,13 @@ Client: what works:
 * subscribing to events
 * adding nodes
 * method call
-* user and password 
+* user without password 
 
 Tested servers: freeopcua C++, freeopcua Python, prosys
 
 
 Client: what is not implemented yet 
+* user/password
 * removing nodes 
 * adding missing modify methods
 * certificate handling
