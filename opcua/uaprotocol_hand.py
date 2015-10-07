@@ -109,7 +109,7 @@ class Header(uatypes.FrozenClass):
         return hdr
 
     def __str__(self):
-        return "Header(type:{}, body_size:{}, channel:{})".format(self.MessageType, self.body_size, self.ChannelId)
+        return "Header(type:{}, chunk_type:{}, body_size:{}, channel:{})".format(self.MessageType, self.ChunkType, self.body_size, self.ChannelId)
     __repr__ = __str__
 
 

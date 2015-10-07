@@ -96,9 +96,27 @@ class BinaryClient(object):
         return utils.Buffer(data)
 
     def _receive(self):
+        body_chunk = b""
+        while True:
+            ret = self._receive_complete_msg()
+            if ret is None:
+                return
+            hdr, algohdr, seqhdr, body = ret 
+            if hdr.ChunkType in (b"F", b"A"):
+                body.data = body_chunk + body.data
+                break
+            elif hdr.ChunkType == b"C":
+                self.logger.debug("Received a an intermediate message with header %s, waiting for next message", hdr)
+                body_chunk += body.data
+            else:
+                self.logger.warning("Received a message with unknown ChunkType %s, in header %s", hdr.ChunkType, hdr)
+                return
+        self._call_callback(seqhdr.RequestId, body)
+
+    def _receive_complete_msg(self):
         header = self._receive_header()
         if header is None:
-            return
+            return None
         body = self._receive_body(header.body_size)
         if header.MessageType == ua.MessageType.Error:
             self.logger.warning("Received an error message type")
@@ -107,7 +125,7 @@ class BinaryClient(object):
             return None
         if header.MessageType == ua.MessageType.Acknowledge:
             self._call_callback(0, body)
-            return
+            return None
         elif header.MessageType == ua.MessageType.SecureOpen:
             algohdr = ua.AsymmetricAlgorithmHeader.from_binary(body)
             self.logger.info(algohdr)
@@ -116,10 +134,10 @@ class BinaryClient(object):
             self.logger.info(algohdr)
         else:
             self.logger.warning("Unsupported message type: %s", header.MessageType)
-            return
+            return None
         seqhdr = ua.SequenceHeader.from_binary(body)
         self.logger.debug(seqhdr)
-        self._call_callback(seqhdr.RequestId, body)
+        return header, algohdr, seqhdr, body
 
     def _call_callback(self, request_id, body):
         with self._lock:
