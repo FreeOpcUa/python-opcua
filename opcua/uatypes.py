@@ -741,7 +741,6 @@ class Variant(FrozenClass):
         if val is None:
             return VariantType.Null
         elif isinstance(val, bool):
-            # TDA, added this because it was missing and causes exceptions when 'bool' type is used
             return VariantType.Boolean
         elif isinstance(val, float):
             return VariantType.Double
