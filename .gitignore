@@ -12,4 +12,8 @@ dist
 *.log
 t.py
 tmp
+old
+dist
+*.egg-info
+*.swp
 

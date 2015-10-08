@@ -11,30 +11,23 @@ import opcua.uaprotocol as ua
 import opcua.utils as utils
 
 
-class BinaryClient(object):
-
+class UASocketClient(object):
     """
-    low level OPC-UA client.
-    implement all(well..one day) methods defined in opcua spec
-    taking in argument the structures defined in opcua spec
-    in python most of the structures are defined in
-    uaprotocol_auto.py and uaprotocol_hand.py
+    handle socket connection and send ua messages
     """
-
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(__name__ + "Socket")
+        self._thread = None
+        self._lock = Lock()
+        self.timeout = 1
         self._socket = None
         self._do_stop = False
         self._security_token = ua.ChannelSecurityToken()
-        self._authentication_token = ua.NodeId()
+        self.authentication_token = ua.NodeId()
         self._sequence_number = 0
         self._request_id = 0
         self._request_handle = 0
         self._callbackmap = {}
-        self._publishcallbacks = {}
-        self._thread = None
-        self._lock = Lock()
-        self.timeout = 1
 
     def start(self):
         """
@@ -45,7 +38,7 @@ class BinaryClient(object):
         self._thread = Thread(target=self._run)
         self._thread.start()
 
-    def _send_request(self, request, callback=None, timeout=1000):
+    def send_request(self, request, callback=None, timeout=1000):
         # HACK to make sure we can convert our request to binary before increasing request counter etc ...
         request.to_binary()
         # END HACK
@@ -61,10 +54,10 @@ class BinaryClient(object):
             self._write_socket(hdr, symhdr, seqhdr, request)
         if not callback:
             data = future.result(self.timeout)
-            self._check_answer(data, " in response to " + request.__class__.__name__)
+            self.check_answer(data, " in response to " + request.__class__.__name__)
             return data
 
-    def _check_answer(self, data, context):
+    def check_answer(self, data, context):
         data = data.copy(50)  # FIXME check max length nodeid + responseheader
         typeid = ua.NodeId.from_binary(data)
         if typeid == ua.FourByteNodeId(ua.ObjectIds.ServiceFault_Encoding_DefaultBinary):
@@ -161,7 +154,7 @@ class BinaryClient(object):
 
     def _create_request_header(self, timeout=1000):
         hdr = ua.RequestHeader()
-        hdr.AuthenticationToken = self._authentication_token
+        hdr.AuthenticationToken = self.authentication_token
         self._request_handle += 1
         hdr.RequestHandle = self._request_handle
         hdr.TimeoutHint = timeout
@@ -225,69 +218,6 @@ class BinaryClient(object):
         self._security_token = response.Parameters.SecurityToken
         return response.Parameters
 
-    def create_session(self, parameters):
-        self.logger.info("create_session")
-        request = ua.CreateSessionRequest()
-        request.Parameters = parameters
-        data = self._send_request(request)
-        response = ua.CreateSessionResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        self._authentication_token = response.Parameters.AuthenticationToken
-        return response.Parameters
-
-    def activate_session(self, parameters):
-        self.logger.info("activate_session")
-        request = ua.ActivateSessionRequest()
-        request.Parameters = parameters
-        data = self._send_request(request)
-        response = ua.ActivateSessionResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Parameters
-
-    def close_session(self, deletesubscriptions):
-        self.logger.info("close_session")
-        request = ua.CloseSessionRequest()
-        request.DeleteSubscriptions = deletesubscriptions
-        data = self._send_request(request)
-        ua.CloseSessionResponse.from_binary(data)
-        # response.ResponseHeader.ServiceResult.check() #disabled, it seems we sent wrong session Id, but where is the sessionId supposed to be sent???
-
-    def browse(self, parameters):
-        self.logger.info("browse")
-        request = ua.BrowseRequest()
-        request.Parameters = parameters
-        data = self._send_request(request)
-        response = ua.BrowseResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Results
-
-    def read(self, parameters):
-        self.logger.info("read")
-        request = ua.ReadRequest()
-        request.Parameters = parameters
-        data = self._send_request(request)
-        response = ua.ReadResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Results
-
-    def write(self, params):
-        self.logger.info("read")
-        request = ua.WriteRequest()
-        request.Parameters = params
-        data = self._send_request(request)
-        response = ua.WriteResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Results
-
-    def get_endpoints(self, params):
-        self.logger.info("get_endpoint")
-        request = ua.GetEndpointsRequest()
-        request.Parameters = params
-        data = self._send_request(request)
-        response = ua.GetEndpointsResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Endpoints
-
     def close_secure_channel(self):
         """
         close secure channel. It seems to trigger a shutdown of socket
@@ -304,11 +234,113 @@ class BinaryClient(object):
 
         # some servers send a response here, most do not ... so we ignore
 
+
+
+class BinaryClient(object):
+
+    """
+    low level OPC-UA client.
+    implement all(well..one day) methods defined in opcua spec
+    taking in argument the structures defined in opcua spec
+    in python most of the structures are defined in
+    uaprotocol_auto.py and uaprotocol_hand.py
+    """
+
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+        self._publishcallbacks = {}
+        self._uasocket = UASocketClient()
+
+    def connect_socket(self, host, port):
+        """
+        connect to server socket and start receiving thread
+        """
+        return self._uasocket.connect_socket(host, port)
+
+    def disconnect_socket(self):
+        return self._uasocket.disconnect_socket()
+
+    def send_hello(self, url):
+        return self._uasocket.send_hello(url)
+
+    def open_secure_channel(self, params):
+        return self._uasocket.open_secure_channel(params)
+
+    def close_secure_channel(self):
+        """
+        close secure channel. It seems to trigger a shutdown of socket
+        in most servers, so be prepare to reconnect
+        """
+        return self._uasocket.close_secure_channel()
+
+    def create_session(self, parameters):
+        self.logger.info("create_session")
+        request = ua.CreateSessionRequest()
+        request.Parameters = parameters
+        data = self._uasocket.send_request(request)
+        response = ua.CreateSessionResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        self._uasocket.authentication_token = response.Parameters.AuthenticationToken
+        return response.Parameters
+
+    def activate_session(self, parameters):
+        self.logger.info("activate_session")
+        request = ua.ActivateSessionRequest()
+        request.Parameters = parameters
+        data = self._uasocket.send_request(request)
+        response = ua.ActivateSessionResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Parameters
+
+    def close_session(self, deletesubscriptions):
+        self.logger.info("close_session")
+        request = ua.CloseSessionRequest()
+        request.DeleteSubscriptions = deletesubscriptions
+        data = self._uasocket.send_request(request)
+        ua.CloseSessionResponse.from_binary(data)
+        # response.ResponseHeader.ServiceResult.check() #disabled, it seems we sent wrong session Id, but where is the sessionId supposed to be sent???
+
+    def browse(self, parameters):
+        self.logger.info("browse")
+        request = ua.BrowseRequest()
+        request.Parameters = parameters
+        data = self._uasocket.send_request(request)
+        response = ua.BrowseResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
+
+    def read(self, parameters):
+        self.logger.info("read")
+        request = ua.ReadRequest()
+        request.Parameters = parameters
+        data = self._uasocket.send_request(request)
+        response = ua.ReadResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
+
+    def write(self, params):
+        self.logger.info("read")
+        request = ua.WriteRequest()
+        request.Parameters = params
+        data = self._uasocket.send_request(request)
+        response = ua.WriteResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
+
+    def get_endpoints(self, params):
+        self.logger.info("get_endpoint")
+        request = ua.GetEndpointsRequest()
+        request.Parameters = params
+        data = self._uasocket.send_request(request)
+        response = ua.GetEndpointsResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Endpoints
+
     def translate_browsepaths_to_nodeids(self, browsepaths):
         self.logger.info("translate_browsepath_to_nodeid")
         request = ua.TranslateBrowsePathsToNodeIdsRequest()
         request.Parameters.BrowsePaths = browsepaths
-        data = self._send_request(request)
+        data = self._uasocket.send_request(request)
         response = ua.TranslateBrowsePathsToNodeIdsResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
@@ -317,7 +349,7 @@ class BinaryClient(object):
         self.logger.info("create_subscription")
         request = ua.CreateSubscriptionRequest()
         request.Parameters = params
-        data = self._send_request(request)
+        data = self._uasocket.send_request(request)
         response = ua.CreateSubscriptionResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         self._publishcallbacks[response.Parameters.SubscriptionId] = callback
@@ -327,7 +359,7 @@ class BinaryClient(object):
         self.logger.info("delete_subscription")
         request = ua.DeleteSubscriptionsRequest()
         request.Parameters.SubscriptionIds = subscriptionids
-        data = self._send_request(request)
+        data = self._uasocket.send_request(request)
         response = ua.DeleteSubscriptionsResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         for sid in subscriptionids:
@@ -340,7 +372,7 @@ class BinaryClient(object):
             acks = []
         request = ua.PublishRequest()
         request.Parameters.SubscriptionAcknowledgements = acks
-        self._send_request(request, self._call_publish_callback, timeout=0)
+        self._uasocket.send_request(request, self._call_publish_callback, timeout=0)
 
     def _call_publish_callback(self, future):
         self.logger.info("call_publish_callback")
@@ -354,7 +386,7 @@ class BinaryClient(object):
         self.logger.info("create_monitored_items")
         request = ua.CreateMonitoredItemsRequest()
         request.Parameters = params
-        data = self._send_request(request)
+        data = self._uasocket.send_request(request)
         response = ua.CreateMonitoredItemsResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
@@ -363,7 +395,7 @@ class BinaryClient(object):
         self.logger.info("delete_monitored_items")
         request = ua.DeleteMonitoredItemsRequest()
         request.Parameters = params
-        data = self._send_request(request)
+        data = self._uasocket.send_request(request)
         response = ua.DeleteMonitoredItemsResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
@@ -372,7 +404,7 @@ class BinaryClient(object):
         self.logger.info("add_nodes")
         request = ua.AddNodesRequest()
         request.Parameters.NodesToAdd = nodestoadd
-        data = self._send_request(request)
+        data = self._uasocket.send_request(request)
         response = ua.AddNodesResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
@@ -380,7 +412,7 @@ class BinaryClient(object):
     def call(self, methodstocall):
         request = ua.CallRequest()
         request.Parameters.MethodsToCall = methodstocall
-        data = self._send_request(request)
+        data = self._uasocket.send_request(request)
         response = ua.CallResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
