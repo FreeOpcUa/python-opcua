@@ -522,6 +522,17 @@ class CommonTests(object):
         val = v.get_value()
         self.assertEqual([1, 2, 3], val)
 
+    def test_bool_variable(self):
+        o = self.opc.get_objects_node()
+        v = o.add_variable(3, 'BoolVariable', True)
+        dt = v.get_data_type()
+        self.assertEqual(dt, ua.TwoByteNodeId(ua.ObjectIds.Boolean))
+        val = v.get_value()
+        self.assertEqual(True, val)
+        v.set_value(False)
+        val = v.get_value()
+        self.assertEqual(False, val)
+
     def test_array_size_one_value(self):
         o = self.opc.get_objects_node()
         v = o.add_variable(3, 'VariableArrayValue', [1, 2, 3])
@@ -576,6 +587,39 @@ class CommonTests(object):
         sub.delete()
         with self.assertRaises(Exception):
             sub.unsubscribe(handle1)  # sub does not exist anymore
+
+
+    def test_subscription_data_change_bool(self):
+        '''
+        test subscriptions. This is far too complicated for
+        a unittest but, setting up subscriptions requires a lot
+        of code, so when we first set it up, it is best
+        to test as many things as possible
+        '''
+        msclt = MySubHandler()
+
+        o = self.opc.get_objects_node()
+
+        # subscribe to a variable
+        startv1 = True 
+        v1 = o.add_variable(3, 'SubscriptionVariableBool', startv1)
+        sub = self.opc.create_subscription(100, msclt)
+        handle1 = sub.subscribe_data_change(v1)
+
+        # Now check we get the start value
+        clthandle, node, val, attr = msclt.future.result()
+        self.assertEqual(val, startv1)
+        self.assertEqual(node, v1)
+
+        msclt.reset()  # reset future object
+
+        # modify v1 and check we get value
+        v1.set_value(False)
+        clthandle, node, val, attr = msclt.future.result()
+        self.assertEqual(node, v1)
+        self.assertEqual(val, False)
+
+        sub.delete() # should delete our monitoreditem too
 
     def test_subscribe_server_time(self):
         msclt = MySubHandler()
