@@ -663,4 +663,4 @@ def get_name_and_doc(val):
     elif val == 0x80B70000:
         return 'BadMaxConnectionsReached', 'The operation could not be finished because all available connections are in use.'
     else:
-        raise Exception('Unknown StatusCode value: {}'.format(val))
+        return 'UknownUaError', 'Unknown StatusCode value: {}'.format(val)
