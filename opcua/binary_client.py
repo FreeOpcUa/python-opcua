@@ -85,7 +85,7 @@ class UASocketClient(object):
         self.logger.debug("reading body of message (%s bytes)", size)
         data = self._socket.read(size)
         if size != len(data):
-            raise Exception("Error, did not received expected number of bytes, got {}, asked for {}".format(len(data), size))
+            raise Exception("Error, did not receive expected number of bytes, got {}, asked for {}".format(len(data), size))
         return utils.Buffer(data)
 
     def _receive(self):
@@ -99,7 +99,7 @@ class UASocketClient(object):
                 body.data = body_chunk + body.data
                 break
             elif hdr.ChunkType == b"C":
-                self.logger.debug("Received a an intermediate message with header %s, waiting for next message", hdr)
+                self.logger.debug("Received an intermediate message with header %s, waiting for next message", hdr)
                 body_chunk += body.data
             else:
                 self.logger.warning("Received a message with unknown ChunkType %s, in header %s", hdr.ChunkType, hdr)

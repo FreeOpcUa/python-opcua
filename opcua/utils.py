@@ -36,7 +36,7 @@ class Buffer(object):
         read and pop number of bytes for buffer
         """
         if size > len(self.data):
-            raise Exception("No enough data left in buffer, request for {}, we have {}".format(size, self))
+            raise Exception("Not enough data left in buffer, request for {}, we have {}".format(size, self))
         #self.logger.debug("Request for %s bytes, from %s", size, self)
         data = self.data[:size]
         self.data = self.data[size:]
@@ -57,7 +57,7 @@ class Buffer(object):
         read 'size' bytes from buffer, without removing them from buffer
         """
         if size > len(self.data):
-            raise Exception("No enough data left in buffer, request for {}, we have {}".format(size, self))
+            raise Exception("Not enough data left in buffer, request for {}, we have {}".format(size, self))
         return self.data[:size]
 
 class SocketClosedException(Exception):
