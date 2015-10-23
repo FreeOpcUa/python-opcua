@@ -299,6 +299,7 @@ class Node(object):
 
         desc.NodeId = self.nodeid
         params = ua.BrowseParameters()
+        params.View.Timestamp = ua.win_epoch_to_datetime(0)
         params.NodesToBrowse.append(desc)
         results = self.server.browse(params)
         return results[0].References
