@@ -167,8 +167,7 @@ class InternalSession(object):
         self.logger.info("activate session")
         result = ua.ActivateSessionResult()
         if not self.state == SessionState.Created:
-            result.Results = [ua.StatusCode(ua.StatusCodes.BadSessionIdInvalid)]
-            return result
+            raise utils.ServiceError(ua.StatusCodes.BadSessionIdInvalid)
         result.ServerNonce = self.nonce
         for _ in params.ClientSoftwareCertificates:
             result.Results.append(ua.StatusCode())

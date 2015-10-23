@@ -10,6 +10,11 @@ except ImportError:
     import trollius as asyncio
     from trollius import From
 
+class ServiceError(Exception):
+    def __init__(self, code):
+        super(ServiceError, self).__init__('UA service error')
+        self.code = code
+
 class NotEnoughData(Exception):
     pass
 

@@ -108,7 +108,17 @@ class UAProcessor(object):
     def process_message(self, algohdr, seqhdr, body):
         typeid = ua.NodeId.from_binary(body)
         requesthdr = ua.RequestHeader.from_binary(body)
+        try:
+            return self._process_message(typeid, requesthdr, algohdr, seqhdr, body)
+        except utils.ServiceError as e:
+            status = ua.StatusCode(e.code)
+            response = ua.ServiceFault()
+            response.ResponseHeader.ServiceResult = status
+            self.logger.info("sending service fault response: %s (%s)", status.doc, status.name)
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+            return True
 
+    def _process_message(self, typeid, requesthdr, algohdr, seqhdr, body):
         if typeid == ua.NodeId(ua.ObjectIds.CreateSessionRequest_Encoding_DefaultBinary):
             self.logger.info("Create session request")
             params = ua.CreateSessionParameters.from_binary(body)
@@ -137,13 +147,8 @@ class UAProcessor(object):
             params = ua.ActivateSessionParameters.from_binary(body)
 
             if not self.session:
-                #result = ua.ActivateSessionResult()
-                # result.Results.append(ua.StatusCode(ua.StatusCodes.BadSessionIdInvalid))
-                response = ua.ServiceFault()
-                response.ResponseHeader.ServiceResult = ua.StatusCode(ua.StatusCodes.BadSessionIdInvalid)
-                self.logger.info("request to activate none existing session, sending service fault response")
-                self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
-                return True
+                self.logger.info("request to activate non-existing session")
+                raise utils.ServiceError(ua.StatusCodes.BadSessionIdInvalid)
 
             result = self.session.activate_session(params)
 
@@ -344,9 +349,7 @@ class UAProcessor(object):
 
         else:
             self.logger.warning("Uknown message received %s", typeid)
-            sf = ua.ServiceFault()
-            sf.ResponseHeader.ServiceResult = ua.StatusCode(ua.StatusCodes.BadNotImplemented)
-            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, sf)
+            raise utils.ServiceError(ua.StatusCodes.BadNotImplemented)
 
         return True
 
