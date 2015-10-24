@@ -1,2 +1,2 @@
 #!/bin/sh
-python tests.py
+python tests/tests.py

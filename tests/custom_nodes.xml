@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UANodeSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.02" LastModified="2013-03-06T05:36:44.0862658Z" xmlns="http://opcfoundation.org/UA/2011/03/UANodeSet.xsd">
+
+  <UAObject NodeId="i=30001" BrowseName="MyXMLFolder"  >
+    <Description>A custom folder.</Description>
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=61</Reference>
+      <Reference ReferenceType="Organizes" IsForward="false">i=85</Reference>
+    </References>
+  </UAObject>
+
+
+  <UAObject NodeId="i=30002" BrowseName="MyXMLObject">
+    <Description>A custom object node.</Description>
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=58</Reference>
+      <Reference ReferenceType="Organizes" IsForward="false">i=30001</Reference>
+    </References>
+  </UAObject>
+
+
+  <UAVariable NodeId="i=30004" BrowseName="MyXMLVariable" DataType="String">
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=69</Reference>
+      <Reference ReferenceType="Organizes" IsForward="false">i=30002</Reference>
+    </References>
+    <Value>
+      <String>StringValue</String>
+    </Value>
+  </UAVariable>
+
+  <UAVariable NodeId="i=30005" BrowseName="MyXMLProperty" DataType="UInt32">
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      <Reference ReferenceType="HasProperty" IsForward="false">i=30002</Reference>
+    </References>
+    <Value>
+      <UInt32>76</UInt32>
+    </Value>
+  </UAVariable>
+
+
+</UANodeSet>
