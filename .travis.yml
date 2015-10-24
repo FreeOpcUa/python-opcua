@@ -12,4 +12,4 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then pip install trollius ; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then pip install enum34 ; fi
 # command to run tests
-script: ./run-tests.py
+script: ./run-tests.sh
