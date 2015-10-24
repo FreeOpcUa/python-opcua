@@ -869,7 +869,7 @@ class DataValue(FrozenClass):
         return obj
 
     def __str__(self):
-        s = 'DataValue(Value:{})'.format(self.Value)
+        s = 'DataValue(Value:{}'.format(self.Value)
         if self.StatusCode is not None:
             s += ', StatusCode:{}'.format(self.StatusCode)
         if self.SourceTimestamp is not None:
