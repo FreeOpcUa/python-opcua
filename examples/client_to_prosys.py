@@ -18,9 +18,10 @@ class SubHandler(object):
 
 
 if __name__ == "__main__":
-    from IPython import embed
+    #from IPython import embed
     logging.basicConfig(level=logging.WARN)
-    client = Client("opc.tcp://localhost:53530/OPCUA/SimulationServer/")
+    #client = Client("opc.tcp://localhost:53530/OPCUA/SimulationServer/")
+    client = Client("opc.tcp://olivier:olivierpass@localhost:53530/OPCUA/SimulationServer/")
     try:
         client.connect()
         root = client.get_root_node()
