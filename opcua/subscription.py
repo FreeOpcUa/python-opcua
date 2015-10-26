@@ -75,8 +75,15 @@ class Subscription(object):
 
     def _call_datachange(self, datachange):
         for item in datachange.MonitoredItems:
+            if item.ClientHandle not in self._monitoreditems_map:
+                self.logger.warning("Received a notification for unknown handle: %s", item.ClientHandle)
+                continue
             with self._lock:
                 data = self._monitoreditems_map[item.ClientHandle]
+            if data is None: #we are not finished to register subscribtion data waiting a bit
+                time.sleep(0.1)
+                with self._lock:
+                    data = self._monitoreditems_map[item.ClientHandle]
             try:
                 self._handler.data_change(data.server_handle, data.node, item.Value.Value.Value, data.attribute)
             except Exception:
@@ -185,23 +192,32 @@ class Subscription(object):
         params.SubscriptionId = self.subscription_id
         params.ItemsToCreate = monitored_items
         params.TimestampsToReturn = ua.TimestampsToReturn.Neither
+        
+        #  pre store data in case notificatio arrives before we are finished to handle response
+        with self._lock:
+            for mi in params.ItemsToCreate:
+                self._monitoreditems_map[mi.RequestedParameters.ClientHandle] = None
 
         mids = []
-        with self._lock:  # Lock entire operation to make sure we do not try to process notification before subscription is regisrered
-            results = self.server.create_monitored_items(params)
-            for idx, result in enumerate(results):
-                mi = params.ItemsToCreate[idx]
-                result.StatusCode.check()
+        results = self.server.create_monitored_items(params)
+        for idx, result in enumerate(results):
+            mi = params.ItemsToCreate[idx]
+            if not result.StatusCode.is_good():
+                with self._lock:
+                    del(self._monitoreditems_map[mi.RequestedParameters.ClientHandle])
+                mids.append(result.StatusCode)
+                continue
 
-                data = SubscriptionItemData()
-                data.client_handle = mi.RequestedParameters.ClientHandle
-                data.node = Node(self.server, mi.ItemToMonitor.NodeId)
-                data.attribute = mi.ItemToMonitor.AttributeId
-                data.server_handle = result.MonitoredItemId
-                data.mfilter = ua.downcast_extobject(result.FilterResult)
+            data = SubscriptionItemData()
+            data.client_handle = mi.RequestedParameters.ClientHandle
+            data.node = Node(self.server, mi.ItemToMonitor.NodeId)
+            data.attribute = mi.ItemToMonitor.AttributeId
+            data.server_handle = result.MonitoredItemId
+            data.mfilter = ua.downcast_extobject(result.FilterResult)
+            with self._lock:
                 self._monitoreditems_map[mi.RequestedParameters.ClientHandle] = data
 
-                mids.append(result.MonitoredItemId)
+            mids.append(result.MonitoredItemId)
         return mids
 
     def unsubscribe(self, handle):
@@ -213,3 +229,9 @@ class Subscription(object):
         params.MonitoredItemIds = [handle]
         results = self.server.delete_monitored_items(params)
         results[0].check()
+        with self._lock:
+            for k, v in self._monitoreditems_map.items():
+                if v.server_handle == handle:
+                    del(self._monitoreditems_map[k])
+                    return
+
