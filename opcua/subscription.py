@@ -10,7 +10,7 @@ from opcua import ua
 from opcua import Node
 from opcua import ObjectIds
 from opcua import AttributeIds
-from opcua import Event
+#from opcua import Event
 
 
 class EventResult():
@@ -107,8 +107,13 @@ class Subscription(object):
         except Exception:
             self.logger.exception("Exception calling status change handler")
 
-    def subscribe_data_change(self, node, attr=ua.AttributeIds.Value):
-        return self._subscribe(node, attr, queuesize=1)
+    def subscribe_data_change(self, nodes, attr=ua.AttributeIds.Value):
+        """
+        Subscribe for data change events for a node or list of nodes.
+        default attribute is Value.
+        If more control is necessary use create_monitored_items method
+        """
+        return self._subscribe(nodes, attr, queuesize=1)
 
     def _get_node(self, nodeid):
         if isinstance(nodeid, ua.NodeId):
@@ -131,48 +136,73 @@ class Subscription(object):
         return evfilter
 
     def subscribe_events(self, sourcenode=ObjectIds.Server, evtype=ObjectIds.BaseEventType):
+        """
+        Subscribe to events from a node. Default node is Server node. 
+        In most servers the server node is the only one you can subscribe to.
+        """
         sourcenode = self._get_node(sourcenode)
         evfilter = self._get_filter_from_event_type(evtype)
         return self._subscribe(sourcenode, AttributeIds.EventNotifier, evfilter)
 
-    def _subscribe(self, node, attr, mfilter=None, queuesize=0):
-        rv = ua.ReadValueId()
-        rv.NodeId = node.nodeid
-        rv.AttributeId = attr
-        # rv.IndexRange //We leave it null, then the entire array is returned
-        mparams = ua.MonitoringParameters()
-        self._client_handle += 1
-        mparams.ClientHandle = self._client_handle
-        mparams.SamplingInterval = self.parameters.RequestedPublishingInterval
-        mparams.QueueSize = queuesize
-        mparams.DiscardOldest = True
-        if mfilter:
-            mparams.Filter = mfilter
+    def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):
+        is_list = True
+        if not type(nodes) in (list, tuple):
+            is_list = False
+            nodes = [nodes]
+        mirs = []
+        for node in nodes:
+            rv = ua.ReadValueId()
+            rv.NodeId = node.nodeid
+            rv.AttributeId = attr
+            # rv.IndexRange //We leave it null, then the entire array is returned
+            mparams = ua.MonitoringParameters()
+            with self._lock:
+                self._client_handle += 1
+                mparams.ClientHandle = self._client_handle
+            mparams.SamplingInterval = self.parameters.RequestedPublishingInterval
+            mparams.QueueSize = queuesize
+            mparams.DiscardOldest = True
+            if mfilter:
+                mparams.Filter = mfilter
+            mir = ua.MonitoredItemCreateRequest()
+            mir.ItemToMonitor = rv
+            mir.MonitoringMode = ua.MonitoringMode.Reporting
+            mir.RequestedParameters = mparams
 
-        mir = ua.MonitoredItemCreateRequest()
-        mir.ItemToMonitor = rv
-        mir.MonitoringMode = ua.MonitoringMode.Reporting
-        mir.RequestedParameters = mparams
+            mirs.append(mir)
 
+        mids = self.create_monitored_items(mirs)
+        if is_list:
+            return mids
+        return mids[0]
+
+    def create_monitored_items(self, monitored_items):
+        """
+        low level method to have full control over subscription parameters
+        Client handle must be unique since it will be used as key for internal registration of data
+        """
         params = ua.CreateMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
-        params.ItemsToCreate.append(mir)
+        params.ItemsToCreate = monitored_items
         params.TimestampsToReturn = ua.TimestampsToReturn.Neither
 
-        with self._lock:
+        mids = []
+        with self._lock:  # Lock entire operation to make sure we do not try to process notification before subscription is regisrered
             results = self.server.create_monitored_items(params)
-            result = results[0]
-            result.StatusCode.check()
-    
-            data = SubscriptionItemData()
-            data.client_handle = mparams.ClientHandle
-            data.node = node
-            data.attribute = attr
-            data.server_handle = result.MonitoredItemId
-            data.mfilter = ua.downcast_extobject(result.FilterResult)
-            self._monitoreditems_map[mparams.ClientHandle] = data
+            for idx, result in enumerate(results):
+                mi = params.ItemsToCreate[idx]
+                result.StatusCode.check()
 
-        return result.MonitoredItemId
+                data = SubscriptionItemData()
+                data.client_handle = mi.RequestedParameters.ClientHandle
+                data.node = Node(self.server, mi.ItemToMonitor.NodeId)
+                data.attribute = mi.ItemToMonitor.AttributeId
+                data.server_handle = result.MonitoredItemId
+                data.mfilter = ua.downcast_extobject(result.FilterResult)
+                self._monitoreditems_map[mi.RequestedParameters.ClientHandle] = data
+
+                mids.append(result.MonitoredItemId)
+        return mids
 
     def unsubscribe(self, handle):
         """

@@ -10,6 +10,7 @@ import io
 from datetime import datetime, timedelta
 import unittest
 from concurrent.futures import Future
+from threading import Lock
 
 from opcua import ua
 from opcua import Client
@@ -53,6 +54,17 @@ class MySubHandler():
 
     def event(self, handle, event):
         self.future.set_result((handle, event))
+
+
+class MySubHandler2():
+    def __init__(self):
+        self.results = [] 
+
+    def data_change(self, handle, node, val, attr):
+        self.results.append((node, val))
+
+    def event(self, handle, event):
+        self.results.append((node, val))
 
 
 class Unit(unittest.TestCase):
@@ -623,6 +635,45 @@ class CommonTests(object):
         self.assertEqual(val, False)
 
         sub.delete() # should delete our monitoreditem too
+
+    def test_subscription_data_change_many(self):
+        '''
+        test subscriptions. This is far too complicated for
+        a unittest but, setting up subscriptions requires a lot
+        of code, so when we first set it up, it is best
+        to test as many things as possible
+        '''
+        msclt = MySubHandler2()
+        o = self.opc.get_objects_node()
+
+        startv1 = True 
+        v1 = o.add_variable(3, 'SubscriptionVariableMany1', startv1)
+        startv2 = [1.22, 1.65] 
+        v2 = o.add_variable(3, 'SubscriptionVariableMany2', startv2)
+
+        sub = self.opc.create_subscription(100, msclt)
+        handle1, handle2 = sub.subscribe_data_change([v1, v2])
+
+        # Now check we get the start values
+        nodes = [v1, v2]
+       
+        count = 0
+        while not len(msclt.results) > 1:
+            count += 1
+            time.sleep(0.1)
+            if count > 100:
+                self.fail("Did not get result from subscription")
+        for node, val in msclt.results:
+            self.assertIn(node, nodes)
+            nodes.remove(node)
+            if node == v1:
+                self.assertEqual(startv1, val)
+            elif node == v2:
+                self.assertEqual(startv2, val)
+            else:
+                self.fail("Error node {} is neither {} nor {}".format(node, v1, v2))
+
+        sub.delete() 
 
     def test_subscribe_server_time(self):
         msclt = MySubHandler()
