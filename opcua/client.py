@@ -61,11 +61,12 @@ class Client(object):
 
     """
 
-    def __init__(self, url):
+    def __init__(self, url, timeout=1):
         """
         used url argument to connect to server.
         if you are unsure of url, write at least hostname and port
         and call get_endpoints
+        timeout is the timeout to get an answer for requests to server
         """
         self.logger = logging.getLogger(__name__)
         self.server_url = urlparse(url)
@@ -83,7 +84,8 @@ class Client(object):
             ua.UserTokenType.Anonymous: b'anonymous',
             ua.UserTokenType.UserName: b'user_name',
         }
-        self.bclient = BinaryClient()
+        self.server_certificate = None
+        self.bclient = BinaryClient(timeout)
         self._nonce = None
         self._session_counter = 1
         self.keepalive = None
@@ -176,6 +178,8 @@ class Client(object):
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0  # means no max size
         response = self.bclient.create_session(params)
+        print("Certificate is ", response.ServerCertificate)
+        self.server_certificate = response.ServerCertificate
         for ep in response.ServerEndpoints:
             if ep.SecurityMode == self.security_mode:
                 # remember PolicyId's: we will use them in activate_session()
@@ -196,9 +200,44 @@ class Client(object):
             params.UserIdentityToken = ua.UserNameIdentityToken()
             params.UserIdentityToken.UserName = self.server_url.username 
             if self.server_url.password:
-                params.UserIdentityToken.Password = bytes(self.server_url.password)
+                #p = bytes(self.server_url.password, "utf8")
+                p = self.server_url.password
+                from Crypto.Cipher import PKCS1_OAEP
+                from Crypto.PublicKey import RSA
+                from binascii import a2b_base64
+                from Crypto.Util.asn1 import DerSequence
+                #from IPython import embed
+                import ssl
+                print("TYPE", type(self.server_certificate))
+                pem = self.server_certificate
+                # Convert from PEM to DER
+                #lines = str(pem).replace(" ",'').split()
+                #data = ''.join(lines[1:-1])
+                #embed()
+                #3data = bytes(data, "utf8")
+                #print("DATA", data)
+                #der = a2b_base64(pem)
+                ssl.PEM_HEADER=""
+                ssl.PEM_FOOTER=""
+                der = ssl.PEM_cert_to_DER_cert(pem)
+                print("DER", der)
+
+                # Extract subjectPublicKeyInfo field from X.509 certificate (see RFC3280)
+                cert = DerSequence()
+                cert.decode(der)
+                tbsCertificate = DerSequence()
+                tbsCertificate.decode(cert[0])
+                key = tbsCertificate[6]
+                print("KEY2", key)
+
+
+                r = RSA.importKey(key)
+                cipher = PKCS1_OAEP.new(r)
+                ciphertext = cipher.encrypt(p)
+                params.UserIdentityToken.Password = ciphertext 
+            print("KKK", self.policy_ids[ua.UserTokenType.UserName])
             params.UserIdentityToken.PolicyId = self.policy_ids[ua.UserTokenType.UserName]
-            #params.EncryptionAlgorithm = ''
+            params.UserIdentityToken.EncryptionAlgorithm = 'http://www.w3.org/2001/04/xmlenc#rsa-oaep'
         return self.bclient.activate_session(params)
 
     def close_session(self):

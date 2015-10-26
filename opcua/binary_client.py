@@ -14,12 +14,13 @@ import opcua.utils as utils
 class UASocketClient(object):
     """
     handle socket connection and send ua messages
+    timeout is the timeout used while waiting for an ua answer from server
     """
-    def __init__(self):
+    def __init__(self, timeout=1):
         self.logger = logging.getLogger(__name__ + "Socket")
         self._thread = None
         self._lock = Lock()
-        self.timeout = 1
+        self.timeout = timeout
         self._socket = None
         self._do_stop = False
         self._security_token = ua.ChannelSecurityToken()
@@ -39,6 +40,10 @@ class UASocketClient(object):
         self._thread.start()
 
     def send_request(self, request, callback=None, timeout=1000):
+        """
+        send request to server.
+        timeout is the timeout written in ua header
+        """
         # HACK to make sure we can convert our request to binary before increasing request counter etc ...
         request.to_binary()
         # END HACK
@@ -246,10 +251,10 @@ class BinaryClient(object):
     uaprotocol_auto.py and uaprotocol_hand.py
     """
 
-    def __init__(self):
+    def __init__(self, timeout=1):
         self.logger = logging.getLogger(__name__)
         self._publishcallbacks = {}
-        self._uasocket = UASocketClient()
+        self._uasocket = UASocketClient(timeout)
 
     def connect_socket(self, host, port):
         """
