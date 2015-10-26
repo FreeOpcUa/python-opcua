@@ -228,7 +228,7 @@ class UASocketClient(object):
         request.RequestHeader = self._create_request_header()
 
         hdr = ua.Header(ua.MessageType.SecureClose, ua.ChunkType.Single, self._security_token.ChannelId)
-        symhdr = ua.SymmetricAlgorithmHeader()
+        symhdr = self._create_sym_algo_header()
         seqhdr = self._create_sequence_header()
         self._write_socket(hdr, symhdr, seqhdr, request)
 
@@ -377,10 +377,14 @@ class BinaryClient(object):
     def _call_publish_callback(self, future):
         self.logger.info("call_publish_callback")
         response = ua.PublishResponse.from_binary(future.result())
+        if response.Parameters.SubscriptionId not in self._publishcallbacks:
+            self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
+            return
+        callback = self._publishcallbacks[response.Parameters.SubscriptionId]
         try:
-            self._publishcallbacks[response.Parameters.SubscriptionId](response.Parameters)
+            callback(response.Parameters)
         except Exception:  # we call client code, catch everything!
-            self.logger.exception("Exception while calling user callback")
+            self.logger.exception("Exception while calling user callback: %s")
 
     def create_monitored_items(self, params):
         self.logger.info("create_monitored_items")
