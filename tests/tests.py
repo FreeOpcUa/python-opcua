@@ -563,6 +563,23 @@ class CommonTests(object):
             handle1 = sub.subscribe_data_change(o) # we can only subscribe to variables so this should fail
         sub.delete()
 
+    def test_subscription_overload(self):
+        msclt = MySubHandler()
+        o = self.opc.get_objects_node()
+        v = o.add_variable(3, 'SubscriptionVariableOverload', 0)
+        sub = self.opc.create_subscription(1, msclt)
+        handle1 = sub.subscribe_data_change(v)
+        for i in range(10):
+            v.set_value(i)
+        sub2 = self.opc.create_subscription(1, msclt)
+        sub.subscribe_data_change(v)
+        sub.subscribe_data_change(v)
+        for i in range(10):
+            v.set_value(i)
+        time.sleep(1)
+        sub.delete()
+        sub2.delete()
+
     def test_subscription_data_change(self):
         '''
         test subscriptions. This is far too complicated for
