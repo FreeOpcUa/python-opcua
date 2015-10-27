@@ -158,30 +158,35 @@ class Subscription(object):
             nodes = [nodes]
         mirs = []
         for node in nodes:
-            rv = ua.ReadValueId()
-            rv.NodeId = node.nodeid
-            rv.AttributeId = attr
-            # rv.IndexRange //We leave it null, then the entire array is returned
-            mparams = ua.MonitoringParameters()
-            with self._lock:
-                self._client_handle += 1
-                mparams.ClientHandle = self._client_handle
-            mparams.SamplingInterval = self.parameters.RequestedPublishingInterval
-            mparams.QueueSize = queuesize
-            mparams.DiscardOldest = True
-            if mfilter:
-                mparams.Filter = mfilter
-            mir = ua.MonitoredItemCreateRequest()
-            mir.ItemToMonitor = rv
-            mir.MonitoringMode = ua.MonitoringMode.Reporting
-            mir.RequestedParameters = mparams
-
+            mir = self._make_monitored_item_request(node, attr, mfilter, queuesize)
             mirs.append(mir)
 
         mids = self.create_monitored_items(mirs)
         if is_list:
             return mids
+        if type(mids[0]) == ua.StatusCode:
+            mids[0].check()
         return mids[0]
+
+    def _make_monitored_item_request(self, node, attr, mfilter, queuesize):
+        rv = ua.ReadValueId()
+        rv.NodeId = node.nodeid
+        rv.AttributeId = attr
+        # rv.IndexRange //We leave it null, then the entire array is returned
+        mparams = ua.MonitoringParameters()
+        with self._lock:
+            self._client_handle += 1
+            mparams.ClientHandle = self._client_handle
+        mparams.SamplingInterval = self.parameters.RequestedPublishingInterval
+        mparams.QueueSize = queuesize
+        mparams.DiscardOldest = True
+        if mfilter:
+            mparams.Filter = mfilter
+        mir = ua.MonitoredItemCreateRequest()
+        mir.ItemToMonitor = rv
+        mir.MonitoringMode = ua.MonitoringMode.Reporting
+        mir.RequestedParameters = mparams
+        return mir
 
     def create_monitored_items(self, monitored_items):
         """

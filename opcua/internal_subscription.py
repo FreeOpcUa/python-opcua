@@ -97,8 +97,13 @@ class MonitoredItemService(object):
                 self.logger.debug("adding callback return status %s and handle %s", result.StatusCode, handle)
                 mdata.callback_handle = handle
                 self._monitored_datachange[handle] = result.MonitoredItemId
-                # force data change event generation
-                self.trigger_datachange(handle, params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+                if result.StatusCode.is_good():
+                    # force data change event generation
+                    self.trigger_datachange(handle, params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+            
+            if not result.StatusCode.is_good():
+                del(self._monitored_items[result.MonitoredItemId])
+                self._monitored_item_counter -= 1
 
             return result
 

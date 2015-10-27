@@ -555,6 +555,14 @@ class CommonTests(object):
         val = v.get_value()
         self.assertEqual([1], val)
 
+    def test_subscription_failure(self):
+        msclt = MySubHandler()
+        o = self.opc.get_objects_node()
+        sub = self.opc.create_subscription(100, msclt)
+        with self.assertRaises(Exception):
+            handle1 = sub.subscribe_data_change(o) # we can only subscribe to variables so this should fail
+        sub.delete()
+
     def test_subscription_data_change(self):
         '''
         test subscriptions. This is far too complicated for
