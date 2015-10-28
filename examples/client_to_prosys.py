@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0, "..")
 import logging
 
 from opcua import Client
@@ -20,8 +22,8 @@ class SubHandler(object):
 if __name__ == "__main__":
     #from IPython import embed
     logging.basicConfig(level=logging.WARN)
-    #client = Client("opc.tcp://localhost:53530/OPCUA/SimulationServer/")
-    client = Client("opc.tcp://olivier:olivierpass@localhost:53530/OPCUA/SimulationServer/")
+    client = Client("opc.tcp://localhost:53530/OPCUA/SimulationServer/")
+    #client = Client("opc.tcp://olivier:olivierpass@localhost:53530/OPCUA/SimulationServer/")
     try:
         client.connect()
         root = client.get_root_node()
@@ -47,14 +49,16 @@ if __name__ == "__main__":
 
         handler = SubHandler()
         sub = client.create_subscription(500, handler)
-        sub.subscribe_data_change(var)
+        handle = sub.subscribe_data_change(var)
 
         device = objects.get_child(["2:MyObjects", "2:MyDevice"])
         method = device.get_child("2:MyMethod")
         result = device.call_method(method, ua.Variant("sin"), ua.Variant(180, ua.VariantType.Double))
         print("Mehtod result is: ", result)
 
-        embed()
-        client.close_session()
+        #embed()
+        sub.unsubscribe(handle)
+        sub.delete()
+        #client.close_session()
     finally:
         client.disconnect()
