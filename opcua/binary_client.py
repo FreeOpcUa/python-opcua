@@ -377,11 +377,13 @@ class BinaryClient(object):
             acks = []
         request = ua.PublishRequest()
         request.Parameters.SubscriptionAcknowledgements = acks
-        self._uasocket.send_request(request, self._call_publish_callback, timeout=0)
+        self._uasocket.send_request(request, self._call_publish_callback, timeout=int(9e8))
 
     def _call_publish_callback(self, future):
         self.logger.info("call_publish_callback")
-        response = ua.PublishResponse.from_binary(future.result())
+        data = future.result()
+        self._uasocket.check_answer(data, "ServiceFault reveived from server while waiting for publish response")
+        response = ua.PublishResponse.from_binary(data)
         if response.Parameters.SubscriptionId not in self._publishcallbacks:
             self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
             return
