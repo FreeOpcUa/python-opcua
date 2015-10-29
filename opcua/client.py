@@ -200,16 +200,17 @@ class Client(object):
             params.UserIdentityToken = ua.UserNameIdentityToken()
             params.UserIdentityToken.UserName = self.server_url.username 
             if self.server_url.password:
+                raise NotImplementedError
                 #p = bytes(self.server_url.password, "utf8")
-                p = self.server_url.password
-                from Crypto.Cipher import PKCS1_OAEP
-                from Crypto.PublicKey import RSA
-                from binascii import a2b_base64
-                from Crypto.Util.asn1 import DerSequence
+                #p = self.server_url.password
+                #from Crypto.Cipher import PKCS1_OAEP
+                #from Crypto.PublicKey import RSA
+                #from binascii import a2b_base64
+                #from Crypto.Util.asn1 import DerSequence
                 #from IPython import embed
-                import ssl
-                print("TYPE", type(self.server_certificate))
-                pem = self.server_certificate
+                #import ssl
+                #print("TYPE", type(self.server_certificate))
+                #pem = self.server_certificate
                 # Convert from PEM to DER
                 #lines = str(pem).replace(" ",'').split()
                 #data = ''.join(lines[1:-1])
@@ -217,25 +218,25 @@ class Client(object):
                 #3data = bytes(data, "utf8")
                 #print("DATA", data)
                 #der = a2b_base64(pem)
-                ssl.PEM_HEADER=""
-                ssl.PEM_FOOTER=""
-                der = ssl.PEM_cert_to_DER_cert(pem)
-                print("DER", der)
+                #ssl.PEM_HEADER=""
+                #ssl.PEM_FOOTER=""
+                #der = ssl.PEM_cert_to_DER_cert(pem)
+                #print("DER", der)
 
                 # Extract subjectPublicKeyInfo field from X.509 certificate (see RFC3280)
-                cert = DerSequence()
-                cert.decode(der)
-                tbsCertificate = DerSequence()
-                tbsCertificate.decode(cert[0])
-                key = tbsCertificate[6]
-                print("KEY2", key)
+                #cert = DerSequence()
+                #cert.decode(der)
+                #tbsCertificate = DerSequence()
+                #tbsCertificate.decode(cert[0])
+                #key = tbsCertificate[6]
+                ##print("KEY2", key)
 
 
-                r = RSA.importKey(key)
-                cipher = PKCS1_OAEP.new(r)
-                ciphertext = cipher.encrypt(p)
-                params.UserIdentityToken.Password = ciphertext 
-            print("KKK", self.policy_ids[ua.UserTokenType.UserName])
+                #r = RSA.importKey(key)
+                #cipher = PKCS1_OAEP.new(r)
+                #ciphertext = cipher.encrypt(p)
+                #params.UserIdentityToken.Password = ciphertext 
+                #print("KKK", self.policy_ids[ua.UserTokenType.UserName])
             params.UserIdentityToken.PolicyId = self.policy_ids[ua.UserTokenType.UserName]
             params.UserIdentityToken.EncryptionAlgorithm = 'http://www.w3.org/2001/04/xmlenc#rsa-oaep'
         return self.bclient.activate_session(params)
