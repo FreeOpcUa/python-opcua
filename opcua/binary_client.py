@@ -69,6 +69,8 @@ class UASocketClient(object):
             self.logger.warning("ServiceFault from server received %s", context)
             hdr = ua.ResponseHeader.from_binary(data)
             hdr.ServiceResult.check()
+            return False
+        return True
 
     def _run(self):
         self.logger.info("Thread started")
@@ -254,6 +256,7 @@ class BinaryClient(object):
     def __init__(self, timeout=1):
         self.logger = logging.getLogger(__name__)
         self._publishcallbacks = {}
+        self._lock = Lock()
         self._uasocket = UASocketClient(timeout)
 
     def connect_socket(self, host, port):
@@ -357,7 +360,8 @@ class BinaryClient(object):
         data = self._uasocket.send_request(request)
         response = ua.CreateSubscriptionResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
-        self._publishcallbacks[response.Parameters.SubscriptionId] = callback
+        with self._lock:
+            self._publishcallbacks[response.Parameters.SubscriptionId] = callback
         return response.Parameters
 
     def delete_subscriptions(self, subscriptionids):
@@ -368,7 +372,8 @@ class BinaryClient(object):
         response = ua.DeleteSubscriptionsResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         for sid in subscriptionids:
-            self._publishcallbacks.pop(sid)
+            with self._lock:
+                self._publishcallbacks.pop(sid)
         return response.Results
 
     def publish(self, acks=None):
@@ -377,17 +382,18 @@ class BinaryClient(object):
             acks = []
         request = ua.PublishRequest()
         request.Parameters.SubscriptionAcknowledgements = acks
-        self._uasocket.send_request(request, self._call_publish_callback, timeout=int(9e8))
+        self._uasocket.send_request(request, self._call_publish_callback, timeout=int(9e8))  # timeout could be set to 0 but some servers to not support it
 
     def _call_publish_callback(self, future):
         self.logger.info("call_publish_callback")
         data = future.result()
-        self._uasocket.check_answer(data, "ServiceFault reveived from server while waiting for publish response")
+        self._uasocket.check_answer(data, "ServiceFault received from server while waiting for publish response")
         response = ua.PublishResponse.from_binary(data)
-        if response.Parameters.SubscriptionId not in self._publishcallbacks:
-            self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
-            return
-        callback = self._publishcallbacks[response.Parameters.SubscriptionId]
+        with self._lock:
+            if response.Parameters.SubscriptionId not in self._publishcallbacks:
+                self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
+                return
+            callback = self._publishcallbacks[response.Parameters.SubscriptionId]
         try:
             callback(response.Parameters)
         except Exception:  # we call client code, catch everything!

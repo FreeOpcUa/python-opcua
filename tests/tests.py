@@ -564,21 +564,31 @@ class CommonTests(object):
         sub.delete()
 
     def test_subscription_overload(self):
+        nb = 10
         msclt = MySubHandler()
         o = self.opc.get_objects_node()
-        v = o.add_variable(3, 'SubscriptionVariableOverload', 0)
         sub = self.opc.create_subscription(1, msclt)
-        handle1 = sub.subscribe_data_change(v)
-        for i in range(10):
-            v.set_value(i)
-        sub2 = self.opc.create_subscription(1, msclt)
-        sub.subscribe_data_change(v)
-        sub.subscribe_data_change(v)
-        for i in range(10):
-            v.set_value(i)
+        vs = []
+        subs = []
+        for i in range(nb):
+            v = o.add_variable(3, 'SubscriptionVariableOverload' + str(i), 99)
+            vs.append(v)
+        for i in range(nb):
+            sub.subscribe_data_change(vs)
+        for i in range(nb):
+            for j in range(nb):
+                vs[i].set_value(j)
+            s = self.opc.create_subscription(1, msclt)
+            s.subscribe_data_change(vs)
+            subs.append(s)
+            sub.subscribe_data_change(vs[i])
+        for i in range(nb):
+            for j in range(nb):
+                vs[i].set_value(j)
         time.sleep(1)
         sub.delete()
-        sub2.delete()
+        for s in subs:
+            s.delete()
 
     def test_subscription_data_change(self):
         '''
