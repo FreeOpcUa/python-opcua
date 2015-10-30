@@ -31,6 +31,13 @@ class SubscriptionItemData():
 
 
 class Subscription(object):
+    """
+    Subscription object returned by Server or Client objects.
+    The object represent a subscription to an opc-ua server.
+    This is a high level class, especially subscribe_data_change 
+    and subscribe_events methods. If more control is necessary look at
+    code and/or use create_monitored_items method.
+    """
 
     def __init__(self, server, params, handler):
         self.logger = logging.getLogger(__name__)
@@ -47,6 +54,9 @@ class Subscription(object):
         self.server.publish()
 
     def delete(self):
+        """
+        Delete subscription on server. This is automatically done by Client and Server classes on exit
+        """
         results = self.server.delete_subscriptions([self.subscription_id])
         results[0].check()
 
@@ -114,6 +124,7 @@ class Subscription(object):
         """
         Subscribe for data change events for a node or list of nodes.
         default attribute is Value.
+        Return a handle which can be used to unsubscribe
         If more control is necessary use create_monitored_items method
         """
         return self._subscribe(nodes, attr, queuesize=1)
@@ -142,6 +153,7 @@ class Subscription(object):
         """
         Subscribe to events from a node. Default node is Server node. 
         In most servers the server node is the only one you can subscribe to.
+        Return a handle which can be used to unsubscribe
         """
         sourcenode = self._get_node(sourcenode)
         evfilter = self._get_filter_from_event_type(evtype)
@@ -220,6 +232,7 @@ class Subscription(object):
     def unsubscribe(self, handle):
         """
         unsubscribe to datachange or events using the handle returned while subscribing
+        if you delete subscription, you do not need to unsubscribe
         """
         params = ua.DeleteMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
