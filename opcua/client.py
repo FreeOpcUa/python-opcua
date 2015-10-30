@@ -269,6 +269,12 @@ class Client(object):
         Create a subscription.
         returns a Subscription object which allow
         to subscribe to events or data on server
+        handler argument is a class with data_change and/or event methods.
+        These methods will be called when notfication from server are received.
+        See example-client.py.
+        Do not do expensive/slow or network operation from these methods 
+        since they are called directly from receiving thread. This is a design choice,
+        start another thread if you need to do such a thing.
         """
         params = ua.CreateSubscriptionParameters()
         params.RequestedPublishingInterval = period

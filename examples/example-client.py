@@ -23,6 +23,9 @@ class SubHandler(object):
 
     """
     Subscription Handler. To receive events from server for a subscription
+    data_change and event methods are called directly from receiving thread.
+    Do not do expensive, slow or network operation there. Create another 
+    thread if you need to do such a thing
     """
 
     def data_change(self, handle, node, val, attr):
