@@ -198,6 +198,10 @@ class Node(object):
     set_data_value = set_value
 
     def set_writable(self, writable=True):
+        """
+        Set node as writable by clients.
+        A node is always writable on server side.
+        """
         if writable:
             self.set_attribute(ua.AttributeIds.AccessLevel, ua.DataValue(ua.Variant(ua.AccessLevelMask.CurrentWrite, ua.VariantType.Byte)))
             self.set_attribute(ua.AttributeIds.UserAccessLevel, ua.DataValue(ua.Variant(ua.AccessLevelMask.CurrentWrite, ua.VariantType.Byte)))
@@ -206,6 +210,10 @@ class Node(object):
             self.set_attribute(ua.AttributeIds.AccessLevel, ua.DataValue(ua.Variant(ua.AccessLevelMask.CurrentRead, ua.VariantType.Byte)))
 
     def set_read_only(self):
+        """
+        Set a node as read-only for clients.
+        A node is always writable on server side.
+        """
         return self.set_writable(False)
 
     def set_attribute(self, attributeid, datavalue):
