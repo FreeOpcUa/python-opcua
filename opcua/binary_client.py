@@ -345,6 +345,15 @@ class BinaryClient(object):
         response.ResponseHeader.ServiceResult.check()
         return response.Endpoints
 
+    def find_servers(self, params):
+        self.logger.info("find_servers")
+        request = ua.FindServersRequest()
+        request.Parameters = params
+        data = self._uasocket.send_request(request)
+        response = ua.FindServersResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Servers
+
     def translate_browsepaths_to_nodeids(self, browsepaths):
         self.logger.info("translate_browsepath_to_nodeid")
         request = ua.TranslateBrowsePathsToNodeIdsRequest()

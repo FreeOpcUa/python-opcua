@@ -102,6 +102,18 @@ class Client(object):
         self.disconnect_socket()
         return endpoints
 
+    def find_all_servers(self):
+        """
+        Connect, ask server for a list of known servers, and disconnect
+        """
+        self.connect_socket()
+        self.send_hello()
+        self.open_secure_channel()
+        servers = self.find_servers()
+        self.close_secure_channel()
+        self.disconnect_socket()
+        return servers
+
     def connect(self):
         """
         High level method
@@ -160,6 +172,10 @@ class Client(object):
         params = ua.GetEndpointsParameters()
         params.EndpointUrl = self.server_url.geturl()
         return self.bclient.get_endpoints(params)
+
+    def find_servers(self):
+        params = ua.FindServersParameters()
+        return self.bclient.find_servers(params)
 
     def create_session(self):
         desc = ua.ApplicationDescription()
