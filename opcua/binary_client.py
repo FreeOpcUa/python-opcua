@@ -207,18 +207,18 @@ class UASocketClient(object):
 
     def open_secure_channel(self, params):
         self.logger.info("open_secure_channel")
-        request = ua.OpenSecureChannelRequest()
-        request.Parameters = params
-        request.RequestHeader = self._create_request_header()
-
-        hdr = ua.Header(ua.MessageType.SecureOpen, ua.ChunkType.Single, self._security_token.ChannelId)
-        asymhdr = ua.AsymmetricAlgorithmHeader()
-        seqhdr = self._create_sequence_header()
-
-        future = Future()
         with self._lock:
+            request = ua.OpenSecureChannelRequest()
+            request.Parameters = params
+            request.RequestHeader = self._create_request_header()
+
+            hdr = ua.Header(ua.MessageType.SecureOpen, ua.ChunkType.Single, self._security_token.ChannelId)
+            asymhdr = ua.AsymmetricAlgorithmHeader()
+            seqhdr = self._create_sequence_header()
+
+            future = Future()
             self._callbackmap[seqhdr.RequestId] = future
-        self._write_socket(hdr, asymhdr, seqhdr, request)
+            self._write_socket(hdr, asymhdr, seqhdr, request)
 
         response = ua.OpenSecureChannelResponse.from_binary(future.result(self.timeout))
         response.ResponseHeader.ServiceResult.check()
@@ -231,13 +231,14 @@ class UASocketClient(object):
         in most servers, so be prepare to reconnect
         """
         self.logger.info("get_endpoint")
-        request = ua.CloseSecureChannelRequest()
-        request.RequestHeader = self._create_request_header()
+        with self._lock:
+            request = ua.CloseSecureChannelRequest()
+            request.RequestHeader = self._create_request_header()
 
-        hdr = ua.Header(ua.MessageType.SecureClose, ua.ChunkType.Single, self._security_token.ChannelId)
-        symhdr = self._create_sym_algo_header()
-        seqhdr = self._create_sequence_header()
-        self._write_socket(hdr, symhdr, seqhdr, request)
+            hdr = ua.Header(ua.MessageType.SecureClose, ua.ChunkType.Single, self._security_token.ChannelId)
+            symhdr = self._create_sym_algo_header()
+            seqhdr = self._create_sequence_header()
+            self._write_socket(hdr, symhdr, seqhdr, request)
 
         # some servers send a response here, most do not ... so we ignore
 
