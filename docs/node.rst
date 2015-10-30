@@ -1,5 +1,5 @@
 
-High level functions and Node class 
+High level Functions and Node Class 
 =========================================
 
 .. automodule:: opcua.node

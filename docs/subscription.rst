@@ -1,9 +1,8 @@
 
-Subscription class 
+Subscription Class 
 =========================================
 
-.. automodule:: opcua.subscription
-   :member-order: bysource
+.. autoclass:: opcua.Subscription
    :members:
    :undoc-members:
 

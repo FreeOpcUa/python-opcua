@@ -1,5 +1,5 @@
 
-OPC-UA Client API 
+OPC-UA Client Class 
 =========================================
 
 .. autoclass:: opcua.Client
