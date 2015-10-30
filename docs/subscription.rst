@@ -1,8 +1,8 @@
 
-High level functions and Node class 
+Subscription class 
 =========================================
 
-.. automodule:: opcua.node
+.. automodule:: opcua.subscription
    :member-order: bysource
    :members:
    :undoc-members:
