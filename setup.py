@@ -10,7 +10,7 @@ else:
 
 setup(
         name = "freeopcua", 
-        version = "0.9.11",
+        version = "0.9.12",
         description = "Pure Python OPC-UA client and server library",
         author = "Olivier Roulet-Dubonnet",
         author_email = "olivier.roulet@gmail.com",
