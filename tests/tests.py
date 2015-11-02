@@ -294,6 +294,12 @@ class CommonTests(object):
         self.assertTrue(obj2 in all_objs)
         self.assertFalse(var in all_objs)
 
+    def test_browsename_with_spaces(self):
+        o = self.opc.get_objects_node()
+        v = o.add_variable(3, 'BNVariable with spaces and %&+?/', 1.3)
+        v2 = o.get_child("3:BNVariable with spaces and %&+?/")
+        self.assertEqual(v, v2)
+
     def test_create_delete_subscription(self):
         o = self.opc.get_objects_node()
         v = o.add_variable(3, 'SubscriptionVariable', [1, 2, 3])
