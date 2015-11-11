@@ -99,6 +99,7 @@ class Client(object):
         self.open_secure_channel()
         endpoints = self.get_endpoints()
         self.close_secure_channel()
+        self.disconnect_socket()
         return endpoints
 
     def connect(self):
@@ -158,8 +159,6 @@ class Client(object):
     def get_endpoints(self):
         params = ua.GetEndpointsParameters()
         params.EndpointUrl = self.server_url.geturl()
-        params.ProfileUris = ["http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary"]
-        params.LocaleIds = ["http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary"]
         return self.bclient.get_endpoints(params)
 
     def create_session(self):
