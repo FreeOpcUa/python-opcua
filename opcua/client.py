@@ -178,7 +178,7 @@ class Client(object):
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0  # means no max size
         response = self.bclient.create_session(params)
-        print("Certificate is ", response.ServerCertificate)
+        #print("Certificate is ", response.ServerCertificate)
         self.server_certificate = response.ServerCertificate
         for ep in response.ServerEndpoints:
             if ep.SecurityMode == self.security_mode:
