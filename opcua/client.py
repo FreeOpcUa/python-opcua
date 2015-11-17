@@ -99,7 +99,20 @@ class Client(object):
         self.open_secure_channel()
         endpoints = self.get_endpoints()
         self.close_secure_channel()
+        self.disconnect_socket()
         return endpoints
+
+    def find_all_servers(self):
+        """
+        Connect, ask server for a list of known servers, and disconnect
+        """
+        self.connect_socket()
+        self.send_hello()
+        self.open_secure_channel()
+        servers = self.find_servers()
+        self.close_secure_channel()
+        self.disconnect_socket()
+        return servers
 
     def connect(self):
         """
@@ -158,9 +171,11 @@ class Client(object):
     def get_endpoints(self):
         params = ua.GetEndpointsParameters()
         params.EndpointUrl = self.server_url.geturl()
-        params.ProfileUris = ["http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary"]
-        params.LocaleIds = ["http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary"]
         return self.bclient.get_endpoints(params)
+
+    def find_servers(self):
+        params = ua.FindServersParameters()
+        return self.bclient.find_servers(params)
 
     def create_session(self):
         desc = ua.ApplicationDescription()
