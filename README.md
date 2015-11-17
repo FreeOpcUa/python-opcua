@@ -15,6 +15,12 @@ coveryage.py reports a test coverage of over 90% of code, most of non-tested cod
 
 Some documentation is available at http://python-opcua.readthedocs.org/en/latest/
 
+A prototype of a GUI client is available at: https://github.com/FreeOpcUa/opcua-client-gui
+
+Examples: https://github.com/FreeOpcUa/python-opcua/tree/master/examples
+
+Simple command line tools: https://github.com/FreeOpcUa/python-opcua/tree/master/tools
+
 Client: what works:
 * connection to server, opening channel, session
 * browsing and reading attributes value
@@ -26,7 +32,7 @@ Client: what works:
 * method call
 * user without password 
 
-Tested servers: freeopcua C++, freeopcua Python, prosys
+Tested servers: freeopcua C++, freeopcua Python, prosys, kepware, beckoff
 
 
 Client: what is not implemented yet 
