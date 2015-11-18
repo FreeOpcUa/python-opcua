@@ -9,7 +9,7 @@ else:
     install_requires = []
 
 setup(name="freeopcua", 
-      version="0.9.13",
+      version="0.9.15",
       description="Pure Python OPC-UA client and server library",
       author="Olivier Roulet-Dubonnet",
       author_email="olivier.roulet@gmail.com",
@@ -29,10 +29,10 @@ setup(name="freeopcua",
       entry_points={'console_scripts': 
                     [
                         'uaread = opcua.tools:uaread',
-                        'uals = opcua.tools:uals'
-                        'uabrowse = opcua.tools:uals'
-                        'uawrite = opcua.tools:uawrite'
-                        'uasubscribe = opcua.tools:uasubscribe'
+                        'uals = opcua.tools:uals',
+                        'uabrowse = opcua.tools:uals',
+                        'uawrite = opcua.tools:uawrite',
+                        'uasubscribe = opcua.tools:uasubscribe',
                         'uadiscover = opcua.tools:uadiscover'
                     ]
                     }
