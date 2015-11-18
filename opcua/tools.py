@@ -3,14 +3,24 @@ import sys
 import argparse
 from opcua import ua, Client
 import code
+from enum import Enum
 
-
-def add_common_args(parser):
+def add_minimum_args(parser):
     parser.add_argument("-u",
                         "--url",
                         help="URL of OPC UA server (for example: opc.tcp://example.org:4840)",
                         default='opc.tcp://localhost:4841',
                         metavar="URL")
+    parser.add_argument("-v",
+                        "--verbose",
+                        dest="loglevel",
+                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                        default='WARNING',
+                        help="Set log level")
+
+
+def add_common_args(parser):
+    add_minimum_args(parser)
     parser.add_argument("-n",
                         "--nodeid",
                         help="Fully-qualified node ID (for example: i=85). Default: root node",
@@ -27,13 +37,6 @@ def add_common_args(parser):
                         type=int,
                         default=0,
                         metavar="NAMESPACE")
-
-    parser.add_argument("-v",
-                        "--verbose",
-                        dest="loglevel",
-                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-                        default='WARNING',
-                        help="Set log level")
 
 
 def get_node(client, args):
@@ -132,16 +135,16 @@ def uawrite():
             val = ua.Variant(ua.NodeId.from_string(val))
         elif args.datatype in ("qualifiedname", "browsename"):
             val = ua.Variant(ua.QualifiedName.from_string(val))
-        elif args.datatype == "uint8":
-            val = ua.Variant(int(val), ua.VariantType.UInt8)
+        #elif args.datatype == "uint8":
+            #val = ua.Variant(int(val), ua.VariantType.UInt8)
         elif args.datatype == "uint16":
             val = ua.Variant(int(val), ua.VariantType.UInt16)
         elif args.datatype == "uint32":
             val = ua.Variant(int(val), ua.VariantType.UInt32)
         elif args.datatype == "uint64":
             val = ua.Variant(int(val), ua.VariantType.UInt64)
-        elif args.datatype == "int8":
-            val = ua.Variant(int(val), ua.VariantType.Int8)
+        #elif args.datatype == "int8":
+            #val = ua.Variant(int(val), ua.VariantType.Int8)
         elif args.datatype == "int16":
             val = ua.Variant(int(val), ua.VariantType.Int16)
         elif args.datatype == "int32":
@@ -254,5 +257,79 @@ def uasubscribe():
     print(args)
 
 
+# converts numeric value to its enum name.
+def enum_to_string(klass, value):
+    if isinstance(value, Enum):
+        return value.name
+    # if value is not a subtype of Enum, try to find a constant
+    # with this value in this class
+    for k, v in vars(klass).items():
+        if not k.startswith('__') and v == value:
+            return k
+    return 'Unknown {} ({})'.format(klass.__name__, value)
+
+
+def application_to_strings(app):
+    result = []
+    result.append(('Application URI', app.ApplicationUri))
+    optionals = [
+        ('Product URI', app.ProductUri),
+        ('Application Name', app.ApplicationName.to_string()),
+        ('Application Type', enum_to_string(ua.ApplicationType, app.ApplicationType)),
+        ('Gateway Server URI', app.GatewayServerUri),
+        ('Discovery Profile URI', app.DiscoveryProfileUri),
+    ]
+    for (n, v) in optionals:
+        if v:
+            result.append((n, v))
+    for url in app.DiscoveryUrls:
+        result.append(('Discovery URL', url))
+    return result  # ['{}: {}'.format(n, v) for (n, v) in result]
+
+
+def endpoint_to_strings(ep):
+    result = [('Endpoint URL', ep.EndpointUrl)]
+    result += application_to_strings(ep.Server)
+    result += [
+        ('Server Certificate', len(ep.ServerCertificate)),
+        ('Security Mode', enum_to_string(ua.MessageSecurityMode, ep.SecurityMode)),
+        ('Security Policy URI', ep.SecurityPolicyUri)]
+    for tok in ep.UserIdentityTokens:
+        result += [
+            ('User policy', tok.PolicyId),
+            ('  Token type', enum_to_string(ua.UserTokenType, tok.TokenType))]
+        if tok.IssuedTokenType or tok.IssuerEndpointUrl:
+            result += [
+                ('  Issued Token type', tok.IssuedTokenType)
+                ('  Issuer Endpoint URL', tok.IssuerEndpointUrl)]
+        if tok.SecurityPolicyUri:
+            result.append(('  Security Policy URI', tok.SecurityPolicyUri))
+    result += [
+        ('Transport Profile URI', ep.TransportProfileUri),
+        ('Security Level', ep.SecurityLevel)]
+    return result
+
+
 def uadiscover():
-    pass
+    parser = argparse.ArgumentParser(description="Performs OPC UA discovery and prints information on servers and endpoints.")
+    add_minimum_args(parser)
+    args = parser.parse_args()
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+
+    client = Client(args.url)
+    for i, server in enumerate(client.find_all_servers(), start=1):
+        print('Server {}:'.format(i))
+        for (n, v) in application_to_strings(server):
+            print('  {}: {}'.format(n, v))
+        print('')
+
+    client = Client(args.url)
+    for i, ep in enumerate(client.get_server_endpoints()):
+        print('Endpoint {}:'.format(i))
+        for (n, v) in endpoint_to_strings(ep):
+            print('  {}: {}'.format(n, v))
+        print('')
+
+    sys.exit(0)
+
+
