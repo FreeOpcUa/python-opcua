@@ -28,7 +28,8 @@ setup(name="freeopcua",
                    "Topic :: Software Development :: Libraries :: Python Modules",
                    ]
        entry_points={'console_scripts': 
-                     ['uaread = opcua.uaread']
+                     ['uaread = opcua.uaread'],
+                     ['uals = opcua.uals']
                     }
       )
 

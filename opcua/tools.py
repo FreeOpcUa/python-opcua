@@ -5,7 +5,7 @@ import argparse
 from opcua import ua, Client
 
 
-def add_common_args(parser, nodeid_required=True):
+def add_common_args(parser):
     parser.add_argument("-u",
                         "--url",
                         help="URL of OPC UA server (for example: opc.tcp://example.org:4840)",
@@ -15,8 +15,6 @@ def add_common_args(parser, nodeid_required=True):
                         "--nodeid",
                         help="Fully-qualified node ID (for example: i=85). Default: root node",
                         default='i=84',
-                        required=nodeid_required,
-                        #required=True,
                         metavar="NODE")
     parser.add_argument("-p",
                         "--path",
@@ -63,6 +61,10 @@ def uaread():
                         help="Data type to return")
 
     args = parser.parse_args()
+    if args.nodeid == "i=84" and args.attribute == ua.AttributeIds.Value:
+        parser.print_usage()
+        print("uaread: error: A NodeId or BrowsePath is required")
+        sys.exit(1)
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
     client = Client(args.url)
@@ -78,6 +80,35 @@ def uaread():
             print(attr.Value)
         else:
             print(attr)
+    finally:
+        client.disconnect()
+    sys.exit(0)
+    print(args)
+
+
+
+
+def uals():
+    parser = argparse.ArgumentParser(description="Browse OPC-UA node and print result")
+    add_common_args(parser)
+    parser.add_argument("-l",
+                        dest="long_format",
+                        default=ua.AttributeIds.Value,
+                        help="use a long listing format")
+
+    args = parser.parse_args()
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+
+    client = Client(args.url)
+    client.connect()
+    try:
+        node = client.get_node(args.nodeid)
+        if args.path:
+            node = node.get_child(args.path.split(","))
+        print("Browsing node {} at {}\n".format(node, args.url))
+        for desc in node.get_children_descriptions():
+            print("    {}, {}, {}".format(desc.DisplayName.to_string(), desc.BrowseName.to_string(), desc.NodeId.to_string()))
+
     finally:
         client.disconnect()
     sys.exit(0)
