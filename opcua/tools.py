@@ -86,15 +86,18 @@ def uaread():
     print(args)
 
 
-
-
 def uals():
     parser = argparse.ArgumentParser(description="Browse OPC-UA node and print result")
     add_common_args(parser)
-    parser.add_argument("-l",
-                        dest="long_format",
-                        default=ua.AttributeIds.Value,
-                        help="use a long listing format")
+    #parser.add_argument("-l",
+                        #dest="long_format",
+                        #default=ua.AttributeIds.Value,
+                        #help="use a long listing format")
+    parser.add_argument("-d",
+                        "--depth",
+                        default=1,
+                        type=int,
+                        help="Browse depth")
 
     args = parser.parse_args()
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
@@ -106,13 +109,21 @@ def uals():
         if args.path:
             node = node.get_child(args.path.split(","))
         print("Browsing node {} at {}\n".format(node, args.url))
-        for desc in node.get_children_descriptions():
-            print("    {}, {}, {}".format(desc.DisplayName.to_string(), desc.BrowseName.to_string(), desc.NodeId.to_string()))
+        _lsprint(client, node.nodeid, args.depth - 1)
 
     finally:
         client.disconnect()
     sys.exit(0)
     print(args)
+
+
+def _lsprint(client, nodeid, depth, indent=""):
+    indent += "    "
+    pnode = client.get_node(nodeid)
+    for desc in pnode.get_children_descriptions():
+        print("{} {}, {}, {}".format(indent, desc.DisplayName.to_string(), desc.BrowseName.to_string(), desc.NodeId.to_string()))
+        if depth:
+            _lsprint(client, desc.NodeId, depth - 1, indent)
 
 
 
