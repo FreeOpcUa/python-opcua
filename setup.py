@@ -9,7 +9,7 @@ else:
     install_requires = []
 
 setup(name="freeopcua", 
-      version="0.9.12",
+      version="0.9.13",
       description="Pure Python OPC-UA client and server library",
       author="Olivier Roulet-Dubonnet",
       author_email="olivier.roulet@gmail.com",
@@ -18,19 +18,19 @@ setup(name="freeopcua",
       provides=["opcua"],
       license="GNU Lesser General Public License",
       install_requires=install_requires,
-      classifiers=[
-                   "Programming Language :: Python",
+      classifiers=["Programming Language :: Python",
                    "Programming Language :: Python :: 3",
                    "Programming Language :: Python :: 2",
                    "Development Status :: 4 - Beta",
                    "Intended Audience :: Developers",
                    "Operating System :: OS Independent",
                    "Topic :: Software Development :: Libraries :: Python Modules",
-                   ]
-       entry_points={'console_scripts': 
-                     ['uaread = opcua.uaread'],
-                     ['uals = opcua.uals']
+                   ],
+      entry_points={'console_scripts': 
+                    [
+                        'uaread = opcua.tools:uaread',
+                        'uals = opcua.tools:uals'
+                    ]
                     }
       )
-
 
