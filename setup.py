@@ -30,6 +30,10 @@ setup(name="freeopcua",
                     [
                         'uaread = opcua.tools:uaread',
                         'uals = opcua.tools:uals'
+                        'uabrowse = opcua.tools:uals'
+                        'uawrite = opcua.tools:uawrite'
+                        'uasubscribe = opcua.tools:uasubscribe'
+                        'uadiscover = opcua.tools:uadiscover'
                     ]
                     }
       )

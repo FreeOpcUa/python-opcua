@@ -1,8 +1,8 @@
 import logging
-import os
 import sys
 import argparse
 from opcua import ua, Client
+import code
 
 
 def add_common_args(parser):
@@ -43,7 +43,7 @@ def get_node(client, args):
 
 
 def uaread():
-    parser = argparse.ArgumentParser(description="Read attribute of a node")
+    parser = argparse.ArgumentParser(description="Read attribute of a node, per default reads value of a node")
     add_common_args(parser)
     parser.add_argument("-a",
                         "--attribute",
@@ -61,7 +61,7 @@ def uaread():
                         help="Data type to return")
 
     args = parser.parse_args()
-    if args.nodeid == "i=84" and args.attribute == ua.AttributeIds.Value:
+    if args.nodeid == "i=84" and args.path == "" and args.attribute == ua.AttributeIds.Value:
         parser.print_usage()
         print("uaread: error: A NodeId or BrowsePath is required")
         sys.exit(1)
@@ -80,6 +80,86 @@ def uaread():
             print(attr.Value)
         else:
             print(attr)
+    finally:
+        client.disconnect()
+    sys.exit(0)
+    print(args)
+
+
+def uawrite():
+    parser = argparse.ArgumentParser(description="Write attribute of a node, per default write value of node")
+    add_common_args(parser)
+    parser.add_argument("-a",
+                        "--attribute",
+                        dest="attribute",
+                        type=int,
+                        #default="VALUE",
+                        #choices=['VALUE', 'NODEID', 'BROWSENAME', 'ERROR', 'CRITICAL'],
+                        default=ua.AttributeIds.Value,
+                        help="Set attribute to read")
+    parser.add_argument("-t",
+                        "--datatype",
+                        dest="datatype",
+                        default="guess",
+                        choices=["guess", 'nodeid', 'qualifiedname', 'browsename', 'string', 'double', 'int32', "int64", "bool"],  # FIXME: to be finished
+                        help="Data type to return")
+    parser.add_argument("value",
+                        help="Value to be written",
+                        metavar="VALUE")
+    args = parser.parse_args()
+    if args.nodeid == "i=84" and args.path == "" and args.attribute == ua.AttributeIds.Value:
+        parser.print_usage()
+        print("uaread: error: A NodeId or BrowsePath is required")
+        sys.exit(1)
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+
+    client = Client(args.url)
+    client.connect()
+    try:
+        node = client.get_node(args.nodeid)
+        if args.path:
+            node = node.get_child(args.path.split(","))
+        val = args.value
+        if args.datatype == "guess":
+            try:
+                val = int(val)
+            except ValueError:
+                try:
+                    val = float(val)
+                except ValueError:
+                    pass
+        elif args.datatype == "nodeid":
+            val = ua.Variant(ua.NodeId.from_string(val))
+        elif args.datatype in ("qualifiedname", "browsename"):
+            val = ua.Variant(ua.QualifiedName.from_string(val))
+        elif args.datatype == "uint8":
+            val = ua.Variant(int(val), ua.VariantType.UInt8)
+        elif args.datatype == "uint16":
+            val = ua.Variant(int(val), ua.VariantType.UInt16)
+        elif args.datatype == "uint32":
+            val = ua.Variant(int(val), ua.VariantType.UInt32)
+        elif args.datatype == "uint64":
+            val = ua.Variant(int(val), ua.VariantType.UInt64)
+        elif args.datatype == "int8":
+            val = ua.Variant(int(val), ua.VariantType.Int8)
+        elif args.datatype == "int16":
+            val = ua.Variant(int(val), ua.VariantType.Int16)
+        elif args.datatype == "int32":
+            val = ua.Variant(int(val), ua.VariantType.Int32)
+        elif args.datatype == "int64":
+            val = ua.Variant(int(val), ua.VariantType.Int64)
+        elif args.datatype == "double":
+            val = ua.Variant(float(val), ua.VariantType.Double)
+        elif args.datatype == "float":
+            val = ua.Variant(float(val), ua.VariantType.Float)
+        elif args.datatype == "bool":
+            if val in ("1", "True", "true"):
+                val = ua.Variant(True, ua.VariantType.Boolean)
+            else:
+                val = ua.Variant(False, ua.VariantType.Boolean)
+        elif args.datatype == "string":
+            val = ua.Variant(val, ua.VariantType.String)
+        node.set_attribute(args.attribute, ua.DataValue(val))
     finally:
         client.disconnect()
     sys.exit(0)
@@ -126,4 +206,53 @@ def _lsprint(client, nodeid, depth, indent=""):
             _lsprint(client, desc.NodeId, depth - 1, indent)
 
 
+class SubHandler(object):
 
+    def data_change(self, handle, node, val, attr):
+        print("New data change event", handle, node, val, attr)
+
+    def event(self, handle, event):
+        print("New event", handle, event)
+
+
+def uasubscribe():
+    parser = argparse.ArgumentParser(description="Subscribe to a node and print results")
+    add_common_args(parser)
+    parser.add_argument("-t",
+                        "--eventtype",
+                        dest="eventtype",
+                        default="datachange",
+                        choices=['datachange', 'event'],
+                        help="Event type to subscribe to")
+
+    args = parser.parse_args()
+    if args.nodeid == "i=84" and args.path == "":
+        parser.print_usage()
+        print("uaread: error: The NodeId or BrowsePath of a variable is required")
+        sys.exit(1)
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+
+    client = Client(args.url)
+    client.connect()
+    try:
+        node = client.get_node(args.nodeid)
+        if args.path:
+            node = node.get_child(args.path.split(","))
+        handler = SubHandler()
+        sub = client.create_subscription(500, handler)
+        if args.eventtype == "datachange":
+            sub.subscribe_data_change(node)
+        else:
+            sub.subscribe_events(node)
+        vars = globals()
+        vars.update(locals())
+        shell = code.InteractiveConsole(vars)
+        shell.interact()
+    finally:
+        client.disconnect()
+    sys.exit(0)
+    print(args)
+
+
+def uadiscover():
+    pass
