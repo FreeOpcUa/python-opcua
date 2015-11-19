@@ -5,6 +5,7 @@ from opcua import ua, Client
 import code
 from enum import Enum
 
+
 def add_minimum_args(parser):
     parser.add_argument("-u",
                         "--url",
@@ -197,7 +198,7 @@ def uawrite():
                         "--array",
                         dest="array",
                         default="guess",
-                        choices=["true", "false"],
+                        choices=["guess", "true", "false"],
                         help="Value is an array")
     parser.add_argument("-t",
                         "--datatype",
