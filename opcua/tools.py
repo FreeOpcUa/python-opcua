@@ -89,6 +89,98 @@ def uaread():
     print(args)
 
 
+def _args_to_array(val, array):
+    if array == "guess":
+        if "," in val:
+            array = "true"
+    if array == "true":
+        val = val.split(",")
+    return val
+
+
+def _arg_to_bool(val):
+    if val in ("true", "True"):
+        return True
+    else:
+        return False
+
+
+def _arg_to_variant(val, array, ptype, varianttype=None):
+    val = _args_to_array(val, array)
+    if isinstance(val, list):
+        val = [ptype(i) for i in val]
+    else:
+        val = ptype(val)
+    if varianttype:
+        return ua.Variant(val, varianttype)
+    else:
+        return ua.Variant(val)
+
+
+def _val_to_variant(val, args):
+    array = args.array
+    if args.datatype == "guess":
+        if val in ("true", "True", "false", "False"):
+            return _arg_to_variant(val, array, _arg_to_bool)
+        # FIXME: guess bool value
+        try:
+            return _arg_to_variant(val, array, int)
+        except ValueError:
+            try:
+                return _arg_to_variant(val, array, float)
+            except ValueError:
+                return _arg_to_variant(val, array, str)
+    elif args.datatype == "bool":
+        if val in ("1", "True", "true"):
+            return ua.Variant(True, ua.VariantType.Boolean)
+        else:
+            return ua.Variant(False, ua.VariantType.Boolean)
+    elif args.datatype == "sbyte":
+        return _arg_to_variant(val, array, int, ua.VariantType.SByte)
+    elif args.datatype == "byte":
+        return _arg_to_variant(val, array, int, ua.VariantType.Byte)
+    #elif args.datatype == "uint8":
+        #return _arg_to_variant(val, array, int, ua.VariantType.Byte)
+    elif args.datatype == "uint16":
+        return _arg_to_variant(val, array, int, ua.VariantType.UInt16)
+    elif args.datatype == "uint32":
+        return _arg_to_variant(val, array, int, ua.VariantType.UInt32)
+    elif args.datatype == "uint64":
+        return _arg_to_variant(val, array, int, ua.VariantType.UInt64)
+    #elif args.datatype == "int8":
+        #return ua.Variant(int(val), ua.VariantType.Int8)
+    elif args.datatype == "int16":
+        return _arg_to_variant(val, array, int, ua.VariantType.Int16)
+    elif args.datatype == "int32":
+        return _arg_to_variant(val, array, int, ua.VariantType.Int32)
+    elif args.datatype == "int64":
+        return _arg_to_variant(val, array, int, ua.VariantType.Int64)
+    elif args.datatype == "float":
+        return _arg_to_variant(val, array, float, ua.VariantType.Float)
+    elif args.datatype == "double":
+        return _arg_to_variant(val, array, float, ua.VariantType.Double)
+    elif args.datatype == "string":
+        return _arg_to_variant(val, array, str, ua.VariantType.String)
+    elif args.datatype == "datetime":
+        raise NotImplementedError
+    elif args.datatype == "Guid":
+        return _arg_to_variant(val, array, bytes, ua.VariantType.Guid)
+    elif args.datatype == "ByteString":
+        return _arg_to_variant(val, array, bytes, ua.VariantType.ByteString)
+    elif args.datatype == "xml":
+        return _arg_to_variant(val, array, str, ua.VariantType.XmlElement)
+    elif args.datatype == "nodeid":
+        return _arg_to_variant(val, array, ua.NodeId.from_string, ua.VariantType.NodeId)
+    elif args.datatype == "expandednodeid":
+        return _arg_to_variant(val, array, ua.ExpandedNodeId.from_string, ua.VariantType.ExpandedNodeId)
+    elif args.datatype == "statuscode":
+        return _arg_to_variant(val, array, int, ua.VariantType.StatusCode)
+    elif args.datatype in ("qualifiedname", "browsename"):
+        return _arg_to_variant(val, array, ua.QualifiedName.from_string, ua.VariantType.QualifiedName)
+    elif args.datatype == "LocalizedText":
+        return _arg_to_variant(val, array, ua.LocalizedText, ua.VariantTypeLocalizedText)
+
+
 def uawrite():
     parser = argparse.ArgumentParser(description="Write attribute of a node, per default write value of node")
     add_common_args(parser)
@@ -100,11 +192,18 @@ def uawrite():
                         #choices=['VALUE', 'NODEID', 'BROWSENAME', 'ERROR', 'CRITICAL'],
                         default=ua.AttributeIds.Value,
                         help="Set attribute to read")
+    parser.add_argument("-l",
+                        "--list",
+                        "--array",
+                        dest="array",
+                        default="guess",
+                        choices=["true", "false"],
+                        help="Value is an array")
     parser.add_argument("-t",
                         "--datatype",
                         dest="datatype",
                         default="guess",
-                        choices=["guess", 'nodeid', 'qualifiedname', 'browsename', 'string', 'double', 'int32', "int64", "bool"],  # FIXME: to be finished
+                        choices=["guess", 'byte', 'sbyte', 'nodeid', 'expandednodeid', 'qualifiedname', 'browsename', 'string', 'float', 'double', 'int16', 'int32', "int64", 'uint16', 'uint32', 'uint64', "bool", "string", 'datetime', 'bytestring', 'xmlelement', 'statuscode', 'localizedtext'],  
                         help="Data type to return")
     parser.add_argument("value",
                         help="Value to be written",
@@ -122,46 +221,7 @@ def uawrite():
         node = client.get_node(args.nodeid)
         if args.path:
             node = node.get_child(args.path.split(","))
-        val = args.value
-        if args.datatype == "guess":
-            try:
-                val = int(val)
-            except ValueError:
-                try:
-                    val = float(val)
-                except ValueError:
-                    pass
-        elif args.datatype == "nodeid":
-            val = ua.Variant(ua.NodeId.from_string(val))
-        elif args.datatype in ("qualifiedname", "browsename"):
-            val = ua.Variant(ua.QualifiedName.from_string(val))
-        #elif args.datatype == "uint8":
-            #val = ua.Variant(int(val), ua.VariantType.UInt8)
-        elif args.datatype == "uint16":
-            val = ua.Variant(int(val), ua.VariantType.UInt16)
-        elif args.datatype == "uint32":
-            val = ua.Variant(int(val), ua.VariantType.UInt32)
-        elif args.datatype == "uint64":
-            val = ua.Variant(int(val), ua.VariantType.UInt64)
-        #elif args.datatype == "int8":
-            #val = ua.Variant(int(val), ua.VariantType.Int8)
-        elif args.datatype == "int16":
-            val = ua.Variant(int(val), ua.VariantType.Int16)
-        elif args.datatype == "int32":
-            val = ua.Variant(int(val), ua.VariantType.Int32)
-        elif args.datatype == "int64":
-            val = ua.Variant(int(val), ua.VariantType.Int64)
-        elif args.datatype == "double":
-            val = ua.Variant(float(val), ua.VariantType.Double)
-        elif args.datatype == "float":
-            val = ua.Variant(float(val), ua.VariantType.Float)
-        elif args.datatype == "bool":
-            if val in ("1", "True", "true"):
-                val = ua.Variant(True, ua.VariantType.Boolean)
-            else:
-                val = ua.Variant(False, ua.VariantType.Boolean)
-        elif args.datatype == "string":
-            val = ua.Variant(val, ua.VariantType.String)
+        val = _val_to_variant(args.value, args)
         node.set_attribute(args.attribute, ua.DataValue(val))
     finally:
         client.disconnect()
@@ -247,8 +307,8 @@ def uasubscribe():
             sub.subscribe_data_change(node)
         else:
             sub.subscribe_events(node)
-        vars = globals()
-        vars.update(locals())
+        glbs = globals()
+        glbs.update(locals())
         shell = code.InteractiveConsole(vars)
         shell.interact()
     finally:
@@ -300,7 +360,7 @@ def endpoint_to_strings(ep):
             ('  Token type', enum_to_string(ua.UserTokenType, tok.TokenType))]
         if tok.IssuedTokenType or tok.IssuerEndpointUrl:
             result += [
-                ('  Issued Token type', tok.IssuedTokenType)
+                ('  Issued Token type', tok.IssuedTokenType),
                 ('  Issuer Endpoint URL', tok.IssuerEndpointUrl)]
         if tok.SecurityPolicyUri:
             result.append(('  Security Policy URI', tok.SecurityPolicyUri))
