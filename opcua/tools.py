@@ -18,6 +18,11 @@ def add_minimum_args(parser):
                         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
                         default='WARNING',
                         help="Set log level")
+    parser.add_argument("--timeout",
+                        dest="timeout",
+                        type=int,
+                        defualt=1,
+                        help="Set socket timeout (NOT the diverse UA timeouts)")
 
 
 def add_common_args(parser):
@@ -71,7 +76,7 @@ def uaread():
         sys.exit(1)
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
-    client = Client(args.url)
+    client = Client(args.url, timeout=args.timeout)
     client.connect()
     try:
         node = client.get_node(args.nodeid)
@@ -216,7 +221,7 @@ def uawrite():
         sys.exit(1)
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
-    client = Client(args.url)
+    client = Client(args.url, timeout=args.timeout)
     client.connect()
     try:
         node = client.get_node(args.nodeid)
@@ -246,7 +251,7 @@ def uals():
     args = parser.parse_args()
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
-    client = Client(args.url)
+    client = Client(args.url, timeout=args.timeout)
     client.connect()
     try:
         node = client.get_node(args.nodeid)
@@ -296,7 +301,7 @@ def uasubscribe():
         sys.exit(1)
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
-    client = Client(args.url)
+    client = Client(args.url, timeout=args.timeout)
     client.connect()
     try:
         node = client.get_node(args.nodeid)
@@ -377,14 +382,14 @@ def uadiscover():
     args = parser.parse_args()
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
-    client = Client(args.url)
+    client = Client(args.url, timeout=args.timeout)
     for i, server in enumerate(client.find_all_servers(), start=1):
         print('Server {}:'.format(i))
         for (n, v) in application_to_strings(server):
             print('  {}: {}'.format(n, v))
         print('')
 
-    client = Client(args.url)
+    client = Client(args.url, timeout=args.timeout)
     for i, ep in enumerate(client.get_server_endpoints()):
         print('Endpoint {}:'.format(i))
         for (n, v) in endpoint_to_strings(ep):
