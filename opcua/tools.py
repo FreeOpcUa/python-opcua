@@ -239,10 +239,10 @@ def uawrite():
 def uals():
     parser = argparse.ArgumentParser(description="Browse OPC-UA node and print result")
     add_common_args(parser)
-    #parser.add_argument("-l",
-                        #dest="long_format",
-                        #default=ua.AttributeIds.Value,
-                        #help="use a long listing format")
+    parser.add_argument("-l",
+                        dest="long_format",
+                        action="store_true",
+                        help="use a long listing format")
     parser.add_argument("-d",
                         "--depth",
                         default=1,
@@ -259,7 +259,7 @@ def uals():
         if args.path:
             node = node.get_child(args.path.split(","))
         print("Browsing node {} at {}\n".format(node, args.url))
-        _lsprint(client, node.nodeid, args.depth - 1)
+        _lsprint(client, node.nodeid, args.long_format, args.depth - 1)
 
     finally:
         client.disconnect()
@@ -267,13 +267,31 @@ def uals():
     print(args)
 
 
-def _lsprint(client, nodeid, depth, indent=""):
+def _lsprint(client, nodeid, long_format, depth, indent=""):
     indent += "    "
     pnode = client.get_node(nodeid)
-    for desc in pnode.get_children_descriptions():
-        print("{} {}, {}, {}".format(indent, desc.DisplayName.to_string(), desc.BrowseName.to_string(), desc.NodeId.to_string()))
-        if depth:
-            _lsprint(client, desc.NodeId, depth - 1, indent)
+    if long_format:
+        nodes = pnode.get_children()
+        for node in pnode.get_children():
+            attrs = node.get_attributes([ua.AttributeIds.DisplayName, 
+                                         ua.AttributeIds.BrowseName,
+                                         ua.AttributeIds.NodeClass,
+                                         ua.AttributeIds.WriteMask,
+                                         ua.AttributeIds.UserWriteMask,
+                                         ua.AttributeIds.DataType,
+                                         ua.AttributeIds.Value])
+            name, bname, nclass, mask, umask, dtype, val = [attr.Value.Value for attr in attrs]
+            if nclass == ua.NodeClass.Variable:
+                print("{}, {}, {}, {}, DataType:{}, Value:{}".format(indent, name.to_string(), bname.to_string(), node.nodeid.to_string(), dtype, val))
+            else:
+                print("{}, {}, {}, {}".format(indent, name.to_string(), bname.to_string(), node.nodeid.to_string()))
+            if depth:
+                _lsprint(client, node.nodeid, long_format, depth - 1, indent)
+    else:
+        for desc in pnode.get_children_descriptions():
+            print("{} {}, {}, {}".format(indent, desc.DisplayName.to_string(), desc.BrowseName.to_string(), desc.NodeId.to_string()))
+            if depth:
+                _lsprint(client, desc.NodeId, long_format, depth - 1, indent)
 
 
 class SubHandler(object):
