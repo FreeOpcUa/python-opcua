@@ -574,8 +574,8 @@ class LocalizedText(FrozenClass):
         return self.Text.decode()
 
     def __str__(self):
-        return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', '  + \
-            'Locale:' + str(self.Locale) + ', '  + \
+        return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', ' + \
+            'Locale:' + str(self.Locale) + ', ' + \
             'Text:' + str(self.Text) + ')'
     __repr__ = __str__
 
@@ -633,9 +633,8 @@ class ExtensionObject(FrozenClass):
         return ext
 
     def __str__(self):
-        return 'ExtensionObject(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-            'Encoding:' + str(self.Encoding) + ', '  + \
-            'Body:' + str(self.Body) + ')'
+        return 'ExtensionObject(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+            'Encoding:' + str(self.Encoding) + ')'
 
     __repr__ = __str__
 

@@ -240,8 +240,11 @@ def uals():
     parser = argparse.ArgumentParser(description="Browse OPC-UA node and print result")
     add_common_args(parser)
     parser.add_argument("-l",
-                        dest="long_format",
-                        action="store_true",
+                        dest="print_format",
+                        #action="store_true",
+                        default=1,
+                        nargs="?",
+                        type=int,
                         help="use a long listing format")
     parser.add_argument("-d",
                         "--depth",
@@ -259,7 +262,13 @@ def uals():
         if args.path:
             node = node.get_child(args.path.split(","))
         print("Browsing node {} at {}\n".format(node, args.url))
-        _lsprint(client, node.nodeid, args.long_format, args.depth - 1)
+        if args.print_format == 0:
+            print("{:30} {:25}".format("DisplayName", "NodeId"))
+            print("")
+        elif args.print_format == 1:
+            print("{:30} {:25} {:25} {:25}".format("DisplayName", "NodeId", "BrowseName", "Value"))
+            print("")
+        _lsprint(client, node.nodeid, args.print_format, args.depth - 1)
 
     finally:
         client.disconnect()
@@ -267,11 +276,22 @@ def uals():
     print(args)
 
 
-def _lsprint(client, nodeid, long_format, depth, indent=""):
-    indent += "    "
+def _lsprint(client, nodeid, print_format, depth, indent=""):
+    indent += "  "
     pnode = client.get_node(nodeid)
-    if long_format:
-        nodes = pnode.get_children()
+    if print_format in (0, 1):
+        for desc in pnode.get_children_descriptions():
+            if print_format == 0:
+                print("{:30} {:25}".format(indent + desc.DisplayName.to_string(), indent + desc.NodeId.to_string()))
+            else:
+                if desc.NodeClass == ua.NodeClass.Variable:
+                    val = client.get_node(desc.NodeId).get_value()
+                    print("{:30}, {!s:25}, {!s:25}, {!s:3}".format(indent + desc.DisplayName.to_string(), indent + desc.NodeId.to_string(), indent + desc.BrowseName.to_string(), indent + str(val)))
+                else:
+                    print("{:30}, {!s:25}, {!s:25}".format(indent + desc.DisplayName.to_string(), indent + desc.NodeId.to_string(), indent + desc.BrowseName.to_string()))
+            if depth:
+                _lsprint(client, desc.NodeId, print_format, depth - 1, indent)
+    else:
         for node in pnode.get_children():
             attrs = node.get_attributes([ua.AttributeIds.DisplayName, 
                                          ua.AttributeIds.BrowseName,
@@ -281,17 +301,13 @@ def _lsprint(client, nodeid, long_format, depth, indent=""):
                                          ua.AttributeIds.DataType,
                                          ua.AttributeIds.Value])
             name, bname, nclass, mask, umask, dtype, val = [attr.Value.Value for attr in attrs]
+            update = attrs[-1].ServerTimestamp
             if nclass == ua.NodeClass.Variable:
-                print("{}, {}, {}, {}, DataType:{}, Value:{}".format(indent, name.to_string(), bname.to_string(), node.nodeid.to_string(), dtype, val))
+                print("{} {}, {}, {}, {}, {update}, {value}".format(indent, name.to_string(), node.nodeid.to_string(), bname.to_string(), dtype.to_string(), update=update, value=val))
             else:
-                print("{}, {}, {}, {}".format(indent, name.to_string(), bname.to_string(), node.nodeid.to_string()))
+                print("{} {}, {}, {}".format(indent, name.to_string(), bname.to_string(), node.nodeid.to_string()))
             if depth:
-                _lsprint(client, node.nodeid, long_format, depth - 1, indent)
-    else:
-        for desc in pnode.get_children_descriptions():
-            print("{} {}, {}, {}".format(indent, desc.DisplayName.to_string(), desc.BrowseName.to_string(), desc.NodeId.to_string()))
-            if depth:
-                _lsprint(client, desc.NodeId, long_format, depth - 1, indent)
+                _lsprint(client, node.nodeid, print_format, depth - 1, indent)
 
 
 class SubHandler(object):
