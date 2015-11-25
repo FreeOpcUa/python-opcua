@@ -21,7 +21,7 @@ def add_minimum_args(parser):
     parser.add_argument("--timeout",
                         dest="timeout",
                         type=int,
-                        defualt=1,
+                        default=1,
                         help="Set socket timeout (NOT the diverse UA timeouts)")
 
 
