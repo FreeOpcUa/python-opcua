@@ -41,7 +41,7 @@ if __name__ == "__main__":
         outputfile.write("        return '{}', '{}'\n".format(name, doc))
         kword = "elif"
     outputfile.write("    else:\n".format(val))
-    outputfile.write("        return 'UknownUaError', 'Unknown StatusCode value: {}'.format(val)\n")
+    outputfile.write("        return 'UnknownUaError', 'Unknown StatusCode value: {}'.format(val)\n")
     '''
     outputfile.write("class StatusCode(Enum):\n")
     outputfile.write("    Good = 0\n")

@@ -383,6 +383,7 @@ def uadiscover():
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
     client = Client(args.url, timeout=args.timeout)
+    print("Performing discovery at {}\n".format(args.url))
     for i, server in enumerate(client.find_all_servers(), start=1):
         print('Server {}:'.format(i))
         for (n, v) in application_to_strings(server):
@@ -390,7 +391,7 @@ def uadiscover():
         print('')
 
     client = Client(args.url, timeout=args.timeout)
-    for i, ep in enumerate(client.get_server_endpoints()):
+    for i, ep in enumerate(client.get_server_endpoints(), start=1):
         print('Endpoint {}:'.format(i))
         for (n, v) in endpoint_to_strings(ep):
             print('  {}: {}'.format(n, v))
