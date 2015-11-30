@@ -4,6 +4,7 @@ import argparse
 from opcua import ua, Client
 import code
 from enum import Enum
+from datetime import datetime
 
 
 def add_minimum_args(parser):
@@ -399,4 +400,69 @@ def uadiscover():
 
     sys.exit(0)
 
+def read_raw_history(client, node_id, startTime, endTime):
+    hrv = ua.HistoryReadValueId()
+    hrv.NodeId = node_id
+    hrv.IndexRange = ''
 
+    details = ua.ReadRawModifiedDetails()
+    details.IsReadModified = False
+    details.StartTime = startTime
+    details.EndTime = endTime
+    details.ReturnBounds = True
+
+    params = ua.HistoryReadParameters()
+    params.HistoryReadDetails = ua.ExtensionObject.from_object(details)
+    params.TimestampsToReturn = ua.TimestampsToReturn.Both
+    params.ReleaseContinuationPoints = False
+    params.NodesToRead.append(hrv)
+    return client.history_read(params)[0].HistoryData
+
+def print_history(res):
+    print("{:30} {:10} {}".format('Source timestamp', 'Status', 'Value'))
+    buf = ua.utils.Buffer(res.Body)
+    if res.TypeId.Identifier == ua.ObjectIds.HistoryData_Encoding_DefaultBinary:
+        for d in ua.HistoryData.from_binary(buf).DataValues:
+            print("{:30} {:10} {}".format(str(d.SourceTimestamp), d.StatusCode.name, d.Value))
+
+def str_to_datetime(s):
+    if not s:
+        return datetime.utcnow()
+    # try different datetime formats
+    for fmt in ["%Y-%m-%d", "%Y-%m-%d %H:%M", "%Y-%m-%d %H:%M:%S"]:
+        try:
+            return datetime.strptime(s, fmt)
+        except ValueError:
+            pass
+
+def uahistoryread():
+    parser = argparse.ArgumentParser(description="Read history of a node")
+    add_common_args(parser)
+    parser.add_argument("--starttime",
+                        default="",
+                        help="Start time, formatted as YYYY-MM-DD [HH:MM[:SS]]. Default: current time")
+    parser.add_argument("--endtime",
+                        default="",
+                        help="End time, formatted as YYYY-MM-DD [HH:MM[:SS]]. Default: current time")
+
+    args = parser.parse_args()
+    if args.nodeid == "i=84" and args.path == "":
+        parser.print_usage()
+        print("uahistoryread: error: A NodeId or BrowsePath is required")
+        sys.exit(1)
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+
+    client = Client(args.url, timeout=args.timeout)
+    client.connect()
+    try:
+        node = client.get_node(args.nodeid)
+        if args.path:
+            node = node.get_child(args.path.split(","))
+        starttime = str_to_datetime(args.starttime)
+        endtime = str_to_datetime(args.endtime)
+        print("Reading raw history of node {} at {}; start at {}, end at {}\n".format(node, args.url, starttime, endtime))
+        res = read_raw_history(client, node.nodeid, starttime, endtime)
+        print_history(res)
+    finally:
+        client.disconnect()
+    sys.exit(0)

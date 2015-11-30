@@ -443,3 +443,12 @@ class BinaryClient(object):
         response = ua.CallResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
+
+    def history_read(self, params):
+        self.logger.info("history_read")
+        request = ua.HistoryReadRequest()
+        request.Parameters = params
+        data = self._uasocket.send_request(request)
+        response = ua.HistoryReadResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
