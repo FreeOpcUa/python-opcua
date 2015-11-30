@@ -1,4 +1,5 @@
 from __future__ import division  # support for python2
+import os
 from threading import Thread, Condition
 import logging
 try:
@@ -9,6 +10,7 @@ except ImportError:  # support for python2
 from opcua import uaprotocol as ua
 from opcua import BinaryClient, Node, Subscription
 from opcua import utils
+from opcua import uacrypto
 
 
 class KeepAlive(Thread):
@@ -58,7 +60,6 @@ class Client(object):
     but if you want to do to special things you will probably need
     to work with the BinaryClient object, available as self.bclient
     which offers a raw OPC-UA interface.
-
     """
 
     def __init__(self, url, timeout=1):
@@ -67,6 +68,8 @@ class Client(object):
         if you are unsure of url, write at least hostname and port
         and call get_endpoints
         timeout is the timeout to get an answer for requests to server
+        public member of this call are available to be set by API users
+
         """
         self.logger = logging.getLogger(__name__)
         self.server_url = urlparse(url)
@@ -80,15 +83,27 @@ class Client(object):
         self.default_timeout = 3600000
         self.secure_channel_timeout = self.default_timeout
         self.session_timeout = self.default_timeout
-        self.policy_ids = {
-            ua.UserTokenType.Anonymous: b'anonymous',
-            ua.UserTokenType.UserName: b'user_name',
-        }
-        self.server_certificate = None
+        self._policy_ids = []
+        self.server_certificate = ""
+        self.client_certificate = ""
+        self.private_key = ""
         self.bclient = BinaryClient(timeout)
         self._nonce = None
         self._session_counter = 1
         self.keepalive = None
+
+    def load_client_certificate(self, path):
+        """
+        load our certificate from file, either pem or der
+        """
+        path, ext = os.path.splitext(path)
+        with open(path) as f:
+            self.client_certificate = f.read()
+        if ext == ".pem":
+            self.client_certificate = uacrypto.PEM_cert_to_DER_cert(self.client_certificate)
+
+    def set_private_key(self, private_key):
+        self.private_key = private_key
 
     def get_server_endpoints(self):
         """
@@ -123,7 +138,7 @@ class Client(object):
         self.send_hello()
         self.open_secure_channel()
         self.create_session()
-        self.activate_session()
+        self.activate_session(username=self.server_url.username, password=self.server_url.password, certificate=self.client_certificate)
 
     def disconnect(self):
         """
@@ -192,67 +207,40 @@ class Client(object):
         params.SessionName = self.description + " Session" + str(self._session_counter)
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0  # means no max size
+        params.ClientCertificate = self.client_certificate
         response = self.bclient.create_session(params)
-        #print("Certificate is ", response.ServerCertificate)
         self.server_certificate = response.ServerCertificate
         for ep in response.ServerEndpoints:
             if ep.SecurityMode == self.security_mode:
                 # remember PolicyId's: we will use them in activate_session()
-                for token in ep.UserIdentityTokens:
-                    self.policy_ids[token.TokenType] = token.PolicyId
+                self._policy_ids = ep.UserIdentityTokens
         self.session_timeout = response.RevisedSessionTimeout
         self.keepalive = KeepAlive(self, min(self.session_timeout, self.secure_channel_timeout) * 0.7)  # 0.7 is from spec
         self.keepalive.start()
         return response
 
-    def activate_session(self):
+    def activate_session(self, username=None, password=None, certificate=None):
+        """
+        Activate session using either username and password or private_key
+        """
         params = ua.ActivateSessionParameters()
         params.LocaleIds.append("en")
-        if not self.server_url.username:
+        if not username and not certificate:
             params.UserIdentityToken = ua.AnonymousIdentityToken()
-            params.UserIdentityToken.PolicyId = self.policy_ids[ua.UserTokenType.Anonymous]
+            params.UserIdentityToken.PolicyId = b"anonymous" 
+        elif certificate:
+            params.UserIdentityToken = ua.X509IdentityToken()
+            params.UserIdentityToken.PolicyId = b"certificate_basic256"  
+            params.UserIdentityToken.CertificateData = certificate
+            # FIXME: add signature
         else:
             params.UserIdentityToken = ua.UserNameIdentityToken()
-            params.UserIdentityToken.UserName = self.server_url.username 
+            params.UserIdentityToken.UserName = username 
             if self.server_url.password:
-                raise NotImplementedError
-                #p = bytes(self.server_url.password, "utf8")
-                #p = self.server_url.password
-                #from Crypto.Cipher import PKCS1_OAEP
-                #from Crypto.PublicKey import RSA
-                #from binascii import a2b_base64
-                #from Crypto.Util.asn1 import DerSequence
-                #from IPython import embed
-                #import ssl
-                #print("TYPE", type(self.server_certificate))
-                #pem = self.server_certificate
-                # Convert from PEM to DER
-                #lines = str(pem).replace(" ",'').split()
-                #data = ''.join(lines[1:-1])
-                #embed()
-                #3data = bytes(data, "utf8")
-                #print("DATA", data)
-                #der = a2b_base64(pem)
-                #ssl.PEM_HEADER=""
-                #ssl.PEM_FOOTER=""
-                #der = ssl.PEM_cert_to_DER_cert(pem)
-                #print("DER", der)
-
-                # Extract subjectPublicKeyInfo field from X.509 certificate (see RFC3280)
-                #cert = DerSequence()
-                #cert.decode(der)
-                #tbsCertificate = DerSequence()
-                #tbsCertificate.decode(cert[0])
-                #key = tbsCertificate[6]
-                ##print("KEY2", key)
-
-
-                #r = RSA.importKey(key)
-                #cipher = PKCS1_OAEP.new(r)
-                #ciphertext = cipher.encrypt(p)
-                #params.UserIdentityToken.Password = ciphertext 
-                #print("KKK", self.policy_ids[ua.UserTokenType.UserName])
-            params.UserIdentityToken.PolicyId = self.policy_ids[ua.UserTokenType.UserName]
+                pubkey = uacrypto.pubkey_from_dercert(self.server_certificate)
+                data = uacrypto.encrypt256(pubkey, bytes(password, "utf8"))
+                params.UserIdentityToken.Password = data
+            params.UserIdentityToken.PolicyId = b"username_basic256" 
             params.UserIdentityToken.EncryptionAlgorithm = 'http://www.w3.org/2001/04/xmlenc#rsa-oaep'
         return self.bclient.activate_session(params)
 
