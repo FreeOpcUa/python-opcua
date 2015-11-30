@@ -307,6 +307,3 @@ class Client(object):
     def get_namespace_index(self, uri):
         uries = self.get_namespace_array()
         return uries.index(uri)
-
-    def history_read(self, params):
-        return self.bclient.history_read(params)

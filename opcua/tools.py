@@ -400,28 +400,10 @@ def uadiscover():
 
     sys.exit(0)
 
-def read_raw_history(client, node_id, startTime, endTime):
-    hrv = ua.HistoryReadValueId()
-    hrv.NodeId = node_id
-    hrv.IndexRange = ''
-
-    details = ua.ReadRawModifiedDetails()
-    details.IsReadModified = False
-    details.StartTime = startTime
-    details.EndTime = endTime
-    details.ReturnBounds = True
-
-    params = ua.HistoryReadParameters()
-    params.HistoryReadDetails = ua.ExtensionObject.from_object(details)
-    params.TimestampsToReturn = ua.TimestampsToReturn.Both
-    params.ReleaseContinuationPoints = False
-    params.NodesToRead.append(hrv)
-    return client.history_read(params)[0].HistoryData
-
 def print_history(res):
-    print("{:30} {:10} {}".format('Source timestamp', 'Status', 'Value'))
-    buf = ua.utils.Buffer(res.Body)
     if res.TypeId.Identifier == ua.ObjectIds.HistoryData_Encoding_DefaultBinary:
+        buf = ua.utils.Buffer(res.Body)
+        print("{:30} {:10} {}".format('Source timestamp', 'Status', 'Value'))
         for d in ua.HistoryData.from_binary(buf).DataValues:
             print("{:30} {:10} {}".format(str(d.SourceTimestamp), d.StatusCode.name, d.Value))
 
@@ -461,8 +443,7 @@ def uahistoryread():
         starttime = str_to_datetime(args.starttime)
         endtime = str_to_datetime(args.endtime)
         print("Reading raw history of node {} at {}; start at {}, end at {}\n".format(node, args.url, starttime, endtime))
-        res = read_raw_history(client, node.nodeid, starttime, endtime)
-        print_history(res)
+        print_history(node.read_raw_history(starttime, endtime))
     finally:
         client.disconnect()
     sys.exit(0)
