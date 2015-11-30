@@ -348,7 +348,7 @@ class UAProcessor(object):
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         else:
-            self.logger.warning("Uknown message received %s", typeid)
+            self.logger.warning("Unknown message received %s", typeid)
             raise utils.ServiceError(ua.StatusCodes.BadNotImplemented)
 
         return True

@@ -4,6 +4,7 @@ import argparse
 from opcua import ua, Client
 import code
 from enum import Enum
+from datetime import datetime
 
 
 def add_minimum_args(parser):
@@ -383,6 +384,7 @@ def uadiscover():
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
     client = Client(args.url, timeout=args.timeout)
+    print("Performing discovery at {}\n".format(args.url))
     for i, server in enumerate(client.find_all_servers(), start=1):
         print('Server {}:'.format(i))
         for (n, v) in application_to_strings(server):
@@ -390,7 +392,7 @@ def uadiscover():
         print('')
 
     client = Client(args.url, timeout=args.timeout)
-    for i, ep in enumerate(client.get_server_endpoints()):
+    for i, ep in enumerate(client.get_server_endpoints(), start=1):
         print('Endpoint {}:'.format(i))
         for (n, v) in endpoint_to_strings(ep):
             print('  {}: {}'.format(n, v))
@@ -398,4 +400,50 @@ def uadiscover():
 
     sys.exit(0)
 
+def print_history(res):
+    if res.TypeId.Identifier == ua.ObjectIds.HistoryData_Encoding_DefaultBinary:
+        buf = ua.utils.Buffer(res.Body)
+        print("{:30} {:10} {}".format('Source timestamp', 'Status', 'Value'))
+        for d in ua.HistoryData.from_binary(buf).DataValues:
+            print("{:30} {:10} {}".format(str(d.SourceTimestamp), d.StatusCode.name, d.Value))
 
+def str_to_datetime(s):
+    if not s:
+        return datetime.utcnow()
+    # try different datetime formats
+    for fmt in ["%Y-%m-%d", "%Y-%m-%d %H:%M", "%Y-%m-%d %H:%M:%S"]:
+        try:
+            return datetime.strptime(s, fmt)
+        except ValueError:
+            pass
+
+def uahistoryread():
+    parser = argparse.ArgumentParser(description="Read history of a node")
+    add_common_args(parser)
+    parser.add_argument("--starttime",
+                        default="",
+                        help="Start time, formatted as YYYY-MM-DD [HH:MM[:SS]]. Default: current time")
+    parser.add_argument("--endtime",
+                        default="",
+                        help="End time, formatted as YYYY-MM-DD [HH:MM[:SS]]. Default: current time")
+
+    args = parser.parse_args()
+    if args.nodeid == "i=84" and args.path == "":
+        parser.print_usage()
+        print("uahistoryread: error: A NodeId or BrowsePath is required")
+        sys.exit(1)
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+
+    client = Client(args.url, timeout=args.timeout)
+    client.connect()
+    try:
+        node = client.get_node(args.nodeid)
+        if args.path:
+            node = node.get_child(args.path.split(","))
+        starttime = str_to_datetime(args.starttime)
+        endtime = str_to_datetime(args.endtime)
+        print("Reading raw history of node {} at {}; start at {}, end at {}\n".format(node, args.url, starttime, endtime))
+        print_history(node.read_raw_history(starttime, endtime))
+    finally:
+        client.disconnect()
+    sys.exit(0)

@@ -406,13 +406,13 @@ class Parser(object):
                     elif key == "Length":
                         field.bitlength = int(val)
                     else:
-                        print("Uknown field item: ", struct.name, key) 
+                        print("Unknown field item: ", struct.name, key)
 
                 struct.fields.append(field)
             elif tag == "Documentation":
                 struct.doc = el.text
             else:
-                print("Uknown tag: ", tag)
+                print("Unknown tag: ", tag)
 
         return struct
 
@@ -436,7 +436,7 @@ class Parser(object):
                     elif k == "Value":
                         ev.value = v
                     else:
-                        print("Uknown field attrib: ", k) 
+                        print("Unknown field attrib: ", k)
                 enum.values.append(ev)
             elif tag == "Documentation":
                 enum.doc = el.text
