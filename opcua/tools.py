@@ -451,11 +451,10 @@ def uadiscover():
     sys.exit(0)
 
 
-def print_history(res):
-    if res.TypeId.Identifier == ua.ObjectIds.HistoryData_Encoding_DefaultBinary:
-        buf = ua.utils.Buffer(res.Body)
+def print_history(o):
+    if isinstance(o, ua.HistoryData):
         print("{:30} {:10} {}".format('Source timestamp', 'Status', 'Value'))
-        for d in ua.HistoryData.from_binary(buf).DataValues:
+        for d in o.DataValues:
             print("{:30} {:10} {}".format(str(d.SourceTimestamp), d.StatusCode.name, d.Value))
 
 

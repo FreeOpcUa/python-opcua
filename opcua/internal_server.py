@@ -172,8 +172,8 @@ class InternalSession(object):
         for _ in params.ClientSoftwareCertificates:
             result.Results.append(ua.StatusCode())
         self.state = SessionState.Activated
-        id_token = ua.downcast_extobject(params.UserIdentityToken)
-        if id_token.TypeId == ua.FourByteNodeId(ua.ObjectIds.UserNameIdentityToken_Encoding_DefaultBinary):
+        id_token = params.UserIdentityToken
+        if isinstance(id_token, ua.UserNameIdentityToken):
             if self.iserver.allow_remote_admin and id_token.UserName in ("admin", "Admin"):
                 self.user = User.Admin
         return result

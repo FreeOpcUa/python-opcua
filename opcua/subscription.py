@@ -66,15 +66,12 @@ class Subscription(object):
             time.sleep(0.01)
 
         for notif in publishresult.NotificationMessage.NotificationData:
-            if notif.TypeId == ua.FourByteNodeId(ua.ObjectIds.DataChangeNotification_Encoding_DefaultBinary):
-                datachange = ua.DataChangeNotification.from_binary(io.BytesIO(notif.to_binary()))
-                self._call_datachange(datachange)
-            elif notif.TypeId == ua.FourByteNodeId(ua.ObjectIds.EventNotificationList_Encoding_DefaultBinary):
-                eventlist = ua.EventNotificationList.from_binary(io.BytesIO(notif.to_binary()))
-                self._call_event(eventlist)
-            elif notif.TypeId == ua.FourByteNodeId(ua.ObjectIds.StatusChangeNotification_Encoding_DefaultBinary):
-                statuschange = ua.StatusChangeNotification.from_binary(io.BytesIO(notif.to_binary()))
-                self._call_status(statuschange)
+            if isinstance(notif, ua.DataChangeNotification):
+                self._call_datachange(notif)
+            elif isinstance(notif, ua.EventNotificationList):
+                self._call_event(notif)
+            elif isinstance(notif, ua.StatusChangeNotification):
+                self._call_status(notif)
             else:
                 self.logger.warning("Notification type not supported yet for notification %s", notif)
 
@@ -223,7 +220,7 @@ class Subscription(object):
                 data.node = Node(self.server, mi.ItemToMonitor.NodeId)
                 data.attribute = mi.ItemToMonitor.AttributeId
                 data.server_handle = result.MonitoredItemId
-                data.mfilter = ua.downcast_extobject(result.FilterResult)
+                data.mfilter = result.FilterResult
                 self._monitoreditems_map[mi.RequestedParameters.ClientHandle] = data
 
                 mids.append(result.MonitoredItemId)

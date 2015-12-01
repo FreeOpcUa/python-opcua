@@ -368,7 +368,7 @@ class Node(object):
         valueid.IndexRange = ''
 
         params = ua.HistoryReadParameters()
-        params.HistoryReadDetails = ua.ExtensionObject.from_object(details)
+        params.HistoryReadDetails = details
         params.TimestampsToReturn = ua.TimestampsToReturn.Both
         params.ReleaseContinuationPoints = False
         params.NodesToRead.append(valueid)
@@ -499,12 +499,12 @@ def _call_method(server, parentnodeid, methodid, arguments):
 
 def _vtype_to_argument(vtype):
     if isinstance(vtype, ua.Argument):
-        return ua.ExtensionObject.from_object(vtype)
+        return vtype
 
     arg = ua.Argument()
     v = ua.Variant(None, vtype)
     arg.DataType = _guess_uatype(v)
-    return ua.ExtensionObject.from_object(arg)
+    return arg
 
 
 def _guess_uatype(variant):
@@ -517,8 +517,7 @@ def _guess_uatype(variant):
             extobj = variant.Value[0]
         else:
             extobj = variant.Value
-        objectidname = ua.ObjectIdsInv[extobj.TypeId.Identifier]
-        classname = objectidname.split("_")[0]
+        classname = extobj.__class__.__name__
         return ua.NodeId(getattr(ua.ObjectIds, classname))
     else:
         return ua.NodeId(getattr(ua.ObjectIds, variant.VariantType.name))

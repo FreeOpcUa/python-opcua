@@ -23,8 +23,6 @@ OverrideNames = {}#{"RequestHeader": "Header", "ResponseHeader": "Header", "Stat
 #some object are defined in extensionobjects in spec but seems not to be in reality
 #in addition to this list all request and response and descriptions will not inherit
 #NoInherit = ["RequestHeader", "ResponseHeader", "ChannelSecurityToken", "UserTokenPolicy", "SignatureData", "BrowseResult", "ReadValueId", "WriteValue", "BrowsePath", "BrowsePathTarget", "RelativePath", "RelativePathElement", "BrowsePathResult"]#, "ApplicationDescription", "EndpointDescription"
-# many objects are defined as inheriting while inheriting ExtensionObjects while they do not so harcode those who really do
-InheritExtensionObjects = ["UserIdentityToken", "NodeAttributes", "NotificationData", "MonitoringFilter"]#"SignatureData"]
 
 
 class Bit(object):
@@ -459,10 +457,7 @@ def add_basetype_members(model):
         emptystruct = False
         if len(struct.fields) == 0:
             emptystruct = True
-        #if not emptystruct and struct.basetype in ("ExtensionObject") and not struct.name in InheritExtensionObjects:
-        if struct.basetype in ("ExtensionObject") and not struct.name in InheritExtensionObjects:
-        #if struct.name in NoInherit or struct.name.endswith("Request") or struct.name.endswith("Response") or struct.name.endswith("Description"):
-            struct.parents.remove(struct.basetype)
+        if struct.basetype in ("ExtensionObject"):
             struct.basetype = None
             continue
         base = model.get_struct(struct.basetype)

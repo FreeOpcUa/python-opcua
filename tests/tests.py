@@ -19,6 +19,8 @@ from opcua import uamethod
 from opcua import Event
 from opcua import ObjectIds
 from opcua import AttributeIds
+from opcua.uaprotocol import extensionobject_from_binary
+from opcua.uaprotocol import extensionobject_to_binary
 
 port_num1 = 48510
 port_num2 = 48530
@@ -132,10 +134,17 @@ class Unit(unittest.TestCase):
         self.assertEqual(nid, nid2)
 
     def test_extension_object(self):
-        obj = ua.ExtensionObject()
-        obj2 = ua.ExtensionObject.from_binary(ua.utils.Buffer(obj.to_binary()))
-        self.assertEqual(obj2.TypeId, obj2.TypeId)
-        self.assertEqual(obj2.Body, obj2.Body)
+        obj = ua.UserNameIdentityToken()
+        obj.UserName = "admin"
+        obj.Password = b"pass"
+        obj2 = ua.extensionobject_from_binary(ua.utils.Buffer(extensionobject_to_binary(obj)))
+        self.assertEqual(type(obj), type(obj2))
+        self.assertEqual(obj.UserName, obj2.UserName)
+        self.assertEqual(obj.Password, obj2.Password)
+        v1 = ua.Variant(obj)
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(v1.to_binary()))
+        self.assertEqual(type(v1), type(v2))
+        self.assertEqual(v1.VariantType, v2.VariantType)
 
     def test_datetime(self):
         now = datetime.now()
