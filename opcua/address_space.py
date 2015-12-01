@@ -265,7 +265,6 @@ class NodeManagementService(object):
             nodedata.attributes[getattr(ua.AttributeIds, name)] = AttributeValue(dv)
 
     def _add_nodeattributes(self, item, nodedata):
-        item = ua.downcast_extobject(item)
         self._add_node_attr(item, nodedata, "AccessLevel", ua.VariantType.Byte)
         self._add_node_attr(item, nodedata, "ArrayDimensions", ua.VariantType.Int32)
         self._add_node_attr(item, nodedata, "BrowseName", ua.VariantType.QualifiedName)

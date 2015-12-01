@@ -61,7 +61,7 @@ class MonitoredItemService(object):
                 result = ua.MonitoredItemCreateResult()
                 if mdata.monitored_item_id == params.MonitoredItemId:
                     result.RevisedSamplingInterval = self.isub.data.RevisedPublishingInterval
-                    result.RevisedQueueSize = ua.downcast_extobject(params.RequestedParameters.QueueSize)
+                    result.RevisedQueueSize = params.RequestedParameters.QueueSize
                     result.FilterResult = params.RequestedParameters.Filter
                     mdata.parameters = result
                     return result
@@ -75,7 +75,7 @@ class MonitoredItemService(object):
             result = ua.MonitoredItemCreateResult()
             result.RevisedSamplingInterval = self.isub.data.RevisedPublishingInterval
             result.RevisedQueueSize = params.RequestedParameters.QueueSize
-            result.FilterResult = ua.downcast_extobject(params.RequestedParameters.Filter)
+            result.FilterResult = params.RequestedParameters.Filter
             self._monitored_item_counter += 1
             result.MonitoredItemId = self._monitored_item_counter
             self.logger.debug("Creating MonitoredItem with id %s", result.MonitoredItemId)

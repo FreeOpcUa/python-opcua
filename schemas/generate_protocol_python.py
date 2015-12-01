@@ -31,6 +31,22 @@ class CodeGenerator(object):
                 continue
             self.generate_struct_code(struct)
 
+        self.iidx = 0
+        self.write("")
+        self.write("ExtensionClasses = {")
+        for struct in self.model.structs:
+            if struct.name in IgnoredStructs:
+                continue
+            if struct.name.endswith("Node") or struct.name.endswith("NodeId"):
+                continue
+            if "ExtensionObject" in struct.parents:
+                self.write("    ObjectIds.{0}_Encoding_DefaultBinary : {0},".format(struct.name))
+        self.write("}")
+        self.write("")
+        with open('uaprotocol_auto_add.py') as f:
+            for line in f:
+                self.write(line.rstrip())
+
     def write(self, *args):
         args = list(args)
         args.insert(0, self.indent * self.iidx)
@@ -44,6 +60,7 @@ class CodeGenerator(object):
         self.write("")
         self.write("from datetime import datetime")
         self.write("")
+        self.write("from opcua.utils import Buffer")
         self.write("from opcua.uatypes import *")
         self.write("from opcua.object_ids import ObjectIds")
         self.write("")
@@ -147,6 +164,8 @@ class CodeGenerator(object):
             elif field.uatype in self.model.enum_list:
                 uatype = self.model.get_enum(field.uatype).uatype
                 self.write("{}.append(pack_uatype('{}', {}))".format(listname, uatype, fname))
+            elif field.uatype in ("ExtensionObject"):
+                self.write("{}.append(extensionobject_to_binary({}))".format(listname, fname))
             else:
                 self.write("{}.append({}.to_binary())".format(listname, fname))
             if field.length:
@@ -190,15 +209,19 @@ class CodeGenerator(object):
                 uatype = self.model.get_enum(field.uatype).uatype
                 self.write("obj.{} = unpack_uatype('{}', data)".format(field.name, uatype))
             else:
+                if field.uatype in ("ExtensionObject"):
+                    frombinary = "extensionobject_from_binary(data)"
+                else:
+                    frombinary = "{}.from_binary(data)".format(field.uatype)
                 if field.length:
                     self.write("length = struct.unpack('<i', data.read(4))[0]")
                     self.write("if length != -1:")
                     self.iidx += 1
                     self.write("for _ in range(0, length):")
                     self.iidx += 1
-                    self.write("obj.{}.append({}.from_binary(data))".format(field.name, field.uatype))
+                    self.write("obj.{}.append({})".format(field.name, frombinary))
                 else:
-                    self.write("obj.{} = {}.from_binary(data)".format(field.name, field.uatype))
+                    self.write("obj.{} = {}".format(field.name, frombinary))
 
         self.iidx = 2
         self.write("return obj")
@@ -230,6 +253,8 @@ class CodeGenerator(object):
             return "datetime.now()"
         elif field.uatype in ("Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Double", "Float", "Byte"):
             return 0
+        elif field.uatype in ("ExtensionObject"):
+            return "None"
         else:
             return field.uatype + "()"
 
