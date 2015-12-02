@@ -4,7 +4,6 @@ from ssl import DER_cert_to_PEM_cert
 import base64
 import hashlib
 
-import OpenSSL
 
 from Crypto.Signature import PKCS1_v1_5
 from Crypto.Hash import SHA256
@@ -85,6 +84,7 @@ def sign_sha1(key, data):
 
 
 if __name__ == "__main__":
+    import OpenSSL
     # Convert from PEM to DER
     pem = open("../examples/server_cert.pem").read()
     der = PEM_cert_to_DER_cert(pem)

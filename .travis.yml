@@ -11,5 +11,6 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then pip install futures ; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then pip install trollius ; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then pip install enum34 ; fi
+  pip install pycrypto
 # command to run tests
 script: ./run-tests.sh
