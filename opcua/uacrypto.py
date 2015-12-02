@@ -6,6 +6,9 @@ import hashlib
 
 import OpenSSL
 
+from Crypto.Signature import PKCS1_v1_5
+from Crypto.Hash import SHA256
+from Crypto.Hash import SHA
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES
 from Crypto.Cipher import PKCS1_OAEP
@@ -16,7 +19,16 @@ BS = 16
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS) 
 unpad = lambda s: s[:-ord(s[len(s) - 1:])]
 
-def encrypt(key, raw):
+
+def dem_to_der(data):
+    """
+    ssh.PEM_cert_to_DER_cert seems to have issues with python3 bytes, so we wrap it
+    """
+    data = PEM_cert_to_DER_cert(data.decode("utf8"))
+    return data
+
+
+def encrypt_aes(key, raw):
     #key = hashlib.sha256(key.encode()).digest()
     key = key.exportKey(format="DER")
     raw = pad(raw)
@@ -24,16 +36,19 @@ def encrypt(key, raw):
     cipher = AES.new(key, AES.MODE_CBC, iv)
     return base64.b64encode(iv + cipher.encrypt(raw)) 
 
-def decrypt(key, enc):
+
+def decrypt_aes(key, enc):
     enc = base64.b64decode(enc)
     iv = enc[:16]
     cipher = AES.new(key, AES.MODE_CBC, iv)
     return unpad(cipher.decrypt(enc[16:]))
 
-def encrypt256(privkey, data):
+
+def encrypt_rsa_oaep(privkey, data):
     if not type(privkey) is RSA._RSAobj:
         privkey = RSA.importKey(privkey)
     cipher = PKCS1_OAEP.new(privkey, Hash.SHA256)
+    #cipher = PKCS1_OAEP.new(privkey, Hash.SHA)
     ciphertext = cipher.encrypt(data)
     return ciphertext
 
@@ -50,15 +65,23 @@ def pubkey_from_dercert(der):
     return rsa_key
 
 
-def sign(key, data):
-    rng = Random.new().read()
-    RSAkey = RSA.generate(384, rng)   # This will take a while...
-    hash = hash.MD5.new(plaintext).digest()
-    signature = RSAkey.sign(hash, rng)
-    signature   # Print what an RSA sig looks like--you don't really care.
-    RSAkey.verify(hash, signature)     # This sig will check out
-    RSAkey.verify(hash[:-1], signature)# This sig will fail
-     
+def sign_sha256(key, data):
+    if not type(key) is RSA._RSAobj:
+        key = RSA.importKey(key)
+    myhash = SHA256.new(data).digest()
+    signature = key.sign(myhash, '')
+    return signature
+
+
+def sign_sha1(key, data):
+    if not type(key) is RSA._RSAobj:
+        key = RSA.importKey(key)
+    myhash = SHA.new(data)
+    signer = PKCS1_v1_5.new(key)
+    signature = signer.sign(myhash)
+    return signature
+
+    
 
 
 if __name__ == "__main__":

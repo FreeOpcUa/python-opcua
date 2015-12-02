@@ -96,14 +96,15 @@ class Client(object):
         """
         load our certificate from file, either pem or der
         """
-        path, ext = os.path.splitext(path)
-        with open(path) as f:
+        _, ext = os.path.splitext(path)
+        with open(path, "br") as f:
             self.client_certificate = f.read()
         if ext == ".pem":
-            self.client_certificate = uacrypto.PEM_cert_to_DER_cert(self.client_certificate)
+            self.client_certificate = uacrypto.dem_to_der(self.client_certificate)
 
-    def set_private_key(self, private_key):
-        self.private_key = private_key
+    def load_private_key(self, path):
+        with open(path, "br") as f:
+            self.private_key = f.read()
 
     def get_server_endpoints(self):
         """
@@ -232,13 +233,16 @@ class Client(object):
             params.UserIdentityToken = ua.X509IdentityToken()
             params.UserIdentityToken.PolicyId = b"certificate_basic256"  
             params.UserIdentityToken.CertificateData = certificate
-            # FIXME: add signature
+            sig = uacrypto.sign_sha1(self.private_key, certificate)
+            params.UserTokenSignature = ua.SignatureData()
+            params.UserTokenSignature.Algorithm = b"http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+            params.UserTokenSignature.Signature = sig
         else:
             params.UserIdentityToken = ua.UserNameIdentityToken()
             params.UserIdentityToken.UserName = username 
             if self.server_url.password:
                 pubkey = uacrypto.pubkey_from_dercert(self.server_certificate)
-                data = uacrypto.encrypt256(pubkey, bytes(password, "utf8"))
+                data = uacrypto.encrypt_rsa_oaep(pubkey, bytes(password, "utf8"))
                 params.UserIdentityToken.Password = data
             params.UserIdentityToken.PolicyId = b"username_basic256" 
             params.UserIdentityToken.EncryptionAlgorithm = 'http://www.w3.org/2001/04/xmlenc#rsa-oaep'
