@@ -130,6 +130,20 @@ class Client(object):
         self.disconnect_socket()
         return servers
 
+    def find_all_servers_on_network(self):
+        """
+        Connect, ask server for a list of known servers on network, and disconnect
+        """
+        self.connect_socket()
+        self.send_hello()
+        self.open_secure_channel()
+        servers = self.find_servers_on_network()
+        self.close_secure_channel()
+        self.disconnect_socket()
+        return servers
+
+
+
     def connect(self):
         """
         High level method
@@ -192,6 +206,10 @@ class Client(object):
     def find_servers(self):
         params = ua.FindServersParameters()
         return self.bclient.find_servers(params)
+
+    def find_servers_on_network(self):
+        params = ua.FindServersOnNetworkParameters()
+        return self.bclient.find_servers_on_network(params)
 
     def create_session(self):
         desc = ua.ApplicationDescription()

@@ -62,8 +62,6 @@ def uaread():
                         "--attribute",
                         dest="attribute",
                         type=int,
-                        #default="VALUE",
-                        #choices=['VALUE', 'NODEID', 'BROWSENAME', 'ERROR', 'CRITICAL'],
                         default=ua.AttributeIds.Value,
                         help="Set attribute to read")
     parser.add_argument("-t",
@@ -198,8 +196,6 @@ def uawrite():
                         "--attribute",
                         dest="attribute",
                         type=int,
-                        #default="VALUE",
-                        #choices=['VALUE', 'NODEID', 'BROWSENAME', 'ERROR', 'CRITICAL'],
                         default=ua.AttributeIds.Value,
                         help="Set attribute to read")
     parser.add_argument("-l",
@@ -244,7 +240,6 @@ def uals():
     add_common_args(parser)
     parser.add_argument("-l",
                         dest="long_format",
-                        #action="store_true",
                         const=3,
                         nargs="?",
                         type=int,
@@ -430,8 +425,29 @@ def endpoint_to_strings(ep):
 def uadiscover():
     parser = argparse.ArgumentParser(description="Performs OPC UA discovery and prints information on servers and endpoints.")
     add_minimum_args(parser)
+    parser.add_argument("-n",
+                        "--network",
+                        action="store_true",
+                        help="Also send a FindServersOnNetwork request to server")
+    #parser.add_argument("-s",
+                        #"--servers",
+                        #action="store_false",
+                        #help="send a FindServers request to server")
+    #parser.add_argument("-e",
+                        #"--endpoints",
+                        #action="store_false",
+                        #help="send a GetEndpoints request to server")
     args = parser.parse_args()
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+    
+    if args.network:
+        client = Client(args.url, timeout=args.timeout)
+        print("Performing discovery at {}\n".format(args.url))
+        for i, server in enumerate(client.find_all_servers_on_network(), start=1):
+            print('Server {}:'.format(i))
+            #for (n, v) in application_to_strings(server):
+                #print('  {}: {}'.format(n, v))
+            print('')
 
     client = Client(args.url, timeout=args.timeout)
     print("Performing discovery at {}\n".format(args.url))
