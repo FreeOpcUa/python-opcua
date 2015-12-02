@@ -362,6 +362,13 @@ def create_standard_address_space_Part9(server):
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=3875")
     refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=47")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2782")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12912")
+    refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
@@ -967,6 +974,63 @@ def create_standard_address_space_Part9(server):
     ref.IsForward = true
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=3876")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12912")
+    node.BrowseName = ua.QualifiedName.from_string("ConditionRefresh2")
+    node.NodeClass = ua.NodeClass.Method
+    node.ParentNodeId = ua.NodeId.from_string("i=2782")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=47")
+    attrs = ua.MethodAttributes()
+    attrs.DisplayName = ua.LocalizedText("ConditionRefresh2")
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12912")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12913")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=3065")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12912")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2787")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=3065")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12912")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2788")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12913")
+    node.BrowseName = ua.QualifiedName.from_string("InputArguments")
+    node.NodeClass = ua.NodeClass.Variable
+    node.ParentNodeId = ua.NodeId.from_string("i=12912")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    node.TypeDefinition = ua.NodeId.from_string("i=68")
+    attrs = ua.VariableAttributes()
+    attrs.DisplayName = ua.LocalizedText("InputArguments")
+    attrs.DataType = ua.NodeId.from_string("i=296")
+    attrs.ValueRank = 1
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12913")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
     refs.append(ref)
@@ -4906,6 +4970,110 @@ def create_standard_address_space_Part9(server):
     attrs.IsAbstract = false
     node.NodeAttributes = attrs
     server.add_nodes([node])
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=13225")
+    node.BrowseName = ua.QualifiedName.from_string("CertificateExpirationAlarmType")
+    node.NodeClass = ua.NodeClass.ObjectType
+    node.ParentNodeId = ua.NodeId.from_string("i=11753")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    attrs = ua.ObjectTypeAttributes()
+    attrs.DisplayName = ua.LocalizedText("CertificateExpirationAlarmType")
+    attrs.IsAbstract = false
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=13225")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=13325")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=13225")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=13326")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=13225")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=13327")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=13325")
+    node.BrowseName = ua.QualifiedName.from_string("ExpirationDate")
+    node.NodeClass = ua.NodeClass.Variable
+    node.ParentNodeId = ua.NodeId.from_string("i=13225")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    node.TypeDefinition = ua.NodeId.from_string("i=68")
+    attrs = ua.VariableAttributes()
+    attrs.DisplayName = ua.LocalizedText("ExpirationDate")
+    attrs.DataType = ua.NodeId(ua.ObjectIds.DateTime)
+    attrs.ValueRank = -1
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
+    ref.SourceNodeId = ua.NodeId.from_string("i=13325")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=13326")
+    node.BrowseName = ua.QualifiedName.from_string("CertificateType")
+    node.NodeClass = ua.NodeClass.Variable
+    node.ParentNodeId = ua.NodeId.from_string("i=13225")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    node.TypeDefinition = ua.NodeId.from_string("i=68")
+    attrs = ua.VariableAttributes()
+    attrs.DisplayName = ua.LocalizedText("CertificateType")
+    attrs.DataType = ua.NodeId(ua.ObjectIds.NodeId)
+    attrs.ValueRank = -1
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
+    ref.SourceNodeId = ua.NodeId.from_string("i=13326")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=13327")
+    node.BrowseName = ua.QualifiedName.from_string("Certificate")
+    node.NodeClass = ua.NodeClass.Variable
+    node.ParentNodeId = ua.NodeId.from_string("i=13225")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    node.TypeDefinition = ua.NodeId.from_string("i=68")
+    attrs = ua.VariableAttributes()
+    attrs.DisplayName = ua.LocalizedText("Certificate")
+    attrs.DataType = ua.NodeId(ua.ObjectIds.ByteString)
+    attrs.ValueRank = -1
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
+    ref.SourceNodeId = ua.NodeId.from_string("i=13327")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    server.add_references(refs)
    
     node = ua.AddNodesItem()
     node.RequestedNewNodeId = ua.NodeId.from_string("i=10751")

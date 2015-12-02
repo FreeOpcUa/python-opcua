@@ -10,21 +10,56 @@ from opcua.object_ids import ObjectIds
 
 
 
+class NamingRuleType(object):
+    '''
+    :ivar Mandatory: 
+    :vartype Mandatory: 1 
+    :ivar Optional: 
+    :vartype Optional: 2 
+    :ivar Constraint: 
+    :vartype Constraint: 3 
+    '''
+    Mandatory = 1
+    Optional = 2
+    Constraint = 3
+
 class OpenFileMode(object):
     '''
     :ivar Read: 
     :vartype Read: 1 
     :ivar Write: 
     :vartype Write: 2 
-    :ivar EraseExisiting: 
-    :vartype EraseExisiting: 4 
+    :ivar EraseExisting: 
+    :vartype EraseExisting: 4 
     :ivar Append: 
     :vartype Append: 8 
     '''
     Read = 1
     Write = 2
-    EraseExisiting = 4
+    EraseExisting = 4
     Append = 8
+
+class TrustListMasks(object):
+    '''
+    :ivar None_: 
+    :vartype None_: 0 
+    :ivar TrustedCertificates: 
+    :vartype TrustedCertificates: 1 
+    :ivar TrustedCrls: 
+    :vartype TrustedCrls: 2 
+    :ivar IssuerCertificates: 
+    :vartype IssuerCertificates: 4 
+    :ivar IssuerCrls: 
+    :vartype IssuerCrls: 8 
+    :ivar All: 
+    :vartype All: 15 
+    '''
+    None_ = 0
+    TrustedCertificates = 1
+    TrustedCrls = 2
+    IssuerCertificates = 4
+    IssuerCrls = 8
+    All = 15
 
 class IdType(object):
     '''
@@ -125,11 +160,14 @@ class UserTokenType(object):
     :vartype Certificate: 2 
     :ivar IssuedToken: 
     :vartype IssuedToken: 3 
+    :ivar Kerberos: 
+    :vartype Kerberos: 4 
     '''
     Anonymous = 0
     UserName = 1
     Certificate = 2
     IssuedToken = 3
+    Kerberos = 4
 
 class SecurityTokenRequestType(object):
     '''
@@ -247,7 +285,7 @@ class NodeAttributesMask(object):
 
 class AttributeWriteMask(object):
     '''
-    Define bits used to indicate which attributes are writeable.
+    Define bits used to indicate which attributes are writable.
     
     :ivar None_: 
     :vartype None_: 0 
@@ -633,18 +671,18 @@ class ExceptionDeviationFormat(object):
     '''
     :ivar AbsoluteValue: 
     :vartype AbsoluteValue: 0 
-    :ivar PercentOfRange: 
-    :vartype PercentOfRange: 1 
     :ivar PercentOfValue: 
-    :vartype PercentOfValue: 2 
+    :vartype PercentOfValue: 1 
+    :ivar PercentOfRange: 
+    :vartype PercentOfRange: 2 
     :ivar PercentOfEURange: 
     :vartype PercentOfEURange: 3 
     :ivar Unknown: 
     :vartype Unknown: 4 
     '''
     AbsoluteValue = 0
-    PercentOfRange = 1
-    PercentOfValue = 2
+    PercentOfValue = 1
+    PercentOfRange = 2
     PercentOfEURange = 3
     Unknown = 4
 
@@ -693,6 +731,8 @@ class DiagnosticInfo(FrozenClass):
     :vartype SymbolicId: Int32 
     :ivar NamespaceURI: 
     :vartype NamespaceURI: Int32 
+    :ivar Locale: 
+    :vartype Locale: Int32 
     :ivar LocalizedText: 
     :vartype LocalizedText: Int32 
     :ivar AdditionalInfo: 
@@ -706,6 +746,7 @@ class DiagnosticInfo(FrozenClass):
         self.Encoding = 0
         self.SymbolicId = 0
         self.NamespaceURI = 0
+        self.Locale = 0
         self.LocalizedText = 0
         self.AdditionalInfo = b''
         self.InnerStatusCode = StatusCode()
@@ -716,7 +757,8 @@ class DiagnosticInfo(FrozenClass):
         packet = []
         if self.SymbolicId: self.Encoding |= (1 << 0)
         if self.NamespaceURI: self.Encoding |= (1 << 1)
-        if self.LocalizedText: self.Encoding |= (1 << 2)
+        if self.Locale: self.Encoding |= (1 << 2)
+        if self.LocalizedText: self.Encoding |= (1 << 3)
         if self.AdditionalInfo: self.Encoding |= (1 << 4)
         if self.InnerStatusCode: self.Encoding |= (1 << 5)
         if self.InnerDiagnosticInfo: self.Encoding |= (1 << 6)
@@ -725,6 +767,8 @@ class DiagnosticInfo(FrozenClass):
             packet.append(pack_uatype('Int32', self.SymbolicId))
         if self.NamespaceURI: 
             packet.append(pack_uatype('Int32', self.NamespaceURI))
+        if self.Locale: 
+            packet.append(pack_uatype('Int32', self.Locale))
         if self.LocalizedText: 
             packet.append(pack_uatype('Int32', self.LocalizedText))
         if self.AdditionalInfo: 
@@ -744,6 +788,8 @@ class DiagnosticInfo(FrozenClass):
         if obj.Encoding & (1 << 1):
             obj.NamespaceURI = unpack_uatype('Int32', data)
         if obj.Encoding & (1 << 2):
+            obj.Locale = unpack_uatype('Int32', data)
+        if obj.Encoding & (1 << 3):
             obj.LocalizedText = unpack_uatype('Int32', data)
         if obj.Encoding & (1 << 4):
             obj.AdditionalInfo = unpack_uatype('CharArray', data)
@@ -757,10 +803,68 @@ class DiagnosticInfo(FrozenClass):
         return 'DiagnosticInfo(' + 'Encoding:' + str(self.Encoding) + ', '  + \
              'SymbolicId:' + str(self.SymbolicId) + ', '  + \
              'NamespaceURI:' + str(self.NamespaceURI) + ', '  + \
+             'Locale:' + str(self.Locale) + ', '  + \
              'LocalizedText:' + str(self.LocalizedText) + ', '  + \
              'AdditionalInfo:' + str(self.AdditionalInfo) + ', '  + \
              'InnerStatusCode:' + str(self.InnerStatusCode) + ', '  + \
              'InnerDiagnosticInfo:' + str(self.InnerDiagnosticInfo) + ')'
+    
+    __repr__ = __str__
+    
+class TrustListDataType(FrozenClass):
+    '''
+    :ivar SpecifiedLists: 
+    :vartype SpecifiedLists: UInt32 
+    :ivar TrustedCertificates: 
+    :vartype TrustedCertificates: ByteString 
+    :ivar TrustedCrls: 
+    :vartype TrustedCrls: ByteString 
+    :ivar IssuerCertificates: 
+    :vartype IssuerCertificates: ByteString 
+    :ivar IssuerCrls: 
+    :vartype IssuerCrls: ByteString 
+    '''
+    def __init__(self):
+        self.SpecifiedLists = 0
+        self.TrustedCertificates = []
+        self.TrustedCrls = []
+        self.IssuerCertificates = []
+        self.IssuerCrls = []
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(pack_uatype('UInt32', self.SpecifiedLists))
+        packet.append(struct.pack('<i', len(self.TrustedCertificates)))
+        for fieldname in self.TrustedCertificates:
+            packet.append(pack_uatype('ByteString', fieldname))
+        packet.append(struct.pack('<i', len(self.TrustedCrls)))
+        for fieldname in self.TrustedCrls:
+            packet.append(pack_uatype('ByteString', fieldname))
+        packet.append(struct.pack('<i', len(self.IssuerCertificates)))
+        for fieldname in self.IssuerCertificates:
+            packet.append(pack_uatype('ByteString', fieldname))
+        packet.append(struct.pack('<i', len(self.IssuerCrls)))
+        for fieldname in self.IssuerCrls:
+            packet.append(pack_uatype('ByteString', fieldname))
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = TrustListDataType()
+        obj.SpecifiedLists = unpack_uatype('UInt32', data)
+        obj.TrustedCertificates = unpack_uatype_array('ByteString', data)
+        obj.TrustedCrls = unpack_uatype_array('ByteString', data)
+        obj.IssuerCertificates = unpack_uatype_array('ByteString', data)
+        obj.IssuerCrls = unpack_uatype_array('ByteString', data)
+        return obj
+    
+    def __str__(self):
+        return 'TrustListDataType(' + 'SpecifiedLists:' + str(self.SpecifiedLists) + ', '  + \
+             'TrustedCertificates:' + str(self.TrustedCertificates) + ', '  + \
+             'TrustedCrls:' + str(self.TrustedCrls) + ', '  + \
+             'IssuerCertificates:' + str(self.IssuerCertificates) + ', '  + \
+             'IssuerCrls:' + str(self.IssuerCrls) + ')'
     
     __repr__ = __str__
     
@@ -853,6 +957,61 @@ class EnumValueType(FrozenClass):
         return 'EnumValueType(' + 'Value:' + str(self.Value) + ', '  + \
              'DisplayName:' + str(self.DisplayName) + ', '  + \
              'Description:' + str(self.Description) + ')'
+    
+    __repr__ = __str__
+    
+class OptionSet(FrozenClass):
+    '''
+    This abstract Structured DataType is the base DataType for all DataTypes representing a bit mask.
+    
+    :ivar Value: 
+    :vartype Value: ByteString 
+    :ivar ValidBits: 
+    :vartype ValidBits: ByteString 
+    '''
+    def __init__(self):
+        self.Value = b''
+        self.ValidBits = b''
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(pack_uatype('ByteString', self.Value))
+        packet.append(pack_uatype('ByteString', self.ValidBits))
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = OptionSet()
+        obj.Value = unpack_uatype('ByteString', data)
+        obj.ValidBits = unpack_uatype('ByteString', data)
+        return obj
+    
+    def __str__(self):
+        return 'OptionSet(' + 'Value:' + str(self.Value) + ', '  + \
+             'ValidBits:' + str(self.ValidBits) + ')'
+    
+    __repr__ = __str__
+    
+class Union(FrozenClass):
+    '''
+    This abstract DataType is the base DataType for all union DataTypes.
+    
+    '''
+    def __init__(self):
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = Union()
+        return obj
+    
+    def __str__(self):
+        return 'Union(' +  + ')'
     
     __repr__ = __str__
     
@@ -1228,6 +1387,200 @@ class FindServersResponse(FrozenClass):
         return 'FindServersResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
              'Servers:' + str(self.Servers) + ')'
+    
+    __repr__ = __str__
+    
+class ServerOnNetwork(FrozenClass):
+    '''
+    :ivar RecordId: 
+    :vartype RecordId: UInt32 
+    :ivar ServerName: 
+    :vartype ServerName: String 
+    :ivar DiscoveryUrl: 
+    :vartype DiscoveryUrl: String 
+    :ivar ServerCapabilities: 
+    :vartype ServerCapabilities: String 
+    '''
+    def __init__(self):
+        self.RecordId = 0
+        self.ServerName = ''
+        self.DiscoveryUrl = ''
+        self.ServerCapabilities = []
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(pack_uatype('UInt32', self.RecordId))
+        packet.append(pack_uatype('String', self.ServerName))
+        packet.append(pack_uatype('String', self.DiscoveryUrl))
+        packet.append(struct.pack('<i', len(self.ServerCapabilities)))
+        for fieldname in self.ServerCapabilities:
+            packet.append(pack_uatype('String', fieldname))
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = ServerOnNetwork()
+        obj.RecordId = unpack_uatype('UInt32', data)
+        obj.ServerName = unpack_uatype('String', data)
+        obj.DiscoveryUrl = unpack_uatype('String', data)
+        obj.ServerCapabilities = unpack_uatype_array('String', data)
+        return obj
+    
+    def __str__(self):
+        return 'ServerOnNetwork(' + 'RecordId:' + str(self.RecordId) + ', '  + \
+             'ServerName:' + str(self.ServerName) + ', '  + \
+             'DiscoveryUrl:' + str(self.DiscoveryUrl) + ', '  + \
+             'ServerCapabilities:' + str(self.ServerCapabilities) + ')'
+    
+    __repr__ = __str__
+    
+class FindServersOnNetworkParameters(FrozenClass):
+    '''
+    :ivar StartingRecordId: 
+    :vartype StartingRecordId: UInt32 
+    :ivar MaxRecordsToReturn: 
+    :vartype MaxRecordsToReturn: UInt32 
+    :ivar ServerCapabilityFilter: 
+    :vartype ServerCapabilityFilter: String 
+    '''
+    def __init__(self):
+        self.StartingRecordId = 0
+        self.MaxRecordsToReturn = 0
+        self.ServerCapabilityFilter = []
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(pack_uatype('UInt32', self.StartingRecordId))
+        packet.append(pack_uatype('UInt32', self.MaxRecordsToReturn))
+        packet.append(struct.pack('<i', len(self.ServerCapabilityFilter)))
+        for fieldname in self.ServerCapabilityFilter:
+            packet.append(pack_uatype('String', fieldname))
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = FindServersOnNetworkParameters()
+        obj.StartingRecordId = unpack_uatype('UInt32', data)
+        obj.MaxRecordsToReturn = unpack_uatype('UInt32', data)
+        obj.ServerCapabilityFilter = unpack_uatype_array('String', data)
+        return obj
+    
+    def __str__(self):
+        return 'FindServersOnNetworkParameters(' + 'StartingRecordId:' + str(self.StartingRecordId) + ', '  + \
+             'MaxRecordsToReturn:' + str(self.MaxRecordsToReturn) + ', '  + \
+             'ServerCapabilityFilter:' + str(self.ServerCapabilityFilter) + ')'
+    
+    __repr__ = __str__
+    
+class FindServersOnNetworkRequest(FrozenClass):
+    '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: FindServersOnNetworkParameters 
+    '''
+    def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.FindServersOnNetworkRequest_Encoding_DefaultBinary)
+        self.RequestHeader = RequestHeader()
+        self.Parameters = FindServersOnNetworkParameters()
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.RequestHeader.to_binary())
+        packet.append(self.Parameters.to_binary())
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = FindServersOnNetworkRequest()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = FindServersOnNetworkParameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'FindServersOnNetworkRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
+class FindServersOnNetworkResult(FrozenClass):
+    '''
+    :ivar LastCounterResetTime: 
+    :vartype LastCounterResetTime: DateTime 
+    :ivar Servers: 
+    :vartype Servers: ServerOnNetwork 
+    '''
+    def __init__(self):
+        self.LastCounterResetTime = datetime.now()
+        self.Servers = []
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(pack_uatype('DateTime', self.LastCounterResetTime))
+        packet.append(struct.pack('<i', len(self.Servers)))
+        for fieldname in self.Servers:
+            packet.append(fieldname.to_binary())
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = FindServersOnNetworkResult()
+        obj.LastCounterResetTime = unpack_uatype('DateTime', data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length != -1:
+            for _ in range(0, length):
+                obj.Servers.append(ServerOnNetwork.from_binary(data))
+        return obj
+    
+    def __str__(self):
+        return 'FindServersOnNetworkResult(' + 'LastCounterResetTime:' + str(self.LastCounterResetTime) + ', '  + \
+             'Servers:' + str(self.Servers) + ')'
+    
+    __repr__ = __str__
+    
+class FindServersOnNetworkResponse(FrozenClass):
+    '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: FindServersOnNetworkResult 
+    '''
+    def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.FindServersOnNetworkResponse_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
+        self.Parameters = FindServersOnNetworkResult()
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
+        packet.append(self.Parameters.to_binary())
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = FindServersOnNetworkResponse()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = FindServersOnNetworkResult.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'FindServersOnNetworkResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
     
     __repr__ = __str__
     
@@ -1650,6 +2003,214 @@ class RegisterServerResponse(FrozenClass):
     def __str__(self):
         return 'RegisterServerResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'ResponseHeader:' + str(self.ResponseHeader) + ')'
+    
+    __repr__ = __str__
+    
+class DiscoveryConfiguration(FrozenClass):
+    '''
+    A base type for discovery configuration information.
+    
+    '''
+    def __init__(self):
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = DiscoveryConfiguration()
+        return obj
+    
+    def __str__(self):
+        return 'DiscoveryConfiguration(' +  + ')'
+    
+    __repr__ = __str__
+    
+class MdnsDiscoveryConfiguration(FrozenClass):
+    '''
+    The discovery information needed for mDNS registration.
+    
+    :ivar MdnsServerName: 
+    :vartype MdnsServerName: String 
+    :ivar ServerCapabilities: 
+    :vartype ServerCapabilities: String 
+    '''
+    def __init__(self):
+        self.MdnsServerName = ''
+        self.ServerCapabilities = []
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(pack_uatype('String', self.MdnsServerName))
+        packet.append(struct.pack('<i', len(self.ServerCapabilities)))
+        for fieldname in self.ServerCapabilities:
+            packet.append(pack_uatype('String', fieldname))
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = MdnsDiscoveryConfiguration()
+        obj.MdnsServerName = unpack_uatype('String', data)
+        obj.ServerCapabilities = unpack_uatype_array('String', data)
+        return obj
+    
+    def __str__(self):
+        return 'MdnsDiscoveryConfiguration(' + 'MdnsServerName:' + str(self.MdnsServerName) + ', '  + \
+             'ServerCapabilities:' + str(self.ServerCapabilities) + ')'
+    
+    __repr__ = __str__
+    
+class RegisterServer2Parameters(FrozenClass):
+    '''
+    :ivar Server: 
+    :vartype Server: RegisteredServer 
+    :ivar DiscoveryConfiguration: 
+    :vartype DiscoveryConfiguration: ExtensionObject 
+    '''
+    def __init__(self):
+        self.Server = RegisteredServer()
+        self.DiscoveryConfiguration = []
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(self.Server.to_binary())
+        packet.append(struct.pack('<i', len(self.DiscoveryConfiguration)))
+        for fieldname in self.DiscoveryConfiguration:
+            packet.append(extensionobject_to_binary(fieldname))
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = RegisterServer2Parameters()
+        obj.Server = RegisteredServer.from_binary(data)
+        length = struct.unpack('<i', data.read(4))[0]
+        if length != -1:
+            for _ in range(0, length):
+                obj.DiscoveryConfiguration.append(extensionobject_from_binary(data))
+        return obj
+    
+    def __str__(self):
+        return 'RegisterServer2Parameters(' + 'Server:' + str(self.Server) + ', '  + \
+             'DiscoveryConfiguration:' + str(self.DiscoveryConfiguration) + ')'
+    
+    __repr__ = __str__
+    
+class RegisterServer2Request(FrozenClass):
+    '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar RequestHeader: 
+    :vartype RequestHeader: RequestHeader 
+    :ivar Parameters: 
+    :vartype Parameters: RegisterServer2Parameters 
+    '''
+    def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.RegisterServer2Request_Encoding_DefaultBinary)
+        self.RequestHeader = RequestHeader()
+        self.Parameters = RegisterServer2Parameters()
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.RequestHeader.to_binary())
+        packet.append(self.Parameters.to_binary())
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = RegisterServer2Request()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.RequestHeader = RequestHeader.from_binary(data)
+        obj.Parameters = RegisterServer2Parameters.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RegisterServer2Request(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
+    
+    __repr__ = __str__
+    
+class RegisterServer2Result(FrozenClass):
+    '''
+    :ivar ConfigurationResults: 
+    :vartype ConfigurationResults: StatusCode 
+    :ivar DiagnosticInfos: 
+    :vartype DiagnosticInfos: DiagnosticInfo 
+    '''
+    def __init__(self):
+        self.ConfigurationResults = []
+        self.DiagnosticInfos = []
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(struct.pack('<i', len(self.ConfigurationResults)))
+        for fieldname in self.ConfigurationResults:
+            packet.append(fieldname.to_binary())
+        packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
+        for fieldname in self.DiagnosticInfos:
+            packet.append(fieldname.to_binary())
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = RegisterServer2Result()
+        length = struct.unpack('<i', data.read(4))[0]
+        if length != -1:
+            for _ in range(0, length):
+                obj.ConfigurationResults.append(StatusCode.from_binary(data))
+        length = struct.unpack('<i', data.read(4))[0]
+        if length != -1:
+            for _ in range(0, length):
+                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
+        return obj
+    
+    def __str__(self):
+        return 'RegisterServer2Result(' + 'ConfigurationResults:' + str(self.ConfigurationResults) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+    
+    __repr__ = __str__
+    
+class RegisterServer2Response(FrozenClass):
+    '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
+    :ivar Parameters: 
+    :vartype Parameters: RegisterServer2Result 
+    '''
+    def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.RegisterServer2Response_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
+        self.Parameters = RegisterServer2Result()
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
+        packet.append(self.Parameters.to_binary())
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = RegisterServer2Response()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        obj.Parameters = RegisterServer2Result.from_binary(data)
+        return obj
+    
+    def __str__(self):
+        return 'RegisterServer2Response(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+             'Parameters:' + str(self.Parameters) + ')'
     
     __repr__ = __str__
     
@@ -2351,6 +2912,37 @@ class X509IdentityToken(FrozenClass):
     def __str__(self):
         return 'X509IdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', '  + \
              'CertificateData:' + str(self.CertificateData) + ')'
+    
+    __repr__ = __str__
+    
+class KerberosIdentityToken(FrozenClass):
+    '''
+    :ivar PolicyId: 
+    :vartype PolicyId: String 
+    :ivar TicketData: 
+    :vartype TicketData: ByteString 
+    '''
+    def __init__(self):
+        self.PolicyId = ''
+        self.TicketData = b''
+        self._freeze()
+    
+    def to_binary(self):
+        packet = []
+        packet.append(pack_uatype('String', self.PolicyId))
+        packet.append(pack_uatype('ByteString', self.TicketData))
+        return b''.join(packet)
+        
+    @staticmethod
+    def from_binary(data):
+        obj = KerberosIdentityToken()
+        obj.PolicyId = unpack_uatype('String', data)
+        obj.TicketData = unpack_uatype('ByteString', data)
+        return obj
+    
+    def __str__(self):
+        return 'KerberosIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', '  + \
+             'TicketData:' + str(self.TicketData) + ')'
     
     __repr__ = __str__
     
@@ -7439,37 +8031,6 @@ class HistoryUpdateResult(FrozenClass):
     
     __repr__ = __str__
     
-class HistoryUpdateEventResult(FrozenClass):
-    '''
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar EventFilterResult: 
-    :vartype EventFilterResult: EventFilterResult 
-    '''
-    def __init__(self):
-        self.StatusCode = StatusCode()
-        self.EventFilterResult = EventFilterResult()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.StatusCode.to_binary())
-        packet.append(self.EventFilterResult.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryUpdateEventResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        obj.EventFilterResult = EventFilterResult.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'HistoryUpdateEventResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
-             'EventFilterResult:' + str(self.EventFilterResult) + ')'
-    
-    __repr__ = __str__
-    
 class HistoryUpdateParameters(FrozenClass):
     '''
     :ivar HistoryUpdateDetails: 
@@ -10385,734 +10946,6 @@ class DeleteSubscriptionsResponse(FrozenClass):
     
     __repr__ = __str__
     
-class ScalarTestType(FrozenClass):
-    '''
-    A complex type containing all possible scalar types used for testing.
-    
-    :ivar Boolean: 
-    :vartype Boolean: Boolean 
-    :ivar SByte: 
-    :vartype SByte: SByte 
-    :ivar Byte: 
-    :vartype Byte: Byte 
-    :ivar Int16: 
-    :vartype Int16: Int16 
-    :ivar UInt16: 
-    :vartype UInt16: UInt16 
-    :ivar Int32: 
-    :vartype Int32: Int32 
-    :ivar UInt32: 
-    :vartype UInt32: UInt32 
-    :ivar Int64: 
-    :vartype Int64: Int64 
-    :ivar UInt64: 
-    :vartype UInt64: UInt64 
-    :ivar Float: 
-    :vartype Float: Float 
-    :ivar Double: 
-    :vartype Double: Double 
-    :ivar String: 
-    :vartype String: String 
-    :ivar DateTime: 
-    :vartype DateTime: DateTime 
-    :ivar Guid: 
-    :vartype Guid: Guid 
-    :ivar ByteString: 
-    :vartype ByteString: ByteString 
-    :ivar XmlElement: 
-    :vartype XmlElement: XmlElement 
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
-    :ivar ExpandedNodeId: 
-    :vartype ExpandedNodeId: ExpandedNodeId 
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar DiagnosticInfo: 
-    :vartype DiagnosticInfo: DiagnosticInfo 
-    :ivar QualifiedName: 
-    :vartype QualifiedName: QualifiedName 
-    :ivar LocalizedText: 
-    :vartype LocalizedText: LocalizedText 
-    :ivar ExtensionObject: 
-    :vartype ExtensionObject: ExtensionObject 
-    :ivar DataValue: 
-    :vartype DataValue: DataValue 
-    :ivar EnumeratedValue: 
-    :vartype EnumeratedValue: EnumeratedTestType 
-    '''
-    def __init__(self):
-        self.Boolean = True
-        self.SByte = SByte()
-        self.Byte = 0
-        self.Int16 = 0
-        self.UInt16 = 0
-        self.Int32 = 0
-        self.UInt32 = 0
-        self.Int64 = 0
-        self.UInt64 = 0
-        self.Float = 0
-        self.Double = 0
-        self.String = ''
-        self.DateTime = datetime.now()
-        self.Guid = Guid()
-        self.ByteString = b''
-        self.XmlElement = XmlElement()
-        self.NodeId = NodeId()
-        self.ExpandedNodeId = ExpandedNodeId()
-        self.StatusCode = StatusCode()
-        self.DiagnosticInfo = DiagnosticInfo()
-        self.QualifiedName = QualifiedName()
-        self.LocalizedText = LocalizedText()
-        self.ExtensionObject = None
-        self.DataValue = DataValue()
-        self.EnumeratedValue = 0
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(pack_uatype('Boolean', self.Boolean))
-        packet.append(pack_uatype('SByte', self.SByte))
-        packet.append(pack_uatype('Byte', self.Byte))
-        packet.append(pack_uatype('Int16', self.Int16))
-        packet.append(pack_uatype('UInt16', self.UInt16))
-        packet.append(pack_uatype('Int32', self.Int32))
-        packet.append(pack_uatype('UInt32', self.UInt32))
-        packet.append(pack_uatype('Int64', self.Int64))
-        packet.append(pack_uatype('UInt64', self.UInt64))
-        packet.append(pack_uatype('Float', self.Float))
-        packet.append(pack_uatype('Double', self.Double))
-        packet.append(pack_uatype('String', self.String))
-        packet.append(pack_uatype('DateTime', self.DateTime))
-        packet.append(self.Guid.to_binary())
-        packet.append(pack_uatype('ByteString', self.ByteString))
-        packet.append(self.XmlElement.to_binary())
-        packet.append(self.NodeId.to_binary())
-        packet.append(self.ExpandedNodeId.to_binary())
-        packet.append(self.StatusCode.to_binary())
-        packet.append(self.DiagnosticInfo.to_binary())
-        packet.append(self.QualifiedName.to_binary())
-        packet.append(self.LocalizedText.to_binary())
-        packet.append(extensionobject_to_binary(self.ExtensionObject))
-        packet.append(self.DataValue.to_binary())
-        packet.append(pack_uatype('UInt32', self.EnumeratedValue))
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = ScalarTestType()
-        obj.Boolean = unpack_uatype('Boolean', data)
-        obj.SByte = unpack_uatype('SByte', data)
-        obj.Byte = unpack_uatype('Byte', data)
-        obj.Int16 = unpack_uatype('Int16', data)
-        obj.UInt16 = unpack_uatype('UInt16', data)
-        obj.Int32 = unpack_uatype('Int32', data)
-        obj.UInt32 = unpack_uatype('UInt32', data)
-        obj.Int64 = unpack_uatype('Int64', data)
-        obj.UInt64 = unpack_uatype('UInt64', data)
-        obj.Float = unpack_uatype('Float', data)
-        obj.Double = unpack_uatype('Double', data)
-        obj.String = unpack_uatype('String', data)
-        obj.DateTime = unpack_uatype('DateTime', data)
-        obj.Guid = Guid.from_binary(data)
-        obj.ByteString = unpack_uatype('ByteString', data)
-        obj.XmlElement = XmlElement.from_binary(data)
-        obj.NodeId = NodeId.from_binary(data)
-        obj.ExpandedNodeId = ExpandedNodeId.from_binary(data)
-        obj.StatusCode = StatusCode.from_binary(data)
-        obj.DiagnosticInfo = DiagnosticInfo.from_binary(data)
-        obj.QualifiedName = QualifiedName.from_binary(data)
-        obj.LocalizedText = LocalizedText.from_binary(data)
-        obj.ExtensionObject = extensionobject_from_binary(data)
-        obj.DataValue = DataValue.from_binary(data)
-        obj.EnumeratedValue = unpack_uatype('UInt32', data)
-        return obj
-    
-    def __str__(self):
-        return 'ScalarTestType(' + 'Boolean:' + str(self.Boolean) + ', '  + \
-             'SByte:' + str(self.SByte) + ', '  + \
-             'Byte:' + str(self.Byte) + ', '  + \
-             'Int16:' + str(self.Int16) + ', '  + \
-             'UInt16:' + str(self.UInt16) + ', '  + \
-             'Int32:' + str(self.Int32) + ', '  + \
-             'UInt32:' + str(self.UInt32) + ', '  + \
-             'Int64:' + str(self.Int64) + ', '  + \
-             'UInt64:' + str(self.UInt64) + ', '  + \
-             'Float:' + str(self.Float) + ', '  + \
-             'Double:' + str(self.Double) + ', '  + \
-             'String:' + str(self.String) + ', '  + \
-             'DateTime:' + str(self.DateTime) + ', '  + \
-             'Guid:' + str(self.Guid) + ', '  + \
-             'ByteString:' + str(self.ByteString) + ', '  + \
-             'XmlElement:' + str(self.XmlElement) + ', '  + \
-             'NodeId:' + str(self.NodeId) + ', '  + \
-             'ExpandedNodeId:' + str(self.ExpandedNodeId) + ', '  + \
-             'StatusCode:' + str(self.StatusCode) + ', '  + \
-             'DiagnosticInfo:' + str(self.DiagnosticInfo) + ', '  + \
-             'QualifiedName:' + str(self.QualifiedName) + ', '  + \
-             'LocalizedText:' + str(self.LocalizedText) + ', '  + \
-             'ExtensionObject:' + str(self.ExtensionObject) + ', '  + \
-             'DataValue:' + str(self.DataValue) + ', '  + \
-             'EnumeratedValue:' + str(self.EnumeratedValue) + ')'
-    
-    __repr__ = __str__
-    
-class ArrayTestType(FrozenClass):
-    '''
-    A complex type containing all possible array types used for testing.
-    
-    :ivar Booleans: 
-    :vartype Booleans: Boolean 
-    :ivar SBytes: 
-    :vartype SBytes: SByte 
-    :ivar Int16s: 
-    :vartype Int16s: Int16 
-    :ivar UInt16s: 
-    :vartype UInt16s: UInt16 
-    :ivar Int32s: 
-    :vartype Int32s: Int32 
-    :ivar UInt32s: 
-    :vartype UInt32s: UInt32 
-    :ivar Int64s: 
-    :vartype Int64s: Int64 
-    :ivar UInt64s: 
-    :vartype UInt64s: UInt64 
-    :ivar Floats: 
-    :vartype Floats: Float 
-    :ivar Doubles: 
-    :vartype Doubles: Double 
-    :ivar Strings: 
-    :vartype Strings: String 
-    :ivar DateTimes: 
-    :vartype DateTimes: DateTime 
-    :ivar Guids: 
-    :vartype Guids: Guid 
-    :ivar ByteStrings: 
-    :vartype ByteStrings: ByteString 
-    :ivar XmlElements: 
-    :vartype XmlElements: XmlElement 
-    :ivar NodeIds: 
-    :vartype NodeIds: NodeId 
-    :ivar ExpandedNodeIds: 
-    :vartype ExpandedNodeIds: ExpandedNodeId 
-    :ivar StatusCodes: 
-    :vartype StatusCodes: StatusCode 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
-    :ivar QualifiedNames: 
-    :vartype QualifiedNames: QualifiedName 
-    :ivar LocalizedTexts: 
-    :vartype LocalizedTexts: LocalizedText 
-    :ivar ExtensionObjects: 
-    :vartype ExtensionObjects: ExtensionObject 
-    :ivar DataValues: 
-    :vartype DataValues: DataValue 
-    :ivar Variants: 
-    :vartype Variants: Variant 
-    :ivar EnumeratedValues: 
-    :vartype EnumeratedValues: EnumeratedTestType 
-    '''
-    def __init__(self):
-        self.Booleans = []
-        self.SBytes = []
-        self.Int16s = []
-        self.UInt16s = []
-        self.Int32s = []
-        self.UInt32s = []
-        self.Int64s = []
-        self.UInt64s = []
-        self.Floats = []
-        self.Doubles = []
-        self.Strings = []
-        self.DateTimes = []
-        self.Guids = []
-        self.ByteStrings = []
-        self.XmlElements = []
-        self.NodeIds = []
-        self.ExpandedNodeIds = []
-        self.StatusCodes = []
-        self.DiagnosticInfos = []
-        self.QualifiedNames = []
-        self.LocalizedTexts = []
-        self.ExtensionObjects = []
-        self.DataValues = []
-        self.Variants = []
-        self.EnumeratedValues = []
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(struct.pack('<i', len(self.Booleans)))
-        for fieldname in self.Booleans:
-            packet.append(pack_uatype('Boolean', fieldname))
-        packet.append(struct.pack('<i', len(self.SBytes)))
-        for fieldname in self.SBytes:
-            packet.append(pack_uatype('SByte', fieldname))
-        packet.append(struct.pack('<i', len(self.Int16s)))
-        for fieldname in self.Int16s:
-            packet.append(pack_uatype('Int16', fieldname))
-        packet.append(struct.pack('<i', len(self.UInt16s)))
-        for fieldname in self.UInt16s:
-            packet.append(pack_uatype('UInt16', fieldname))
-        packet.append(struct.pack('<i', len(self.Int32s)))
-        for fieldname in self.Int32s:
-            packet.append(pack_uatype('Int32', fieldname))
-        packet.append(struct.pack('<i', len(self.UInt32s)))
-        for fieldname in self.UInt32s:
-            packet.append(pack_uatype('UInt32', fieldname))
-        packet.append(struct.pack('<i', len(self.Int64s)))
-        for fieldname in self.Int64s:
-            packet.append(pack_uatype('Int64', fieldname))
-        packet.append(struct.pack('<i', len(self.UInt64s)))
-        for fieldname in self.UInt64s:
-            packet.append(pack_uatype('UInt64', fieldname))
-        packet.append(struct.pack('<i', len(self.Floats)))
-        for fieldname in self.Floats:
-            packet.append(pack_uatype('Float', fieldname))
-        packet.append(struct.pack('<i', len(self.Doubles)))
-        for fieldname in self.Doubles:
-            packet.append(pack_uatype('Double', fieldname))
-        packet.append(struct.pack('<i', len(self.Strings)))
-        for fieldname in self.Strings:
-            packet.append(pack_uatype('String', fieldname))
-        packet.append(struct.pack('<i', len(self.DateTimes)))
-        for fieldname in self.DateTimes:
-            packet.append(pack_uatype('DateTime', fieldname))
-        packet.append(struct.pack('<i', len(self.Guids)))
-        for fieldname in self.Guids:
-            packet.append(fieldname.to_binary())
-        packet.append(struct.pack('<i', len(self.ByteStrings)))
-        for fieldname in self.ByteStrings:
-            packet.append(pack_uatype('ByteString', fieldname))
-        packet.append(struct.pack('<i', len(self.XmlElements)))
-        for fieldname in self.XmlElements:
-            packet.append(fieldname.to_binary())
-        packet.append(struct.pack('<i', len(self.NodeIds)))
-        for fieldname in self.NodeIds:
-            packet.append(fieldname.to_binary())
-        packet.append(struct.pack('<i', len(self.ExpandedNodeIds)))
-        for fieldname in self.ExpandedNodeIds:
-            packet.append(fieldname.to_binary())
-        packet.append(struct.pack('<i', len(self.StatusCodes)))
-        for fieldname in self.StatusCodes:
-            packet.append(fieldname.to_binary())
-        packet.append(struct.pack('<i', len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        packet.append(struct.pack('<i', len(self.QualifiedNames)))
-        for fieldname in self.QualifiedNames:
-            packet.append(fieldname.to_binary())
-        packet.append(struct.pack('<i', len(self.LocalizedTexts)))
-        for fieldname in self.LocalizedTexts:
-            packet.append(fieldname.to_binary())
-        packet.append(struct.pack('<i', len(self.ExtensionObjects)))
-        for fieldname in self.ExtensionObjects:
-            packet.append(extensionobject_to_binary(fieldname))
-        packet.append(struct.pack('<i', len(self.DataValues)))
-        for fieldname in self.DataValues:
-            packet.append(fieldname.to_binary())
-        packet.append(struct.pack('<i', len(self.Variants)))
-        for fieldname in self.Variants:
-            packet.append(fieldname.to_binary())
-        packet.append(struct.pack('<i', len(self.EnumeratedValues)))
-        for fieldname in self.EnumeratedValues:
-            packet.append(pack_uatype('UInt32', fieldname))
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = ArrayTestType()
-        obj.Booleans = unpack_uatype_array('Boolean', data)
-        obj.SBytes = unpack_uatype_array('SByte', data)
-        obj.Int16s = unpack_uatype_array('Int16', data)
-        obj.UInt16s = unpack_uatype_array('UInt16', data)
-        obj.Int32s = unpack_uatype_array('Int32', data)
-        obj.UInt32s = unpack_uatype_array('UInt32', data)
-        obj.Int64s = unpack_uatype_array('Int64', data)
-        obj.UInt64s = unpack_uatype_array('UInt64', data)
-        obj.Floats = unpack_uatype_array('Float', data)
-        obj.Doubles = unpack_uatype_array('Double', data)
-        obj.Strings = unpack_uatype_array('String', data)
-        obj.DateTimes = unpack_uatype_array('DateTime', data)
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.Guids.append(Guid.from_binary(data))
-        obj.ByteStrings = unpack_uatype_array('ByteString', data)
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.XmlElements.append(XmlElement.from_binary(data))
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.NodeIds.append(NodeId.from_binary(data))
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.ExpandedNodeIds.append(ExpandedNodeId.from_binary(data))
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.StatusCodes.append(StatusCode.from_binary(data))
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.QualifiedNames.append(QualifiedName.from_binary(data))
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.LocalizedTexts.append(LocalizedText.from_binary(data))
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.ExtensionObjects.append(extensionobject_from_binary(data))
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.DataValues.append(DataValue.from_binary(data))
-        length = struct.unpack('<i', data.read(4))[0]
-        if length != -1:
-            for _ in range(0, length):
-                obj.Variants.append(Variant.from_binary(data))
-        obj.EnumeratedValues = unpack_uatype('UInt32', data)
-        return obj
-    
-    def __str__(self):
-        return 'ArrayTestType(' + 'Booleans:' + str(self.Booleans) + ', '  + \
-             'SBytes:' + str(self.SBytes) + ', '  + \
-             'Int16s:' + str(self.Int16s) + ', '  + \
-             'UInt16s:' + str(self.UInt16s) + ', '  + \
-             'Int32s:' + str(self.Int32s) + ', '  + \
-             'UInt32s:' + str(self.UInt32s) + ', '  + \
-             'Int64s:' + str(self.Int64s) + ', '  + \
-             'UInt64s:' + str(self.UInt64s) + ', '  + \
-             'Floats:' + str(self.Floats) + ', '  + \
-             'Doubles:' + str(self.Doubles) + ', '  + \
-             'Strings:' + str(self.Strings) + ', '  + \
-             'DateTimes:' + str(self.DateTimes) + ', '  + \
-             'Guids:' + str(self.Guids) + ', '  + \
-             'ByteStrings:' + str(self.ByteStrings) + ', '  + \
-             'XmlElements:' + str(self.XmlElements) + ', '  + \
-             'NodeIds:' + str(self.NodeIds) + ', '  + \
-             'ExpandedNodeIds:' + str(self.ExpandedNodeIds) + ', '  + \
-             'StatusCodes:' + str(self.StatusCodes) + ', '  + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ', '  + \
-             'QualifiedNames:' + str(self.QualifiedNames) + ', '  + \
-             'LocalizedTexts:' + str(self.LocalizedTexts) + ', '  + \
-             'ExtensionObjects:' + str(self.ExtensionObjects) + ', '  + \
-             'DataValues:' + str(self.DataValues) + ', '  + \
-             'Variants:' + str(self.Variants) + ', '  + \
-             'EnumeratedValues:' + str(self.EnumeratedValues) + ')'
-    
-    __repr__ = __str__
-    
-class CompositeTestType(FrozenClass):
-    '''
-    :ivar Field1: 
-    :vartype Field1: ScalarTestType 
-    :ivar Field2: 
-    :vartype Field2: ArrayTestType 
-    '''
-    def __init__(self):
-        self.Field1 = ScalarTestType()
-        self.Field2 = ArrayTestType()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.Field1.to_binary())
-        packet.append(self.Field2.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = CompositeTestType()
-        obj.Field1 = ScalarTestType.from_binary(data)
-        obj.Field2 = ArrayTestType.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'CompositeTestType(' + 'Field1:' + str(self.Field1) + ', '  + \
-             'Field2:' + str(self.Field2) + ')'
-    
-    __repr__ = __str__
-    
-class TestStackParameters(FrozenClass):
-    '''
-    :ivar TestId: 
-    :vartype TestId: UInt32 
-    :ivar Iteration: 
-    :vartype Iteration: Int32 
-    :ivar Input: 
-    :vartype Input: Variant 
-    '''
-    def __init__(self):
-        self.TestId = 0
-        self.Iteration = 0
-        self.Input = Variant()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(pack_uatype('UInt32', self.TestId))
-        packet.append(pack_uatype('Int32', self.Iteration))
-        packet.append(self.Input.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = TestStackParameters()
-        obj.TestId = unpack_uatype('UInt32', data)
-        obj.Iteration = unpack_uatype('Int32', data)
-        obj.Input = Variant.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'TestStackParameters(' + 'TestId:' + str(self.TestId) + ', '  + \
-             'Iteration:' + str(self.Iteration) + ', '  + \
-             'Input:' + str(self.Input) + ')'
-    
-    __repr__ = __str__
-    
-class TestStackRequest(FrozenClass):
-    '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: TestStackParameters 
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.TestStackRequest_Encoding_DefaultBinary)
-        self.RequestHeader = RequestHeader()
-        self.Parameters = TestStackParameters()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = TestStackRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = TestStackParameters.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'TestStackRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
-    
-    __repr__ = __str__
-    
-class TestStackResult(FrozenClass):
-    '''
-    :ivar Output: 
-    :vartype Output: Variant 
-    '''
-    def __init__(self):
-        self.Output = Variant()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.Output.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = TestStackResult()
-        obj.Output = Variant.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'TestStackResult(' + 'Output:' + str(self.Output) + ')'
-    
-    __repr__ = __str__
-    
-class TestStackResponse(FrozenClass):
-    '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: TestStackResult 
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.TestStackResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = TestStackResult()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = TestStackResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = TestStackResult.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'TestStackResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
-    
-    __repr__ = __str__
-    
-class TestStackExParameters(FrozenClass):
-    '''
-    :ivar TestId: 
-    :vartype TestId: UInt32 
-    :ivar Iteration: 
-    :vartype Iteration: Int32 
-    :ivar Input: 
-    :vartype Input: CompositeTestType 
-    '''
-    def __init__(self):
-        self.TestId = 0
-        self.Iteration = 0
-        self.Input = CompositeTestType()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(pack_uatype('UInt32', self.TestId))
-        packet.append(pack_uatype('Int32', self.Iteration))
-        packet.append(self.Input.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = TestStackExParameters()
-        obj.TestId = unpack_uatype('UInt32', data)
-        obj.Iteration = unpack_uatype('Int32', data)
-        obj.Input = CompositeTestType.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'TestStackExParameters(' + 'TestId:' + str(self.TestId) + ', '  + \
-             'Iteration:' + str(self.Iteration) + ', '  + \
-             'Input:' + str(self.Input) + ')'
-    
-    __repr__ = __str__
-    
-class TestStackExRequest(FrozenClass):
-    '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: TestStackExParameters 
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.TestStackExRequest_Encoding_DefaultBinary)
-        self.RequestHeader = RequestHeader()
-        self.Parameters = TestStackExParameters()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = TestStackExRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = TestStackExParameters.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'TestStackExRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
-    
-    __repr__ = __str__
-    
-class TestStackExResult(FrozenClass):
-    '''
-    :ivar Output: 
-    :vartype Output: CompositeTestType 
-    '''
-    def __init__(self):
-        self.Output = CompositeTestType()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.Output.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = TestStackExResult()
-        obj.Output = CompositeTestType.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'TestStackExResult(' + 'Output:' + str(self.Output) + ')'
-    
-    __repr__ = __str__
-    
-class TestStackExResponse(FrozenClass):
-    '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: TestStackExResult 
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.TestStackExResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = TestStackExResult()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = TestStackExResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = TestStackExResult.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'TestStackExResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
-    
-    __repr__ = __str__
-    
 class BuildInfo(FrozenClass):
     '''
     :ivar ProductUri: 
@@ -12491,8 +12324,11 @@ class Annotation(FrozenClass):
     __repr__ = __str__
 
 ExtensionClasses = {
+    ObjectIds.TrustListDataType_Encoding_DefaultBinary : TrustListDataType,
     ObjectIds.Argument_Encoding_DefaultBinary : Argument,
     ObjectIds.EnumValueType_Encoding_DefaultBinary : EnumValueType,
+    ObjectIds.OptionSet_Encoding_DefaultBinary : OptionSet,
+    ObjectIds.Union_Encoding_DefaultBinary : Union,
     ObjectIds.TimeZoneDataType_Encoding_DefaultBinary : TimeZoneDataType,
     ObjectIds.ApplicationDescription_Encoding_DefaultBinary : ApplicationDescription,
     ObjectIds.RequestHeader_Encoding_DefaultBinary : RequestHeader,
@@ -12500,6 +12336,9 @@ ExtensionClasses = {
     ObjectIds.ServiceFault_Encoding_DefaultBinary : ServiceFault,
     ObjectIds.FindServersRequest_Encoding_DefaultBinary : FindServersRequest,
     ObjectIds.FindServersResponse_Encoding_DefaultBinary : FindServersResponse,
+    ObjectIds.ServerOnNetwork_Encoding_DefaultBinary : ServerOnNetwork,
+    ObjectIds.FindServersOnNetworkRequest_Encoding_DefaultBinary : FindServersOnNetworkRequest,
+    ObjectIds.FindServersOnNetworkResponse_Encoding_DefaultBinary : FindServersOnNetworkResponse,
     ObjectIds.UserTokenPolicy_Encoding_DefaultBinary : UserTokenPolicy,
     ObjectIds.EndpointDescription_Encoding_DefaultBinary : EndpointDescription,
     ObjectIds.GetEndpointsRequest_Encoding_DefaultBinary : GetEndpointsRequest,
@@ -12507,6 +12346,10 @@ ExtensionClasses = {
     ObjectIds.RegisteredServer_Encoding_DefaultBinary : RegisteredServer,
     ObjectIds.RegisterServerRequest_Encoding_DefaultBinary : RegisterServerRequest,
     ObjectIds.RegisterServerResponse_Encoding_DefaultBinary : RegisterServerResponse,
+    ObjectIds.DiscoveryConfiguration_Encoding_DefaultBinary : DiscoveryConfiguration,
+    ObjectIds.MdnsDiscoveryConfiguration_Encoding_DefaultBinary : MdnsDiscoveryConfiguration,
+    ObjectIds.RegisterServer2Request_Encoding_DefaultBinary : RegisterServer2Request,
+    ObjectIds.RegisterServer2Response_Encoding_DefaultBinary : RegisterServer2Response,
     ObjectIds.ChannelSecurityToken_Encoding_DefaultBinary : ChannelSecurityToken,
     ObjectIds.OpenSecureChannelRequest_Encoding_DefaultBinary : OpenSecureChannelRequest,
     ObjectIds.OpenSecureChannelResponse_Encoding_DefaultBinary : OpenSecureChannelResponse,
@@ -12520,6 +12363,7 @@ ExtensionClasses = {
     ObjectIds.AnonymousIdentityToken_Encoding_DefaultBinary : AnonymousIdentityToken,
     ObjectIds.UserNameIdentityToken_Encoding_DefaultBinary : UserNameIdentityToken,
     ObjectIds.X509IdentityToken_Encoding_DefaultBinary : X509IdentityToken,
+    ObjectIds.KerberosIdentityToken_Encoding_DefaultBinary : KerberosIdentityToken,
     ObjectIds.IssuedIdentityToken_Encoding_DefaultBinary : IssuedIdentityToken,
     ObjectIds.ActivateSessionRequest_Encoding_DefaultBinary : ActivateSessionRequest,
     ObjectIds.ActivateSessionResponse_Encoding_DefaultBinary : ActivateSessionResponse,
@@ -12615,7 +12459,6 @@ ExtensionClasses = {
     ObjectIds.DeleteAtTimeDetails_Encoding_DefaultBinary : DeleteAtTimeDetails,
     ObjectIds.DeleteEventDetails_Encoding_DefaultBinary : DeleteEventDetails,
     ObjectIds.HistoryUpdateResult_Encoding_DefaultBinary : HistoryUpdateResult,
-    ObjectIds.HistoryUpdateEventResult_Encoding_DefaultBinary : HistoryUpdateEventResult,
     ObjectIds.HistoryUpdateRequest_Encoding_DefaultBinary : HistoryUpdateRequest,
     ObjectIds.HistoryUpdateResponse_Encoding_DefaultBinary : HistoryUpdateResponse,
     ObjectIds.CallMethodRequest_Encoding_DefaultBinary : CallMethodRequest,
@@ -12669,13 +12512,6 @@ ExtensionClasses = {
     ObjectIds.TransferSubscriptionsResponse_Encoding_DefaultBinary : TransferSubscriptionsResponse,
     ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary : DeleteSubscriptionsRequest,
     ObjectIds.DeleteSubscriptionsResponse_Encoding_DefaultBinary : DeleteSubscriptionsResponse,
-    ObjectIds.ScalarTestType_Encoding_DefaultBinary : ScalarTestType,
-    ObjectIds.ArrayTestType_Encoding_DefaultBinary : ArrayTestType,
-    ObjectIds.CompositeTestType_Encoding_DefaultBinary : CompositeTestType,
-    ObjectIds.TestStackRequest_Encoding_DefaultBinary : TestStackRequest,
-    ObjectIds.TestStackResponse_Encoding_DefaultBinary : TestStackResponse,
-    ObjectIds.TestStackExRequest_Encoding_DefaultBinary : TestStackExRequest,
-    ObjectIds.TestStackExResponse_Encoding_DefaultBinary : TestStackExResponse,
     ObjectIds.BuildInfo_Encoding_DefaultBinary : BuildInfo,
     ObjectIds.RedundantServerDataType_Encoding_DefaultBinary : RedundantServerDataType,
     ObjectIds.EndpointUrlListDataType_Encoding_DefaultBinary : EndpointUrlListDataType,

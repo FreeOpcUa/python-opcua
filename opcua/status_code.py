@@ -38,6 +38,7 @@ class StatusCodes:
     BadCertificateIssuerRevocationUnknown = 0x801C0000
     BadCertificateRevoked = 0x801D0000
     BadCertificateIssuerRevoked = 0x801E0000
+    BadCertificateChainIncomplete = 0x810D0000
     BadUserAccessDenied = 0x801F0000
     BadIdentityTokenInvalid = 0x80200000
     BadIdentityTokenRejected = 0x80210000
@@ -51,6 +52,7 @@ class StatusCodes:
     BadRequestHeaderInvalid = 0x802A0000
     BadTimestampsToReturnInvalid = 0x802B0000
     BadRequestCancelledByClient = 0x802C0000
+    BadTooManyArguments = 0x80E50000
     GoodSubscriptionTransferred = 0x002D0000
     GoodCompletesAsynchronously = 0x002E0000
     GoodOverload = 0x002F0000
@@ -132,6 +134,7 @@ class StatusCodes:
     BadQueryTooComplex = 0x806E0000
     BadNoMatch = 0x806F0000
     BadMaxAgeInvalid = 0x80700000
+    BadSecurityModeInsufficient = 0x80E60000
     BadHistoryOperationInvalid = 0x80710000
     BadHistoryOperationUnsupported = 0x80720000
     BadInvalidTimestampArgument = 0x80BD0000
@@ -204,6 +207,14 @@ class StatusCodes:
     BadAggregateInvalidInputs = 0x80D60000
     BadAggregateConfigurationRejected = 0x80DA0000
     GoodDataIgnored = 0x00D90000
+    BadRequestNotAllowed = 0x80E40000
+    GoodEdited = 0x00DC0000
+    GoodPostActionFailed = 0x00DD0000
+    UncertainDominantValueChanged = 0x40DE0000
+    GoodDependentValueChanged = 0x00E00000
+    BadDominantValueChanged = 0x80E10000
+    UncertainDependentValueChanged = 0x40E20000
+    BadDependentValueChanged = 0x80E30000
     GoodCommunicationEvent = 0x00A70000
     GoodShutdownEvent = 0x00A80000
     GoodCallAgain = 0x00A90000
@@ -293,9 +304,11 @@ def get_name_and_doc(val):
     elif val == 0x801C0000:
         return 'BadCertificateIssuerRevocationUnknown', 'It was not possible to determine if the Issuer Certificate has been revoked.'
     elif val == 0x801D0000:
-        return 'BadCertificateRevoked', 'The Certificate has been revoked.'
+        return 'BadCertificateRevoked', 'The certificate has been revoked.'
     elif val == 0x801E0000:
-        return 'BadCertificateIssuerRevoked', 'The Issuer Certificate has been revoked.'
+        return 'BadCertificateIssuerRevoked', 'The issuer certificate has been revoked.'
+    elif val == 0x810D0000:
+        return 'BadCertificateChainIncomplete', 'The certificate chain is incomplete.'
     elif val == 0x801F0000:
         return 'BadUserAccessDenied', 'User does not have permission to perform the requested operation.'
     elif val == 0x80200000:
@@ -322,6 +335,8 @@ def get_name_and_doc(val):
         return 'BadTimestampsToReturnInvalid', 'The timestamps to return parameter is invalid.'
     elif val == 0x802C0000:
         return 'BadRequestCancelledByClient', 'The request was cancelled by the client.'
+    elif val == 0x80E50000:
+        return 'BadTooManyArguments', 'Too many arguments were provided.'
     elif val == 0x002D0000:
         return 'GoodSubscriptionTransferred', 'The subscription was transferred to another session.'
     elif val == 0x002E0000:
@@ -484,6 +499,8 @@ def get_name_and_doc(val):
         return 'BadNoMatch', 'The requested operation has no match to return.'
     elif val == 0x80700000:
         return 'BadMaxAgeInvalid', 'The max age parameter is invalid.'
+    elif val == 0x80E60000:
+        return 'BadSecurityModeInsufficient', 'The operation is not permitted over the current secure channel.'
     elif val == 0x80710000:
         return 'BadHistoryOperationInvalid', 'The history details parameter is not valid.'
     elif val == 0x80720000:
@@ -628,6 +645,22 @@ def get_name_and_doc(val):
         return 'BadAggregateConfigurationRejected', 'The aggregate configuration is not valid for specified node.'
     elif val == 0x00D90000:
         return 'GoodDataIgnored', 'The request pecifies fields which are not valid for the EventType or cannot be saved by the historian.'
+    elif val == 0x80E40000:
+        return 'BadRequestNotAllowed', 'The request was rejected by the server because it did not meet the criteria set by the server.'
+    elif val == 0x00DC0000:
+        return 'GoodEdited', 'The value does not come from the real source and has been edited by the server.'
+    elif val == 0x00DD0000:
+        return 'GoodPostActionFailed', 'There was an error in execution of these post-actions.'
+    elif val == 0x40DE0000:
+        return 'UncertainDominantValueChanged', 'The related EngineeringUnit has been changed but the Variable Value is still provided based on the previous unit.'
+    elif val == 0x00E00000:
+        return 'GoodDependentValueChanged', 'A dependent value has been changed but the change has not been applied to the device.'
+    elif val == 0x80E10000:
+        return 'BadDominantValueChanged', 'The related EngineeringUnit has been changed but this change has not been applied to the device. The Variable Value is still dependent on the previous unit but its status is currently Bad.'
+    elif val == 0x40E20000:
+        return 'UncertainDependentValueChanged', 'A dependent value has been changed but the change has not been applied to the device. The quality of the dominant variable is uncertain.'
+    elif val == 0x80E30000:
+        return 'BadDependentValueChanged', 'A dependent value has been changed but the change has not been applied to the device. The quality of the dominant variable is Bad.'
     elif val == 0x00A70000:
         return 'GoodCommunicationEvent', 'The communication layer has raised an event.'
     elif val == 0x00A80000:
