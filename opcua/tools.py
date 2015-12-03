@@ -5,9 +5,22 @@ from datetime import datetime
 import code
 from enum import Enum
 
+try:
+    from IPython import embed
+except ImportError:
+    import code
+
+    def embed():
+        vars = globals()
+        vars.update(locals())
+        shell = code.InteractiveConsole(vars)
+        shell.interact()
+
 from opcua import ua
 from opcua import Client
+from opcua import Server
 from opcua import Node
+from opcua import uamethod
 
 
 def add_minimum_args(parser):
@@ -420,6 +433,52 @@ def endpoint_to_strings(ep):
         ('Transport Profile URI', ep.TransportProfileUri),
         ('Security Level', ep.SecurityLevel)]
     return result
+
+
+def uaserver():
+    parser = argparse.ArgumentParser(description="Run an example OPC-UA server. By importing xml definition and using uawrite, it is even possible to expose real data using this server")
+    add_minimum_args(parser)
+    parser.add_argument("-x",
+                        "--xml",
+                        help="Populate address space with nodes defined in XML")
+    parser.add_argument("-p",
+                        "--populate",
+                        action="store_false",
+                        help="populate address space with some sample nodes")
+    args = parser.parse_args()
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+
+    server = Server()
+    server.set_endpoint(args.url)
+    server.set_server_name("FreeOpcUa Example Server")
+    if args.xml:
+        server.import_xml(args.xml)
+    if args.populate:
+        @uamethod
+        def multiply(parent, x, y):
+            print("multiply method call with parameters: ", x, y)
+            return x * y
+
+        uri = "http://examples.freeopcua.github.io"
+        idx = server.register_namespace(uri)
+        objects = server.get_objects_node()
+        myobj = objects.add_object(idx, "MyObject")
+        myvar = myobj.add_variable(idx, "MyVariable", 6.7)
+        myvar.set_writable()    # Set MyVariable to be writable by clients
+        myarrayvar = myobj.add_variable(idx, "MyVarArray", [6.7, 7.9])
+        myarrayvar.set_writable()    # Set MyVariable to be writable by clients
+        myprop = myobj.add_property(idx, "MyProperty", "I am a property")
+        mymethod = myobj.add_method(idx, "MyMethod", multiply, [ua.VariantType.Int64], [ua.VariantType.Boolean])
+
+    server.start()
+    try:
+        embed()
+    finally:
+        server.stop()
+    sys.exit(0)
+
+
+
 
 
 def uadiscover():
