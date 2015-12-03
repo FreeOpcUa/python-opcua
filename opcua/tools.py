@@ -2,7 +2,6 @@ import logging
 import sys
 import argparse
 from datetime import datetime
-import code
 from enum import Enum
 
 try:
@@ -11,10 +10,7 @@ except ImportError:
     import code
 
     def embed():
-        vars = globals()
-        vars.update(locals())
-        shell = code.InteractiveConsole(vars)
-        shell.interact()
+        code.interact(local=dict(globals(), **locals())) 
 
 from opcua import ua
 from opcua import Client
@@ -51,7 +47,7 @@ def add_common_args(parser):
                         metavar="NODE")
     parser.add_argument("-p",
                         "--path",
-                        help="Comma separated browse path to the node starting at nodeid (for example: 3:Mybject,3:MyVariable)",
+                        help="Comma separated browse path to the node starting at NODE (for example: 3:Mybject,3:MyVariable)",
                         default='',
                         metavar="BROWSEPATH")
     parser.add_argument("-i",
@@ -372,10 +368,7 @@ def uasubscribe():
             sub.subscribe_data_change(node)
         else:
             sub.subscribe_events(node)
-        glbs = globals()
-        glbs.update(locals())
-        shell = code.InteractiveConsole(vars)
-        shell.interact()
+        embed()
     finally:
         client.disconnect()
     sys.exit(0)
@@ -433,6 +426,38 @@ def endpoint_to_strings(ep):
         ('Transport Profile URI', ep.TransportProfileUri),
         ('Security Level', ep.SecurityLevel)]
     return result
+
+
+def uaclient():
+    parser = argparse.ArgumentParser(description="Connect to server and start python shell. root and objects nodes are available. Node specificed in command line is available as mynode variable")
+    add_common_args(parser)
+    parser.add_argument("-c",
+                        "--certificate",
+                        help="set client certificate")
+    parser.add_argument("-k",
+                        "--private_key",
+                        help="set client private key")
+    args = parser.parse_args()
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+
+    client = Client(args.url, timeout=args.timeout)
+    client.connect()
+    if args.certificate:
+        client.load_certificate(args.certificate)
+    if args.private_key:
+        client.load_certificate(args.private_key)
+    try:
+        root = client.get_root_node()
+        objects = client.get_objects_node()
+        mynode = client.get_node(args.nodeid)
+        if args.path:
+            mynode = mynode.get_child(args.path.split(","))
+        embed()
+    finally:
+        client.disconnect()
+    sys.exit(0)
+
+
 
 
 def uaserver():

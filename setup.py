@@ -34,6 +34,8 @@ setup(name="freeopcua",
                         'uawrite = opcua.tools:uawrite',
                         'uasubscribe = opcua.tools:uasubscribe',
                         'uahistoryread = opcua.tools:uahistoryread',
+                        'uaclient = opcua.tools:uaclient',
+                        'uaserver = opcua.tools:uaserver',
                         'uadiscover = opcua.tools:uadiscover'
                     ]
                     }
