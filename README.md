@@ -19,7 +19,14 @@ A prototype of a GUI client is available at: https://github.com/FreeOpcUa/opcua-
 
 Examples: https://github.com/FreeOpcUa/python-opcua/tree/master/examples
 
-Simple command line tools: https://github.com/FreeOpcUa/python-opcua/tree/master/tools
+A set of command line tools: https://github.com/FreeOpcUa/python-opcua/tree/master/tools
+* uadiscover (find_servers, get_endpoints and find_servers_on_network calls)
+* uals (list children of a node)
+* uahistoryread
+* uaread (read attribute of a node)
+* uawrite (write attribute of a node)
+* uasubscribe (subscribe to a node and print datachange events)
+* uaclient (connect to server and start python shell)
 
 Client: what works:
 * connection to server, opening channel, session
