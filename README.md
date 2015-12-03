@@ -37,16 +37,17 @@ Client: what works:
 * subscribing to events
 * adding nodes
 * method call
-* user without password 
+* user without password
+* history read
+* login with certificate
 
 Tested servers: freeopcua C++, freeopcua Python, prosys, kepware, beckoff
 
 
 Client: what is not implemented yet 
-* user/password
+* correct password encryption
 * removing nodes 
 * adding missing modify methods
-* certificate handling
 
 
 Server: what works:
