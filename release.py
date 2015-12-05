@@ -10,8 +10,7 @@ def bump_version():
     oldv = "{}.{}.{}".format(v1, v2, v3)
     newv = "{}.{}.{}".format(v1, v2, str(int(v3) + 1))
     print("Current version is: {}, write new version, ctrl-c to exit".format(oldv))
-    print(newv, end="")
-    ans = input()
+    ans = input(newv)
     if ans:
         newv = ans 
     s = s.replace(oldv, newv)
@@ -22,11 +21,18 @@ def bump_version():
 
 def release():
     v = bump_version()
-    os.system("git add setup.py")
-    os.system("git commit -m 'new release'")
-    os.system("git tag {}".format(v))
-    os.system("git push --tags")
-    os.system("python setup.py sdist upload")
+    ans = input("version bumped, commiting?")
+    if ans in ("", "y", "yes"):
+        os.system("git add setup.py")
+        os.system("git commit -m 'new release'")
+        os.system("git tag {}".format(v))
+        ans = input("change committed, psh to server?")
+        if ans in ("", "y", "yes"):
+            os.system("git push")
+            os.system("git push --tags")
+        ans = input("upload to pip?")
+        if ans in ("", "y", "yes"):
+            os.system("python setup.py sdist upload")
 
 
 if __name__ == "__main__":
