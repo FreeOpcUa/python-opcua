@@ -460,22 +460,32 @@ def uaclient():
     sys.exit(0)
 
 
-
-
 def uaserver():
-    parser = argparse.ArgumentParser(description="Run an example OPC-UA server. By importing xml definition and using uawrite, it is even possible to expose real data using this server")
-    add_minimum_args(parser)
+    parser = argparse.ArgumentParser(description="Run an example OPC-UA server. By importing xml definition and using uawrite command line, it is even possible to expose real data using this server")
+    # we setup a server, this is a bit different from other tool so we do not reuse common arguments
+    parser.add_argument("-u",
+                        "--url",
+                        help="URL of OPC UA server, default is opc.tcp://0.0.0.0:4841",
+                        default='opc.tcp://0.0.0:4841',
+                        metavar="URL")
+    parser.add_argument("-v",
+                        "--verbose",
+                        dest="loglevel",
+                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                        default='WARNING',
+                        help="Set log level")
     parser.add_argument("-x",
                         "--xml",
+                        metavar="XML_FILE",
                         help="Populate address space with nodes defined in XML")
     parser.add_argument("-p",
                         "--populate",
                         action="store_false",
-                        help="populate address space with some sample nodes")
+                        help="Populate address space with some sample nodes")
     parser.add_argument("-s",
                         "--shell",
                         action="store_true",
-                        help="Start python shell instead of dandomly changing node values")
+                        help="Start python shell instead of randomly changing node values")
     args = parser.parse_args()
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
