@@ -3,6 +3,8 @@ import sys
 import argparse
 from datetime import datetime
 from enum import Enum
+import math
+import time
 
 try:
     from IPython import embed
@@ -470,6 +472,10 @@ def uaserver():
                         "--populate",
                         action="store_false",
                         help="populate address space with some sample nodes")
+    parser.add_argument("-s",
+                        "--shell",
+                        action="store_true",
+                        help="Start python shell instead of dandomly changing node values")
     args = parser.parse_args()
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
@@ -488,16 +494,24 @@ def uaserver():
         idx = server.register_namespace(uri)
         objects = server.get_objects_node()
         myobj = objects.add_object(idx, "MyObject")
+        mywritablevar = myobj.add_variable(idx, "MyWritableVariable", 6.7)
+        mywritablevar.set_writable()    # Set MyVariable to be writable by clients
         myvar = myobj.add_variable(idx, "MyVariable", 6.7)
-        myvar.set_writable()    # Set MyVariable to be writable by clients
         myarrayvar = myobj.add_variable(idx, "MyVarArray", [6.7, 7.9])
-        myarrayvar.set_writable()    # Set MyVariable to be writable by clients
         myprop = myobj.add_property(idx, "MyProperty", "I am a property")
-        mymethod = myobj.add_method(idx, "MyMethod", multiply, [ua.VariantType.Int64], [ua.VariantType.Boolean])
+        mymethod = myobj.add_method(idx, "MyMethod", multiply, [ua.VariantType.Double, ua.VariantType.Int64], [ua.VariantType.Double])
 
     server.start()
     try:
-        embed()
+        if args.shell:
+            embed()
+        else:
+            count = 0
+            while True:
+                time.sleep(1)
+                myvar.set_value(math.sin(count / 10))
+                myarrayvar.set_value([math.sin(count / 10), math.sin(count / 100)])
+                count += 1
     finally:
         server.stop()
     sys.exit(0)
