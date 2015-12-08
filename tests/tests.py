@@ -152,10 +152,21 @@ class Unit(unittest.TestCase):
         dt = ua.win_epoch_to_datetime(epch)
         self.assertEqual(now, dt)
 
+        # python's datetime has a range from Jan 1, 0001 to the end of year 9999
+        # windows' filetime has a range from Jan 1, 1601 to approx. year 30828
+        # let's test an overlapping range [Jan 1, 1601 - Dec 31, 9999]
+        dt = datetime(1601, 1, 1)
+        self.assertEqual(ua.win_epoch_to_datetime(ua.datetime_to_win_epoch(dt)), dt)
+        dt = datetime(9999, 12, 31, 23, 59, 59)
+        self.assertEqual(ua.win_epoch_to_datetime(ua.datetime_to_win_epoch(dt)), dt)
+
         epch = 128930364000001000
         dt = ua.win_epoch_to_datetime(epch)
         epch2 = ua.datetime_to_win_epoch(dt)
         self.assertEqual(epch, epch2)
+
+        epch = 0
+        self.assertEqual(ua.datetime_to_win_epoch(ua.win_epoch_to_datetime(epch)), epch)
 
     def test_equal_nodeid(self):
         nid1 = ua.NodeId(999, 2)
