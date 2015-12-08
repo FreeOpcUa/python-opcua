@@ -23,6 +23,7 @@ UaTypes = ("Boolean", "SByte", "Byte", "Int8", "UInt8", "Int16", "UInt16", "Int3
 
 EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
 HUNDREDS_OF_NANOSECONDS = 10000000
+FILETIME_EPOCH_AS_DATETIME = datetime(1601, 1, 1)
 
 
 class UTC(tzinfo):
@@ -39,7 +40,7 @@ class UTC(tzinfo):
         return timedelta(0)
 
 
-# methods copied from  David Buxton <david@gasmark6.com> sample code
+# method copied from David Buxton <david@gasmark6.com> sample code
 def datetime_to_win_epoch(dt):
     if (dt.tzinfo is None) or (dt.tzinfo.utcoffset(dt) is None):
         dt = dt.replace(tzinfo=UTC())
@@ -48,14 +49,7 @@ def datetime_to_win_epoch(dt):
 
 
 def win_epoch_to_datetime(epch):
-    (s, ns100) = divmod(epch - EPOCH_AS_FILETIME, HUNDREDS_OF_NANOSECONDS)
-    try:
-        dt = datetime.utcfromtimestamp(s)
-    except Exception as ex: #FIXME: find out what kind of exceptin is raised!!!
-        logger.debug("Exception occurred during conversion within 'win_epoch_to_datetime'. %s", ex)
-        return datetime.now()
-    dt = dt.replace(microsecond=(ns100 // 10))
-    return dt
+    return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch // 10)
 
 
 def uatype_to_fmt(uatype):
