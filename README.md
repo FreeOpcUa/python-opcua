@@ -103,7 +103,7 @@ if __name__ == "__main__":
 Example server code:
 
 ```
-    from opcua import ua, Server
+    from opcua import ua, Server, ObjectIds
 
     server = Server()
     

@@ -4,7 +4,7 @@ from distutils.command.install_data import install_data
 import sys
 
 if sys.version_info[0] < 3:
-    install_requires = ["enum34", "trollius", "futures"]
+    install_requires = ["enum34", "trollius", "futures", "pycrypto"]
 else:
     install_requires = []
 
