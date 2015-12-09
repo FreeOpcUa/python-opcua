@@ -89,7 +89,7 @@ class XMLParser(object):
         obj.nodetype = name
         for key, val in child.attrib.items():
             self._set_attr(key, val, obj)
-        obj.displayname = obj.browsename  # gice a default value to display name
+        obj.displayname = obj.browsename  # give a default value to display name
         for el in child:
             self._parse_tag(el, obj)
         return obj
@@ -147,9 +147,19 @@ class XMLParser(object):
         for val in el:
             ntag = self._retag.match(val.tag).groups()[1]
             obj.valuetype = ntag
-            if ntag in ("Int32", "UInt32"):
+            if ntag in ("Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64"):
                 obj.value = int(val.text)
-            elif ntag in ('ByteString', 'String'):
+            elif ntag in ("Float", "Double"):
+                obj.value = float(val.text)
+            elif ntag in ("Boolean"):
+                if val.text in ("True", "true", "1", "on", "On"):
+                    obj.value = bool(1)
+                else:
+                    obj.value = bool(0)
+            elif ntag in ("ByteString", "String"):
+                mytext = val.text
+                if mytext is None:  # support importing null strings
+                    mytext = ""
                 mytext = val.text.replace('\n', '').replace('\r', '')
                 # obj.value.append('b"{}"'.format(mytext))
                 obj.value = mytext
