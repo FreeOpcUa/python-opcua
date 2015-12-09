@@ -1,5 +1,5 @@
 """
-add noce defined in XML to address space
+add node defined in XML to address space
 format is the one from opc-ua specification
 """
 import logging
