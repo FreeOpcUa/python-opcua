@@ -230,13 +230,23 @@ class Client(object):
         response = self.bclient.create_session(params)
         self.server_certificate = response.ServerCertificate
         for ep in response.ServerEndpoints:
-            if ep.SecurityMode == self.security_mode:
+            if urlparse(ep.EndpointUrl).scheme == self.server_url.scheme and ep.SecurityMode == self.security_mode:
                 # remember PolicyId's: we will use them in activate_session()
                 self._policy_ids = ep.UserIdentityTokens
         self.session_timeout = response.RevisedSessionTimeout
         self.keepalive = KeepAlive(self, min(self.session_timeout, self.secure_channel_timeout) * 0.7)  # 0.7 is from spec
         self.keepalive.start()
         return response
+
+    def server_policy_id(self, token_type, default):
+        """
+        Find PolicyId of server's UserTokenPolicy by token_type.
+        Return default if there's no matching UserTokenPolicy.
+        """
+        for policy in self._policy_ids:
+            if policy.TokenType == token_type:
+                return policy.PolicyId
+        return default
 
     def activate_session(self, username=None, password=None, certificate=None):
         """
@@ -246,10 +256,10 @@ class Client(object):
         params.LocaleIds.append("en")
         if not username and not certificate:
             params.UserIdentityToken = ua.AnonymousIdentityToken()
-            params.UserIdentityToken.PolicyId = b"anonymous" 
+            params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Anonymous, b"anonymous")
         elif certificate:
             params.UserIdentityToken = ua.X509IdentityToken()
-            params.UserIdentityToken.PolicyId = b"certificate_basic256"  
+            params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Certificate, b"certificate_basic256")
             params.UserIdentityToken.CertificateData = certificate
             sig = uacrypto.sign_sha1(self.private_key, certificate)
             params.UserTokenSignature = ua.SignatureData()
@@ -262,7 +272,7 @@ class Client(object):
                 pubkey = uacrypto.pubkey_from_dercert(self.server_certificate)
                 data = uacrypto.encrypt_rsa_oaep(pubkey, bytes(password, "utf8"))
                 params.UserIdentityToken.Password = data
-            params.UserIdentityToken.PolicyId = b"username_basic256" 
+            params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")
             params.UserIdentityToken.EncryptionAlgorithm = 'http://www.w3.org/2001/04/xmlenc#rsa-oaep'
         return self.bclient.activate_session(params)
 
