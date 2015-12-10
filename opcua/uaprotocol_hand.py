@@ -9,6 +9,7 @@ from opcua.attribute_ids import AttributeIds
 
 logger = logging.getLogger('opcua.uaprotocol')
 
+OPC_TCP_SCHEME = 'opc.tcp'
 
 class AccessLevelMask(object):
     """
