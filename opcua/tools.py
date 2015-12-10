@@ -60,13 +60,19 @@ def add_common_args(parser):
                         metavar="NAMESPACE")
 
 
-def parse_args(parser):
+def parse_args(parser, requirenodeid=False):
     args = parser.parse_args()
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
     if args.url and '://' not in args.url:
         logging.info("Adding default scheme %s to URL %s", ua.OPC_TCP_SCHEME, args.url)
         args.url = ua.OPC_TCP_SCHEME + '://' + args.url
+    # check that a nodeid has been given explicitly, a bit hackish...
+    if requirenodeid and args.nodeid == "i=84" and args.path == "":
+        parser.print_usage()
+        print("{}: error: A NodeId or BrowsePath is required".format(parser.prog))
+        sys.exit(1)
     return args
+
 
 def get_node(client, args):
     node = client.get_node(args.nodeid)
@@ -91,11 +97,7 @@ def uaread():
                         choices=['python', 'variant', 'datavalue'],
                         help="Data type to return")
 
-    args = parse_args(parser)
-    if args.nodeid == "i=84" and args.path == "" and args.attribute == ua.AttributeIds.Value:
-        parser.print_usage()
-        print("uaread: error: A NodeId or BrowsePath is required")
-        sys.exit(1)
+    args = parse_args(parser, requirenodeid=True)
 
     client = Client(args.url, timeout=args.timeout)
     client.connect()
@@ -231,11 +233,7 @@ def uawrite():
     parser.add_argument("value",
                         help="Value to be written",
                         metavar="VALUE")
-    args = parse_args(parser)
-    if args.nodeid == "i=84" and args.path == "" and args.attribute == ua.AttributeIds.Value:
-        parser.print_usage()
-        print("uaread: error: A NodeId or BrowsePath is required")
-        sys.exit(1)
+    args = parse_args(parser, requirenodeid=True)
 
     client = Client(args.url, timeout=args.timeout)
     client.connect()
@@ -351,11 +349,7 @@ def uasubscribe():
                         choices=['datachange', 'event'],
                         help="Event type to subscribe to")
 
-    args = parse_args(parser)
-    if args.nodeid == "i=84" and args.path == "":
-        parser.print_usage()
-        print("uaread: error: The NodeId or BrowsePath of a variable is required")
-        sys.exit(1)
+    args = parse_args(parser, requirenodeid=True)
 
     client = Client(args.url, timeout=args.timeout)
     client.connect()
@@ -596,11 +590,7 @@ def uahistoryread():
                         default="",
                         help="End time, formatted as YYYY-MM-DD [HH:MM[:SS]]. Default: current time")
 
-    args = parse_args(parser)
-    if args.nodeid == "i=84" and args.path == "":
-        parser.print_usage()
-        print("uahistoryread: error: A NodeId or BrowsePath is required")
-        sys.exit(1)
+    args = parse_args(parser, requirenodeid=True)
 
     client = Client(args.url, timeout=args.timeout)
     client.connect()
