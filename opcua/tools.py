@@ -72,6 +72,7 @@ def get_node(client, args):
     node = client.get_node(args.nodeid)
     if args.path:
         node = node.get_child(args.path.split(","))
+    return node
 
 
 def uaread():
@@ -99,9 +100,7 @@ def uaread():
     client = Client(args.url, timeout=args.timeout)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         attr = node.get_attribute(args.attribute)
         if args.datatype == "python":
             print(attr.Value.Value)
@@ -241,9 +240,7 @@ def uawrite():
     client = Client(args.url, timeout=args.timeout)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         val = _val_to_variant(args.value, args)
         node.set_attribute(args.attribute, ua.DataValue(val))
     finally:
@@ -274,9 +271,7 @@ def uals():
     client = Client(args.url, timeout=args.timeout)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         print("Browsing node {} at {}\n".format(node, args.url))
         if args.long_format == 0:
             _lsprint_0(node, args.depth - 1)
@@ -365,9 +360,7 @@ def uasubscribe():
     client = Client(args.url, timeout=args.timeout)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         handler = SubHandler()
         sub = client.create_subscription(500, handler)
         if args.eventtype == "datachange":
@@ -454,9 +447,7 @@ def uaclient():
     try:
         root = client.get_root_node()
         objects = client.get_objects_node()
-        mynode = client.get_node(args.nodeid)
-        if args.path:
-            mynode = mynode.get_child(args.path.split(","))
+        mynode = get_node(client, args)
         embed()
     finally:
         client.disconnect()
@@ -614,9 +605,7 @@ def uahistoryread():
     client = Client(args.url, timeout=args.timeout)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         starttime = str_to_datetime(args.starttime)
         endtime = str_to_datetime(args.endtime)
         print("Reading raw history of node {} at {}; start at {}, end at {}\n".format(node, args.url, starttime, endtime))
