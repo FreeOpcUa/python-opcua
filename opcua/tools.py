@@ -60,10 +60,19 @@ def add_common_args(parser):
                         metavar="NAMESPACE")
 
 
+def parse_args(parser):
+    args = parser.parse_args()
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+    if args.url and '://' not in args.url:
+        logging.info("Adding default scheme %s to URL %s", ua.OPC_TCP_SCHEME, args.url)
+        args.url = ua.OPC_TCP_SCHEME + '://' + args.url
+    return args
+
 def get_node(client, args):
     node = client.get_node(args.nodeid)
     if args.path:
         node = node.get_child(args.path.split(","))
+    return node
 
 
 def uaread():
@@ -82,19 +91,16 @@ def uaread():
                         choices=['python', 'variant', 'datavalue'],
                         help="Data type to return")
 
-    args = parser.parse_args()
+    args = parse_args(parser)
     if args.nodeid == "i=84" and args.path == "" and args.attribute == ua.AttributeIds.Value:
         parser.print_usage()
         print("uaread: error: A NodeId or BrowsePath is required")
         sys.exit(1)
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
     client = Client(args.url, timeout=args.timeout)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         attr = node.get_attribute(args.attribute)
         if args.datatype == "python":
             print(attr.Value.Value)
@@ -225,19 +231,16 @@ def uawrite():
     parser.add_argument("value",
                         help="Value to be written",
                         metavar="VALUE")
-    args = parser.parse_args()
+    args = parse_args(parser)
     if args.nodeid == "i=84" and args.path == "" and args.attribute == ua.AttributeIds.Value:
         parser.print_usage()
         print("uaread: error: A NodeId or BrowsePath is required")
         sys.exit(1)
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
     client = Client(args.url, timeout=args.timeout)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         val = _val_to_variant(args.value, args)
         node.set_attribute(args.attribute, ua.DataValue(val))
     finally:
@@ -261,17 +264,14 @@ def uals():
                         type=int,
                         help="Browse depth")
 
-    args = parser.parse_args()
+    args = parse_args(parser)
     if args.long_format is None:
         args.long_format = 1
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
     client = Client(args.url, timeout=args.timeout)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         print("Browsing node {} at {}\n".format(node, args.url))
         if args.long_format == 0:
             _lsprint_0(node, args.depth - 1)
@@ -351,19 +351,16 @@ def uasubscribe():
                         choices=['datachange', 'event'],
                         help="Event type to subscribe to")
 
-    args = parser.parse_args()
+    args = parse_args(parser)
     if args.nodeid == "i=84" and args.path == "":
         parser.print_usage()
         print("uaread: error: The NodeId or BrowsePath of a variable is required")
         sys.exit(1)
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
     client = Client(args.url, timeout=args.timeout)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         handler = SubHandler()
         sub = client.create_subscription(500, handler)
         if args.eventtype == "datachange":
@@ -439,8 +436,7 @@ def uaclient():
     parser.add_argument("-k",
                         "--private_key",
                         help="set client private key")
-    args = parser.parse_args()
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+    args = parse_args(parser)
 
     client = Client(args.url, timeout=args.timeout)
     client.connect()
@@ -451,9 +447,7 @@ def uaclient():
     try:
         root = client.get_root_node()
         objects = client.get_objects_node()
-        mynode = client.get_node(args.nodeid)
-        if args.path:
-            mynode = mynode.get_child(args.path.split(","))
+        mynode = get_node(client, args)
         embed()
     finally:
         client.disconnect()
@@ -466,7 +460,7 @@ def uaserver():
     parser.add_argument("-u",
                         "--url",
                         help="URL of OPC UA server, default is opc.tcp://0.0.0.0:4841",
-                        default='opc.tcp://0.0.0:4841',
+                        default='opc.tcp://0.0.0.0:4841',
                         metavar="URL")
     parser.add_argument("-v",
                         "--verbose",
@@ -545,8 +539,7 @@ def uadiscover():
                         #"--endpoints",
                         #action="store_false",
                         #help="send a GetEndpoints request to server")
-    args = parser.parse_args()
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+    args = parse_args(parser)
     
     if args.network:
         client = Client(args.url, timeout=args.timeout)
@@ -603,19 +596,16 @@ def uahistoryread():
                         default="",
                         help="End time, formatted as YYYY-MM-DD [HH:MM[:SS]]. Default: current time")
 
-    args = parser.parse_args()
+    args = parse_args(parser)
     if args.nodeid == "i=84" and args.path == "":
         parser.print_usage()
         print("uahistoryread: error: A NodeId or BrowsePath is required")
         sys.exit(1)
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
     client = Client(args.url, timeout=args.timeout)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         starttime = str_to_datetime(args.starttime)
         endtime = str_to_datetime(args.endtime)
         print("Reading raw history of node {} at {}; start at {}, end at {}\n".format(node, args.url, starttime, endtime))
