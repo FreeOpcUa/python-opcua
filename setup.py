@@ -9,7 +9,7 @@ else:
     install_requires = ["pycrypto"]
 
 setup(name="freeopcua", 
-      version="0.9.18",
+      version="0.9.19",
       description="Pure Python OPC-UA client and server library",
       author="Olivier Roulet-Dubonnet",
       author_email="olivier.roulet@gmail.com",
