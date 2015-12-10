@@ -273,6 +273,7 @@ class CommonTests(object):
     client side since we have been carefull to have the exact
     same api on server and client side
     '''
+    opc = None
 
     def test_root(self):
         root = self.opc.get_root_node()
@@ -280,6 +281,15 @@ class CommonTests(object):
         self.assertEqual(ua.LocalizedText('Root'), root.get_display_name())
         nid = ua.NodeId(84, 0)
         self.assertEqual(nid, root.nodeid)
+
+    def test_find_servers(self):
+        servers = self.opc.find_servers()
+
+    def test_register_server(self):
+        servers = self.opc.register_server()
+
+    def test_register_server2(self):
+        servers = self.opc.register_server()
 
     def test_objects(self):
         objects = self.opc.get_objects_node()

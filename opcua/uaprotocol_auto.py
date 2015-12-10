@@ -1909,31 +1909,6 @@ class RegisteredServer(FrozenClass):
     
     __repr__ = __str__
     
-class RegisterServerParameters(FrozenClass):
-    '''
-    :ivar Server: 
-    :vartype Server: RegisteredServer 
-    '''
-    def __init__(self):
-        self.Server = RegisteredServer()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.Server.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = RegisterServerParameters()
-        obj.Server = RegisteredServer.from_binary(data)
-        return obj
-    
-    def __str__(self):
-        return 'RegisterServerParameters(' + 'Server:' + str(self.Server) + ')'
-    
-    __repr__ = __str__
-    
 class RegisterServerRequest(FrozenClass):
     '''
     Registers a server with the discovery server.
@@ -1942,20 +1917,20 @@ class RegisterServerRequest(FrozenClass):
     :vartype TypeId: NodeId 
     :ivar RequestHeader: 
     :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: RegisterServerParameters 
+    :ivar Server: 
+    :vartype Server: RegisteredServer 
     '''
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServerRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
-        self.Parameters = RegisterServerParameters()
+        self.Server = RegisteredServer()
         self._freeze()
     
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
+        packet.append(self.Server.to_binary())
         return b''.join(packet)
         
     @staticmethod
@@ -1963,13 +1938,13 @@ class RegisterServerRequest(FrozenClass):
         obj = RegisterServerRequest()
         obj.TypeId = NodeId.from_binary(data)
         obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = RegisterServerParameters.from_binary(data)
+        obj.Server = RegisteredServer.from_binary(data)
         return obj
     
     def __str__(self):
         return 'RegisterServerRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'RequestHeader:' + str(self.RequestHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'Server:' + str(self.Server) + ')'
     
     __repr__ = __str__
     
@@ -2136,20 +2111,28 @@ class RegisterServer2Request(FrozenClass):
     
     __repr__ = __str__
     
-class RegisterServer2Result(FrozenClass):
+class RegisterServer2Response(FrozenClass):
     '''
+    :ivar TypeId: 
+    :vartype TypeId: NodeId 
+    :ivar ResponseHeader: 
+    :vartype ResponseHeader: ResponseHeader 
     :ivar ConfigurationResults: 
     :vartype ConfigurationResults: StatusCode 
     :ivar DiagnosticInfos: 
     :vartype DiagnosticInfos: DiagnosticInfo 
     '''
     def __init__(self):
+        self.TypeId = FourByteNodeId(ObjectIds.RegisterServer2Response_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
         self.ConfigurationResults = []
         self.DiagnosticInfos = []
         self._freeze()
     
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
         packet.append(struct.pack('<i', len(self.ConfigurationResults)))
         for fieldname in self.ConfigurationResults:
             packet.append(fieldname.to_binary())
@@ -2160,7 +2143,9 @@ class RegisterServer2Result(FrozenClass):
         
     @staticmethod
     def from_binary(data):
-        obj = RegisterServer2Result()
+        obj = RegisterServer2Response()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
         if length != -1:
             for _ in range(0, length):
@@ -2172,45 +2157,10 @@ class RegisterServer2Result(FrozenClass):
         return obj
     
     def __str__(self):
-        return 'RegisterServer2Result(' + 'ConfigurationResults:' + str(self.ConfigurationResults) + ', '  + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
-    __repr__ = __str__
-    
-class RegisterServer2Response(FrozenClass):
-    '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: RegisterServer2Result 
-    '''
-    def __init__(self):
-        self.TypeId = FourByteNodeId(ObjectIds.RegisterServer2Response_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = RegisterServer2Result()
-        self._freeze()
-    
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-        
-    @staticmethod
-    def from_binary(data):
-        obj = RegisterServer2Response()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = RegisterServer2Result.from_binary(data)
-        return obj
-    
-    def __str__(self):
         return 'RegisterServer2Response(' + 'TypeId:' + str(self.TypeId) + ', '  + \
              'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Parameters:' + str(self.Parameters) + ')'
+             'ConfigurationResults:' + str(self.ConfigurationResults) + ', '  + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
     
     __repr__ = __str__
     

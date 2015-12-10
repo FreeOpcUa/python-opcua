@@ -33,6 +33,12 @@ class SessionState(Enum):
     Closed = 2
 
 
+class ServerDesc(object):
+    def __init__(self, serv, cap=None):
+        self.Server = serv
+        self.Capabilities = cap
+
+
 class InternalServer(object):
 
     def __init__(self):
@@ -40,14 +46,17 @@ class InternalServer(object):
         self.endpoints = []
         self._channel_id_counter = 5
         self.allow_remote_admin = True
+        self._known_servers = []  # used if we are a discovery server
 
         self.aspace = AddressSpace()
         self.attribute_service = AttributeService(self.aspace)
         self.view_service = ViewService(self.aspace)
         self.method_service = MethodService(self.aspace)
         self.node_mgt_service = NodeManagementService(self.aspace)
-        standard_address_space.fill_address_space(self.node_mgt_service)  # import address space from code generated from xml
-        #standard_address_space.fill_address_space_from_disk(self.aspace)  # import address space from save db to disc
+        # import address space from code generated from xml
+        standard_address_space.fill_address_space(self.node_mgt_service)  
+        # import address space from save db to disc
+        #standard_address_space.fill_address_space_from_disk(self.aspace)  
 
         # import address space directly from xml, this has preformance impact so disabled
         #importer = xmlimporter.XmlImporter(self.node_mgt_service)
@@ -106,12 +115,24 @@ class InternalServer(object):
         return self.endpoints[:]
 
     def find_servers(self, params):
-        #FIXME: implement correctly
+        #FIXME: implement filtering from parmams.uri 
         servers = []
         for edp in self.endpoints:
             servers.append(edp.Server)
-        return servers
-        
+        return servers + [desc.Server for desc in self._known_servers]
+
+    def register_server(self, server, conf=None):
+        appdesc = ua.ApplicationDesciption()
+        appdesc.ApplicationUri = server.ServerUri
+        appdesc.ProductUri = server.ProductUri
+        appdesc.ApplicationName = server.ServerNames[0]  # FIXME: select name from client locale
+        appdesc.ApplicationType = server.ServerType
+        appdesc.GatewayServerUri = server.DatewayServerUri
+        appdesc.DiscoveryProfileUri = server.DiscoveryUris[0]  # FIXME: select discovery uri using reachability from client network
+        self._known_servers.append(ServerDesc(appdesc, conf))
+
+    def register_server2(self, params):
+        return self.register_server(params.Server, params.DiscoveryConfiguration)
 
     def create_session(self, name, user=User.Anonymous):
         return InternalSession(self, self.aspace, self.subscription_service, name, user=user)

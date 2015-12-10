@@ -258,12 +258,14 @@ class BinaryClient(object):
         self.logger = logging.getLogger(__name__)
         self._publishcallbacks = {}
         self._lock = Lock()
-        self._uasocket = UASocketClient(timeout)
+        self._timeout = timeout
+        self._uasocket = None
 
     def connect_socket(self, host, port):
         """
         connect to server socket and start receiving thread
         """
+        self._uasocket = UASocketClient(self._timeout)
         return self._uasocket.connect_socket(host, port)
 
     def disconnect_socket(self):
@@ -361,7 +363,25 @@ class BinaryClient(object):
         data = self._uasocket.send_request(request)
         response = ua.FindServersOnNetworkResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
-        return response.Servers
+        return response.Parameters
+
+    def register_server(self, registered_server):
+        self.logger.info("register_server")
+        request = ua.RegisterServerRequest()
+        request.Server = registered_server
+        data = self._uasocket.send_request(request)
+        response = ua.RegisterServerResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        # nothing to return for this service
+
+    def register_server2(self, params):
+        self.logger.info("register_server2")
+        request = ua.RegisterServer2Request()
+        request.Parameters = params
+        data = self._uasocket.send_request(request)
+        response = ua.RegisterServer2Response.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.ConfigurationResults
 
     def translate_browsepaths_to_nodeids(self, browsepaths):
         self.logger.info("translate_browsepath_to_nodeid")
