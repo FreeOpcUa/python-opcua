@@ -460,7 +460,7 @@ def uaserver():
     parser.add_argument("-u",
                         "--url",
                         help="URL of OPC UA server, default is opc.tcp://0.0.0.0:4841",
-                        default='opc.tcp://0.0.0:4841',
+                        default='opc.tcp://0.0.0.0:4841',
                         metavar="URL")
     parser.add_argument("-v",
                         "--verbose",
