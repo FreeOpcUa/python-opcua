@@ -6,7 +6,7 @@ import sys
 if sys.version_info[0] < 3:
     install_requires = ["enum34", "trollius", "futures", "pycrypto"]
 else:
-    install_requires = []
+    install_requires = ["pycrypto"]
 
 setup(name="freeopcua", 
       version="0.9.18",
