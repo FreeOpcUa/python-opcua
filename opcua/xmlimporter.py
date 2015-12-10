@@ -1,5 +1,5 @@
 """
-add noce defined in XML to address space
+add node defined in XML to address space
 format is the one from opc-ua specification
 """
 import logging
@@ -97,7 +97,7 @@ class XmlImporter(object):
         attrs.DisplayName = ua.LocalizedText(obj.displayname)
         attrs.DataType = self.to_data_type(obj.datatype)
         # if obj.value and len(obj.value) == 1:
-        if obj.value:
+        if obj.value is not None:
             attrs.Value = ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
         if obj.rank:
             attrs.ValueRank = obj.rank
