@@ -212,34 +212,25 @@ class Client(object):
         params.EndpointUrl = self.server_url.geturl()
         return self.bclient.get_endpoints(params)
 
-    def register_server(self, server_uri, product_uri, endpoint_url):
+    def register_server(self, server, discovery_configuration=None):
         """
         register a server to discovery server
+        if discovery_configuration is provided, the newer register_server2 service call is used
         """
         serv = ua.RegisteredServer()
-        serv.ServerUri = server_uri
-        serv.ProductUri = product_uri
-        serv.DiscoveryUrls = [endpoint_url]
+        serv.ServerUri = server.server_uri
+        serv.ProductUri = server.product_uri
+        serv.DiscoveryUrls = [server.endpoint.geturl()]
         serv.ServerType = ua.ApplicationType.ClientAndServer
+        serv.ServerNames = [ua.LocalizedText(server.name)]
         serv.IsOnline = True
-        self.bclient.register_server(serv)
-
-    def register_server2(self, server_uri, product_uri, endpoint_url):
-        """
-        register a server to discovery server, using the newer RegisterServer2 service
-        This is mostly sample code as no known server implement this....
-        """
-        serv = ua.RegisteredServer()
-        serv.ServerUri = server_uri
-        serv.ProductUri = product_uri
-        serv.DiscoveryUrls = [endpoint_url]
-        serv.ServerType = ua.ApplicationType.ClientAndServer
-        serv.IsOnline = True
-
-        params = ua.registerServer2Parameters()
-        params.Server = serv
-        params.DiscoveryConfiguration
-        return self.bclient.register_server2(params)
+        if discovery_configuration:
+            params = ua.registerServer2Parameters()
+            params.Server = serv
+            params.DiscoveryConfiguration
+            return self.bclient.register_server2(params)
+        else:
+            return self.bclient.register_server(serv)
 
     def find_servers(self, uris=[]):
         """

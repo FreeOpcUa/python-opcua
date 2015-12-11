@@ -122,13 +122,13 @@ class InternalServer(object):
         return servers + [desc.Server for desc in self._known_servers]
 
     def register_server(self, server, conf=None):
-        appdesc = ua.ApplicationDesciption()
+        appdesc = ua.ApplicationDescription()
         appdesc.ApplicationUri = server.ServerUri
         appdesc.ProductUri = server.ProductUri
         appdesc.ApplicationName = server.ServerNames[0]  # FIXME: select name from client locale
         appdesc.ApplicationType = server.ServerType
-        appdesc.GatewayServerUri = server.DatewayServerUri
-        appdesc.DiscoveryProfileUri = server.DiscoveryUris[0]  # FIXME: select discovery uri using reachability from client network
+        appdesc.GatewayServerUri = server.GatewayServerUri
+        appdesc.DiscoveryProfileUri = server.DiscoveryUrls[0]  # FIXME: select discovery uri using reachability from client network
         self._known_servers.append(ServerDesc(appdesc, conf))
 
     def register_server2(self, params):

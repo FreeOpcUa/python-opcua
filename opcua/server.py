@@ -15,6 +15,7 @@ from opcua.binary_server_asyncio import BinaryServer
 from opcua.internal_server import InternalServer
 from opcua import Node, Subscription, ObjectIds, Event
 from opcua import xmlimporter
+from opcua import Client
 
 
 class Server(object):
@@ -47,18 +48,43 @@ class Server(object):
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.endpoint = "opc.tcp://localhost:4841/freeopcua/server/"
+        self.endpoint = urlparse("opc.tcp://0.0.0.0:4841/freeopcua/server/")
         self.server_uri = "urn:freeopcua:python:server"
         self.product_uri = "urn:freeopcua.github.no:python:server"
         self.name = "FreeOpcUa Python Server"
         self.default_timeout = 3600000
         self.iserver = InternalServer()
         self.bserver = None
+        self._discovery_client = None
+        self._discovery_period = 60
 
         # setup some expected values
         self.register_namespace(self.server_uri)
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
         sa_node.set_value([self.server_uri])
+
+    def find_servers(self, uris=[]):
+        params = ua.FindServersParameters()
+        params.EndpointUrl = self.endpoint.geturl()
+        params.ServerUris = uris 
+        return self.iserver.find_servers(params)
+
+    def register_to_discovery(self, url, period=60):
+        """
+        Register to a OPC-UA Discovery server. Registering must be renewed at
+        least every 10 minutes, so this method will use our asyncio thread to
+        re-register every period seconds
+        """
+        self._discovery_period = period
+        self._discovery_client = Client(url)
+        self._discovery_client.connect()
+        self.iserver.loop.call_soon(self._renew_registration)
+
+    def _renew_registration(self):
+        print("RENEW ", self._discovery_period, self._discovery_client) 
+        if self._discovery_client:
+            self._discovery_client.register_server(self)
+            self.iserver.loop.call_later(self._discovery_period, self._renew_registration)
 
     def allow_remote_admin(self, allow):
         """
@@ -115,6 +141,8 @@ class Server(object):
         """
         Stop server  
         """
+        if self._discovery_client:
+            self._discovery_client.disconnect()
         self.bserver.stop()
         self.iserver.stop()
 

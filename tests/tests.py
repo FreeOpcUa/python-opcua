@@ -275,21 +275,16 @@ class CommonTests(object):
     '''
     opc = None
 
+    def test_find_servers(self):
+        servers = self.opc.find_servers()
+        # FIXME : finish
+
     def test_root(self):
         root = self.opc.get_root_node()
         self.assertEqual(ua.QualifiedName('Root', 0), root.get_browse_name())
         self.assertEqual(ua.LocalizedText('Root'), root.get_display_name())
         nid = ua.NodeId(84, 0)
         self.assertEqual(nid, root.nodeid)
-
-    def test_find_servers(self):
-        servers = self.opc.find_servers()
-
-    def test_register_server(self):
-        servers = self.opc.register_server()
-
-    def test_register_server2(self):
-        servers = self.opc.register_server()
 
     def test_objects(self):
         objects = self.opc.get_objects_node()
@@ -921,6 +916,15 @@ class TestServer(unittest.TestCase, CommonTests):
     @classmethod
     def tearDownClass(self):
         self.srv.stop()
+
+
+    def test_register_server(self):
+        self.srv.register_to_discovery(self.srv.endpoint.geturl(), 1)
+
+    #def test_register_server2(self):
+        #servers = self.opc.register_server()
+
+
 
     def test_register_namespace(self):
         uri = 'http://mycustom.Namespace.com'
