@@ -46,7 +46,7 @@ class InternalServer(object):
         self.endpoints = []
         self._channel_id_counter = 5
         self.allow_remote_admin = True
-        self._known_servers = []  # used if we are a discovery server
+        self._known_servers = {}  # used if we are a discovery server
 
         self.aspace = AddressSpace()
         self.attribute_service = AttributeService(self.aspace)
@@ -119,7 +119,7 @@ class InternalServer(object):
         servers = []
         for edp in self.endpoints:
             servers.append(edp.Server)
-        return servers + [desc.Server for desc in self._known_servers]
+        return servers + [desc.Server for desc in self._known_servers.values()]
 
     def register_server(self, server, conf=None):
         appdesc = ua.ApplicationDescription()
@@ -128,8 +128,8 @@ class InternalServer(object):
         appdesc.ApplicationName = server.ServerNames[0]  # FIXME: select name from client locale
         appdesc.ApplicationType = server.ServerType
         appdesc.GatewayServerUri = server.GatewayServerUri
-        appdesc.DiscoveryProfileUri = server.DiscoveryUrls[0]  # FIXME: select discovery uri using reachability from client network
-        self._known_servers.append(ServerDesc(appdesc, conf))
+        appdesc.DiscoveryUrls = server.DiscoveryUrls  # FIXME: select discovery uri using reachability from client network
+        self._known_servers[server.ServerUri] = ServerDesc(appdesc, conf)
 
     def register_server2(self, params):
         return self.register_server(params.Server, params.DiscoveryConfiguration)

@@ -31,8 +31,8 @@ class Server(object):
     All methods are threadsafe
 
 
-    :ivar server_uri: 
-    :vartype server_uri: uri 
+    :ivar application_uri: 
+    :vartype application_uri: uri 
     :ivar product_uri: 
     :vartype product_uri: uri 
     :ivar name: 
@@ -49,9 +49,10 @@ class Server(object):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.endpoint = urlparse("opc.tcp://0.0.0.0:4841/freeopcua/server/")
-        self.server_uri = "urn:freeopcua:python:server"
+        self.application_uri = "urn:freeopcua:python:server"
         self.product_uri = "urn:freeopcua.github.no:python:server"
         self.name = "FreeOpcUa Python Server"
+        self.application_type = ua.ApplicationType.ClientAndServer
         self.default_timeout = 3600000
         self.iserver = InternalServer()
         self.bserver = None
@@ -59,9 +60,19 @@ class Server(object):
         self._discovery_period = 60
 
         # setup some expected values
-        self.register_namespace(self.server_uri)
+        self.register_namespace(self.application_uri)
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
-        sa_node.set_value([self.server_uri])
+        sa_node.set_value([self.application_uri])
+
+    def set_application_uri(self, uri):
+        """
+        Set application/server URI.
+        This uri is supposed to be unique. If you intent to register
+        your server to a discovery server, it really should be unique in
+        your system!
+        default is : "urn:freeopcua:python:server"
+        """
+        self.application_uri = uri
 
     def find_servers(self, uris=[]):
         params = ua.FindServersParameters()
@@ -81,7 +92,6 @@ class Server(object):
         self.iserver.loop.call_soon(self._renew_registration)
 
     def _renew_registration(self):
-        print("RENEW ", self._discovery_period, self._discovery_client) 
         if self._discovery_client:
             self._discovery_client.register_server(self)
             self.iserver.loop.call_later(self._discovery_period, self._renew_registration)
@@ -109,8 +119,8 @@ class Server(object):
 
         appdesc = ua.ApplicationDescription()
         appdesc.ApplicationName = ua.LocalizedText(self.name)
-        appdesc.ApplicationUri = self.server_uri
-        appdesc.ApplicationType = ua.ApplicationType.Server
+        appdesc.ApplicationUri = self.application_uri
+        appdesc.ApplicationType = self.application_type
         appdesc.ProductUri = self.product_uri
         appdesc.DiscoveryUrls.append(self.endpoint.geturl())
 
@@ -122,6 +132,7 @@ class Server(object):
         edp.UserIdentityTokens = [idtoken]
         edp.TransportProfileUri = 'http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary'
         edp.SecurityLevel = 0
+        # FIXME: advertise support for user and certificate identity
 
         self.iserver.add_endpoint(edp)
 

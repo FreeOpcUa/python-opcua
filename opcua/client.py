@@ -218,10 +218,10 @@ class Client(object):
         if discovery_configuration is provided, the newer register_server2 service call is used
         """
         serv = ua.RegisteredServer()
-        serv.ServerUri = server.server_uri
+        serv.ServerUri = server.application_uri
         serv.ProductUri = server.product_uri
         serv.DiscoveryUrls = [server.endpoint.geturl()]
-        serv.ServerType = ua.ApplicationType.ClientAndServer
+        serv.ServerType = server.application_type
         serv.ServerNames = [ua.LocalizedText(server.name)]
         serv.IsOnline = True
         if discovery_configuration:
