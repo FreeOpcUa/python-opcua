@@ -24,25 +24,25 @@ class Server(object):
     High level Server class
     Create an opcua server with default values
     The class is very short. Users are adviced to read the code.
-    Create your own namespace and then populate your server address space 
+    Create your own namespace and then populate your server address space
     using use the get_root() or get_objects() to get Node objects.
     and get_event_object() to fire events.
     Then start server. See example_server.py
     All methods are threadsafe
 
 
-    :ivar application_uri: 
-    :vartype application_uri: uri 
-    :ivar product_uri: 
-    :vartype product_uri: uri 
-    :ivar name: 
-    :vartype name: string 
+    :ivar application_uri:
+    :vartype application_uri: uri
+    :ivar product_uri:
+    :vartype product_uri: uri
+    :ivar name:
+    :vartype name: string
     :ivar default_timeout: timout in milliseconds for sessions and secure channel
-    :vartype default_timeout: int 
-    :ivar iserver: internal server object 
-    :vartype default_timeout: InternalServer 
-    :ivar bserver: binary protocol server 
-    :vartype bserver: BinaryServer 
+    :vartype default_timeout: int
+    :ivar iserver: internal server object
+    :vartype default_timeout: InternalServer
+    :ivar bserver: binary protocol server
+    :vartype bserver: BinaryServer
 
     """
 
@@ -75,9 +75,12 @@ class Server(object):
         self.application_uri = uri
 
     def find_servers(self, uris=[]):
+        """
+        find_servers. mainly implemented for simmetry with client
+        """
         params = ua.FindServersParameters()
         params.EndpointUrl = self.endpoint.geturl()
-        params.ServerUris = uris 
+        params.ServerUris = uris
         return self.iserver.find_servers(params)
 
     def register_to_discovery(self, url, period=60):
@@ -117,6 +120,18 @@ class Server(object):
         idtoken.PolicyId = 'anonymous'
         idtoken.TokenType = ua.UserTokenType.Anonymous
 
+        idtoken2 = ua.UserTokenPolicy()
+        idtoken2.PolicyId = 'certificate_basic256'
+        idtoken2.TokenType = ua.UserTokenType.Certificate
+
+        idtoken3 = ua.UserTokenPolicy()
+        idtoken3.PolicyId = 'certificate_basic128'
+        idtoken3.TokenType = ua.UserTokenType.Certificate
+
+        idtoken4 = ua.UserTokenPolicy()
+        idtoken4.PolicyId = 'username'
+        idtoken4.TokenType = ua.UserTokenType.UserName
+
         appdesc = ua.ApplicationDescription()
         appdesc.ApplicationName = ua.LocalizedText(self.name)
         appdesc.ApplicationUri = self.application_uri
@@ -129,11 +144,9 @@ class Server(object):
         edp.Server = appdesc
         edp.SecurityMode = ua.MessageSecurityMode.None_
         edp.SecurityPolicyUri = 'http://opcfoundation.org/UA/SecurityPolicy#None'
-        edp.UserIdentityTokens = [idtoken]
+        edp.UserIdentityTokens = [idtoken, idtoken2, idtoken3]
         edp.TransportProfileUri = 'http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary'
         edp.SecurityLevel = 0
-        # FIXME: advertise support for user and certificate identity
-
         self.iserver.add_endpoint(edp)
 
     def set_server_name(self, name):
@@ -141,7 +154,7 @@ class Server(object):
 
     def start(self):
         """
-        Start to listen on network 
+        Start to listen on network
         """
         self.iserver.start()
         self._setup_server_nodes()
@@ -150,7 +163,7 @@ class Server(object):
 
     def stop(self):
         """
-        Stop server  
+        Stop server
         """
         if self._discovery_client:
             self._discovery_client.disconnect()
@@ -233,4 +246,3 @@ class Server(object):
         """
         importer = xmlimporter.XmlImporter(self.iserver.node_mgt_service)
         importer.import_xml(path)
-
