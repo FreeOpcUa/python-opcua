@@ -64,6 +64,7 @@ class Server(object):
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
         sa_node.set_value([self.application_uri])
 
+
     def set_application_uri(self, uri):
         """
         Set application/server URI.

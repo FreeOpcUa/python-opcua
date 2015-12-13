@@ -1,8 +1,4 @@
 # temporary hack
-from IPython import embed
-
-import struct
-
 import generate_model as gm
 
 IgnoredEnums = ["NodeIdType"]
@@ -33,6 +29,7 @@ class CodeGenerator(object):
 
         self.iidx = 0
         self.write("")
+        self.write("")
         self.write("ExtensionClasses = {")
         for struct in self.model.structs:
             if struct.name in IgnoredStructs:
@@ -40,18 +37,17 @@ class CodeGenerator(object):
             if struct.name.endswith("Node") or struct.name.endswith("NodeId"):
                 continue
             if "ExtensionObject" in struct.parents:
-                self.write("    ObjectIds.{0}_Encoding_DefaultBinary : {0},".format(struct.name))
+                self.write("    ObjectIds.{0}_Encoding_DefaultBinary: {0},".format(struct.name))
         self.write("}")
         self.write("")
         with open('uaprotocol_auto_add.py') as f:
             for line in f:
                 self.write(line.rstrip())
 
-    def write(self, *args):
-        args = list(args)
-        args.insert(0, self.indent * self.iidx)
-        line = " ".join(args)
-        self.output_file.write(line[1:] + "\n")
+    def write(self, line):
+        if line:
+            line = self.indent * self.iidx + line
+        self.output_file.write(line + "\n")
 
     def make_header(self):
         self.write("'''")
@@ -63,10 +59,9 @@ class CodeGenerator(object):
         self.write("from opcua.utils import Buffer")
         self.write("from opcua.uatypes import *")
         self.write("from opcua.object_ids import ObjectIds")
-        self.write("")
-        self.write("")
 
     def generate_enum_code(self, enum):
+        self.write("")
         self.write("")
         self.write("class {}(object):".format(enum.name))
         self.iidx = 1
@@ -75,14 +70,15 @@ class CodeGenerator(object):
             self.write(enum.doc)
             self.write("")
         for val in enum.values:
-            self.write(":ivar {}: ".format(val.name))
-            self.write(":vartype {}: {} ".format(val.name, val.value))
+            self.write(":ivar {}:".format(val.name))
+            self.write(":vartype {}: {}".format(val.name, val.value))
         self.write("'''")
         for val in enum.values:
             self.write("{} = {}".format(val.name, val.value))
         self.iidx = 0
 
     def generate_struct_code(self, obj):
+        self.write("")
         self.write("")
         self.iidx = 0
         self.write("class {}(FrozenClass):".format(obj.name))
@@ -92,8 +88,8 @@ class CodeGenerator(object):
             self.write(obj.doc)
             self.write("")
         for field in obj.fields:
-            self.write(":ivar {}: ".format(field.name))
-            self.write(":vartype {}: {} ".format(field.name, field.uatype))
+            self.write(":ivar {}:".format(field.name))
+            self.write(":vartype {}: {}".format(field.name, field.uatype))
         self.write("'''")
         self.write("def __init__(self):")
         self.iidx += 1
@@ -232,7 +228,7 @@ class CodeGenerator(object):
         self.write("def __str__(self):")
         self.iidx += 1
         tmp = ["'{name}:' + str(self.{name})".format(name=f.name) for f in obj.fields]
-        tmp = " + ', '  + \\\n             ".join(tmp)
+        tmp = " + ', ' + \\\n               ".join(tmp)
         self.write("return '{}(' + {} + ')'".format(obj.name, tmp))
         self.iidx -= 1
         self.write("")
