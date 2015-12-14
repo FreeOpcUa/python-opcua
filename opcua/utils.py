@@ -28,6 +28,7 @@ class Buffer(object):
     def __init__(self, data):
         self.logger = logging.getLogger(__name__)
         self.data = data
+        self.rsize = 0
 
     def __str__(self):
         return "Buffer(size:{}, data:{})".format(len(self.data), self.data)
@@ -40,11 +41,13 @@ class Buffer(object):
         """
         read and pop number of bytes for buffer
         """
-        if size > len(self.data):
+        rsize = self.rsize
+        nrsize = rsize + size
+        if nrsize > len(self.data):
             raise Exception("Not enough data left in buffer, request for {}, we have {}".format(size, self))
         #self.logger.debug("Request for %s bytes, from %s", size, self)
-        data = self.data[:size]
-        self.data = self.data[size:]
+        data = self.data[rsize:nrsize]
+        self.rsize = nrsize
         #self.logger.debug("Returning: %s ", data)
         return data
 
@@ -53,9 +56,9 @@ class Buffer(object):
         return a copy, optionnaly only copy 'size' bytes
         """
         if size is None:
-            return Buffer(self.data)
+            return Buffer(self.data[self.rsize:])
         else:
-            return Buffer(self.data[:size])
+            return Buffer(self.data[self.rsize:self.rsize + size])
 
     def test_read(self, size):
         """
