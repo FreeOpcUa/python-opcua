@@ -190,21 +190,21 @@ def set_bit(data, offset):
     return data | mask
 
 
-class FrozenClass(object):
+# class FrozenClass(object):
 
-    """
-    make it impossible to add members to a class.
-    This is a hack since I found out that most bugs are due to misspelling a variable in protocol
-    """
-    __isfrozen = False
+#     """
+#     make it impossible to add members to a class.
+#     This is a hack since I found out that most bugs are due to misspelling a variable in protocol
+#     """
+#     __isfrozen = False
 
-    def __setattr__(self, key, value):
-        if self.__isfrozen and not hasattr(self, key):
-            raise TypeError("Error adding member '{}' to class '{}', class is frozen, members are {}".format(key, self.__class__.__name__, self.__dict__.keys()))
-        object.__setattr__(self, key, value)
+#     def __setattr__(self, key, value):
+#         if self.__isfrozen and not hasattr(self, key):
+#             raise TypeError("Error adding member '{}' to class '{}', class is frozen, members are {}".format(key, self.__class__.__name__, self.__dict__.keys()))
+#         object.__setattr__(self, key, value)
 
-    def _freeze(self):
-        self.__isfrozen = True
+#     def _freeze(self):
+#         self.__isfrozen = True
 
 
 class Guid(object):
@@ -225,7 +225,7 @@ class Guid(object):
         return isinstance(other, Guid) and self.uuid == other.uuid
 
 
-class StatusCode(FrozenClass):
+class StatusCode(object):
 
     """
     :ivar value:
@@ -235,6 +235,11 @@ class StatusCode(FrozenClass):
     :ivar doc:
     :vartype doc: string
     """
+    __slots__ = [
+        "value",
+        "name",
+        "doc",
+    ]
 
     def __init__(self, value=0):
         self.value = value
@@ -279,7 +284,7 @@ class NodeIdType(object):
     ByteString = 5
 
 
-class NodeId(FrozenClass):
+class NodeId(object):
 
     """
     NodeId Object
@@ -299,6 +304,14 @@ class NodeId(FrozenClass):
     :ivar ServerIndex:
     :vartype ServerIndex: Int
     """
+
+    __slots__ = [
+        "Identifier",
+        "NamespaceIndex",
+        "NodeIdType",
+        "NamespaceUri",
+        "ServerIndex",
+    ]
 
     def __init__(self, identifier=None, namespaceidx=0, nodeidtype=None):
         self.Identifier = identifier
@@ -452,36 +465,42 @@ class NodeId(FrozenClass):
 
 
 class TwoByteNodeId(NodeId):
+    __slots__ = []
 
     def __init__(self, identifier):
         NodeId.__init__(self, identifier, 0, NodeIdType.TwoByte)
 
 
 class FourByteNodeId(NodeId):
+    __slots__ = []
 
     def __init__(self, identifier, namespace=0):
         NodeId.__init__(self, identifier, namespace, NodeIdType.FourByte)
 
 
 class NumericNodeId(NodeId):
+    __slots__ = []
 
     def __init__(self, identifier, namespace=0):
         NodeId.__init__(self, identifier, namespace, NodeIdType.Numeric)
 
 
 class ByteStringNodeId(NodeId):
+    __slots__ = []
 
     def __init__(self, identifier, namespace=0):
         NodeId.__init__(self, identifier, namespace, NodeIdType.ByteString)
 
 
 class GuidNodeId(NodeId):
+    __slots__ = []
 
     def __init__(self, identifier, namespace=0):
         NodeId.__init__(self, identifier, namespace, NodeIdType.Guid)
 
 
 class StringNodeId(NodeId):
+    __slots__ = []
 
     def __init__(self, identifier, namespace=0):
         NodeId.__init__(self, identifier, namespace, NodeIdType.String)
@@ -490,11 +509,15 @@ class StringNodeId(NodeId):
 ExpandedNodeId = NodeId
 
 
-class QualifiedName(FrozenClass):
+class QualifiedName(object):
 
     '''
     A string qualified with a namespace index.
     '''
+    __slots__ = [
+        "NamespaceIndex",
+        "Name",
+    ]
 
     def __init__(self, name="", namespaceidx=0):
         self.NamespaceIndex = namespaceidx
@@ -536,11 +559,16 @@ class QualifiedName(FrozenClass):
     __repr__ = __str__
 
 
-class LocalizedText(FrozenClass):
+class LocalizedText(object):
 
     '''
     A string qualified with a namespace index.
     '''
+    __slots__ = [
+        "Encoding",
+        "Text",
+        "Locale",
+    ]
 
     def __init__(self, text=""):
         self.Encoding = 0
@@ -550,7 +578,6 @@ class LocalizedText(FrozenClass):
         if self.Text:
             self.Encoding |= (1 << 1)
         self.Locale = b''
-        self._freeze()
 
     def to_binary(self):
         packet = []
@@ -655,7 +682,7 @@ class VariantType(Enum):
     DiagnosticInfo = 25
 
 
-class Variant(FrozenClass):
+class Variant(object):
 
     """
     Create an OPC-UA Variant object.
@@ -668,6 +695,12 @@ class Variant(FrozenClass):
     :ivar VariantType:
     :vartype VariantType: VariantType
     """
+
+    __slots__ = [
+        "Encoding",
+        "Value",
+        "VariantType",
+    ]
 
     def __init__(self, value=None, varianttype=None):
         self.Encoding = 0
@@ -744,7 +777,7 @@ class Variant(FrozenClass):
         return obj
 
 
-class DataValue(FrozenClass):
+class DataValue(object):
 
     '''
     A value with an associated timestamp, and quality.
@@ -764,6 +797,15 @@ class DataValue(FrozenClass):
     :vartype ServerPicoseconds: int
 
     '''
+    __slots__ = [
+        "Encoding",
+        "Value",
+        "StatusCode",
+        "SourceTimestamp",
+        "SourcePicoseconds",
+        "ServerTimestamp",
+        "ServerPicoseconds",
+    ]
 
     def __init__(self, variant=None):
         self.Encoding = 0

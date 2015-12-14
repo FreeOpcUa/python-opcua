@@ -22,7 +22,16 @@ class AccessLevelMask(object):
     SemanticChange = 4
 
 
-class Hello(uatypes.FrozenClass):
+class Hello(object):
+
+    __slots__ = [
+        "ProtocolVersion",
+        "ReceiveBufferSize",
+        "SendBufferSize",
+        "MaxMessageSize",
+        "MaxChunkCount",
+        "EndpointUrl",
+    ]
 
     def __init__(self):
         self.ProtocolVersion = 0
@@ -31,7 +40,6 @@ class Hello(uatypes.FrozenClass):
         self.MaxMessageSize = 0
         self.MaxChunkCount = 0
         self.EndpointUrl = ""
-        self._freeze()
 
     def to_binary(self):
         b = []
@@ -72,7 +80,14 @@ class ChunkType(object):
     Final = b"A"
 
 
-class Header(uatypes.FrozenClass):
+class Header(object):
+    __slots__ = [
+        "MessageType",
+        "ChunkType",
+        "ChannelId",
+        "body_size",
+        "packet_size",
+    ]
 
     def __init__(self, msgType=None, chunkType=None, channelid=0):
         self.MessageType = msgType
@@ -80,7 +95,6 @@ class Header(uatypes.FrozenClass):
         self.ChannelId = channelid
         self.body_size = 0
         self.packet_size = 0
-        self._freeze()
 
     def add_size(self, size):
         self.body_size += size
@@ -114,12 +128,15 @@ class Header(uatypes.FrozenClass):
     __repr__ = __str__
 
 
-class ErrorMessage(uatypes.FrozenClass):
+class ErrorMessage(object):
+    __slots__ = [
+        "Error",
+        "Reason",
+    ]
 
     def __init__(self):
         self.Error = uatypes.StatusCode()
         self.Reason = ""
-        self._freeze()
 
     def to_binary(self):
         b = []
@@ -139,7 +156,14 @@ class ErrorMessage(uatypes.FrozenClass):
     __repr__ = __str__
 
 
-class Acknowledge(uatypes.FrozenClass):
+class Acknowledge(object):
+    __slots__ = [
+        "ProtocolVersion",
+        "ReceiveBufferSize",
+        "SendBufferSize",
+        "MaxMessageSize",
+        "MaxChunkCount",
+    ]
 
     def __init__(self):
         self.ProtocolVersion = 0
@@ -147,7 +171,6 @@ class Acknowledge(uatypes.FrozenClass):
         self.SendBufferSize = 65536
         self.MaxMessageSize = 0  # No limits
         self.MaxChunkCount = 0  # No limits
-        self._freeze()
 
     def to_binary(self):
         b = []
@@ -169,13 +192,17 @@ class Acknowledge(uatypes.FrozenClass):
         return ack
 
 
-class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
+class AsymmetricAlgorithmHeader(object):
+    __slots__ = [
+        "SecurityPolicyURI",
+        "SenderCertificate",
+        "ReceiverCertificateThumbPrint",
+    ]
 
     def __init__(self):
         self.SecurityPolicyURI = "http://opcfoundation.org/UA/SecurityPolicy#None"
         self.SenderCertificate = b""
         self.ReceiverCertificateThumbPrint = b""
-        self._freeze()
 
     def to_binary(self):
         b = []
@@ -197,11 +224,13 @@ class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
     __repr__ = __str__
 
 
-class SymmetricAlgorithmHeader(uatypes.FrozenClass):
+class SymmetricAlgorithmHeader(object):
+    __slots__ = [
+        "TokenId",
+    ]
 
     def __init__(self):
         self.TokenId = 0
-        self._freeze()
 
     @staticmethod
     def from_binary(data):
@@ -217,12 +246,15 @@ class SymmetricAlgorithmHeader(uatypes.FrozenClass):
     __repr__ = __str__
 
 
-class SequenceHeader(uatypes.FrozenClass):
+class SequenceHeader(object):
+    __slots__ = [
+        "SequenceNumber",
+        "RequestId",
+    ]
 
     def __init__(self):
         self.SequenceNumber = None
         self.RequestId = None
-        self._freeze()
 
     @staticmethod
     def from_binary(data):
@@ -246,6 +278,8 @@ ana = auto.NodeAttributesMask
 
 
 class ObjectAttributes(auto.ObjectAttributes):
+    __slots__ = [
+    ]
 
     def __init__(self):
         auto.ObjectAttributes.__init__(self)
@@ -253,6 +287,8 @@ class ObjectAttributes(auto.ObjectAttributes):
 
 
 class ObjectTypeAttributes(auto.ObjectTypeAttributes):
+    __slots__ = [
+    ]
 
     def __init__(self):
         auto.ObjectTypeAttributes.__init__(self)
@@ -260,6 +296,8 @@ class ObjectTypeAttributes(auto.ObjectTypeAttributes):
 
 
 class VariableAttributes(auto.VariableAttributes):
+    __slots__ = [
+    ]
 
     def __init__(self):
         auto.VariableAttributes.__init__(self)
@@ -268,6 +306,8 @@ class VariableAttributes(auto.VariableAttributes):
 
 
 class VariableTypeAttributes(auto.VariableTypeAttributes):
+    __slots__ = [
+    ]
 
     def __init__(self):
         auto.VariableTypeAttributes.__init__(self)
@@ -275,6 +315,8 @@ class VariableTypeAttributes(auto.VariableTypeAttributes):
 
 
 class MethodAttributes(auto.MethodAttributes):
+    __slots__ = [
+    ]
 
     def __init__(self):
         auto.MethodAttributes.__init__(self)
@@ -282,6 +324,8 @@ class MethodAttributes(auto.MethodAttributes):
 
 
 class ReferenceTypeAttributes(auto.ReferenceTypeAttributes):
+    __slots__ = [
+    ]
 
     def __init__(self):
         auto.ReferenceTypeAttributes.__init__(self)
@@ -289,6 +333,8 @@ class ReferenceTypeAttributes(auto.ReferenceTypeAttributes):
 
 
 class DataTypeAttributes(auto.DataTypeAttributes):
+    __slots__ = [
+    ]
 
     def __init__(self):
         auto.DataTypeAttributes.__init__(self)
@@ -296,6 +342,8 @@ class DataTypeAttributes(auto.DataTypeAttributes):
 
 
 class ViewAttributes(auto.ViewAttributes):
+    __slots__ = [
+    ]
 
     def __init__(self):
         auto.ViewAttributes.__init__(self)
@@ -303,6 +351,8 @@ class ViewAttributes(auto.ViewAttributes):
 
 
 class Argument(auto.Argument):
+    __slots__ = [
+    ]
 
     def __init__(self):
         auto.Argument.__init__(self)

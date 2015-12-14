@@ -85,7 +85,7 @@ class CodeGenerator(object):
     def generate_struct_code(self, obj):
         self.write("")
         self.iidx = 0
-        self.write("class {}(FrozenClass):".format(obj.name))
+        self.write("class {}(object):".format(obj.name))
         self.iidx += 1
         self.write("'''")
         if obj.doc:
@@ -95,6 +95,16 @@ class CodeGenerator(object):
             self.write(":ivar {}: ".format(field.name))
             self.write(":vartype {}: {} ".format(field.name, field.uatype))
         self.write("'''")
+
+        self.write("")
+        self.write("__slots__ = [")
+        self.iidx += 1
+        for field in obj.fields:
+            self.write('"{}",'.format(field.name))
+        self.iidx -= 1
+        self.write("]")
+        self.write("")
+
         self.write("def __init__(self):")
         self.iidx += 1
 
@@ -112,7 +122,8 @@ class CodeGenerator(object):
                 self.write("self.TypeId = FourByteNodeId(ObjectIds.{}_Encoding_DefaultBinary)".format(obj.name))
             else:
                 self.write("self.{} = {}".format(field.name, "[]" if field.length else self.get_default_value(field)))
-        self.write("self._freeze()")
+        if len(obj.fields) == 0:
+            self.write("pass")
         self.iidx = 1
 
         # serialize code
