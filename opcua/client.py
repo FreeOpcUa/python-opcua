@@ -10,7 +10,12 @@ except ImportError:  # support for python2
 from opcua import uaprotocol as ua
 from opcua import BinaryClient, Node, Subscription
 from opcua import utils
-from opcua import uacrypto
+use_crypto = True
+try:
+    from opcua import uacrypto
+except:
+    print("pycrypto is not installed, use of crypto disabled")
+    use_crypto = False
 
 
 class KeepAlive(Thread):
@@ -105,17 +110,6 @@ class Client(object):
     def load_private_key(self, path):
         with open(path, "br") as f:
             self.private_key = f.read()
-
-    def connect_and_register_server(self):
-        """
-        Connect to discovery server, register my server, and disconnect
-        """
-        self.connect_socket()
-        self.send_hello()
-        self.open_secure_channel()
-        self.register_server()
-        self.close_secure_channel()
-        self.disconnect_socket()
 
     def connect_and_get_server_endpoints(self):
         """
@@ -225,19 +219,21 @@ class Client(object):
         serv.ServerNames = [ua.LocalizedText(server.name)]
         serv.IsOnline = True
         if discovery_configuration:
-            params = ua.registerServer2Parameters()
+            params = ua.RegisterServer2Parameters()
             params.Server = serv
-            params.DiscoveryConfiguration
+            params.DiscoveryConfiguration = discovery_configuration
             return self.bclient.register_server2(params)
         else:
             return self.bclient.register_server(serv)
 
-    def find_servers(self, uris=[]):
+    def find_servers(self, uris=None):
         """
         send a FindServer request to the server. The answer should be a list of
         servers the server knows about
         A list of uris can be provided, only server having matching uris will be returned
         """
+        if uris is None:
+            uris = []
         params = ua.FindServersParameters()
         params.EndpointUrl = self.server_url.geturl()
         params.ServerUris = uris 
