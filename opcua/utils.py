@@ -26,7 +26,7 @@ class Buffer(object):
     """
 
     def __init__(self, data):
-        self.logger = logging.getLogger(__name__)
+        # self.logger = logging.getLogger(__name__)
         self.data = data
         self.rsize = 0
 

@@ -56,8 +56,6 @@ def uatype_to_fmt(uatype):
     if uatype == "Char":
         return "B"
     elif uatype == "SByte":
-        return "B"
-    elif uatype == "Int6":
         return "b"
     elif uatype == "Int8":
         return "b"
