@@ -117,19 +117,50 @@ def pack_uatype(uatype, value):
     else:
         return value.to_binary()
 
+uatype_struct_Int8 = struct.Struct("<b")
+uatype_struct_SByte = uatype_struct_Int8
+uatype_struct_Int16 = struct.Struct("<h")
+uatype_struct_Int32 = struct.Struct("<i")
+uatype_struct_Int64 = struct.Struct("<q")
+uatype_struct_UInt8 = struct.Struct("<B")
+uatype_struct_Char = uatype_struct_UInt8
+uatype_struct_Byte = uatype_struct_UInt8
+uatype_struct_UInt16 = struct.Struct("<H")
+uatype_struct_UInt32 = struct.Struct("<I")
+uatype_struct_UInt64 = struct.Struct("<Q")
+uatype_struct_Boolean = struct.Struct("<?")
+uatype_struct_Double = struct.Struct("<d")
+uatype_struct_Float = struct.Struct("<f")
+
+uatype2struct = {
+    "Int8": uatype_struct_Int8,
+    "SByte": uatype_struct_SByte,
+    "Int16": uatype_struct_Int16,
+    "Int32": uatype_struct_Int32,
+    "Int64": uatype_struct_Int64,
+    "UInt8": uatype_struct_UInt8,
+    "Char": uatype_struct_Char,
+    "Byte": uatype_struct_Byte,
+    "UInt16": uatype_struct_UInt16,
+    "UInt32": uatype_struct_UInt32,
+    "UInt64": uatype_struct_UInt64,
+    "Boolean": uatype_struct_Boolean,
+    "Double": uatype_struct_Double,
+    "Float": uatype_struct_Float,
+}
+
 
 def unpack_uatype(uatype, data):
+    if uatype in uatype2struct:
+        st = uatype2struct[uatype]
+        return st.unpack(data.read(st.size))[0]
     if uatype == "String":
         return unpack_string(data)
     elif uatype in ("CharArray", "ByteString"):
         return unpack_bytes(data)
     elif uatype == "DateTime":
-        epch = struct.unpack('<q', data.read(8))[0]
+        epch = uatype_struct_Int64.unpack(data.read(8))[0]
         return win_epoch_to_datetime(epch)
-    elif uatype in UaTypes:
-        fmt = '<' + uatype_to_fmt(uatype)
-        size = struct.calcsize(fmt)
-        return struct.unpack(fmt, data.read(size))[0]
     elif uatype == "ExtensionObject":
         # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
         # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
@@ -143,7 +174,7 @@ def unpack_uatype(uatype, data):
 
 
 def unpack_uatype_array(uatype, data):
-    length = struct.unpack('<i', data.read(4))[0]
+    length = uatype_struct_Int32.unpack(data.read(4))[0]
     if length == -1:
         return None
     else:
@@ -165,7 +196,7 @@ pack_bytes = pack_string
 
 
 def unpack_bytes(data):
-    length = struct.unpack("<i", data.read(4))[0]
+    length = uatype_struct_Int32.unpack(data.read(4))[0]
     if length == -1:
         return b''
     return data.read(length)
