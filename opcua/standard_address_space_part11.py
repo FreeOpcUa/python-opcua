@@ -1543,7 +1543,7 @@ def create_standard_address_space_Part11(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = ua.LocalizedText("NewValues")
     attrs.DataType = ua.NodeId.from_string("i=920")
-    attrs.ValueRank = -1
+    attrs.ValueRank = 1
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
@@ -1566,7 +1566,7 @@ def create_standard_address_space_Part11(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = ua.LocalizedText("OldValues")
     attrs.DataType = ua.NodeId.from_string("i=920")
-    attrs.ValueRank = -1
+    attrs.ValueRank = 1
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []

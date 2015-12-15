@@ -14,12 +14,13 @@ import opcua.utils as utils
 class UASocketClient(object):
     """
     handle socket connection and send ua messages
+    timeout is the timeout used while waiting for an ua answer from server
     """
-    def __init__(self):
+    def __init__(self, timeout=1):
         self.logger = logging.getLogger(__name__ + "Socket")
         self._thread = None
         self._lock = Lock()
-        self.timeout = 1
+        self.timeout = timeout
         self._socket = None
         self._do_stop = False
         self._security_token = ua.ChannelSecurityToken()
@@ -39,6 +40,10 @@ class UASocketClient(object):
         self._thread.start()
 
     def send_request(self, request, callback=None, timeout=1000):
+        """
+        send request to server.
+        timeout is the timeout written in ua header
+        """
         # HACK to make sure we can convert our request to binary before increasing request counter etc ...
         request.to_binary()
         # END HACK
@@ -64,6 +69,8 @@ class UASocketClient(object):
             self.logger.warning("ServiceFault from server received %s", context)
             hdr = ua.ResponseHeader.from_binary(data)
             hdr.ServiceResult.check()
+            return False
+        return True
 
     def _run(self):
         self.logger.info("Thread started")
@@ -200,18 +207,18 @@ class UASocketClient(object):
 
     def open_secure_channel(self, params):
         self.logger.info("open_secure_channel")
-        request = ua.OpenSecureChannelRequest()
-        request.Parameters = params
-        request.RequestHeader = self._create_request_header()
-
-        hdr = ua.Header(ua.MessageType.SecureOpen, ua.ChunkType.Single, self._security_token.ChannelId)
-        asymhdr = ua.AsymmetricAlgorithmHeader()
-        seqhdr = self._create_sequence_header()
-
-        future = Future()
         with self._lock:
+            request = ua.OpenSecureChannelRequest()
+            request.Parameters = params
+            request.RequestHeader = self._create_request_header()
+
+            hdr = ua.Header(ua.MessageType.SecureOpen, ua.ChunkType.Single, self._security_token.ChannelId)
+            asymhdr = ua.AsymmetricAlgorithmHeader()
+            seqhdr = self._create_sequence_header()
+
+            future = Future()
             self._callbackmap[seqhdr.RequestId] = future
-        self._write_socket(hdr, asymhdr, seqhdr, request)
+            self._write_socket(hdr, asymhdr, seqhdr, request)
 
         response = ua.OpenSecureChannelResponse.from_binary(future.result(self.timeout))
         response.ResponseHeader.ServiceResult.check()
@@ -224,13 +231,14 @@ class UASocketClient(object):
         in most servers, so be prepare to reconnect
         """
         self.logger.info("get_endpoint")
-        request = ua.CloseSecureChannelRequest()
-        request.RequestHeader = self._create_request_header()
+        with self._lock:
+            request = ua.CloseSecureChannelRequest()
+            request.RequestHeader = self._create_request_header()
 
-        hdr = ua.Header(ua.MessageType.SecureClose, ua.ChunkType.Single, self._security_token.ChannelId)
-        symhdr = ua.SymmetricAlgorithmHeader()
-        seqhdr = self._create_sequence_header()
-        self._write_socket(hdr, symhdr, seqhdr, request)
+            hdr = ua.Header(ua.MessageType.SecureClose, ua.ChunkType.Single, self._security_token.ChannelId)
+            symhdr = self._create_sym_algo_header()
+            seqhdr = self._create_sequence_header()
+            self._write_socket(hdr, symhdr, seqhdr, request)
 
         # some servers send a response here, most do not ... so we ignore
 
@@ -246,15 +254,18 @@ class BinaryClient(object):
     uaprotocol_auto.py and uaprotocol_hand.py
     """
 
-    def __init__(self):
+    def __init__(self, timeout=1):
         self.logger = logging.getLogger(__name__)
         self._publishcallbacks = {}
-        self._uasocket = UASocketClient()
+        self._lock = Lock()
+        self._timeout = timeout
+        self._uasocket = None
 
     def connect_socket(self, host, port):
         """
         connect to server socket and start receiving thread
         """
+        self._uasocket = UASocketClient(self._timeout)
         return self._uasocket.connect_socket(host, port)
 
     def disconnect_socket(self):
@@ -336,6 +347,42 @@ class BinaryClient(object):
         response.ResponseHeader.ServiceResult.check()
         return response.Endpoints
 
+    def find_servers(self, params):
+        self.logger.info("find_servers")
+        request = ua.FindServersRequest()
+        request.Parameters = params
+        data = self._uasocket.send_request(request)
+        response = ua.FindServersResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Servers
+
+    def find_servers_on_network(self, params):
+        self.logger.info("find_servers_on_network")
+        request = ua.FindServersOnNetworkRequest()
+        request.Parameters = params
+        data = self._uasocket.send_request(request)
+        response = ua.FindServersOnNetworkResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Parameters
+
+    def register_server(self, registered_server):
+        self.logger.info("register_server")
+        request = ua.RegisterServerRequest()
+        request.Server = registered_server
+        data = self._uasocket.send_request(request)
+        response = ua.RegisterServerResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        # nothing to return for this service
+
+    def register_server2(self, params):
+        self.logger.info("register_server2")
+        request = ua.RegisterServer2Request()
+        request.Parameters = params
+        data = self._uasocket.send_request(request)
+        response = ua.RegisterServer2Response.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.ConfigurationResults
+
     def translate_browsepaths_to_nodeids(self, browsepaths):
         self.logger.info("translate_browsepath_to_nodeid")
         request = ua.TranslateBrowsePathsToNodeIdsRequest()
@@ -352,7 +399,8 @@ class BinaryClient(object):
         data = self._uasocket.send_request(request)
         response = ua.CreateSubscriptionResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
-        self._publishcallbacks[response.Parameters.SubscriptionId] = callback
+        with self._lock:
+            self._publishcallbacks[response.Parameters.SubscriptionId] = callback
         return response.Parameters
 
     def delete_subscriptions(self, subscriptionids):
@@ -363,7 +411,8 @@ class BinaryClient(object):
         response = ua.DeleteSubscriptionsResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         for sid in subscriptionids:
-            self._publishcallbacks.pop(sid)
+            with self._lock:
+                self._publishcallbacks.pop(sid)
         return response.Results
 
     def publish(self, acks=None):
@@ -372,15 +421,22 @@ class BinaryClient(object):
             acks = []
         request = ua.PublishRequest()
         request.Parameters.SubscriptionAcknowledgements = acks
-        self._uasocket.send_request(request, self._call_publish_callback, timeout=0)
+        self._uasocket.send_request(request, self._call_publish_callback, timeout=int(9e8))  # timeout could be set to 0 but some servers to not support it
 
     def _call_publish_callback(self, future):
         self.logger.info("call_publish_callback")
-        response = ua.PublishResponse.from_binary(future.result())
+        data = future.result()
+        self._uasocket.check_answer(data, "ServiceFault received from server while waiting for publish response")
+        response = ua.PublishResponse.from_binary(data)
+        with self._lock:
+            if response.Parameters.SubscriptionId not in self._publishcallbacks:
+                self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
+                return
+            callback = self._publishcallbacks[response.Parameters.SubscriptionId]
         try:
-            self._publishcallbacks[response.Parameters.SubscriptionId](response.Parameters)
+            callback(response.Parameters)
         except Exception:  # we call client code, catch everything!
-            self.logger.exception("Exception while calling user callback")
+            self.logger.exception("Exception while calling user callback: %s")
 
     def create_monitored_items(self, params):
         self.logger.info("create_monitored_items")
@@ -414,5 +470,14 @@ class BinaryClient(object):
         request.Parameters.MethodsToCall = methodstocall
         data = self._uasocket.send_request(request)
         response = ua.CallResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
+
+    def history_read(self, params):
+        self.logger.info("history_read")
+        request = ua.HistoryReadRequest()
+        request.Parameters = params
+        data = self._uasocket.send_request(request)
+        response = ua.HistoryReadResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         return response.Results

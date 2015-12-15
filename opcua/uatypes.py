@@ -23,6 +23,7 @@ UaTypes = ("Boolean", "SByte", "Byte", "Int8", "UInt8", "Int16", "UInt16", "Int3
 
 EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
 HUNDREDS_OF_NANOSECONDS = 10000000
+FILETIME_EPOCH_AS_DATETIME = datetime(1601, 1, 1)
 
 
 class UTC(tzinfo):
@@ -39,7 +40,7 @@ class UTC(tzinfo):
         return timedelta(0)
 
 
-# methods copied from  David Buxton <david@gasmark6.com> sample code
+# method copied from David Buxton <david@gasmark6.com> sample code
 def datetime_to_win_epoch(dt):
     if (dt.tzinfo is None) or (dt.tzinfo.utcoffset(dt) is None):
         dt = dt.replace(tzinfo=UTC())
@@ -48,14 +49,7 @@ def datetime_to_win_epoch(dt):
 
 
 def win_epoch_to_datetime(epch):
-    (s, ns100) = divmod(epch - EPOCH_AS_FILETIME, HUNDREDS_OF_NANOSECONDS)
-    try:
-        dt = datetime.utcfromtimestamp(s)
-    except Exception as ex: #FIXME: find out what kind of exceptin is raised!!!
-        logger.debug("Exception occurred during conversion within 'win_epoch_to_datetime'. %s", ex)
-        return datetime.now()
-    dt = dt.replace(microsecond=(ns100 // 10))
-    return dt
+    return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch // 10)
 
 
 def uatype_to_fmt(uatype):
@@ -116,6 +110,12 @@ def pack_uatype(uatype, value):
     elif uatype in UaTypes:
         fmt = '<' + uatype_to_fmt(uatype)
         return struct.pack(fmt, value)
+    elif uatype == "ExtensionObject":
+        # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
+        # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
+        # Using local import to avoid import loop
+        from opcua.uaprotocol_auto import extensionobject_to_binary
+        return extensionobject_to_binary(value)
     else:
         return value.to_binary()
 
@@ -132,6 +132,12 @@ def unpack_uatype(uatype, data):
         fmt = '<' + uatype_to_fmt(uatype)
         size = struct.calcsize(fmt)
         return struct.unpack(fmt, data.read(size))[0]
+    elif uatype == "ExtensionObject":
+        # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
+        # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
+        # Using local import to avoid import loop
+        from opcua.uaprotocol_auto import extensionobject_from_binary
+        return extensionobject_from_binary(data)
     else:
         code = "{}.from_binary(data)".format(uatype)
         tmp = eval(code)
@@ -580,8 +586,8 @@ class LocalizedText(FrozenClass):
         return self.Text.decode()
 
     def __str__(self):
-        return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', '  + \
-            'Locale:' + str(self.Locale) + ', '  + \
+        return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', ' + \
+            'Locale:' + str(self.Locale) + ', ' + \
             'Text:' + str(self.Text) + ')'
     __repr__ = __str__
 
@@ -590,60 +596,6 @@ class LocalizedText(FrozenClass):
             return True
         return False
 
-
-class ExtensionObject(FrozenClass):
-
-    '''
-
-    Any UA object packed as an ExtensionObject
-
-
-    :ivar TypeId:
-    :vartype TypeId: NodeId
-    :ivar Body:
-    :vartype Body: bytes
-
-    '''
-
-    def __init__(self):
-        self.TypeId = NodeId()
-        self.Encoding = 0
-        self.Body = b''
-        self._freeze()
-
-    def to_binary(self):
-        packet = []
-        if self.Body:
-            self.Encoding |= (1 << 0)
-        packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
-        if self.Body:
-            packet.append(pack_uatype('ByteString', self.Body))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ExtensionObject()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
-        if obj.Encoding & (1 << 0):
-            obj.Body = unpack_uatype('ByteString', data)
-        return obj
-
-    @staticmethod
-    def from_object(obj):
-        ext = ExtensionObject()
-        oid = getattr(ObjectIds, "{}_Encoding_DefaultBinary".format(obj.__class__.__name__))
-        ext.TypeId = FourByteNodeId(oid)
-        ext.Body = obj.to_binary()
-        return ext
-
-    def __str__(self):
-        return 'ExtensionObject(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-            'Encoding:' + str(self.Encoding) + ', '  + \
-            'Body:' + str(self.Body) + ')'
-
-    __repr__ = __str__
 
 
 class VariantType(Enum):
@@ -760,7 +712,10 @@ class Variant(FrozenClass):
             return VariantType.DateTime
         else:
             if isinstance(val, object):
-                return getattr(VariantType, val.__class__.__name__)
+                try:
+                    return getattr(VariantType, val.__class__.__name__)
+                except AttributeError:
+                    return VariantType.ExtensionObject
             else:
                 raise Exception("Could not guess UA type of {} with type {}, specify UA type".format(val, type(val)))
 

@@ -10,6 +10,7 @@ import io
 from datetime import datetime, timedelta
 import unittest
 from concurrent.futures import Future
+from threading import Lock
 
 from opcua import ua
 from opcua import Client
@@ -18,9 +19,12 @@ from opcua import uamethod
 from opcua import Event
 from opcua import ObjectIds
 from opcua import AttributeIds
+from opcua.uaprotocol import extensionobject_from_binary
+from opcua.uaprotocol import extensionobject_to_binary
 
 port_num1 = 48510
 port_num2 = 48530
+port_discovery = 48550
 
 
 class SubHandler():
@@ -53,6 +57,17 @@ class MySubHandler():
 
     def event(self, handle, event):
         self.future.set_result((handle, event))
+
+
+class MySubHandler2():
+    def __init__(self):
+        self.results = [] 
+
+    def data_change(self, handle, node, val, attr):
+        self.results.append((node, val))
+
+    def event(self, handle, event):
+        self.results.append((node, val))
 
 
 class Unit(unittest.TestCase):
@@ -123,10 +138,17 @@ class Unit(unittest.TestCase):
         self.assertEqual(nid, nid2)
 
     def test_extension_object(self):
-        obj = ua.ExtensionObject()
-        obj2 = ua.ExtensionObject.from_binary(ua.utils.Buffer(obj.to_binary()))
-        self.assertEqual(obj2.TypeId, obj2.TypeId)
-        self.assertEqual(obj2.Body, obj2.Body)
+        obj = ua.UserNameIdentityToken()
+        obj.UserName = "admin"
+        obj.Password = b"pass"
+        obj2 = ua.extensionobject_from_binary(ua.utils.Buffer(extensionobject_to_binary(obj)))
+        self.assertEqual(type(obj), type(obj2))
+        self.assertEqual(obj.UserName, obj2.UserName)
+        self.assertEqual(obj.Password, obj2.Password)
+        v1 = ua.Variant(obj)
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(v1.to_binary()))
+        self.assertEqual(type(v1), type(v2))
+        self.assertEqual(v1.VariantType, v2.VariantType)
 
     def test_datetime(self):
         now = datetime.now()
@@ -134,10 +156,21 @@ class Unit(unittest.TestCase):
         dt = ua.win_epoch_to_datetime(epch)
         self.assertEqual(now, dt)
 
+        # python's datetime has a range from Jan 1, 0001 to the end of year 9999
+        # windows' filetime has a range from Jan 1, 1601 to approx. year 30828
+        # let's test an overlapping range [Jan 1, 1601 - Dec 31, 9999]
+        dt = datetime(1601, 1, 1)
+        self.assertEqual(ua.win_epoch_to_datetime(ua.datetime_to_win_epoch(dt)), dt)
+        dt = datetime(9999, 12, 31, 23, 59, 59)
+        self.assertEqual(ua.win_epoch_to_datetime(ua.datetime_to_win_epoch(dt)), dt)
+
         epch = 128930364000001000
         dt = ua.win_epoch_to_datetime(epch)
         epch2 = ua.datetime_to_win_epoch(dt)
         self.assertEqual(epch, epch2)
+
+        epch = 0
+        self.assertEqual(ua.datetime_to_win_epoch(ua.win_epoch_to_datetime(epch)), epch)
 
     def test_equal_nodeid(self):
         nid1 = ua.NodeId(999, 2)
@@ -244,6 +277,11 @@ class CommonTests(object):
     client side since we have been carefull to have the exact
     same api on server and client side
     '''
+    opc = None
+
+    def test_find_servers(self):
+        servers = self.opc.find_servers()
+        # FIXME : finish
 
     def test_root(self):
         root = self.opc.get_root_node()
@@ -284,6 +322,12 @@ class CommonTests(object):
         self.assertTrue(folder in all_objs)
         self.assertTrue(obj2 in all_objs)
         self.assertFalse(var in all_objs)
+
+    def test_browsename_with_spaces(self):
+        o = self.opc.get_objects_node()
+        v = o.add_variable(3, 'BNVariable with spaces and %&+?/', 1.3)
+        v2 = o.get_child("3:BNVariable with spaces and %&+?/")
+        self.assertEqual(v, v2)
 
     def test_create_delete_subscription(self):
         o = self.opc.get_objects_node()
@@ -546,6 +590,41 @@ class CommonTests(object):
         val = v.get_value()
         self.assertEqual([1], val)
 
+    def test_subscription_failure(self):
+        msclt = MySubHandler()
+        o = self.opc.get_objects_node()
+        sub = self.opc.create_subscription(100, msclt)
+        with self.assertRaises(Exception):
+            handle1 = sub.subscribe_data_change(o) # we can only subscribe to variables so this should fail
+        sub.delete()
+
+    def test_subscription_overload(self):
+        nb = 10
+        msclt = MySubHandler()
+        o = self.opc.get_objects_node()
+        sub = self.opc.create_subscription(1, msclt)
+        vs = []
+        subs = []
+        for i in range(nb):
+            v = o.add_variable(3, 'SubscriptionVariableOverload' + str(i), 99)
+            vs.append(v)
+        for i in range(nb):
+            sub.subscribe_data_change(vs)
+        for i in range(nb):
+            for j in range(nb):
+                vs[i].set_value(j)
+            s = self.opc.create_subscription(1, msclt)
+            s.subscribe_data_change(vs)
+            subs.append(s)
+            sub.subscribe_data_change(vs[i])
+        for i in range(nb):
+            for j in range(nb):
+                vs[i].set_value(j)
+        time.sleep(1)
+        sub.delete()
+        for s in subs:
+            s.delete()
+
     def test_subscription_data_change(self):
         '''
         test subscriptions. This is far too complicated for
@@ -626,6 +705,45 @@ class CommonTests(object):
         self.assertEqual(val, False)
 
         sub.delete() # should delete our monitoreditem too
+
+    def test_subscription_data_change_many(self):
+        '''
+        test subscriptions. This is far too complicated for
+        a unittest but, setting up subscriptions requires a lot
+        of code, so when we first set it up, it is best
+        to test as many things as possible
+        '''
+        msclt = MySubHandler2()
+        o = self.opc.get_objects_node()
+
+        startv1 = True 
+        v1 = o.add_variable(3, 'SubscriptionVariableMany1', startv1)
+        startv2 = [1.22, 1.65] 
+        v2 = o.add_variable(3, 'SubscriptionVariableMany2', startv2)
+
+        sub = self.opc.create_subscription(100, msclt)
+        handle1, handle2 = sub.subscribe_data_change([v1, v2])
+
+        # Now check we get the start values
+        nodes = [v1, v2]
+       
+        count = 0
+        while not len(msclt.results) > 1:
+            count += 1
+            time.sleep(0.1)
+            if count > 100:
+                self.fail("Did not get result from subscription")
+        for node, val in msclt.results:
+            self.assertIn(node, nodes)
+            nodes.remove(node)
+            if node == v1:
+                self.assertEqual(startv1, val)
+            elif node == v2:
+                self.assertEqual(startv2, val)
+            else:
+                self.fail("Error node {} is neither {} nor {}".format(node, v1, v2))
+
+        sub.delete() 
 
     def test_subscribe_server_time(self):
         msclt = MySubHandler()
@@ -798,10 +916,43 @@ class TestServer(unittest.TestCase, CommonTests):
         add_server_methods(self.srv)
         self.srv.start()
         self.opc = self.srv
+        self.discovery = Server()
+        self.discovery.set_application_uri("urn:freeopcua:python:discovery")
+        self.discovery.set_endpoint('opc.tcp://localhost:%d' % port_discovery)
+        self.discovery.start()
 
     @classmethod
     def tearDownClass(self):
         self.srv.stop()
+        self.discovery.stop()
+
+    def test_discovery(self):
+        client = Client(self.discovery.endpoint.geturl())
+        client.connect()
+        servers = client.find_servers()
+        new_app_uri = "urn:freeopcua:python:server::test_discovery"
+        self.srv.application_uri = new_app_uri
+        self.srv.register_to_discovery(self.discovery.endpoint.geturl(), 1)
+        time.sleep(0.1) # let server register registration
+        new_servers = client.find_servers()
+        self.assertEqual(len(new_servers) - len(servers) , 1)
+        self.assertFalse(new_app_uri in [s.ApplicationUri for s in servers])
+        self.assertTrue(new_app_uri in [s.ApplicationUri for s in new_servers])
+        client.disconnect()
+
+    """
+    # not sure if this test is necessary, and there is a lot repetition with previous test
+    def test_discovery_server_side(self):
+        servers = self.discovery.find_servers()
+        self.assertEqual(len(servers), 1)
+        self.srv.register_to_discovery(self.discovery.endpoint.geturl(), 1)
+        time.sleep(1) # let server register registration
+        servers = self.discovery.find_servers()
+        print("SERVERS 2", servers)
+        self.assertEqual(len(servers), 2)
+    """
+    #def test_register_server2(self):
+        #servers = self.opc.register_server()
 
     def test_register_namespace(self):
         uri = 'http://mycustom.Namespace.com'

@@ -198,6 +198,10 @@ class Node(object):
     set_data_value = set_value
 
     def set_writable(self, writable=True):
+        """
+        Set node as writable by clients.
+        A node is always writable on server side.
+        """
         if writable:
             self.set_attribute(ua.AttributeIds.AccessLevel, ua.DataValue(ua.Variant(ua.AccessLevelMask.CurrentWrite, ua.VariantType.Byte)))
             self.set_attribute(ua.AttributeIds.UserAccessLevel, ua.DataValue(ua.Variant(ua.AccessLevelMask.CurrentWrite, ua.VariantType.Byte)))
@@ -206,6 +210,10 @@ class Node(object):
             self.set_attribute(ua.AttributeIds.AccessLevel, ua.DataValue(ua.Variant(ua.AccessLevelMask.CurrentRead, ua.VariantType.Byte)))
 
     def set_read_only(self):
+        """
+        Set a node as read-only for clients.
+        A node is always writable on server side.
+        """
         return self.set_writable(False)
 
     def set_attribute(self, attributeid, datavalue):
@@ -335,6 +343,38 @@ class Node(object):
         # FIXME: seems this method may return several nodes
         return Node(self.server, result.Targets[0].TargetId)
 
+    def read_raw_history(self, starttime=None, endtime=None, numvalues=0, returnbounds=True):
+        """
+        Read raw history of a node
+        result code from server is checked and an exception is raised in case of error
+        """
+        details = ua.ReadRawModifiedDetails()
+        details.IsReadModified = False
+        if starttime:
+            details.StartTime = starttime
+        if endtime:
+            details.EndTime = endtime
+        details.NumValuesPerNode = numvalues
+        details.ReturnBounds = returnbounds
+        return self.history_read(details)
+
+    def history_read(self, details):
+        """
+        Read raw history of a node, low-level function
+        result code from server is checked and an exception is raised in case of error
+        """
+        valueid = ua.HistoryReadValueId()
+        valueid.NodeId = self.nodeid
+        valueid.IndexRange = ''
+
+        params = ua.HistoryReadParameters()
+        params.HistoryReadDetails = details
+        params.TimestampsToReturn = ua.TimestampsToReturn.Both
+        params.ReleaseContinuationPoints = False
+        params.NodesToRead.append(valueid)
+        result = self.server.history_read(params)[0]
+        return result.HistoryData
+
     # Convenience legacy methods
     add_folder = create_folder
     add_property = create_property
@@ -459,12 +499,12 @@ def _call_method(server, parentnodeid, methodid, arguments):
 
 def _vtype_to_argument(vtype):
     if isinstance(vtype, ua.Argument):
-        return ua.ExtensionObject.from_object(vtype)
+        return vtype
 
     arg = ua.Argument()
     v = ua.Variant(None, vtype)
     arg.DataType = _guess_uatype(v)
-    return ua.ExtensionObject.from_object(arg)
+    return arg
 
 
 def _guess_uatype(variant):
@@ -477,8 +517,7 @@ def _guess_uatype(variant):
             extobj = variant.Value[0]
         else:
             extobj = variant.Value
-        objectidname = ua.ObjectIdsInv[extobj.TypeId.Identifier]
-        classname = objectidname.split("_")[0]
+        classname = extobj.__class__.__name__
         return ua.NodeId(getattr(ua.ObjectIds, classname))
     else:
         return ua.NodeId(getattr(ua.ObjectIds, variant.VariantType.name))

@@ -9,6 +9,7 @@ from opcua.attribute_ids import AttributeIds
 
 logger = logging.getLogger('opcua.uaprotocol')
 
+OPC_TCP_SCHEME = 'opc.tcp'
 
 class AccessLevelMask(object):
     """
@@ -308,5 +309,4 @@ class Argument(auto.Argument):
         self.ValueRank = -2
 
 
-ObjectIdsInv = {v: k for k, v in ObjectIds.__dict__.items()}
 AttributeIdsInv = {v: k for k, v in AttributeIds.__dict__.items()}

@@ -39,16 +39,17 @@ class BinaryServer(object):
 
             iserver = self.iserver
             loop = self.loop
+            logger = self.logger
 
             def connection_made(self, transport):
                 self.peername = transport.get_extra_info('peername')
-                print('New connection from {}'.format(self.peername))
+                self.logger.info('New connection from %s', self.peername)
                 self.transport = transport
                 self.processor = UAProcessor(self.iserver, self.transport)
                 self.data = b""
 
             def connection_lost(self, ex):
-                print('Lost connection from ', self.peername, ex)
+                self.logger.info('Lost connection from %s, %s', self.peername, ex)
                 self.transport.close()
                 self.processor.close()
 
@@ -90,6 +91,6 @@ class BinaryServer(object):
         print('Listening on {}:{}'.format(self.hostname, self.port))
 
     def stop(self):
-        print("Closing asyncio socket server")
+        self.logger.info("Closing asyncio socket server")
         self.loop.call_soon(self._server.close)
         self.loop.run_coro_and_wait(self._server.wait_closed())

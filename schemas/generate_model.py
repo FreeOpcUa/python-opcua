@@ -14,7 +14,7 @@ IgnoredEnums = []#["IdType", "NodeIdType"]
 #we want to implement som struct by hand, to make better interface or simply because they are too complicated 
 IgnoredStructs = []#["NodeId", "ExpandedNodeId", "Variant", "QualifiedName", "DataValue", "LocalizedText"]#, "ExtensionObject"]
 #by default we split requests and respons in header and parameters, but some are so simple we do not split them
-NoSplitStruct = ["GetEndpointsResponse", "CloseSessionRequest", "AddNodesResponse", "BrowseResponse", "HistoryReadResponse", "HistoryUpdateResponse", "RegisterServerResponse", "CloseSecureChannelRequest", "CloseSecureChannelResponse", "CloseSessionRequest", "CloseSessionResponse", "UnregisterNodesResponse", "MonitoredItemModifyRequest", "MonitoredItemsCreateRequest", "ReadResponse", "WriteResponse", "TranslateBrowsePathsToNodeIdsResponse", "DeleteSubscriptionsResponse", "DeleteMonitoredItemsResponse", "CreateMonitoredItemsResponse", "ServiceFault", "AddReferencesRequest", "AddReferencesResponse", "ModifyMonitoredItemsResponse", "RepublishResponse", "CallResponse", "FindServersResponse"]
+NoSplitStruct = ["GetEndpointsResponse", "CloseSessionRequest", "AddNodesResponse", "BrowseResponse", "HistoryReadResponse", "HistoryUpdateResponse", "RegisterServerResponse", "CloseSecureChannelRequest", "CloseSecureChannelResponse", "CloseSessionRequest", "CloseSessionResponse", "UnregisterNodesResponse", "MonitoredItemModifyRequest", "MonitoredItemsCreateRequest", "ReadResponse", "WriteResponse", "TranslateBrowsePathsToNodeIdsResponse", "DeleteSubscriptionsResponse", "DeleteMonitoredItemsResponse", "CreateMonitoredItemsResponse", "ServiceFault", "AddReferencesRequest", "AddReferencesResponse", "ModifyMonitoredItemsResponse", "RepublishResponse", "CallResponse", "FindServersResponse", "RegisterServerRequest", "RegisterServer2Response"]
 #structs that end with Request or Response but are not
 NotRequest = ["MonitoredItemCreateRequest", "MonitoredItemModifyRequest", "CallMethodRequest"]
 OverrideTypes = {}#AttributeId": "AttributeID",  "ResultMask": "BrowseResultMask", "NodeClassMask": "NodeClass", "AccessLevel": "VariableAccessLevel", "UserAccessLevel": "VariableAccessLevel", "NotificationData": "NotificationData"}
@@ -23,8 +23,6 @@ OverrideNames = {}#{"RequestHeader": "Header", "ResponseHeader": "Header", "Stat
 #some object are defined in extensionobjects in spec but seems not to be in reality
 #in addition to this list all request and response and descriptions will not inherit
 #NoInherit = ["RequestHeader", "ResponseHeader", "ChannelSecurityToken", "UserTokenPolicy", "SignatureData", "BrowseResult", "ReadValueId", "WriteValue", "BrowsePath", "BrowsePathTarget", "RelativePath", "RelativePathElement", "BrowsePathResult"]#, "ApplicationDescription", "EndpointDescription"
-# many objects are defined as inheriting while inheriting ExtensionObjects while they do not so harcode those who really do
-InheritExtensionObjects = ["UserIdentityToken", "NodeAttributes", "NotificationData", "MonitoringFilter"]#"SignatureData"]
 
 
 class Bit(object):
@@ -406,13 +404,13 @@ class Parser(object):
                     elif key == "Length":
                         field.bitlength = int(val)
                     else:
-                        print("Uknown field item: ", struct.name, key) 
+                        print("Unknown field item: ", struct.name, key)
 
                 struct.fields.append(field)
             elif tag == "Documentation":
                 struct.doc = el.text
             else:
-                print("Uknown tag: ", tag)
+                print("Unknown tag: ", tag)
 
         return struct
 
@@ -436,7 +434,7 @@ class Parser(object):
                     elif k == "Value":
                         ev.value = v
                     else:
-                        print("Uknown field attrib: ", k) 
+                        print("Unknown field attrib: ", k)
                 enum.values.append(ev)
             elif tag == "Documentation":
                 enum.doc = el.text
@@ -459,10 +457,7 @@ def add_basetype_members(model):
         emptystruct = False
         if len(struct.fields) == 0:
             emptystruct = True
-        #if not emptystruct and struct.basetype in ("ExtensionObject") and not struct.name in InheritExtensionObjects:
-        if struct.basetype in ("ExtensionObject") and not struct.name in InheritExtensionObjects:
-        #if struct.name in NoInherit or struct.name.endswith("Request") or struct.name.endswith("Response") or struct.name.endswith("Description"):
-            struct.parents.remove(struct.basetype)
+        if struct.basetype in ("ExtensionObject"):
             struct.basetype = None
             continue
         base = model.get_struct(struct.basetype)

@@ -14,6 +14,7 @@ Contents:
    server
    client
    node
+   subscription
    ua
 
 Indices and tables

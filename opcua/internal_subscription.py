@@ -61,7 +61,7 @@ class MonitoredItemService(object):
                 result = ua.MonitoredItemCreateResult()
                 if mdata.monitored_item_id == params.MonitoredItemId:
                     result.RevisedSamplingInterval = self.isub.data.RevisedPublishingInterval
-                    result.RevisedQueueSize = ua.downcast_extobject(params.RequestedParameters.QueueSize)
+                    result.RevisedQueueSize = params.RequestedParameters.QueueSize
                     result.FilterResult = params.RequestedParameters.Filter
                     mdata.parameters = result
                     return result
@@ -75,7 +75,7 @@ class MonitoredItemService(object):
             result = ua.MonitoredItemCreateResult()
             result.RevisedSamplingInterval = self.isub.data.RevisedPublishingInterval
             result.RevisedQueueSize = params.RequestedParameters.QueueSize
-            result.FilterResult = ua.downcast_extobject(params.RequestedParameters.Filter)
+            result.FilterResult = params.RequestedParameters.Filter
             self._monitored_item_counter += 1
             result.MonitoredItemId = self._monitored_item_counter
             self.logger.debug("Creating MonitoredItem with id %s", result.MonitoredItemId)
@@ -97,8 +97,13 @@ class MonitoredItemService(object):
                 self.logger.debug("adding callback return status %s and handle %s", result.StatusCode, handle)
                 mdata.callback_handle = handle
                 self._monitored_datachange[handle] = result.MonitoredItemId
-                # force data change event generation
-                self.trigger_datachange(handle, params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+                if result.StatusCode.is_good():
+                    # force data change event generation
+                    self.trigger_datachange(handle, params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+            
+            if not result.StatusCode.is_good():
+                del(self._monitored_items[result.MonitoredItemId])
+                self._monitored_item_counter -= 1
 
             return result
 

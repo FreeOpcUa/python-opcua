@@ -1,5 +1,5 @@
 
-OPC-UA Server API 
+OPC-UA Server Class 
 =========================================
 
 .. autoclass:: opcua.Server

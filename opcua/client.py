@@ -1,4 +1,5 @@
 from __future__ import division  # support for python2
+import os
 from threading import Thread, Condition
 import logging
 try:
@@ -9,6 +10,7 @@ except ImportError:  # support for python2
 from opcua import uaprotocol as ua
 from opcua import BinaryClient, Node, Subscription
 from opcua import utils
+from opcua import uacrypto
 
 
 class KeepAlive(Thread):
@@ -58,14 +60,16 @@ class Client(object):
     but if you want to do to special things you will probably need
     to work with the BinaryClient object, available as self.bclient
     which offers a raw OPC-UA interface.
-
     """
 
-    def __init__(self, url):
+    def __init__(self, url, timeout=1):
         """
         used url argument to connect to server.
         if you are unsure of url, write at least hostname and port
         and call get_endpoints
+        timeout is the timeout to get an answer for requests to server
+        public member of this call are available to be set by API users
+
         """
         self.logger = logging.getLogger(__name__)
         self.server_url = urlparse(url)
@@ -79,16 +83,41 @@ class Client(object):
         self.default_timeout = 3600000
         self.secure_channel_timeout = self.default_timeout
         self.session_timeout = self.default_timeout
-        self.policy_ids = {
-            ua.UserTokenType.Anonymous: b'anonymous',
-            ua.UserTokenType.UserName: b'user_name',
-        }
-        self.bclient = BinaryClient()
+        self._policy_ids = []
+        self.server_certificate = ""
+        self.client_certificate = ""
+        self.private_key = ""
+        self.bclient = BinaryClient(timeout)
         self._nonce = None
         self._session_counter = 1
         self.keepalive = None
 
-    def get_server_endpoints(self):
+    def load_client_certificate(self, path):
+        """
+        load our certificate from file, either pem or der
+        """
+        _, ext = os.path.splitext(path)
+        with open(path, "br") as f:
+            self.client_certificate = f.read()
+        if ext == ".pem":
+            self.client_certificate = uacrypto.dem_to_der(self.client_certificate)
+
+    def load_private_key(self, path):
+        with open(path, "br") as f:
+            self.private_key = f.read()
+
+    def connect_and_register_server(self):
+        """
+        Connect to discovery server, register my server, and disconnect
+        """
+        self.connect_socket()
+        self.send_hello()
+        self.open_secure_channel()
+        self.register_server()
+        self.close_secure_channel()
+        self.disconnect_socket()
+
+    def connect_and_get_server_endpoints(self):
         """
         Connect, ask server for endpoints, and disconnect
         """
@@ -97,7 +126,32 @@ class Client(object):
         self.open_secure_channel()
         endpoints = self.get_endpoints()
         self.close_secure_channel()
+        self.disconnect_socket()
         return endpoints
+
+    def connect_and_find_servers(self):
+        """
+        Connect, ask server for a list of known servers, and disconnect
+        """
+        self.connect_socket()
+        self.send_hello()
+        self.open_secure_channel()  # spec says it should not be necessary to open channel
+        servers = self.find_servers()
+        self.close_secure_channel()
+        self.disconnect_socket()
+        return servers
+
+    def connect_and_find_servers_on_network(self):
+        """
+        Connect, ask server for a list of known servers on network, and disconnect
+        """
+        self.connect_socket()
+        self.send_hello()
+        self.open_secure_channel()
+        servers = self.find_servers_on_network()
+        self.close_secure_channel()
+        self.disconnect_socket()
+        return servers
 
     def connect(self):
         """
@@ -108,7 +162,7 @@ class Client(object):
         self.send_hello()
         self.open_secure_channel()
         self.create_session()
-        self.activate_session()
+        self.activate_session(username=self.server_url.username, password=self.server_url.password, certificate=self.client_certificate)
 
     def disconnect(self):
         """
@@ -156,9 +210,42 @@ class Client(object):
     def get_endpoints(self):
         params = ua.GetEndpointsParameters()
         params.EndpointUrl = self.server_url.geturl()
-        params.ProfileUris = ["http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary"]
-        params.LocaleIds = ["http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary"]
         return self.bclient.get_endpoints(params)
+
+    def register_server(self, server, discovery_configuration=None):
+        """
+        register a server to discovery server
+        if discovery_configuration is provided, the newer register_server2 service call is used
+        """
+        serv = ua.RegisteredServer()
+        serv.ServerUri = server.application_uri
+        serv.ProductUri = server.product_uri
+        serv.DiscoveryUrls = [server.endpoint.geturl()]
+        serv.ServerType = server.application_type
+        serv.ServerNames = [ua.LocalizedText(server.name)]
+        serv.IsOnline = True
+        if discovery_configuration:
+            params = ua.registerServer2Parameters()
+            params.Server = serv
+            params.DiscoveryConfiguration
+            return self.bclient.register_server2(params)
+        else:
+            return self.bclient.register_server(serv)
+
+    def find_servers(self, uris=[]):
+        """
+        send a FindServer request to the server. The answer should be a list of
+        servers the server knows about
+        A list of uris can be provided, only server having matching uris will be returned
+        """
+        params = ua.FindServersParameters()
+        params.EndpointUrl = self.server_url.geturl()
+        params.ServerUris = uris 
+        return self.bclient.find_servers(params)
+
+    def find_servers_on_network(self):
+        params = ua.FindServersOnNetworkParameters()
+        return self.bclient.find_servers_on_network(params)
 
     def create_session(self):
         desc = ua.ApplicationDescription()
@@ -175,30 +262,54 @@ class Client(object):
         params.SessionName = self.description + " Session" + str(self._session_counter)
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0  # means no max size
+        params.ClientCertificate = self.client_certificate
         response = self.bclient.create_session(params)
+        self.server_certificate = response.ServerCertificate
         for ep in response.ServerEndpoints:
-            if ep.SecurityMode == self.security_mode:
+            if urlparse(ep.EndpointUrl).scheme == self.server_url.scheme and ep.SecurityMode == self.security_mode:
                 # remember PolicyId's: we will use them in activate_session()
-                for token in ep.UserIdentityTokens:
-                    self.policy_ids[token.TokenType] = token.PolicyId
+                self._policy_ids = ep.UserIdentityTokens
         self.session_timeout = response.RevisedSessionTimeout
         self.keepalive = KeepAlive(self, min(self.session_timeout, self.secure_channel_timeout) * 0.7)  # 0.7 is from spec
         self.keepalive.start()
         return response
 
-    def activate_session(self):
+    def server_policy_id(self, token_type, default):
+        """
+        Find PolicyId of server's UserTokenPolicy by token_type.
+        Return default if there's no matching UserTokenPolicy.
+        """
+        for policy in self._policy_ids:
+            if policy.TokenType == token_type:
+                return policy.PolicyId
+        return default
+
+    def activate_session(self, username=None, password=None, certificate=None):
+        """
+        Activate session using either username and password or private_key
+        """
         params = ua.ActivateSessionParameters()
         params.LocaleIds.append("en")
-        if not self.server_url.username:
+        if not username and not certificate:
             params.UserIdentityToken = ua.AnonymousIdentityToken()
-            params.UserIdentityToken.PolicyId = self.policy_ids[ua.UserTokenType.Anonymous]
+            params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Anonymous, b"anonymous")
+        elif certificate:
+            params.UserIdentityToken = ua.X509IdentityToken()
+            params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Certificate, b"certificate_basic256")
+            params.UserIdentityToken.CertificateData = certificate
+            sig = uacrypto.sign_sha1(self.private_key, certificate)
+            params.UserTokenSignature = ua.SignatureData()
+            params.UserTokenSignature.Algorithm = b"http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+            params.UserTokenSignature.Signature = sig
         else:
             params.UserIdentityToken = ua.UserNameIdentityToken()
-            params.UserIdentityToken.UserName = self.server_url.username 
+            params.UserIdentityToken.UserName = username 
             if self.server_url.password:
-                params.UserIdentityToken.Password = bytes(self.server_url.password)
-            params.UserIdentityToken.PolicyId = self.policy_ids[ua.UserTokenType.UserName]
-            #params.EncryptionAlgorithm = ''
+                pubkey = uacrypto.pubkey_from_dercert(self.server_certificate)
+                data = uacrypto.encrypt_rsa_oaep(pubkey, bytes(password, "utf8"))
+                params.UserIdentityToken.Password = data
+            params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")
+            params.UserIdentityToken.EncryptionAlgorithm = 'http://www.w3.org/2001/04/xmlenc#rsa-oaep'
         return self.bclient.activate_session(params)
 
     def close_session(self):
@@ -229,6 +340,12 @@ class Client(object):
         Create a subscription.
         returns a Subscription object which allow
         to subscribe to events or data on server
+        handler argument is a class with data_change and/or event methods.
+        These methods will be called when notfication from server are received.
+        See example-client.py.
+        Do not do expensive/slow or network operation from these methods 
+        since they are called directly from receiving thread. This is a design choice,
+        start another thread if you need to do such a thing.
         """
         params = ua.CreateSubscriptionParameters()
         params.RequestedPublishingInterval = period

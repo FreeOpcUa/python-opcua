@@ -7,7 +7,7 @@
   xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 >
-  <!-- This File was generated on 2013-03-06 and supports the specifications supported by the UA SDK v1.1.334.4. -->
+  <!-- This File was generated on 2015-08-18 and supports the specifications supported by the UA SDK v1.1.335.1. -->
 
   <wsdl:types>
     <xsd:schema targetNamespace="http://opcfoundation.org/UA/2008/02/Types.xsd/Imports">
@@ -35,6 +35,16 @@
     <wsdl:part name="detail" element="s0:ServiceFault" />
   </wsdl:message>
 
+  <wsdl:message name="FindServersOnNetworkMessage">
+    <wsdl:part name="parameters" element="s0:FindServersOnNetworkRequest"/>
+  </wsdl:message>
+  <wsdl:message name="FindServersOnNetworkResponseMessage">
+    <wsdl:part name="parameters" element="s0:FindServersOnNetworkResponse"/>
+  </wsdl:message>
+  <wsdl:message name="FindServersOnNetwork_FaultMessage">
+    <wsdl:part name="detail" element="s0:ServiceFault" />
+  </wsdl:message>
+
   <wsdl:message name="GetEndpointsMessage">
     <wsdl:part name="parameters" element="s0:GetEndpointsRequest"/>
   </wsdl:message>
@@ -52,6 +62,16 @@
     <wsdl:part name="parameters" element="s0:RegisterServerResponse"/>
   </wsdl:message>
   <wsdl:message name="RegisterServer_FaultMessage">
+    <wsdl:part name="detail" element="s0:ServiceFault" />
+  </wsdl:message>
+
+  <wsdl:message name="RegisterServer2Message">
+    <wsdl:part name="parameters" element="s0:RegisterServer2Request"/>
+  </wsdl:message>
+  <wsdl:message name="RegisterServer2ResponseMessage">
+    <wsdl:part name="parameters" element="s0:RegisterServer2Response"/>
+  </wsdl:message>
+  <wsdl:message name="RegisterServer2_FaultMessage">
     <wsdl:part name="detail" element="s0:ServiceFault" />
   </wsdl:message>
 
@@ -375,26 +395,6 @@
     <wsdl:part name="detail" element="s0:ServiceFault" />
   </wsdl:message>
 
-  <wsdl:message name="TestStackMessage">
-    <wsdl:part name="parameters" element="s0:TestStackRequest"/>
-  </wsdl:message>
-  <wsdl:message name="TestStackResponseMessage">
-    <wsdl:part name="parameters" element="s0:TestStackResponse"/>
-  </wsdl:message>
-  <wsdl:message name="TestStack_FaultMessage">
-    <wsdl:part name="detail" element="s0:ServiceFault" />
-  </wsdl:message>
-
-  <wsdl:message name="TestStackExMessage">
-    <wsdl:part name="parameters" element="s0:TestStackExRequest"/>
-  </wsdl:message>
-  <wsdl:message name="TestStackExResponseMessage">
-    <wsdl:part name="parameters" element="s0:TestStackExResponse"/>
-  </wsdl:message>
-  <wsdl:message name="TestStackEx_FaultMessage">
-    <wsdl:part name="detail" element="s0:ServiceFault" />
-  </wsdl:message>
-
   <wsdl:portType name="ISessionEndpoint">
 
     <wsdl:operation name="InvokeService">
@@ -611,6 +611,12 @@
       <wsdl:fault wsaw:Action="http://opcfoundation.org/UA/2008/02/Services.wsdl/FindServersFault" name="FindServersFaultMessage" message="tns:FindServers_FaultMessage" />
     </wsdl:operation>
 
+    <wsdl:operation name="FindServersOnNetwork">
+      <wsdl:input wsaw:Action="http://opcfoundation.org/UA/2008/02/Services.wsdl/FindServersOnNetwork" name="FindServersOnNetworkMessage" message="tns:FindServersOnNetworkMessage"/>
+      <wsdl:output wsaw:Action="http://opcfoundation.org/UA/2008/02/Services.wsdl/FindServersOnNetworkResponse" name="FindServersOnNetworkResponseMessage" message="tns:FindServersOnNetworkResponseMessage"/>
+      <wsdl:fault wsaw:Action="http://opcfoundation.org/UA/2008/02/Services.wsdl/FindServersOnNetworkFault" name="FindServersOnNetworkFaultMessage" message="tns:FindServersOnNetwork_FaultMessage" />
+    </wsdl:operation>
+
     <wsdl:operation name="GetEndpoints">
       <wsdl:input wsaw:Action="http://opcfoundation.org/UA/2008/02/Services.wsdl/GetEndpoints" name="GetEndpointsMessage" message="tns:GetEndpointsMessage"/>
       <wsdl:output wsaw:Action="http://opcfoundation.org/UA/2008/02/Services.wsdl/GetEndpointsResponse" name="GetEndpointsResponseMessage" message="tns:GetEndpointsResponseMessage"/>
@@ -631,6 +637,12 @@
       <wsdl:input wsaw:Action="http://opcfoundation.org/UA/2008/02/Services.wsdl/RegisterServer" name="RegisterServerMessage" message="tns:RegisterServerMessage"/>
       <wsdl:output wsaw:Action="http://opcfoundation.org/UA/2008/02/Services.wsdl/RegisterServerResponse" name="RegisterServerResponseMessage" message="tns:RegisterServerResponseMessage"/>
       <wsdl:fault wsaw:Action="http://opcfoundation.org/UA/2008/02/Services.wsdl/RegisterServerFault" name="RegisterServerFaultMessage" message="tns:RegisterServer_FaultMessage" />
+    </wsdl:operation>
+
+    <wsdl:operation name="RegisterServer2">
+      <wsdl:input wsaw:Action="http://opcfoundation.org/UA/2008/02/Services.wsdl/RegisterServer2" name="RegisterServer2Message" message="tns:RegisterServer2Message"/>
+      <wsdl:output wsaw:Action="http://opcfoundation.org/UA/2008/02/Services.wsdl/RegisterServer2Response" name="RegisterServer2ResponseMessage" message="tns:RegisterServer2ResponseMessage"/>
+      <wsdl:fault wsaw:Action="http://opcfoundation.org/UA/2008/02/Services.wsdl/RegisterServer2Fault" name="RegisterServer2FaultMessage" message="tns:RegisterServer2_FaultMessage" />
     </wsdl:operation>
 
   </wsdl:portType>

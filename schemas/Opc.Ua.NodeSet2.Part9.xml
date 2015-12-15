@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<UANodeSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.02" LastModified="2013-03-06T05:36:43.5402346Z" xmlns="http://opcfoundation.org/UA/2011/03/UANodeSet.xsd">
+<UANodeSet xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" LastModified="2015-08-18T00:23:00Z" xmlns="http://opcfoundation.org/UA/2011/03/UANodeSet.xsd">
+  <Models>
+    <Model ModelUri="http://opcfoundation.org/UA/" Version="1.02" PublicationDate="2015-08-17T17:23:51.6981503-07:00" />
+  </Models>
   <Aliases>
     <Alias Alias="Boolean">i=1</Alias>
     <Alias Alias="SByte">i=2</Alias>
@@ -134,6 +137,7 @@
       <Reference ReferenceType="HasComponent">i=9027</Reference>
       <Reference ReferenceType="HasComponent">i=9029</Reference>
       <Reference ReferenceType="HasComponent">i=3875</Reference>
+      <Reference ReferenceType="HasComponent">i=12912</Reference>
       <Reference ReferenceType="HasSubtype" IsForward="false">i=2041</Reference>
     </References>
   </UAObjectType>
@@ -391,6 +395,67 @@
                 <Locale>
                 </Locale>
                 <Text>The identifier for the suscription to refresh.</Text>
+              </Description>
+            </Argument>
+          </Body>
+        </ExtensionObject>
+      </ListOfExtensionObject>
+    </Value>
+  </UAVariable>
+  <UAMethod NodeId="i=12912" BrowseName="ConditionRefresh2" ParentNodeId="i=2782">
+    <DisplayName>ConditionRefresh2</DisplayName>
+    <References>
+      <Reference ReferenceType="HasProperty">i=12913</Reference>
+      <Reference ReferenceType="i=3065">i=2787</Reference>
+      <Reference ReferenceType="i=3065">i=2788</Reference>
+      <Reference ReferenceType="HasComponent" IsForward="false">i=2782</Reference>
+    </References>
+  </UAMethod>
+  <UAVariable NodeId="i=12913" BrowseName="InputArguments" ParentNodeId="i=12912" DataType="i=296" ValueRank="1">
+    <DisplayName>InputArguments</DisplayName>
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      <Reference ReferenceType="HasModellingRule">i=78</Reference>
+      <Reference ReferenceType="HasProperty" IsForward="false">i=12912</Reference>
+    </References>
+    <Value>
+      <ListOfExtensionObject xmlns="http://opcfoundation.org/UA/2008/02/Types.xsd">
+        <ExtensionObject>
+          <TypeId>
+            <Identifier>i=297</Identifier>
+          </TypeId>
+          <Body>
+            <Argument>
+              <Name>SubscriptionId</Name>
+              <DataType>
+                <Identifier>i=288</Identifier>
+              </DataType>
+              <ValueRank>-1</ValueRank>
+              <ArrayDimensions />
+              <Description>
+                <Locale>
+                </Locale>
+                <Text>The identifier for the suscription to refresh.</Text>
+              </Description>
+            </Argument>
+          </Body>
+        </ExtensionObject>
+        <ExtensionObject>
+          <TypeId>
+            <Identifier>i=297</Identifier>
+          </TypeId>
+          <Body>
+            <Argument>
+              <Name>MonitoredItemId</Name>
+              <DataType>
+                <Identifier>i=288</Identifier>
+              </DataType>
+              <ValueRank>-1</ValueRank>
+              <ArrayDimensions />
+              <Description>
+                <Locale>
+                </Locale>
+                <Text>The identifier for the monitored item to refresh.</Text>
               </Description>
             </Argument>
           </Body>
@@ -1776,6 +1841,39 @@
       <Reference ReferenceType="HasSubtype" IsForward="false">i=10637</Reference>
     </References>
   </UAObjectType>
+  <UAObjectType NodeId="i=13225" BrowseName="CertificateExpirationAlarmType">
+    <DisplayName>CertificateExpirationAlarmType</DisplayName>
+    <References>
+      <Reference ReferenceType="HasProperty">i=13325</Reference>
+      <Reference ReferenceType="HasProperty">i=13326</Reference>
+      <Reference ReferenceType="HasProperty">i=13327</Reference>
+      <Reference ReferenceType="HasSubtype" IsForward="false">i=11753</Reference>
+    </References>
+  </UAObjectType>
+  <UAVariable NodeId="i=13325" BrowseName="ExpirationDate" ParentNodeId="i=13225" DataType="DateTime">
+    <DisplayName>ExpirationDate</DisplayName>
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      <Reference ReferenceType="HasModellingRule">i=78</Reference>
+      <Reference ReferenceType="HasProperty" IsForward="false">i=13225</Reference>
+    </References>
+  </UAVariable>
+  <UAVariable NodeId="i=13326" BrowseName="CertificateType" ParentNodeId="i=13225" DataType="NodeId">
+    <DisplayName>CertificateType</DisplayName>
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      <Reference ReferenceType="HasModellingRule">i=78</Reference>
+      <Reference ReferenceType="HasProperty" IsForward="false">i=13225</Reference>
+    </References>
+  </UAVariable>
+  <UAVariable NodeId="i=13327" BrowseName="Certificate" ParentNodeId="i=13225" DataType="ByteString">
+    <DisplayName>Certificate</DisplayName>
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      <Reference ReferenceType="HasModellingRule">i=78</Reference>
+      <Reference ReferenceType="HasProperty" IsForward="false">i=13225</Reference>
+    </References>
+  </UAVariable>
   <UAObjectType NodeId="i=10751" BrowseName="TripAlarmType">
     <DisplayName>TripAlarmType</DisplayName>
     <References>

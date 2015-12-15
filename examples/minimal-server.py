@@ -20,7 +20,7 @@ if __name__ == "__main__":
     objects = server.get_objects_node()
 
     # populating our address space
-    myobj = objects.add_object(idx, "NewObject")
+    myobj = objects.add_object(idx, "MyObject")
     myvar = myobj.add_variable(idx, "MyVariable", 6.7)
     myvar.set_writable()    # Set MyVariable to be writable by clients
 

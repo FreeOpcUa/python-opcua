@@ -23,6 +23,9 @@ class SubHandler(object):
 
     """
     Subscription Handler. To receive events from server for a subscription
+    data_change and event methods are called directly from receiving thread.
+    Do not do expensive, slow or network operation there. Create another 
+    thread if you need to do such a thing
     """
 
     def data_change(self, handle, node, val, attr):
@@ -61,8 +64,8 @@ if __name__ == "__main__":
         #var.set_value(3.9) # set node value using implicit data type
 
         # Now getting a variable node using its browse path
-        myvar = root.get_child(["0:Objects", "2:NewObject", "2:MyVariable"])
-        obj = root.get_child(["0:Objects", "2:NewObject"])
+        myvar = root.get_child(["0:Objects", "2:MyObject", "2:MyVariable"])
+        obj = root.get_child(["0:Objects", "2:MyObject"])
         print("myvar is: ", myvar)
 
         # subscribing to a variable node

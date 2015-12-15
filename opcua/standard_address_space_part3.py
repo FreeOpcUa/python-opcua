@@ -77,7 +77,7 @@ def create_standard_address_space_Part3(server):
     node.RequestedNewNodeId = ua.NodeId.from_string("i=28")
     node.BrowseName = ua.QualifiedName.from_string("UInteger")
     node.NodeClass = ua.NodeClass.DataType
-    node.ParentNodeId = ua.NodeId.from_string("i=27")
+    node.ParentNodeId = ua.NodeId.from_string("i=26")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
     attrs.Description = ua.LocalizedText("b'Describes a value that can have any unsigned integer DataType.'")
@@ -368,6 +368,19 @@ def create_standard_address_space_Part3(server):
     attrs = ua.DataTypeAttributes()
     attrs.Description = ua.LocalizedText("b'Describes a value that is an image encoded as a string of bytes.'")
     attrs.DisplayName = ua.LocalizedText("Image")
+    attrs.IsAbstract = false
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=121")
+    node.BrowseName = ua.QualifiedName.from_string("Decimal128")
+    node.NodeClass = ua.NodeClass.DataType
+    node.ParentNodeId = ua.NodeId.from_string("i=26")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    attrs = ua.DataTypeAttributes()
+    attrs.Description = ua.LocalizedText("b'Describes a 128-bit decimal value.'")
+    attrs.DisplayName = ua.LocalizedText("Decimal128")
     attrs.IsAbstract = false
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -777,6 +790,19 @@ def create_standard_address_space_Part3(server):
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12908")
+    node.BrowseName = ua.QualifiedName.from_string("MaxByteStringLength")
+    node.NodeClass = ua.NodeClass.Variable
+    node.TypeDefinition = ua.NodeId.from_string("i=68")
+    attrs = ua.VariableAttributes()
+    attrs.Description = ua.LocalizedText("The maximum length for a byte string that can be stored in the owning variable.")
+    attrs.DisplayName = ua.LocalizedText("MaxByteStringLength")
+    attrs.DataType = ua.NodeId(ua.ObjectIds.UInt32)
+    attrs.ValueRank = -2
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+   
+    node = ua.AddNodesItem()
     node.RequestedNewNodeId = ua.NodeId.from_string("i=11512")
     node.BrowseName = ua.QualifiedName.from_string("MaxArrayLength")
     node.NodeClass = ua.NodeClass.Variable
@@ -824,6 +850,19 @@ def create_standard_address_space_Part3(server):
     attrs.Description = ua.LocalizedText("The human readable strings associated with the values of an enumerated value (when values have no sequence).")
     attrs.DisplayName = ua.LocalizedText("EnumValues")
     attrs.DataType = ua.NodeId.from_string("i=7594")
+    attrs.ValueRank = 1
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12745")
+    node.BrowseName = ua.QualifiedName.from_string("OptionSetValues")
+    node.NodeClass = ua.NodeClass.Variable
+    node.TypeDefinition = ua.NodeId.from_string("i=68")
+    attrs = ua.VariableAttributes()
+    attrs.Description = ua.LocalizedText("Contains the human-readable representation for each bit of the bit mask.")
+    attrs.DisplayName = ua.LocalizedText("OptionSetValues")
+    attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
     attrs.ValueRank = 1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1023,13 +1062,104 @@ def create_standard_address_space_Part3(server):
     server.add_nodes([node])
    
     node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12755")
+    node.BrowseName = ua.QualifiedName.from_string("OptionSet")
+    node.NodeClass = ua.NodeClass.DataType
+    node.ParentNodeId = ua.NodeId.from_string("i=22")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    attrs = ua.DataTypeAttributes()
+    attrs.Description = ua.LocalizedText("b'This abstract Structured DataType is the base DataType for all DataTypes representing a bit mask.'")
+    attrs.DisplayName = ua.LocalizedText("OptionSet")
+    attrs.IsAbstract = false
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12756")
+    node.BrowseName = ua.QualifiedName.from_string("Union")
+    node.NodeClass = ua.NodeClass.DataType
+    node.ParentNodeId = ua.NodeId.from_string("i=22")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    attrs = ua.DataTypeAttributes()
+    attrs.Description = ua.LocalizedText("b'This abstract DataType is the base DataType for all union DataTypes.'")
+    attrs.DisplayName = ua.LocalizedText("Union")
+    attrs.IsAbstract = false
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12877")
+    node.BrowseName = ua.QualifiedName.from_string("NormalizedString")
+    node.NodeClass = ua.NodeClass.DataType
+    node.ParentNodeId = ua.NodeId.from_string("i=12")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    attrs = ua.DataTypeAttributes()
+    attrs.Description = ua.LocalizedText("b'A string normalized based on the rules in the unicode specification.'")
+    attrs.DisplayName = ua.LocalizedText("NormalizedString")
+    attrs.IsAbstract = false
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12878")
+    node.BrowseName = ua.QualifiedName.from_string("DecimalString")
+    node.NodeClass = ua.NodeClass.DataType
+    node.ParentNodeId = ua.NodeId.from_string("i=12")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    attrs = ua.DataTypeAttributes()
+    attrs.Description = ua.LocalizedText("b'An arbitraty numeric value.'")
+    attrs.DisplayName = ua.LocalizedText("DecimalString")
+    attrs.IsAbstract = false
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12879")
+    node.BrowseName = ua.QualifiedName.from_string("DurationString")
+    node.NodeClass = ua.NodeClass.DataType
+    node.ParentNodeId = ua.NodeId.from_string("i=12")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    attrs = ua.DataTypeAttributes()
+    attrs.Description = ua.LocalizedText("b'A period of time formatted as defined in ISO 8601-2000.'")
+    attrs.DisplayName = ua.LocalizedText("DurationString")
+    attrs.IsAbstract = false
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12880")
+    node.BrowseName = ua.QualifiedName.from_string("TimeString")
+    node.NodeClass = ua.NodeClass.DataType
+    node.ParentNodeId = ua.NodeId.from_string("i=12")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    attrs = ua.DataTypeAttributes()
+    attrs.Description = ua.LocalizedText("b'A time formatted as defined in ISO 8601-2000.'")
+    attrs.DisplayName = ua.LocalizedText("TimeString")
+    attrs.IsAbstract = false
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12881")
+    node.BrowseName = ua.QualifiedName.from_string("DateString")
+    node.NodeClass = ua.NodeClass.DataType
+    node.ParentNodeId = ua.NodeId.from_string("i=12")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    attrs = ua.DataTypeAttributes()
+    attrs.Description = ua.LocalizedText("b'A date formatted as defined in ISO 8601-2000.'")
+    attrs.DisplayName = ua.LocalizedText("DateString")
+    attrs.IsAbstract = false
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+   
+    node = ua.AddNodesItem()
     node.RequestedNewNodeId = ua.NodeId.from_string("i=290")
     node.BrowseName = ua.QualifiedName.from_string("Duration")
     node.NodeClass = ua.NodeClass.DataType
     node.ParentNodeId = ua.NodeId.from_string("i=11")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'A period of time measured in seconds.'")
+    attrs.Description = ua.LocalizedText("b'A period of time measured in milliseconds.'")
     attrs.DisplayName = ua.LocalizedText("Duration")
     attrs.IsAbstract = false
     node.NodeAttributes = attrs
@@ -1118,6 +1248,50 @@ def create_standard_address_space_Part3(server):
     server.add_references(refs)
    
     node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12757")
+    node.BrowseName = ua.QualifiedName.from_string("Default XML")
+    node.NodeClass = ua.NodeClass.Object
+    node.ParentNodeId = ua.NodeId.from_string("i=12755")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    node.TypeDefinition = ua.NodeId.from_string("i=76")
+    attrs = ua.ObjectAttributes()
+    attrs.DisplayName = ua.LocalizedText("Default XML")
+    attrs.EventNotifier = 0
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12757")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12759")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12758")
+    node.BrowseName = ua.QualifiedName.from_string("Default XML")
+    node.NodeClass = ua.NodeClass.Object
+    node.ParentNodeId = ua.NodeId.from_string("i=12756")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    node.TypeDefinition = ua.NodeId.from_string("i=76")
+    attrs = ua.ObjectAttributes()
+    attrs.DisplayName = ua.LocalizedText("Default XML")
+    attrs.EventNotifier = 0
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12758")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12762")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
     node.RequestedNewNodeId = ua.NodeId.from_string("i=8913")
     node.BrowseName = ua.QualifiedName.from_string("Default XML")
     node.NodeClass = ua.NodeClass.Object
@@ -1180,6 +1354,50 @@ def create_standard_address_space_Part3(server):
     ref.SourceNodeId = ua.NodeId.from_string("i=8251")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=7656")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12765")
+    node.BrowseName = ua.QualifiedName.from_string("Default Binary")
+    node.NodeClass = ua.NodeClass.Object
+    node.ParentNodeId = ua.NodeId.from_string("i=12755")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    node.TypeDefinition = ua.NodeId.from_string("i=76")
+    attrs = ua.ObjectAttributes()
+    attrs.DisplayName = ua.LocalizedText("Default Binary")
+    attrs.EventNotifier = 0
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12765")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12767")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12766")
+    node.BrowseName = ua.QualifiedName.from_string("Default Binary")
+    node.NodeClass = ua.NodeClass.Object
+    node.ParentNodeId = ua.NodeId.from_string("i=12756")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    node.TypeDefinition = ua.NodeId.from_string("i=76")
+    attrs = ua.ObjectAttributes()
+    attrs.DisplayName = ua.LocalizedText("Default Binary")
+    attrs.EventNotifier = 0
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = true
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12766")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12770")
     refs.append(ref)
     server.add_references(refs)
    
