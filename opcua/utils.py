@@ -18,7 +18,7 @@ class ServiceError(Exception):
 class NotEnoughData(Exception):
     pass
 
-class Buffer2(object):
+class Buffer(object):
 
     """
     alternative to io.BytesIO making debug easier
@@ -78,10 +78,6 @@ class Buffer2(object):
 
     data = property(get_data, set_data)
 
-try:
-    from _buffer import Buffer
-except ImportError:
-    Buffer = Buffer2
 
 class SocketClosedException(Exception):
     pass
