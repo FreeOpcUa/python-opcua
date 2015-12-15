@@ -10,49 +10,52 @@ from opcua.object_ids import ObjectIds
 
 
 
+
 class NamingRuleType(object):
     '''
-    :ivar Mandatory: 
-    :vartype Mandatory: 1 
-    :ivar Optional: 
-    :vartype Optional: 2 
-    :ivar Constraint: 
-    :vartype Constraint: 3 
+    :ivar Mandatory:
+    :vartype Mandatory: 1
+    :ivar Optional:
+    :vartype Optional: 2
+    :ivar Constraint:
+    :vartype Constraint: 3
     '''
     Mandatory = 1
     Optional = 2
     Constraint = 3
 
+
 class OpenFileMode(object):
     '''
-    :ivar Read: 
-    :vartype Read: 1 
-    :ivar Write: 
-    :vartype Write: 2 
-    :ivar EraseExisting: 
-    :vartype EraseExisting: 4 
-    :ivar Append: 
-    :vartype Append: 8 
+    :ivar Read:
+    :vartype Read: 1
+    :ivar Write:
+    :vartype Write: 2
+    :ivar EraseExisting:
+    :vartype EraseExisting: 4
+    :ivar Append:
+    :vartype Append: 8
     '''
     Read = 1
     Write = 2
     EraseExisting = 4
     Append = 8
 
+
 class TrustListMasks(object):
     '''
-    :ivar None_: 
-    :vartype None_: 0 
-    :ivar TrustedCertificates: 
-    :vartype TrustedCertificates: 1 
-    :ivar TrustedCrls: 
-    :vartype TrustedCrls: 2 
-    :ivar IssuerCertificates: 
-    :vartype IssuerCertificates: 4 
-    :ivar IssuerCrls: 
-    :vartype IssuerCrls: 8 
-    :ivar All: 
-    :vartype All: 15 
+    :ivar None_:
+    :vartype None_: 0
+    :ivar TrustedCertificates:
+    :vartype TrustedCertificates: 1
+    :ivar TrustedCrls:
+    :vartype TrustedCrls: 2
+    :ivar IssuerCertificates:
+    :vartype IssuerCertificates: 4
+    :ivar IssuerCrls:
+    :vartype IssuerCrls: 8
+    :ivar All:
+    :vartype All: 15
     '''
     None_ = 0
     TrustedCertificates = 1
@@ -61,46 +64,48 @@ class TrustListMasks(object):
     IssuerCrls = 8
     All = 15
 
+
 class IdType(object):
     '''
     The type of identifier used in a node id.
-    
-    :ivar Numeric: 
-    :vartype Numeric: 0 
-    :ivar String: 
-    :vartype String: 1 
-    :ivar Guid: 
-    :vartype Guid: 2 
-    :ivar Opaque: 
-    :vartype Opaque: 3 
+
+    :ivar Numeric:
+    :vartype Numeric: 0
+    :ivar String:
+    :vartype String: 1
+    :ivar Guid:
+    :vartype Guid: 2
+    :ivar Opaque:
+    :vartype Opaque: 3
     '''
     Numeric = 0
     String = 1
     Guid = 2
     Opaque = 3
 
+
 class NodeClass(object):
     '''
     A mask specifying the class of the node.
-    
-    :ivar Unspecified: 
-    :vartype Unspecified: 0 
-    :ivar Object: 
-    :vartype Object: 1 
-    :ivar Variable: 
-    :vartype Variable: 2 
-    :ivar Method: 
-    :vartype Method: 4 
-    :ivar ObjectType: 
-    :vartype ObjectType: 8 
-    :ivar VariableType: 
-    :vartype VariableType: 16 
-    :ivar ReferenceType: 
-    :vartype ReferenceType: 32 
-    :ivar DataType: 
-    :vartype DataType: 64 
-    :ivar View: 
-    :vartype View: 128 
+
+    :ivar Unspecified:
+    :vartype Unspecified: 0
+    :ivar Object:
+    :vartype Object: 1
+    :ivar Variable:
+    :vartype Variable: 2
+    :ivar Method:
+    :vartype Method: 4
+    :ivar ObjectType:
+    :vartype ObjectType: 8
+    :ivar VariableType:
+    :vartype VariableType: 16
+    :ivar ReferenceType:
+    :vartype ReferenceType: 32
+    :ivar DataType:
+    :vartype DataType: 64
+    :ivar View:
+    :vartype View: 128
     '''
     Unspecified = 0
     Object = 1
@@ -112,56 +117,59 @@ class NodeClass(object):
     DataType = 64
     View = 128
 
+
 class ApplicationType(object):
     '''
     The types of applications.
-    
-    :ivar Server: 
-    :vartype Server: 0 
-    :ivar Client: 
-    :vartype Client: 1 
-    :ivar ClientAndServer: 
-    :vartype ClientAndServer: 2 
-    :ivar DiscoveryServer: 
-    :vartype DiscoveryServer: 3 
+
+    :ivar Server:
+    :vartype Server: 0
+    :ivar Client:
+    :vartype Client: 1
+    :ivar ClientAndServer:
+    :vartype ClientAndServer: 2
+    :ivar DiscoveryServer:
+    :vartype DiscoveryServer: 3
     '''
     Server = 0
     Client = 1
     ClientAndServer = 2
     DiscoveryServer = 3
 
+
 class MessageSecurityMode(object):
     '''
     The type of security to use on a message.
-    
-    :ivar Invalid: 
-    :vartype Invalid: 0 
-    :ivar None_: 
-    :vartype None_: 1 
-    :ivar Sign: 
-    :vartype Sign: 2 
-    :ivar SignAndEncrypt: 
-    :vartype SignAndEncrypt: 3 
+
+    :ivar Invalid:
+    :vartype Invalid: 0
+    :ivar None_:
+    :vartype None_: 1
+    :ivar Sign:
+    :vartype Sign: 2
+    :ivar SignAndEncrypt:
+    :vartype SignAndEncrypt: 3
     '''
     Invalid = 0
     None_ = 1
     Sign = 2
     SignAndEncrypt = 3
 
+
 class UserTokenType(object):
     '''
     The possible user token types.
-    
-    :ivar Anonymous: 
-    :vartype Anonymous: 0 
-    :ivar UserName: 
-    :vartype UserName: 1 
-    :ivar Certificate: 
-    :vartype Certificate: 2 
-    :ivar IssuedToken: 
-    :vartype IssuedToken: 3 
-    :ivar Kerberos: 
-    :vartype Kerberos: 4 
+
+    :ivar Anonymous:
+    :vartype Anonymous: 0
+    :ivar UserName:
+    :vartype UserName: 1
+    :ivar Certificate:
+    :vartype Certificate: 2
+    :ivar IssuedToken:
+    :vartype IssuedToken: 3
+    :ivar Kerberos:
+    :vartype Kerberos: 4
     '''
     Anonymous = 0
     UserName = 1
@@ -169,86 +177,88 @@ class UserTokenType(object):
     IssuedToken = 3
     Kerberos = 4
 
+
 class SecurityTokenRequestType(object):
     '''
     Indicates whether a token if being created or renewed.
-    
-    :ivar Issue: 
-    :vartype Issue: 0 
-    :ivar Renew: 
-    :vartype Renew: 1 
+
+    :ivar Issue:
+    :vartype Issue: 0
+    :ivar Renew:
+    :vartype Renew: 1
     '''
     Issue = 0
     Renew = 1
 
+
 class NodeAttributesMask(object):
     '''
     The bits used to specify default attributes for a new node.
-    
-    :ivar None_: 
-    :vartype None_: 0 
-    :ivar AccessLevel: 
-    :vartype AccessLevel: 1 
-    :ivar ArrayDimensions: 
-    :vartype ArrayDimensions: 2 
-    :ivar BrowseName: 
-    :vartype BrowseName: 4 
-    :ivar ContainsNoLoops: 
-    :vartype ContainsNoLoops: 8 
-    :ivar DataType: 
-    :vartype DataType: 16 
-    :ivar Description: 
-    :vartype Description: 32 
-    :ivar DisplayName: 
-    :vartype DisplayName: 64 
-    :ivar EventNotifier: 
-    :vartype EventNotifier: 128 
-    :ivar Executable: 
-    :vartype Executable: 256 
-    :ivar Historizing: 
-    :vartype Historizing: 512 
-    :ivar InverseName: 
-    :vartype InverseName: 1024 
-    :ivar IsAbstract: 
-    :vartype IsAbstract: 2048 
-    :ivar MinimumSamplingInterval: 
-    :vartype MinimumSamplingInterval: 4096 
-    :ivar NodeClass: 
-    :vartype NodeClass: 8192 
-    :ivar NodeId: 
-    :vartype NodeId: 16384 
-    :ivar Symmetric: 
-    :vartype Symmetric: 32768 
-    :ivar UserAccessLevel: 
-    :vartype UserAccessLevel: 65536 
-    :ivar UserExecutable: 
-    :vartype UserExecutable: 131072 
-    :ivar UserWriteMask: 
-    :vartype UserWriteMask: 262144 
-    :ivar ValueRank: 
-    :vartype ValueRank: 524288 
-    :ivar WriteMask: 
-    :vartype WriteMask: 1048576 
-    :ivar Value: 
-    :vartype Value: 2097152 
-    :ivar All: 
-    :vartype All: 4194303 
-    :ivar BaseNode: 
-    :vartype BaseNode: 1335396 
-    :ivar Object: 
-    :vartype Object: 1335524 
-    :ivar ObjectTypeOrDataType: 
-    :vartype ObjectTypeOrDataType: 1337444 
-    :ivar Variable: 
-    :vartype Variable: 4026999 
-    :ivar VariableType: 
-    :vartype VariableType: 3958902 
-    :ivar Method: 
-    :vartype Method: 1466724 
-    :ivar ReferenceType: 
-    :vartype ReferenceType: 1371236 
-    :ivar View: 
-    :vartype View: 1335532 
+
+    :ivar None_:
+    :vartype None_: 0
+    :ivar AccessLevel:
+    :vartype AccessLevel: 1
+    :ivar ArrayDimensions:
+    :vartype ArrayDimensions: 2
+    :ivar BrowseName:
+    :vartype BrowseName: 4
+    :ivar ContainsNoLoops:
+    :vartype ContainsNoLoops: 8
+    :ivar DataType:
+    :vartype DataType: 16
+    :ivar Description:
+    :vartype Description: 32
+    :ivar DisplayName:
+    :vartype DisplayName: 64
+    :ivar EventNotifier:
+    :vartype EventNotifier: 128
+    :ivar Executable:
+    :vartype Executable: 256
+    :ivar Historizing:
+    :vartype Historizing: 512
+    :ivar InverseName:
+    :vartype InverseName: 1024
+    :ivar IsAbstract:
+    :vartype IsAbstract: 2048
+    :ivar MinimumSamplingInterval:
+    :vartype MinimumSamplingInterval: 4096
+    :ivar NodeClass:
+    :vartype NodeClass: 8192
+    :ivar NodeId:
+    :vartype NodeId: 16384
+    :ivar Symmetric:
+    :vartype Symmetric: 32768
+    :ivar UserAccessLevel:
+    :vartype UserAccessLevel: 65536
+    :ivar UserExecutable:
+    :vartype UserExecutable: 131072
+    :ivar UserWriteMask:
+    :vartype UserWriteMask: 262144
+    :ivar ValueRank:
+    :vartype ValueRank: 524288
+    :ivar WriteMask:
+    :vartype WriteMask: 1048576
+    :ivar Value:
+    :vartype Value: 2097152
+    :ivar All:
+    :vartype All: 4194303
+    :ivar BaseNode:
+    :vartype BaseNode: 1335396
+    :ivar Object:
+    :vartype Object: 1335524
+    :ivar ObjectTypeOrDataType:
+    :vartype ObjectTypeOrDataType: 1337444
+    :ivar Variable:
+    :vartype Variable: 4026999
+    :ivar VariableType:
+    :vartype VariableType: 3958902
+    :ivar Method:
+    :vartype Method: 1466724
+    :ivar ReferenceType:
+    :vartype ReferenceType: 1371236
+    :ivar View:
+    :vartype View: 1335532
     '''
     None_ = 0
     AccessLevel = 1
@@ -283,56 +293,57 @@ class NodeAttributesMask(object):
     ReferenceType = 1371236
     View = 1335532
 
+
 class AttributeWriteMask(object):
     '''
     Define bits used to indicate which attributes are writable.
-    
-    :ivar None_: 
-    :vartype None_: 0 
-    :ivar AccessLevel: 
-    :vartype AccessLevel: 1 
-    :ivar ArrayDimensions: 
-    :vartype ArrayDimensions: 2 
-    :ivar BrowseName: 
-    :vartype BrowseName: 4 
-    :ivar ContainsNoLoops: 
-    :vartype ContainsNoLoops: 8 
-    :ivar DataType: 
-    :vartype DataType: 16 
-    :ivar Description: 
-    :vartype Description: 32 
-    :ivar DisplayName: 
-    :vartype DisplayName: 64 
-    :ivar EventNotifier: 
-    :vartype EventNotifier: 128 
-    :ivar Executable: 
-    :vartype Executable: 256 
-    :ivar Historizing: 
-    :vartype Historizing: 512 
-    :ivar InverseName: 
-    :vartype InverseName: 1024 
-    :ivar IsAbstract: 
-    :vartype IsAbstract: 2048 
-    :ivar MinimumSamplingInterval: 
-    :vartype MinimumSamplingInterval: 4096 
-    :ivar NodeClass: 
-    :vartype NodeClass: 8192 
-    :ivar NodeId: 
-    :vartype NodeId: 16384 
-    :ivar Symmetric: 
-    :vartype Symmetric: 32768 
-    :ivar UserAccessLevel: 
-    :vartype UserAccessLevel: 65536 
-    :ivar UserExecutable: 
-    :vartype UserExecutable: 131072 
-    :ivar UserWriteMask: 
-    :vartype UserWriteMask: 262144 
-    :ivar ValueRank: 
-    :vartype ValueRank: 524288 
-    :ivar WriteMask: 
-    :vartype WriteMask: 1048576 
-    :ivar ValueForVariableType: 
-    :vartype ValueForVariableType: 2097152 
+
+    :ivar None_:
+    :vartype None_: 0
+    :ivar AccessLevel:
+    :vartype AccessLevel: 1
+    :ivar ArrayDimensions:
+    :vartype ArrayDimensions: 2
+    :ivar BrowseName:
+    :vartype BrowseName: 4
+    :ivar ContainsNoLoops:
+    :vartype ContainsNoLoops: 8
+    :ivar DataType:
+    :vartype DataType: 16
+    :ivar Description:
+    :vartype Description: 32
+    :ivar DisplayName:
+    :vartype DisplayName: 64
+    :ivar EventNotifier:
+    :vartype EventNotifier: 128
+    :ivar Executable:
+    :vartype Executable: 256
+    :ivar Historizing:
+    :vartype Historizing: 512
+    :ivar InverseName:
+    :vartype InverseName: 1024
+    :ivar IsAbstract:
+    :vartype IsAbstract: 2048
+    :ivar MinimumSamplingInterval:
+    :vartype MinimumSamplingInterval: 4096
+    :ivar NodeClass:
+    :vartype NodeClass: 8192
+    :ivar NodeId:
+    :vartype NodeId: 16384
+    :ivar Symmetric:
+    :vartype Symmetric: 32768
+    :ivar UserAccessLevel:
+    :vartype UserAccessLevel: 65536
+    :ivar UserExecutable:
+    :vartype UserExecutable: 131072
+    :ivar UserWriteMask:
+    :vartype UserWriteMask: 262144
+    :ivar ValueRank:
+    :vartype ValueRank: 524288
+    :ivar WriteMask:
+    :vartype WriteMask: 1048576
+    :ivar ValueForVariableType:
+    :vartype ValueForVariableType: 2097152
     '''
     None_ = 0
     AccessLevel = 1
@@ -358,45 +369,47 @@ class AttributeWriteMask(object):
     WriteMask = 1048576
     ValueForVariableType = 2097152
 
+
 class BrowseDirection(object):
     '''
     The directions of the references to return.
-    
-    :ivar Forward: 
-    :vartype Forward: 0 
-    :ivar Inverse: 
-    :vartype Inverse: 1 
-    :ivar Both: 
-    :vartype Both: 2 
+
+    :ivar Forward:
+    :vartype Forward: 0
+    :ivar Inverse:
+    :vartype Inverse: 1
+    :ivar Both:
+    :vartype Both: 2
     '''
     Forward = 0
     Inverse = 1
     Both = 2
 
+
 class BrowseResultMask(object):
     '''
     A bit mask which specifies what should be returned in a browse response.
-    
-    :ivar None_: 
-    :vartype None_: 0 
-    :ivar ReferenceTypeId: 
-    :vartype ReferenceTypeId: 1 
-    :ivar IsForward: 
-    :vartype IsForward: 2 
-    :ivar NodeClass: 
-    :vartype NodeClass: 4 
-    :ivar BrowseName: 
-    :vartype BrowseName: 8 
-    :ivar DisplayName: 
-    :vartype DisplayName: 16 
-    :ivar TypeDefinition: 
-    :vartype TypeDefinition: 32 
-    :ivar All: 
-    :vartype All: 63 
-    :ivar ReferenceTypeInfo: 
-    :vartype ReferenceTypeInfo: 3 
-    :ivar TargetInfo: 
-    :vartype TargetInfo: 60 
+
+    :ivar None_:
+    :vartype None_: 0
+    :ivar ReferenceTypeId:
+    :vartype ReferenceTypeId: 1
+    :ivar IsForward:
+    :vartype IsForward: 2
+    :ivar NodeClass:
+    :vartype NodeClass: 4
+    :ivar BrowseName:
+    :vartype BrowseName: 8
+    :ivar DisplayName:
+    :vartype DisplayName: 16
+    :ivar TypeDefinition:
+    :vartype TypeDefinition: 32
+    :ivar All:
+    :vartype All: 63
+    :ivar ReferenceTypeInfo:
+    :vartype ReferenceTypeInfo: 3
+    :ivar TargetInfo:
+    :vartype TargetInfo: 60
     '''
     None_ = 0
     ReferenceTypeId = 1
@@ -409,60 +422,62 @@ class BrowseResultMask(object):
     ReferenceTypeInfo = 3
     TargetInfo = 60
 
+
 class ComplianceLevel(object):
     '''
-    :ivar Untested: 
-    :vartype Untested: 0 
-    :ivar Partial: 
-    :vartype Partial: 1 
-    :ivar SelfTested: 
-    :vartype SelfTested: 2 
-    :ivar Certified: 
-    :vartype Certified: 3 
+    :ivar Untested:
+    :vartype Untested: 0
+    :ivar Partial:
+    :vartype Partial: 1
+    :ivar SelfTested:
+    :vartype SelfTested: 2
+    :ivar Certified:
+    :vartype Certified: 3
     '''
     Untested = 0
     Partial = 1
     SelfTested = 2
     Certified = 3
 
+
 class FilterOperator(object):
     '''
-    :ivar Equals: 
-    :vartype Equals: 0 
-    :ivar IsNull: 
-    :vartype IsNull: 1 
-    :ivar GreaterThan: 
-    :vartype GreaterThan: 2 
-    :ivar LessThan: 
-    :vartype LessThan: 3 
-    :ivar GreaterThanOrEqual: 
-    :vartype GreaterThanOrEqual: 4 
-    :ivar LessThanOrEqual: 
-    :vartype LessThanOrEqual: 5 
-    :ivar Like: 
-    :vartype Like: 6 
-    :ivar Not: 
-    :vartype Not: 7 
-    :ivar Between: 
-    :vartype Between: 8 
-    :ivar InList: 
-    :vartype InList: 9 
-    :ivar And: 
-    :vartype And: 10 
-    :ivar Or: 
-    :vartype Or: 11 
-    :ivar Cast: 
-    :vartype Cast: 12 
-    :ivar InView: 
-    :vartype InView: 13 
-    :ivar OfType: 
-    :vartype OfType: 14 
-    :ivar RelatedTo: 
-    :vartype RelatedTo: 15 
-    :ivar BitwiseAnd: 
-    :vartype BitwiseAnd: 16 
-    :ivar BitwiseOr: 
-    :vartype BitwiseOr: 17 
+    :ivar Equals:
+    :vartype Equals: 0
+    :ivar IsNull:
+    :vartype IsNull: 1
+    :ivar GreaterThan:
+    :vartype GreaterThan: 2
+    :ivar LessThan:
+    :vartype LessThan: 3
+    :ivar GreaterThanOrEqual:
+    :vartype GreaterThanOrEqual: 4
+    :ivar LessThanOrEqual:
+    :vartype LessThanOrEqual: 5
+    :ivar Like:
+    :vartype Like: 6
+    :ivar Not:
+    :vartype Not: 7
+    :ivar Between:
+    :vartype Between: 8
+    :ivar InList:
+    :vartype InList: 9
+    :ivar And:
+    :vartype And: 10
+    :ivar Or:
+    :vartype Or: 11
+    :ivar Cast:
+    :vartype Cast: 12
+    :ivar InView:
+    :vartype InView: 13
+    :ivar OfType:
+    :vartype OfType: 14
+    :ivar RelatedTo:
+    :vartype RelatedTo: 15
+    :ivar BitwiseAnd:
+    :vartype BitwiseAnd: 16
+    :ivar BitwiseOr:
+    :vartype BitwiseOr: 17
     '''
     Equals = 0
     IsNull = 1
@@ -483,122 +498,130 @@ class FilterOperator(object):
     BitwiseAnd = 16
     BitwiseOr = 17
 
+
 class TimestampsToReturn(object):
     '''
-    :ivar Source: 
-    :vartype Source: 0 
-    :ivar Server: 
-    :vartype Server: 1 
-    :ivar Both: 
-    :vartype Both: 2 
-    :ivar Neither: 
-    :vartype Neither: 3 
+    :ivar Source:
+    :vartype Source: 0
+    :ivar Server:
+    :vartype Server: 1
+    :ivar Both:
+    :vartype Both: 2
+    :ivar Neither:
+    :vartype Neither: 3
     '''
     Source = 0
     Server = 1
     Both = 2
     Neither = 3
 
+
 class HistoryUpdateType(object):
     '''
-    :ivar Insert: 
-    :vartype Insert: 1 
-    :ivar Replace: 
-    :vartype Replace: 2 
-    :ivar Update: 
-    :vartype Update: 3 
-    :ivar Delete: 
-    :vartype Delete: 4 
+    :ivar Insert:
+    :vartype Insert: 1
+    :ivar Replace:
+    :vartype Replace: 2
+    :ivar Update:
+    :vartype Update: 3
+    :ivar Delete:
+    :vartype Delete: 4
     '''
     Insert = 1
     Replace = 2
     Update = 3
     Delete = 4
 
+
 class PerformUpdateType(object):
     '''
-    :ivar Insert: 
-    :vartype Insert: 1 
-    :ivar Replace: 
-    :vartype Replace: 2 
-    :ivar Update: 
-    :vartype Update: 3 
-    :ivar Remove: 
-    :vartype Remove: 4 
+    :ivar Insert:
+    :vartype Insert: 1
+    :ivar Replace:
+    :vartype Replace: 2
+    :ivar Update:
+    :vartype Update: 3
+    :ivar Remove:
+    :vartype Remove: 4
     '''
     Insert = 1
     Replace = 2
     Update = 3
     Remove = 4
 
+
 class MonitoringMode(object):
     '''
-    :ivar Disabled: 
-    :vartype Disabled: 0 
-    :ivar Sampling: 
-    :vartype Sampling: 1 
-    :ivar Reporting: 
-    :vartype Reporting: 2 
+    :ivar Disabled:
+    :vartype Disabled: 0
+    :ivar Sampling:
+    :vartype Sampling: 1
+    :ivar Reporting:
+    :vartype Reporting: 2
     '''
     Disabled = 0
     Sampling = 1
     Reporting = 2
 
+
 class DataChangeTrigger(object):
     '''
-    :ivar Status: 
-    :vartype Status: 0 
-    :ivar StatusValue: 
-    :vartype StatusValue: 1 
-    :ivar StatusValueTimestamp: 
-    :vartype StatusValueTimestamp: 2 
+    :ivar Status:
+    :vartype Status: 0
+    :ivar StatusValue:
+    :vartype StatusValue: 1
+    :ivar StatusValueTimestamp:
+    :vartype StatusValueTimestamp: 2
     '''
     Status = 0
     StatusValue = 1
     StatusValueTimestamp = 2
 
+
 class DeadbandType(object):
     '''
-    :ivar None_: 
-    :vartype None_: 0 
-    :ivar Absolute: 
-    :vartype Absolute: 1 
-    :ivar Percent: 
-    :vartype Percent: 2 
+    :ivar None_:
+    :vartype None_: 0
+    :ivar Absolute:
+    :vartype Absolute: 1
+    :ivar Percent:
+    :vartype Percent: 2
     '''
     None_ = 0
     Absolute = 1
     Percent = 2
 
+
 class EnumeratedTestType(object):
     '''
     A simple enumerated type used for testing.
-    
-    :ivar Red: 
-    :vartype Red: 1 
-    :ivar Yellow: 
-    :vartype Yellow: 4 
-    :ivar Green: 
-    :vartype Green: 5 
+
+    :ivar Red:
+    :vartype Red: 1
+    :ivar Yellow:
+    :vartype Yellow: 4
+    :ivar Green:
+    :vartype Green: 5
     '''
     Red = 1
     Yellow = 4
     Green = 5
 
+
 class RedundancySupport(object):
     '''
-    :ivar None_: 
-    :vartype None_: 0 
-    :ivar Cold: 
-    :vartype Cold: 1 
-    :ivar Warm: 
-    :vartype Warm: 2 
-    :ivar Hot: 
-    :vartype Hot: 3 
-    :ivar Transparent: 
-    :vartype Transparent: 4 
-    :ivar HotAndMirrored: 
-    :vartype HotAndMirrored: 5 
+    :ivar None_:
+    :vartype None_: 0
+    :ivar Cold:
+    :vartype Cold: 1
+    :ivar Warm:
+    :vartype Warm: 2
+    :ivar Hot:
+    :vartype Hot: 3
+    :ivar Transparent:
+    :vartype Transparent: 4
+    :ivar HotAndMirrored:
+    :vartype HotAndMirrored: 5
     '''
     None_ = 0
     Cold = 1
@@ -607,24 +630,25 @@ class RedundancySupport(object):
     Transparent = 4
     HotAndMirrored = 5
 
+
 class ServerState(object):
     '''
-    :ivar Running: 
-    :vartype Running: 0 
-    :ivar Failed: 
-    :vartype Failed: 1 
-    :ivar NoConfiguration: 
-    :vartype NoConfiguration: 2 
-    :ivar Suspended: 
-    :vartype Suspended: 3 
-    :ivar Shutdown: 
-    :vartype Shutdown: 4 
-    :ivar Test: 
-    :vartype Test: 5 
-    :ivar CommunicationFault: 
-    :vartype CommunicationFault: 6 
-    :ivar Unknown: 
-    :vartype Unknown: 7 
+    :ivar Running:
+    :vartype Running: 0
+    :ivar Failed:
+    :vartype Failed: 1
+    :ivar NoConfiguration:
+    :vartype NoConfiguration: 2
+    :ivar Suspended:
+    :vartype Suspended: 3
+    :ivar Shutdown:
+    :vartype Shutdown: 4
+    :ivar Test:
+    :vartype Test: 5
+    :ivar CommunicationFault:
+    :vartype CommunicationFault: 6
+    :ivar Unknown:
+    :vartype Unknown: 7
     '''
     Running = 0
     Failed = 1
@@ -635,18 +659,19 @@ class ServerState(object):
     CommunicationFault = 6
     Unknown = 7
 
+
 class ModelChangeStructureVerbMask(object):
     '''
-    :ivar NodeAdded: 
-    :vartype NodeAdded: 1 
-    :ivar NodeDeleted: 
-    :vartype NodeDeleted: 2 
-    :ivar ReferenceAdded: 
-    :vartype ReferenceAdded: 4 
-    :ivar ReferenceDeleted: 
-    :vartype ReferenceDeleted: 8 
-    :ivar DataTypeChanged: 
-    :vartype DataTypeChanged: 16 
+    :ivar NodeAdded:
+    :vartype NodeAdded: 1
+    :ivar NodeDeleted:
+    :vartype NodeDeleted: 2
+    :ivar ReferenceAdded:
+    :vartype ReferenceAdded: 4
+    :ivar ReferenceDeleted:
+    :vartype ReferenceDeleted: 8
+    :ivar DataTypeChanged:
+    :vartype DataTypeChanged: 16
     '''
     NodeAdded = 1
     NodeDeleted = 2
@@ -654,31 +679,33 @@ class ModelChangeStructureVerbMask(object):
     ReferenceDeleted = 8
     DataTypeChanged = 16
 
+
 class AxisScaleEnumeration(object):
     '''
-    :ivar Linear: 
-    :vartype Linear: 0 
-    :ivar Log: 
-    :vartype Log: 1 
-    :ivar Ln: 
-    :vartype Ln: 2 
+    :ivar Linear:
+    :vartype Linear: 0
+    :ivar Log:
+    :vartype Log: 1
+    :ivar Ln:
+    :vartype Ln: 2
     '''
     Linear = 0
     Log = 1
     Ln = 2
 
+
 class ExceptionDeviationFormat(object):
     '''
-    :ivar AbsoluteValue: 
-    :vartype AbsoluteValue: 0 
-    :ivar PercentOfValue: 
-    :vartype PercentOfValue: 1 
-    :ivar PercentOfRange: 
-    :vartype PercentOfRange: 2 
-    :ivar PercentOfEURange: 
-    :vartype PercentOfEURange: 3 
-    :ivar Unknown: 
-    :vartype Unknown: 4 
+    :ivar AbsoluteValue:
+    :vartype AbsoluteValue: 0
+    :ivar PercentOfValue:
+    :vartype PercentOfValue: 1
+    :ivar PercentOfRange:
+    :vartype PercentOfRange: 2
+    :ivar PercentOfEURange:
+    :vartype PercentOfEURange: 3
+    :ivar Unknown:
+    :vartype Unknown: 4
     '''
     AbsoluteValue = 0
     PercentOfValue = 1
@@ -686,25 +713,29 @@ class ExceptionDeviationFormat(object):
     PercentOfEURange = 3
     Unknown = 4
 
+
 class XmlElement(object):
     '''
     An XML element encoded as a UTF-8 string.
-    
-    :ivar Length: 
-    :vartype Length: Int32 
-    :ivar Value: 
-    :vartype Value: Char 
+
+    :ivar Length:
+    :vartype Length: Int32
+    :ivar Value:
+    :vartype Value: Char
     '''
-    
+
     __slots__ = [
         "Length",
         "Value",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Length = 0
         self.Value = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Int32', self.Length))
@@ -712,42 +743,44 @@ class XmlElement(object):
         for fieldname in self.Value:
             packet.append(pack_uatype('Char', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = XmlElement()
-        obj.Length = unpack_uatype('Int32', data)
-        obj.Value = unpack_uatype_array('Char', data)
-        return obj
-    
+        return XmlElement(data)
+
+    def _binary_init(self, data):
+        self.Length = unpack_uatype('Int32', data)
+        self.Value = unpack_uatype_array('Char', data)
+
     def __str__(self):
-        return 'XmlElement(' + 'Length:' + str(self.Length) + ', '  + \
+        return 'XmlElement(' + 'Length:' + str(self.Length) + ', ' + \
              'Value:' + str(self.Value) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DiagnosticInfo(object):
     '''
     A recursive structure containing diagnostic information associated with a status code.
-    
-    :ivar Encoding: 
-    :vartype Encoding: UInt8 
-    :ivar SymbolicId: 
-    :vartype SymbolicId: Int32 
-    :ivar NamespaceURI: 
-    :vartype NamespaceURI: Int32 
-    :ivar Locale: 
-    :vartype Locale: Int32 
-    :ivar LocalizedText: 
-    :vartype LocalizedText: Int32 
-    :ivar AdditionalInfo: 
-    :vartype AdditionalInfo: CharArray 
-    :ivar InnerStatusCode: 
-    :vartype InnerStatusCode: StatusCode 
-    :ivar InnerDiagnosticInfo: 
-    :vartype InnerDiagnosticInfo: DiagnosticInfo 
+
+    :ivar Encoding:
+    :vartype Encoding: UInt8
+    :ivar SymbolicId:
+    :vartype SymbolicId: Int32
+    :ivar NamespaceURI:
+    :vartype NamespaceURI: Int32
+    :ivar Locale:
+    :vartype Locale: Int32
+    :ivar LocalizedText:
+    :vartype LocalizedText: Int32
+    :ivar AdditionalInfo:
+    :vartype AdditionalInfo: CharArray
+    :ivar InnerStatusCode:
+    :vartype InnerStatusCode: StatusCode
+    :ivar InnerDiagnosticInfo:
+    :vartype InnerDiagnosticInfo: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "Encoding",
         "SymbolicId",
@@ -758,8 +791,11 @@ class DiagnosticInfo(object):
         "InnerStatusCode",
         "InnerDiagnosticInfo",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Encoding = 0
         self.SymbolicId = 0
         self.NamespaceURI = 0
@@ -768,7 +804,7 @@ class DiagnosticInfo(object):
         self.AdditionalInfo = b''
         self.InnerStatusCode = StatusCode()
         self.InnerDiagnosticInfo = None
-    
+
     def to_binary(self):
         packet = []
         if self.SymbolicId: self.Encoding |= (1 << 0)
@@ -779,68 +815,84 @@ class DiagnosticInfo(object):
         if self.InnerStatusCode: self.Encoding |= (1 << 5)
         if self.InnerDiagnosticInfo: self.Encoding |= (1 << 6)
         packet.append(pack_uatype('UInt8', self.Encoding))
-        if self.SymbolicId: 
+        if self.SymbolicId:
             packet.append(pack_uatype('Int32', self.SymbolicId))
-        if self.NamespaceURI: 
+        if self.NamespaceURI:
             packet.append(pack_uatype('Int32', self.NamespaceURI))
-        if self.Locale: 
+        if self.Locale:
             packet.append(pack_uatype('Int32', self.Locale))
-        if self.LocalizedText: 
+        if self.LocalizedText:
             packet.append(pack_uatype('Int32', self.LocalizedText))
-        if self.AdditionalInfo: 
+        if self.AdditionalInfo:
             packet.append(pack_uatype('CharArray', self.AdditionalInfo))
-        if self.InnerStatusCode: 
+        if self.InnerStatusCode:
             packet.append(self.InnerStatusCode.to_binary())
-        if self.InnerDiagnosticInfo: 
+        if self.InnerDiagnosticInfo:
             packet.append(self.InnerDiagnosticInfo.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DiagnosticInfo()
-        obj.Encoding = unpack_uatype('UInt8', data)
-        if obj.Encoding & (1 << 0):
-            obj.SymbolicId = unpack_uatype('Int32', data)
-        if obj.Encoding & (1 << 1):
-            obj.NamespaceURI = unpack_uatype('Int32', data)
-        if obj.Encoding & (1 << 2):
-            obj.Locale = unpack_uatype('Int32', data)
-        if obj.Encoding & (1 << 3):
-            obj.LocalizedText = unpack_uatype('Int32', data)
-        if obj.Encoding & (1 << 4):
-            obj.AdditionalInfo = unpack_uatype('CharArray', data)
-        if obj.Encoding & (1 << 5):
-            obj.InnerStatusCode = StatusCode.from_binary(data)
-        if obj.Encoding & (1 << 6):
-            obj.InnerDiagnosticInfo = DiagnosticInfo.from_binary(data)
-        return obj
-    
+        return DiagnosticInfo(data)
+
+    def _binary_init(self, data):
+        self.Encoding = unpack_uatype('UInt8', data)
+        if self.Encoding & (1 << 0):
+            self.SymbolicId = unpack_uatype('Int32', data)
+        else:
+            self.SymbolicId = 0
+        if self.Encoding & (1 << 1):
+            self.NamespaceURI = unpack_uatype('Int32', data)
+        else:
+            self.NamespaceURI = 0
+        if self.Encoding & (1 << 2):
+            self.Locale = unpack_uatype('Int32', data)
+        else:
+            self.Locale = 0
+        if self.Encoding & (1 << 3):
+            self.LocalizedText = unpack_uatype('Int32', data)
+        else:
+            self.LocalizedText = 0
+        if self.Encoding & (1 << 4):
+            self.AdditionalInfo = unpack_uatype('CharArray', data)
+        else:
+            self.AdditionalInfo = b''
+        if self.Encoding & (1 << 5):
+            self.InnerStatusCode = StatusCode.from_binary(data)
+        else:
+            self.InnerStatusCode = StatusCode()
+        if self.Encoding & (1 << 6):
+            self.InnerDiagnosticInfo = DiagnosticInfo.from_binary(data)
+        else:
+            self.InnerDiagnosticInfo = None
+
     def __str__(self):
-        return 'DiagnosticInfo(' + 'Encoding:' + str(self.Encoding) + ', '  + \
-             'SymbolicId:' + str(self.SymbolicId) + ', '  + \
-             'NamespaceURI:' + str(self.NamespaceURI) + ', '  + \
-             'Locale:' + str(self.Locale) + ', '  + \
-             'LocalizedText:' + str(self.LocalizedText) + ', '  + \
-             'AdditionalInfo:' + str(self.AdditionalInfo) + ', '  + \
-             'InnerStatusCode:' + str(self.InnerStatusCode) + ', '  + \
+        return 'DiagnosticInfo(' + 'Encoding:' + str(self.Encoding) + ', ' + \
+             'SymbolicId:' + str(self.SymbolicId) + ', ' + \
+             'NamespaceURI:' + str(self.NamespaceURI) + ', ' + \
+             'Locale:' + str(self.Locale) + ', ' + \
+             'LocalizedText:' + str(self.LocalizedText) + ', ' + \
+             'AdditionalInfo:' + str(self.AdditionalInfo) + ', ' + \
+             'InnerStatusCode:' + str(self.InnerStatusCode) + ', ' + \
              'InnerDiagnosticInfo:' + str(self.InnerDiagnosticInfo) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class TrustListDataType(object):
     '''
-    :ivar SpecifiedLists: 
-    :vartype SpecifiedLists: UInt32 
-    :ivar TrustedCertificates: 
-    :vartype TrustedCertificates: ByteString 
-    :ivar TrustedCrls: 
-    :vartype TrustedCrls: ByteString 
-    :ivar IssuerCertificates: 
-    :vartype IssuerCertificates: ByteString 
-    :ivar IssuerCrls: 
-    :vartype IssuerCrls: ByteString 
+    :ivar SpecifiedLists:
+    :vartype SpecifiedLists: UInt32
+    :ivar TrustedCertificates:
+    :vartype TrustedCertificates: ByteString
+    :ivar TrustedCrls:
+    :vartype TrustedCrls: ByteString
+    :ivar IssuerCertificates:
+    :vartype IssuerCertificates: ByteString
+    :ivar IssuerCrls:
+    :vartype IssuerCrls: ByteString
     '''
-    
+
     __slots__ = [
         "SpecifiedLists",
         "TrustedCertificates",
@@ -848,14 +900,17 @@ class TrustListDataType(object):
         "IssuerCertificates",
         "IssuerCrls",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SpecifiedLists = 0
         self.TrustedCertificates = []
         self.TrustedCrls = []
         self.IssuerCertificates = []
         self.IssuerCrls = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SpecifiedLists))
@@ -872,42 +927,44 @@ class TrustListDataType(object):
         for fieldname in self.IssuerCrls:
             packet.append(pack_uatype('ByteString', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = TrustListDataType()
-        obj.SpecifiedLists = unpack_uatype('UInt32', data)
-        obj.TrustedCertificates = unpack_uatype_array('ByteString', data)
-        obj.TrustedCrls = unpack_uatype_array('ByteString', data)
-        obj.IssuerCertificates = unpack_uatype_array('ByteString', data)
-        obj.IssuerCrls = unpack_uatype_array('ByteString', data)
-        return obj
-    
+        return TrustListDataType(data)
+
+    def _binary_init(self, data):
+        self.SpecifiedLists = unpack_uatype('UInt32', data)
+        self.TrustedCertificates = unpack_uatype_array('ByteString', data)
+        self.TrustedCrls = unpack_uatype_array('ByteString', data)
+        self.IssuerCertificates = unpack_uatype_array('ByteString', data)
+        self.IssuerCrls = unpack_uatype_array('ByteString', data)
+
     def __str__(self):
-        return 'TrustListDataType(' + 'SpecifiedLists:' + str(self.SpecifiedLists) + ', '  + \
-             'TrustedCertificates:' + str(self.TrustedCertificates) + ', '  + \
-             'TrustedCrls:' + str(self.TrustedCrls) + ', '  + \
-             'IssuerCertificates:' + str(self.IssuerCertificates) + ', '  + \
+        return 'TrustListDataType(' + 'SpecifiedLists:' + str(self.SpecifiedLists) + ', ' + \
+             'TrustedCertificates:' + str(self.TrustedCertificates) + ', ' + \
+             'TrustedCrls:' + str(self.TrustedCrls) + ', ' + \
+             'IssuerCertificates:' + str(self.IssuerCertificates) + ', ' + \
              'IssuerCrls:' + str(self.IssuerCrls) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class Argument(object):
     '''
     An argument for a method.
-    
-    :ivar Name: 
-    :vartype Name: String 
-    :ivar DataType: 
-    :vartype DataType: NodeId 
-    :ivar ValueRank: 
-    :vartype ValueRank: Int32 
-    :ivar ArrayDimensions: 
-    :vartype ArrayDimensions: UInt32 
-    :ivar Description: 
-    :vartype Description: LocalizedText 
+
+    :ivar Name:
+    :vartype Name: String
+    :ivar DataType:
+    :vartype DataType: NodeId
+    :ivar ValueRank:
+    :vartype ValueRank: Int32
+    :ivar ArrayDimensions:
+    :vartype ArrayDimensions: UInt32
+    :ivar Description:
+    :vartype Description: LocalizedText
     '''
-    
+
     __slots__ = [
         "Name",
         "DataType",
@@ -915,14 +972,17 @@ class Argument(object):
         "ArrayDimensions",
         "Description",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Name = ''
         self.DataType = NodeId()
         self.ValueRank = 0
         self.ArrayDimensions = []
         self.Description = LocalizedText()
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.Name))
@@ -933,191 +993,213 @@ class Argument(object):
             packet.append(pack_uatype('UInt32', fieldname))
         packet.append(self.Description.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = Argument()
-        obj.Name = unpack_uatype('String', data)
-        obj.DataType = NodeId.from_binary(data)
-        obj.ValueRank = unpack_uatype('Int32', data)
-        obj.ArrayDimensions = unpack_uatype_array('UInt32', data)
-        obj.Description = LocalizedText.from_binary(data)
-        return obj
-    
+        return Argument(data)
+
+    def _binary_init(self, data):
+        self.Name = unpack_uatype('String', data)
+        self.DataType = NodeId.from_binary(data)
+        self.ValueRank = unpack_uatype('Int32', data)
+        self.ArrayDimensions = unpack_uatype_array('UInt32', data)
+        self.Description = LocalizedText.from_binary(data)
+
     def __str__(self):
-        return 'Argument(' + 'Name:' + str(self.Name) + ', '  + \
-             'DataType:' + str(self.DataType) + ', '  + \
-             'ValueRank:' + str(self.ValueRank) + ', '  + \
-             'ArrayDimensions:' + str(self.ArrayDimensions) + ', '  + \
+        return 'Argument(' + 'Name:' + str(self.Name) + ', ' + \
+             'DataType:' + str(self.DataType) + ', ' + \
+             'ValueRank:' + str(self.ValueRank) + ', ' + \
+             'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
              'Description:' + str(self.Description) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class EnumValueType(object):
     '''
     A mapping between a value of an enumerated type and a name and description.
-    
-    :ivar Value: 
-    :vartype Value: Int64 
-    :ivar DisplayName: 
-    :vartype DisplayName: LocalizedText 
-    :ivar Description: 
-    :vartype Description: LocalizedText 
+
+    :ivar Value:
+    :vartype Value: Int64
+    :ivar DisplayName:
+    :vartype DisplayName: LocalizedText
+    :ivar Description:
+    :vartype Description: LocalizedText
     '''
-    
+
     __slots__ = [
         "Value",
         "DisplayName",
         "Description",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Value = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Int64', self.Value))
         packet.append(self.DisplayName.to_binary())
         packet.append(self.Description.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = EnumValueType()
-        obj.Value = unpack_uatype('Int64', data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        return obj
-    
+        return EnumValueType(data)
+
+    def _binary_init(self, data):
+        self.Value = unpack_uatype('Int64', data)
+        self.DisplayName = LocalizedText.from_binary(data)
+        self.Description = LocalizedText.from_binary(data)
+
     def __str__(self):
-        return 'EnumValueType(' + 'Value:' + str(self.Value) + ', '  + \
-             'DisplayName:' + str(self.DisplayName) + ', '  + \
+        return 'EnumValueType(' + 'Value:' + str(self.Value) + ', ' + \
+             'DisplayName:' + str(self.DisplayName) + ', ' + \
              'Description:' + str(self.Description) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class OptionSet(object):
     '''
     This abstract Structured DataType is the base DataType for all DataTypes representing a bit mask.
-    
-    :ivar Value: 
-    :vartype Value: ByteString 
-    :ivar ValidBits: 
-    :vartype ValidBits: ByteString 
+
+    :ivar Value:
+    :vartype Value: ByteString
+    :ivar ValidBits:
+    :vartype ValidBits: ByteString
     '''
-    
+
     __slots__ = [
         "Value",
         "ValidBits",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Value = b''
         self.ValidBits = b''
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('ByteString', self.Value))
         packet.append(pack_uatype('ByteString', self.ValidBits))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = OptionSet()
-        obj.Value = unpack_uatype('ByteString', data)
-        obj.ValidBits = unpack_uatype('ByteString', data)
-        return obj
-    
+        return OptionSet(data)
+
+    def _binary_init(self, data):
+        self.Value = unpack_uatype('ByteString', data)
+        self.ValidBits = unpack_uatype('ByteString', data)
+
     def __str__(self):
-        return 'OptionSet(' + 'Value:' + str(self.Value) + ', '  + \
+        return 'OptionSet(' + 'Value:' + str(self.Value) + ', ' + \
              'ValidBits:' + str(self.ValidBits) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class Union(object):
     '''
     This abstract DataType is the base DataType for all union DataTypes.
-    
+
     '''
-    
+
     __slots__ = [
     ]
-    
-    def __init__(self):
-        pass
-    
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
+
     def to_binary(self):
         packet = []
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = Union()
-        return obj
-    
+        return Union(data)
+
+    def _binary_init(self, data):
+        pass
+
     def __str__(self):
         return 'Union(' +  + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class TimeZoneDataType(object):
     '''
-    :ivar Offset: 
-    :vartype Offset: Int16 
-    :ivar DaylightSavingInOffset: 
-    :vartype DaylightSavingInOffset: Boolean 
+    :ivar Offset:
+    :vartype Offset: Int16
+    :ivar DaylightSavingInOffset:
+    :vartype DaylightSavingInOffset: Boolean
     '''
-    
+
     __slots__ = [
         "Offset",
         "DaylightSavingInOffset",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Offset = 0
         self.DaylightSavingInOffset = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Int16', self.Offset))
         packet.append(pack_uatype('Boolean', self.DaylightSavingInOffset))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = TimeZoneDataType()
-        obj.Offset = unpack_uatype('Int16', data)
-        obj.DaylightSavingInOffset = unpack_uatype('Boolean', data)
-        return obj
-    
+        return TimeZoneDataType(data)
+
+    def _binary_init(self, data):
+        self.Offset = unpack_uatype('Int16', data)
+        self.DaylightSavingInOffset = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'TimeZoneDataType(' + 'Offset:' + str(self.Offset) + ', '  + \
+        return 'TimeZoneDataType(' + 'Offset:' + str(self.Offset) + ', ' + \
              'DaylightSavingInOffset:' + str(self.DaylightSavingInOffset) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ApplicationDescription(object):
     '''
     Describes an application and how to find it.
-    
-    :ivar ApplicationUri: 
-    :vartype ApplicationUri: String 
-    :ivar ProductUri: 
-    :vartype ProductUri: String 
-    :ivar ApplicationName: 
-    :vartype ApplicationName: LocalizedText 
-    :ivar ApplicationType: 
-    :vartype ApplicationType: ApplicationType 
-    :ivar GatewayServerUri: 
-    :vartype GatewayServerUri: String 
-    :ivar DiscoveryProfileUri: 
-    :vartype DiscoveryProfileUri: String 
-    :ivar DiscoveryUrls: 
-    :vartype DiscoveryUrls: String 
+
+    :ivar ApplicationUri:
+    :vartype ApplicationUri: String
+    :ivar ProductUri:
+    :vartype ProductUri: String
+    :ivar ApplicationName:
+    :vartype ApplicationName: LocalizedText
+    :ivar ApplicationType:
+    :vartype ApplicationType: ApplicationType
+    :ivar GatewayServerUri:
+    :vartype GatewayServerUri: String
+    :ivar DiscoveryProfileUri:
+    :vartype DiscoveryProfileUri: String
+    :ivar DiscoveryUrls:
+    :vartype DiscoveryUrls: String
     '''
-    
+
     __slots__ = [
         "ApplicationUri",
         "ProductUri",
@@ -1127,8 +1209,11 @@ class ApplicationDescription(object):
         "DiscoveryProfileUri",
         "DiscoveryUrls",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ApplicationUri = ''
         self.ProductUri = ''
         self.ApplicationName = LocalizedText()
@@ -1136,7 +1221,7 @@ class ApplicationDescription(object):
         self.GatewayServerUri = ''
         self.DiscoveryProfileUri = ''
         self.DiscoveryUrls = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.ApplicationUri))
@@ -1149,50 +1234,52 @@ class ApplicationDescription(object):
         for fieldname in self.DiscoveryUrls:
             packet.append(pack_uatype('String', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ApplicationDescription()
-        obj.ApplicationUri = unpack_uatype('String', data)
-        obj.ProductUri = unpack_uatype('String', data)
-        obj.ApplicationName = LocalizedText.from_binary(data)
-        obj.ApplicationType = unpack_uatype('UInt32', data)
-        obj.GatewayServerUri = unpack_uatype('String', data)
-        obj.DiscoveryProfileUri = unpack_uatype('String', data)
-        obj.DiscoveryUrls = unpack_uatype_array('String', data)
-        return obj
-    
+        return ApplicationDescription(data)
+
+    def _binary_init(self, data):
+        self.ApplicationUri = unpack_uatype('String', data)
+        self.ProductUri = unpack_uatype('String', data)
+        self.ApplicationName = LocalizedText.from_binary(data)
+        self.ApplicationType = unpack_uatype('UInt32', data)
+        self.GatewayServerUri = unpack_uatype('String', data)
+        self.DiscoveryProfileUri = unpack_uatype('String', data)
+        self.DiscoveryUrls = unpack_uatype_array('String', data)
+
     def __str__(self):
-        return 'ApplicationDescription(' + 'ApplicationUri:' + str(self.ApplicationUri) + ', '  + \
-             'ProductUri:' + str(self.ProductUri) + ', '  + \
-             'ApplicationName:' + str(self.ApplicationName) + ', '  + \
-             'ApplicationType:' + str(self.ApplicationType) + ', '  + \
-             'GatewayServerUri:' + str(self.GatewayServerUri) + ', '  + \
-             'DiscoveryProfileUri:' + str(self.DiscoveryProfileUri) + ', '  + \
+        return 'ApplicationDescription(' + 'ApplicationUri:' + str(self.ApplicationUri) + ', ' + \
+             'ProductUri:' + str(self.ProductUri) + ', ' + \
+             'ApplicationName:' + str(self.ApplicationName) + ', ' + \
+             'ApplicationType:' + str(self.ApplicationType) + ', ' + \
+             'GatewayServerUri:' + str(self.GatewayServerUri) + ', ' + \
+             'DiscoveryProfileUri:' + str(self.DiscoveryProfileUri) + ', ' + \
              'DiscoveryUrls:' + str(self.DiscoveryUrls) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RequestHeader(object):
     '''
     The header passed with every server request.
-    
-    :ivar AuthenticationToken: 
-    :vartype AuthenticationToken: NodeId 
-    :ivar Timestamp: 
-    :vartype Timestamp: DateTime 
-    :ivar RequestHandle: 
-    :vartype RequestHandle: UInt32 
-    :ivar ReturnDiagnostics: 
-    :vartype ReturnDiagnostics: UInt32 
-    :ivar AuditEntryId: 
-    :vartype AuditEntryId: String 
-    :ivar TimeoutHint: 
-    :vartype TimeoutHint: UInt32 
-    :ivar AdditionalHeader: 
-    :vartype AdditionalHeader: ExtensionObject 
+
+    :ivar AuthenticationToken:
+    :vartype AuthenticationToken: NodeId
+    :ivar Timestamp:
+    :vartype Timestamp: DateTime
+    :ivar RequestHandle:
+    :vartype RequestHandle: UInt32
+    :ivar ReturnDiagnostics:
+    :vartype ReturnDiagnostics: UInt32
+    :ivar AuditEntryId:
+    :vartype AuditEntryId: String
+    :ivar TimeoutHint:
+    :vartype TimeoutHint: UInt32
+    :ivar AdditionalHeader:
+    :vartype AdditionalHeader: ExtensionObject
     '''
-    
+
     __slots__ = [
         "AuthenticationToken",
         "Timestamp",
@@ -1202,8 +1289,11 @@ class RequestHeader(object):
         "TimeoutHint",
         "AdditionalHeader",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.AuthenticationToken = NodeId()
         self.Timestamp = datetime.now()
         self.RequestHandle = 0
@@ -1211,7 +1301,7 @@ class RequestHeader(object):
         self.AuditEntryId = ''
         self.TimeoutHint = 0
         self.AdditionalHeader = None
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.AuthenticationToken.to_binary())
@@ -1222,48 +1312,50 @@ class RequestHeader(object):
         packet.append(pack_uatype('UInt32', self.TimeoutHint))
         packet.append(extensionobject_to_binary(self.AdditionalHeader))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RequestHeader()
-        obj.AuthenticationToken = NodeId.from_binary(data)
-        obj.Timestamp = unpack_uatype('DateTime', data)
-        obj.RequestHandle = unpack_uatype('UInt32', data)
-        obj.ReturnDiagnostics = unpack_uatype('UInt32', data)
-        obj.AuditEntryId = unpack_uatype('String', data)
-        obj.TimeoutHint = unpack_uatype('UInt32', data)
-        obj.AdditionalHeader = extensionobject_from_binary(data)
-        return obj
-    
+        return RequestHeader(data)
+
+    def _binary_init(self, data):
+        self.AuthenticationToken = NodeId.from_binary(data)
+        self.Timestamp = unpack_uatype('DateTime', data)
+        self.RequestHandle = unpack_uatype('UInt32', data)
+        self.ReturnDiagnostics = unpack_uatype('UInt32', data)
+        self.AuditEntryId = unpack_uatype('String', data)
+        self.TimeoutHint = unpack_uatype('UInt32', data)
+        self.AdditionalHeader = extensionobject_from_binary(data)
+
     def __str__(self):
-        return 'RequestHeader(' + 'AuthenticationToken:' + str(self.AuthenticationToken) + ', '  + \
-             'Timestamp:' + str(self.Timestamp) + ', '  + \
-             'RequestHandle:' + str(self.RequestHandle) + ', '  + \
-             'ReturnDiagnostics:' + str(self.ReturnDiagnostics) + ', '  + \
-             'AuditEntryId:' + str(self.AuditEntryId) + ', '  + \
-             'TimeoutHint:' + str(self.TimeoutHint) + ', '  + \
+        return 'RequestHeader(' + 'AuthenticationToken:' + str(self.AuthenticationToken) + ', ' + \
+             'Timestamp:' + str(self.Timestamp) + ', ' + \
+             'RequestHandle:' + str(self.RequestHandle) + ', ' + \
+             'ReturnDiagnostics:' + str(self.ReturnDiagnostics) + ', ' + \
+             'AuditEntryId:' + str(self.AuditEntryId) + ', ' + \
+             'TimeoutHint:' + str(self.TimeoutHint) + ', ' + \
              'AdditionalHeader:' + str(self.AdditionalHeader) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ResponseHeader(object):
     '''
     The header passed with every server response.
-    
-    :ivar Timestamp: 
-    :vartype Timestamp: DateTime 
-    :ivar RequestHandle: 
-    :vartype RequestHandle: UInt32 
-    :ivar ServiceResult: 
-    :vartype ServiceResult: StatusCode 
-    :ivar ServiceDiagnostics: 
-    :vartype ServiceDiagnostics: DiagnosticInfo 
-    :ivar StringTable: 
-    :vartype StringTable: String 
-    :ivar AdditionalHeader: 
-    :vartype AdditionalHeader: ExtensionObject 
+
+    :ivar Timestamp:
+    :vartype Timestamp: DateTime
+    :ivar RequestHandle:
+    :vartype RequestHandle: UInt32
+    :ivar ServiceResult:
+    :vartype ServiceResult: StatusCode
+    :ivar ServiceDiagnostics:
+    :vartype ServiceDiagnostics: DiagnosticInfo
+    :ivar StringTable:
+    :vartype StringTable: String
+    :ivar AdditionalHeader:
+    :vartype AdditionalHeader: ExtensionObject
     '''
-    
+
     __slots__ = [
         "Timestamp",
         "RequestHandle",
@@ -1272,15 +1364,18 @@ class ResponseHeader(object):
         "StringTable",
         "AdditionalHeader",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Timestamp = datetime.now()
         self.RequestHandle = 0
         self.ServiceResult = StatusCode()
         self.ServiceDiagnostics = DiagnosticInfo()
         self.StringTable = []
         self.AdditionalHeader = None
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('DateTime', self.Timestamp))
@@ -1292,87 +1387,97 @@ class ResponseHeader(object):
             packet.append(pack_uatype('String', fieldname))
         packet.append(extensionobject_to_binary(self.AdditionalHeader))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ResponseHeader()
-        obj.Timestamp = unpack_uatype('DateTime', data)
-        obj.RequestHandle = unpack_uatype('UInt32', data)
-        obj.ServiceResult = StatusCode.from_binary(data)
-        obj.ServiceDiagnostics = DiagnosticInfo.from_binary(data)
-        obj.StringTable = unpack_uatype_array('String', data)
-        obj.AdditionalHeader = extensionobject_from_binary(data)
-        return obj
-    
+        return ResponseHeader(data)
+
+    def _binary_init(self, data):
+        self.Timestamp = unpack_uatype('DateTime', data)
+        self.RequestHandle = unpack_uatype('UInt32', data)
+        self.ServiceResult = StatusCode.from_binary(data)
+        self.ServiceDiagnostics = DiagnosticInfo.from_binary(data)
+        self.StringTable = unpack_uatype_array('String', data)
+        self.AdditionalHeader = extensionobject_from_binary(data)
+
     def __str__(self):
-        return 'ResponseHeader(' + 'Timestamp:' + str(self.Timestamp) + ', '  + \
-             'RequestHandle:' + str(self.RequestHandle) + ', '  + \
-             'ServiceResult:' + str(self.ServiceResult) + ', '  + \
-             'ServiceDiagnostics:' + str(self.ServiceDiagnostics) + ', '  + \
-             'StringTable:' + str(self.StringTable) + ', '  + \
+        return 'ResponseHeader(' + 'Timestamp:' + str(self.Timestamp) + ', ' + \
+             'RequestHandle:' + str(self.RequestHandle) + ', ' + \
+             'ServiceResult:' + str(self.ServiceResult) + ', ' + \
+             'ServiceDiagnostics:' + str(self.ServiceDiagnostics) + ', ' + \
+             'StringTable:' + str(self.StringTable) + ', ' + \
              'AdditionalHeader:' + str(self.AdditionalHeader) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ServiceFault(object):
     '''
     The response returned by all services when there is a service level error.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.ServiceFault_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ServiceFault()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        return obj
-    
+        return ServiceFault(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+
     def __str__(self):
-        return 'ServiceFault(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+        return 'ServiceFault(' + 'TypeId:' + str(self.TypeId) + ', ' + \
              'ResponseHeader:' + str(self.ResponseHeader) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class FindServersParameters(object):
     '''
-    :ivar EndpointUrl: 
-    :vartype EndpointUrl: String 
-    :ivar LocaleIds: 
-    :vartype LocaleIds: String 
-    :ivar ServerUris: 
-    :vartype ServerUris: String 
+    :ivar EndpointUrl:
+    :vartype EndpointUrl: String
+    :ivar LocaleIds:
+    :vartype LocaleIds: String
+    :ivar ServerUris:
+    :vartype ServerUris: String
     '''
-    
+
     __slots__ = [
         "EndpointUrl",
         "LocaleIds",
         "ServerUris",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.EndpointUrl = ''
         self.LocaleIds = []
         self.ServerUris = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.EndpointUrl))
@@ -1383,90 +1488,100 @@ class FindServersParameters(object):
         for fieldname in self.ServerUris:
             packet.append(pack_uatype('String', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = FindServersParameters()
-        obj.EndpointUrl = unpack_uatype('String', data)
-        obj.LocaleIds = unpack_uatype_array('String', data)
-        obj.ServerUris = unpack_uatype_array('String', data)
-        return obj
-    
+        return FindServersParameters(data)
+
+    def _binary_init(self, data):
+        self.EndpointUrl = unpack_uatype('String', data)
+        self.LocaleIds = unpack_uatype_array('String', data)
+        self.ServerUris = unpack_uatype_array('String', data)
+
     def __str__(self):
-        return 'FindServersParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', '  + \
-             'LocaleIds:' + str(self.LocaleIds) + ', '  + \
+        return 'FindServersParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
+             'LocaleIds:' + str(self.LocaleIds) + ', ' + \
              'ServerUris:' + str(self.ServerUris) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class FindServersRequest(object):
     '''
     Finds the servers known to the discovery server.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: FindServersParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: FindServersParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.FindServersRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = FindServersParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = FindServersRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = FindServersParameters.from_binary(data)
-        return obj
-    
+        return FindServersRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = FindServersParameters.from_binary(data)
+
     def __str__(self):
-        return 'FindServersRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'FindServersRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class FindServersResponse(object):
     '''
     Finds the servers known to the discovery server.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Servers: 
-    :vartype Servers: ApplicationDescription 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Servers:
+    :vartype Servers: ApplicationDescription
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Servers",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.FindServersResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Servers = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -1475,50 +1590,57 @@ class FindServersResponse(object):
         for fieldname in self.Servers:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = FindServersResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return FindServersResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Servers.append(ApplicationDescription.from_binary(data))
-        return obj
-    
+                array.append(ApplicationDescription.from_binary(data))
+        self.Servers = array
+
     def __str__(self):
-        return 'FindServersResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'FindServersResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Servers:' + str(self.Servers) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ServerOnNetwork(object):
     '''
-    :ivar RecordId: 
-    :vartype RecordId: UInt32 
-    :ivar ServerName: 
-    :vartype ServerName: String 
-    :ivar DiscoveryUrl: 
-    :vartype DiscoveryUrl: String 
-    :ivar ServerCapabilities: 
-    :vartype ServerCapabilities: String 
+    :ivar RecordId:
+    :vartype RecordId: UInt32
+    :ivar ServerName:
+    :vartype ServerName: String
+    :ivar DiscoveryUrl:
+    :vartype DiscoveryUrl: String
+    :ivar ServerCapabilities:
+    :vartype ServerCapabilities: String
     '''
-    
+
     __slots__ = [
         "RecordId",
         "ServerName",
         "DiscoveryUrl",
         "ServerCapabilities",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.RecordId = 0
         self.ServerName = ''
         self.DiscoveryUrl = ''
         self.ServerCapabilities = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.RecordId))
@@ -1528,45 +1650,50 @@ class ServerOnNetwork(object):
         for fieldname in self.ServerCapabilities:
             packet.append(pack_uatype('String', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ServerOnNetwork()
-        obj.RecordId = unpack_uatype('UInt32', data)
-        obj.ServerName = unpack_uatype('String', data)
-        obj.DiscoveryUrl = unpack_uatype('String', data)
-        obj.ServerCapabilities = unpack_uatype_array('String', data)
-        return obj
-    
+        return ServerOnNetwork(data)
+
+    def _binary_init(self, data):
+        self.RecordId = unpack_uatype('UInt32', data)
+        self.ServerName = unpack_uatype('String', data)
+        self.DiscoveryUrl = unpack_uatype('String', data)
+        self.ServerCapabilities = unpack_uatype_array('String', data)
+
     def __str__(self):
-        return 'ServerOnNetwork(' + 'RecordId:' + str(self.RecordId) + ', '  + \
-             'ServerName:' + str(self.ServerName) + ', '  + \
-             'DiscoveryUrl:' + str(self.DiscoveryUrl) + ', '  + \
+        return 'ServerOnNetwork(' + 'RecordId:' + str(self.RecordId) + ', ' + \
+             'ServerName:' + str(self.ServerName) + ', ' + \
+             'DiscoveryUrl:' + str(self.DiscoveryUrl) + ', ' + \
              'ServerCapabilities:' + str(self.ServerCapabilities) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class FindServersOnNetworkParameters(object):
     '''
-    :ivar StartingRecordId: 
-    :vartype StartingRecordId: UInt32 
-    :ivar MaxRecordsToReturn: 
-    :vartype MaxRecordsToReturn: UInt32 
-    :ivar ServerCapabilityFilter: 
-    :vartype ServerCapabilityFilter: String 
+    :ivar StartingRecordId:
+    :vartype StartingRecordId: UInt32
+    :ivar MaxRecordsToReturn:
+    :vartype MaxRecordsToReturn: UInt32
+    :ivar ServerCapabilityFilter:
+    :vartype ServerCapabilityFilter: String
     '''
-    
+
     __slots__ = [
         "StartingRecordId",
         "MaxRecordsToReturn",
         "ServerCapabilityFilter",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StartingRecordId = 0
         self.MaxRecordsToReturn = 0
         self.ServerCapabilityFilter = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.StartingRecordId))
@@ -1575,82 +1702,92 @@ class FindServersOnNetworkParameters(object):
         for fieldname in self.ServerCapabilityFilter:
             packet.append(pack_uatype('String', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = FindServersOnNetworkParameters()
-        obj.StartingRecordId = unpack_uatype('UInt32', data)
-        obj.MaxRecordsToReturn = unpack_uatype('UInt32', data)
-        obj.ServerCapabilityFilter = unpack_uatype_array('String', data)
-        return obj
-    
+        return FindServersOnNetworkParameters(data)
+
+    def _binary_init(self, data):
+        self.StartingRecordId = unpack_uatype('UInt32', data)
+        self.MaxRecordsToReturn = unpack_uatype('UInt32', data)
+        self.ServerCapabilityFilter = unpack_uatype_array('String', data)
+
     def __str__(self):
-        return 'FindServersOnNetworkParameters(' + 'StartingRecordId:' + str(self.StartingRecordId) + ', '  + \
-             'MaxRecordsToReturn:' + str(self.MaxRecordsToReturn) + ', '  + \
+        return 'FindServersOnNetworkParameters(' + 'StartingRecordId:' + str(self.StartingRecordId) + ', ' + \
+             'MaxRecordsToReturn:' + str(self.MaxRecordsToReturn) + ', ' + \
              'ServerCapabilityFilter:' + str(self.ServerCapabilityFilter) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class FindServersOnNetworkRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: FindServersOnNetworkParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: FindServersOnNetworkParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.FindServersOnNetworkRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = FindServersOnNetworkParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = FindServersOnNetworkRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = FindServersOnNetworkParameters.from_binary(data)
-        return obj
-    
+        return FindServersOnNetworkRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = FindServersOnNetworkParameters.from_binary(data)
+
     def __str__(self):
-        return 'FindServersOnNetworkRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'FindServersOnNetworkRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class FindServersOnNetworkResult(object):
     '''
-    :ivar LastCounterResetTime: 
-    :vartype LastCounterResetTime: DateTime 
-    :ivar Servers: 
-    :vartype Servers: ServerOnNetwork 
+    :ivar LastCounterResetTime:
+    :vartype LastCounterResetTime: DateTime
+    :ivar Servers:
+    :vartype Servers: ServerOnNetwork
     '''
-    
+
     __slots__ = [
         "LastCounterResetTime",
         "Servers",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.LastCounterResetTime = datetime.now()
         self.Servers = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('DateTime', self.LastCounterResetTime))
@@ -1658,82 +1795,91 @@ class FindServersOnNetworkResult(object):
         for fieldname in self.Servers:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = FindServersOnNetworkResult()
-        obj.LastCounterResetTime = unpack_uatype('DateTime', data)
+        return FindServersOnNetworkResult(data)
+
+    def _binary_init(self, data):
+        self.LastCounterResetTime = unpack_uatype('DateTime', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Servers.append(ServerOnNetwork.from_binary(data))
-        return obj
-    
+                array.append(ServerOnNetwork.from_binary(data))
+        self.Servers = array
+
     def __str__(self):
-        return 'FindServersOnNetworkResult(' + 'LastCounterResetTime:' + str(self.LastCounterResetTime) + ', '  + \
+        return 'FindServersOnNetworkResult(' + 'LastCounterResetTime:' + str(self.LastCounterResetTime) + ', ' + \
              'Servers:' + str(self.Servers) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class FindServersOnNetworkResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: FindServersOnNetworkResult 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: FindServersOnNetworkResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.FindServersOnNetworkResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = FindServersOnNetworkResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = FindServersOnNetworkResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = FindServersOnNetworkResult.from_binary(data)
-        return obj
-    
+        return FindServersOnNetworkResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = FindServersOnNetworkResult.from_binary(data)
+
     def __str__(self):
-        return 'FindServersOnNetworkResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'FindServersOnNetworkResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class UserTokenPolicy(object):
     '''
     Describes a user token that can be used with a server.
-    
-    :ivar PolicyId: 
-    :vartype PolicyId: String 
-    :ivar TokenType: 
-    :vartype TokenType: UserTokenType 
-    :ivar IssuedTokenType: 
-    :vartype IssuedTokenType: String 
-    :ivar IssuerEndpointUrl: 
-    :vartype IssuerEndpointUrl: String 
-    :ivar SecurityPolicyUri: 
-    :vartype SecurityPolicyUri: String 
+
+    :ivar PolicyId:
+    :vartype PolicyId: String
+    :ivar TokenType:
+    :vartype TokenType: UserTokenType
+    :ivar IssuedTokenType:
+    :vartype IssuedTokenType: String
+    :ivar IssuerEndpointUrl:
+    :vartype IssuerEndpointUrl: String
+    :ivar SecurityPolicyUri:
+    :vartype SecurityPolicyUri: String
     '''
-    
+
     __slots__ = [
         "PolicyId",
         "TokenType",
@@ -1741,14 +1887,17 @@ class UserTokenPolicy(object):
         "IssuerEndpointUrl",
         "SecurityPolicyUri",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.PolicyId = ''
         self.TokenType = 0
         self.IssuedTokenType = ''
         self.IssuerEndpointUrl = ''
         self.SecurityPolicyUri = ''
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.PolicyId))
@@ -1757,48 +1906,50 @@ class UserTokenPolicy(object):
         packet.append(pack_uatype('String', self.IssuerEndpointUrl))
         packet.append(pack_uatype('String', self.SecurityPolicyUri))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = UserTokenPolicy()
-        obj.PolicyId = unpack_uatype('String', data)
-        obj.TokenType = unpack_uatype('UInt32', data)
-        obj.IssuedTokenType = unpack_uatype('String', data)
-        obj.IssuerEndpointUrl = unpack_uatype('String', data)
-        obj.SecurityPolicyUri = unpack_uatype('String', data)
-        return obj
-    
+        return UserTokenPolicy(data)
+
+    def _binary_init(self, data):
+        self.PolicyId = unpack_uatype('String', data)
+        self.TokenType = unpack_uatype('UInt32', data)
+        self.IssuedTokenType = unpack_uatype('String', data)
+        self.IssuerEndpointUrl = unpack_uatype('String', data)
+        self.SecurityPolicyUri = unpack_uatype('String', data)
+
     def __str__(self):
-        return 'UserTokenPolicy(' + 'PolicyId:' + str(self.PolicyId) + ', '  + \
-             'TokenType:' + str(self.TokenType) + ', '  + \
-             'IssuedTokenType:' + str(self.IssuedTokenType) + ', '  + \
-             'IssuerEndpointUrl:' + str(self.IssuerEndpointUrl) + ', '  + \
+        return 'UserTokenPolicy(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
+             'TokenType:' + str(self.TokenType) + ', ' + \
+             'IssuedTokenType:' + str(self.IssuedTokenType) + ', ' + \
+             'IssuerEndpointUrl:' + str(self.IssuerEndpointUrl) + ', ' + \
              'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class EndpointDescription(object):
     '''
     The description of a endpoint that can be used to access a server.
-    
-    :ivar EndpointUrl: 
-    :vartype EndpointUrl: String 
-    :ivar Server: 
-    :vartype Server: ApplicationDescription 
-    :ivar ServerCertificate: 
-    :vartype ServerCertificate: ByteString 
-    :ivar SecurityMode: 
-    :vartype SecurityMode: MessageSecurityMode 
-    :ivar SecurityPolicyUri: 
-    :vartype SecurityPolicyUri: String 
-    :ivar UserIdentityTokens: 
-    :vartype UserIdentityTokens: UserTokenPolicy 
-    :ivar TransportProfileUri: 
-    :vartype TransportProfileUri: String 
-    :ivar SecurityLevel: 
-    :vartype SecurityLevel: Byte 
+
+    :ivar EndpointUrl:
+    :vartype EndpointUrl: String
+    :ivar Server:
+    :vartype Server: ApplicationDescription
+    :ivar ServerCertificate:
+    :vartype ServerCertificate: ByteString
+    :ivar SecurityMode:
+    :vartype SecurityMode: MessageSecurityMode
+    :ivar SecurityPolicyUri:
+    :vartype SecurityPolicyUri: String
+    :ivar UserIdentityTokens:
+    :vartype UserIdentityTokens: UserTokenPolicy
+    :ivar TransportProfileUri:
+    :vartype TransportProfileUri: String
+    :ivar SecurityLevel:
+    :vartype SecurityLevel: Byte
     '''
-    
+
     __slots__ = [
         "EndpointUrl",
         "Server",
@@ -1809,8 +1960,11 @@ class EndpointDescription(object):
         "TransportProfileUri",
         "SecurityLevel",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.EndpointUrl = ''
         self.Server = ApplicationDescription()
         self.ServerCertificate = b''
@@ -1819,7 +1973,7 @@ class EndpointDescription(object):
         self.UserIdentityTokens = []
         self.TransportProfileUri = ''
         self.SecurityLevel = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.EndpointUrl))
@@ -1833,56 +1987,63 @@ class EndpointDescription(object):
         packet.append(pack_uatype('String', self.TransportProfileUri))
         packet.append(pack_uatype('Byte', self.SecurityLevel))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = EndpointDescription()
-        obj.EndpointUrl = unpack_uatype('String', data)
-        obj.Server = ApplicationDescription.from_binary(data)
-        obj.ServerCertificate = unpack_uatype('ByteString', data)
-        obj.SecurityMode = unpack_uatype('UInt32', data)
-        obj.SecurityPolicyUri = unpack_uatype('String', data)
+        return EndpointDescription(data)
+
+    def _binary_init(self, data):
+        self.EndpointUrl = unpack_uatype('String', data)
+        self.Server = ApplicationDescription.from_binary(data)
+        self.ServerCertificate = unpack_uatype('ByteString', data)
+        self.SecurityMode = unpack_uatype('UInt32', data)
+        self.SecurityPolicyUri = unpack_uatype('String', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.UserIdentityTokens.append(UserTokenPolicy.from_binary(data))
-        obj.TransportProfileUri = unpack_uatype('String', data)
-        obj.SecurityLevel = unpack_uatype('Byte', data)
-        return obj
-    
+                array.append(UserTokenPolicy.from_binary(data))
+        self.UserIdentityTokens = array
+        self.TransportProfileUri = unpack_uatype('String', data)
+        self.SecurityLevel = unpack_uatype('Byte', data)
+
     def __str__(self):
-        return 'EndpointDescription(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', '  + \
-             'Server:' + str(self.Server) + ', '  + \
-             'ServerCertificate:' + str(self.ServerCertificate) + ', '  + \
-             'SecurityMode:' + str(self.SecurityMode) + ', '  + \
-             'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', '  + \
-             'UserIdentityTokens:' + str(self.UserIdentityTokens) + ', '  + \
-             'TransportProfileUri:' + str(self.TransportProfileUri) + ', '  + \
+        return 'EndpointDescription(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
+             'Server:' + str(self.Server) + ', ' + \
+             'ServerCertificate:' + str(self.ServerCertificate) + ', ' + \
+             'SecurityMode:' + str(self.SecurityMode) + ', ' + \
+             'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', ' + \
+             'UserIdentityTokens:' + str(self.UserIdentityTokens) + ', ' + \
+             'TransportProfileUri:' + str(self.TransportProfileUri) + ', ' + \
              'SecurityLevel:' + str(self.SecurityLevel) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class GetEndpointsParameters(object):
     '''
-    :ivar EndpointUrl: 
-    :vartype EndpointUrl: String 
-    :ivar LocaleIds: 
-    :vartype LocaleIds: String 
-    :ivar ProfileUris: 
-    :vartype ProfileUris: String 
+    :ivar EndpointUrl:
+    :vartype EndpointUrl: String
+    :ivar LocaleIds:
+    :vartype LocaleIds: String
+    :ivar ProfileUris:
+    :vartype ProfileUris: String
     '''
-    
+
     __slots__ = [
         "EndpointUrl",
         "LocaleIds",
         "ProfileUris",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.EndpointUrl = ''
         self.LocaleIds = []
         self.ProfileUris = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.EndpointUrl))
@@ -1893,90 +2054,100 @@ class GetEndpointsParameters(object):
         for fieldname in self.ProfileUris:
             packet.append(pack_uatype('String', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = GetEndpointsParameters()
-        obj.EndpointUrl = unpack_uatype('String', data)
-        obj.LocaleIds = unpack_uatype_array('String', data)
-        obj.ProfileUris = unpack_uatype_array('String', data)
-        return obj
-    
+        return GetEndpointsParameters(data)
+
+    def _binary_init(self, data):
+        self.EndpointUrl = unpack_uatype('String', data)
+        self.LocaleIds = unpack_uatype_array('String', data)
+        self.ProfileUris = unpack_uatype_array('String', data)
+
     def __str__(self):
-        return 'GetEndpointsParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', '  + \
-             'LocaleIds:' + str(self.LocaleIds) + ', '  + \
+        return 'GetEndpointsParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
+             'LocaleIds:' + str(self.LocaleIds) + ', ' + \
              'ProfileUris:' + str(self.ProfileUris) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class GetEndpointsRequest(object):
     '''
     Gets the endpoints used by the server.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: GetEndpointsParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: GetEndpointsParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.GetEndpointsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = GetEndpointsParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = GetEndpointsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = GetEndpointsParameters.from_binary(data)
-        return obj
-    
+        return GetEndpointsRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = GetEndpointsParameters.from_binary(data)
+
     def __str__(self):
-        return 'GetEndpointsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'GetEndpointsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class GetEndpointsResponse(object):
     '''
     Gets the endpoints used by the server.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Endpoints: 
-    :vartype Endpoints: EndpointDescription 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Endpoints:
+    :vartype Endpoints: EndpointDescription
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Endpoints",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.GetEndpointsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Endpoints = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -1985,47 +2156,51 @@ class GetEndpointsResponse(object):
         for fieldname in self.Endpoints:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = GetEndpointsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return GetEndpointsResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Endpoints.append(EndpointDescription.from_binary(data))
-        return obj
-    
+                array.append(EndpointDescription.from_binary(data))
+        self.Endpoints = array
+
     def __str__(self):
-        return 'GetEndpointsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'GetEndpointsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Endpoints:' + str(self.Endpoints) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RegisteredServer(object):
     '''
     The information required to register a server with a discovery server.
-    
-    :ivar ServerUri: 
-    :vartype ServerUri: String 
-    :ivar ProductUri: 
-    :vartype ProductUri: String 
-    :ivar ServerNames: 
-    :vartype ServerNames: LocalizedText 
-    :ivar ServerType: 
-    :vartype ServerType: ApplicationType 
-    :ivar GatewayServerUri: 
-    :vartype GatewayServerUri: String 
-    :ivar DiscoveryUrls: 
-    :vartype DiscoveryUrls: String 
-    :ivar SemaphoreFilePath: 
-    :vartype SemaphoreFilePath: String 
-    :ivar IsOnline: 
-    :vartype IsOnline: Boolean 
+
+    :ivar ServerUri:
+    :vartype ServerUri: String
+    :ivar ProductUri:
+    :vartype ProductUri: String
+    :ivar ServerNames:
+    :vartype ServerNames: LocalizedText
+    :ivar ServerType:
+    :vartype ServerType: ApplicationType
+    :ivar GatewayServerUri:
+    :vartype GatewayServerUri: String
+    :ivar DiscoveryUrls:
+    :vartype DiscoveryUrls: String
+    :ivar SemaphoreFilePath:
+    :vartype SemaphoreFilePath: String
+    :ivar IsOnline:
+    :vartype IsOnline: Boolean
     '''
-    
+
     __slots__ = [
         "ServerUri",
         "ProductUri",
@@ -2036,8 +2211,11 @@ class RegisteredServer(object):
         "SemaphoreFilePath",
         "IsOnline",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ServerUri = ''
         self.ProductUri = ''
         self.ServerNames = []
@@ -2046,7 +2224,7 @@ class RegisteredServer(object):
         self.DiscoveryUrls = []
         self.SemaphoreFilePath = ''
         self.IsOnline = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.ServerUri))
@@ -2062,192 +2240,219 @@ class RegisteredServer(object):
         packet.append(pack_uatype('String', self.SemaphoreFilePath))
         packet.append(pack_uatype('Boolean', self.IsOnline))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RegisteredServer()
-        obj.ServerUri = unpack_uatype('String', data)
-        obj.ProductUri = unpack_uatype('String', data)
+        return RegisteredServer(data)
+
+    def _binary_init(self, data):
+        self.ServerUri = unpack_uatype('String', data)
+        self.ProductUri = unpack_uatype('String', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.ServerNames.append(LocalizedText.from_binary(data))
-        obj.ServerType = unpack_uatype('UInt32', data)
-        obj.GatewayServerUri = unpack_uatype('String', data)
-        obj.DiscoveryUrls = unpack_uatype_array('String', data)
-        obj.SemaphoreFilePath = unpack_uatype('String', data)
-        obj.IsOnline = unpack_uatype('Boolean', data)
-        return obj
-    
+                array.append(LocalizedText.from_binary(data))
+        self.ServerNames = array
+        self.ServerType = unpack_uatype('UInt32', data)
+        self.GatewayServerUri = unpack_uatype('String', data)
+        self.DiscoveryUrls = unpack_uatype_array('String', data)
+        self.SemaphoreFilePath = unpack_uatype('String', data)
+        self.IsOnline = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'RegisteredServer(' + 'ServerUri:' + str(self.ServerUri) + ', '  + \
-             'ProductUri:' + str(self.ProductUri) + ', '  + \
-             'ServerNames:' + str(self.ServerNames) + ', '  + \
-             'ServerType:' + str(self.ServerType) + ', '  + \
-             'GatewayServerUri:' + str(self.GatewayServerUri) + ', '  + \
-             'DiscoveryUrls:' + str(self.DiscoveryUrls) + ', '  + \
-             'SemaphoreFilePath:' + str(self.SemaphoreFilePath) + ', '  + \
+        return 'RegisteredServer(' + 'ServerUri:' + str(self.ServerUri) + ', ' + \
+             'ProductUri:' + str(self.ProductUri) + ', ' + \
+             'ServerNames:' + str(self.ServerNames) + ', ' + \
+             'ServerType:' + str(self.ServerType) + ', ' + \
+             'GatewayServerUri:' + str(self.GatewayServerUri) + ', ' + \
+             'DiscoveryUrls:' + str(self.DiscoveryUrls) + ', ' + \
+             'SemaphoreFilePath:' + str(self.SemaphoreFilePath) + ', ' + \
              'IsOnline:' + str(self.IsOnline) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RegisterServerParameters(object):
     '''
-    :ivar Server: 
-    :vartype Server: RegisteredServer 
+    :ivar Server:
+    :vartype Server: RegisteredServer
     '''
-    
+
     __slots__ = [
         "Server",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Server = RegisteredServer()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.Server.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RegisterServerParameters()
-        obj.Server = RegisteredServer.from_binary(data)
-        return obj
-    
+        return RegisterServerParameters(data)
+
+    def _binary_init(self, data):
+        self.Server = RegisteredServer.from_binary(data)
+
     def __str__(self):
         return 'RegisterServerParameters(' + 'Server:' + str(self.Server) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RegisterServerRequest(object):
     '''
     Registers a server with the discovery server.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: RegisterServerParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: RegisterServerParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServerRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = RegisterServerParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RegisterServerRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = RegisterServerParameters.from_binary(data)
-        return obj
-    
+        return RegisterServerRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = RegisterServerParameters.from_binary(data)
+
     def __str__(self):
-        return 'RegisterServerRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'RegisterServerRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RegisterServerResponse(object):
     '''
     Registers a server with the discovery server.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServerResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RegisterServerResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        return obj
-    
+        return RegisterServerResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+
     def __str__(self):
-        return 'RegisterServerResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+        return 'RegisterServerResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
              'ResponseHeader:' + str(self.ResponseHeader) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DiscoveryConfiguration(object):
     '''
     A base type for discovery configuration information.
-    
+
     '''
-    
+
     __slots__ = [
     ]
-    
-    def __init__(self):
-        pass
-    
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
+
     def to_binary(self):
         packet = []
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DiscoveryConfiguration()
-        return obj
-    
+        return DiscoveryConfiguration(data)
+
+    def _binary_init(self, data):
+        pass
+
     def __str__(self):
         return 'DiscoveryConfiguration(' +  + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class MdnsDiscoveryConfiguration(object):
     '''
     The discovery information needed for mDNS registration.
-    
-    :ivar MdnsServerName: 
-    :vartype MdnsServerName: String 
-    :ivar ServerCapabilities: 
-    :vartype ServerCapabilities: String 
+
+    :ivar MdnsServerName:
+    :vartype MdnsServerName: String
+    :ivar ServerCapabilities:
+    :vartype ServerCapabilities: String
     '''
-    
+
     __slots__ = [
         "MdnsServerName",
         "ServerCapabilities",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.MdnsServerName = ''
         self.ServerCapabilities = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.MdnsServerName))
@@ -2255,37 +2460,42 @@ class MdnsDiscoveryConfiguration(object):
         for fieldname in self.ServerCapabilities:
             packet.append(pack_uatype('String', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = MdnsDiscoveryConfiguration()
-        obj.MdnsServerName = unpack_uatype('String', data)
-        obj.ServerCapabilities = unpack_uatype_array('String', data)
-        return obj
-    
+        return MdnsDiscoveryConfiguration(data)
+
+    def _binary_init(self, data):
+        self.MdnsServerName = unpack_uatype('String', data)
+        self.ServerCapabilities = unpack_uatype_array('String', data)
+
     def __str__(self):
-        return 'MdnsDiscoveryConfiguration(' + 'MdnsServerName:' + str(self.MdnsServerName) + ', '  + \
+        return 'MdnsDiscoveryConfiguration(' + 'MdnsServerName:' + str(self.MdnsServerName) + ', ' + \
              'ServerCapabilities:' + str(self.ServerCapabilities) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RegisterServer2Parameters(object):
     '''
-    :ivar Server: 
-    :vartype Server: RegisteredServer 
-    :ivar DiscoveryConfiguration: 
-    :vartype DiscoveryConfiguration: ExtensionObject 
+    :ivar Server:
+    :vartype Server: RegisteredServer
+    :ivar DiscoveryConfiguration:
+    :vartype DiscoveryConfiguration: ExtensionObject
     '''
-    
+
     __slots__ = [
         "Server",
         "DiscoveryConfiguration",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Server = RegisteredServer()
         self.DiscoveryConfiguration = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.Server.to_binary())
@@ -2293,83 +2503,95 @@ class RegisterServer2Parameters(object):
         for fieldname in self.DiscoveryConfiguration:
             packet.append(extensionobject_to_binary(fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RegisterServer2Parameters()
-        obj.Server = RegisteredServer.from_binary(data)
+        return RegisterServer2Parameters(data)
+
+    def _binary_init(self, data):
+        self.Server = RegisteredServer.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiscoveryConfiguration.append(extensionobject_from_binary(data))
-        return obj
-    
+                array.append(extensionobject_from_binary(data))
+        self.DiscoveryConfiguration = array
+
     def __str__(self):
-        return 'RegisterServer2Parameters(' + 'Server:' + str(self.Server) + ', '  + \
+        return 'RegisterServer2Parameters(' + 'Server:' + str(self.Server) + ', ' + \
              'DiscoveryConfiguration:' + str(self.DiscoveryConfiguration) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RegisterServer2Request(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: RegisterServer2Parameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: RegisterServer2Parameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServer2Request_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = RegisterServer2Parameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RegisterServer2Request()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = RegisterServer2Parameters.from_binary(data)
-        return obj
-    
+        return RegisterServer2Request(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = RegisterServer2Parameters.from_binary(data)
+
     def __str__(self):
-        return 'RegisterServer2Request(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'RegisterServer2Request(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RegisterServer2Result(object):
     '''
-    :ivar ConfigurationResults: 
-    :vartype ConfigurationResults: StatusCode 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar ConfigurationResults:
+    :vartype ConfigurationResults: StatusCode
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "ConfigurationResults",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ConfigurationResults = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.ConfigurationResults)))
@@ -2379,96 +2601,110 @@ class RegisterServer2Result(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RegisterServer2Result()
+        return RegisterServer2Result(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.ConfigurationResults.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.ConfigurationResults = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'RegisterServer2Result(' + 'ConfigurationResults:' + str(self.ConfigurationResults) + ', '  + \
+        return 'RegisterServer2Result(' + 'ConfigurationResults:' + str(self.ConfigurationResults) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RegisterServer2Response(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: RegisterServer2Result 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: RegisterServer2Result
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServer2Response_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = RegisterServer2Result()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RegisterServer2Response()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = RegisterServer2Result.from_binary(data)
-        return obj
-    
+        return RegisterServer2Response(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = RegisterServer2Result.from_binary(data)
+
     def __str__(self):
-        return 'RegisterServer2Response(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'RegisterServer2Response(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ChannelSecurityToken(object):
     '''
     The token that identifies a set of keys for an active secure channel.
-    
-    :ivar ChannelId: 
-    :vartype ChannelId: UInt32 
-    :ivar TokenId: 
-    :vartype TokenId: UInt32 
-    :ivar CreatedAt: 
-    :vartype CreatedAt: DateTime 
-    :ivar RevisedLifetime: 
-    :vartype RevisedLifetime: UInt32 
+
+    :ivar ChannelId:
+    :vartype ChannelId: UInt32
+    :ivar TokenId:
+    :vartype TokenId: UInt32
+    :ivar CreatedAt:
+    :vartype CreatedAt: DateTime
+    :ivar RevisedLifetime:
+    :vartype RevisedLifetime: UInt32
     '''
-    
+
     __slots__ = [
         "ChannelId",
         "TokenId",
         "CreatedAt",
         "RevisedLifetime",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ChannelId = 0
         self.TokenId = 0
         self.CreatedAt = datetime.now()
         self.RevisedLifetime = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.ChannelId))
@@ -2476,38 +2712,40 @@ class ChannelSecurityToken(object):
         packet.append(pack_uatype('DateTime', self.CreatedAt))
         packet.append(pack_uatype('UInt32', self.RevisedLifetime))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ChannelSecurityToken()
-        obj.ChannelId = unpack_uatype('UInt32', data)
-        obj.TokenId = unpack_uatype('UInt32', data)
-        obj.CreatedAt = unpack_uatype('DateTime', data)
-        obj.RevisedLifetime = unpack_uatype('UInt32', data)
-        return obj
-    
+        return ChannelSecurityToken(data)
+
+    def _binary_init(self, data):
+        self.ChannelId = unpack_uatype('UInt32', data)
+        self.TokenId = unpack_uatype('UInt32', data)
+        self.CreatedAt = unpack_uatype('DateTime', data)
+        self.RevisedLifetime = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'ChannelSecurityToken(' + 'ChannelId:' + str(self.ChannelId) + ', '  + \
-             'TokenId:' + str(self.TokenId) + ', '  + \
-             'CreatedAt:' + str(self.CreatedAt) + ', '  + \
+        return 'ChannelSecurityToken(' + 'ChannelId:' + str(self.ChannelId) + ', ' + \
+             'TokenId:' + str(self.TokenId) + ', ' + \
+             'CreatedAt:' + str(self.CreatedAt) + ', ' + \
              'RevisedLifetime:' + str(self.RevisedLifetime) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class OpenSecureChannelParameters(object):
     '''
-    :ivar ClientProtocolVersion: 
-    :vartype ClientProtocolVersion: UInt32 
-    :ivar RequestType: 
-    :vartype RequestType: SecurityTokenRequestType 
-    :ivar SecurityMode: 
-    :vartype SecurityMode: MessageSecurityMode 
-    :ivar ClientNonce: 
-    :vartype ClientNonce: ByteString 
-    :ivar RequestedLifetime: 
-    :vartype RequestedLifetime: UInt32 
+    :ivar ClientProtocolVersion:
+    :vartype ClientProtocolVersion: UInt32
+    :ivar RequestType:
+    :vartype RequestType: SecurityTokenRequestType
+    :ivar SecurityMode:
+    :vartype SecurityMode: MessageSecurityMode
+    :ivar ClientNonce:
+    :vartype ClientNonce: ByteString
+    :ivar RequestedLifetime:
+    :vartype RequestedLifetime: UInt32
     '''
-    
+
     __slots__ = [
         "ClientProtocolVersion",
         "RequestType",
@@ -2515,14 +2753,17 @@ class OpenSecureChannelParameters(object):
         "ClientNonce",
         "RequestedLifetime",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ClientProtocolVersion = 0
         self.RequestType = 0
         self.SecurityMode = 0
         self.ClientNonce = b''
         self.RequestedLifetime = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.ClientProtocolVersion))
@@ -2531,331 +2772,368 @@ class OpenSecureChannelParameters(object):
         packet.append(pack_uatype('ByteString', self.ClientNonce))
         packet.append(pack_uatype('UInt32', self.RequestedLifetime))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = OpenSecureChannelParameters()
-        obj.ClientProtocolVersion = unpack_uatype('UInt32', data)
-        obj.RequestType = unpack_uatype('UInt32', data)
-        obj.SecurityMode = unpack_uatype('UInt32', data)
-        obj.ClientNonce = unpack_uatype('ByteString', data)
-        obj.RequestedLifetime = unpack_uatype('UInt32', data)
-        return obj
-    
+        return OpenSecureChannelParameters(data)
+
+    def _binary_init(self, data):
+        self.ClientProtocolVersion = unpack_uatype('UInt32', data)
+        self.RequestType = unpack_uatype('UInt32', data)
+        self.SecurityMode = unpack_uatype('UInt32', data)
+        self.ClientNonce = unpack_uatype('ByteString', data)
+        self.RequestedLifetime = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'OpenSecureChannelParameters(' + 'ClientProtocolVersion:' + str(self.ClientProtocolVersion) + ', '  + \
-             'RequestType:' + str(self.RequestType) + ', '  + \
-             'SecurityMode:' + str(self.SecurityMode) + ', '  + \
-             'ClientNonce:' + str(self.ClientNonce) + ', '  + \
+        return 'OpenSecureChannelParameters(' + 'ClientProtocolVersion:' + str(self.ClientProtocolVersion) + ', ' + \
+             'RequestType:' + str(self.RequestType) + ', ' + \
+             'SecurityMode:' + str(self.SecurityMode) + ', ' + \
+             'ClientNonce:' + str(self.ClientNonce) + ', ' + \
              'RequestedLifetime:' + str(self.RequestedLifetime) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class OpenSecureChannelRequest(object):
     '''
     Creates a secure channel with a server.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: OpenSecureChannelParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: OpenSecureChannelParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.OpenSecureChannelRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = OpenSecureChannelParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = OpenSecureChannelRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = OpenSecureChannelParameters.from_binary(data)
-        return obj
-    
+        return OpenSecureChannelRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = OpenSecureChannelParameters.from_binary(data)
+
     def __str__(self):
-        return 'OpenSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'OpenSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class OpenSecureChannelResult(object):
     '''
-    :ivar ServerProtocolVersion: 
-    :vartype ServerProtocolVersion: UInt32 
-    :ivar SecurityToken: 
-    :vartype SecurityToken: ChannelSecurityToken 
-    :ivar ServerNonce: 
-    :vartype ServerNonce: ByteString 
+    :ivar ServerProtocolVersion:
+    :vartype ServerProtocolVersion: UInt32
+    :ivar SecurityToken:
+    :vartype SecurityToken: ChannelSecurityToken
+    :ivar ServerNonce:
+    :vartype ServerNonce: ByteString
     '''
-    
+
     __slots__ = [
         "ServerProtocolVersion",
         "SecurityToken",
         "ServerNonce",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ServerProtocolVersion = 0
         self.SecurityToken = ChannelSecurityToken()
         self.ServerNonce = b''
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.ServerProtocolVersion))
         packet.append(self.SecurityToken.to_binary())
         packet.append(pack_uatype('ByteString', self.ServerNonce))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = OpenSecureChannelResult()
-        obj.ServerProtocolVersion = unpack_uatype('UInt32', data)
-        obj.SecurityToken = ChannelSecurityToken.from_binary(data)
-        obj.ServerNonce = unpack_uatype('ByteString', data)
-        return obj
-    
+        return OpenSecureChannelResult(data)
+
+    def _binary_init(self, data):
+        self.ServerProtocolVersion = unpack_uatype('UInt32', data)
+        self.SecurityToken = ChannelSecurityToken.from_binary(data)
+        self.ServerNonce = unpack_uatype('ByteString', data)
+
     def __str__(self):
-        return 'OpenSecureChannelResult(' + 'ServerProtocolVersion:' + str(self.ServerProtocolVersion) + ', '  + \
-             'SecurityToken:' + str(self.SecurityToken) + ', '  + \
+        return 'OpenSecureChannelResult(' + 'ServerProtocolVersion:' + str(self.ServerProtocolVersion) + ', ' + \
+             'SecurityToken:' + str(self.SecurityToken) + ', ' + \
              'ServerNonce:' + str(self.ServerNonce) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class OpenSecureChannelResponse(object):
     '''
     Creates a secure channel with a server.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: OpenSecureChannelResult 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: OpenSecureChannelResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.OpenSecureChannelResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = OpenSecureChannelResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = OpenSecureChannelResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = OpenSecureChannelResult.from_binary(data)
-        return obj
-    
+        return OpenSecureChannelResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = OpenSecureChannelResult.from_binary(data)
+
     def __str__(self):
-        return 'OpenSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'OpenSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CloseSecureChannelRequest(object):
     '''
     Closes a secure channel.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.CloseSecureChannelRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CloseSecureChannelRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        return obj
-    
+        return CloseSecureChannelRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+
     def __str__(self):
-        return 'CloseSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+        return 'CloseSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
              'RequestHeader:' + str(self.RequestHeader) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CloseSecureChannelResponse(object):
     '''
     Closes a secure channel.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.CloseSecureChannelResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CloseSecureChannelResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        return obj
-    
+        return CloseSecureChannelResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+
     def __str__(self):
-        return 'CloseSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+        return 'CloseSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
              'ResponseHeader:' + str(self.ResponseHeader) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SignedSoftwareCertificate(object):
     '''
     A software certificate with a digital signature.
-    
-    :ivar CertificateData: 
-    :vartype CertificateData: ByteString 
-    :ivar Signature: 
-    :vartype Signature: ByteString 
+
+    :ivar CertificateData:
+    :vartype CertificateData: ByteString
+    :ivar Signature:
+    :vartype Signature: ByteString
     '''
-    
+
     __slots__ = [
         "CertificateData",
         "Signature",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.CertificateData = b''
         self.Signature = b''
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('ByteString', self.CertificateData))
         packet.append(pack_uatype('ByteString', self.Signature))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SignedSoftwareCertificate()
-        obj.CertificateData = unpack_uatype('ByteString', data)
-        obj.Signature = unpack_uatype('ByteString', data)
-        return obj
-    
+        return SignedSoftwareCertificate(data)
+
+    def _binary_init(self, data):
+        self.CertificateData = unpack_uatype('ByteString', data)
+        self.Signature = unpack_uatype('ByteString', data)
+
     def __str__(self):
-        return 'SignedSoftwareCertificate(' + 'CertificateData:' + str(self.CertificateData) + ', '  + \
+        return 'SignedSoftwareCertificate(' + 'CertificateData:' + str(self.CertificateData) + ', ' + \
              'Signature:' + str(self.Signature) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SignatureData(object):
     '''
     A digital signature.
-    
-    :ivar Algorithm: 
-    :vartype Algorithm: String 
-    :ivar Signature: 
-    :vartype Signature: ByteString 
+
+    :ivar Algorithm:
+    :vartype Algorithm: String
+    :ivar Signature:
+    :vartype Signature: ByteString
     '''
-    
+
     __slots__ = [
         "Algorithm",
         "Signature",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Algorithm = ''
         self.Signature = b''
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.Algorithm))
         packet.append(pack_uatype('ByteString', self.Signature))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SignatureData()
-        obj.Algorithm = unpack_uatype('String', data)
-        obj.Signature = unpack_uatype('ByteString', data)
-        return obj
-    
+        return SignatureData(data)
+
+    def _binary_init(self, data):
+        self.Algorithm = unpack_uatype('String', data)
+        self.Signature = unpack_uatype('ByteString', data)
+
     def __str__(self):
-        return 'SignatureData(' + 'Algorithm:' + str(self.Algorithm) + ', '  + \
+        return 'SignatureData(' + 'Algorithm:' + str(self.Algorithm) + ', ' + \
              'Signature:' + str(self.Signature) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CreateSessionParameters(object):
     '''
-    :ivar ClientDescription: 
-    :vartype ClientDescription: ApplicationDescription 
-    :ivar ServerUri: 
-    :vartype ServerUri: String 
-    :ivar EndpointUrl: 
-    :vartype EndpointUrl: String 
-    :ivar SessionName: 
-    :vartype SessionName: String 
-    :ivar ClientNonce: 
-    :vartype ClientNonce: ByteString 
-    :ivar ClientCertificate: 
-    :vartype ClientCertificate: ByteString 
-    :ivar RequestedSessionTimeout: 
-    :vartype RequestedSessionTimeout: Double 
-    :ivar MaxResponseMessageSize: 
-    :vartype MaxResponseMessageSize: UInt32 
+    :ivar ClientDescription:
+    :vartype ClientDescription: ApplicationDescription
+    :ivar ServerUri:
+    :vartype ServerUri: String
+    :ivar EndpointUrl:
+    :vartype EndpointUrl: String
+    :ivar SessionName:
+    :vartype SessionName: String
+    :ivar ClientNonce:
+    :vartype ClientNonce: ByteString
+    :ivar ClientCertificate:
+    :vartype ClientCertificate: ByteString
+    :ivar RequestedSessionTimeout:
+    :vartype RequestedSessionTimeout: Double
+    :ivar MaxResponseMessageSize:
+    :vartype MaxResponseMessageSize: UInt32
     '''
-    
+
     __slots__ = [
         "ClientDescription",
         "ServerUri",
@@ -2866,8 +3144,11 @@ class CreateSessionParameters(object):
         "RequestedSessionTimeout",
         "MaxResponseMessageSize",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ClientDescription = ApplicationDescription()
         self.ServerUri = ''
         self.EndpointUrl = ''
@@ -2876,7 +3157,7 @@ class CreateSessionParameters(object):
         self.ClientCertificate = b''
         self.RequestedSessionTimeout = 0
         self.MaxResponseMessageSize = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.ClientDescription.to_binary())
@@ -2888,99 +3169,106 @@ class CreateSessionParameters(object):
         packet.append(pack_uatype('Double', self.RequestedSessionTimeout))
         packet.append(pack_uatype('UInt32', self.MaxResponseMessageSize))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CreateSessionParameters()
-        obj.ClientDescription = ApplicationDescription.from_binary(data)
-        obj.ServerUri = unpack_uatype('String', data)
-        obj.EndpointUrl = unpack_uatype('String', data)
-        obj.SessionName = unpack_uatype('String', data)
-        obj.ClientNonce = unpack_uatype('ByteString', data)
-        obj.ClientCertificate = unpack_uatype('ByteString', data)
-        obj.RequestedSessionTimeout = unpack_uatype('Double', data)
-        obj.MaxResponseMessageSize = unpack_uatype('UInt32', data)
-        return obj
-    
+        return CreateSessionParameters(data)
+
+    def _binary_init(self, data):
+        self.ClientDescription = ApplicationDescription.from_binary(data)
+        self.ServerUri = unpack_uatype('String', data)
+        self.EndpointUrl = unpack_uatype('String', data)
+        self.SessionName = unpack_uatype('String', data)
+        self.ClientNonce = unpack_uatype('ByteString', data)
+        self.ClientCertificate = unpack_uatype('ByteString', data)
+        self.RequestedSessionTimeout = unpack_uatype('Double', data)
+        self.MaxResponseMessageSize = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'CreateSessionParameters(' + 'ClientDescription:' + str(self.ClientDescription) + ', '  + \
-             'ServerUri:' + str(self.ServerUri) + ', '  + \
-             'EndpointUrl:' + str(self.EndpointUrl) + ', '  + \
-             'SessionName:' + str(self.SessionName) + ', '  + \
-             'ClientNonce:' + str(self.ClientNonce) + ', '  + \
-             'ClientCertificate:' + str(self.ClientCertificate) + ', '  + \
-             'RequestedSessionTimeout:' + str(self.RequestedSessionTimeout) + ', '  + \
+        return 'CreateSessionParameters(' + 'ClientDescription:' + str(self.ClientDescription) + ', ' + \
+             'ServerUri:' + str(self.ServerUri) + ', ' + \
+             'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
+             'SessionName:' + str(self.SessionName) + ', ' + \
+             'ClientNonce:' + str(self.ClientNonce) + ', ' + \
+             'ClientCertificate:' + str(self.ClientCertificate) + ', ' + \
+             'RequestedSessionTimeout:' + str(self.RequestedSessionTimeout) + ', ' + \
              'MaxResponseMessageSize:' + str(self.MaxResponseMessageSize) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CreateSessionRequest(object):
     '''
     Creates a new session with the server.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: CreateSessionParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: CreateSessionParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.CreateSessionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CreateSessionParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CreateSessionRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = CreateSessionParameters.from_binary(data)
-        return obj
-    
+        return CreateSessionRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = CreateSessionParameters.from_binary(data)
+
     def __str__(self):
-        return 'CreateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'CreateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CreateSessionResult(object):
     '''
-    :ivar SessionId: 
-    :vartype SessionId: NodeId 
-    :ivar AuthenticationToken: 
-    :vartype AuthenticationToken: NodeId 
-    :ivar RevisedSessionTimeout: 
-    :vartype RevisedSessionTimeout: Double 
-    :ivar ServerNonce: 
-    :vartype ServerNonce: ByteString 
-    :ivar ServerCertificate: 
-    :vartype ServerCertificate: ByteString 
-    :ivar ServerEndpoints: 
-    :vartype ServerEndpoints: EndpointDescription 
-    :ivar ServerSoftwareCertificates: 
-    :vartype ServerSoftwareCertificates: SignedSoftwareCertificate 
-    :ivar ServerSignature: 
-    :vartype ServerSignature: SignatureData 
-    :ivar MaxRequestMessageSize: 
-    :vartype MaxRequestMessageSize: UInt32 
+    :ivar SessionId:
+    :vartype SessionId: NodeId
+    :ivar AuthenticationToken:
+    :vartype AuthenticationToken: NodeId
+    :ivar RevisedSessionTimeout:
+    :vartype RevisedSessionTimeout: Double
+    :ivar ServerNonce:
+    :vartype ServerNonce: ByteString
+    :ivar ServerCertificate:
+    :vartype ServerCertificate: ByteString
+    :ivar ServerEndpoints:
+    :vartype ServerEndpoints: EndpointDescription
+    :ivar ServerSoftwareCertificates:
+    :vartype ServerSoftwareCertificates: SignedSoftwareCertificate
+    :ivar ServerSignature:
+    :vartype ServerSignature: SignatureData
+    :ivar MaxRequestMessageSize:
+    :vartype MaxRequestMessageSize: UInt32
     '''
-    
+
     __slots__ = [
         "SessionId",
         "AuthenticationToken",
@@ -2992,8 +3280,11 @@ class CreateSessionResult(object):
         "ServerSignature",
         "MaxRequestMessageSize",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SessionId = NodeId()
         self.AuthenticationToken = NodeId()
         self.RevisedSessionTimeout = 0
@@ -3003,7 +3294,7 @@ class CreateSessionResult(object):
         self.ServerSoftwareCertificates = []
         self.ServerSignature = SignatureData()
         self.MaxRequestMessageSize = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.SessionId.to_binary())
@@ -3020,174 +3311,198 @@ class CreateSessionResult(object):
         packet.append(self.ServerSignature.to_binary())
         packet.append(pack_uatype('UInt32', self.MaxRequestMessageSize))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CreateSessionResult()
-        obj.SessionId = NodeId.from_binary(data)
-        obj.AuthenticationToken = NodeId.from_binary(data)
-        obj.RevisedSessionTimeout = unpack_uatype('Double', data)
-        obj.ServerNonce = unpack_uatype('ByteString', data)
-        obj.ServerCertificate = unpack_uatype('ByteString', data)
+        return CreateSessionResult(data)
+
+    def _binary_init(self, data):
+        self.SessionId = NodeId.from_binary(data)
+        self.AuthenticationToken = NodeId.from_binary(data)
+        self.RevisedSessionTimeout = unpack_uatype('Double', data)
+        self.ServerNonce = unpack_uatype('ByteString', data)
+        self.ServerCertificate = unpack_uatype('ByteString', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.ServerEndpoints.append(EndpointDescription.from_binary(data))
+                array.append(EndpointDescription.from_binary(data))
+        self.ServerEndpoints = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.ServerSoftwareCertificates.append(SignedSoftwareCertificate.from_binary(data))
-        obj.ServerSignature = SignatureData.from_binary(data)
-        obj.MaxRequestMessageSize = unpack_uatype('UInt32', data)
-        return obj
-    
+                array.append(SignedSoftwareCertificate.from_binary(data))
+        self.ServerSoftwareCertificates = array
+        self.ServerSignature = SignatureData.from_binary(data)
+        self.MaxRequestMessageSize = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'CreateSessionResult(' + 'SessionId:' + str(self.SessionId) + ', '  + \
-             'AuthenticationToken:' + str(self.AuthenticationToken) + ', '  + \
-             'RevisedSessionTimeout:' + str(self.RevisedSessionTimeout) + ', '  + \
-             'ServerNonce:' + str(self.ServerNonce) + ', '  + \
-             'ServerCertificate:' + str(self.ServerCertificate) + ', '  + \
-             'ServerEndpoints:' + str(self.ServerEndpoints) + ', '  + \
-             'ServerSoftwareCertificates:' + str(self.ServerSoftwareCertificates) + ', '  + \
-             'ServerSignature:' + str(self.ServerSignature) + ', '  + \
+        return 'CreateSessionResult(' + 'SessionId:' + str(self.SessionId) + ', ' + \
+             'AuthenticationToken:' + str(self.AuthenticationToken) + ', ' + \
+             'RevisedSessionTimeout:' + str(self.RevisedSessionTimeout) + ', ' + \
+             'ServerNonce:' + str(self.ServerNonce) + ', ' + \
+             'ServerCertificate:' + str(self.ServerCertificate) + ', ' + \
+             'ServerEndpoints:' + str(self.ServerEndpoints) + ', ' + \
+             'ServerSoftwareCertificates:' + str(self.ServerSoftwareCertificates) + ', ' + \
+             'ServerSignature:' + str(self.ServerSignature) + ', ' + \
              'MaxRequestMessageSize:' + str(self.MaxRequestMessageSize) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CreateSessionResponse(object):
     '''
     Creates a new session with the server.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: CreateSessionResult 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: CreateSessionResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.CreateSessionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = CreateSessionResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CreateSessionResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = CreateSessionResult.from_binary(data)
-        return obj
-    
+        return CreateSessionResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = CreateSessionResult.from_binary(data)
+
     def __str__(self):
-        return 'CreateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'CreateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class UserIdentityToken(object):
     '''
     A base type for a user identity token.
-    
-    :ivar PolicyId: 
-    :vartype PolicyId: String 
+
+    :ivar PolicyId:
+    :vartype PolicyId: String
     '''
-    
+
     __slots__ = [
         "PolicyId",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.PolicyId = ''
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.PolicyId))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = UserIdentityToken()
-        obj.PolicyId = unpack_uatype('String', data)
-        return obj
-    
+        return UserIdentityToken(data)
+
+    def _binary_init(self, data):
+        self.PolicyId = unpack_uatype('String', data)
+
     def __str__(self):
         return 'UserIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class AnonymousIdentityToken(object):
     '''
     A token representing an anonymous user.
-    
-    :ivar PolicyId: 
-    :vartype PolicyId: String 
+
+    :ivar PolicyId:
+    :vartype PolicyId: String
     '''
-    
+
     __slots__ = [
         "PolicyId",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.PolicyId = ''
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.PolicyId))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = AnonymousIdentityToken()
-        obj.PolicyId = unpack_uatype('String', data)
-        return obj
-    
+        return AnonymousIdentityToken(data)
+
+    def _binary_init(self, data):
+        self.PolicyId = unpack_uatype('String', data)
+
     def __str__(self):
         return 'AnonymousIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class UserNameIdentityToken(object):
     '''
     A token representing a user identified by a user name and password.
-    
-    :ivar PolicyId: 
-    :vartype PolicyId: String 
-    :ivar UserName: 
-    :vartype UserName: String 
-    :ivar Password: 
-    :vartype Password: ByteString 
-    :ivar EncryptionAlgorithm: 
-    :vartype EncryptionAlgorithm: String 
+
+    :ivar PolicyId:
+    :vartype PolicyId: String
+    :ivar UserName:
+    :vartype UserName: String
+    :ivar Password:
+    :vartype Password: ByteString
+    :ivar EncryptionAlgorithm:
+    :vartype EncryptionAlgorithm: String
     '''
-    
+
     __slots__ = [
         "PolicyId",
         "UserName",
         "Password",
         "EncryptionAlgorithm",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.PolicyId = ''
         self.UserName = ''
         self.Password = b''
         self.EncryptionAlgorithm = ''
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.PolicyId))
@@ -3195,157 +3510,174 @@ class UserNameIdentityToken(object):
         packet.append(pack_uatype('ByteString', self.Password))
         packet.append(pack_uatype('String', self.EncryptionAlgorithm))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = UserNameIdentityToken()
-        obj.PolicyId = unpack_uatype('String', data)
-        obj.UserName = unpack_uatype('String', data)
-        obj.Password = unpack_uatype('ByteString', data)
-        obj.EncryptionAlgorithm = unpack_uatype('String', data)
-        return obj
-    
+        return UserNameIdentityToken(data)
+
+    def _binary_init(self, data):
+        self.PolicyId = unpack_uatype('String', data)
+        self.UserName = unpack_uatype('String', data)
+        self.Password = unpack_uatype('ByteString', data)
+        self.EncryptionAlgorithm = unpack_uatype('String', data)
+
     def __str__(self):
-        return 'UserNameIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', '  + \
-             'UserName:' + str(self.UserName) + ', '  + \
-             'Password:' + str(self.Password) + ', '  + \
+        return 'UserNameIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
+             'UserName:' + str(self.UserName) + ', ' + \
+             'Password:' + str(self.Password) + ', ' + \
              'EncryptionAlgorithm:' + str(self.EncryptionAlgorithm) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class X509IdentityToken(object):
     '''
     A token representing a user identified by an X509 certificate.
-    
-    :ivar PolicyId: 
-    :vartype PolicyId: String 
-    :ivar CertificateData: 
-    :vartype CertificateData: ByteString 
+
+    :ivar PolicyId:
+    :vartype PolicyId: String
+    :ivar CertificateData:
+    :vartype CertificateData: ByteString
     '''
-    
+
     __slots__ = [
         "PolicyId",
         "CertificateData",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.PolicyId = ''
         self.CertificateData = b''
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.PolicyId))
         packet.append(pack_uatype('ByteString', self.CertificateData))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = X509IdentityToken()
-        obj.PolicyId = unpack_uatype('String', data)
-        obj.CertificateData = unpack_uatype('ByteString', data)
-        return obj
-    
+        return X509IdentityToken(data)
+
+    def _binary_init(self, data):
+        self.PolicyId = unpack_uatype('String', data)
+        self.CertificateData = unpack_uatype('ByteString', data)
+
     def __str__(self):
-        return 'X509IdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', '  + \
+        return 'X509IdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
              'CertificateData:' + str(self.CertificateData) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class KerberosIdentityToken(object):
     '''
-    :ivar PolicyId: 
-    :vartype PolicyId: String 
-    :ivar TicketData: 
-    :vartype TicketData: ByteString 
+    :ivar PolicyId:
+    :vartype PolicyId: String
+    :ivar TicketData:
+    :vartype TicketData: ByteString
     '''
-    
+
     __slots__ = [
         "PolicyId",
         "TicketData",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.PolicyId = ''
         self.TicketData = b''
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.PolicyId))
         packet.append(pack_uatype('ByteString', self.TicketData))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = KerberosIdentityToken()
-        obj.PolicyId = unpack_uatype('String', data)
-        obj.TicketData = unpack_uatype('ByteString', data)
-        return obj
-    
+        return KerberosIdentityToken(data)
+
+    def _binary_init(self, data):
+        self.PolicyId = unpack_uatype('String', data)
+        self.TicketData = unpack_uatype('ByteString', data)
+
     def __str__(self):
-        return 'KerberosIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', '  + \
+        return 'KerberosIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
              'TicketData:' + str(self.TicketData) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class IssuedIdentityToken(object):
     '''
     A token representing a user identified by a WS-Security XML token.
-    
-    :ivar PolicyId: 
-    :vartype PolicyId: String 
-    :ivar TokenData: 
-    :vartype TokenData: ByteString 
-    :ivar EncryptionAlgorithm: 
-    :vartype EncryptionAlgorithm: String 
+
+    :ivar PolicyId:
+    :vartype PolicyId: String
+    :ivar TokenData:
+    :vartype TokenData: ByteString
+    :ivar EncryptionAlgorithm:
+    :vartype EncryptionAlgorithm: String
     '''
-    
+
     __slots__ = [
         "PolicyId",
         "TokenData",
         "EncryptionAlgorithm",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.PolicyId = ''
         self.TokenData = b''
         self.EncryptionAlgorithm = ''
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.PolicyId))
         packet.append(pack_uatype('ByteString', self.TokenData))
         packet.append(pack_uatype('String', self.EncryptionAlgorithm))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = IssuedIdentityToken()
-        obj.PolicyId = unpack_uatype('String', data)
-        obj.TokenData = unpack_uatype('ByteString', data)
-        obj.EncryptionAlgorithm = unpack_uatype('String', data)
-        return obj
-    
+        return IssuedIdentityToken(data)
+
+    def _binary_init(self, data):
+        self.PolicyId = unpack_uatype('String', data)
+        self.TokenData = unpack_uatype('ByteString', data)
+        self.EncryptionAlgorithm = unpack_uatype('String', data)
+
     def __str__(self):
-        return 'IssuedIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', '  + \
-             'TokenData:' + str(self.TokenData) + ', '  + \
+        return 'IssuedIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
+             'TokenData:' + str(self.TokenData) + ', ' + \
              'EncryptionAlgorithm:' + str(self.EncryptionAlgorithm) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ActivateSessionParameters(object):
     '''
-    :ivar ClientSignature: 
-    :vartype ClientSignature: SignatureData 
-    :ivar ClientSoftwareCertificates: 
-    :vartype ClientSoftwareCertificates: SignedSoftwareCertificate 
-    :ivar LocaleIds: 
-    :vartype LocaleIds: String 
-    :ivar UserIdentityToken: 
-    :vartype UserIdentityToken: ExtensionObject 
-    :ivar UserTokenSignature: 
-    :vartype UserTokenSignature: SignatureData 
+    :ivar ClientSignature:
+    :vartype ClientSignature: SignatureData
+    :ivar ClientSoftwareCertificates:
+    :vartype ClientSoftwareCertificates: SignedSoftwareCertificate
+    :ivar LocaleIds:
+    :vartype LocaleIds: String
+    :ivar UserIdentityToken:
+    :vartype UserIdentityToken: ExtensionObject
+    :ivar UserTokenSignature:
+    :vartype UserTokenSignature: SignatureData
     '''
-    
+
     __slots__ = [
         "ClientSignature",
         "ClientSoftwareCertificates",
@@ -3353,14 +3685,17 @@ class ActivateSessionParameters(object):
         "UserIdentityToken",
         "UserTokenSignature",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ClientSignature = SignatureData()
         self.ClientSoftwareCertificates = []
         self.LocaleIds = []
         self.UserIdentityToken = None
         self.UserTokenSignature = SignatureData()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.ClientSignature.to_binary())
@@ -3373,95 +3708,107 @@ class ActivateSessionParameters(object):
         packet.append(extensionobject_to_binary(self.UserIdentityToken))
         packet.append(self.UserTokenSignature.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ActivateSessionParameters()
-        obj.ClientSignature = SignatureData.from_binary(data)
+        return ActivateSessionParameters(data)
+
+    def _binary_init(self, data):
+        self.ClientSignature = SignatureData.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.ClientSoftwareCertificates.append(SignedSoftwareCertificate.from_binary(data))
-        obj.LocaleIds = unpack_uatype_array('String', data)
-        obj.UserIdentityToken = extensionobject_from_binary(data)
-        obj.UserTokenSignature = SignatureData.from_binary(data)
-        return obj
-    
+                array.append(SignedSoftwareCertificate.from_binary(data))
+        self.ClientSoftwareCertificates = array
+        self.LocaleIds = unpack_uatype_array('String', data)
+        self.UserIdentityToken = extensionobject_from_binary(data)
+        self.UserTokenSignature = SignatureData.from_binary(data)
+
     def __str__(self):
-        return 'ActivateSessionParameters(' + 'ClientSignature:' + str(self.ClientSignature) + ', '  + \
-             'ClientSoftwareCertificates:' + str(self.ClientSoftwareCertificates) + ', '  + \
-             'LocaleIds:' + str(self.LocaleIds) + ', '  + \
-             'UserIdentityToken:' + str(self.UserIdentityToken) + ', '  + \
+        return 'ActivateSessionParameters(' + 'ClientSignature:' + str(self.ClientSignature) + ', ' + \
+             'ClientSoftwareCertificates:' + str(self.ClientSoftwareCertificates) + ', ' + \
+             'LocaleIds:' + str(self.LocaleIds) + ', ' + \
+             'UserIdentityToken:' + str(self.UserIdentityToken) + ', ' + \
              'UserTokenSignature:' + str(self.UserTokenSignature) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ActivateSessionRequest(object):
     '''
     Activates a session with the server.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: ActivateSessionParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: ActivateSessionParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.ActivateSessionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = ActivateSessionParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ActivateSessionRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = ActivateSessionParameters.from_binary(data)
-        return obj
-    
+        return ActivateSessionRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = ActivateSessionParameters.from_binary(data)
+
     def __str__(self):
-        return 'ActivateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'ActivateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ActivateSessionResult(object):
     '''
-    :ivar ServerNonce: 
-    :vartype ServerNonce: ByteString 
-    :ivar Results: 
-    :vartype Results: StatusCode 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar ServerNonce:
+    :vartype ServerNonce: ByteString
+    :ivar Results:
+    :vartype Results: StatusCode
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "ServerNonce",
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ServerNonce = b''
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('ByteString', self.ServerNonce))
@@ -3472,320 +3819,361 @@ class ActivateSessionResult(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ActivateSessionResult()
-        obj.ServerNonce = unpack_uatype('ByteString', data)
+        return ActivateSessionResult(data)
+
+    def _binary_init(self, data):
+        self.ServerNonce = unpack_uatype('ByteString', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'ActivateSessionResult(' + 'ServerNonce:' + str(self.ServerNonce) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'ActivateSessionResult(' + 'ServerNonce:' + str(self.ServerNonce) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ActivateSessionResponse(object):
     '''
     Activates a session with the server.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: ActivateSessionResult 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: ActivateSessionResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.ActivateSessionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = ActivateSessionResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ActivateSessionResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = ActivateSessionResult.from_binary(data)
-        return obj
-    
+        return ActivateSessionResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = ActivateSessionResult.from_binary(data)
+
     def __str__(self):
-        return 'ActivateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'ActivateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CloseSessionRequest(object):
     '''
     Closes a session with the server.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar DeleteSubscriptions: 
-    :vartype DeleteSubscriptions: Boolean 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar DeleteSubscriptions:
+    :vartype DeleteSubscriptions: Boolean
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "DeleteSubscriptions",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.CloseSessionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.DeleteSubscriptions = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(pack_uatype('Boolean', self.DeleteSubscriptions))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CloseSessionRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.DeleteSubscriptions = unpack_uatype('Boolean', data)
-        return obj
-    
+        return CloseSessionRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.DeleteSubscriptions = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'CloseSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'CloseSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'DeleteSubscriptions:' + str(self.DeleteSubscriptions) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CloseSessionResponse(object):
     '''
     Closes a session with the server.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.CloseSessionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CloseSessionResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        return obj
-    
+        return CloseSessionResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+
     def __str__(self):
-        return 'CloseSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+        return 'CloseSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
              'ResponseHeader:' + str(self.ResponseHeader) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CancelParameters(object):
     '''
-    :ivar RequestHandle: 
-    :vartype RequestHandle: UInt32 
+    :ivar RequestHandle:
+    :vartype RequestHandle: UInt32
     '''
-    
+
     __slots__ = [
         "RequestHandle",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.RequestHandle = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.RequestHandle))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CancelParameters()
-        obj.RequestHandle = unpack_uatype('UInt32', data)
-        return obj
-    
+        return CancelParameters(data)
+
+    def _binary_init(self, data):
+        self.RequestHandle = unpack_uatype('UInt32', data)
+
     def __str__(self):
         return 'CancelParameters(' + 'RequestHandle:' + str(self.RequestHandle) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CancelRequest(object):
     '''
     Cancels an outstanding request.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: CancelParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: CancelParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.CancelRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CancelParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CancelRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = CancelParameters.from_binary(data)
-        return obj
-    
+        return CancelRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = CancelParameters.from_binary(data)
+
     def __str__(self):
-        return 'CancelRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'CancelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CancelResult(object):
     '''
-    :ivar CancelCount: 
-    :vartype CancelCount: UInt32 
+    :ivar CancelCount:
+    :vartype CancelCount: UInt32
     '''
-    
+
     __slots__ = [
         "CancelCount",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.CancelCount = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.CancelCount))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CancelResult()
-        obj.CancelCount = unpack_uatype('UInt32', data)
-        return obj
-    
+        return CancelResult(data)
+
+    def _binary_init(self, data):
+        self.CancelCount = unpack_uatype('UInt32', data)
+
     def __str__(self):
         return 'CancelResult(' + 'CancelCount:' + str(self.CancelCount) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CancelResponse(object):
     '''
     Cancels an outstanding request.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: CancelResult 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: CancelResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.CancelResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = CancelResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CancelResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = CancelResult.from_binary(data)
-        return obj
-    
+        return CancelResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = CancelResult.from_binary(data)
+
     def __str__(self):
-        return 'CancelResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'CancelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class NodeAttributes(object):
     '''
     The base attributes for all nodes.
-    
-    :ivar SpecifiedAttributes: 
-    :vartype SpecifiedAttributes: UInt32 
-    :ivar DisplayName: 
-    :vartype DisplayName: LocalizedText 
-    :ivar Description: 
-    :vartype Description: LocalizedText 
-    :ivar WriteMask: 
-    :vartype WriteMask: UInt32 
-    :ivar UserWriteMask: 
-    :vartype UserWriteMask: UInt32 
+
+    :ivar SpecifiedAttributes:
+    :vartype SpecifiedAttributes: UInt32
+    :ivar DisplayName:
+    :vartype DisplayName: LocalizedText
+    :ivar Description:
+    :vartype Description: LocalizedText
+    :ivar WriteMask:
+    :vartype WriteMask: UInt32
+    :ivar UserWriteMask:
+    :vartype UserWriteMask: UInt32
     '''
-    
+
     __slots__ = [
         "SpecifiedAttributes",
         "DisplayName",
@@ -3793,14 +4181,17 @@ class NodeAttributes(object):
         "WriteMask",
         "UserWriteMask",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
         self.WriteMask = 0
         self.UserWriteMask = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
@@ -3809,44 +4200,46 @@ class NodeAttributes(object):
         packet.append(pack_uatype('UInt32', self.WriteMask))
         packet.append(pack_uatype('UInt32', self.UserWriteMask))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = NodeAttributes()
-        obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        obj.WriteMask = unpack_uatype('UInt32', data)
-        obj.UserWriteMask = unpack_uatype('UInt32', data)
-        return obj
-    
+        return NodeAttributes(data)
+
+    def _binary_init(self, data):
+        self.SpecifiedAttributes = unpack_uatype('UInt32', data)
+        self.DisplayName = LocalizedText.from_binary(data)
+        self.Description = LocalizedText.from_binary(data)
+        self.WriteMask = unpack_uatype('UInt32', data)
+        self.UserWriteMask = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'NodeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
-             'DisplayName:' + str(self.DisplayName) + ', '  + \
-             'Description:' + str(self.Description) + ', '  + \
-             'WriteMask:' + str(self.WriteMask) + ', '  + \
+        return 'NodeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
+             'DisplayName:' + str(self.DisplayName) + ', ' + \
+             'Description:' + str(self.Description) + ', ' + \
+             'WriteMask:' + str(self.WriteMask) + ', ' + \
              'UserWriteMask:' + str(self.UserWriteMask) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ObjectAttributes(object):
     '''
     The attributes for an object node.
-    
-    :ivar SpecifiedAttributes: 
-    :vartype SpecifiedAttributes: UInt32 
-    :ivar DisplayName: 
-    :vartype DisplayName: LocalizedText 
-    :ivar Description: 
-    :vartype Description: LocalizedText 
-    :ivar WriteMask: 
-    :vartype WriteMask: UInt32 
-    :ivar UserWriteMask: 
-    :vartype UserWriteMask: UInt32 
-    :ivar EventNotifier: 
-    :vartype EventNotifier: Byte 
+
+    :ivar SpecifiedAttributes:
+    :vartype SpecifiedAttributes: UInt32
+    :ivar DisplayName:
+    :vartype DisplayName: LocalizedText
+    :ivar Description:
+    :vartype Description: LocalizedText
+    :ivar WriteMask:
+    :vartype WriteMask: UInt32
+    :ivar UserWriteMask:
+    :vartype UserWriteMask: UInt32
+    :ivar EventNotifier:
+    :vartype EventNotifier: Byte
     '''
-    
+
     __slots__ = [
         "SpecifiedAttributes",
         "DisplayName",
@@ -3855,15 +4248,18 @@ class ObjectAttributes(object):
         "UserWriteMask",
         "EventNotifier",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
         self.WriteMask = 0
         self.UserWriteMask = 0
         self.EventNotifier = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
@@ -3873,60 +4269,62 @@ class ObjectAttributes(object):
         packet.append(pack_uatype('UInt32', self.UserWriteMask))
         packet.append(pack_uatype('Byte', self.EventNotifier))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ObjectAttributes()
-        obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        obj.WriteMask = unpack_uatype('UInt32', data)
-        obj.UserWriteMask = unpack_uatype('UInt32', data)
-        obj.EventNotifier = unpack_uatype('Byte', data)
-        return obj
-    
+        return ObjectAttributes(data)
+
+    def _binary_init(self, data):
+        self.SpecifiedAttributes = unpack_uatype('UInt32', data)
+        self.DisplayName = LocalizedText.from_binary(data)
+        self.Description = LocalizedText.from_binary(data)
+        self.WriteMask = unpack_uatype('UInt32', data)
+        self.UserWriteMask = unpack_uatype('UInt32', data)
+        self.EventNotifier = unpack_uatype('Byte', data)
+
     def __str__(self):
-        return 'ObjectAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
-             'DisplayName:' + str(self.DisplayName) + ', '  + \
-             'Description:' + str(self.Description) + ', '  + \
-             'WriteMask:' + str(self.WriteMask) + ', '  + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+        return 'ObjectAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
+             'DisplayName:' + str(self.DisplayName) + ', ' + \
+             'Description:' + str(self.Description) + ', ' + \
+             'WriteMask:' + str(self.WriteMask) + ', ' + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
              'EventNotifier:' + str(self.EventNotifier) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class VariableAttributes(object):
     '''
     The attributes for a variable node.
-    
-    :ivar SpecifiedAttributes: 
-    :vartype SpecifiedAttributes: UInt32 
-    :ivar DisplayName: 
-    :vartype DisplayName: LocalizedText 
-    :ivar Description: 
-    :vartype Description: LocalizedText 
-    :ivar WriteMask: 
-    :vartype WriteMask: UInt32 
-    :ivar UserWriteMask: 
-    :vartype UserWriteMask: UInt32 
-    :ivar Value: 
-    :vartype Value: Variant 
-    :ivar DataType: 
-    :vartype DataType: NodeId 
-    :ivar ValueRank: 
-    :vartype ValueRank: Int32 
-    :ivar ArrayDimensions: 
-    :vartype ArrayDimensions: UInt32 
-    :ivar AccessLevel: 
-    :vartype AccessLevel: Byte 
-    :ivar UserAccessLevel: 
-    :vartype UserAccessLevel: Byte 
-    :ivar MinimumSamplingInterval: 
-    :vartype MinimumSamplingInterval: Double 
-    :ivar Historizing: 
-    :vartype Historizing: Boolean 
+
+    :ivar SpecifiedAttributes:
+    :vartype SpecifiedAttributes: UInt32
+    :ivar DisplayName:
+    :vartype DisplayName: LocalizedText
+    :ivar Description:
+    :vartype Description: LocalizedText
+    :ivar WriteMask:
+    :vartype WriteMask: UInt32
+    :ivar UserWriteMask:
+    :vartype UserWriteMask: UInt32
+    :ivar Value:
+    :vartype Value: Variant
+    :ivar DataType:
+    :vartype DataType: NodeId
+    :ivar ValueRank:
+    :vartype ValueRank: Int32
+    :ivar ArrayDimensions:
+    :vartype ArrayDimensions: UInt32
+    :ivar AccessLevel:
+    :vartype AccessLevel: Byte
+    :ivar UserAccessLevel:
+    :vartype UserAccessLevel: Byte
+    :ivar MinimumSamplingInterval:
+    :vartype MinimumSamplingInterval: Double
+    :ivar Historizing:
+    :vartype Historizing: Boolean
     '''
-    
+
     __slots__ = [
         "SpecifiedAttributes",
         "DisplayName",
@@ -3942,8 +4340,11 @@ class VariableAttributes(object):
         "MinimumSamplingInterval",
         "Historizing",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -3957,7 +4358,7 @@ class VariableAttributes(object):
         self.UserAccessLevel = 0
         self.MinimumSamplingInterval = 0
         self.Historizing = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
@@ -3976,62 +4377,64 @@ class VariableAttributes(object):
         packet.append(pack_uatype('Double', self.MinimumSamplingInterval))
         packet.append(pack_uatype('Boolean', self.Historizing))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = VariableAttributes()
-        obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        obj.WriteMask = unpack_uatype('UInt32', data)
-        obj.UserWriteMask = unpack_uatype('UInt32', data)
-        obj.Value = Variant.from_binary(data)
-        obj.DataType = NodeId.from_binary(data)
-        obj.ValueRank = unpack_uatype('Int32', data)
-        obj.ArrayDimensions = unpack_uatype_array('UInt32', data)
-        obj.AccessLevel = unpack_uatype('Byte', data)
-        obj.UserAccessLevel = unpack_uatype('Byte', data)
-        obj.MinimumSamplingInterval = unpack_uatype('Double', data)
-        obj.Historizing = unpack_uatype('Boolean', data)
-        return obj
-    
+        return VariableAttributes(data)
+
+    def _binary_init(self, data):
+        self.SpecifiedAttributes = unpack_uatype('UInt32', data)
+        self.DisplayName = LocalizedText.from_binary(data)
+        self.Description = LocalizedText.from_binary(data)
+        self.WriteMask = unpack_uatype('UInt32', data)
+        self.UserWriteMask = unpack_uatype('UInt32', data)
+        self.Value = Variant.from_binary(data)
+        self.DataType = NodeId.from_binary(data)
+        self.ValueRank = unpack_uatype('Int32', data)
+        self.ArrayDimensions = unpack_uatype_array('UInt32', data)
+        self.AccessLevel = unpack_uatype('Byte', data)
+        self.UserAccessLevel = unpack_uatype('Byte', data)
+        self.MinimumSamplingInterval = unpack_uatype('Double', data)
+        self.Historizing = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'VariableAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
-             'DisplayName:' + str(self.DisplayName) + ', '  + \
-             'Description:' + str(self.Description) + ', '  + \
-             'WriteMask:' + str(self.WriteMask) + ', '  + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
-             'Value:' + str(self.Value) + ', '  + \
-             'DataType:' + str(self.DataType) + ', '  + \
-             'ValueRank:' + str(self.ValueRank) + ', '  + \
-             'ArrayDimensions:' + str(self.ArrayDimensions) + ', '  + \
-             'AccessLevel:' + str(self.AccessLevel) + ', '  + \
-             'UserAccessLevel:' + str(self.UserAccessLevel) + ', '  + \
-             'MinimumSamplingInterval:' + str(self.MinimumSamplingInterval) + ', '  + \
+        return 'VariableAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
+             'DisplayName:' + str(self.DisplayName) + ', ' + \
+             'Description:' + str(self.Description) + ', ' + \
+             'WriteMask:' + str(self.WriteMask) + ', ' + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
+             'Value:' + str(self.Value) + ', ' + \
+             'DataType:' + str(self.DataType) + ', ' + \
+             'ValueRank:' + str(self.ValueRank) + ', ' + \
+             'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
+             'AccessLevel:' + str(self.AccessLevel) + ', ' + \
+             'UserAccessLevel:' + str(self.UserAccessLevel) + ', ' + \
+             'MinimumSamplingInterval:' + str(self.MinimumSamplingInterval) + ', ' + \
              'Historizing:' + str(self.Historizing) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class MethodAttributes(object):
     '''
     The attributes for a method node.
-    
-    :ivar SpecifiedAttributes: 
-    :vartype SpecifiedAttributes: UInt32 
-    :ivar DisplayName: 
-    :vartype DisplayName: LocalizedText 
-    :ivar Description: 
-    :vartype Description: LocalizedText 
-    :ivar WriteMask: 
-    :vartype WriteMask: UInt32 
-    :ivar UserWriteMask: 
-    :vartype UserWriteMask: UInt32 
-    :ivar Executable: 
-    :vartype Executable: Boolean 
-    :ivar UserExecutable: 
-    :vartype UserExecutable: Boolean 
+
+    :ivar SpecifiedAttributes:
+    :vartype SpecifiedAttributes: UInt32
+    :ivar DisplayName:
+    :vartype DisplayName: LocalizedText
+    :ivar Description:
+    :vartype Description: LocalizedText
+    :ivar WriteMask:
+    :vartype WriteMask: UInt32
+    :ivar UserWriteMask:
+    :vartype UserWriteMask: UInt32
+    :ivar Executable:
+    :vartype Executable: Boolean
+    :ivar UserExecutable:
+    :vartype UserExecutable: Boolean
     '''
-    
+
     __slots__ = [
         "SpecifiedAttributes",
         "DisplayName",
@@ -4041,8 +4444,11 @@ class MethodAttributes(object):
         "Executable",
         "UserExecutable",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -4050,7 +4456,7 @@ class MethodAttributes(object):
         self.UserWriteMask = 0
         self.Executable = True
         self.UserExecutable = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
@@ -4061,48 +4467,50 @@ class MethodAttributes(object):
         packet.append(pack_uatype('Boolean', self.Executable))
         packet.append(pack_uatype('Boolean', self.UserExecutable))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = MethodAttributes()
-        obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        obj.WriteMask = unpack_uatype('UInt32', data)
-        obj.UserWriteMask = unpack_uatype('UInt32', data)
-        obj.Executable = unpack_uatype('Boolean', data)
-        obj.UserExecutable = unpack_uatype('Boolean', data)
-        return obj
-    
+        return MethodAttributes(data)
+
+    def _binary_init(self, data):
+        self.SpecifiedAttributes = unpack_uatype('UInt32', data)
+        self.DisplayName = LocalizedText.from_binary(data)
+        self.Description = LocalizedText.from_binary(data)
+        self.WriteMask = unpack_uatype('UInt32', data)
+        self.UserWriteMask = unpack_uatype('UInt32', data)
+        self.Executable = unpack_uatype('Boolean', data)
+        self.UserExecutable = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'MethodAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
-             'DisplayName:' + str(self.DisplayName) + ', '  + \
-             'Description:' + str(self.Description) + ', '  + \
-             'WriteMask:' + str(self.WriteMask) + ', '  + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
-             'Executable:' + str(self.Executable) + ', '  + \
+        return 'MethodAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
+             'DisplayName:' + str(self.DisplayName) + ', ' + \
+             'Description:' + str(self.Description) + ', ' + \
+             'WriteMask:' + str(self.WriteMask) + ', ' + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
+             'Executable:' + str(self.Executable) + ', ' + \
              'UserExecutable:' + str(self.UserExecutable) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ObjectTypeAttributes(object):
     '''
     The attributes for an object type node.
-    
-    :ivar SpecifiedAttributes: 
-    :vartype SpecifiedAttributes: UInt32 
-    :ivar DisplayName: 
-    :vartype DisplayName: LocalizedText 
-    :ivar Description: 
-    :vartype Description: LocalizedText 
-    :ivar WriteMask: 
-    :vartype WriteMask: UInt32 
-    :ivar UserWriteMask: 
-    :vartype UserWriteMask: UInt32 
-    :ivar IsAbstract: 
-    :vartype IsAbstract: Boolean 
+
+    :ivar SpecifiedAttributes:
+    :vartype SpecifiedAttributes: UInt32
+    :ivar DisplayName:
+    :vartype DisplayName: LocalizedText
+    :ivar Description:
+    :vartype Description: LocalizedText
+    :ivar WriteMask:
+    :vartype WriteMask: UInt32
+    :ivar UserWriteMask:
+    :vartype UserWriteMask: UInt32
+    :ivar IsAbstract:
+    :vartype IsAbstract: Boolean
     '''
-    
+
     __slots__ = [
         "SpecifiedAttributes",
         "DisplayName",
@@ -4111,15 +4519,18 @@ class ObjectTypeAttributes(object):
         "UserWriteMask",
         "IsAbstract",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
         self.WriteMask = 0
         self.UserWriteMask = 0
         self.IsAbstract = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
@@ -4129,54 +4540,56 @@ class ObjectTypeAttributes(object):
         packet.append(pack_uatype('UInt32', self.UserWriteMask))
         packet.append(pack_uatype('Boolean', self.IsAbstract))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ObjectTypeAttributes()
-        obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        obj.WriteMask = unpack_uatype('UInt32', data)
-        obj.UserWriteMask = unpack_uatype('UInt32', data)
-        obj.IsAbstract = unpack_uatype('Boolean', data)
-        return obj
-    
+        return ObjectTypeAttributes(data)
+
+    def _binary_init(self, data):
+        self.SpecifiedAttributes = unpack_uatype('UInt32', data)
+        self.DisplayName = LocalizedText.from_binary(data)
+        self.Description = LocalizedText.from_binary(data)
+        self.WriteMask = unpack_uatype('UInt32', data)
+        self.UserWriteMask = unpack_uatype('UInt32', data)
+        self.IsAbstract = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'ObjectTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
-             'DisplayName:' + str(self.DisplayName) + ', '  + \
-             'Description:' + str(self.Description) + ', '  + \
-             'WriteMask:' + str(self.WriteMask) + ', '  + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+        return 'ObjectTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
+             'DisplayName:' + str(self.DisplayName) + ', ' + \
+             'Description:' + str(self.Description) + ', ' + \
+             'WriteMask:' + str(self.WriteMask) + ', ' + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
              'IsAbstract:' + str(self.IsAbstract) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class VariableTypeAttributes(object):
     '''
     The attributes for a variable type node.
-    
-    :ivar SpecifiedAttributes: 
-    :vartype SpecifiedAttributes: UInt32 
-    :ivar DisplayName: 
-    :vartype DisplayName: LocalizedText 
-    :ivar Description: 
-    :vartype Description: LocalizedText 
-    :ivar WriteMask: 
-    :vartype WriteMask: UInt32 
-    :ivar UserWriteMask: 
-    :vartype UserWriteMask: UInt32 
-    :ivar Value: 
-    :vartype Value: Variant 
-    :ivar DataType: 
-    :vartype DataType: NodeId 
-    :ivar ValueRank: 
-    :vartype ValueRank: Int32 
-    :ivar ArrayDimensions: 
-    :vartype ArrayDimensions: UInt32 
-    :ivar IsAbstract: 
-    :vartype IsAbstract: Boolean 
+
+    :ivar SpecifiedAttributes:
+    :vartype SpecifiedAttributes: UInt32
+    :ivar DisplayName:
+    :vartype DisplayName: LocalizedText
+    :ivar Description:
+    :vartype Description: LocalizedText
+    :ivar WriteMask:
+    :vartype WriteMask: UInt32
+    :ivar UserWriteMask:
+    :vartype UserWriteMask: UInt32
+    :ivar Value:
+    :vartype Value: Variant
+    :ivar DataType:
+    :vartype DataType: NodeId
+    :ivar ValueRank:
+    :vartype ValueRank: Int32
+    :ivar ArrayDimensions:
+    :vartype ArrayDimensions: UInt32
+    :ivar IsAbstract:
+    :vartype IsAbstract: Boolean
     '''
-    
+
     __slots__ = [
         "SpecifiedAttributes",
         "DisplayName",
@@ -4189,8 +4602,11 @@ class VariableTypeAttributes(object):
         "ArrayDimensions",
         "IsAbstract",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -4201,7 +4617,7 @@ class VariableTypeAttributes(object):
         self.ValueRank = 0
         self.ArrayDimensions = []
         self.IsAbstract = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
@@ -4217,58 +4633,60 @@ class VariableTypeAttributes(object):
             packet.append(pack_uatype('UInt32', fieldname))
         packet.append(pack_uatype('Boolean', self.IsAbstract))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = VariableTypeAttributes()
-        obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        obj.WriteMask = unpack_uatype('UInt32', data)
-        obj.UserWriteMask = unpack_uatype('UInt32', data)
-        obj.Value = Variant.from_binary(data)
-        obj.DataType = NodeId.from_binary(data)
-        obj.ValueRank = unpack_uatype('Int32', data)
-        obj.ArrayDimensions = unpack_uatype_array('UInt32', data)
-        obj.IsAbstract = unpack_uatype('Boolean', data)
-        return obj
-    
+        return VariableTypeAttributes(data)
+
+    def _binary_init(self, data):
+        self.SpecifiedAttributes = unpack_uatype('UInt32', data)
+        self.DisplayName = LocalizedText.from_binary(data)
+        self.Description = LocalizedText.from_binary(data)
+        self.WriteMask = unpack_uatype('UInt32', data)
+        self.UserWriteMask = unpack_uatype('UInt32', data)
+        self.Value = Variant.from_binary(data)
+        self.DataType = NodeId.from_binary(data)
+        self.ValueRank = unpack_uatype('Int32', data)
+        self.ArrayDimensions = unpack_uatype_array('UInt32', data)
+        self.IsAbstract = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'VariableTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
-             'DisplayName:' + str(self.DisplayName) + ', '  + \
-             'Description:' + str(self.Description) + ', '  + \
-             'WriteMask:' + str(self.WriteMask) + ', '  + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
-             'Value:' + str(self.Value) + ', '  + \
-             'DataType:' + str(self.DataType) + ', '  + \
-             'ValueRank:' + str(self.ValueRank) + ', '  + \
-             'ArrayDimensions:' + str(self.ArrayDimensions) + ', '  + \
+        return 'VariableTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
+             'DisplayName:' + str(self.DisplayName) + ', ' + \
+             'Description:' + str(self.Description) + ', ' + \
+             'WriteMask:' + str(self.WriteMask) + ', ' + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
+             'Value:' + str(self.Value) + ', ' + \
+             'DataType:' + str(self.DataType) + ', ' + \
+             'ValueRank:' + str(self.ValueRank) + ', ' + \
+             'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
              'IsAbstract:' + str(self.IsAbstract) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ReferenceTypeAttributes(object):
     '''
     The attributes for a reference type node.
-    
-    :ivar SpecifiedAttributes: 
-    :vartype SpecifiedAttributes: UInt32 
-    :ivar DisplayName: 
-    :vartype DisplayName: LocalizedText 
-    :ivar Description: 
-    :vartype Description: LocalizedText 
-    :ivar WriteMask: 
-    :vartype WriteMask: UInt32 
-    :ivar UserWriteMask: 
-    :vartype UserWriteMask: UInt32 
-    :ivar IsAbstract: 
-    :vartype IsAbstract: Boolean 
-    :ivar Symmetric: 
-    :vartype Symmetric: Boolean 
-    :ivar InverseName: 
-    :vartype InverseName: LocalizedText 
+
+    :ivar SpecifiedAttributes:
+    :vartype SpecifiedAttributes: UInt32
+    :ivar DisplayName:
+    :vartype DisplayName: LocalizedText
+    :ivar Description:
+    :vartype Description: LocalizedText
+    :ivar WriteMask:
+    :vartype WriteMask: UInt32
+    :ivar UserWriteMask:
+    :vartype UserWriteMask: UInt32
+    :ivar IsAbstract:
+    :vartype IsAbstract: Boolean
+    :ivar Symmetric:
+    :vartype Symmetric: Boolean
+    :ivar InverseName:
+    :vartype InverseName: LocalizedText
     '''
-    
+
     __slots__ = [
         "SpecifiedAttributes",
         "DisplayName",
@@ -4279,8 +4697,11 @@ class ReferenceTypeAttributes(object):
         "Symmetric",
         "InverseName",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -4289,7 +4710,7 @@ class ReferenceTypeAttributes(object):
         self.IsAbstract = True
         self.Symmetric = True
         self.InverseName = LocalizedText()
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
@@ -4301,50 +4722,52 @@ class ReferenceTypeAttributes(object):
         packet.append(pack_uatype('Boolean', self.Symmetric))
         packet.append(self.InverseName.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ReferenceTypeAttributes()
-        obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        obj.WriteMask = unpack_uatype('UInt32', data)
-        obj.UserWriteMask = unpack_uatype('UInt32', data)
-        obj.IsAbstract = unpack_uatype('Boolean', data)
-        obj.Symmetric = unpack_uatype('Boolean', data)
-        obj.InverseName = LocalizedText.from_binary(data)
-        return obj
-    
+        return ReferenceTypeAttributes(data)
+
+    def _binary_init(self, data):
+        self.SpecifiedAttributes = unpack_uatype('UInt32', data)
+        self.DisplayName = LocalizedText.from_binary(data)
+        self.Description = LocalizedText.from_binary(data)
+        self.WriteMask = unpack_uatype('UInt32', data)
+        self.UserWriteMask = unpack_uatype('UInt32', data)
+        self.IsAbstract = unpack_uatype('Boolean', data)
+        self.Symmetric = unpack_uatype('Boolean', data)
+        self.InverseName = LocalizedText.from_binary(data)
+
     def __str__(self):
-        return 'ReferenceTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
-             'DisplayName:' + str(self.DisplayName) + ', '  + \
-             'Description:' + str(self.Description) + ', '  + \
-             'WriteMask:' + str(self.WriteMask) + ', '  + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
-             'IsAbstract:' + str(self.IsAbstract) + ', '  + \
-             'Symmetric:' + str(self.Symmetric) + ', '  + \
+        return 'ReferenceTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
+             'DisplayName:' + str(self.DisplayName) + ', ' + \
+             'Description:' + str(self.Description) + ', ' + \
+             'WriteMask:' + str(self.WriteMask) + ', ' + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
+             'IsAbstract:' + str(self.IsAbstract) + ', ' + \
+             'Symmetric:' + str(self.Symmetric) + ', ' + \
              'InverseName:' + str(self.InverseName) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DataTypeAttributes(object):
     '''
     The attributes for a data type node.
-    
-    :ivar SpecifiedAttributes: 
-    :vartype SpecifiedAttributes: UInt32 
-    :ivar DisplayName: 
-    :vartype DisplayName: LocalizedText 
-    :ivar Description: 
-    :vartype Description: LocalizedText 
-    :ivar WriteMask: 
-    :vartype WriteMask: UInt32 
-    :ivar UserWriteMask: 
-    :vartype UserWriteMask: UInt32 
-    :ivar IsAbstract: 
-    :vartype IsAbstract: Boolean 
+
+    :ivar SpecifiedAttributes:
+    :vartype SpecifiedAttributes: UInt32
+    :ivar DisplayName:
+    :vartype DisplayName: LocalizedText
+    :ivar Description:
+    :vartype Description: LocalizedText
+    :ivar WriteMask:
+    :vartype WriteMask: UInt32
+    :ivar UserWriteMask:
+    :vartype UserWriteMask: UInt32
+    :ivar IsAbstract:
+    :vartype IsAbstract: Boolean
     '''
-    
+
     __slots__ = [
         "SpecifiedAttributes",
         "DisplayName",
@@ -4353,15 +4776,18 @@ class DataTypeAttributes(object):
         "UserWriteMask",
         "IsAbstract",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
         self.WriteMask = 0
         self.UserWriteMask = 0
         self.IsAbstract = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
@@ -4371,48 +4797,50 @@ class DataTypeAttributes(object):
         packet.append(pack_uatype('UInt32', self.UserWriteMask))
         packet.append(pack_uatype('Boolean', self.IsAbstract))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DataTypeAttributes()
-        obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        obj.WriteMask = unpack_uatype('UInt32', data)
-        obj.UserWriteMask = unpack_uatype('UInt32', data)
-        obj.IsAbstract = unpack_uatype('Boolean', data)
-        return obj
-    
+        return DataTypeAttributes(data)
+
+    def _binary_init(self, data):
+        self.SpecifiedAttributes = unpack_uatype('UInt32', data)
+        self.DisplayName = LocalizedText.from_binary(data)
+        self.Description = LocalizedText.from_binary(data)
+        self.WriteMask = unpack_uatype('UInt32', data)
+        self.UserWriteMask = unpack_uatype('UInt32', data)
+        self.IsAbstract = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'DataTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
-             'DisplayName:' + str(self.DisplayName) + ', '  + \
-             'Description:' + str(self.Description) + ', '  + \
-             'WriteMask:' + str(self.WriteMask) + ', '  + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
+        return 'DataTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
+             'DisplayName:' + str(self.DisplayName) + ', ' + \
+             'Description:' + str(self.Description) + ', ' + \
+             'WriteMask:' + str(self.WriteMask) + ', ' + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
              'IsAbstract:' + str(self.IsAbstract) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ViewAttributes(object):
     '''
     The attributes for a view node.
-    
-    :ivar SpecifiedAttributes: 
-    :vartype SpecifiedAttributes: UInt32 
-    :ivar DisplayName: 
-    :vartype DisplayName: LocalizedText 
-    :ivar Description: 
-    :vartype Description: LocalizedText 
-    :ivar WriteMask: 
-    :vartype WriteMask: UInt32 
-    :ivar UserWriteMask: 
-    :vartype UserWriteMask: UInt32 
-    :ivar ContainsNoLoops: 
-    :vartype ContainsNoLoops: Boolean 
-    :ivar EventNotifier: 
-    :vartype EventNotifier: Byte 
+
+    :ivar SpecifiedAttributes:
+    :vartype SpecifiedAttributes: UInt32
+    :ivar DisplayName:
+    :vartype DisplayName: LocalizedText
+    :ivar Description:
+    :vartype Description: LocalizedText
+    :ivar WriteMask:
+    :vartype WriteMask: UInt32
+    :ivar UserWriteMask:
+    :vartype UserWriteMask: UInt32
+    :ivar ContainsNoLoops:
+    :vartype ContainsNoLoops: Boolean
+    :ivar EventNotifier:
+    :vartype EventNotifier: Byte
     '''
-    
+
     __slots__ = [
         "SpecifiedAttributes",
         "DisplayName",
@@ -4422,8 +4850,11 @@ class ViewAttributes(object):
         "ContainsNoLoops",
         "EventNotifier",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -4431,7 +4862,7 @@ class ViewAttributes(object):
         self.UserWriteMask = 0
         self.ContainsNoLoops = True
         self.EventNotifier = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SpecifiedAttributes))
@@ -4442,50 +4873,52 @@ class ViewAttributes(object):
         packet.append(pack_uatype('Boolean', self.ContainsNoLoops))
         packet.append(pack_uatype('Byte', self.EventNotifier))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ViewAttributes()
-        obj.SpecifiedAttributes = unpack_uatype('UInt32', data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        obj.WriteMask = unpack_uatype('UInt32', data)
-        obj.UserWriteMask = unpack_uatype('UInt32', data)
-        obj.ContainsNoLoops = unpack_uatype('Boolean', data)
-        obj.EventNotifier = unpack_uatype('Byte', data)
-        return obj
-    
+        return ViewAttributes(data)
+
+    def _binary_init(self, data):
+        self.SpecifiedAttributes = unpack_uatype('UInt32', data)
+        self.DisplayName = LocalizedText.from_binary(data)
+        self.Description = LocalizedText.from_binary(data)
+        self.WriteMask = unpack_uatype('UInt32', data)
+        self.UserWriteMask = unpack_uatype('UInt32', data)
+        self.ContainsNoLoops = unpack_uatype('Boolean', data)
+        self.EventNotifier = unpack_uatype('Byte', data)
+
     def __str__(self):
-        return 'ViewAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', '  + \
-             'DisplayName:' + str(self.DisplayName) + ', '  + \
-             'Description:' + str(self.Description) + ', '  + \
-             'WriteMask:' + str(self.WriteMask) + ', '  + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', '  + \
-             'ContainsNoLoops:' + str(self.ContainsNoLoops) + ', '  + \
+        return 'ViewAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
+             'DisplayName:' + str(self.DisplayName) + ', ' + \
+             'Description:' + str(self.Description) + ', ' + \
+             'WriteMask:' + str(self.WriteMask) + ', ' + \
+             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
+             'ContainsNoLoops:' + str(self.ContainsNoLoops) + ', ' + \
              'EventNotifier:' + str(self.EventNotifier) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class AddNodesItem(object):
     '''
     A request to add a node to the server address space.
-    
-    :ivar ParentNodeId: 
-    :vartype ParentNodeId: ExpandedNodeId 
-    :ivar ReferenceTypeId: 
-    :vartype ReferenceTypeId: NodeId 
-    :ivar RequestedNewNodeId: 
-    :vartype RequestedNewNodeId: ExpandedNodeId 
-    :ivar BrowseName: 
-    :vartype BrowseName: QualifiedName 
-    :ivar NodeClass: 
-    :vartype NodeClass: NodeClass 
-    :ivar NodeAttributes: 
-    :vartype NodeAttributes: ExtensionObject 
-    :ivar TypeDefinition: 
-    :vartype TypeDefinition: ExpandedNodeId 
+
+    :ivar ParentNodeId:
+    :vartype ParentNodeId: ExpandedNodeId
+    :ivar ReferenceTypeId:
+    :vartype ReferenceTypeId: NodeId
+    :ivar RequestedNewNodeId:
+    :vartype RequestedNewNodeId: ExpandedNodeId
+    :ivar BrowseName:
+    :vartype BrowseName: QualifiedName
+    :ivar NodeClass:
+    :vartype NodeClass: NodeClass
+    :ivar NodeAttributes:
+    :vartype NodeAttributes: ExtensionObject
+    :ivar TypeDefinition:
+    :vartype TypeDefinition: ExpandedNodeId
     '''
-    
+
     __slots__ = [
         "ParentNodeId",
         "ReferenceTypeId",
@@ -4495,8 +4928,11 @@ class AddNodesItem(object):
         "NodeAttributes",
         "TypeDefinition",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ParentNodeId = ExpandedNodeId()
         self.ReferenceTypeId = NodeId()
         self.RequestedNewNodeId = ExpandedNodeId()
@@ -4504,7 +4940,7 @@ class AddNodesItem(object):
         self.NodeClass = 0
         self.NodeAttributes = None
         self.TypeDefinition = ExpandedNodeId()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.ParentNodeId.to_binary())
@@ -4515,174 +4951,196 @@ class AddNodesItem(object):
         packet.append(extensionobject_to_binary(self.NodeAttributes))
         packet.append(self.TypeDefinition.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = AddNodesItem()
-        obj.ParentNodeId = ExpandedNodeId.from_binary(data)
-        obj.ReferenceTypeId = NodeId.from_binary(data)
-        obj.RequestedNewNodeId = ExpandedNodeId.from_binary(data)
-        obj.BrowseName = QualifiedName.from_binary(data)
-        obj.NodeClass = unpack_uatype('UInt32', data)
-        obj.NodeAttributes = extensionobject_from_binary(data)
-        obj.TypeDefinition = ExpandedNodeId.from_binary(data)
-        return obj
-    
+        return AddNodesItem(data)
+
+    def _binary_init(self, data):
+        self.ParentNodeId = ExpandedNodeId.from_binary(data)
+        self.ReferenceTypeId = NodeId.from_binary(data)
+        self.RequestedNewNodeId = ExpandedNodeId.from_binary(data)
+        self.BrowseName = QualifiedName.from_binary(data)
+        self.NodeClass = unpack_uatype('UInt32', data)
+        self.NodeAttributes = extensionobject_from_binary(data)
+        self.TypeDefinition = ExpandedNodeId.from_binary(data)
+
     def __str__(self):
-        return 'AddNodesItem(' + 'ParentNodeId:' + str(self.ParentNodeId) + ', '  + \
-             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
-             'RequestedNewNodeId:' + str(self.RequestedNewNodeId) + ', '  + \
-             'BrowseName:' + str(self.BrowseName) + ', '  + \
-             'NodeClass:' + str(self.NodeClass) + ', '  + \
-             'NodeAttributes:' + str(self.NodeAttributes) + ', '  + \
+        return 'AddNodesItem(' + 'ParentNodeId:' + str(self.ParentNodeId) + ', ' + \
+             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
+             'RequestedNewNodeId:' + str(self.RequestedNewNodeId) + ', ' + \
+             'BrowseName:' + str(self.BrowseName) + ', ' + \
+             'NodeClass:' + str(self.NodeClass) + ', ' + \
+             'NodeAttributes:' + str(self.NodeAttributes) + ', ' + \
              'TypeDefinition:' + str(self.TypeDefinition) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class AddNodesResult(object):
     '''
     A result of an add node operation.
-    
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar AddedNodeId: 
-    :vartype AddedNodeId: NodeId 
+
+    :ivar StatusCode:
+    :vartype StatusCode: StatusCode
+    :ivar AddedNodeId:
+    :vartype AddedNodeId: NodeId
     '''
-    
+
     __slots__ = [
         "StatusCode",
         "AddedNodeId",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StatusCode = StatusCode()
         self.AddedNodeId = NodeId()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
         packet.append(self.AddedNodeId.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = AddNodesResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        obj.AddedNodeId = NodeId.from_binary(data)
-        return obj
-    
+        return AddNodesResult(data)
+
+    def _binary_init(self, data):
+        self.StatusCode = StatusCode.from_binary(data)
+        self.AddedNodeId = NodeId.from_binary(data)
+
     def __str__(self):
-        return 'AddNodesResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+        return 'AddNodesResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
              'AddedNodeId:' + str(self.AddedNodeId) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class AddNodesParameters(object):
     '''
-    :ivar NodesToAdd: 
-    :vartype NodesToAdd: AddNodesItem 
+    :ivar NodesToAdd:
+    :vartype NodesToAdd: AddNodesItem
     '''
-    
+
     __slots__ = [
         "NodesToAdd",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodesToAdd = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.NodesToAdd)))
         for fieldname in self.NodesToAdd:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = AddNodesParameters()
+        return AddNodesParameters(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.NodesToAdd.append(AddNodesItem.from_binary(data))
-        return obj
-    
+                array.append(AddNodesItem.from_binary(data))
+        self.NodesToAdd = array
+
     def __str__(self):
         return 'AddNodesParameters(' + 'NodesToAdd:' + str(self.NodesToAdd) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class AddNodesRequest(object):
     '''
     Adds one or more nodes to the server address space.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: AddNodesParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: AddNodesParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.AddNodesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = AddNodesParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = AddNodesRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = AddNodesParameters.from_binary(data)
-        return obj
-    
+        return AddNodesRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = AddNodesParameters.from_binary(data)
+
     def __str__(self):
-        return 'AddNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'AddNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class AddNodesResponse(object):
     '''
     Adds one or more nodes to the server address space.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Results: 
-    :vartype Results: AddNodesResult 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Results:
+    :vartype Results: AddNodesResult
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.AddNodesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -4694,48 +5152,54 @@ class AddNodesResponse(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = AddNodesResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return AddNodesResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(AddNodesResult.from_binary(data))
+                array.append(AddNodesResult.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'AddNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'AddNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class AddReferencesItem(object):
     '''
     A request to add a reference to the server address space.
-    
-    :ivar SourceNodeId: 
-    :vartype SourceNodeId: NodeId 
-    :ivar ReferenceTypeId: 
-    :vartype ReferenceTypeId: NodeId 
-    :ivar IsForward: 
-    :vartype IsForward: Boolean 
-    :ivar TargetServerUri: 
-    :vartype TargetServerUri: String 
-    :ivar TargetNodeId: 
-    :vartype TargetNodeId: ExpandedNodeId 
-    :ivar TargetNodeClass: 
-    :vartype TargetNodeClass: NodeClass 
+
+    :ivar SourceNodeId:
+    :vartype SourceNodeId: NodeId
+    :ivar ReferenceTypeId:
+    :vartype ReferenceTypeId: NodeId
+    :ivar IsForward:
+    :vartype IsForward: Boolean
+    :ivar TargetServerUri:
+    :vartype TargetServerUri: String
+    :ivar TargetNodeId:
+    :vartype TargetNodeId: ExpandedNodeId
+    :ivar TargetNodeClass:
+    :vartype TargetNodeClass: NodeClass
     '''
-    
+
     __slots__ = [
         "SourceNodeId",
         "ReferenceTypeId",
@@ -4744,15 +5208,18 @@ class AddReferencesItem(object):
         "TargetNodeId",
         "TargetNodeClass",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SourceNodeId = NodeId()
         self.ReferenceTypeId = NodeId()
         self.IsForward = True
         self.TargetServerUri = ''
         self.TargetNodeId = ExpandedNodeId()
         self.TargetNodeClass = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.SourceNodeId.to_binary())
@@ -4762,51 +5229,56 @@ class AddReferencesItem(object):
         packet.append(self.TargetNodeId.to_binary())
         packet.append(pack_uatype('UInt32', self.TargetNodeClass))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = AddReferencesItem()
-        obj.SourceNodeId = NodeId.from_binary(data)
-        obj.ReferenceTypeId = NodeId.from_binary(data)
-        obj.IsForward = unpack_uatype('Boolean', data)
-        obj.TargetServerUri = unpack_uatype('String', data)
-        obj.TargetNodeId = ExpandedNodeId.from_binary(data)
-        obj.TargetNodeClass = unpack_uatype('UInt32', data)
-        return obj
-    
+        return AddReferencesItem(data)
+
+    def _binary_init(self, data):
+        self.SourceNodeId = NodeId.from_binary(data)
+        self.ReferenceTypeId = NodeId.from_binary(data)
+        self.IsForward = unpack_uatype('Boolean', data)
+        self.TargetServerUri = unpack_uatype('String', data)
+        self.TargetNodeId = ExpandedNodeId.from_binary(data)
+        self.TargetNodeClass = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'AddReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', '  + \
-             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
-             'IsForward:' + str(self.IsForward) + ', '  + \
-             'TargetServerUri:' + str(self.TargetServerUri) + ', '  + \
-             'TargetNodeId:' + str(self.TargetNodeId) + ', '  + \
+        return 'AddReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', ' + \
+             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
+             'IsForward:' + str(self.IsForward) + ', ' + \
+             'TargetServerUri:' + str(self.TargetServerUri) + ', ' + \
+             'TargetNodeId:' + str(self.TargetNodeId) + ', ' + \
              'TargetNodeClass:' + str(self.TargetNodeClass) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class AddReferencesRequest(object):
     '''
     Adds one or more references to the server address space.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar ReferencesToAdd: 
-    :vartype ReferencesToAdd: AddReferencesItem 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar ReferencesToAdd:
+    :vartype ReferencesToAdd: AddReferencesItem
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "ReferencesToAdd",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.AddReferencesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.ReferencesToAdd = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -4815,52 +5287,59 @@ class AddReferencesRequest(object):
         for fieldname in self.ReferencesToAdd:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = AddReferencesRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
+        return AddReferencesRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.ReferencesToAdd.append(AddReferencesItem.from_binary(data))
-        return obj
-    
+                array.append(AddReferencesItem.from_binary(data))
+        self.ReferencesToAdd = array
+
     def __str__(self):
-        return 'AddReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'AddReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'ReferencesToAdd:' + str(self.ReferencesToAdd) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class AddReferencesResponse(object):
     '''
     Adds one or more references to the server address space.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Results: 
-    :vartype Results: StatusCode 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Results:
+    :vartype Results: StatusCode
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.AddReferencesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -4872,164 +5351,190 @@ class AddReferencesResponse(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = AddReferencesResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return AddReferencesResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'AddReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'AddReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteNodesItem(object):
     '''
     A request to delete a node to the server address space.
-    
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
-    :ivar DeleteTargetReferences: 
-    :vartype DeleteTargetReferences: Boolean 
+
+    :ivar NodeId:
+    :vartype NodeId: NodeId
+    :ivar DeleteTargetReferences:
+    :vartype DeleteTargetReferences: Boolean
     '''
-    
+
     __slots__ = [
         "NodeId",
         "DeleteTargetReferences",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = NodeId()
         self.DeleteTargetReferences = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
         packet.append(pack_uatype('Boolean', self.DeleteTargetReferences))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteNodesItem()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.DeleteTargetReferences = unpack_uatype('Boolean', data)
-        return obj
-    
+        return DeleteNodesItem(data)
+
+    def _binary_init(self, data):
+        self.NodeId = NodeId.from_binary(data)
+        self.DeleteTargetReferences = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'DeleteNodesItem(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+        return 'DeleteNodesItem(' + 'NodeId:' + str(self.NodeId) + ', ' + \
              'DeleteTargetReferences:' + str(self.DeleteTargetReferences) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteNodesParameters(object):
     '''
-    :ivar NodesToDelete: 
-    :vartype NodesToDelete: DeleteNodesItem 
+    :ivar NodesToDelete:
+    :vartype NodesToDelete: DeleteNodesItem
     '''
-    
+
     __slots__ = [
         "NodesToDelete",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodesToDelete = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.NodesToDelete)))
         for fieldname in self.NodesToDelete:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteNodesParameters()
+        return DeleteNodesParameters(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.NodesToDelete.append(DeleteNodesItem.from_binary(data))
-        return obj
-    
+                array.append(DeleteNodesItem.from_binary(data))
+        self.NodesToDelete = array
+
     def __str__(self):
         return 'DeleteNodesParameters(' + 'NodesToDelete:' + str(self.NodesToDelete) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteNodesRequest(object):
     '''
     Delete one or more nodes from the server address space.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: DeleteNodesParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: DeleteNodesParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteNodesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteNodesParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteNodesRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = DeleteNodesParameters.from_binary(data)
-        return obj
-    
+        return DeleteNodesRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = DeleteNodesParameters.from_binary(data)
+
     def __str__(self):
-        return 'DeleteNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'DeleteNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteNodesResult(object):
     '''
-    :ivar Results: 
-    :vartype Results: StatusCode 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar Results:
+    :vartype Results: StatusCode
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
@@ -5039,87 +5544,98 @@ class DeleteNodesResult(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteNodesResult()
+        return DeleteNodesResult(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'DeleteNodesResult(' + 'Results:' + str(self.Results) + ', '  + \
+        return 'DeleteNodesResult(' + 'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteNodesResponse(object):
     '''
     Delete one or more nodes from the server address space.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: DeleteNodesResult 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: DeleteNodesResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteNodesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = DeleteNodesResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteNodesResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = DeleteNodesResult.from_binary(data)
-        return obj
-    
+        return DeleteNodesResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = DeleteNodesResult.from_binary(data)
+
     def __str__(self):
-        return 'DeleteNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'DeleteNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteReferencesItem(object):
     '''
     A request to delete a node from the server address space.
-    
-    :ivar SourceNodeId: 
-    :vartype SourceNodeId: NodeId 
-    :ivar ReferenceTypeId: 
-    :vartype ReferenceTypeId: NodeId 
-    :ivar IsForward: 
-    :vartype IsForward: Boolean 
-    :ivar TargetNodeId: 
-    :vartype TargetNodeId: ExpandedNodeId 
-    :ivar DeleteBidirectional: 
-    :vartype DeleteBidirectional: Boolean 
+
+    :ivar SourceNodeId:
+    :vartype SourceNodeId: NodeId
+    :ivar ReferenceTypeId:
+    :vartype ReferenceTypeId: NodeId
+    :ivar IsForward:
+    :vartype IsForward: Boolean
+    :ivar TargetNodeId:
+    :vartype TargetNodeId: ExpandedNodeId
+    :ivar DeleteBidirectional:
+    :vartype DeleteBidirectional: Boolean
     '''
-    
+
     __slots__ = [
         "SourceNodeId",
         "ReferenceTypeId",
@@ -5127,14 +5643,17 @@ class DeleteReferencesItem(object):
         "TargetNodeId",
         "DeleteBidirectional",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SourceNodeId = NodeId()
         self.ReferenceTypeId = NodeId()
         self.IsForward = True
         self.TargetNodeId = ExpandedNodeId()
         self.DeleteBidirectional = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.SourceNodeId.to_binary())
@@ -5143,122 +5662,139 @@ class DeleteReferencesItem(object):
         packet.append(self.TargetNodeId.to_binary())
         packet.append(pack_uatype('Boolean', self.DeleteBidirectional))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteReferencesItem()
-        obj.SourceNodeId = NodeId.from_binary(data)
-        obj.ReferenceTypeId = NodeId.from_binary(data)
-        obj.IsForward = unpack_uatype('Boolean', data)
-        obj.TargetNodeId = ExpandedNodeId.from_binary(data)
-        obj.DeleteBidirectional = unpack_uatype('Boolean', data)
-        return obj
-    
+        return DeleteReferencesItem(data)
+
+    def _binary_init(self, data):
+        self.SourceNodeId = NodeId.from_binary(data)
+        self.ReferenceTypeId = NodeId.from_binary(data)
+        self.IsForward = unpack_uatype('Boolean', data)
+        self.TargetNodeId = ExpandedNodeId.from_binary(data)
+        self.DeleteBidirectional = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'DeleteReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', '  + \
-             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
-             'IsForward:' + str(self.IsForward) + ', '  + \
-             'TargetNodeId:' + str(self.TargetNodeId) + ', '  + \
+        return 'DeleteReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', ' + \
+             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
+             'IsForward:' + str(self.IsForward) + ', ' + \
+             'TargetNodeId:' + str(self.TargetNodeId) + ', ' + \
              'DeleteBidirectional:' + str(self.DeleteBidirectional) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteReferencesParameters(object):
     '''
-    :ivar ReferencesToDelete: 
-    :vartype ReferencesToDelete: DeleteReferencesItem 
+    :ivar ReferencesToDelete:
+    :vartype ReferencesToDelete: DeleteReferencesItem
     '''
-    
+
     __slots__ = [
         "ReferencesToDelete",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ReferencesToDelete = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.ReferencesToDelete)))
         for fieldname in self.ReferencesToDelete:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteReferencesParameters()
+        return DeleteReferencesParameters(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.ReferencesToDelete.append(DeleteReferencesItem.from_binary(data))
-        return obj
-    
+                array.append(DeleteReferencesItem.from_binary(data))
+        self.ReferencesToDelete = array
+
     def __str__(self):
         return 'DeleteReferencesParameters(' + 'ReferencesToDelete:' + str(self.ReferencesToDelete) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteReferencesRequest(object):
     '''
     Delete one or more references from the server address space.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: DeleteReferencesParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: DeleteReferencesParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteReferencesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteReferencesParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteReferencesRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = DeleteReferencesParameters.from_binary(data)
-        return obj
-    
+        return DeleteReferencesRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = DeleteReferencesParameters.from_binary(data)
+
     def __str__(self):
-        return 'DeleteReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'DeleteReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteReferencesResult(object):
     '''
-    :ivar Results: 
-    :vartype Results: StatusCode 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar Results:
+    :vartype Results: StatusCode
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
@@ -5268,134 +5804,150 @@ class DeleteReferencesResult(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteReferencesResult()
+        return DeleteReferencesResult(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'DeleteReferencesResult(' + 'Results:' + str(self.Results) + ', '  + \
+        return 'DeleteReferencesResult(' + 'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteReferencesResponse(object):
     '''
     Delete one or more references from the server address space.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: DeleteReferencesResult 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: DeleteReferencesResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteReferencesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = DeleteReferencesResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteReferencesResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = DeleteReferencesResult.from_binary(data)
-        return obj
-    
+        return DeleteReferencesResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = DeleteReferencesResult.from_binary(data)
+
     def __str__(self):
-        return 'DeleteReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'DeleteReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ViewDescription(object):
     '''
     The view to browse.
-    
-    :ivar ViewId: 
-    :vartype ViewId: NodeId 
-    :ivar Timestamp: 
-    :vartype Timestamp: DateTime 
-    :ivar ViewVersion: 
-    :vartype ViewVersion: UInt32 
+
+    :ivar ViewId:
+    :vartype ViewId: NodeId
+    :ivar Timestamp:
+    :vartype Timestamp: DateTime
+    :ivar ViewVersion:
+    :vartype ViewVersion: UInt32
     '''
-    
+
     __slots__ = [
         "ViewId",
         "Timestamp",
         "ViewVersion",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ViewId = NodeId()
         self.Timestamp = datetime.now()
         self.ViewVersion = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.ViewId.to_binary())
         packet.append(pack_uatype('DateTime', self.Timestamp))
         packet.append(pack_uatype('UInt32', self.ViewVersion))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ViewDescription()
-        obj.ViewId = NodeId.from_binary(data)
-        obj.Timestamp = unpack_uatype('DateTime', data)
-        obj.ViewVersion = unpack_uatype('UInt32', data)
-        return obj
-    
+        return ViewDescription(data)
+
+    def _binary_init(self, data):
+        self.ViewId = NodeId.from_binary(data)
+        self.Timestamp = unpack_uatype('DateTime', data)
+        self.ViewVersion = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'ViewDescription(' + 'ViewId:' + str(self.ViewId) + ', '  + \
-             'Timestamp:' + str(self.Timestamp) + ', '  + \
+        return 'ViewDescription(' + 'ViewId:' + str(self.ViewId) + ', ' + \
+             'Timestamp:' + str(self.Timestamp) + ', ' + \
              'ViewVersion:' + str(self.ViewVersion) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class BrowseDescription(object):
     '''
     A request to browse the the references from a node.
-    
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
-    :ivar BrowseDirection: 
-    :vartype BrowseDirection: BrowseDirection 
-    :ivar ReferenceTypeId: 
-    :vartype ReferenceTypeId: NodeId 
-    :ivar IncludeSubtypes: 
-    :vartype IncludeSubtypes: Boolean 
-    :ivar NodeClassMask: 
-    :vartype NodeClassMask: UInt32 
-    :ivar ResultMask: 
-    :vartype ResultMask: UInt32 
+
+    :ivar NodeId:
+    :vartype NodeId: NodeId
+    :ivar BrowseDirection:
+    :vartype BrowseDirection: BrowseDirection
+    :ivar ReferenceTypeId:
+    :vartype ReferenceTypeId: NodeId
+    :ivar IncludeSubtypes:
+    :vartype IncludeSubtypes: Boolean
+    :ivar NodeClassMask:
+    :vartype NodeClassMask: UInt32
+    :ivar ResultMask:
+    :vartype ResultMask: UInt32
     '''
-    
+
     __slots__ = [
         "NodeId",
         "BrowseDirection",
@@ -5404,15 +5956,18 @@ class BrowseDescription(object):
         "NodeClassMask",
         "ResultMask",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = NodeId()
         self.BrowseDirection = 0
         self.ReferenceTypeId = NodeId()
         self.IncludeSubtypes = True
         self.NodeClassMask = 0
         self.ResultMask = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
@@ -5422,48 +5977,50 @@ class BrowseDescription(object):
         packet.append(pack_uatype('UInt32', self.NodeClassMask))
         packet.append(pack_uatype('UInt32', self.ResultMask))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = BrowseDescription()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.BrowseDirection = unpack_uatype('UInt32', data)
-        obj.ReferenceTypeId = NodeId.from_binary(data)
-        obj.IncludeSubtypes = unpack_uatype('Boolean', data)
-        obj.NodeClassMask = unpack_uatype('UInt32', data)
-        obj.ResultMask = unpack_uatype('UInt32', data)
-        return obj
-    
+        return BrowseDescription(data)
+
+    def _binary_init(self, data):
+        self.NodeId = NodeId.from_binary(data)
+        self.BrowseDirection = unpack_uatype('UInt32', data)
+        self.ReferenceTypeId = NodeId.from_binary(data)
+        self.IncludeSubtypes = unpack_uatype('Boolean', data)
+        self.NodeClassMask = unpack_uatype('UInt32', data)
+        self.ResultMask = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'BrowseDescription(' + 'NodeId:' + str(self.NodeId) + ', '  + \
-             'BrowseDirection:' + str(self.BrowseDirection) + ', '  + \
-             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
-             'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', '  + \
-             'NodeClassMask:' + str(self.NodeClassMask) + ', '  + \
+        return 'BrowseDescription(' + 'NodeId:' + str(self.NodeId) + ', ' + \
+             'BrowseDirection:' + str(self.BrowseDirection) + ', ' + \
+             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
+             'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', ' + \
+             'NodeClassMask:' + str(self.NodeClassMask) + ', ' + \
              'ResultMask:' + str(self.ResultMask) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ReferenceDescription(object):
     '''
     The description of a reference.
-    
-    :ivar ReferenceTypeId: 
-    :vartype ReferenceTypeId: NodeId 
-    :ivar IsForward: 
-    :vartype IsForward: Boolean 
-    :ivar NodeId: 
-    :vartype NodeId: ExpandedNodeId 
-    :ivar BrowseName: 
-    :vartype BrowseName: QualifiedName 
-    :ivar DisplayName: 
-    :vartype DisplayName: LocalizedText 
-    :ivar NodeClass: 
-    :vartype NodeClass: NodeClass 
-    :ivar TypeDefinition: 
-    :vartype TypeDefinition: ExpandedNodeId 
+
+    :ivar ReferenceTypeId:
+    :vartype ReferenceTypeId: NodeId
+    :ivar IsForward:
+    :vartype IsForward: Boolean
+    :ivar NodeId:
+    :vartype NodeId: ExpandedNodeId
+    :ivar BrowseName:
+    :vartype BrowseName: QualifiedName
+    :ivar DisplayName:
+    :vartype DisplayName: LocalizedText
+    :ivar NodeClass:
+    :vartype NodeClass: NodeClass
+    :ivar TypeDefinition:
+    :vartype TypeDefinition: ExpandedNodeId
     '''
-    
+
     __slots__ = [
         "ReferenceTypeId",
         "IsForward",
@@ -5473,8 +6030,11 @@ class ReferenceDescription(object):
         "NodeClass",
         "TypeDefinition",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ReferenceTypeId = NodeId()
         self.IsForward = True
         self.NodeId = ExpandedNodeId()
@@ -5482,7 +6042,7 @@ class ReferenceDescription(object):
         self.DisplayName = LocalizedText()
         self.NodeClass = 0
         self.TypeDefinition = ExpandedNodeId()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.ReferenceTypeId.to_binary())
@@ -5493,53 +6053,58 @@ class ReferenceDescription(object):
         packet.append(pack_uatype('UInt32', self.NodeClass))
         packet.append(self.TypeDefinition.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ReferenceDescription()
-        obj.ReferenceTypeId = NodeId.from_binary(data)
-        obj.IsForward = unpack_uatype('Boolean', data)
-        obj.NodeId = ExpandedNodeId.from_binary(data)
-        obj.BrowseName = QualifiedName.from_binary(data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.NodeClass = unpack_uatype('UInt32', data)
-        obj.TypeDefinition = ExpandedNodeId.from_binary(data)
-        return obj
-    
+        return ReferenceDescription(data)
+
+    def _binary_init(self, data):
+        self.ReferenceTypeId = NodeId.from_binary(data)
+        self.IsForward = unpack_uatype('Boolean', data)
+        self.NodeId = ExpandedNodeId.from_binary(data)
+        self.BrowseName = QualifiedName.from_binary(data)
+        self.DisplayName = LocalizedText.from_binary(data)
+        self.NodeClass = unpack_uatype('UInt32', data)
+        self.TypeDefinition = ExpandedNodeId.from_binary(data)
+
     def __str__(self):
-        return 'ReferenceDescription(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
-             'IsForward:' + str(self.IsForward) + ', '  + \
-             'NodeId:' + str(self.NodeId) + ', '  + \
-             'BrowseName:' + str(self.BrowseName) + ', '  + \
-             'DisplayName:' + str(self.DisplayName) + ', '  + \
-             'NodeClass:' + str(self.NodeClass) + ', '  + \
+        return 'ReferenceDescription(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
+             'IsForward:' + str(self.IsForward) + ', ' + \
+             'NodeId:' + str(self.NodeId) + ', ' + \
+             'BrowseName:' + str(self.BrowseName) + ', ' + \
+             'DisplayName:' + str(self.DisplayName) + ', ' + \
+             'NodeClass:' + str(self.NodeClass) + ', ' + \
              'TypeDefinition:' + str(self.TypeDefinition) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class BrowseResult(object):
     '''
     The result of a browse operation.
-    
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar ContinuationPoint: 
-    :vartype ContinuationPoint: ByteString 
-    :ivar References: 
-    :vartype References: ReferenceDescription 
+
+    :ivar StatusCode:
+    :vartype StatusCode: StatusCode
+    :ivar ContinuationPoint:
+    :vartype ContinuationPoint: ByteString
+    :ivar References:
+    :vartype References: ReferenceDescription
     '''
-    
+
     __slots__ = [
         "StatusCode",
         "ContinuationPoint",
         "References",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StatusCode = StatusCode()
         self.ContinuationPoint = b''
         self.References = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
@@ -5548,46 +6113,53 @@ class BrowseResult(object):
         for fieldname in self.References:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = BrowseResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        obj.ContinuationPoint = unpack_uatype('ByteString', data)
+        return BrowseResult(data)
+
+    def _binary_init(self, data):
+        self.StatusCode = StatusCode.from_binary(data)
+        self.ContinuationPoint = unpack_uatype('ByteString', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.References.append(ReferenceDescription.from_binary(data))
-        return obj
-    
+                array.append(ReferenceDescription.from_binary(data))
+        self.References = array
+
     def __str__(self):
-        return 'BrowseResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
-             'ContinuationPoint:' + str(self.ContinuationPoint) + ', '  + \
+        return 'BrowseResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
+             'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
              'References:' + str(self.References) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class BrowseParameters(object):
     '''
-    :ivar View: 
-    :vartype View: ViewDescription 
-    :ivar RequestedMaxReferencesPerNode: 
-    :vartype RequestedMaxReferencesPerNode: UInt32 
-    :ivar NodesToBrowse: 
-    :vartype NodesToBrowse: BrowseDescription 
+    :ivar View:
+    :vartype View: ViewDescription
+    :ivar RequestedMaxReferencesPerNode:
+    :vartype RequestedMaxReferencesPerNode: UInt32
+    :ivar NodesToBrowse:
+    :vartype NodesToBrowse: BrowseDescription
     '''
-    
+
     __slots__ = [
         "View",
         "RequestedMaxReferencesPerNode",
         "NodesToBrowse",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.View = ViewDescription()
         self.RequestedMaxReferencesPerNode = 0
         self.NodesToBrowse = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.View.to_binary())
@@ -5596,97 +6168,109 @@ class BrowseParameters(object):
         for fieldname in self.NodesToBrowse:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = BrowseParameters()
-        obj.View = ViewDescription.from_binary(data)
-        obj.RequestedMaxReferencesPerNode = unpack_uatype('UInt32', data)
+        return BrowseParameters(data)
+
+    def _binary_init(self, data):
+        self.View = ViewDescription.from_binary(data)
+        self.RequestedMaxReferencesPerNode = unpack_uatype('UInt32', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.NodesToBrowse.append(BrowseDescription.from_binary(data))
-        return obj
-    
+                array.append(BrowseDescription.from_binary(data))
+        self.NodesToBrowse = array
+
     def __str__(self):
-        return 'BrowseParameters(' + 'View:' + str(self.View) + ', '  + \
-             'RequestedMaxReferencesPerNode:' + str(self.RequestedMaxReferencesPerNode) + ', '  + \
+        return 'BrowseParameters(' + 'View:' + str(self.View) + ', ' + \
+             'RequestedMaxReferencesPerNode:' + str(self.RequestedMaxReferencesPerNode) + ', ' + \
              'NodesToBrowse:' + str(self.NodesToBrowse) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class BrowseRequest(object):
     '''
     Browse the references for one or more nodes from the server address space.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: BrowseParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: BrowseParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.BrowseRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = BrowseParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = BrowseRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = BrowseParameters.from_binary(data)
-        return obj
-    
+        return BrowseRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = BrowseParameters.from_binary(data)
+
     def __str__(self):
-        return 'BrowseRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'BrowseRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class BrowseResponse(object):
     '''
     Browse the references for one or more nodes from the server address space.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Results: 
-    :vartype Results: BrowseResult 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Results:
+    :vartype Results: BrowseResult
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.BrowseResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -5698,47 +6282,56 @@ class BrowseResponse(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = BrowseResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return BrowseResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(BrowseResult.from_binary(data))
+                array.append(BrowseResult.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'BrowseResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'BrowseResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class BrowseNextParameters(object):
     '''
-    :ivar ReleaseContinuationPoints: 
-    :vartype ReleaseContinuationPoints: Boolean 
-    :ivar ContinuationPoints: 
-    :vartype ContinuationPoints: ByteString 
+    :ivar ReleaseContinuationPoints:
+    :vartype ReleaseContinuationPoints: Boolean
+    :ivar ContinuationPoints:
+    :vartype ContinuationPoints: ByteString
     '''
-    
+
     __slots__ = [
         "ReleaseContinuationPoints",
         "ContinuationPoints",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ReleaseContinuationPoints = True
         self.ContinuationPoints = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Boolean', self.ReleaseContinuationPoints))
@@ -5746,82 +6339,92 @@ class BrowseNextParameters(object):
         for fieldname in self.ContinuationPoints:
             packet.append(pack_uatype('ByteString', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = BrowseNextParameters()
-        obj.ReleaseContinuationPoints = unpack_uatype('Boolean', data)
-        obj.ContinuationPoints = unpack_uatype_array('ByteString', data)
-        return obj
-    
+        return BrowseNextParameters(data)
+
+    def _binary_init(self, data):
+        self.ReleaseContinuationPoints = unpack_uatype('Boolean', data)
+        self.ContinuationPoints = unpack_uatype_array('ByteString', data)
+
     def __str__(self):
-        return 'BrowseNextParameters(' + 'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', '  + \
+        return 'BrowseNextParameters(' + 'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', ' + \
              'ContinuationPoints:' + str(self.ContinuationPoints) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class BrowseNextRequest(object):
     '''
     Continues one or more browse operations.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: BrowseNextParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: BrowseNextParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.BrowseNextRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = BrowseNextParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = BrowseNextRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = BrowseNextParameters.from_binary(data)
-        return obj
-    
+        return BrowseNextRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = BrowseNextParameters.from_binary(data)
+
     def __str__(self):
-        return 'BrowseNextRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'BrowseNextRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class BrowseNextResult(object):
     '''
-    :ivar Results: 
-    :vartype Results: BrowseResult 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar Results:
+    :vartype Results: BrowseResult
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
@@ -5831,98 +6434,112 @@ class BrowseNextResult(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = BrowseNextResult()
+        return BrowseNextResult(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(BrowseResult.from_binary(data))
+                array.append(BrowseResult.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'BrowseNextResult(' + 'Results:' + str(self.Results) + ', '  + \
+        return 'BrowseNextResult(' + 'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class BrowseNextResponse(object):
     '''
     Continues one or more browse operations.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: BrowseNextResult 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: BrowseNextResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.BrowseNextResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = BrowseNextResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = BrowseNextResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = BrowseNextResult.from_binary(data)
-        return obj
-    
+        return BrowseNextResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = BrowseNextResult.from_binary(data)
+
     def __str__(self):
-        return 'BrowseNextResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'BrowseNextResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RelativePathElement(object):
     '''
     An element in a relative path.
-    
-    :ivar ReferenceTypeId: 
-    :vartype ReferenceTypeId: NodeId 
-    :ivar IsInverse: 
-    :vartype IsInverse: Boolean 
-    :ivar IncludeSubtypes: 
-    :vartype IncludeSubtypes: Boolean 
-    :ivar TargetName: 
-    :vartype TargetName: QualifiedName 
+
+    :ivar ReferenceTypeId:
+    :vartype ReferenceTypeId: NodeId
+    :ivar IsInverse:
+    :vartype IsInverse: Boolean
+    :ivar IncludeSubtypes:
+    :vartype IncludeSubtypes: Boolean
+    :ivar TargetName:
+    :vartype TargetName: QualifiedName
     '''
-    
+
     __slots__ = [
         "ReferenceTypeId",
         "IsInverse",
         "IncludeSubtypes",
         "TargetName",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ReferenceTypeId = NodeId()
         self.IsInverse = True
         self.IncludeSubtypes = True
         self.TargetName = QualifiedName()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.ReferenceTypeId.to_binary())
@@ -5930,155 +6547,177 @@ class RelativePathElement(object):
         packet.append(pack_uatype('Boolean', self.IncludeSubtypes))
         packet.append(self.TargetName.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RelativePathElement()
-        obj.ReferenceTypeId = NodeId.from_binary(data)
-        obj.IsInverse = unpack_uatype('Boolean', data)
-        obj.IncludeSubtypes = unpack_uatype('Boolean', data)
-        obj.TargetName = QualifiedName.from_binary(data)
-        return obj
-    
+        return RelativePathElement(data)
+
+    def _binary_init(self, data):
+        self.ReferenceTypeId = NodeId.from_binary(data)
+        self.IsInverse = unpack_uatype('Boolean', data)
+        self.IncludeSubtypes = unpack_uatype('Boolean', data)
+        self.TargetName = QualifiedName.from_binary(data)
+
     def __str__(self):
-        return 'RelativePathElement(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
-             'IsInverse:' + str(self.IsInverse) + ', '  + \
-             'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', '  + \
+        return 'RelativePathElement(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
+             'IsInverse:' + str(self.IsInverse) + ', ' + \
+             'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', ' + \
              'TargetName:' + str(self.TargetName) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RelativePath(object):
     '''
     A relative path constructed from reference types and browse names.
-    
-    :ivar Elements: 
-    :vartype Elements: RelativePathElement 
+
+    :ivar Elements:
+    :vartype Elements: RelativePathElement
     '''
-    
+
     __slots__ = [
         "Elements",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Elements = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Elements)))
         for fieldname in self.Elements:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RelativePath()
+        return RelativePath(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Elements.append(RelativePathElement.from_binary(data))
-        return obj
-    
+                array.append(RelativePathElement.from_binary(data))
+        self.Elements = array
+
     def __str__(self):
         return 'RelativePath(' + 'Elements:' + str(self.Elements) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class BrowsePath(object):
     '''
     A request to translate a path into a node id.
-    
-    :ivar StartingNode: 
-    :vartype StartingNode: NodeId 
-    :ivar RelativePath: 
-    :vartype RelativePath: RelativePath 
+
+    :ivar StartingNode:
+    :vartype StartingNode: NodeId
+    :ivar RelativePath:
+    :vartype RelativePath: RelativePath
     '''
-    
+
     __slots__ = [
         "StartingNode",
         "RelativePath",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StartingNode = NodeId()
         self.RelativePath = RelativePath()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.StartingNode.to_binary())
         packet.append(self.RelativePath.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = BrowsePath()
-        obj.StartingNode = NodeId.from_binary(data)
-        obj.RelativePath = RelativePath.from_binary(data)
-        return obj
-    
+        return BrowsePath(data)
+
+    def _binary_init(self, data):
+        self.StartingNode = NodeId.from_binary(data)
+        self.RelativePath = RelativePath.from_binary(data)
+
     def __str__(self):
-        return 'BrowsePath(' + 'StartingNode:' + str(self.StartingNode) + ', '  + \
+        return 'BrowsePath(' + 'StartingNode:' + str(self.StartingNode) + ', ' + \
              'RelativePath:' + str(self.RelativePath) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class BrowsePathTarget(object):
     '''
     The target of the translated path.
-    
-    :ivar TargetId: 
-    :vartype TargetId: ExpandedNodeId 
-    :ivar RemainingPathIndex: 
-    :vartype RemainingPathIndex: UInt32 
+
+    :ivar TargetId:
+    :vartype TargetId: ExpandedNodeId
+    :ivar RemainingPathIndex:
+    :vartype RemainingPathIndex: UInt32
     '''
-    
+
     __slots__ = [
         "TargetId",
         "RemainingPathIndex",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TargetId = ExpandedNodeId()
         self.RemainingPathIndex = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TargetId.to_binary())
         packet.append(pack_uatype('UInt32', self.RemainingPathIndex))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = BrowsePathTarget()
-        obj.TargetId = ExpandedNodeId.from_binary(data)
-        obj.RemainingPathIndex = unpack_uatype('UInt32', data)
-        return obj
-    
+        return BrowsePathTarget(data)
+
+    def _binary_init(self, data):
+        self.TargetId = ExpandedNodeId.from_binary(data)
+        self.RemainingPathIndex = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'BrowsePathTarget(' + 'TargetId:' + str(self.TargetId) + ', '  + \
+        return 'BrowsePathTarget(' + 'TargetId:' + str(self.TargetId) + ', ' + \
              'RemainingPathIndex:' + str(self.RemainingPathIndex) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class BrowsePathResult(object):
     '''
     The result of a translate opearation.
-    
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar Targets: 
-    :vartype Targets: BrowsePathTarget 
+
+    :ivar StatusCode:
+    :vartype StatusCode: StatusCode
+    :ivar Targets:
+    :vartype Targets: BrowsePathTarget
     '''
-    
+
     __slots__ = [
         "StatusCode",
         "Targets",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StatusCode = StatusCode()
         self.Targets = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
@@ -6086,129 +6725,148 @@ class BrowsePathResult(object):
         for fieldname in self.Targets:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = BrowsePathResult()
-        obj.StatusCode = StatusCode.from_binary(data)
+        return BrowsePathResult(data)
+
+    def _binary_init(self, data):
+        self.StatusCode = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Targets.append(BrowsePathTarget.from_binary(data))
-        return obj
-    
+                array.append(BrowsePathTarget.from_binary(data))
+        self.Targets = array
+
     def __str__(self):
-        return 'BrowsePathResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+        return 'BrowsePathResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
              'Targets:' + str(self.Targets) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class TranslateBrowsePathsToNodeIdsParameters(object):
     '''
-    :ivar BrowsePaths: 
-    :vartype BrowsePaths: BrowsePath 
+    :ivar BrowsePaths:
+    :vartype BrowsePaths: BrowsePath
     '''
-    
+
     __slots__ = [
         "BrowsePaths",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.BrowsePaths = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.BrowsePaths)))
         for fieldname in self.BrowsePaths:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = TranslateBrowsePathsToNodeIdsParameters()
+        return TranslateBrowsePathsToNodeIdsParameters(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.BrowsePaths.append(BrowsePath.from_binary(data))
-        return obj
-    
+                array.append(BrowsePath.from_binary(data))
+        self.BrowsePaths = array
+
     def __str__(self):
         return 'TranslateBrowsePathsToNodeIdsParameters(' + 'BrowsePaths:' + str(self.BrowsePaths) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class TranslateBrowsePathsToNodeIdsRequest(object):
     '''
     Translates one or more paths in the server address space.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: TranslateBrowsePathsToNodeIdsParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: TranslateBrowsePathsToNodeIdsParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = TranslateBrowsePathsToNodeIdsParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = TranslateBrowsePathsToNodeIdsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = TranslateBrowsePathsToNodeIdsParameters.from_binary(data)
-        return obj
-    
+        return TranslateBrowsePathsToNodeIdsRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = TranslateBrowsePathsToNodeIdsParameters.from_binary(data)
+
     def __str__(self):
-        return 'TranslateBrowsePathsToNodeIdsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'TranslateBrowsePathsToNodeIdsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class TranslateBrowsePathsToNodeIdsResponse(object):
     '''
     Translates one or more paths in the server address space.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Results: 
-    :vartype Results: BrowsePathResult 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Results:
+    :vartype Results: BrowsePathResult
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -6220,327 +6878,374 @@ class TranslateBrowsePathsToNodeIdsResponse(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = TranslateBrowsePathsToNodeIdsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return TranslateBrowsePathsToNodeIdsResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(BrowsePathResult.from_binary(data))
+                array.append(BrowsePathResult.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'TranslateBrowsePathsToNodeIdsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'TranslateBrowsePathsToNodeIdsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RegisterNodesParameters(object):
     '''
-    :ivar NodesToRegister: 
-    :vartype NodesToRegister: NodeId 
+    :ivar NodesToRegister:
+    :vartype NodesToRegister: NodeId
     '''
-    
+
     __slots__ = [
         "NodesToRegister",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodesToRegister = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.NodesToRegister)))
         for fieldname in self.NodesToRegister:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RegisterNodesParameters()
+        return RegisterNodesParameters(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.NodesToRegister.append(NodeId.from_binary(data))
-        return obj
-    
+                array.append(NodeId.from_binary(data))
+        self.NodesToRegister = array
+
     def __str__(self):
         return 'RegisterNodesParameters(' + 'NodesToRegister:' + str(self.NodesToRegister) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RegisterNodesRequest(object):
     '''
     Registers one or more nodes for repeated use within a session.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: RegisterNodesParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: RegisterNodesParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.RegisterNodesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = RegisterNodesParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RegisterNodesRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = RegisterNodesParameters.from_binary(data)
-        return obj
-    
+        return RegisterNodesRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = RegisterNodesParameters.from_binary(data)
+
     def __str__(self):
-        return 'RegisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'RegisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RegisterNodesResult(object):
     '''
-    :ivar RegisteredNodeIds: 
-    :vartype RegisteredNodeIds: NodeId 
+    :ivar RegisteredNodeIds:
+    :vartype RegisteredNodeIds: NodeId
     '''
-    
+
     __slots__ = [
         "RegisteredNodeIds",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.RegisteredNodeIds = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.RegisteredNodeIds)))
         for fieldname in self.RegisteredNodeIds:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RegisterNodesResult()
+        return RegisterNodesResult(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.RegisteredNodeIds.append(NodeId.from_binary(data))
-        return obj
-    
+                array.append(NodeId.from_binary(data))
+        self.RegisteredNodeIds = array
+
     def __str__(self):
         return 'RegisterNodesResult(' + 'RegisteredNodeIds:' + str(self.RegisteredNodeIds) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RegisterNodesResponse(object):
     '''
     Registers one or more nodes for repeated use within a session.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: RegisterNodesResult 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: RegisterNodesResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.RegisterNodesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = RegisterNodesResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RegisterNodesResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = RegisterNodesResult.from_binary(data)
-        return obj
-    
+        return RegisterNodesResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = RegisterNodesResult.from_binary(data)
+
     def __str__(self):
-        return 'RegisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'RegisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class UnregisterNodesParameters(object):
     '''
-    :ivar NodesToUnregister: 
-    :vartype NodesToUnregister: NodeId 
+    :ivar NodesToUnregister:
+    :vartype NodesToUnregister: NodeId
     '''
-    
+
     __slots__ = [
         "NodesToUnregister",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodesToUnregister = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.NodesToUnregister)))
         for fieldname in self.NodesToUnregister:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = UnregisterNodesParameters()
+        return UnregisterNodesParameters(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.NodesToUnregister.append(NodeId.from_binary(data))
-        return obj
-    
+                array.append(NodeId.from_binary(data))
+        self.NodesToUnregister = array
+
     def __str__(self):
         return 'UnregisterNodesParameters(' + 'NodesToUnregister:' + str(self.NodesToUnregister) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class UnregisterNodesRequest(object):
     '''
     Unregisters one or more previously registered nodes.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: UnregisterNodesParameters 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: UnregisterNodesParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.UnregisterNodesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = UnregisterNodesParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = UnregisterNodesRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = UnregisterNodesParameters.from_binary(data)
-        return obj
-    
+        return UnregisterNodesRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = UnregisterNodesParameters.from_binary(data)
+
     def __str__(self):
-        return 'UnregisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'UnregisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class UnregisterNodesResponse(object):
     '''
     Unregisters one or more previously registered nodes.
-    
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.UnregisterNodesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = UnregisterNodesResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        return obj
-    
+        return UnregisterNodesResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+
     def __str__(self):
-        return 'UnregisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
+        return 'UnregisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
              'ResponseHeader:' + str(self.ResponseHeader) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class EndpointConfiguration(object):
     '''
-    :ivar OperationTimeout: 
-    :vartype OperationTimeout: Int32 
-    :ivar UseBinaryEncoding: 
-    :vartype UseBinaryEncoding: Boolean 
-    :ivar MaxStringLength: 
-    :vartype MaxStringLength: Int32 
-    :ivar MaxByteStringLength: 
-    :vartype MaxByteStringLength: Int32 
-    :ivar MaxArrayLength: 
-    :vartype MaxArrayLength: Int32 
-    :ivar MaxMessageSize: 
-    :vartype MaxMessageSize: Int32 
-    :ivar MaxBufferSize: 
-    :vartype MaxBufferSize: Int32 
-    :ivar ChannelLifetime: 
-    :vartype ChannelLifetime: Int32 
-    :ivar SecurityTokenLifetime: 
-    :vartype SecurityTokenLifetime: Int32 
+    :ivar OperationTimeout:
+    :vartype OperationTimeout: Int32
+    :ivar UseBinaryEncoding:
+    :vartype UseBinaryEncoding: Boolean
+    :ivar MaxStringLength:
+    :vartype MaxStringLength: Int32
+    :ivar MaxByteStringLength:
+    :vartype MaxByteStringLength: Int32
+    :ivar MaxArrayLength:
+    :vartype MaxArrayLength: Int32
+    :ivar MaxMessageSize:
+    :vartype MaxMessageSize: Int32
+    :ivar MaxBufferSize:
+    :vartype MaxBufferSize: Int32
+    :ivar ChannelLifetime:
+    :vartype ChannelLifetime: Int32
+    :ivar SecurityTokenLifetime:
+    :vartype SecurityTokenLifetime: Int32
     '''
-    
+
     __slots__ = [
         "OperationTimeout",
         "UseBinaryEncoding",
@@ -6552,8 +7257,11 @@ class EndpointConfiguration(object):
         "ChannelLifetime",
         "SecurityTokenLifetime",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.OperationTimeout = 0
         self.UseBinaryEncoding = True
         self.MaxStringLength = 0
@@ -6563,7 +7271,7 @@ class EndpointConfiguration(object):
         self.MaxBufferSize = 0
         self.ChannelLifetime = 0
         self.SecurityTokenLifetime = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Int32', self.OperationTimeout))
@@ -6576,50 +7284,52 @@ class EndpointConfiguration(object):
         packet.append(pack_uatype('Int32', self.ChannelLifetime))
         packet.append(pack_uatype('Int32', self.SecurityTokenLifetime))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = EndpointConfiguration()
-        obj.OperationTimeout = unpack_uatype('Int32', data)
-        obj.UseBinaryEncoding = unpack_uatype('Boolean', data)
-        obj.MaxStringLength = unpack_uatype('Int32', data)
-        obj.MaxByteStringLength = unpack_uatype('Int32', data)
-        obj.MaxArrayLength = unpack_uatype('Int32', data)
-        obj.MaxMessageSize = unpack_uatype('Int32', data)
-        obj.MaxBufferSize = unpack_uatype('Int32', data)
-        obj.ChannelLifetime = unpack_uatype('Int32', data)
-        obj.SecurityTokenLifetime = unpack_uatype('Int32', data)
-        return obj
-    
+        return EndpointConfiguration(data)
+
+    def _binary_init(self, data):
+        self.OperationTimeout = unpack_uatype('Int32', data)
+        self.UseBinaryEncoding = unpack_uatype('Boolean', data)
+        self.MaxStringLength = unpack_uatype('Int32', data)
+        self.MaxByteStringLength = unpack_uatype('Int32', data)
+        self.MaxArrayLength = unpack_uatype('Int32', data)
+        self.MaxMessageSize = unpack_uatype('Int32', data)
+        self.MaxBufferSize = unpack_uatype('Int32', data)
+        self.ChannelLifetime = unpack_uatype('Int32', data)
+        self.SecurityTokenLifetime = unpack_uatype('Int32', data)
+
     def __str__(self):
-        return 'EndpointConfiguration(' + 'OperationTimeout:' + str(self.OperationTimeout) + ', '  + \
-             'UseBinaryEncoding:' + str(self.UseBinaryEncoding) + ', '  + \
-             'MaxStringLength:' + str(self.MaxStringLength) + ', '  + \
-             'MaxByteStringLength:' + str(self.MaxByteStringLength) + ', '  + \
-             'MaxArrayLength:' + str(self.MaxArrayLength) + ', '  + \
-             'MaxMessageSize:' + str(self.MaxMessageSize) + ', '  + \
-             'MaxBufferSize:' + str(self.MaxBufferSize) + ', '  + \
-             'ChannelLifetime:' + str(self.ChannelLifetime) + ', '  + \
+        return 'EndpointConfiguration(' + 'OperationTimeout:' + str(self.OperationTimeout) + ', ' + \
+             'UseBinaryEncoding:' + str(self.UseBinaryEncoding) + ', ' + \
+             'MaxStringLength:' + str(self.MaxStringLength) + ', ' + \
+             'MaxByteStringLength:' + str(self.MaxByteStringLength) + ', ' + \
+             'MaxArrayLength:' + str(self.MaxArrayLength) + ', ' + \
+             'MaxMessageSize:' + str(self.MaxMessageSize) + ', ' + \
+             'MaxBufferSize:' + str(self.MaxBufferSize) + ', ' + \
+             'ChannelLifetime:' + str(self.ChannelLifetime) + ', ' + \
              'SecurityTokenLifetime:' + str(self.SecurityTokenLifetime) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SupportedProfile(object):
     '''
-    :ivar OrganizationUri: 
-    :vartype OrganizationUri: String 
-    :ivar ProfileId: 
-    :vartype ProfileId: String 
-    :ivar ComplianceTool: 
-    :vartype ComplianceTool: String 
-    :ivar ComplianceDate: 
-    :vartype ComplianceDate: DateTime 
-    :ivar ComplianceLevel: 
-    :vartype ComplianceLevel: ComplianceLevel 
-    :ivar UnsupportedUnitIds: 
-    :vartype UnsupportedUnitIds: String 
+    :ivar OrganizationUri:
+    :vartype OrganizationUri: String
+    :ivar ProfileId:
+    :vartype ProfileId: String
+    :ivar ComplianceTool:
+    :vartype ComplianceTool: String
+    :ivar ComplianceDate:
+    :vartype ComplianceDate: DateTime
+    :ivar ComplianceLevel:
+    :vartype ComplianceLevel: ComplianceLevel
+    :ivar UnsupportedUnitIds:
+    :vartype UnsupportedUnitIds: String
     '''
-    
+
     __slots__ = [
         "OrganizationUri",
         "ProfileId",
@@ -6628,15 +7338,18 @@ class SupportedProfile(object):
         "ComplianceLevel",
         "UnsupportedUnitIds",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.OrganizationUri = ''
         self.ProfileId = ''
         self.ComplianceTool = ''
         self.ComplianceDate = datetime.now()
         self.ComplianceLevel = 0
         self.UnsupportedUnitIds = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.OrganizationUri))
@@ -6648,52 +7361,54 @@ class SupportedProfile(object):
         for fieldname in self.UnsupportedUnitIds:
             packet.append(pack_uatype('String', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SupportedProfile()
-        obj.OrganizationUri = unpack_uatype('String', data)
-        obj.ProfileId = unpack_uatype('String', data)
-        obj.ComplianceTool = unpack_uatype('String', data)
-        obj.ComplianceDate = unpack_uatype('DateTime', data)
-        obj.ComplianceLevel = unpack_uatype('UInt32', data)
-        obj.UnsupportedUnitIds = unpack_uatype_array('String', data)
-        return obj
-    
+        return SupportedProfile(data)
+
+    def _binary_init(self, data):
+        self.OrganizationUri = unpack_uatype('String', data)
+        self.ProfileId = unpack_uatype('String', data)
+        self.ComplianceTool = unpack_uatype('String', data)
+        self.ComplianceDate = unpack_uatype('DateTime', data)
+        self.ComplianceLevel = unpack_uatype('UInt32', data)
+        self.UnsupportedUnitIds = unpack_uatype_array('String', data)
+
     def __str__(self):
-        return 'SupportedProfile(' + 'OrganizationUri:' + str(self.OrganizationUri) + ', '  + \
-             'ProfileId:' + str(self.ProfileId) + ', '  + \
-             'ComplianceTool:' + str(self.ComplianceTool) + ', '  + \
-             'ComplianceDate:' + str(self.ComplianceDate) + ', '  + \
-             'ComplianceLevel:' + str(self.ComplianceLevel) + ', '  + \
+        return 'SupportedProfile(' + 'OrganizationUri:' + str(self.OrganizationUri) + ', ' + \
+             'ProfileId:' + str(self.ProfileId) + ', ' + \
+             'ComplianceTool:' + str(self.ComplianceTool) + ', ' + \
+             'ComplianceDate:' + str(self.ComplianceDate) + ', ' + \
+             'ComplianceLevel:' + str(self.ComplianceLevel) + ', ' + \
              'UnsupportedUnitIds:' + str(self.UnsupportedUnitIds) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SoftwareCertificate(object):
     '''
-    :ivar ProductName: 
-    :vartype ProductName: String 
-    :ivar ProductUri: 
-    :vartype ProductUri: String 
-    :ivar VendorName: 
-    :vartype VendorName: String 
-    :ivar VendorProductCertificate: 
-    :vartype VendorProductCertificate: ByteString 
-    :ivar SoftwareVersion: 
-    :vartype SoftwareVersion: String 
-    :ivar BuildNumber: 
-    :vartype BuildNumber: String 
-    :ivar BuildDate: 
-    :vartype BuildDate: DateTime 
-    :ivar IssuedBy: 
-    :vartype IssuedBy: String 
-    :ivar IssueDate: 
-    :vartype IssueDate: DateTime 
-    :ivar SupportedProfiles: 
-    :vartype SupportedProfiles: SupportedProfile 
+    :ivar ProductName:
+    :vartype ProductName: String
+    :ivar ProductUri:
+    :vartype ProductUri: String
+    :ivar VendorName:
+    :vartype VendorName: String
+    :ivar VendorProductCertificate:
+    :vartype VendorProductCertificate: ByteString
+    :ivar SoftwareVersion:
+    :vartype SoftwareVersion: String
+    :ivar BuildNumber:
+    :vartype BuildNumber: String
+    :ivar BuildDate:
+    :vartype BuildDate: DateTime
+    :ivar IssuedBy:
+    :vartype IssuedBy: String
+    :ivar IssueDate:
+    :vartype IssueDate: DateTime
+    :ivar SupportedProfiles:
+    :vartype SupportedProfiles: SupportedProfile
     '''
-    
+
     __slots__ = [
         "ProductName",
         "ProductUri",
@@ -6706,8 +7421,11 @@ class SoftwareCertificate(object):
         "IssueDate",
         "SupportedProfiles",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ProductName = ''
         self.ProductUri = ''
         self.VendorName = ''
@@ -6718,7 +7436,7 @@ class SoftwareCertificate(object):
         self.IssuedBy = ''
         self.IssueDate = datetime.now()
         self.SupportedProfiles = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.ProductName))
@@ -6734,103 +7452,115 @@ class SoftwareCertificate(object):
         for fieldname in self.SupportedProfiles:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SoftwareCertificate()
-        obj.ProductName = unpack_uatype('String', data)
-        obj.ProductUri = unpack_uatype('String', data)
-        obj.VendorName = unpack_uatype('String', data)
-        obj.VendorProductCertificate = unpack_uatype('ByteString', data)
-        obj.SoftwareVersion = unpack_uatype('String', data)
-        obj.BuildNumber = unpack_uatype('String', data)
-        obj.BuildDate = unpack_uatype('DateTime', data)
-        obj.IssuedBy = unpack_uatype('String', data)
-        obj.IssueDate = unpack_uatype('DateTime', data)
+        return SoftwareCertificate(data)
+
+    def _binary_init(self, data):
+        self.ProductName = unpack_uatype('String', data)
+        self.ProductUri = unpack_uatype('String', data)
+        self.VendorName = unpack_uatype('String', data)
+        self.VendorProductCertificate = unpack_uatype('ByteString', data)
+        self.SoftwareVersion = unpack_uatype('String', data)
+        self.BuildNumber = unpack_uatype('String', data)
+        self.BuildDate = unpack_uatype('DateTime', data)
+        self.IssuedBy = unpack_uatype('String', data)
+        self.IssueDate = unpack_uatype('DateTime', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.SupportedProfiles.append(SupportedProfile.from_binary(data))
-        return obj
-    
+                array.append(SupportedProfile.from_binary(data))
+        self.SupportedProfiles = array
+
     def __str__(self):
-        return 'SoftwareCertificate(' + 'ProductName:' + str(self.ProductName) + ', '  + \
-             'ProductUri:' + str(self.ProductUri) + ', '  + \
-             'VendorName:' + str(self.VendorName) + ', '  + \
-             'VendorProductCertificate:' + str(self.VendorProductCertificate) + ', '  + \
-             'SoftwareVersion:' + str(self.SoftwareVersion) + ', '  + \
-             'BuildNumber:' + str(self.BuildNumber) + ', '  + \
-             'BuildDate:' + str(self.BuildDate) + ', '  + \
-             'IssuedBy:' + str(self.IssuedBy) + ', '  + \
-             'IssueDate:' + str(self.IssueDate) + ', '  + \
+        return 'SoftwareCertificate(' + 'ProductName:' + str(self.ProductName) + ', ' + \
+             'ProductUri:' + str(self.ProductUri) + ', ' + \
+             'VendorName:' + str(self.VendorName) + ', ' + \
+             'VendorProductCertificate:' + str(self.VendorProductCertificate) + ', ' + \
+             'SoftwareVersion:' + str(self.SoftwareVersion) + ', ' + \
+             'BuildNumber:' + str(self.BuildNumber) + ', ' + \
+             'BuildDate:' + str(self.BuildDate) + ', ' + \
+             'IssuedBy:' + str(self.IssuedBy) + ', ' + \
+             'IssueDate:' + str(self.IssueDate) + ', ' + \
              'SupportedProfiles:' + str(self.SupportedProfiles) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class QueryDataDescription(object):
     '''
-    :ivar RelativePath: 
-    :vartype RelativePath: RelativePath 
-    :ivar AttributeId: 
-    :vartype AttributeId: UInt32 
-    :ivar IndexRange: 
-    :vartype IndexRange: String 
+    :ivar RelativePath:
+    :vartype RelativePath: RelativePath
+    :ivar AttributeId:
+    :vartype AttributeId: UInt32
+    :ivar IndexRange:
+    :vartype IndexRange: String
     '''
-    
+
     __slots__ = [
         "RelativePath",
         "AttributeId",
         "IndexRange",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.RelativePath = RelativePath()
         self.AttributeId = 0
         self.IndexRange = ''
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.RelativePath.to_binary())
         packet.append(pack_uatype('UInt32', self.AttributeId))
         packet.append(pack_uatype('String', self.IndexRange))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = QueryDataDescription()
-        obj.RelativePath = RelativePath.from_binary(data)
-        obj.AttributeId = unpack_uatype('UInt32', data)
-        obj.IndexRange = unpack_uatype('String', data)
-        return obj
-    
+        return QueryDataDescription(data)
+
+    def _binary_init(self, data):
+        self.RelativePath = RelativePath.from_binary(data)
+        self.AttributeId = unpack_uatype('UInt32', data)
+        self.IndexRange = unpack_uatype('String', data)
+
     def __str__(self):
-        return 'QueryDataDescription(' + 'RelativePath:' + str(self.RelativePath) + ', '  + \
-             'AttributeId:' + str(self.AttributeId) + ', '  + \
+        return 'QueryDataDescription(' + 'RelativePath:' + str(self.RelativePath) + ', ' + \
+             'AttributeId:' + str(self.AttributeId) + ', ' + \
              'IndexRange:' + str(self.IndexRange) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class NodeTypeDescription(object):
     '''
-    :ivar TypeDefinitionNode: 
-    :vartype TypeDefinitionNode: ExpandedNodeId 
-    :ivar IncludeSubTypes: 
-    :vartype IncludeSubTypes: Boolean 
-    :ivar DataToReturn: 
-    :vartype DataToReturn: QueryDataDescription 
+    :ivar TypeDefinitionNode:
+    :vartype TypeDefinitionNode: ExpandedNodeId
+    :ivar IncludeSubTypes:
+    :vartype IncludeSubTypes: Boolean
+    :ivar DataToReturn:
+    :vartype DataToReturn: QueryDataDescription
     '''
-    
+
     __slots__ = [
         "TypeDefinitionNode",
         "IncludeSubTypes",
         "DataToReturn",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeDefinitionNode = ExpandedNodeId()
         self.IncludeSubTypes = True
         self.DataToReturn = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeDefinitionNode.to_binary())
@@ -6839,46 +7569,53 @@ class NodeTypeDescription(object):
         for fieldname in self.DataToReturn:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = NodeTypeDescription()
-        obj.TypeDefinitionNode = ExpandedNodeId.from_binary(data)
-        obj.IncludeSubTypes = unpack_uatype('Boolean', data)
+        return NodeTypeDescription(data)
+
+    def _binary_init(self, data):
+        self.TypeDefinitionNode = ExpandedNodeId.from_binary(data)
+        self.IncludeSubTypes = unpack_uatype('Boolean', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DataToReturn.append(QueryDataDescription.from_binary(data))
-        return obj
-    
+                array.append(QueryDataDescription.from_binary(data))
+        self.DataToReturn = array
+
     def __str__(self):
-        return 'NodeTypeDescription(' + 'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', '  + \
-             'IncludeSubTypes:' + str(self.IncludeSubTypes) + ', '  + \
+        return 'NodeTypeDescription(' + 'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', ' + \
+             'IncludeSubTypes:' + str(self.IncludeSubTypes) + ', ' + \
              'DataToReturn:' + str(self.DataToReturn) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class QueryDataSet(object):
     '''
-    :ivar NodeId: 
-    :vartype NodeId: ExpandedNodeId 
-    :ivar TypeDefinitionNode: 
-    :vartype TypeDefinitionNode: ExpandedNodeId 
-    :ivar Values: 
-    :vartype Values: Variant 
+    :ivar NodeId:
+    :vartype NodeId: ExpandedNodeId
+    :ivar TypeDefinitionNode:
+    :vartype TypeDefinitionNode: ExpandedNodeId
+    :ivar Values:
+    :vartype Values: Variant
     '''
-    
+
     __slots__ = [
         "NodeId",
         "TypeDefinitionNode",
         "Values",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = ExpandedNodeId()
         self.TypeDefinitionNode = ExpandedNodeId()
         self.Values = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
@@ -6887,50 +7624,57 @@ class QueryDataSet(object):
         for fieldname in self.Values:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = QueryDataSet()
-        obj.NodeId = ExpandedNodeId.from_binary(data)
-        obj.TypeDefinitionNode = ExpandedNodeId.from_binary(data)
+        return QueryDataSet(data)
+
+    def _binary_init(self, data):
+        self.NodeId = ExpandedNodeId.from_binary(data)
+        self.TypeDefinitionNode = ExpandedNodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Values.append(Variant.from_binary(data))
-        return obj
-    
+                array.append(Variant.from_binary(data))
+        self.Values = array
+
     def __str__(self):
-        return 'QueryDataSet(' + 'NodeId:' + str(self.NodeId) + ', '  + \
-             'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', '  + \
+        return 'QueryDataSet(' + 'NodeId:' + str(self.NodeId) + ', ' + \
+             'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', ' + \
              'Values:' + str(self.Values) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class NodeReference(object):
     '''
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
-    :ivar ReferenceTypeId: 
-    :vartype ReferenceTypeId: NodeId 
-    :ivar IsForward: 
-    :vartype IsForward: Boolean 
-    :ivar ReferencedNodeIds: 
-    :vartype ReferencedNodeIds: NodeId 
+    :ivar NodeId:
+    :vartype NodeId: NodeId
+    :ivar ReferenceTypeId:
+    :vartype ReferenceTypeId: NodeId
+    :ivar IsForward:
+    :vartype IsForward: Boolean
+    :ivar ReferencedNodeIds:
+    :vartype ReferencedNodeIds: NodeId
     '''
-    
+
     __slots__ = [
         "NodeId",
         "ReferenceTypeId",
         "IsForward",
         "ReferencedNodeIds",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = NodeId()
         self.ReferenceTypeId = NodeId()
         self.IsForward = True
         self.ReferencedNodeIds = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
@@ -6940,44 +7684,51 @@ class NodeReference(object):
         for fieldname in self.ReferencedNodeIds:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = NodeReference()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.ReferenceTypeId = NodeId.from_binary(data)
-        obj.IsForward = unpack_uatype('Boolean', data)
+        return NodeReference(data)
+
+    def _binary_init(self, data):
+        self.NodeId = NodeId.from_binary(data)
+        self.ReferenceTypeId = NodeId.from_binary(data)
+        self.IsForward = unpack_uatype('Boolean', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.ReferencedNodeIds.append(NodeId.from_binary(data))
-        return obj
-    
+                array.append(NodeId.from_binary(data))
+        self.ReferencedNodeIds = array
+
     def __str__(self):
-        return 'NodeReference(' + 'NodeId:' + str(self.NodeId) + ', '  + \
-             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', '  + \
-             'IsForward:' + str(self.IsForward) + ', '  + \
+        return 'NodeReference(' + 'NodeId:' + str(self.NodeId) + ', ' + \
+             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
+             'IsForward:' + str(self.IsForward) + ', ' + \
              'ReferencedNodeIds:' + str(self.ReferencedNodeIds) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ContentFilterElement(object):
     '''
-    :ivar FilterOperator: 
-    :vartype FilterOperator: FilterOperator 
-    :ivar FilterOperands: 
-    :vartype FilterOperands: ExtensionObject 
+    :ivar FilterOperator:
+    :vartype FilterOperator: FilterOperator
+    :ivar FilterOperands:
+    :vartype FilterOperands: ExtensionObject
     '''
-    
+
     __slots__ = [
         "FilterOperator",
         "FilterOperands",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.FilterOperator = 0
         self.FilterOperands = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.FilterOperator))
@@ -6985,129 +7736,150 @@ class ContentFilterElement(object):
         for fieldname in self.FilterOperands:
             packet.append(extensionobject_to_binary(fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ContentFilterElement()
-        obj.FilterOperator = unpack_uatype('UInt32', data)
+        return ContentFilterElement(data)
+
+    def _binary_init(self, data):
+        self.FilterOperator = unpack_uatype('UInt32', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.FilterOperands.append(extensionobject_from_binary(data))
-        return obj
-    
+                array.append(extensionobject_from_binary(data))
+        self.FilterOperands = array
+
     def __str__(self):
-        return 'ContentFilterElement(' + 'FilterOperator:' + str(self.FilterOperator) + ', '  + \
+        return 'ContentFilterElement(' + 'FilterOperator:' + str(self.FilterOperator) + ', ' + \
              'FilterOperands:' + str(self.FilterOperands) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ContentFilter(object):
     '''
-    :ivar Elements: 
-    :vartype Elements: ContentFilterElement 
+    :ivar Elements:
+    :vartype Elements: ContentFilterElement
     '''
-    
+
     __slots__ = [
         "Elements",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Elements = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Elements)))
         for fieldname in self.Elements:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ContentFilter()
+        return ContentFilter(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Elements.append(ContentFilterElement.from_binary(data))
-        return obj
-    
+                array.append(ContentFilterElement.from_binary(data))
+        self.Elements = array
+
     def __str__(self):
         return 'ContentFilter(' + 'Elements:' + str(self.Elements) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ElementOperand(object):
     '''
-    :ivar Index: 
-    :vartype Index: UInt32 
+    :ivar Index:
+    :vartype Index: UInt32
     '''
-    
+
     __slots__ = [
         "Index",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Index = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.Index))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ElementOperand()
-        obj.Index = unpack_uatype('UInt32', data)
-        return obj
-    
+        return ElementOperand(data)
+
+    def _binary_init(self, data):
+        self.Index = unpack_uatype('UInt32', data)
+
     def __str__(self):
         return 'ElementOperand(' + 'Index:' + str(self.Index) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class LiteralOperand(object):
     '''
-    :ivar Value: 
-    :vartype Value: Variant 
+    :ivar Value:
+    :vartype Value: Variant
     '''
-    
+
     __slots__ = [
         "Value",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Value = Variant()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.Value.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = LiteralOperand()
-        obj.Value = Variant.from_binary(data)
-        return obj
-    
+        return LiteralOperand(data)
+
+    def _binary_init(self, data):
+        self.Value = Variant.from_binary(data)
+
     def __str__(self):
         return 'LiteralOperand(' + 'Value:' + str(self.Value) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class AttributeOperand(object):
     '''
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
-    :ivar Alias: 
-    :vartype Alias: String 
-    :ivar BrowsePath: 
-    :vartype BrowsePath: RelativePath 
-    :ivar AttributeId: 
-    :vartype AttributeId: UInt32 
-    :ivar IndexRange: 
-    :vartype IndexRange: String 
+    :ivar NodeId:
+    :vartype NodeId: NodeId
+    :ivar Alias:
+    :vartype Alias: String
+    :ivar BrowsePath:
+    :vartype BrowsePath: RelativePath
+    :ivar AttributeId:
+    :vartype AttributeId: UInt32
+    :ivar IndexRange:
+    :vartype IndexRange: String
     '''
-    
+
     __slots__ = [
         "NodeId",
         "Alias",
@@ -7115,14 +7887,17 @@ class AttributeOperand(object):
         "AttributeId",
         "IndexRange",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = NodeId()
         self.Alias = ''
         self.BrowsePath = RelativePath()
         self.AttributeId = 0
         self.IndexRange = ''
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
@@ -7131,51 +7906,56 @@ class AttributeOperand(object):
         packet.append(pack_uatype('UInt32', self.AttributeId))
         packet.append(pack_uatype('String', self.IndexRange))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = AttributeOperand()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.Alias = unpack_uatype('String', data)
-        obj.BrowsePath = RelativePath.from_binary(data)
-        obj.AttributeId = unpack_uatype('UInt32', data)
-        obj.IndexRange = unpack_uatype('String', data)
-        return obj
-    
+        return AttributeOperand(data)
+
+    def _binary_init(self, data):
+        self.NodeId = NodeId.from_binary(data)
+        self.Alias = unpack_uatype('String', data)
+        self.BrowsePath = RelativePath.from_binary(data)
+        self.AttributeId = unpack_uatype('UInt32', data)
+        self.IndexRange = unpack_uatype('String', data)
+
     def __str__(self):
-        return 'AttributeOperand(' + 'NodeId:' + str(self.NodeId) + ', '  + \
-             'Alias:' + str(self.Alias) + ', '  + \
-             'BrowsePath:' + str(self.BrowsePath) + ', '  + \
-             'AttributeId:' + str(self.AttributeId) + ', '  + \
+        return 'AttributeOperand(' + 'NodeId:' + str(self.NodeId) + ', ' + \
+             'Alias:' + str(self.Alias) + ', ' + \
+             'BrowsePath:' + str(self.BrowsePath) + ', ' + \
+             'AttributeId:' + str(self.AttributeId) + ', ' + \
              'IndexRange:' + str(self.IndexRange) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SimpleAttributeOperand(object):
     '''
-    :ivar TypeDefinitionId: 
-    :vartype TypeDefinitionId: NodeId 
-    :ivar BrowsePath: 
-    :vartype BrowsePath: QualifiedName 
-    :ivar AttributeId: 
-    :vartype AttributeId: UInt32 
-    :ivar IndexRange: 
-    :vartype IndexRange: String 
+    :ivar TypeDefinitionId:
+    :vartype TypeDefinitionId: NodeId
+    :ivar BrowsePath:
+    :vartype BrowsePath: QualifiedName
+    :ivar AttributeId:
+    :vartype AttributeId: UInt32
+    :ivar IndexRange:
+    :vartype IndexRange: String
     '''
-    
+
     __slots__ = [
         "TypeDefinitionId",
         "BrowsePath",
         "AttributeId",
         "IndexRange",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeDefinitionId = NodeId()
         self.BrowsePath = []
         self.AttributeId = 0
         self.IndexRange = ''
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeDefinitionId.to_binary())
@@ -7185,48 +7965,55 @@ class SimpleAttributeOperand(object):
         packet.append(pack_uatype('UInt32', self.AttributeId))
         packet.append(pack_uatype('String', self.IndexRange))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SimpleAttributeOperand()
-        obj.TypeDefinitionId = NodeId.from_binary(data)
+        return SimpleAttributeOperand(data)
+
+    def _binary_init(self, data):
+        self.TypeDefinitionId = NodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.BrowsePath.append(QualifiedName.from_binary(data))
-        obj.AttributeId = unpack_uatype('UInt32', data)
-        obj.IndexRange = unpack_uatype('String', data)
-        return obj
-    
+                array.append(QualifiedName.from_binary(data))
+        self.BrowsePath = array
+        self.AttributeId = unpack_uatype('UInt32', data)
+        self.IndexRange = unpack_uatype('String', data)
+
     def __str__(self):
-        return 'SimpleAttributeOperand(' + 'TypeDefinitionId:' + str(self.TypeDefinitionId) + ', '  + \
-             'BrowsePath:' + str(self.BrowsePath) + ', '  + \
-             'AttributeId:' + str(self.AttributeId) + ', '  + \
+        return 'SimpleAttributeOperand(' + 'TypeDefinitionId:' + str(self.TypeDefinitionId) + ', ' + \
+             'BrowsePath:' + str(self.BrowsePath) + ', ' + \
+             'AttributeId:' + str(self.AttributeId) + ', ' + \
              'IndexRange:' + str(self.IndexRange) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ContentFilterElementResult(object):
     '''
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar OperandStatusCodes: 
-    :vartype OperandStatusCodes: StatusCode 
-    :ivar OperandDiagnosticInfos: 
-    :vartype OperandDiagnosticInfos: DiagnosticInfo 
+    :ivar StatusCode:
+    :vartype StatusCode: StatusCode
+    :ivar OperandStatusCodes:
+    :vartype OperandStatusCodes: StatusCode
+    :ivar OperandDiagnosticInfos:
+    :vartype OperandDiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "StatusCode",
         "OperandStatusCodes",
         "OperandDiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StatusCode = StatusCode()
         self.OperandStatusCodes = []
         self.OperandDiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
@@ -7237,45 +8024,54 @@ class ContentFilterElementResult(object):
         for fieldname in self.OperandDiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ContentFilterElementResult()
-        obj.StatusCode = StatusCode.from_binary(data)
+        return ContentFilterElementResult(data)
+
+    def _binary_init(self, data):
+        self.StatusCode = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.OperandStatusCodes.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.OperandStatusCodes = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.OperandDiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.OperandDiagnosticInfos = array
+
     def __str__(self):
-        return 'ContentFilterElementResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
-             'OperandStatusCodes:' + str(self.OperandStatusCodes) + ', '  + \
+        return 'ContentFilterElementResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
+             'OperandStatusCodes:' + str(self.OperandStatusCodes) + ', ' + \
              'OperandDiagnosticInfos:' + str(self.OperandDiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ContentFilterResult(object):
     '''
-    :ivar ElementResults: 
-    :vartype ElementResults: ContentFilterElementResult 
-    :ivar ElementDiagnosticInfos: 
-    :vartype ElementDiagnosticInfos: DiagnosticInfo 
+    :ivar ElementResults:
+    :vartype ElementResults: ContentFilterElementResult
+    :ivar ElementDiagnosticInfos:
+    :vartype ElementDiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "ElementResults",
         "ElementDiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ElementResults = []
         self.ElementDiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.ElementResults)))
@@ -7285,47 +8081,56 @@ class ContentFilterResult(object):
         for fieldname in self.ElementDiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ContentFilterResult()
+        return ContentFilterResult(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.ElementResults.append(ContentFilterElementResult.from_binary(data))
+                array.append(ContentFilterElementResult.from_binary(data))
+        self.ElementResults = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.ElementDiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.ElementDiagnosticInfos = array
+
     def __str__(self):
-        return 'ContentFilterResult(' + 'ElementResults:' + str(self.ElementResults) + ', '  + \
+        return 'ContentFilterResult(' + 'ElementResults:' + str(self.ElementResults) + ', ' + \
              'ElementDiagnosticInfos:' + str(self.ElementDiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ParsingResult(object):
     '''
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar DataStatusCodes: 
-    :vartype DataStatusCodes: StatusCode 
-    :ivar DataDiagnosticInfos: 
-    :vartype DataDiagnosticInfos: DiagnosticInfo 
+    :ivar StatusCode:
+    :vartype StatusCode: StatusCode
+    :ivar DataStatusCodes:
+    :vartype DataStatusCodes: StatusCode
+    :ivar DataDiagnosticInfos:
+    :vartype DataDiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "StatusCode",
         "DataStatusCodes",
         "DataDiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StatusCode = StatusCode()
         self.DataStatusCodes = []
         self.DataDiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
@@ -7336,42 +8141,48 @@ class ParsingResult(object):
         for fieldname in self.DataDiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ParsingResult()
-        obj.StatusCode = StatusCode.from_binary(data)
+        return ParsingResult(data)
+
+    def _binary_init(self, data):
+        self.StatusCode = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DataStatusCodes.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.DataStatusCodes = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DataDiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DataDiagnosticInfos = array
+
     def __str__(self):
-        return 'ParsingResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
-             'DataStatusCodes:' + str(self.DataStatusCodes) + ', '  + \
+        return 'ParsingResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
+             'DataStatusCodes:' + str(self.DataStatusCodes) + ', ' + \
              'DataDiagnosticInfos:' + str(self.DataDiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class QueryFirstParameters(object):
     '''
-    :ivar View: 
-    :vartype View: ViewDescription 
-    :ivar NodeTypes: 
-    :vartype NodeTypes: NodeTypeDescription 
-    :ivar Filter: 
-    :vartype Filter: ContentFilter 
-    :ivar MaxDataSetsToReturn: 
-    :vartype MaxDataSetsToReturn: UInt32 
-    :ivar MaxReferencesToReturn: 
-    :vartype MaxReferencesToReturn: UInt32 
+    :ivar View:
+    :vartype View: ViewDescription
+    :ivar NodeTypes:
+    :vartype NodeTypes: NodeTypeDescription
+    :ivar Filter:
+    :vartype Filter: ContentFilter
+    :ivar MaxDataSetsToReturn:
+    :vartype MaxDataSetsToReturn: UInt32
+    :ivar MaxReferencesToReturn:
+    :vartype MaxReferencesToReturn: UInt32
     '''
-    
+
     __slots__ = [
         "View",
         "NodeTypes",
@@ -7379,14 +8190,17 @@ class QueryFirstParameters(object):
         "MaxDataSetsToReturn",
         "MaxReferencesToReturn",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.View = ViewDescription()
         self.NodeTypes = []
         self.Filter = ContentFilter()
         self.MaxDataSetsToReturn = 0
         self.MaxReferencesToReturn = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.View.to_binary())
@@ -7397,86 +8211,95 @@ class QueryFirstParameters(object):
         packet.append(pack_uatype('UInt32', self.MaxDataSetsToReturn))
         packet.append(pack_uatype('UInt32', self.MaxReferencesToReturn))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = QueryFirstParameters()
-        obj.View = ViewDescription.from_binary(data)
+        return QueryFirstParameters(data)
+
+    def _binary_init(self, data):
+        self.View = ViewDescription.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.NodeTypes.append(NodeTypeDescription.from_binary(data))
-        obj.Filter = ContentFilter.from_binary(data)
-        obj.MaxDataSetsToReturn = unpack_uatype('UInt32', data)
-        obj.MaxReferencesToReturn = unpack_uatype('UInt32', data)
-        return obj
-    
+                array.append(NodeTypeDescription.from_binary(data))
+        self.NodeTypes = array
+        self.Filter = ContentFilter.from_binary(data)
+        self.MaxDataSetsToReturn = unpack_uatype('UInt32', data)
+        self.MaxReferencesToReturn = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'QueryFirstParameters(' + 'View:' + str(self.View) + ', '  + \
-             'NodeTypes:' + str(self.NodeTypes) + ', '  + \
-             'Filter:' + str(self.Filter) + ', '  + \
-             'MaxDataSetsToReturn:' + str(self.MaxDataSetsToReturn) + ', '  + \
+        return 'QueryFirstParameters(' + 'View:' + str(self.View) + ', ' + \
+             'NodeTypes:' + str(self.NodeTypes) + ', ' + \
+             'Filter:' + str(self.Filter) + ', ' + \
+             'MaxDataSetsToReturn:' + str(self.MaxDataSetsToReturn) + ', ' + \
              'MaxReferencesToReturn:' + str(self.MaxReferencesToReturn) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class QueryFirstRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: QueryFirstParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: QueryFirstParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.QueryFirstRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = QueryFirstParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = QueryFirstRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = QueryFirstParameters.from_binary(data)
-        return obj
-    
+        return QueryFirstRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = QueryFirstParameters.from_binary(data)
+
     def __str__(self):
-        return 'QueryFirstRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'QueryFirstRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class QueryFirstResult(object):
     '''
-    :ivar QueryDataSets: 
-    :vartype QueryDataSets: QueryDataSet 
-    :ivar ContinuationPoint: 
-    :vartype ContinuationPoint: ByteString 
-    :ivar ParsingResults: 
-    :vartype ParsingResults: ParsingResult 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
-    :ivar FilterResult: 
-    :vartype FilterResult: ContentFilterResult 
+    :ivar QueryDataSets:
+    :vartype QueryDataSets: QueryDataSet
+    :ivar ContinuationPoint:
+    :vartype ContinuationPoint: ByteString
+    :ivar ParsingResults:
+    :vartype ParsingResults: ParsingResult
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
+    :ivar FilterResult:
+    :vartype FilterResult: ContentFilterResult
     '''
-    
+
     __slots__ = [
         "QueryDataSets",
         "ContinuationPoint",
@@ -7484,14 +8307,17 @@ class QueryFirstResult(object):
         "DiagnosticInfos",
         "FilterResult",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.QueryDataSets = []
         self.ContinuationPoint = b''
         self.ParsingResults = []
         self.DiagnosticInfos = []
         self.FilterResult = ContentFilterResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.QueryDataSets)))
@@ -7506,174 +8332,200 @@ class QueryFirstResult(object):
             packet.append(fieldname.to_binary())
         packet.append(self.FilterResult.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = QueryFirstResult()
+        return QueryFirstResult(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.QueryDataSets.append(QueryDataSet.from_binary(data))
-        obj.ContinuationPoint = unpack_uatype('ByteString', data)
+                array.append(QueryDataSet.from_binary(data))
+        self.QueryDataSets = array
+        self.ContinuationPoint = unpack_uatype('ByteString', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.ParsingResults.append(ParsingResult.from_binary(data))
+                array.append(ParsingResult.from_binary(data))
+        self.ParsingResults = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        obj.FilterResult = ContentFilterResult.from_binary(data)
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+        self.FilterResult = ContentFilterResult.from_binary(data)
+
     def __str__(self):
-        return 'QueryFirstResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', '  + \
-             'ContinuationPoint:' + str(self.ContinuationPoint) + ', '  + \
-             'ParsingResults:' + str(self.ParsingResults) + ', '  + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ', '  + \
+        return 'QueryFirstResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', ' + \
+             'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
+             'ParsingResults:' + str(self.ParsingResults) + ', ' + \
+             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ', ' + \
              'FilterResult:' + str(self.FilterResult) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class QueryFirstResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: QueryFirstResult 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: QueryFirstResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.QueryFirstResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = QueryFirstResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = QueryFirstResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = QueryFirstResult.from_binary(data)
-        return obj
-    
+        return QueryFirstResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = QueryFirstResult.from_binary(data)
+
     def __str__(self):
-        return 'QueryFirstResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'QueryFirstResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class QueryNextParameters(object):
     '''
-    :ivar ReleaseContinuationPoint: 
-    :vartype ReleaseContinuationPoint: Boolean 
-    :ivar ContinuationPoint: 
-    :vartype ContinuationPoint: ByteString 
+    :ivar ReleaseContinuationPoint:
+    :vartype ReleaseContinuationPoint: Boolean
+    :ivar ContinuationPoint:
+    :vartype ContinuationPoint: ByteString
     '''
-    
+
     __slots__ = [
         "ReleaseContinuationPoint",
         "ContinuationPoint",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ReleaseContinuationPoint = True
         self.ContinuationPoint = b''
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Boolean', self.ReleaseContinuationPoint))
         packet.append(pack_uatype('ByteString', self.ContinuationPoint))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = QueryNextParameters()
-        obj.ReleaseContinuationPoint = unpack_uatype('Boolean', data)
-        obj.ContinuationPoint = unpack_uatype('ByteString', data)
-        return obj
-    
+        return QueryNextParameters(data)
+
+    def _binary_init(self, data):
+        self.ReleaseContinuationPoint = unpack_uatype('Boolean', data)
+        self.ContinuationPoint = unpack_uatype('ByteString', data)
+
     def __str__(self):
-        return 'QueryNextParameters(' + 'ReleaseContinuationPoint:' + str(self.ReleaseContinuationPoint) + ', '  + \
+        return 'QueryNextParameters(' + 'ReleaseContinuationPoint:' + str(self.ReleaseContinuationPoint) + ', ' + \
              'ContinuationPoint:' + str(self.ContinuationPoint) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class QueryNextRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: QueryNextParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: QueryNextParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.QueryNextRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = QueryNextParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = QueryNextRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = QueryNextParameters.from_binary(data)
-        return obj
-    
+        return QueryNextRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = QueryNextParameters.from_binary(data)
+
     def __str__(self):
-        return 'QueryNextRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'QueryNextRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class QueryNextResult(object):
     '''
-    :ivar QueryDataSets: 
-    :vartype QueryDataSets: QueryDataSet 
-    :ivar RevisedContinuationPoint: 
-    :vartype RevisedContinuationPoint: ByteString 
+    :ivar QueryDataSets:
+    :vartype QueryDataSets: QueryDataSet
+    :ivar RevisedContinuationPoint:
+    :vartype RevisedContinuationPoint: ByteString
     '''
-    
+
     __slots__ = [
         "QueryDataSets",
         "RevisedContinuationPoint",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.QueryDataSets = []
         self.RevisedContinuationPoint = b''
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.QueryDataSets)))
@@ -7681,91 +8533,103 @@ class QueryNextResult(object):
             packet.append(fieldname.to_binary())
         packet.append(pack_uatype('ByteString', self.RevisedContinuationPoint))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = QueryNextResult()
+        return QueryNextResult(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.QueryDataSets.append(QueryDataSet.from_binary(data))
-        obj.RevisedContinuationPoint = unpack_uatype('ByteString', data)
-        return obj
-    
+                array.append(QueryDataSet.from_binary(data))
+        self.QueryDataSets = array
+        self.RevisedContinuationPoint = unpack_uatype('ByteString', data)
+
     def __str__(self):
-        return 'QueryNextResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', '  + \
+        return 'QueryNextResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', ' + \
              'RevisedContinuationPoint:' + str(self.RevisedContinuationPoint) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class QueryNextResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: QueryNextResult 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: QueryNextResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.QueryNextResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = QueryNextResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = QueryNextResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = QueryNextResult.from_binary(data)
-        return obj
-    
+        return QueryNextResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = QueryNextResult.from_binary(data)
+
     def __str__(self):
-        return 'QueryNextResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'QueryNextResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ReadValueId(object):
     '''
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
-    :ivar AttributeId: 
-    :vartype AttributeId: UInt32 
-    :ivar IndexRange: 
-    :vartype IndexRange: String 
-    :ivar DataEncoding: 
-    :vartype DataEncoding: QualifiedName 
+    :ivar NodeId:
+    :vartype NodeId: NodeId
+    :ivar AttributeId:
+    :vartype AttributeId: UInt32
+    :ivar IndexRange:
+    :vartype IndexRange: String
+    :ivar DataEncoding:
+    :vartype DataEncoding: QualifiedName
     '''
-    
+
     __slots__ = [
         "NodeId",
         "AttributeId",
         "IndexRange",
         "DataEncoding",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = NodeId()
         self.AttributeId = 0
         self.IndexRange = ''
         self.DataEncoding = QualifiedName()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
@@ -7773,45 +8637,50 @@ class ReadValueId(object):
         packet.append(pack_uatype('String', self.IndexRange))
         packet.append(self.DataEncoding.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ReadValueId()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.AttributeId = unpack_uatype('UInt32', data)
-        obj.IndexRange = unpack_uatype('String', data)
-        obj.DataEncoding = QualifiedName.from_binary(data)
-        return obj
-    
+        return ReadValueId(data)
+
+    def _binary_init(self, data):
+        self.NodeId = NodeId.from_binary(data)
+        self.AttributeId = unpack_uatype('UInt32', data)
+        self.IndexRange = unpack_uatype('String', data)
+        self.DataEncoding = QualifiedName.from_binary(data)
+
     def __str__(self):
-        return 'ReadValueId(' + 'NodeId:' + str(self.NodeId) + ', '  + \
-             'AttributeId:' + str(self.AttributeId) + ', '  + \
-             'IndexRange:' + str(self.IndexRange) + ', '  + \
+        return 'ReadValueId(' + 'NodeId:' + str(self.NodeId) + ', ' + \
+             'AttributeId:' + str(self.AttributeId) + ', ' + \
+             'IndexRange:' + str(self.IndexRange) + ', ' + \
              'DataEncoding:' + str(self.DataEncoding) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ReadParameters(object):
     '''
-    :ivar MaxAge: 
-    :vartype MaxAge: Double 
-    :ivar TimestampsToReturn: 
-    :vartype TimestampsToReturn: TimestampsToReturn 
-    :ivar NodesToRead: 
-    :vartype NodesToRead: ReadValueId 
+    :ivar MaxAge:
+    :vartype MaxAge: Double
+    :ivar TimestampsToReturn:
+    :vartype TimestampsToReturn: TimestampsToReturn
+    :ivar NodesToRead:
+    :vartype NodesToRead: ReadValueId
     '''
-    
+
     __slots__ = [
         "MaxAge",
         "TimestampsToReturn",
         "NodesToRead",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.MaxAge = 0
         self.TimestampsToReturn = 0
         self.NodesToRead = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Double', self.MaxAge))
@@ -7820,93 +8689,105 @@ class ReadParameters(object):
         for fieldname in self.NodesToRead:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ReadParameters()
-        obj.MaxAge = unpack_uatype('Double', data)
-        obj.TimestampsToReturn = unpack_uatype('UInt32', data)
+        return ReadParameters(data)
+
+    def _binary_init(self, data):
+        self.MaxAge = unpack_uatype('Double', data)
+        self.TimestampsToReturn = unpack_uatype('UInt32', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.NodesToRead.append(ReadValueId.from_binary(data))
-        return obj
-    
+                array.append(ReadValueId.from_binary(data))
+        self.NodesToRead = array
+
     def __str__(self):
-        return 'ReadParameters(' + 'MaxAge:' + str(self.MaxAge) + ', '  + \
-             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', '  + \
+        return 'ReadParameters(' + 'MaxAge:' + str(self.MaxAge) + ', ' + \
+             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
              'NodesToRead:' + str(self.NodesToRead) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ReadRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: ReadParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: ReadParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.ReadRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = ReadParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ReadRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = ReadParameters.from_binary(data)
-        return obj
-    
+        return ReadRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = ReadParameters.from_binary(data)
+
     def __str__(self):
-        return 'ReadRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'ReadRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ReadResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Results: 
-    :vartype Results: DataValue 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Results:
+    :vartype Results: DataValue
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.ReadResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -7918,55 +8799,64 @@ class ReadResponse(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ReadResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return ReadResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(DataValue.from_binary(data))
+                array.append(DataValue.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'ReadResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'ReadResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryReadValueId(object):
     '''
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
-    :ivar IndexRange: 
-    :vartype IndexRange: String 
-    :ivar DataEncoding: 
-    :vartype DataEncoding: QualifiedName 
-    :ivar ContinuationPoint: 
-    :vartype ContinuationPoint: ByteString 
+    :ivar NodeId:
+    :vartype NodeId: NodeId
+    :ivar IndexRange:
+    :vartype IndexRange: String
+    :ivar DataEncoding:
+    :vartype DataEncoding: QualifiedName
+    :ivar ContinuationPoint:
+    :vartype ContinuationPoint: ByteString
     '''
-    
+
     __slots__ = [
         "NodeId",
         "IndexRange",
         "DataEncoding",
         "ContinuationPoint",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = NodeId()
         self.IndexRange = ''
         self.DataEncoding = QualifiedName()
         self.ContinuationPoint = b''
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
@@ -7974,116 +8864,131 @@ class HistoryReadValueId(object):
         packet.append(self.DataEncoding.to_binary())
         packet.append(pack_uatype('ByteString', self.ContinuationPoint))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryReadValueId()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.IndexRange = unpack_uatype('String', data)
-        obj.DataEncoding = QualifiedName.from_binary(data)
-        obj.ContinuationPoint = unpack_uatype('ByteString', data)
-        return obj
-    
+        return HistoryReadValueId(data)
+
+    def _binary_init(self, data):
+        self.NodeId = NodeId.from_binary(data)
+        self.IndexRange = unpack_uatype('String', data)
+        self.DataEncoding = QualifiedName.from_binary(data)
+        self.ContinuationPoint = unpack_uatype('ByteString', data)
+
     def __str__(self):
-        return 'HistoryReadValueId(' + 'NodeId:' + str(self.NodeId) + ', '  + \
-             'IndexRange:' + str(self.IndexRange) + ', '  + \
-             'DataEncoding:' + str(self.DataEncoding) + ', '  + \
+        return 'HistoryReadValueId(' + 'NodeId:' + str(self.NodeId) + ', ' + \
+             'IndexRange:' + str(self.IndexRange) + ', ' + \
+             'DataEncoding:' + str(self.DataEncoding) + ', ' + \
              'ContinuationPoint:' + str(self.ContinuationPoint) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryReadResult(object):
     '''
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar ContinuationPoint: 
-    :vartype ContinuationPoint: ByteString 
-    :ivar HistoryData: 
-    :vartype HistoryData: ExtensionObject 
+    :ivar StatusCode:
+    :vartype StatusCode: StatusCode
+    :ivar ContinuationPoint:
+    :vartype ContinuationPoint: ByteString
+    :ivar HistoryData:
+    :vartype HistoryData: ExtensionObject
     '''
-    
+
     __slots__ = [
         "StatusCode",
         "ContinuationPoint",
         "HistoryData",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StatusCode = StatusCode()
         self.ContinuationPoint = b''
         self.HistoryData = None
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
         packet.append(pack_uatype('ByteString', self.ContinuationPoint))
         packet.append(extensionobject_to_binary(self.HistoryData))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryReadResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        obj.ContinuationPoint = unpack_uatype('ByteString', data)
-        obj.HistoryData = extensionobject_from_binary(data)
-        return obj
-    
+        return HistoryReadResult(data)
+
+    def _binary_init(self, data):
+        self.StatusCode = StatusCode.from_binary(data)
+        self.ContinuationPoint = unpack_uatype('ByteString', data)
+        self.HistoryData = extensionobject_from_binary(data)
+
     def __str__(self):
-        return 'HistoryReadResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
-             'ContinuationPoint:' + str(self.ContinuationPoint) + ', '  + \
+        return 'HistoryReadResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
+             'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
              'HistoryData:' + str(self.HistoryData) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryReadDetails(object):
     '''
     '''
-    
+
     __slots__ = [
     ]
-    
-    def __init__(self):
-        pass
-    
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
+
     def to_binary(self):
         packet = []
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryReadDetails()
-        return obj
-    
+        return HistoryReadDetails(data)
+
+    def _binary_init(self, data):
+        pass
+
     def __str__(self):
         return 'HistoryReadDetails(' +  + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ReadEventDetails(object):
     '''
-    :ivar NumValuesPerNode: 
-    :vartype NumValuesPerNode: UInt32 
-    :ivar StartTime: 
-    :vartype StartTime: DateTime 
-    :ivar EndTime: 
-    :vartype EndTime: DateTime 
-    :ivar Filter: 
-    :vartype Filter: EventFilter 
+    :ivar NumValuesPerNode:
+    :vartype NumValuesPerNode: UInt32
+    :ivar StartTime:
+    :vartype StartTime: DateTime
+    :ivar EndTime:
+    :vartype EndTime: DateTime
+    :ivar Filter:
+    :vartype Filter: EventFilter
     '''
-    
+
     __slots__ = [
         "NumValuesPerNode",
         "StartTime",
         "EndTime",
         "Filter",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NumValuesPerNode = 0
         self.StartTime = datetime.now()
         self.EndTime = datetime.now()
         self.Filter = EventFilter()
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.NumValuesPerNode))
@@ -8091,38 +8996,40 @@ class ReadEventDetails(object):
         packet.append(pack_uatype('DateTime', self.EndTime))
         packet.append(self.Filter.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ReadEventDetails()
-        obj.NumValuesPerNode = unpack_uatype('UInt32', data)
-        obj.StartTime = unpack_uatype('DateTime', data)
-        obj.EndTime = unpack_uatype('DateTime', data)
-        obj.Filter = EventFilter.from_binary(data)
-        return obj
-    
+        return ReadEventDetails(data)
+
+    def _binary_init(self, data):
+        self.NumValuesPerNode = unpack_uatype('UInt32', data)
+        self.StartTime = unpack_uatype('DateTime', data)
+        self.EndTime = unpack_uatype('DateTime', data)
+        self.Filter = EventFilter.from_binary(data)
+
     def __str__(self):
-        return 'ReadEventDetails(' + 'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', '  + \
-             'StartTime:' + str(self.StartTime) + ', '  + \
-             'EndTime:' + str(self.EndTime) + ', '  + \
+        return 'ReadEventDetails(' + 'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', ' + \
+             'StartTime:' + str(self.StartTime) + ', ' + \
+             'EndTime:' + str(self.EndTime) + ', ' + \
              'Filter:' + str(self.Filter) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ReadRawModifiedDetails(object):
     '''
-    :ivar IsReadModified: 
-    :vartype IsReadModified: Boolean 
-    :ivar StartTime: 
-    :vartype StartTime: DateTime 
-    :ivar EndTime: 
-    :vartype EndTime: DateTime 
-    :ivar NumValuesPerNode: 
-    :vartype NumValuesPerNode: UInt32 
-    :ivar ReturnBounds: 
-    :vartype ReturnBounds: Boolean 
+    :ivar IsReadModified:
+    :vartype IsReadModified: Boolean
+    :ivar StartTime:
+    :vartype StartTime: DateTime
+    :ivar EndTime:
+    :vartype EndTime: DateTime
+    :ivar NumValuesPerNode:
+    :vartype NumValuesPerNode: UInt32
+    :ivar ReturnBounds:
+    :vartype ReturnBounds: Boolean
     '''
-    
+
     __slots__ = [
         "IsReadModified",
         "StartTime",
@@ -8130,14 +9037,17 @@ class ReadRawModifiedDetails(object):
         "NumValuesPerNode",
         "ReturnBounds",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.IsReadModified = True
         self.StartTime = datetime.now()
         self.EndTime = datetime.now()
         self.NumValuesPerNode = 0
         self.ReturnBounds = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Boolean', self.IsReadModified))
@@ -8146,40 +9056,42 @@ class ReadRawModifiedDetails(object):
         packet.append(pack_uatype('UInt32', self.NumValuesPerNode))
         packet.append(pack_uatype('Boolean', self.ReturnBounds))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ReadRawModifiedDetails()
-        obj.IsReadModified = unpack_uatype('Boolean', data)
-        obj.StartTime = unpack_uatype('DateTime', data)
-        obj.EndTime = unpack_uatype('DateTime', data)
-        obj.NumValuesPerNode = unpack_uatype('UInt32', data)
-        obj.ReturnBounds = unpack_uatype('Boolean', data)
-        return obj
-    
+        return ReadRawModifiedDetails(data)
+
+    def _binary_init(self, data):
+        self.IsReadModified = unpack_uatype('Boolean', data)
+        self.StartTime = unpack_uatype('DateTime', data)
+        self.EndTime = unpack_uatype('DateTime', data)
+        self.NumValuesPerNode = unpack_uatype('UInt32', data)
+        self.ReturnBounds = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'ReadRawModifiedDetails(' + 'IsReadModified:' + str(self.IsReadModified) + ', '  + \
-             'StartTime:' + str(self.StartTime) + ', '  + \
-             'EndTime:' + str(self.EndTime) + ', '  + \
-             'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', '  + \
+        return 'ReadRawModifiedDetails(' + 'IsReadModified:' + str(self.IsReadModified) + ', ' + \
+             'StartTime:' + str(self.StartTime) + ', ' + \
+             'EndTime:' + str(self.EndTime) + ', ' + \
+             'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', ' + \
              'ReturnBounds:' + str(self.ReturnBounds) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ReadProcessedDetails(object):
     '''
-    :ivar StartTime: 
-    :vartype StartTime: DateTime 
-    :ivar EndTime: 
-    :vartype EndTime: DateTime 
-    :ivar ProcessingInterval: 
-    :vartype ProcessingInterval: Double 
-    :ivar AggregateType: 
-    :vartype AggregateType: NodeId 
-    :ivar AggregateConfiguration: 
-    :vartype AggregateConfiguration: AggregateConfiguration 
+    :ivar StartTime:
+    :vartype StartTime: DateTime
+    :ivar EndTime:
+    :vartype EndTime: DateTime
+    :ivar ProcessingInterval:
+    :vartype ProcessingInterval: Double
+    :ivar AggregateType:
+    :vartype AggregateType: NodeId
+    :ivar AggregateConfiguration:
+    :vartype AggregateConfiguration: AggregateConfiguration
     '''
-    
+
     __slots__ = [
         "StartTime",
         "EndTime",
@@ -8187,14 +9099,17 @@ class ReadProcessedDetails(object):
         "AggregateType",
         "AggregateConfiguration",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StartTime = datetime.now()
         self.EndTime = datetime.now()
         self.ProcessingInterval = 0
         self.AggregateType = []
         self.AggregateConfiguration = AggregateConfiguration()
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('DateTime', self.StartTime))
@@ -8205,46 +9120,53 @@ class ReadProcessedDetails(object):
             packet.append(fieldname.to_binary())
         packet.append(self.AggregateConfiguration.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ReadProcessedDetails()
-        obj.StartTime = unpack_uatype('DateTime', data)
-        obj.EndTime = unpack_uatype('DateTime', data)
-        obj.ProcessingInterval = unpack_uatype('Double', data)
+        return ReadProcessedDetails(data)
+
+    def _binary_init(self, data):
+        self.StartTime = unpack_uatype('DateTime', data)
+        self.EndTime = unpack_uatype('DateTime', data)
+        self.ProcessingInterval = unpack_uatype('Double', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.AggregateType.append(NodeId.from_binary(data))
-        obj.AggregateConfiguration = AggregateConfiguration.from_binary(data)
-        return obj
-    
+                array.append(NodeId.from_binary(data))
+        self.AggregateType = array
+        self.AggregateConfiguration = AggregateConfiguration.from_binary(data)
+
     def __str__(self):
-        return 'ReadProcessedDetails(' + 'StartTime:' + str(self.StartTime) + ', '  + \
-             'EndTime:' + str(self.EndTime) + ', '  + \
-             'ProcessingInterval:' + str(self.ProcessingInterval) + ', '  + \
-             'AggregateType:' + str(self.AggregateType) + ', '  + \
+        return 'ReadProcessedDetails(' + 'StartTime:' + str(self.StartTime) + ', ' + \
+             'EndTime:' + str(self.EndTime) + ', ' + \
+             'ProcessingInterval:' + str(self.ProcessingInterval) + ', ' + \
+             'AggregateType:' + str(self.AggregateType) + ', ' + \
              'AggregateConfiguration:' + str(self.AggregateConfiguration) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ReadAtTimeDetails(object):
     '''
-    :ivar ReqTimes: 
-    :vartype ReqTimes: DateTime 
-    :ivar UseSimpleBounds: 
-    :vartype UseSimpleBounds: Boolean 
+    :ivar ReqTimes:
+    :vartype ReqTimes: DateTime
+    :ivar UseSimpleBounds:
+    :vartype UseSimpleBounds: Boolean
     '''
-    
+
     __slots__ = [
         "ReqTimes",
         "UseSimpleBounds",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ReqTimes = []
         self.UseSimpleBounds = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.ReqTimes)))
@@ -8252,114 +9174,131 @@ class ReadAtTimeDetails(object):
             packet.append(pack_uatype('DateTime', fieldname))
         packet.append(pack_uatype('Boolean', self.UseSimpleBounds))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ReadAtTimeDetails()
-        obj.ReqTimes = unpack_uatype_array('DateTime', data)
-        obj.UseSimpleBounds = unpack_uatype('Boolean', data)
-        return obj
-    
+        return ReadAtTimeDetails(data)
+
+    def _binary_init(self, data):
+        self.ReqTimes = unpack_uatype_array('DateTime', data)
+        self.UseSimpleBounds = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'ReadAtTimeDetails(' + 'ReqTimes:' + str(self.ReqTimes) + ', '  + \
+        return 'ReadAtTimeDetails(' + 'ReqTimes:' + str(self.ReqTimes) + ', ' + \
              'UseSimpleBounds:' + str(self.UseSimpleBounds) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryData(object):
     '''
-    :ivar DataValues: 
-    :vartype DataValues: DataValue 
+    :ivar DataValues:
+    :vartype DataValues: DataValue
     '''
-    
+
     __slots__ = [
         "DataValues",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.DataValues = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.DataValues)))
         for fieldname in self.DataValues:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryData()
+        return HistoryData(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DataValues.append(DataValue.from_binary(data))
-        return obj
-    
+                array.append(DataValue.from_binary(data))
+        self.DataValues = array
+
     def __str__(self):
         return 'HistoryData(' + 'DataValues:' + str(self.DataValues) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ModificationInfo(object):
     '''
-    :ivar ModificationTime: 
-    :vartype ModificationTime: DateTime 
-    :ivar UpdateType: 
-    :vartype UpdateType: HistoryUpdateType 
-    :ivar UserName: 
-    :vartype UserName: String 
+    :ivar ModificationTime:
+    :vartype ModificationTime: DateTime
+    :ivar UpdateType:
+    :vartype UpdateType: HistoryUpdateType
+    :ivar UserName:
+    :vartype UserName: String
     '''
-    
+
     __slots__ = [
         "ModificationTime",
         "UpdateType",
         "UserName",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ModificationTime = datetime.now()
         self.UpdateType = 0
         self.UserName = ''
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('DateTime', self.ModificationTime))
         packet.append(pack_uatype('UInt32', self.UpdateType))
         packet.append(pack_uatype('String', self.UserName))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ModificationInfo()
-        obj.ModificationTime = unpack_uatype('DateTime', data)
-        obj.UpdateType = unpack_uatype('UInt32', data)
-        obj.UserName = unpack_uatype('String', data)
-        return obj
-    
+        return ModificationInfo(data)
+
+    def _binary_init(self, data):
+        self.ModificationTime = unpack_uatype('DateTime', data)
+        self.UpdateType = unpack_uatype('UInt32', data)
+        self.UserName = unpack_uatype('String', data)
+
     def __str__(self):
-        return 'ModificationInfo(' + 'ModificationTime:' + str(self.ModificationTime) + ', '  + \
-             'UpdateType:' + str(self.UpdateType) + ', '  + \
+        return 'ModificationInfo(' + 'ModificationTime:' + str(self.ModificationTime) + ', ' + \
+             'UpdateType:' + str(self.UpdateType) + ', ' + \
              'UserName:' + str(self.UserName) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryModifiedData(object):
     '''
-    :ivar DataValues: 
-    :vartype DataValues: DataValue 
-    :ivar ModificationInfos: 
-    :vartype ModificationInfos: ModificationInfo 
+    :ivar DataValues:
+    :vartype DataValues: DataValue
+    :ivar ModificationInfos:
+    :vartype ModificationInfos: ModificationInfo
     '''
-    
+
     __slots__ = [
         "DataValues",
         "ModificationInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.DataValues = []
         self.ModificationInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.DataValues)))
@@ -8369,85 +9308,101 @@ class HistoryModifiedData(object):
         for fieldname in self.ModificationInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryModifiedData()
+        return HistoryModifiedData(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DataValues.append(DataValue.from_binary(data))
+                array.append(DataValue.from_binary(data))
+        self.DataValues = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.ModificationInfos.append(ModificationInfo.from_binary(data))
-        return obj
-    
+                array.append(ModificationInfo.from_binary(data))
+        self.ModificationInfos = array
+
     def __str__(self):
-        return 'HistoryModifiedData(' + 'DataValues:' + str(self.DataValues) + ', '  + \
+        return 'HistoryModifiedData(' + 'DataValues:' + str(self.DataValues) + ', ' + \
              'ModificationInfos:' + str(self.ModificationInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryEvent(object):
     '''
-    :ivar Events: 
-    :vartype Events: HistoryEventFieldList 
+    :ivar Events:
+    :vartype Events: HistoryEventFieldList
     '''
-    
+
     __slots__ = [
         "Events",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Events = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Events)))
         for fieldname in self.Events:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryEvent()
+        return HistoryEvent(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Events.append(HistoryEventFieldList.from_binary(data))
-        return obj
-    
+                array.append(HistoryEventFieldList.from_binary(data))
+        self.Events = array
+
     def __str__(self):
         return 'HistoryEvent(' + 'Events:' + str(self.Events) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryReadParameters(object):
     '''
-    :ivar HistoryReadDetails: 
-    :vartype HistoryReadDetails: ExtensionObject 
-    :ivar TimestampsToReturn: 
-    :vartype TimestampsToReturn: TimestampsToReturn 
-    :ivar ReleaseContinuationPoints: 
-    :vartype ReleaseContinuationPoints: Boolean 
-    :ivar NodesToRead: 
-    :vartype NodesToRead: HistoryReadValueId 
+    :ivar HistoryReadDetails:
+    :vartype HistoryReadDetails: ExtensionObject
+    :ivar TimestampsToReturn:
+    :vartype TimestampsToReturn: TimestampsToReturn
+    :ivar ReleaseContinuationPoints:
+    :vartype ReleaseContinuationPoints: Boolean
+    :ivar NodesToRead:
+    :vartype NodesToRead: HistoryReadValueId
     '''
-    
+
     __slots__ = [
         "HistoryReadDetails",
         "TimestampsToReturn",
         "ReleaseContinuationPoints",
         "NodesToRead",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.HistoryReadDetails = None
         self.TimestampsToReturn = 0
         self.ReleaseContinuationPoints = True
         self.NodesToRead = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(extensionobject_to_binary(self.HistoryReadDetails))
@@ -8457,95 +9412,107 @@ class HistoryReadParameters(object):
         for fieldname in self.NodesToRead:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryReadParameters()
-        obj.HistoryReadDetails = extensionobject_from_binary(data)
-        obj.TimestampsToReturn = unpack_uatype('UInt32', data)
-        obj.ReleaseContinuationPoints = unpack_uatype('Boolean', data)
+        return HistoryReadParameters(data)
+
+    def _binary_init(self, data):
+        self.HistoryReadDetails = extensionobject_from_binary(data)
+        self.TimestampsToReturn = unpack_uatype('UInt32', data)
+        self.ReleaseContinuationPoints = unpack_uatype('Boolean', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.NodesToRead.append(HistoryReadValueId.from_binary(data))
-        return obj
-    
+                array.append(HistoryReadValueId.from_binary(data))
+        self.NodesToRead = array
+
     def __str__(self):
-        return 'HistoryReadParameters(' + 'HistoryReadDetails:' + str(self.HistoryReadDetails) + ', '  + \
-             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', '  + \
-             'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', '  + \
+        return 'HistoryReadParameters(' + 'HistoryReadDetails:' + str(self.HistoryReadDetails) + ', ' + \
+             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
+             'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', ' + \
              'NodesToRead:' + str(self.NodesToRead) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryReadRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: HistoryReadParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: HistoryReadParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.HistoryReadRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = HistoryReadParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryReadRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = HistoryReadParameters.from_binary(data)
-        return obj
-    
+        return HistoryReadRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = HistoryReadParameters.from_binary(data)
+
     def __str__(self):
-        return 'HistoryReadRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'HistoryReadRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryReadResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Results: 
-    :vartype Results: HistoryReadResult 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Results:
+    :vartype Results: HistoryReadResult
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.HistoryReadResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -8557,55 +9524,64 @@ class HistoryReadResponse(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryReadResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return HistoryReadResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(HistoryReadResult.from_binary(data))
+                array.append(HistoryReadResult.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'HistoryReadResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'HistoryReadResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class WriteValue(object):
     '''
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
-    :ivar AttributeId: 
-    :vartype AttributeId: UInt32 
-    :ivar IndexRange: 
-    :vartype IndexRange: String 
-    :ivar Value: 
-    :vartype Value: DataValue 
+    :ivar NodeId:
+    :vartype NodeId: NodeId
+    :ivar AttributeId:
+    :vartype AttributeId: UInt32
+    :ivar IndexRange:
+    :vartype IndexRange: String
+    :ivar Value:
+    :vartype Value: DataValue
     '''
-    
+
     __slots__ = [
         "NodeId",
         "AttributeId",
         "IndexRange",
         "Value",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = NodeId()
         self.AttributeId = 0
         self.IndexRange = ''
         self.Value = DataValue()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
@@ -8613,126 +9589,143 @@ class WriteValue(object):
         packet.append(pack_uatype('String', self.IndexRange))
         packet.append(self.Value.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = WriteValue()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.AttributeId = unpack_uatype('UInt32', data)
-        obj.IndexRange = unpack_uatype('String', data)
-        obj.Value = DataValue.from_binary(data)
-        return obj
-    
+        return WriteValue(data)
+
+    def _binary_init(self, data):
+        self.NodeId = NodeId.from_binary(data)
+        self.AttributeId = unpack_uatype('UInt32', data)
+        self.IndexRange = unpack_uatype('String', data)
+        self.Value = DataValue.from_binary(data)
+
     def __str__(self):
-        return 'WriteValue(' + 'NodeId:' + str(self.NodeId) + ', '  + \
-             'AttributeId:' + str(self.AttributeId) + ', '  + \
-             'IndexRange:' + str(self.IndexRange) + ', '  + \
+        return 'WriteValue(' + 'NodeId:' + str(self.NodeId) + ', ' + \
+             'AttributeId:' + str(self.AttributeId) + ', ' + \
+             'IndexRange:' + str(self.IndexRange) + ', ' + \
              'Value:' + str(self.Value) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class WriteParameters(object):
     '''
-    :ivar NodesToWrite: 
-    :vartype NodesToWrite: WriteValue 
+    :ivar NodesToWrite:
+    :vartype NodesToWrite: WriteValue
     '''
-    
+
     __slots__ = [
         "NodesToWrite",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodesToWrite = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.NodesToWrite)))
         for fieldname in self.NodesToWrite:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = WriteParameters()
+        return WriteParameters(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.NodesToWrite.append(WriteValue.from_binary(data))
-        return obj
-    
+                array.append(WriteValue.from_binary(data))
+        self.NodesToWrite = array
+
     def __str__(self):
         return 'WriteParameters(' + 'NodesToWrite:' + str(self.NodesToWrite) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class WriteRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: WriteParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: WriteParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.WriteRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = WriteParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = WriteRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = WriteParameters.from_binary(data)
-        return obj
-    
+        return WriteRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = WriteParameters.from_binary(data)
+
     def __str__(self):
-        return 'WriteRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'WriteRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class WriteResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Results: 
-    :vartype Results: StatusCode 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Results:
+    :vartype Results: StatusCode
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.WriteResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -8744,80 +9737,94 @@ class WriteResponse(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = WriteResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return WriteResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'WriteResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'WriteResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryUpdateDetails(object):
     '''
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
+    :ivar NodeId:
+    :vartype NodeId: NodeId
     '''
-    
+
     __slots__ = [
         "NodeId",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = NodeId()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryUpdateDetails()
-        obj.NodeId = NodeId.from_binary(data)
-        return obj
-    
+        return HistoryUpdateDetails(data)
+
+    def _binary_init(self, data):
+        self.NodeId = NodeId.from_binary(data)
+
     def __str__(self):
         return 'HistoryUpdateDetails(' + 'NodeId:' + str(self.NodeId) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class UpdateDataDetails(object):
     '''
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
-    :ivar PerformInsertReplace: 
-    :vartype PerformInsertReplace: PerformUpdateType 
-    :ivar UpdateValues: 
-    :vartype UpdateValues: DataValue 
+    :ivar NodeId:
+    :vartype NodeId: NodeId
+    :ivar PerformInsertReplace:
+    :vartype PerformInsertReplace: PerformUpdateType
+    :ivar UpdateValues:
+    :vartype UpdateValues: DataValue
     '''
-    
+
     __slots__ = [
         "NodeId",
         "PerformInsertReplace",
         "UpdateValues",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = NodeId()
         self.PerformInsertReplace = 0
         self.UpdateValues = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
@@ -8826,46 +9833,53 @@ class UpdateDataDetails(object):
         for fieldname in self.UpdateValues:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = UpdateDataDetails()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.PerformInsertReplace = unpack_uatype('UInt32', data)
+        return UpdateDataDetails(data)
+
+    def _binary_init(self, data):
+        self.NodeId = NodeId.from_binary(data)
+        self.PerformInsertReplace = unpack_uatype('UInt32', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.UpdateValues.append(DataValue.from_binary(data))
-        return obj
-    
+                array.append(DataValue.from_binary(data))
+        self.UpdateValues = array
+
     def __str__(self):
-        return 'UpdateDataDetails(' + 'NodeId:' + str(self.NodeId) + ', '  + \
-             'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', '  + \
+        return 'UpdateDataDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
+             'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
              'UpdateValues:' + str(self.UpdateValues) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class UpdateStructureDataDetails(object):
     '''
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
-    :ivar PerformInsertReplace: 
-    :vartype PerformInsertReplace: PerformUpdateType 
-    :ivar UpdateValues: 
-    :vartype UpdateValues: DataValue 
+    :ivar NodeId:
+    :vartype NodeId: NodeId
+    :ivar PerformInsertReplace:
+    :vartype PerformInsertReplace: PerformUpdateType
+    :ivar UpdateValues:
+    :vartype UpdateValues: DataValue
     '''
-    
+
     __slots__ = [
         "NodeId",
         "PerformInsertReplace",
         "UpdateValues",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = NodeId()
         self.PerformInsertReplace = 0
         self.UpdateValues = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
@@ -8874,50 +9888,57 @@ class UpdateStructureDataDetails(object):
         for fieldname in self.UpdateValues:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = UpdateStructureDataDetails()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.PerformInsertReplace = unpack_uatype('UInt32', data)
+        return UpdateStructureDataDetails(data)
+
+    def _binary_init(self, data):
+        self.NodeId = NodeId.from_binary(data)
+        self.PerformInsertReplace = unpack_uatype('UInt32', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.UpdateValues.append(DataValue.from_binary(data))
-        return obj
-    
+                array.append(DataValue.from_binary(data))
+        self.UpdateValues = array
+
     def __str__(self):
-        return 'UpdateStructureDataDetails(' + 'NodeId:' + str(self.NodeId) + ', '  + \
-             'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', '  + \
+        return 'UpdateStructureDataDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
+             'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
              'UpdateValues:' + str(self.UpdateValues) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class UpdateEventDetails(object):
     '''
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
-    :ivar PerformInsertReplace: 
-    :vartype PerformInsertReplace: PerformUpdateType 
-    :ivar Filter: 
-    :vartype Filter: EventFilter 
-    :ivar EventData: 
-    :vartype EventData: HistoryEventFieldList 
+    :ivar NodeId:
+    :vartype NodeId: NodeId
+    :ivar PerformInsertReplace:
+    :vartype PerformInsertReplace: PerformUpdateType
+    :ivar Filter:
+    :vartype Filter: EventFilter
+    :ivar EventData:
+    :vartype EventData: HistoryEventFieldList
     '''
-    
+
     __slots__ = [
         "NodeId",
         "PerformInsertReplace",
         "Filter",
         "EventData",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = NodeId()
         self.PerformInsertReplace = 0
         self.Filter = EventFilter()
         self.EventData = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
@@ -8927,52 +9948,59 @@ class UpdateEventDetails(object):
         for fieldname in self.EventData:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = UpdateEventDetails()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.PerformInsertReplace = unpack_uatype('UInt32', data)
-        obj.Filter = EventFilter.from_binary(data)
+        return UpdateEventDetails(data)
+
+    def _binary_init(self, data):
+        self.NodeId = NodeId.from_binary(data)
+        self.PerformInsertReplace = unpack_uatype('UInt32', data)
+        self.Filter = EventFilter.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.EventData.append(HistoryEventFieldList.from_binary(data))
-        return obj
-    
+                array.append(HistoryEventFieldList.from_binary(data))
+        self.EventData = array
+
     def __str__(self):
-        return 'UpdateEventDetails(' + 'NodeId:' + str(self.NodeId) + ', '  + \
-             'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', '  + \
-             'Filter:' + str(self.Filter) + ', '  + \
+        return 'UpdateEventDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
+             'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
+             'Filter:' + str(self.Filter) + ', ' + \
              'EventData:' + str(self.EventData) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteRawModifiedDetails(object):
     '''
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
-    :ivar IsDeleteModified: 
-    :vartype IsDeleteModified: Boolean 
-    :ivar StartTime: 
-    :vartype StartTime: DateTime 
-    :ivar EndTime: 
-    :vartype EndTime: DateTime 
+    :ivar NodeId:
+    :vartype NodeId: NodeId
+    :ivar IsDeleteModified:
+    :vartype IsDeleteModified: Boolean
+    :ivar StartTime:
+    :vartype StartTime: DateTime
+    :ivar EndTime:
+    :vartype EndTime: DateTime
     '''
-    
+
     __slots__ = [
         "NodeId",
         "IsDeleteModified",
         "StartTime",
         "EndTime",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = NodeId()
         self.IsDeleteModified = True
         self.StartTime = datetime.now()
         self.EndTime = datetime.now()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
@@ -8980,41 +10008,46 @@ class DeleteRawModifiedDetails(object):
         packet.append(pack_uatype('DateTime', self.StartTime))
         packet.append(pack_uatype('DateTime', self.EndTime))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteRawModifiedDetails()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.IsDeleteModified = unpack_uatype('Boolean', data)
-        obj.StartTime = unpack_uatype('DateTime', data)
-        obj.EndTime = unpack_uatype('DateTime', data)
-        return obj
-    
+        return DeleteRawModifiedDetails(data)
+
+    def _binary_init(self, data):
+        self.NodeId = NodeId.from_binary(data)
+        self.IsDeleteModified = unpack_uatype('Boolean', data)
+        self.StartTime = unpack_uatype('DateTime', data)
+        self.EndTime = unpack_uatype('DateTime', data)
+
     def __str__(self):
-        return 'DeleteRawModifiedDetails(' + 'NodeId:' + str(self.NodeId) + ', '  + \
-             'IsDeleteModified:' + str(self.IsDeleteModified) + ', '  + \
-             'StartTime:' + str(self.StartTime) + ', '  + \
+        return 'DeleteRawModifiedDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
+             'IsDeleteModified:' + str(self.IsDeleteModified) + ', ' + \
+             'StartTime:' + str(self.StartTime) + ', ' + \
              'EndTime:' + str(self.EndTime) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteAtTimeDetails(object):
     '''
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
-    :ivar ReqTimes: 
-    :vartype ReqTimes: DateTime 
+    :ivar NodeId:
+    :vartype NodeId: NodeId
+    :ivar ReqTimes:
+    :vartype ReqTimes: DateTime
     '''
-    
+
     __slots__ = [
         "NodeId",
         "ReqTimes",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = NodeId()
         self.ReqTimes = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
@@ -9022,37 +10055,42 @@ class DeleteAtTimeDetails(object):
         for fieldname in self.ReqTimes:
             packet.append(pack_uatype('DateTime', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteAtTimeDetails()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.ReqTimes = unpack_uatype_array('DateTime', data)
-        return obj
-    
+        return DeleteAtTimeDetails(data)
+
+    def _binary_init(self, data):
+        self.NodeId = NodeId.from_binary(data)
+        self.ReqTimes = unpack_uatype_array('DateTime', data)
+
     def __str__(self):
-        return 'DeleteAtTimeDetails(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+        return 'DeleteAtTimeDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
              'ReqTimes:' + str(self.ReqTimes) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteEventDetails(object):
     '''
-    :ivar NodeId: 
-    :vartype NodeId: NodeId 
-    :ivar EventIds: 
-    :vartype EventIds: ByteString 
+    :ivar NodeId:
+    :vartype NodeId: NodeId
+    :ivar EventIds:
+    :vartype EventIds: ByteString
     '''
-    
+
     __slots__ = [
         "NodeId",
         "EventIds",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NodeId = NodeId()
         self.EventIds = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
@@ -9060,41 +10098,46 @@ class DeleteEventDetails(object):
         for fieldname in self.EventIds:
             packet.append(pack_uatype('ByteString', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteEventDetails()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.EventIds = unpack_uatype_array('ByteString', data)
-        return obj
-    
+        return DeleteEventDetails(data)
+
+    def _binary_init(self, data):
+        self.NodeId = NodeId.from_binary(data)
+        self.EventIds = unpack_uatype_array('ByteString', data)
+
     def __str__(self):
-        return 'DeleteEventDetails(' + 'NodeId:' + str(self.NodeId) + ', '  + \
+        return 'DeleteEventDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
              'EventIds:' + str(self.EventIds) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryUpdateResult(object):
     '''
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar OperationResults: 
-    :vartype OperationResults: StatusCode 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar StatusCode:
+    :vartype StatusCode: StatusCode
+    :ivar OperationResults:
+    :vartype OperationResults: StatusCode
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "StatusCode",
         "OperationResults",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StatusCode = StatusCode()
         self.OperationResults = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
@@ -9105,130 +10148,151 @@ class HistoryUpdateResult(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryUpdateResult()
-        obj.StatusCode = StatusCode.from_binary(data)
+        return HistoryUpdateResult(data)
+
+    def _binary_init(self, data):
+        self.StatusCode = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.OperationResults.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.OperationResults = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'HistoryUpdateResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
-             'OperationResults:' + str(self.OperationResults) + ', '  + \
+        return 'HistoryUpdateResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
+             'OperationResults:' + str(self.OperationResults) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryUpdateParameters(object):
     '''
-    :ivar HistoryUpdateDetails: 
-    :vartype HistoryUpdateDetails: ExtensionObject 
+    :ivar HistoryUpdateDetails:
+    :vartype HistoryUpdateDetails: ExtensionObject
     '''
-    
+
     __slots__ = [
         "HistoryUpdateDetails",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.HistoryUpdateDetails = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.HistoryUpdateDetails)))
         for fieldname in self.HistoryUpdateDetails:
             packet.append(extensionobject_to_binary(fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryUpdateParameters()
+        return HistoryUpdateParameters(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.HistoryUpdateDetails.append(extensionobject_from_binary(data))
-        return obj
-    
+                array.append(extensionobject_from_binary(data))
+        self.HistoryUpdateDetails = array
+
     def __str__(self):
         return 'HistoryUpdateParameters(' + 'HistoryUpdateDetails:' + str(self.HistoryUpdateDetails) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryUpdateRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: HistoryUpdateParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: HistoryUpdateParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.HistoryUpdateRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = HistoryUpdateParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryUpdateRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = HistoryUpdateParameters.from_binary(data)
-        return obj
-    
+        return HistoryUpdateRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = HistoryUpdateParameters.from_binary(data)
+
     def __str__(self):
-        return 'HistoryUpdateRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'HistoryUpdateRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryUpdateResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Results: 
-    :vartype Results: HistoryUpdateResult 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Results:
+    :vartype Results: HistoryUpdateResult
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.HistoryUpdateResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -9240,51 +10304,60 @@ class HistoryUpdateResponse(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryUpdateResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return HistoryUpdateResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(HistoryUpdateResult.from_binary(data))
+                array.append(HistoryUpdateResult.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'HistoryUpdateResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'HistoryUpdateResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CallMethodRequest(object):
     '''
-    :ivar ObjectId: 
-    :vartype ObjectId: NodeId 
-    :ivar MethodId: 
-    :vartype MethodId: NodeId 
-    :ivar InputArguments: 
-    :vartype InputArguments: Variant 
+    :ivar ObjectId:
+    :vartype ObjectId: NodeId
+    :ivar MethodId:
+    :vartype MethodId: NodeId
+    :ivar InputArguments:
+    :vartype InputArguments: Variant
     '''
-    
+
     __slots__ = [
         "ObjectId",
         "MethodId",
         "InputArguments",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ObjectId = NodeId()
         self.MethodId = NodeId()
         self.InputArguments = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.ObjectId.to_binary())
@@ -9293,50 +10366,57 @@ class CallMethodRequest(object):
         for fieldname in self.InputArguments:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CallMethodRequest()
-        obj.ObjectId = NodeId.from_binary(data)
-        obj.MethodId = NodeId.from_binary(data)
+        return CallMethodRequest(data)
+
+    def _binary_init(self, data):
+        self.ObjectId = NodeId.from_binary(data)
+        self.MethodId = NodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.InputArguments.append(Variant.from_binary(data))
-        return obj
-    
+                array.append(Variant.from_binary(data))
+        self.InputArguments = array
+
     def __str__(self):
-        return 'CallMethodRequest(' + 'ObjectId:' + str(self.ObjectId) + ', '  + \
-             'MethodId:' + str(self.MethodId) + ', '  + \
+        return 'CallMethodRequest(' + 'ObjectId:' + str(self.ObjectId) + ', ' + \
+             'MethodId:' + str(self.MethodId) + ', ' + \
              'InputArguments:' + str(self.InputArguments) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CallMethodResult(object):
     '''
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar InputArgumentResults: 
-    :vartype InputArgumentResults: StatusCode 
-    :ivar InputArgumentDiagnosticInfos: 
-    :vartype InputArgumentDiagnosticInfos: DiagnosticInfo 
-    :ivar OutputArguments: 
-    :vartype OutputArguments: Variant 
+    :ivar StatusCode:
+    :vartype StatusCode: StatusCode
+    :ivar InputArgumentResults:
+    :vartype InputArgumentResults: StatusCode
+    :ivar InputArgumentDiagnosticInfos:
+    :vartype InputArgumentDiagnosticInfos: DiagnosticInfo
+    :ivar OutputArguments:
+    :vartype OutputArguments: Variant
     '''
-    
+
     __slots__ = [
         "StatusCode",
         "InputArgumentResults",
         "InputArgumentDiagnosticInfos",
         "OutputArguments",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StatusCode = StatusCode()
         self.InputArgumentResults = []
         self.InputArgumentDiagnosticInfos = []
         self.OutputArguments = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
@@ -9350,135 +10430,158 @@ class CallMethodResult(object):
         for fieldname in self.OutputArguments:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CallMethodResult()
-        obj.StatusCode = StatusCode.from_binary(data)
+        return CallMethodResult(data)
+
+    def _binary_init(self, data):
+        self.StatusCode = StatusCode.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.InputArgumentResults.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.InputArgumentResults = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.InputArgumentDiagnosticInfos.append(DiagnosticInfo.from_binary(data))
+                array.append(DiagnosticInfo.from_binary(data))
+        self.InputArgumentDiagnosticInfos = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.OutputArguments.append(Variant.from_binary(data))
-        return obj
-    
+                array.append(Variant.from_binary(data))
+        self.OutputArguments = array
+
     def __str__(self):
-        return 'CallMethodResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
-             'InputArgumentResults:' + str(self.InputArgumentResults) + ', '  + \
-             'InputArgumentDiagnosticInfos:' + str(self.InputArgumentDiagnosticInfos) + ', '  + \
+        return 'CallMethodResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
+             'InputArgumentResults:' + str(self.InputArgumentResults) + ', ' + \
+             'InputArgumentDiagnosticInfos:' + str(self.InputArgumentDiagnosticInfos) + ', ' + \
              'OutputArguments:' + str(self.OutputArguments) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CallParameters(object):
     '''
-    :ivar MethodsToCall: 
-    :vartype MethodsToCall: CallMethodRequest 
+    :ivar MethodsToCall:
+    :vartype MethodsToCall: CallMethodRequest
     '''
-    
+
     __slots__ = [
         "MethodsToCall",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.MethodsToCall = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.MethodsToCall)))
         for fieldname in self.MethodsToCall:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CallParameters()
+        return CallParameters(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.MethodsToCall.append(CallMethodRequest.from_binary(data))
-        return obj
-    
+                array.append(CallMethodRequest.from_binary(data))
+        self.MethodsToCall = array
+
     def __str__(self):
         return 'CallParameters(' + 'MethodsToCall:' + str(self.MethodsToCall) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CallRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: CallParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: CallParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.CallRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CallParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CallRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = CallParameters.from_binary(data)
-        return obj
-    
+        return CallRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = CallParameters.from_binary(data)
+
     def __str__(self):
-        return 'CallRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'CallRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CallResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Results: 
-    :vartype Results: CallMethodResult 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Results:
+    :vartype Results: CallMethodResult
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.CallResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -9490,114 +10593,133 @@ class CallResponse(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CallResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return CallResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(CallMethodResult.from_binary(data))
+                array.append(CallMethodResult.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'CallResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'CallResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class MonitoringFilter(object):
     '''
     '''
-    
+
     __slots__ = [
     ]
-    
-    def __init__(self):
-        pass
-    
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
+
     def to_binary(self):
         packet = []
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = MonitoringFilter()
-        return obj
-    
+        return MonitoringFilter(data)
+
+    def _binary_init(self, data):
+        pass
+
     def __str__(self):
         return 'MonitoringFilter(' +  + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DataChangeFilter(object):
     '''
-    :ivar Trigger: 
-    :vartype Trigger: DataChangeTrigger 
-    :ivar DeadbandType: 
-    :vartype DeadbandType: UInt32 
-    :ivar DeadbandValue: 
-    :vartype DeadbandValue: Double 
+    :ivar Trigger:
+    :vartype Trigger: DataChangeTrigger
+    :ivar DeadbandType:
+    :vartype DeadbandType: UInt32
+    :ivar DeadbandValue:
+    :vartype DeadbandValue: Double
     '''
-    
+
     __slots__ = [
         "Trigger",
         "DeadbandType",
         "DeadbandValue",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Trigger = 0
         self.DeadbandType = 0
         self.DeadbandValue = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.Trigger))
         packet.append(pack_uatype('UInt32', self.DeadbandType))
         packet.append(pack_uatype('Double', self.DeadbandValue))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DataChangeFilter()
-        obj.Trigger = unpack_uatype('UInt32', data)
-        obj.DeadbandType = unpack_uatype('UInt32', data)
-        obj.DeadbandValue = unpack_uatype('Double', data)
-        return obj
-    
+        return DataChangeFilter(data)
+
+    def _binary_init(self, data):
+        self.Trigger = unpack_uatype('UInt32', data)
+        self.DeadbandType = unpack_uatype('UInt32', data)
+        self.DeadbandValue = unpack_uatype('Double', data)
+
     def __str__(self):
-        return 'DataChangeFilter(' + 'Trigger:' + str(self.Trigger) + ', '  + \
-             'DeadbandType:' + str(self.DeadbandType) + ', '  + \
+        return 'DataChangeFilter(' + 'Trigger:' + str(self.Trigger) + ', ' + \
+             'DeadbandType:' + str(self.DeadbandType) + ', ' + \
              'DeadbandValue:' + str(self.DeadbandValue) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class EventFilter(object):
     '''
-    :ivar SelectClauses: 
-    :vartype SelectClauses: SimpleAttributeOperand 
-    :ivar WhereClause: 
-    :vartype WhereClause: ContentFilter 
+    :ivar SelectClauses:
+    :vartype SelectClauses: SimpleAttributeOperand
+    :ivar WhereClause:
+    :vartype WhereClause: ContentFilter
     '''
-    
+
     __slots__ = [
         "SelectClauses",
         "WhereClause",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SelectClauses = []
         self.WhereClause = ContentFilter()
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.SelectClauses)))
@@ -9605,37 +10727,41 @@ class EventFilter(object):
             packet.append(fieldname.to_binary())
         packet.append(self.WhereClause.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = EventFilter()
+        return EventFilter(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.SelectClauses.append(SimpleAttributeOperand.from_binary(data))
-        obj.WhereClause = ContentFilter.from_binary(data)
-        return obj
-    
+                array.append(SimpleAttributeOperand.from_binary(data))
+        self.SelectClauses = array
+        self.WhereClause = ContentFilter.from_binary(data)
+
     def __str__(self):
-        return 'EventFilter(' + 'SelectClauses:' + str(self.SelectClauses) + ', '  + \
+        return 'EventFilter(' + 'SelectClauses:' + str(self.SelectClauses) + ', ' + \
              'WhereClause:' + str(self.WhereClause) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class AggregateConfiguration(object):
     '''
-    :ivar UseServerCapabilitiesDefaults: 
-    :vartype UseServerCapabilitiesDefaults: Boolean 
-    :ivar TreatUncertainAsBad: 
-    :vartype TreatUncertainAsBad: Boolean 
-    :ivar PercentDataBad: 
-    :vartype PercentDataBad: Byte 
-    :ivar PercentDataGood: 
-    :vartype PercentDataGood: Byte 
-    :ivar UseSlopedExtrapolation: 
-    :vartype UseSlopedExtrapolation: Boolean 
+    :ivar UseServerCapabilitiesDefaults:
+    :vartype UseServerCapabilitiesDefaults: Boolean
+    :ivar TreatUncertainAsBad:
+    :vartype TreatUncertainAsBad: Boolean
+    :ivar PercentDataBad:
+    :vartype PercentDataBad: Byte
+    :ivar PercentDataGood:
+    :vartype PercentDataGood: Byte
+    :ivar UseSlopedExtrapolation:
+    :vartype UseSlopedExtrapolation: Boolean
     '''
-    
+
     __slots__ = [
         "UseServerCapabilitiesDefaults",
         "TreatUncertainAsBad",
@@ -9643,14 +10769,17 @@ class AggregateConfiguration(object):
         "PercentDataGood",
         "UseSlopedExtrapolation",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.UseServerCapabilitiesDefaults = True
         self.TreatUncertainAsBad = True
         self.PercentDataBad = 0
         self.PercentDataGood = 0
         self.UseSlopedExtrapolation = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Boolean', self.UseServerCapabilitiesDefaults))
@@ -9659,51 +10788,56 @@ class AggregateConfiguration(object):
         packet.append(pack_uatype('Byte', self.PercentDataGood))
         packet.append(pack_uatype('Boolean', self.UseSlopedExtrapolation))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = AggregateConfiguration()
-        obj.UseServerCapabilitiesDefaults = unpack_uatype('Boolean', data)
-        obj.TreatUncertainAsBad = unpack_uatype('Boolean', data)
-        obj.PercentDataBad = unpack_uatype('Byte', data)
-        obj.PercentDataGood = unpack_uatype('Byte', data)
-        obj.UseSlopedExtrapolation = unpack_uatype('Boolean', data)
-        return obj
-    
+        return AggregateConfiguration(data)
+
+    def _binary_init(self, data):
+        self.UseServerCapabilitiesDefaults = unpack_uatype('Boolean', data)
+        self.TreatUncertainAsBad = unpack_uatype('Boolean', data)
+        self.PercentDataBad = unpack_uatype('Byte', data)
+        self.PercentDataGood = unpack_uatype('Byte', data)
+        self.UseSlopedExtrapolation = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'AggregateConfiguration(' + 'UseServerCapabilitiesDefaults:' + str(self.UseServerCapabilitiesDefaults) + ', '  + \
-             'TreatUncertainAsBad:' + str(self.TreatUncertainAsBad) + ', '  + \
-             'PercentDataBad:' + str(self.PercentDataBad) + ', '  + \
-             'PercentDataGood:' + str(self.PercentDataGood) + ', '  + \
+        return 'AggregateConfiguration(' + 'UseServerCapabilitiesDefaults:' + str(self.UseServerCapabilitiesDefaults) + ', ' + \
+             'TreatUncertainAsBad:' + str(self.TreatUncertainAsBad) + ', ' + \
+             'PercentDataBad:' + str(self.PercentDataBad) + ', ' + \
+             'PercentDataGood:' + str(self.PercentDataGood) + ', ' + \
              'UseSlopedExtrapolation:' + str(self.UseSlopedExtrapolation) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class AggregateFilter(object):
     '''
-    :ivar StartTime: 
-    :vartype StartTime: DateTime 
-    :ivar AggregateType: 
-    :vartype AggregateType: NodeId 
-    :ivar ProcessingInterval: 
-    :vartype ProcessingInterval: Double 
-    :ivar AggregateConfiguration: 
-    :vartype AggregateConfiguration: AggregateConfiguration 
+    :ivar StartTime:
+    :vartype StartTime: DateTime
+    :ivar AggregateType:
+    :vartype AggregateType: NodeId
+    :ivar ProcessingInterval:
+    :vartype ProcessingInterval: Double
+    :ivar AggregateConfiguration:
+    :vartype AggregateConfiguration: AggregateConfiguration
     '''
-    
+
     __slots__ = [
         "StartTime",
         "AggregateType",
         "ProcessingInterval",
         "AggregateConfiguration",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StartTime = datetime.now()
         self.AggregateType = NodeId()
         self.ProcessingInterval = 0
         self.AggregateConfiguration = AggregateConfiguration()
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('DateTime', self.StartTime))
@@ -9711,69 +10845,79 @@ class AggregateFilter(object):
         packet.append(pack_uatype('Double', self.ProcessingInterval))
         packet.append(self.AggregateConfiguration.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = AggregateFilter()
-        obj.StartTime = unpack_uatype('DateTime', data)
-        obj.AggregateType = NodeId.from_binary(data)
-        obj.ProcessingInterval = unpack_uatype('Double', data)
-        obj.AggregateConfiguration = AggregateConfiguration.from_binary(data)
-        return obj
-    
+        return AggregateFilter(data)
+
+    def _binary_init(self, data):
+        self.StartTime = unpack_uatype('DateTime', data)
+        self.AggregateType = NodeId.from_binary(data)
+        self.ProcessingInterval = unpack_uatype('Double', data)
+        self.AggregateConfiguration = AggregateConfiguration.from_binary(data)
+
     def __str__(self):
-        return 'AggregateFilter(' + 'StartTime:' + str(self.StartTime) + ', '  + \
-             'AggregateType:' + str(self.AggregateType) + ', '  + \
-             'ProcessingInterval:' + str(self.ProcessingInterval) + ', '  + \
+        return 'AggregateFilter(' + 'StartTime:' + str(self.StartTime) + ', ' + \
+             'AggregateType:' + str(self.AggregateType) + ', ' + \
+             'ProcessingInterval:' + str(self.ProcessingInterval) + ', ' + \
              'AggregateConfiguration:' + str(self.AggregateConfiguration) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class MonitoringFilterResult(object):
     '''
     '''
-    
+
     __slots__ = [
     ]
-    
-    def __init__(self):
-        pass
-    
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
+
     def to_binary(self):
         packet = []
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = MonitoringFilterResult()
-        return obj
-    
+        return MonitoringFilterResult(data)
+
+    def _binary_init(self, data):
+        pass
+
     def __str__(self):
         return 'MonitoringFilterResult(' +  + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class EventFilterResult(object):
     '''
-    :ivar SelectClauseResults: 
-    :vartype SelectClauseResults: StatusCode 
-    :ivar SelectClauseDiagnosticInfos: 
-    :vartype SelectClauseDiagnosticInfos: DiagnosticInfo 
-    :ivar WhereClauseResult: 
-    :vartype WhereClauseResult: ContentFilterResult 
+    :ivar SelectClauseResults:
+    :vartype SelectClauseResults: StatusCode
+    :ivar SelectClauseDiagnosticInfos:
+    :vartype SelectClauseDiagnosticInfos: DiagnosticInfo
+    :ivar WhereClauseResult:
+    :vartype WhereClauseResult: ContentFilterResult
     '''
-    
+
     __slots__ = [
         "SelectClauseResults",
         "SelectClauseDiagnosticInfos",
         "WhereClauseResult",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SelectClauseResults = []
         self.SelectClauseDiagnosticInfos = []
         self.WhereClauseResult = ContentFilterResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.SelectClauseResults)))
@@ -9784,85 +10928,96 @@ class EventFilterResult(object):
             packet.append(fieldname.to_binary())
         packet.append(self.WhereClauseResult.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = EventFilterResult()
+        return EventFilterResult(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.SelectClauseResults.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.SelectClauseResults = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.SelectClauseDiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        obj.WhereClauseResult = ContentFilterResult.from_binary(data)
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.SelectClauseDiagnosticInfos = array
+        self.WhereClauseResult = ContentFilterResult.from_binary(data)
+
     def __str__(self):
-        return 'EventFilterResult(' + 'SelectClauseResults:' + str(self.SelectClauseResults) + ', '  + \
-             'SelectClauseDiagnosticInfos:' + str(self.SelectClauseDiagnosticInfos) + ', '  + \
+        return 'EventFilterResult(' + 'SelectClauseResults:' + str(self.SelectClauseResults) + ', ' + \
+             'SelectClauseDiagnosticInfos:' + str(self.SelectClauseDiagnosticInfos) + ', ' + \
              'WhereClauseResult:' + str(self.WhereClauseResult) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class AggregateFilterResult(object):
     '''
-    :ivar RevisedStartTime: 
-    :vartype RevisedStartTime: DateTime 
-    :ivar RevisedProcessingInterval: 
-    :vartype RevisedProcessingInterval: Double 
-    :ivar RevisedAggregateConfiguration: 
-    :vartype RevisedAggregateConfiguration: AggregateConfiguration 
+    :ivar RevisedStartTime:
+    :vartype RevisedStartTime: DateTime
+    :ivar RevisedProcessingInterval:
+    :vartype RevisedProcessingInterval: Double
+    :ivar RevisedAggregateConfiguration:
+    :vartype RevisedAggregateConfiguration: AggregateConfiguration
     '''
-    
+
     __slots__ = [
         "RevisedStartTime",
         "RevisedProcessingInterval",
         "RevisedAggregateConfiguration",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.RevisedStartTime = datetime.now()
         self.RevisedProcessingInterval = 0
         self.RevisedAggregateConfiguration = AggregateConfiguration()
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('DateTime', self.RevisedStartTime))
         packet.append(pack_uatype('Double', self.RevisedProcessingInterval))
         packet.append(self.RevisedAggregateConfiguration.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = AggregateFilterResult()
-        obj.RevisedStartTime = unpack_uatype('DateTime', data)
-        obj.RevisedProcessingInterval = unpack_uatype('Double', data)
-        obj.RevisedAggregateConfiguration = AggregateConfiguration.from_binary(data)
-        return obj
-    
+        return AggregateFilterResult(data)
+
+    def _binary_init(self, data):
+        self.RevisedStartTime = unpack_uatype('DateTime', data)
+        self.RevisedProcessingInterval = unpack_uatype('Double', data)
+        self.RevisedAggregateConfiguration = AggregateConfiguration.from_binary(data)
+
     def __str__(self):
-        return 'AggregateFilterResult(' + 'RevisedStartTime:' + str(self.RevisedStartTime) + ', '  + \
-             'RevisedProcessingInterval:' + str(self.RevisedProcessingInterval) + ', '  + \
+        return 'AggregateFilterResult(' + 'RevisedStartTime:' + str(self.RevisedStartTime) + ', ' + \
+             'RevisedProcessingInterval:' + str(self.RevisedProcessingInterval) + ', ' + \
              'RevisedAggregateConfiguration:' + str(self.RevisedAggregateConfiguration) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class MonitoringParameters(object):
     '''
-    :ivar ClientHandle: 
-    :vartype ClientHandle: UInt32 
-    :ivar SamplingInterval: 
-    :vartype SamplingInterval: Double 
-    :ivar Filter: 
-    :vartype Filter: ExtensionObject 
-    :ivar QueueSize: 
-    :vartype QueueSize: UInt32 
-    :ivar DiscardOldest: 
-    :vartype DiscardOldest: Boolean 
+    :ivar ClientHandle:
+    :vartype ClientHandle: UInt32
+    :ivar SamplingInterval:
+    :vartype SamplingInterval: Double
+    :ivar Filter:
+    :vartype Filter: ExtensionObject
+    :ivar QueueSize:
+    :vartype QueueSize: UInt32
+    :ivar DiscardOldest:
+    :vartype DiscardOldest: Boolean
     '''
-    
+
     __slots__ = [
         "ClientHandle",
         "SamplingInterval",
@@ -9870,14 +11025,17 @@ class MonitoringParameters(object):
         "QueueSize",
         "DiscardOldest",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ClientHandle = 0
         self.SamplingInterval = 0
         self.Filter = None
         self.QueueSize = 0
         self.DiscardOldest = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.ClientHandle))
@@ -9886,83 +11044,90 @@ class MonitoringParameters(object):
         packet.append(pack_uatype('UInt32', self.QueueSize))
         packet.append(pack_uatype('Boolean', self.DiscardOldest))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = MonitoringParameters()
-        obj.ClientHandle = unpack_uatype('UInt32', data)
-        obj.SamplingInterval = unpack_uatype('Double', data)
-        obj.Filter = extensionobject_from_binary(data)
-        obj.QueueSize = unpack_uatype('UInt32', data)
-        obj.DiscardOldest = unpack_uatype('Boolean', data)
-        return obj
-    
+        return MonitoringParameters(data)
+
+    def _binary_init(self, data):
+        self.ClientHandle = unpack_uatype('UInt32', data)
+        self.SamplingInterval = unpack_uatype('Double', data)
+        self.Filter = extensionobject_from_binary(data)
+        self.QueueSize = unpack_uatype('UInt32', data)
+        self.DiscardOldest = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'MonitoringParameters(' + 'ClientHandle:' + str(self.ClientHandle) + ', '  + \
-             'SamplingInterval:' + str(self.SamplingInterval) + ', '  + \
-             'Filter:' + str(self.Filter) + ', '  + \
-             'QueueSize:' + str(self.QueueSize) + ', '  + \
+        return 'MonitoringParameters(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
+             'SamplingInterval:' + str(self.SamplingInterval) + ', ' + \
+             'Filter:' + str(self.Filter) + ', ' + \
+             'QueueSize:' + str(self.QueueSize) + ', ' + \
              'DiscardOldest:' + str(self.DiscardOldest) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class MonitoredItemCreateRequest(object):
     '''
-    :ivar ItemToMonitor: 
-    :vartype ItemToMonitor: ReadValueId 
-    :ivar MonitoringMode: 
-    :vartype MonitoringMode: MonitoringMode 
-    :ivar RequestedParameters: 
-    :vartype RequestedParameters: MonitoringParameters 
+    :ivar ItemToMonitor:
+    :vartype ItemToMonitor: ReadValueId
+    :ivar MonitoringMode:
+    :vartype MonitoringMode: MonitoringMode
+    :ivar RequestedParameters:
+    :vartype RequestedParameters: MonitoringParameters
     '''
-    
+
     __slots__ = [
         "ItemToMonitor",
         "MonitoringMode",
         "RequestedParameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ItemToMonitor = ReadValueId()
         self.MonitoringMode = 0
         self.RequestedParameters = MonitoringParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.ItemToMonitor.to_binary())
         packet.append(pack_uatype('UInt32', self.MonitoringMode))
         packet.append(self.RequestedParameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = MonitoredItemCreateRequest()
-        obj.ItemToMonitor = ReadValueId.from_binary(data)
-        obj.MonitoringMode = unpack_uatype('UInt32', data)
-        obj.RequestedParameters = MonitoringParameters.from_binary(data)
-        return obj
-    
+        return MonitoredItemCreateRequest(data)
+
+    def _binary_init(self, data):
+        self.ItemToMonitor = ReadValueId.from_binary(data)
+        self.MonitoringMode = unpack_uatype('UInt32', data)
+        self.RequestedParameters = MonitoringParameters.from_binary(data)
+
     def __str__(self):
-        return 'MonitoredItemCreateRequest(' + 'ItemToMonitor:' + str(self.ItemToMonitor) + ', '  + \
-             'MonitoringMode:' + str(self.MonitoringMode) + ', '  + \
+        return 'MonitoredItemCreateRequest(' + 'ItemToMonitor:' + str(self.ItemToMonitor) + ', ' + \
+             'MonitoringMode:' + str(self.MonitoringMode) + ', ' + \
              'RequestedParameters:' + str(self.RequestedParameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class MonitoredItemCreateResult(object):
     '''
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar MonitoredItemId: 
-    :vartype MonitoredItemId: UInt32 
-    :ivar RevisedSamplingInterval: 
-    :vartype RevisedSamplingInterval: Double 
-    :ivar RevisedQueueSize: 
-    :vartype RevisedQueueSize: UInt32 
-    :ivar FilterResult: 
-    :vartype FilterResult: ExtensionObject 
+    :ivar StatusCode:
+    :vartype StatusCode: StatusCode
+    :ivar MonitoredItemId:
+    :vartype MonitoredItemId: UInt32
+    :ivar RevisedSamplingInterval:
+    :vartype RevisedSamplingInterval: Double
+    :ivar RevisedQueueSize:
+    :vartype RevisedQueueSize: UInt32
+    :ivar FilterResult:
+    :vartype FilterResult: ExtensionObject
     '''
-    
+
     __slots__ = [
         "StatusCode",
         "MonitoredItemId",
@@ -9970,14 +11135,17 @@ class MonitoredItemCreateResult(object):
         "RevisedQueueSize",
         "FilterResult",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StatusCode = StatusCode()
         self.MonitoredItemId = 0
         self.RevisedSamplingInterval = 0
         self.RevisedQueueSize = 0
         self.FilterResult = None
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
@@ -9986,47 +11154,52 @@ class MonitoredItemCreateResult(object):
         packet.append(pack_uatype('UInt32', self.RevisedQueueSize))
         packet.append(extensionobject_to_binary(self.FilterResult))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = MonitoredItemCreateResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        obj.MonitoredItemId = unpack_uatype('UInt32', data)
-        obj.RevisedSamplingInterval = unpack_uatype('Double', data)
-        obj.RevisedQueueSize = unpack_uatype('UInt32', data)
-        obj.FilterResult = extensionobject_from_binary(data)
-        return obj
-    
+        return MonitoredItemCreateResult(data)
+
+    def _binary_init(self, data):
+        self.StatusCode = StatusCode.from_binary(data)
+        self.MonitoredItemId = unpack_uatype('UInt32', data)
+        self.RevisedSamplingInterval = unpack_uatype('Double', data)
+        self.RevisedQueueSize = unpack_uatype('UInt32', data)
+        self.FilterResult = extensionobject_from_binary(data)
+
     def __str__(self):
-        return 'MonitoredItemCreateResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
-             'MonitoredItemId:' + str(self.MonitoredItemId) + ', '  + \
-             'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', '  + \
-             'RevisedQueueSize:' + str(self.RevisedQueueSize) + ', '  + \
+        return 'MonitoredItemCreateResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
+             'MonitoredItemId:' + str(self.MonitoredItemId) + ', ' + \
+             'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', ' + \
+             'RevisedQueueSize:' + str(self.RevisedQueueSize) + ', ' + \
              'FilterResult:' + str(self.FilterResult) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CreateMonitoredItemsParameters(object):
     '''
-    :ivar SubscriptionId: 
-    :vartype SubscriptionId: UInt32 
-    :ivar TimestampsToReturn: 
-    :vartype TimestampsToReturn: TimestampsToReturn 
-    :ivar ItemsToCreate: 
-    :vartype ItemsToCreate: MonitoredItemCreateRequest 
+    :ivar SubscriptionId:
+    :vartype SubscriptionId: UInt32
+    :ivar TimestampsToReturn:
+    :vartype TimestampsToReturn: TimestampsToReturn
+    :ivar ItemsToCreate:
+    :vartype ItemsToCreate: MonitoredItemCreateRequest
     '''
-    
+
     __slots__ = [
         "SubscriptionId",
         "TimestampsToReturn",
         "ItemsToCreate",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SubscriptionId = 0
         self.TimestampsToReturn = 0
         self.ItemsToCreate = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SubscriptionId))
@@ -10035,93 +11208,105 @@ class CreateMonitoredItemsParameters(object):
         for fieldname in self.ItemsToCreate:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CreateMonitoredItemsParameters()
-        obj.SubscriptionId = unpack_uatype('UInt32', data)
-        obj.TimestampsToReturn = unpack_uatype('UInt32', data)
+        return CreateMonitoredItemsParameters(data)
+
+    def _binary_init(self, data):
+        self.SubscriptionId = unpack_uatype('UInt32', data)
+        self.TimestampsToReturn = unpack_uatype('UInt32', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.ItemsToCreate.append(MonitoredItemCreateRequest.from_binary(data))
-        return obj
-    
+                array.append(MonitoredItemCreateRequest.from_binary(data))
+        self.ItemsToCreate = array
+
     def __str__(self):
-        return 'CreateMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
-             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', '  + \
+        return 'CreateMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
+             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
              'ItemsToCreate:' + str(self.ItemsToCreate) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CreateMonitoredItemsRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: CreateMonitoredItemsParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: CreateMonitoredItemsParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.CreateMonitoredItemsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CreateMonitoredItemsParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CreateMonitoredItemsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = CreateMonitoredItemsParameters.from_binary(data)
-        return obj
-    
+        return CreateMonitoredItemsRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = CreateMonitoredItemsParameters.from_binary(data)
+
     def __str__(self):
-        return 'CreateMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'CreateMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CreateMonitoredItemsResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Results: 
-    :vartype Results: MonitoredItemCreateResult 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Results:
+    :vartype Results: MonitoredItemCreateResult
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.CreateMonitoredItemsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -10133,91 +11318,105 @@ class CreateMonitoredItemsResponse(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CreateMonitoredItemsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return CreateMonitoredItemsResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(MonitoredItemCreateResult.from_binary(data))
+                array.append(MonitoredItemCreateResult.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'CreateMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'CreateMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class MonitoredItemModifyRequest(object):
     '''
-    :ivar MonitoredItemId: 
-    :vartype MonitoredItemId: UInt32 
-    :ivar RequestedParameters: 
-    :vartype RequestedParameters: MonitoringParameters 
+    :ivar MonitoredItemId:
+    :vartype MonitoredItemId: UInt32
+    :ivar RequestedParameters:
+    :vartype RequestedParameters: MonitoringParameters
     '''
-    
+
     __slots__ = [
         "MonitoredItemId",
         "RequestedParameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.MonitoredItemId = 0
         self.RequestedParameters = MonitoringParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.MonitoredItemId))
         packet.append(self.RequestedParameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = MonitoredItemModifyRequest()
-        obj.MonitoredItemId = unpack_uatype('UInt32', data)
-        obj.RequestedParameters = MonitoringParameters.from_binary(data)
-        return obj
-    
+        return MonitoredItemModifyRequest(data)
+
+    def _binary_init(self, data):
+        self.MonitoredItemId = unpack_uatype('UInt32', data)
+        self.RequestedParameters = MonitoringParameters.from_binary(data)
+
     def __str__(self):
-        return 'MonitoredItemModifyRequest(' + 'MonitoredItemId:' + str(self.MonitoredItemId) + ', '  + \
+        return 'MonitoredItemModifyRequest(' + 'MonitoredItemId:' + str(self.MonitoredItemId) + ', ' + \
              'RequestedParameters:' + str(self.RequestedParameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class MonitoredItemModifyResult(object):
     '''
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar RevisedSamplingInterval: 
-    :vartype RevisedSamplingInterval: Double 
-    :ivar RevisedQueueSize: 
-    :vartype RevisedQueueSize: UInt32 
-    :ivar FilterResult: 
-    :vartype FilterResult: ExtensionObject 
+    :ivar StatusCode:
+    :vartype StatusCode: StatusCode
+    :ivar RevisedSamplingInterval:
+    :vartype RevisedSamplingInterval: Double
+    :ivar RevisedQueueSize:
+    :vartype RevisedQueueSize: UInt32
+    :ivar FilterResult:
+    :vartype FilterResult: ExtensionObject
     '''
-    
+
     __slots__ = [
         "StatusCode",
         "RevisedSamplingInterval",
         "RevisedQueueSize",
         "FilterResult",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StatusCode = StatusCode()
         self.RevisedSamplingInterval = 0
         self.RevisedQueueSize = 0
         self.FilterResult = None
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
@@ -10225,45 +11424,50 @@ class MonitoredItemModifyResult(object):
         packet.append(pack_uatype('UInt32', self.RevisedQueueSize))
         packet.append(extensionobject_to_binary(self.FilterResult))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = MonitoredItemModifyResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        obj.RevisedSamplingInterval = unpack_uatype('Double', data)
-        obj.RevisedQueueSize = unpack_uatype('UInt32', data)
-        obj.FilterResult = extensionobject_from_binary(data)
-        return obj
-    
+        return MonitoredItemModifyResult(data)
+
+    def _binary_init(self, data):
+        self.StatusCode = StatusCode.from_binary(data)
+        self.RevisedSamplingInterval = unpack_uatype('Double', data)
+        self.RevisedQueueSize = unpack_uatype('UInt32', data)
+        self.FilterResult = extensionobject_from_binary(data)
+
     def __str__(self):
-        return 'MonitoredItemModifyResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
-             'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', '  + \
-             'RevisedQueueSize:' + str(self.RevisedQueueSize) + ', '  + \
+        return 'MonitoredItemModifyResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
+             'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', ' + \
+             'RevisedQueueSize:' + str(self.RevisedQueueSize) + ', ' + \
              'FilterResult:' + str(self.FilterResult) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ModifyMonitoredItemsParameters(object):
     '''
-    :ivar SubscriptionId: 
-    :vartype SubscriptionId: UInt32 
-    :ivar TimestampsToReturn: 
-    :vartype TimestampsToReturn: TimestampsToReturn 
-    :ivar ItemsToModify: 
-    :vartype ItemsToModify: MonitoredItemModifyRequest 
+    :ivar SubscriptionId:
+    :vartype SubscriptionId: UInt32
+    :ivar TimestampsToReturn:
+    :vartype TimestampsToReturn: TimestampsToReturn
+    :ivar ItemsToModify:
+    :vartype ItemsToModify: MonitoredItemModifyRequest
     '''
-    
+
     __slots__ = [
         "SubscriptionId",
         "TimestampsToReturn",
         "ItemsToModify",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SubscriptionId = 0
         self.TimestampsToReturn = 0
         self.ItemsToModify = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SubscriptionId))
@@ -10272,93 +11476,105 @@ class ModifyMonitoredItemsParameters(object):
         for fieldname in self.ItemsToModify:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ModifyMonitoredItemsParameters()
-        obj.SubscriptionId = unpack_uatype('UInt32', data)
-        obj.TimestampsToReturn = unpack_uatype('UInt32', data)
+        return ModifyMonitoredItemsParameters(data)
+
+    def _binary_init(self, data):
+        self.SubscriptionId = unpack_uatype('UInt32', data)
+        self.TimestampsToReturn = unpack_uatype('UInt32', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.ItemsToModify.append(MonitoredItemModifyRequest.from_binary(data))
-        return obj
-    
+                array.append(MonitoredItemModifyRequest.from_binary(data))
+        self.ItemsToModify = array
+
     def __str__(self):
-        return 'ModifyMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
-             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', '  + \
+        return 'ModifyMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
+             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
              'ItemsToModify:' + str(self.ItemsToModify) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ModifyMonitoredItemsRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: ModifyMonitoredItemsParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: ModifyMonitoredItemsParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.ModifyMonitoredItemsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = ModifyMonitoredItemsParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ModifyMonitoredItemsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = ModifyMonitoredItemsParameters.from_binary(data)
-        return obj
-    
+        return ModifyMonitoredItemsRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = ModifyMonitoredItemsParameters.from_binary(data)
+
     def __str__(self):
-        return 'ModifyMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'ModifyMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ModifyMonitoredItemsResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Results: 
-    :vartype Results: MonitoredItemModifyResult 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Results:
+    :vartype Results: MonitoredItemModifyResult
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.ModifyMonitoredItemsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -10370,51 +11586,60 @@ class ModifyMonitoredItemsResponse(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ModifyMonitoredItemsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return ModifyMonitoredItemsResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(MonitoredItemModifyResult.from_binary(data))
+                array.append(MonitoredItemModifyResult.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'ModifyMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'ModifyMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SetMonitoringModeParameters(object):
     '''
-    :ivar SubscriptionId: 
-    :vartype SubscriptionId: UInt32 
-    :ivar MonitoringMode: 
-    :vartype MonitoringMode: MonitoringMode 
-    :ivar MonitoredItemIds: 
-    :vartype MonitoredItemIds: UInt32 
+    :ivar SubscriptionId:
+    :vartype SubscriptionId: UInt32
+    :ivar MonitoringMode:
+    :vartype MonitoringMode: MonitoringMode
+    :ivar MonitoredItemIds:
+    :vartype MonitoredItemIds: UInt32
     '''
-    
+
     __slots__ = [
         "SubscriptionId",
         "MonitoringMode",
         "MonitoredItemIds",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SubscriptionId = 0
         self.MonitoringMode = 0
         self.MonitoredItemIds = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SubscriptionId))
@@ -10423,82 +11648,92 @@ class SetMonitoringModeParameters(object):
         for fieldname in self.MonitoredItemIds:
             packet.append(pack_uatype('UInt32', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SetMonitoringModeParameters()
-        obj.SubscriptionId = unpack_uatype('UInt32', data)
-        obj.MonitoringMode = unpack_uatype('UInt32', data)
-        obj.MonitoredItemIds = unpack_uatype_array('UInt32', data)
-        return obj
-    
+        return SetMonitoringModeParameters(data)
+
+    def _binary_init(self, data):
+        self.SubscriptionId = unpack_uatype('UInt32', data)
+        self.MonitoringMode = unpack_uatype('UInt32', data)
+        self.MonitoredItemIds = unpack_uatype_array('UInt32', data)
+
     def __str__(self):
-        return 'SetMonitoringModeParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
-             'MonitoringMode:' + str(self.MonitoringMode) + ', '  + \
+        return 'SetMonitoringModeParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
+             'MonitoringMode:' + str(self.MonitoringMode) + ', ' + \
              'MonitoredItemIds:' + str(self.MonitoredItemIds) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SetMonitoringModeRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: SetMonitoringModeParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: SetMonitoringModeParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.SetMonitoringModeRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = SetMonitoringModeParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SetMonitoringModeRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = SetMonitoringModeParameters.from_binary(data)
-        return obj
-    
+        return SetMonitoringModeRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = SetMonitoringModeParameters.from_binary(data)
+
     def __str__(self):
-        return 'SetMonitoringModeRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'SetMonitoringModeRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SetMonitoringModeResult(object):
     '''
-    :ivar Results: 
-    :vartype Results: StatusCode 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar Results:
+    :vartype Results: StatusCode
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
@@ -10508,94 +11743,108 @@ class SetMonitoringModeResult(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SetMonitoringModeResult()
+        return SetMonitoringModeResult(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'SetMonitoringModeResult(' + 'Results:' + str(self.Results) + ', '  + \
+        return 'SetMonitoringModeResult(' + 'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SetMonitoringModeResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: SetMonitoringModeResult 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: SetMonitoringModeResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.SetMonitoringModeResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = SetMonitoringModeResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SetMonitoringModeResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = SetMonitoringModeResult.from_binary(data)
-        return obj
-    
+        return SetMonitoringModeResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = SetMonitoringModeResult.from_binary(data)
+
     def __str__(self):
-        return 'SetMonitoringModeResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'SetMonitoringModeResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SetTriggeringParameters(object):
     '''
-    :ivar SubscriptionId: 
-    :vartype SubscriptionId: UInt32 
-    :ivar TriggeringItemId: 
-    :vartype TriggeringItemId: UInt32 
-    :ivar LinksToAdd: 
-    :vartype LinksToAdd: UInt32 
-    :ivar LinksToRemove: 
-    :vartype LinksToRemove: UInt32 
+    :ivar SubscriptionId:
+    :vartype SubscriptionId: UInt32
+    :ivar TriggeringItemId:
+    :vartype TriggeringItemId: UInt32
+    :ivar LinksToAdd:
+    :vartype LinksToAdd: UInt32
+    :ivar LinksToRemove:
+    :vartype LinksToRemove: UInt32
     '''
-    
+
     __slots__ = [
         "SubscriptionId",
         "TriggeringItemId",
         "LinksToAdd",
         "LinksToRemove",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SubscriptionId = 0
         self.TriggeringItemId = 0
         self.LinksToAdd = []
         self.LinksToRemove = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SubscriptionId))
@@ -10607,92 +11856,102 @@ class SetTriggeringParameters(object):
         for fieldname in self.LinksToRemove:
             packet.append(pack_uatype('UInt32', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SetTriggeringParameters()
-        obj.SubscriptionId = unpack_uatype('UInt32', data)
-        obj.TriggeringItemId = unpack_uatype('UInt32', data)
-        obj.LinksToAdd = unpack_uatype_array('UInt32', data)
-        obj.LinksToRemove = unpack_uatype_array('UInt32', data)
-        return obj
-    
+        return SetTriggeringParameters(data)
+
+    def _binary_init(self, data):
+        self.SubscriptionId = unpack_uatype('UInt32', data)
+        self.TriggeringItemId = unpack_uatype('UInt32', data)
+        self.LinksToAdd = unpack_uatype_array('UInt32', data)
+        self.LinksToRemove = unpack_uatype_array('UInt32', data)
+
     def __str__(self):
-        return 'SetTriggeringParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
-             'TriggeringItemId:' + str(self.TriggeringItemId) + ', '  + \
-             'LinksToAdd:' + str(self.LinksToAdd) + ', '  + \
+        return 'SetTriggeringParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
+             'TriggeringItemId:' + str(self.TriggeringItemId) + ', ' + \
+             'LinksToAdd:' + str(self.LinksToAdd) + ', ' + \
              'LinksToRemove:' + str(self.LinksToRemove) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SetTriggeringRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: SetTriggeringParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: SetTriggeringParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.SetTriggeringRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = SetTriggeringParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SetTriggeringRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = SetTriggeringParameters.from_binary(data)
-        return obj
-    
+        return SetTriggeringRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = SetTriggeringParameters.from_binary(data)
+
     def __str__(self):
-        return 'SetTriggeringRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'SetTriggeringRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SetTriggeringResult(object):
     '''
-    :ivar AddResults: 
-    :vartype AddResults: StatusCode 
-    :ivar AddDiagnosticInfos: 
-    :vartype AddDiagnosticInfos: DiagnosticInfo 
-    :ivar RemoveResults: 
-    :vartype RemoveResults: StatusCode 
-    :ivar RemoveDiagnosticInfos: 
-    :vartype RemoveDiagnosticInfos: DiagnosticInfo 
+    :ivar AddResults:
+    :vartype AddResults: StatusCode
+    :ivar AddDiagnosticInfos:
+    :vartype AddDiagnosticInfos: DiagnosticInfo
+    :ivar RemoveResults:
+    :vartype RemoveResults: StatusCode
+    :ivar RemoveDiagnosticInfos:
+    :vartype RemoveDiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "AddResults",
         "AddDiagnosticInfos",
         "RemoveResults",
         "RemoveDiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.AddResults = []
         self.AddDiagnosticInfos = []
         self.RemoveResults = []
         self.RemoveDiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.AddResults)))
@@ -10708,96 +11967,114 @@ class SetTriggeringResult(object):
         for fieldname in self.RemoveDiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SetTriggeringResult()
+        return SetTriggeringResult(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.AddResults.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.AddResults = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.AddDiagnosticInfos.append(DiagnosticInfo.from_binary(data))
+                array.append(DiagnosticInfo.from_binary(data))
+        self.AddDiagnosticInfos = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.RemoveResults.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.RemoveResults = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.RemoveDiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.RemoveDiagnosticInfos = array
+
     def __str__(self):
-        return 'SetTriggeringResult(' + 'AddResults:' + str(self.AddResults) + ', '  + \
-             'AddDiagnosticInfos:' + str(self.AddDiagnosticInfos) + ', '  + \
-             'RemoveResults:' + str(self.RemoveResults) + ', '  + \
+        return 'SetTriggeringResult(' + 'AddResults:' + str(self.AddResults) + ', ' + \
+             'AddDiagnosticInfos:' + str(self.AddDiagnosticInfos) + ', ' + \
+             'RemoveResults:' + str(self.RemoveResults) + ', ' + \
              'RemoveDiagnosticInfos:' + str(self.RemoveDiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SetTriggeringResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: SetTriggeringResult 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: SetTriggeringResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.SetTriggeringResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = SetTriggeringResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SetTriggeringResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = SetTriggeringResult.from_binary(data)
-        return obj
-    
+        return SetTriggeringResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = SetTriggeringResult.from_binary(data)
+
     def __str__(self):
-        return 'SetTriggeringResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'SetTriggeringResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteMonitoredItemsParameters(object):
     '''
-    :ivar SubscriptionId: 
-    :vartype SubscriptionId: UInt32 
-    :ivar MonitoredItemIds: 
-    :vartype MonitoredItemIds: UInt32 
+    :ivar SubscriptionId:
+    :vartype SubscriptionId: UInt32
+    :ivar MonitoredItemIds:
+    :vartype MonitoredItemIds: UInt32
     '''
-    
+
     __slots__ = [
         "SubscriptionId",
         "MonitoredItemIds",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SubscriptionId = 0
         self.MonitoredItemIds = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SubscriptionId))
@@ -10805,88 +12082,98 @@ class DeleteMonitoredItemsParameters(object):
         for fieldname in self.MonitoredItemIds:
             packet.append(pack_uatype('UInt32', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteMonitoredItemsParameters()
-        obj.SubscriptionId = unpack_uatype('UInt32', data)
-        obj.MonitoredItemIds = unpack_uatype_array('UInt32', data)
-        return obj
-    
+        return DeleteMonitoredItemsParameters(data)
+
+    def _binary_init(self, data):
+        self.SubscriptionId = unpack_uatype('UInt32', data)
+        self.MonitoredItemIds = unpack_uatype_array('UInt32', data)
+
     def __str__(self):
-        return 'DeleteMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+        return 'DeleteMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
              'MonitoredItemIds:' + str(self.MonitoredItemIds) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteMonitoredItemsRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: DeleteMonitoredItemsParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: DeleteMonitoredItemsParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteMonitoredItemsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteMonitoredItemsParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteMonitoredItemsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = DeleteMonitoredItemsParameters.from_binary(data)
-        return obj
-    
+        return DeleteMonitoredItemsRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = DeleteMonitoredItemsParameters.from_binary(data)
+
     def __str__(self):
-        return 'DeleteMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'DeleteMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteMonitoredItemsResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Results: 
-    :vartype Results: StatusCode 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Results:
+    :vartype Results: StatusCode
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteMonitoredItemsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -10898,46 +12185,52 @@ class DeleteMonitoredItemsResponse(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteMonitoredItemsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return DeleteMonitoredItemsResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'DeleteMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'DeleteMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CreateSubscriptionParameters(object):
     '''
-    :ivar RequestedPublishingInterval: 
-    :vartype RequestedPublishingInterval: Double 
-    :ivar RequestedLifetimeCount: 
-    :vartype RequestedLifetimeCount: UInt32 
-    :ivar RequestedMaxKeepAliveCount: 
-    :vartype RequestedMaxKeepAliveCount: UInt32 
-    :ivar MaxNotificationsPerPublish: 
-    :vartype MaxNotificationsPerPublish: UInt32 
-    :ivar PublishingEnabled: 
-    :vartype PublishingEnabled: Boolean 
-    :ivar Priority: 
-    :vartype Priority: Byte 
+    :ivar RequestedPublishingInterval:
+    :vartype RequestedPublishingInterval: Double
+    :ivar RequestedLifetimeCount:
+    :vartype RequestedLifetimeCount: UInt32
+    :ivar RequestedMaxKeepAliveCount:
+    :vartype RequestedMaxKeepAliveCount: UInt32
+    :ivar MaxNotificationsPerPublish:
+    :vartype MaxNotificationsPerPublish: UInt32
+    :ivar PublishingEnabled:
+    :vartype PublishingEnabled: Boolean
+    :ivar Priority:
+    :vartype Priority: Byte
     '''
-    
+
     __slots__ = [
         "RequestedPublishingInterval",
         "RequestedLifetimeCount",
@@ -10946,15 +12239,18 @@ class CreateSubscriptionParameters(object):
         "PublishingEnabled",
         "Priority",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.RequestedPublishingInterval = 0
         self.RequestedLifetimeCount = 0
         self.RequestedMaxKeepAliveCount = 0
         self.MaxNotificationsPerPublish = 0
         self.PublishingEnabled = True
         self.Priority = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Double', self.RequestedPublishingInterval))
@@ -10964,96 +12260,106 @@ class CreateSubscriptionParameters(object):
         packet.append(pack_uatype('Boolean', self.PublishingEnabled))
         packet.append(pack_uatype('Byte', self.Priority))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CreateSubscriptionParameters()
-        obj.RequestedPublishingInterval = unpack_uatype('Double', data)
-        obj.RequestedLifetimeCount = unpack_uatype('UInt32', data)
-        obj.RequestedMaxKeepAliveCount = unpack_uatype('UInt32', data)
-        obj.MaxNotificationsPerPublish = unpack_uatype('UInt32', data)
-        obj.PublishingEnabled = unpack_uatype('Boolean', data)
-        obj.Priority = unpack_uatype('Byte', data)
-        return obj
-    
+        return CreateSubscriptionParameters(data)
+
+    def _binary_init(self, data):
+        self.RequestedPublishingInterval = unpack_uatype('Double', data)
+        self.RequestedLifetimeCount = unpack_uatype('UInt32', data)
+        self.RequestedMaxKeepAliveCount = unpack_uatype('UInt32', data)
+        self.MaxNotificationsPerPublish = unpack_uatype('UInt32', data)
+        self.PublishingEnabled = unpack_uatype('Boolean', data)
+        self.Priority = unpack_uatype('Byte', data)
+
     def __str__(self):
-        return 'CreateSubscriptionParameters(' + 'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', '  + \
-             'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', '  + \
-             'RequestedMaxKeepAliveCount:' + str(self.RequestedMaxKeepAliveCount) + ', '  + \
-             'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', '  + \
-             'PublishingEnabled:' + str(self.PublishingEnabled) + ', '  + \
+        return 'CreateSubscriptionParameters(' + 'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', ' + \
+             'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', ' + \
+             'RequestedMaxKeepAliveCount:' + str(self.RequestedMaxKeepAliveCount) + ', ' + \
+             'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
+             'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
              'Priority:' + str(self.Priority) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CreateSubscriptionRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: CreateSubscriptionParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: CreateSubscriptionParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.CreateSubscriptionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CreateSubscriptionParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CreateSubscriptionRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = CreateSubscriptionParameters.from_binary(data)
-        return obj
-    
+        return CreateSubscriptionRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = CreateSubscriptionParameters.from_binary(data)
+
     def __str__(self):
-        return 'CreateSubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'CreateSubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CreateSubscriptionResult(object):
     '''
-    :ivar SubscriptionId: 
-    :vartype SubscriptionId: UInt32 
-    :ivar RevisedPublishingInterval: 
-    :vartype RevisedPublishingInterval: Double 
-    :ivar RevisedLifetimeCount: 
-    :vartype RevisedLifetimeCount: UInt32 
-    :ivar RevisedMaxKeepAliveCount: 
-    :vartype RevisedMaxKeepAliveCount: UInt32 
+    :ivar SubscriptionId:
+    :vartype SubscriptionId: UInt32
+    :ivar RevisedPublishingInterval:
+    :vartype RevisedPublishingInterval: Double
+    :ivar RevisedLifetimeCount:
+    :vartype RevisedLifetimeCount: UInt32
+    :ivar RevisedMaxKeepAliveCount:
+    :vartype RevisedMaxKeepAliveCount: UInt32
     '''
-    
+
     __slots__ = [
         "SubscriptionId",
         "RevisedPublishingInterval",
         "RevisedLifetimeCount",
         "RevisedMaxKeepAliveCount",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SubscriptionId = 0
         self.RevisedPublishingInterval = 0
         self.RevisedLifetimeCount = 0
         self.RevisedMaxKeepAliveCount = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SubscriptionId))
@@ -11061,83 +12367,90 @@ class CreateSubscriptionResult(object):
         packet.append(pack_uatype('UInt32', self.RevisedLifetimeCount))
         packet.append(pack_uatype('UInt32', self.RevisedMaxKeepAliveCount))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CreateSubscriptionResult()
-        obj.SubscriptionId = unpack_uatype('UInt32', data)
-        obj.RevisedPublishingInterval = unpack_uatype('Double', data)
-        obj.RevisedLifetimeCount = unpack_uatype('UInt32', data)
-        obj.RevisedMaxKeepAliveCount = unpack_uatype('UInt32', data)
-        return obj
-    
+        return CreateSubscriptionResult(data)
+
+    def _binary_init(self, data):
+        self.SubscriptionId = unpack_uatype('UInt32', data)
+        self.RevisedPublishingInterval = unpack_uatype('Double', data)
+        self.RevisedLifetimeCount = unpack_uatype('UInt32', data)
+        self.RevisedMaxKeepAliveCount = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'CreateSubscriptionResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
-             'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', '  + \
-             'RevisedLifetimeCount:' + str(self.RevisedLifetimeCount) + ', '  + \
+        return 'CreateSubscriptionResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
+             'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', ' + \
+             'RevisedLifetimeCount:' + str(self.RevisedLifetimeCount) + ', ' + \
              'RevisedMaxKeepAliveCount:' + str(self.RevisedMaxKeepAliveCount) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class CreateSubscriptionResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: CreateSubscriptionResult 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: CreateSubscriptionResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.CreateSubscriptionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = CreateSubscriptionResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = CreateSubscriptionResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = CreateSubscriptionResult.from_binary(data)
-        return obj
-    
+        return CreateSubscriptionResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = CreateSubscriptionResult.from_binary(data)
+
     def __str__(self):
-        return 'CreateSubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'CreateSubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ModifySubscriptionParameters(object):
     '''
-    :ivar SubscriptionId: 
-    :vartype SubscriptionId: UInt32 
-    :ivar RequestedPublishingInterval: 
-    :vartype RequestedPublishingInterval: Double 
-    :ivar RequestedLifetimeCount: 
-    :vartype RequestedLifetimeCount: UInt32 
-    :ivar RequestedMaxKeepAliveCount: 
-    :vartype RequestedMaxKeepAliveCount: UInt32 
-    :ivar MaxNotificationsPerPublish: 
-    :vartype MaxNotificationsPerPublish: UInt32 
-    :ivar Priority: 
-    :vartype Priority: Byte 
+    :ivar SubscriptionId:
+    :vartype SubscriptionId: UInt32
+    :ivar RequestedPublishingInterval:
+    :vartype RequestedPublishingInterval: Double
+    :ivar RequestedLifetimeCount:
+    :vartype RequestedLifetimeCount: UInt32
+    :ivar RequestedMaxKeepAliveCount:
+    :vartype RequestedMaxKeepAliveCount: UInt32
+    :ivar MaxNotificationsPerPublish:
+    :vartype MaxNotificationsPerPublish: UInt32
+    :ivar Priority:
+    :vartype Priority: Byte
     '''
-    
+
     __slots__ = [
         "SubscriptionId",
         "RequestedPublishingInterval",
@@ -11146,15 +12459,18 @@ class ModifySubscriptionParameters(object):
         "MaxNotificationsPerPublish",
         "Priority",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SubscriptionId = 0
         self.RequestedPublishingInterval = 0
         self.RequestedLifetimeCount = 0
         self.RequestedMaxKeepAliveCount = 0
         self.MaxNotificationsPerPublish = 0
         self.Priority = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SubscriptionId))
@@ -11164,174 +12480,194 @@ class ModifySubscriptionParameters(object):
         packet.append(pack_uatype('UInt32', self.MaxNotificationsPerPublish))
         packet.append(pack_uatype('Byte', self.Priority))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ModifySubscriptionParameters()
-        obj.SubscriptionId = unpack_uatype('UInt32', data)
-        obj.RequestedPublishingInterval = unpack_uatype('Double', data)
-        obj.RequestedLifetimeCount = unpack_uatype('UInt32', data)
-        obj.RequestedMaxKeepAliveCount = unpack_uatype('UInt32', data)
-        obj.MaxNotificationsPerPublish = unpack_uatype('UInt32', data)
-        obj.Priority = unpack_uatype('Byte', data)
-        return obj
-    
+        return ModifySubscriptionParameters(data)
+
+    def _binary_init(self, data):
+        self.SubscriptionId = unpack_uatype('UInt32', data)
+        self.RequestedPublishingInterval = unpack_uatype('Double', data)
+        self.RequestedLifetimeCount = unpack_uatype('UInt32', data)
+        self.RequestedMaxKeepAliveCount = unpack_uatype('UInt32', data)
+        self.MaxNotificationsPerPublish = unpack_uatype('UInt32', data)
+        self.Priority = unpack_uatype('Byte', data)
+
     def __str__(self):
-        return 'ModifySubscriptionParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
-             'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', '  + \
-             'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', '  + \
-             'RequestedMaxKeepAliveCount:' + str(self.RequestedMaxKeepAliveCount) + ', '  + \
-             'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', '  + \
+        return 'ModifySubscriptionParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
+             'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', ' + \
+             'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', ' + \
+             'RequestedMaxKeepAliveCount:' + str(self.RequestedMaxKeepAliveCount) + ', ' + \
+             'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
              'Priority:' + str(self.Priority) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ModifySubscriptionRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: ModifySubscriptionParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: ModifySubscriptionParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.ModifySubscriptionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = ModifySubscriptionParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ModifySubscriptionRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = ModifySubscriptionParameters.from_binary(data)
-        return obj
-    
+        return ModifySubscriptionRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = ModifySubscriptionParameters.from_binary(data)
+
     def __str__(self):
-        return 'ModifySubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'ModifySubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ModifySubscriptionResult(object):
     '''
-    :ivar RevisedPublishingInterval: 
-    :vartype RevisedPublishingInterval: Double 
-    :ivar RevisedLifetimeCount: 
-    :vartype RevisedLifetimeCount: UInt32 
-    :ivar RevisedMaxKeepAliveCount: 
-    :vartype RevisedMaxKeepAliveCount: UInt32 
+    :ivar RevisedPublishingInterval:
+    :vartype RevisedPublishingInterval: Double
+    :ivar RevisedLifetimeCount:
+    :vartype RevisedLifetimeCount: UInt32
+    :ivar RevisedMaxKeepAliveCount:
+    :vartype RevisedMaxKeepAliveCount: UInt32
     '''
-    
+
     __slots__ = [
         "RevisedPublishingInterval",
         "RevisedLifetimeCount",
         "RevisedMaxKeepAliveCount",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.RevisedPublishingInterval = 0
         self.RevisedLifetimeCount = 0
         self.RevisedMaxKeepAliveCount = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Double', self.RevisedPublishingInterval))
         packet.append(pack_uatype('UInt32', self.RevisedLifetimeCount))
         packet.append(pack_uatype('UInt32', self.RevisedMaxKeepAliveCount))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ModifySubscriptionResult()
-        obj.RevisedPublishingInterval = unpack_uatype('Double', data)
-        obj.RevisedLifetimeCount = unpack_uatype('UInt32', data)
-        obj.RevisedMaxKeepAliveCount = unpack_uatype('UInt32', data)
-        return obj
-    
+        return ModifySubscriptionResult(data)
+
+    def _binary_init(self, data):
+        self.RevisedPublishingInterval = unpack_uatype('Double', data)
+        self.RevisedLifetimeCount = unpack_uatype('UInt32', data)
+        self.RevisedMaxKeepAliveCount = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'ModifySubscriptionResult(' + 'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', '  + \
-             'RevisedLifetimeCount:' + str(self.RevisedLifetimeCount) + ', '  + \
+        return 'ModifySubscriptionResult(' + 'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', ' + \
+             'RevisedLifetimeCount:' + str(self.RevisedLifetimeCount) + ', ' + \
              'RevisedMaxKeepAliveCount:' + str(self.RevisedMaxKeepAliveCount) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ModifySubscriptionResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: ModifySubscriptionResult 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: ModifySubscriptionResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.ModifySubscriptionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = ModifySubscriptionResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ModifySubscriptionResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = ModifySubscriptionResult.from_binary(data)
-        return obj
-    
+        return ModifySubscriptionResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = ModifySubscriptionResult.from_binary(data)
+
     def __str__(self):
-        return 'ModifySubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'ModifySubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SetPublishingModeParameters(object):
     '''
-    :ivar PublishingEnabled: 
-    :vartype PublishingEnabled: Boolean 
-    :ivar SubscriptionIds: 
-    :vartype SubscriptionIds: UInt32 
+    :ivar PublishingEnabled:
+    :vartype PublishingEnabled: Boolean
+    :ivar SubscriptionIds:
+    :vartype SubscriptionIds: UInt32
     '''
-    
+
     __slots__ = [
         "PublishingEnabled",
         "SubscriptionIds",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.PublishingEnabled = True
         self.SubscriptionIds = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Boolean', self.PublishingEnabled))
@@ -11339,80 +12675,90 @@ class SetPublishingModeParameters(object):
         for fieldname in self.SubscriptionIds:
             packet.append(pack_uatype('UInt32', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SetPublishingModeParameters()
-        obj.PublishingEnabled = unpack_uatype('Boolean', data)
-        obj.SubscriptionIds = unpack_uatype_array('UInt32', data)
-        return obj
-    
+        return SetPublishingModeParameters(data)
+
+    def _binary_init(self, data):
+        self.PublishingEnabled = unpack_uatype('Boolean', data)
+        self.SubscriptionIds = unpack_uatype_array('UInt32', data)
+
     def __str__(self):
-        return 'SetPublishingModeParameters(' + 'PublishingEnabled:' + str(self.PublishingEnabled) + ', '  + \
+        return 'SetPublishingModeParameters(' + 'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
              'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SetPublishingModeRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: SetPublishingModeParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: SetPublishingModeParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.SetPublishingModeRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = SetPublishingModeParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SetPublishingModeRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = SetPublishingModeParameters.from_binary(data)
-        return obj
-    
+        return SetPublishingModeRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = SetPublishingModeParameters.from_binary(data)
+
     def __str__(self):
-        return 'SetPublishingModeRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'SetPublishingModeRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SetPublishingModeResult(object):
     '''
-    :ivar Results: 
-    :vartype Results: StatusCode 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar Results:
+    :vartype Results: StatusCode
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
@@ -11422,90 +12768,104 @@ class SetPublishingModeResult(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SetPublishingModeResult()
+        return SetPublishingModeResult(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'SetPublishingModeResult(' + 'Results:' + str(self.Results) + ', '  + \
+        return 'SetPublishingModeResult(' + 'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SetPublishingModeResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: SetPublishingModeResult 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: SetPublishingModeResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.SetPublishingModeResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = SetPublishingModeResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SetPublishingModeResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = SetPublishingModeResult.from_binary(data)
-        return obj
-    
+        return SetPublishingModeResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = SetPublishingModeResult.from_binary(data)
+
     def __str__(self):
-        return 'SetPublishingModeResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'SetPublishingModeResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class NotificationMessage(object):
     '''
-    :ivar SequenceNumber: 
-    :vartype SequenceNumber: UInt32 
-    :ivar PublishTime: 
-    :vartype PublishTime: DateTime 
-    :ivar NotificationData: 
-    :vartype NotificationData: ExtensionObject 
+    :ivar SequenceNumber:
+    :vartype SequenceNumber: UInt32
+    :ivar PublishTime:
+    :vartype PublishTime: DateTime
+    :ivar NotificationData:
+    :vartype NotificationData: ExtensionObject
     '''
-    
+
     __slots__ = [
         "SequenceNumber",
         "PublishTime",
         "NotificationData",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SequenceNumber = 0
         self.PublishTime = datetime.now()
         self.NotificationData = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SequenceNumber))
@@ -11514,66 +12874,78 @@ class NotificationMessage(object):
         for fieldname in self.NotificationData:
             packet.append(extensionobject_to_binary(fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = NotificationMessage()
-        obj.SequenceNumber = unpack_uatype('UInt32', data)
-        obj.PublishTime = unpack_uatype('DateTime', data)
+        return NotificationMessage(data)
+
+    def _binary_init(self, data):
+        self.SequenceNumber = unpack_uatype('UInt32', data)
+        self.PublishTime = unpack_uatype('DateTime', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.NotificationData.append(extensionobject_from_binary(data))
-        return obj
-    
+                array.append(extensionobject_from_binary(data))
+        self.NotificationData = array
+
     def __str__(self):
-        return 'NotificationMessage(' + 'SequenceNumber:' + str(self.SequenceNumber) + ', '  + \
-             'PublishTime:' + str(self.PublishTime) + ', '  + \
+        return 'NotificationMessage(' + 'SequenceNumber:' + str(self.SequenceNumber) + ', ' + \
+             'PublishTime:' + str(self.PublishTime) + ', ' + \
              'NotificationData:' + str(self.NotificationData) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class NotificationData(object):
     '''
     '''
-    
+
     __slots__ = [
     ]
-    
-    def __init__(self):
-        pass
-    
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
+
     def to_binary(self):
         packet = []
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = NotificationData()
-        return obj
-    
+        return NotificationData(data)
+
+    def _binary_init(self, data):
+        pass
+
     def __str__(self):
         return 'NotificationData(' +  + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DataChangeNotification(object):
     '''
-    :ivar MonitoredItems: 
-    :vartype MonitoredItems: MonitoredItemNotification 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar MonitoredItems:
+    :vartype MonitoredItems: MonitoredItemNotification
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "MonitoredItems",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.MonitoredItems = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.MonitoredItems)))
@@ -11583,113 +12955,134 @@ class DataChangeNotification(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DataChangeNotification()
+        return DataChangeNotification(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.MonitoredItems.append(MonitoredItemNotification.from_binary(data))
+                array.append(MonitoredItemNotification.from_binary(data))
+        self.MonitoredItems = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'DataChangeNotification(' + 'MonitoredItems:' + str(self.MonitoredItems) + ', '  + \
+        return 'DataChangeNotification(' + 'MonitoredItems:' + str(self.MonitoredItems) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class MonitoredItemNotification(object):
     '''
-    :ivar ClientHandle: 
-    :vartype ClientHandle: UInt32 
-    :ivar Value: 
-    :vartype Value: DataValue 
+    :ivar ClientHandle:
+    :vartype ClientHandle: UInt32
+    :ivar Value:
+    :vartype Value: DataValue
     '''
-    
+
     __slots__ = [
         "ClientHandle",
         "Value",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ClientHandle = 0
         self.Value = DataValue()
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.ClientHandle))
         packet.append(self.Value.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = MonitoredItemNotification()
-        obj.ClientHandle = unpack_uatype('UInt32', data)
-        obj.Value = DataValue.from_binary(data)
-        return obj
-    
+        return MonitoredItemNotification(data)
+
+    def _binary_init(self, data):
+        self.ClientHandle = unpack_uatype('UInt32', data)
+        self.Value = DataValue.from_binary(data)
+
     def __str__(self):
-        return 'MonitoredItemNotification(' + 'ClientHandle:' + str(self.ClientHandle) + ', '  + \
+        return 'MonitoredItemNotification(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
              'Value:' + str(self.Value) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class EventNotificationList(object):
     '''
-    :ivar Events: 
-    :vartype Events: EventFieldList 
+    :ivar Events:
+    :vartype Events: EventFieldList
     '''
-    
+
     __slots__ = [
         "Events",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Events = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Events)))
         for fieldname in self.Events:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = EventNotificationList()
+        return EventNotificationList(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Events.append(EventFieldList.from_binary(data))
-        return obj
-    
+                array.append(EventFieldList.from_binary(data))
+        self.Events = array
+
     def __str__(self):
         return 'EventNotificationList(' + 'Events:' + str(self.Events) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class EventFieldList(object):
     '''
-    :ivar ClientHandle: 
-    :vartype ClientHandle: UInt32 
-    :ivar EventFields: 
-    :vartype EventFields: Variant 
+    :ivar ClientHandle:
+    :vartype ClientHandle: UInt32
+    :ivar EventFields:
+    :vartype EventFields: Variant
     '''
-    
+
     __slots__ = [
         "ClientHandle",
         "EventFields",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ClientHandle = 0
         self.EventFields = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.ClientHandle))
@@ -11697,222 +13090,255 @@ class EventFieldList(object):
         for fieldname in self.EventFields:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = EventFieldList()
-        obj.ClientHandle = unpack_uatype('UInt32', data)
+        return EventFieldList(data)
+
+    def _binary_init(self, data):
+        self.ClientHandle = unpack_uatype('UInt32', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.EventFields.append(Variant.from_binary(data))
-        return obj
-    
+                array.append(Variant.from_binary(data))
+        self.EventFields = array
+
     def __str__(self):
-        return 'EventFieldList(' + 'ClientHandle:' + str(self.ClientHandle) + ', '  + \
+        return 'EventFieldList(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
              'EventFields:' + str(self.EventFields) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class HistoryEventFieldList(object):
     '''
-    :ivar EventFields: 
-    :vartype EventFields: Variant 
+    :ivar EventFields:
+    :vartype EventFields: Variant
     '''
-    
+
     __slots__ = [
         "EventFields",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.EventFields = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.EventFields)))
         for fieldname in self.EventFields:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = HistoryEventFieldList()
+        return HistoryEventFieldList(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.EventFields.append(Variant.from_binary(data))
-        return obj
-    
+                array.append(Variant.from_binary(data))
+        self.EventFields = array
+
     def __str__(self):
         return 'HistoryEventFieldList(' + 'EventFields:' + str(self.EventFields) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class StatusChangeNotification(object):
     '''
-    :ivar Status: 
-    :vartype Status: StatusCode 
-    :ivar DiagnosticInfo: 
-    :vartype DiagnosticInfo: DiagnosticInfo 
+    :ivar Status:
+    :vartype Status: StatusCode
+    :ivar DiagnosticInfo:
+    :vartype DiagnosticInfo: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "Status",
         "DiagnosticInfo",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Status = StatusCode()
         self.DiagnosticInfo = DiagnosticInfo()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.Status.to_binary())
         packet.append(self.DiagnosticInfo.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = StatusChangeNotification()
-        obj.Status = StatusCode.from_binary(data)
-        obj.DiagnosticInfo = DiagnosticInfo.from_binary(data)
-        return obj
-    
+        return StatusChangeNotification(data)
+
+    def _binary_init(self, data):
+        self.Status = StatusCode.from_binary(data)
+        self.DiagnosticInfo = DiagnosticInfo.from_binary(data)
+
     def __str__(self):
-        return 'StatusChangeNotification(' + 'Status:' + str(self.Status) + ', '  + \
+        return 'StatusChangeNotification(' + 'Status:' + str(self.Status) + ', ' + \
              'DiagnosticInfo:' + str(self.DiagnosticInfo) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SubscriptionAcknowledgement(object):
     '''
-    :ivar SubscriptionId: 
-    :vartype SubscriptionId: UInt32 
-    :ivar SequenceNumber: 
-    :vartype SequenceNumber: UInt32 
+    :ivar SubscriptionId:
+    :vartype SubscriptionId: UInt32
+    :ivar SequenceNumber:
+    :vartype SequenceNumber: UInt32
     '''
-    
+
     __slots__ = [
         "SubscriptionId",
         "SequenceNumber",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SubscriptionId = 0
         self.SequenceNumber = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SubscriptionId))
         packet.append(pack_uatype('UInt32', self.SequenceNumber))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SubscriptionAcknowledgement()
-        obj.SubscriptionId = unpack_uatype('UInt32', data)
-        obj.SequenceNumber = unpack_uatype('UInt32', data)
-        return obj
-    
+        return SubscriptionAcknowledgement(data)
+
+    def _binary_init(self, data):
+        self.SubscriptionId = unpack_uatype('UInt32', data)
+        self.SequenceNumber = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'SubscriptionAcknowledgement(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+        return 'SubscriptionAcknowledgement(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
              'SequenceNumber:' + str(self.SequenceNumber) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class PublishParameters(object):
     '''
-    :ivar SubscriptionAcknowledgements: 
-    :vartype SubscriptionAcknowledgements: SubscriptionAcknowledgement 
+    :ivar SubscriptionAcknowledgements:
+    :vartype SubscriptionAcknowledgements: SubscriptionAcknowledgement
     '''
-    
+
     __slots__ = [
         "SubscriptionAcknowledgements",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SubscriptionAcknowledgements = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.SubscriptionAcknowledgements)))
         for fieldname in self.SubscriptionAcknowledgements:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = PublishParameters()
+        return PublishParameters(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.SubscriptionAcknowledgements.append(SubscriptionAcknowledgement.from_binary(data))
-        return obj
-    
+                array.append(SubscriptionAcknowledgement.from_binary(data))
+        self.SubscriptionAcknowledgements = array
+
     def __str__(self):
         return 'PublishParameters(' + 'SubscriptionAcknowledgements:' + str(self.SubscriptionAcknowledgements) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class PublishRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: PublishParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: PublishParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.PublishRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = PublishParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = PublishRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = PublishParameters.from_binary(data)
-        return obj
-    
+        return PublishRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = PublishParameters.from_binary(data)
+
     def __str__(self):
-        return 'PublishRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'PublishRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class PublishResult(object):
     '''
-    :ivar SubscriptionId: 
-    :vartype SubscriptionId: UInt32 
-    :ivar AvailableSequenceNumbers: 
-    :vartype AvailableSequenceNumbers: UInt32 
-    :ivar MoreNotifications: 
-    :vartype MoreNotifications: Boolean 
-    :ivar NotificationMessage: 
-    :vartype NotificationMessage: NotificationMessage 
-    :ivar Results: 
-    :vartype Results: StatusCode 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar SubscriptionId:
+    :vartype SubscriptionId: UInt32
+    :ivar AvailableSequenceNumbers:
+    :vartype AvailableSequenceNumbers: UInt32
+    :ivar MoreNotifications:
+    :vartype MoreNotifications: Boolean
+    :ivar NotificationMessage:
+    :vartype NotificationMessage: NotificationMessage
+    :ivar Results:
+    :vartype Results: StatusCode
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "SubscriptionId",
         "AvailableSequenceNumbers",
@@ -11921,15 +13347,18 @@ class PublishResult(object):
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SubscriptionId = 0
         self.AvailableSequenceNumbers = []
         self.MoreNotifications = True
         self.NotificationMessage = NotificationMessage()
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SubscriptionId))
@@ -11945,216 +13374,245 @@ class PublishResult(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = PublishResult()
-        obj.SubscriptionId = unpack_uatype('UInt32', data)
-        obj.AvailableSequenceNumbers = unpack_uatype_array('UInt32', data)
-        obj.MoreNotifications = unpack_uatype('Boolean', data)
-        obj.NotificationMessage = NotificationMessage.from_binary(data)
+        return PublishResult(data)
+
+    def _binary_init(self, data):
+        self.SubscriptionId = unpack_uatype('UInt32', data)
+        self.AvailableSequenceNumbers = unpack_uatype_array('UInt32', data)
+        self.MoreNotifications = unpack_uatype('Boolean', data)
+        self.NotificationMessage = NotificationMessage.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'PublishResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
-             'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ', '  + \
-             'MoreNotifications:' + str(self.MoreNotifications) + ', '  + \
-             'NotificationMessage:' + str(self.NotificationMessage) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'PublishResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
+             'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ', ' + \
+             'MoreNotifications:' + str(self.MoreNotifications) + ', ' + \
+             'NotificationMessage:' + str(self.NotificationMessage) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class PublishResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: PublishResult 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: PublishResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.PublishResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = PublishResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = PublishResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = PublishResult.from_binary(data)
-        return obj
-    
+        return PublishResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = PublishResult.from_binary(data)
+
     def __str__(self):
-        return 'PublishResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'PublishResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RepublishParameters(object):
     '''
-    :ivar SubscriptionId: 
-    :vartype SubscriptionId: UInt32 
-    :ivar RetransmitSequenceNumber: 
-    :vartype RetransmitSequenceNumber: UInt32 
+    :ivar SubscriptionId:
+    :vartype SubscriptionId: UInt32
+    :ivar RetransmitSequenceNumber:
+    :vartype RetransmitSequenceNumber: UInt32
     '''
-    
+
     __slots__ = [
         "SubscriptionId",
         "RetransmitSequenceNumber",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SubscriptionId = 0
         self.RetransmitSequenceNumber = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.SubscriptionId))
         packet.append(pack_uatype('UInt32', self.RetransmitSequenceNumber))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RepublishParameters()
-        obj.SubscriptionId = unpack_uatype('UInt32', data)
-        obj.RetransmitSequenceNumber = unpack_uatype('UInt32', data)
-        return obj
-    
+        return RepublishParameters(data)
+
+    def _binary_init(self, data):
+        self.SubscriptionId = unpack_uatype('UInt32', data)
+        self.RetransmitSequenceNumber = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'RepublishParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
+        return 'RepublishParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
              'RetransmitSequenceNumber:' + str(self.RetransmitSequenceNumber) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RepublishRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: RepublishParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: RepublishParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.RepublishRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = RepublishParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RepublishRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = RepublishParameters.from_binary(data)
-        return obj
-    
+        return RepublishRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = RepublishParameters.from_binary(data)
+
     def __str__(self):
-        return 'RepublishRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'RepublishRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RepublishResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar NotificationMessage: 
-    :vartype NotificationMessage: NotificationMessage 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar NotificationMessage:
+    :vartype NotificationMessage: NotificationMessage
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "NotificationMessage",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.RepublishResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.NotificationMessage = NotificationMessage()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.NotificationMessage.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RepublishResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.NotificationMessage = NotificationMessage.from_binary(data)
-        return obj
-    
+        return RepublishResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.NotificationMessage = NotificationMessage.from_binary(data)
+
     def __str__(self):
-        return 'RepublishResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'RepublishResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'NotificationMessage:' + str(self.NotificationMessage) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class TransferResult(object):
     '''
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar AvailableSequenceNumbers: 
-    :vartype AvailableSequenceNumbers: UInt32 
+    :ivar StatusCode:
+    :vartype StatusCode: StatusCode
+    :ivar AvailableSequenceNumbers:
+    :vartype AvailableSequenceNumbers: UInt32
     '''
-    
+
     __slots__ = [
         "StatusCode",
         "AvailableSequenceNumbers",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StatusCode = StatusCode()
         self.AvailableSequenceNumbers = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
@@ -12162,37 +13620,42 @@ class TransferResult(object):
         for fieldname in self.AvailableSequenceNumbers:
             packet.append(pack_uatype('UInt32', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = TransferResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        obj.AvailableSequenceNumbers = unpack_uatype_array('UInt32', data)
-        return obj
-    
+        return TransferResult(data)
+
+    def _binary_init(self, data):
+        self.StatusCode = StatusCode.from_binary(data)
+        self.AvailableSequenceNumbers = unpack_uatype_array('UInt32', data)
+
     def __str__(self):
-        return 'TransferResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+        return 'TransferResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
              'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class TransferSubscriptionsParameters(object):
     '''
-    :ivar SubscriptionIds: 
-    :vartype SubscriptionIds: UInt32 
-    :ivar SendInitialValues: 
-    :vartype SendInitialValues: Boolean 
+    :ivar SubscriptionIds:
+    :vartype SubscriptionIds: UInt32
+    :ivar SendInitialValues:
+    :vartype SendInitialValues: Boolean
     '''
-    
+
     __slots__ = [
         "SubscriptionIds",
         "SendInitialValues",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SubscriptionIds = []
         self.SendInitialValues = True
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.SubscriptionIds)))
@@ -12200,80 +13663,90 @@ class TransferSubscriptionsParameters(object):
             packet.append(pack_uatype('UInt32', fieldname))
         packet.append(pack_uatype('Boolean', self.SendInitialValues))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = TransferSubscriptionsParameters()
-        obj.SubscriptionIds = unpack_uatype_array('UInt32', data)
-        obj.SendInitialValues = unpack_uatype('Boolean', data)
-        return obj
-    
+        return TransferSubscriptionsParameters(data)
+
+    def _binary_init(self, data):
+        self.SubscriptionIds = unpack_uatype_array('UInt32', data)
+        self.SendInitialValues = unpack_uatype('Boolean', data)
+
     def __str__(self):
-        return 'TransferSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ', '  + \
+        return 'TransferSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ', ' + \
              'SendInitialValues:' + str(self.SendInitialValues) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class TransferSubscriptionsRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: TransferSubscriptionsParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: TransferSubscriptionsParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.TransferSubscriptionsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = TransferSubscriptionsParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = TransferSubscriptionsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = TransferSubscriptionsParameters.from_binary(data)
-        return obj
-    
+        return TransferSubscriptionsRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = TransferSubscriptionsParameters.from_binary(data)
+
     def __str__(self):
-        return 'TransferSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'TransferSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class TransferSubscriptionsResult(object):
     '''
-    :ivar Results: 
-    :vartype Results: TransferResult 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar Results:
+    :vartype Results: TransferResult
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.Results)))
@@ -12283,168 +13756,192 @@ class TransferSubscriptionsResult(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = TransferSubscriptionsResult()
+        return TransferSubscriptionsResult(data)
+
+    def _binary_init(self, data):
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(TransferResult.from_binary(data))
+                array.append(TransferResult.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'TransferSubscriptionsResult(' + 'Results:' + str(self.Results) + ', '  + \
+        return 'TransferSubscriptionsResult(' + 'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class TransferSubscriptionsResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Parameters: 
-    :vartype Parameters: TransferSubscriptionsResult 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Parameters:
+    :vartype Parameters: TransferSubscriptionsResult
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.TransferSubscriptionsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = TransferSubscriptionsResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.ResponseHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = TransferSubscriptionsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = TransferSubscriptionsResult.from_binary(data)
-        return obj
-    
+        return TransferSubscriptionsResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
+        self.Parameters = TransferSubscriptionsResult.from_binary(data)
+
     def __str__(self):
-        return 'TransferSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
+        return 'TransferSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteSubscriptionsParameters(object):
     '''
-    :ivar SubscriptionIds: 
-    :vartype SubscriptionIds: UInt32 
+    :ivar SubscriptionIds:
+    :vartype SubscriptionIds: UInt32
     '''
-    
+
     __slots__ = [
         "SubscriptionIds",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SubscriptionIds = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.SubscriptionIds)))
         for fieldname in self.SubscriptionIds:
             packet.append(pack_uatype('UInt32', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteSubscriptionsParameters()
-        obj.SubscriptionIds = unpack_uatype_array('UInt32', data)
-        return obj
-    
+        return DeleteSubscriptionsParameters(data)
+
+    def _binary_init(self, data):
+        self.SubscriptionIds = unpack_uatype_array('UInt32', data)
+
     def __str__(self):
         return 'DeleteSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteSubscriptionsRequest(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar RequestHeader: 
-    :vartype RequestHeader: RequestHeader 
-    :ivar Parameters: 
-    :vartype Parameters: DeleteSubscriptionsParameters 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar RequestHeader:
+    :vartype RequestHeader: RequestHeader
+    :ivar Parameters:
+    :vartype Parameters: DeleteSubscriptionsParameters
     '''
-    
+
     __slots__ = [
         "TypeId",
         "RequestHeader",
         "Parameters",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteSubscriptionsParameters()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
         packet.append(self.Parameters.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteSubscriptionsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = DeleteSubscriptionsParameters.from_binary(data)
-        return obj
-    
+        return DeleteSubscriptionsRequest(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.RequestHeader = RequestHeader.from_binary(data)
+        self.Parameters = DeleteSubscriptionsParameters.from_binary(data)
+
     def __str__(self):
-        return 'DeleteSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'RequestHeader:' + str(self.RequestHeader) + ', '  + \
+        return 'DeleteSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
              'Parameters:' + str(self.Parameters) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DeleteSubscriptionsResponse(object):
     '''
-    :ivar TypeId: 
-    :vartype TypeId: NodeId 
-    :ivar ResponseHeader: 
-    :vartype ResponseHeader: ResponseHeader 
-    :ivar Results: 
-    :vartype Results: StatusCode 
-    :ivar DiagnosticInfos: 
-    :vartype DiagnosticInfos: DiagnosticInfo 
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
+    :ivar Results:
+    :vartype Results: StatusCode
+    :ivar DiagnosticInfos:
+    :vartype DiagnosticInfos: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "TypeId",
         "ResponseHeader",
         "Results",
         "DiagnosticInfos",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
@@ -12456,46 +13953,52 @@ class DeleteSubscriptionsResponse(object):
         for fieldname in self.DiagnosticInfos:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DeleteSubscriptionsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
+        return DeleteSubscriptionsResponse(data)
+
+    def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.Results.append(StatusCode.from_binary(data))
+                array.append(StatusCode.from_binary(data))
+        self.Results = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.DiagnosticInfos.append(DiagnosticInfo.from_binary(data))
-        return obj
-    
+                array.append(DiagnosticInfo.from_binary(data))
+        self.DiagnosticInfos = array
+
     def __str__(self):
-        return 'DeleteSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', '  + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', '  + \
-             'Results:' + str(self.Results) + ', '  + \
+        return 'DeleteSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+             'Results:' + str(self.Results) + ', ' + \
              'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class BuildInfo(object):
     '''
-    :ivar ProductUri: 
-    :vartype ProductUri: String 
-    :ivar ManufacturerName: 
-    :vartype ManufacturerName: String 
-    :ivar ProductName: 
-    :vartype ProductName: String 
-    :ivar SoftwareVersion: 
-    :vartype SoftwareVersion: String 
-    :ivar BuildNumber: 
-    :vartype BuildNumber: String 
-    :ivar BuildDate: 
-    :vartype BuildDate: DateTime 
+    :ivar ProductUri:
+    :vartype ProductUri: String
+    :ivar ManufacturerName:
+    :vartype ManufacturerName: String
+    :ivar ProductName:
+    :vartype ProductName: String
+    :ivar SoftwareVersion:
+    :vartype SoftwareVersion: String
+    :ivar BuildNumber:
+    :vartype BuildNumber: String
+    :ivar BuildDate:
+    :vartype BuildDate: DateTime
     '''
-    
+
     __slots__ = [
         "ProductUri",
         "ManufacturerName",
@@ -12504,15 +14007,18 @@ class BuildInfo(object):
         "BuildNumber",
         "BuildDate",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ProductUri = ''
         self.ManufacturerName = ''
         self.ProductName = ''
         self.SoftwareVersion = ''
         self.BuildNumber = ''
         self.BuildDate = datetime.now()
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.ProductUri))
@@ -12522,119 +14028,134 @@ class BuildInfo(object):
         packet.append(pack_uatype('String', self.BuildNumber))
         packet.append(pack_uatype('DateTime', self.BuildDate))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = BuildInfo()
-        obj.ProductUri = unpack_uatype('String', data)
-        obj.ManufacturerName = unpack_uatype('String', data)
-        obj.ProductName = unpack_uatype('String', data)
-        obj.SoftwareVersion = unpack_uatype('String', data)
-        obj.BuildNumber = unpack_uatype('String', data)
-        obj.BuildDate = unpack_uatype('DateTime', data)
-        return obj
-    
+        return BuildInfo(data)
+
+    def _binary_init(self, data):
+        self.ProductUri = unpack_uatype('String', data)
+        self.ManufacturerName = unpack_uatype('String', data)
+        self.ProductName = unpack_uatype('String', data)
+        self.SoftwareVersion = unpack_uatype('String', data)
+        self.BuildNumber = unpack_uatype('String', data)
+        self.BuildDate = unpack_uatype('DateTime', data)
+
     def __str__(self):
-        return 'BuildInfo(' + 'ProductUri:' + str(self.ProductUri) + ', '  + \
-             'ManufacturerName:' + str(self.ManufacturerName) + ', '  + \
-             'ProductName:' + str(self.ProductName) + ', '  + \
-             'SoftwareVersion:' + str(self.SoftwareVersion) + ', '  + \
-             'BuildNumber:' + str(self.BuildNumber) + ', '  + \
+        return 'BuildInfo(' + 'ProductUri:' + str(self.ProductUri) + ', ' + \
+             'ManufacturerName:' + str(self.ManufacturerName) + ', ' + \
+             'ProductName:' + str(self.ProductName) + ', ' + \
+             'SoftwareVersion:' + str(self.SoftwareVersion) + ', ' + \
+             'BuildNumber:' + str(self.BuildNumber) + ', ' + \
              'BuildDate:' + str(self.BuildDate) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class RedundantServerDataType(object):
     '''
-    :ivar ServerId: 
-    :vartype ServerId: String 
-    :ivar ServiceLevel: 
-    :vartype ServiceLevel: Byte 
-    :ivar ServerState: 
-    :vartype ServerState: ServerState 
+    :ivar ServerId:
+    :vartype ServerId: String
+    :ivar ServiceLevel:
+    :vartype ServiceLevel: Byte
+    :ivar ServerState:
+    :vartype ServerState: ServerState
     '''
-    
+
     __slots__ = [
         "ServerId",
         "ServiceLevel",
         "ServerState",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ServerId = ''
         self.ServiceLevel = 0
         self.ServerState = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.ServerId))
         packet.append(pack_uatype('Byte', self.ServiceLevel))
         packet.append(pack_uatype('UInt32', self.ServerState))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = RedundantServerDataType()
-        obj.ServerId = unpack_uatype('String', data)
-        obj.ServiceLevel = unpack_uatype('Byte', data)
-        obj.ServerState = unpack_uatype('UInt32', data)
-        return obj
-    
+        return RedundantServerDataType(data)
+
+    def _binary_init(self, data):
+        self.ServerId = unpack_uatype('String', data)
+        self.ServiceLevel = unpack_uatype('Byte', data)
+        self.ServerState = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'RedundantServerDataType(' + 'ServerId:' + str(self.ServerId) + ', '  + \
-             'ServiceLevel:' + str(self.ServiceLevel) + ', '  + \
+        return 'RedundantServerDataType(' + 'ServerId:' + str(self.ServerId) + ', ' + \
+             'ServiceLevel:' + str(self.ServiceLevel) + ', ' + \
              'ServerState:' + str(self.ServerState) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class EndpointUrlListDataType(object):
     '''
-    :ivar EndpointUrlList: 
-    :vartype EndpointUrlList: String 
+    :ivar EndpointUrlList:
+    :vartype EndpointUrlList: String
     '''
-    
+
     __slots__ = [
         "EndpointUrlList",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.EndpointUrlList = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(struct.pack('<i', len(self.EndpointUrlList)))
         for fieldname in self.EndpointUrlList:
             packet.append(pack_uatype('String', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = EndpointUrlListDataType()
-        obj.EndpointUrlList = unpack_uatype_array('String', data)
-        return obj
-    
+        return EndpointUrlListDataType(data)
+
+    def _binary_init(self, data):
+        self.EndpointUrlList = unpack_uatype_array('String', data)
+
     def __str__(self):
         return 'EndpointUrlListDataType(' + 'EndpointUrlList:' + str(self.EndpointUrlList) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class NetworkGroupDataType(object):
     '''
-    :ivar ServerUri: 
-    :vartype ServerUri: String 
-    :ivar NetworkPaths: 
-    :vartype NetworkPaths: EndpointUrlListDataType 
+    :ivar ServerUri:
+    :vartype ServerUri: String
+    :ivar NetworkPaths:
+    :vartype NetworkPaths: EndpointUrlListDataType
     '''
-    
+
     __slots__ = [
         "ServerUri",
         "NetworkPaths",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ServerUri = ''
         self.NetworkPaths = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.ServerUri))
@@ -12642,48 +14163,55 @@ class NetworkGroupDataType(object):
         for fieldname in self.NetworkPaths:
             packet.append(fieldname.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = NetworkGroupDataType()
-        obj.ServerUri = unpack_uatype('String', data)
+        return NetworkGroupDataType(data)
+
+    def _binary_init(self, data):
+        self.ServerUri = unpack_uatype('String', data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.NetworkPaths.append(EndpointUrlListDataType.from_binary(data))
-        return obj
-    
+                array.append(EndpointUrlListDataType.from_binary(data))
+        self.NetworkPaths = array
+
     def __str__(self):
-        return 'NetworkGroupDataType(' + 'ServerUri:' + str(self.ServerUri) + ', '  + \
+        return 'NetworkGroupDataType(' + 'ServerUri:' + str(self.ServerUri) + ', ' + \
              'NetworkPaths:' + str(self.NetworkPaths) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SamplingIntervalDiagnosticsDataType(object):
     '''
-    :ivar SamplingInterval: 
-    :vartype SamplingInterval: Double 
-    :ivar MonitoredItemCount: 
-    :vartype MonitoredItemCount: UInt32 
-    :ivar MaxMonitoredItemCount: 
-    :vartype MaxMonitoredItemCount: UInt32 
-    :ivar DisabledMonitoredItemCount: 
-    :vartype DisabledMonitoredItemCount: UInt32 
+    :ivar SamplingInterval:
+    :vartype SamplingInterval: Double
+    :ivar MonitoredItemCount:
+    :vartype MonitoredItemCount: UInt32
+    :ivar MaxMonitoredItemCount:
+    :vartype MaxMonitoredItemCount: UInt32
+    :ivar DisabledMonitoredItemCount:
+    :vartype DisabledMonitoredItemCount: UInt32
     '''
-    
+
     __slots__ = [
         "SamplingInterval",
         "MonitoredItemCount",
         "MaxMonitoredItemCount",
         "DisabledMonitoredItemCount",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SamplingInterval = 0
         self.MonitoredItemCount = 0
         self.MaxMonitoredItemCount = 0
         self.DisabledMonitoredItemCount = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Double', self.SamplingInterval))
@@ -12691,52 +14219,54 @@ class SamplingIntervalDiagnosticsDataType(object):
         packet.append(pack_uatype('UInt32', self.MaxMonitoredItemCount))
         packet.append(pack_uatype('UInt32', self.DisabledMonitoredItemCount))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SamplingIntervalDiagnosticsDataType()
-        obj.SamplingInterval = unpack_uatype('Double', data)
-        obj.MonitoredItemCount = unpack_uatype('UInt32', data)
-        obj.MaxMonitoredItemCount = unpack_uatype('UInt32', data)
-        obj.DisabledMonitoredItemCount = unpack_uatype('UInt32', data)
-        return obj
-    
+        return SamplingIntervalDiagnosticsDataType(data)
+
+    def _binary_init(self, data):
+        self.SamplingInterval = unpack_uatype('Double', data)
+        self.MonitoredItemCount = unpack_uatype('UInt32', data)
+        self.MaxMonitoredItemCount = unpack_uatype('UInt32', data)
+        self.DisabledMonitoredItemCount = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'SamplingIntervalDiagnosticsDataType(' + 'SamplingInterval:' + str(self.SamplingInterval) + ', '  + \
-             'MonitoredItemCount:' + str(self.MonitoredItemCount) + ', '  + \
-             'MaxMonitoredItemCount:' + str(self.MaxMonitoredItemCount) + ', '  + \
+        return 'SamplingIntervalDiagnosticsDataType(' + 'SamplingInterval:' + str(self.SamplingInterval) + ', ' + \
+             'MonitoredItemCount:' + str(self.MonitoredItemCount) + ', ' + \
+             'MaxMonitoredItemCount:' + str(self.MaxMonitoredItemCount) + ', ' + \
              'DisabledMonitoredItemCount:' + str(self.DisabledMonitoredItemCount) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ServerDiagnosticsSummaryDataType(object):
     '''
-    :ivar ServerViewCount: 
-    :vartype ServerViewCount: UInt32 
-    :ivar CurrentSessionCount: 
-    :vartype CurrentSessionCount: UInt32 
-    :ivar CumulatedSessionCount: 
-    :vartype CumulatedSessionCount: UInt32 
-    :ivar SecurityRejectedSessionCount: 
-    :vartype SecurityRejectedSessionCount: UInt32 
-    :ivar RejectedSessionCount: 
-    :vartype RejectedSessionCount: UInt32 
-    :ivar SessionTimeoutCount: 
-    :vartype SessionTimeoutCount: UInt32 
-    :ivar SessionAbortCount: 
-    :vartype SessionAbortCount: UInt32 
-    :ivar CurrentSubscriptionCount: 
-    :vartype CurrentSubscriptionCount: UInt32 
-    :ivar CumulatedSubscriptionCount: 
-    :vartype CumulatedSubscriptionCount: UInt32 
-    :ivar PublishingIntervalCount: 
-    :vartype PublishingIntervalCount: UInt32 
-    :ivar SecurityRejectedRequestsCount: 
-    :vartype SecurityRejectedRequestsCount: UInt32 
-    :ivar RejectedRequestsCount: 
-    :vartype RejectedRequestsCount: UInt32 
+    :ivar ServerViewCount:
+    :vartype ServerViewCount: UInt32
+    :ivar CurrentSessionCount:
+    :vartype CurrentSessionCount: UInt32
+    :ivar CumulatedSessionCount:
+    :vartype CumulatedSessionCount: UInt32
+    :ivar SecurityRejectedSessionCount:
+    :vartype SecurityRejectedSessionCount: UInt32
+    :ivar RejectedSessionCount:
+    :vartype RejectedSessionCount: UInt32
+    :ivar SessionTimeoutCount:
+    :vartype SessionTimeoutCount: UInt32
+    :ivar SessionAbortCount:
+    :vartype SessionAbortCount: UInt32
+    :ivar CurrentSubscriptionCount:
+    :vartype CurrentSubscriptionCount: UInt32
+    :ivar CumulatedSubscriptionCount:
+    :vartype CumulatedSubscriptionCount: UInt32
+    :ivar PublishingIntervalCount:
+    :vartype PublishingIntervalCount: UInt32
+    :ivar SecurityRejectedRequestsCount:
+    :vartype SecurityRejectedRequestsCount: UInt32
+    :ivar RejectedRequestsCount:
+    :vartype RejectedRequestsCount: UInt32
     '''
-    
+
     __slots__ = [
         "ServerViewCount",
         "CurrentSessionCount",
@@ -12751,8 +14281,11 @@ class ServerDiagnosticsSummaryDataType(object):
         "SecurityRejectedRequestsCount",
         "RejectedRequestsCount",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.ServerViewCount = 0
         self.CurrentSessionCount = 0
         self.CumulatedSessionCount = 0
@@ -12765,7 +14298,7 @@ class ServerDiagnosticsSummaryDataType(object):
         self.PublishingIntervalCount = 0
         self.SecurityRejectedRequestsCount = 0
         self.RejectedRequestsCount = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.ServerViewCount))
@@ -12781,56 +14314,58 @@ class ServerDiagnosticsSummaryDataType(object):
         packet.append(pack_uatype('UInt32', self.SecurityRejectedRequestsCount))
         packet.append(pack_uatype('UInt32', self.RejectedRequestsCount))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ServerDiagnosticsSummaryDataType()
-        obj.ServerViewCount = unpack_uatype('UInt32', data)
-        obj.CurrentSessionCount = unpack_uatype('UInt32', data)
-        obj.CumulatedSessionCount = unpack_uatype('UInt32', data)
-        obj.SecurityRejectedSessionCount = unpack_uatype('UInt32', data)
-        obj.RejectedSessionCount = unpack_uatype('UInt32', data)
-        obj.SessionTimeoutCount = unpack_uatype('UInt32', data)
-        obj.SessionAbortCount = unpack_uatype('UInt32', data)
-        obj.CurrentSubscriptionCount = unpack_uatype('UInt32', data)
-        obj.CumulatedSubscriptionCount = unpack_uatype('UInt32', data)
-        obj.PublishingIntervalCount = unpack_uatype('UInt32', data)
-        obj.SecurityRejectedRequestsCount = unpack_uatype('UInt32', data)
-        obj.RejectedRequestsCount = unpack_uatype('UInt32', data)
-        return obj
-    
+        return ServerDiagnosticsSummaryDataType(data)
+
+    def _binary_init(self, data):
+        self.ServerViewCount = unpack_uatype('UInt32', data)
+        self.CurrentSessionCount = unpack_uatype('UInt32', data)
+        self.CumulatedSessionCount = unpack_uatype('UInt32', data)
+        self.SecurityRejectedSessionCount = unpack_uatype('UInt32', data)
+        self.RejectedSessionCount = unpack_uatype('UInt32', data)
+        self.SessionTimeoutCount = unpack_uatype('UInt32', data)
+        self.SessionAbortCount = unpack_uatype('UInt32', data)
+        self.CurrentSubscriptionCount = unpack_uatype('UInt32', data)
+        self.CumulatedSubscriptionCount = unpack_uatype('UInt32', data)
+        self.PublishingIntervalCount = unpack_uatype('UInt32', data)
+        self.SecurityRejectedRequestsCount = unpack_uatype('UInt32', data)
+        self.RejectedRequestsCount = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'ServerDiagnosticsSummaryDataType(' + 'ServerViewCount:' + str(self.ServerViewCount) + ', '  + \
-             'CurrentSessionCount:' + str(self.CurrentSessionCount) + ', '  + \
-             'CumulatedSessionCount:' + str(self.CumulatedSessionCount) + ', '  + \
-             'SecurityRejectedSessionCount:' + str(self.SecurityRejectedSessionCount) + ', '  + \
-             'RejectedSessionCount:' + str(self.RejectedSessionCount) + ', '  + \
-             'SessionTimeoutCount:' + str(self.SessionTimeoutCount) + ', '  + \
-             'SessionAbortCount:' + str(self.SessionAbortCount) + ', '  + \
-             'CurrentSubscriptionCount:' + str(self.CurrentSubscriptionCount) + ', '  + \
-             'CumulatedSubscriptionCount:' + str(self.CumulatedSubscriptionCount) + ', '  + \
-             'PublishingIntervalCount:' + str(self.PublishingIntervalCount) + ', '  + \
-             'SecurityRejectedRequestsCount:' + str(self.SecurityRejectedRequestsCount) + ', '  + \
+        return 'ServerDiagnosticsSummaryDataType(' + 'ServerViewCount:' + str(self.ServerViewCount) + ', ' + \
+             'CurrentSessionCount:' + str(self.CurrentSessionCount) + ', ' + \
+             'CumulatedSessionCount:' + str(self.CumulatedSessionCount) + ', ' + \
+             'SecurityRejectedSessionCount:' + str(self.SecurityRejectedSessionCount) + ', ' + \
+             'RejectedSessionCount:' + str(self.RejectedSessionCount) + ', ' + \
+             'SessionTimeoutCount:' + str(self.SessionTimeoutCount) + ', ' + \
+             'SessionAbortCount:' + str(self.SessionAbortCount) + ', ' + \
+             'CurrentSubscriptionCount:' + str(self.CurrentSubscriptionCount) + ', ' + \
+             'CumulatedSubscriptionCount:' + str(self.CumulatedSubscriptionCount) + ', ' + \
+             'PublishingIntervalCount:' + str(self.PublishingIntervalCount) + ', ' + \
+             'SecurityRejectedRequestsCount:' + str(self.SecurityRejectedRequestsCount) + ', ' + \
              'RejectedRequestsCount:' + str(self.RejectedRequestsCount) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ServerStatusDataType(object):
     '''
-    :ivar StartTime: 
-    :vartype StartTime: DateTime 
-    :ivar CurrentTime: 
-    :vartype CurrentTime: DateTime 
-    :ivar State: 
-    :vartype State: ServerState 
-    :ivar BuildInfo: 
-    :vartype BuildInfo: BuildInfo 
-    :ivar SecondsTillShutdown: 
-    :vartype SecondsTillShutdown: UInt32 
-    :ivar ShutdownReason: 
-    :vartype ShutdownReason: LocalizedText 
+    :ivar StartTime:
+    :vartype StartTime: DateTime
+    :ivar CurrentTime:
+    :vartype CurrentTime: DateTime
+    :ivar State:
+    :vartype State: ServerState
+    :ivar BuildInfo:
+    :vartype BuildInfo: BuildInfo
+    :ivar SecondsTillShutdown:
+    :vartype SecondsTillShutdown: UInt32
+    :ivar ShutdownReason:
+    :vartype ShutdownReason: LocalizedText
     '''
-    
+
     __slots__ = [
         "StartTime",
         "CurrentTime",
@@ -12839,15 +14374,18 @@ class ServerStatusDataType(object):
         "SecondsTillShutdown",
         "ShutdownReason",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StartTime = datetime.now()
         self.CurrentTime = datetime.now()
         self.State = 0
         self.BuildInfo = BuildInfo()
         self.SecondsTillShutdown = 0
         self.ShutdownReason = LocalizedText()
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('DateTime', self.StartTime))
@@ -12857,118 +14395,120 @@ class ServerStatusDataType(object):
         packet.append(pack_uatype('UInt32', self.SecondsTillShutdown))
         packet.append(self.ShutdownReason.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ServerStatusDataType()
-        obj.StartTime = unpack_uatype('DateTime', data)
-        obj.CurrentTime = unpack_uatype('DateTime', data)
-        obj.State = unpack_uatype('UInt32', data)
-        obj.BuildInfo = BuildInfo.from_binary(data)
-        obj.SecondsTillShutdown = unpack_uatype('UInt32', data)
-        obj.ShutdownReason = LocalizedText.from_binary(data)
-        return obj
-    
+        return ServerStatusDataType(data)
+
+    def _binary_init(self, data):
+        self.StartTime = unpack_uatype('DateTime', data)
+        self.CurrentTime = unpack_uatype('DateTime', data)
+        self.State = unpack_uatype('UInt32', data)
+        self.BuildInfo = BuildInfo.from_binary(data)
+        self.SecondsTillShutdown = unpack_uatype('UInt32', data)
+        self.ShutdownReason = LocalizedText.from_binary(data)
+
     def __str__(self):
-        return 'ServerStatusDataType(' + 'StartTime:' + str(self.StartTime) + ', '  + \
-             'CurrentTime:' + str(self.CurrentTime) + ', '  + \
-             'State:' + str(self.State) + ', '  + \
-             'BuildInfo:' + str(self.BuildInfo) + ', '  + \
-             'SecondsTillShutdown:' + str(self.SecondsTillShutdown) + ', '  + \
+        return 'ServerStatusDataType(' + 'StartTime:' + str(self.StartTime) + ', ' + \
+             'CurrentTime:' + str(self.CurrentTime) + ', ' + \
+             'State:' + str(self.State) + ', ' + \
+             'BuildInfo:' + str(self.BuildInfo) + ', ' + \
+             'SecondsTillShutdown:' + str(self.SecondsTillShutdown) + ', ' + \
              'ShutdownReason:' + str(self.ShutdownReason) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SessionDiagnosticsDataType(object):
     '''
-    :ivar SessionId: 
-    :vartype SessionId: NodeId 
-    :ivar SessionName: 
-    :vartype SessionName: String 
-    :ivar ClientDescription: 
-    :vartype ClientDescription: ApplicationDescription 
-    :ivar ServerUri: 
-    :vartype ServerUri: String 
-    :ivar EndpointUrl: 
-    :vartype EndpointUrl: String 
-    :ivar LocaleIds: 
-    :vartype LocaleIds: String 
-    :ivar ActualSessionTimeout: 
-    :vartype ActualSessionTimeout: Double 
-    :ivar MaxResponseMessageSize: 
-    :vartype MaxResponseMessageSize: UInt32 
-    :ivar ClientConnectionTime: 
-    :vartype ClientConnectionTime: DateTime 
-    :ivar ClientLastContactTime: 
-    :vartype ClientLastContactTime: DateTime 
-    :ivar CurrentSubscriptionsCount: 
-    :vartype CurrentSubscriptionsCount: UInt32 
-    :ivar CurrentMonitoredItemsCount: 
-    :vartype CurrentMonitoredItemsCount: UInt32 
-    :ivar CurrentPublishRequestsInQueue: 
-    :vartype CurrentPublishRequestsInQueue: UInt32 
-    :ivar TotalRequestCount: 
-    :vartype TotalRequestCount: ServiceCounterDataType 
-    :ivar UnauthorizedRequestCount: 
-    :vartype UnauthorizedRequestCount: UInt32 
-    :ivar ReadCount: 
-    :vartype ReadCount: ServiceCounterDataType 
-    :ivar HistoryReadCount: 
-    :vartype HistoryReadCount: ServiceCounterDataType 
-    :ivar WriteCount: 
-    :vartype WriteCount: ServiceCounterDataType 
-    :ivar HistoryUpdateCount: 
-    :vartype HistoryUpdateCount: ServiceCounterDataType 
-    :ivar CallCount: 
-    :vartype CallCount: ServiceCounterDataType 
-    :ivar CreateMonitoredItemsCount: 
-    :vartype CreateMonitoredItemsCount: ServiceCounterDataType 
-    :ivar ModifyMonitoredItemsCount: 
-    :vartype ModifyMonitoredItemsCount: ServiceCounterDataType 
-    :ivar SetMonitoringModeCount: 
-    :vartype SetMonitoringModeCount: ServiceCounterDataType 
-    :ivar SetTriggeringCount: 
-    :vartype SetTriggeringCount: ServiceCounterDataType 
-    :ivar DeleteMonitoredItemsCount: 
-    :vartype DeleteMonitoredItemsCount: ServiceCounterDataType 
-    :ivar CreateSubscriptionCount: 
-    :vartype CreateSubscriptionCount: ServiceCounterDataType 
-    :ivar ModifySubscriptionCount: 
-    :vartype ModifySubscriptionCount: ServiceCounterDataType 
-    :ivar SetPublishingModeCount: 
-    :vartype SetPublishingModeCount: ServiceCounterDataType 
-    :ivar PublishCount: 
-    :vartype PublishCount: ServiceCounterDataType 
-    :ivar RepublishCount: 
-    :vartype RepublishCount: ServiceCounterDataType 
-    :ivar TransferSubscriptionsCount: 
-    :vartype TransferSubscriptionsCount: ServiceCounterDataType 
-    :ivar DeleteSubscriptionsCount: 
-    :vartype DeleteSubscriptionsCount: ServiceCounterDataType 
-    :ivar AddNodesCount: 
-    :vartype AddNodesCount: ServiceCounterDataType 
-    :ivar AddReferencesCount: 
-    :vartype AddReferencesCount: ServiceCounterDataType 
-    :ivar DeleteNodesCount: 
-    :vartype DeleteNodesCount: ServiceCounterDataType 
-    :ivar DeleteReferencesCount: 
-    :vartype DeleteReferencesCount: ServiceCounterDataType 
-    :ivar BrowseCount: 
-    :vartype BrowseCount: ServiceCounterDataType 
-    :ivar BrowseNextCount: 
-    :vartype BrowseNextCount: ServiceCounterDataType 
-    :ivar TranslateBrowsePathsToNodeIdsCount: 
-    :vartype TranslateBrowsePathsToNodeIdsCount: ServiceCounterDataType 
-    :ivar QueryFirstCount: 
-    :vartype QueryFirstCount: ServiceCounterDataType 
-    :ivar QueryNextCount: 
-    :vartype QueryNextCount: ServiceCounterDataType 
-    :ivar RegisterNodesCount: 
-    :vartype RegisterNodesCount: ServiceCounterDataType 
-    :ivar UnregisterNodesCount: 
-    :vartype UnregisterNodesCount: ServiceCounterDataType 
+    :ivar SessionId:
+    :vartype SessionId: NodeId
+    :ivar SessionName:
+    :vartype SessionName: String
+    :ivar ClientDescription:
+    :vartype ClientDescription: ApplicationDescription
+    :ivar ServerUri:
+    :vartype ServerUri: String
+    :ivar EndpointUrl:
+    :vartype EndpointUrl: String
+    :ivar LocaleIds:
+    :vartype LocaleIds: String
+    :ivar ActualSessionTimeout:
+    :vartype ActualSessionTimeout: Double
+    :ivar MaxResponseMessageSize:
+    :vartype MaxResponseMessageSize: UInt32
+    :ivar ClientConnectionTime:
+    :vartype ClientConnectionTime: DateTime
+    :ivar ClientLastContactTime:
+    :vartype ClientLastContactTime: DateTime
+    :ivar CurrentSubscriptionsCount:
+    :vartype CurrentSubscriptionsCount: UInt32
+    :ivar CurrentMonitoredItemsCount:
+    :vartype CurrentMonitoredItemsCount: UInt32
+    :ivar CurrentPublishRequestsInQueue:
+    :vartype CurrentPublishRequestsInQueue: UInt32
+    :ivar TotalRequestCount:
+    :vartype TotalRequestCount: ServiceCounterDataType
+    :ivar UnauthorizedRequestCount:
+    :vartype UnauthorizedRequestCount: UInt32
+    :ivar ReadCount:
+    :vartype ReadCount: ServiceCounterDataType
+    :ivar HistoryReadCount:
+    :vartype HistoryReadCount: ServiceCounterDataType
+    :ivar WriteCount:
+    :vartype WriteCount: ServiceCounterDataType
+    :ivar HistoryUpdateCount:
+    :vartype HistoryUpdateCount: ServiceCounterDataType
+    :ivar CallCount:
+    :vartype CallCount: ServiceCounterDataType
+    :ivar CreateMonitoredItemsCount:
+    :vartype CreateMonitoredItemsCount: ServiceCounterDataType
+    :ivar ModifyMonitoredItemsCount:
+    :vartype ModifyMonitoredItemsCount: ServiceCounterDataType
+    :ivar SetMonitoringModeCount:
+    :vartype SetMonitoringModeCount: ServiceCounterDataType
+    :ivar SetTriggeringCount:
+    :vartype SetTriggeringCount: ServiceCounterDataType
+    :ivar DeleteMonitoredItemsCount:
+    :vartype DeleteMonitoredItemsCount: ServiceCounterDataType
+    :ivar CreateSubscriptionCount:
+    :vartype CreateSubscriptionCount: ServiceCounterDataType
+    :ivar ModifySubscriptionCount:
+    :vartype ModifySubscriptionCount: ServiceCounterDataType
+    :ivar SetPublishingModeCount:
+    :vartype SetPublishingModeCount: ServiceCounterDataType
+    :ivar PublishCount:
+    :vartype PublishCount: ServiceCounterDataType
+    :ivar RepublishCount:
+    :vartype RepublishCount: ServiceCounterDataType
+    :ivar TransferSubscriptionsCount:
+    :vartype TransferSubscriptionsCount: ServiceCounterDataType
+    :ivar DeleteSubscriptionsCount:
+    :vartype DeleteSubscriptionsCount: ServiceCounterDataType
+    :ivar AddNodesCount:
+    :vartype AddNodesCount: ServiceCounterDataType
+    :ivar AddReferencesCount:
+    :vartype AddReferencesCount: ServiceCounterDataType
+    :ivar DeleteNodesCount:
+    :vartype DeleteNodesCount: ServiceCounterDataType
+    :ivar DeleteReferencesCount:
+    :vartype DeleteReferencesCount: ServiceCounterDataType
+    :ivar BrowseCount:
+    :vartype BrowseCount: ServiceCounterDataType
+    :ivar BrowseNextCount:
+    :vartype BrowseNextCount: ServiceCounterDataType
+    :ivar TranslateBrowsePathsToNodeIdsCount:
+    :vartype TranslateBrowsePathsToNodeIdsCount: ServiceCounterDataType
+    :ivar QueryFirstCount:
+    :vartype QueryFirstCount: ServiceCounterDataType
+    :ivar QueryNextCount:
+    :vartype QueryNextCount: ServiceCounterDataType
+    :ivar RegisterNodesCount:
+    :vartype RegisterNodesCount: ServiceCounterDataType
+    :ivar UnregisterNodesCount:
+    :vartype UnregisterNodesCount: ServiceCounterDataType
     '''
-    
+
     __slots__ = [
         "SessionId",
         "SessionName",
@@ -13014,8 +14554,11 @@ class SessionDiagnosticsDataType(object):
         "RegisterNodesCount",
         "UnregisterNodesCount",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SessionId = NodeId()
         self.SessionName = ''
         self.ClientDescription = ApplicationDescription()
@@ -13059,7 +14602,7 @@ class SessionDiagnosticsDataType(object):
         self.QueryNextCount = ServiceCounterDataType()
         self.RegisterNodesCount = ServiceCounterDataType()
         self.UnregisterNodesCount = ServiceCounterDataType()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.SessionId.to_binary())
@@ -13108,124 +14651,126 @@ class SessionDiagnosticsDataType(object):
         packet.append(self.RegisterNodesCount.to_binary())
         packet.append(self.UnregisterNodesCount.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SessionDiagnosticsDataType()
-        obj.SessionId = NodeId.from_binary(data)
-        obj.SessionName = unpack_uatype('String', data)
-        obj.ClientDescription = ApplicationDescription.from_binary(data)
-        obj.ServerUri = unpack_uatype('String', data)
-        obj.EndpointUrl = unpack_uatype('String', data)
-        obj.LocaleIds = unpack_uatype_array('String', data)
-        obj.ActualSessionTimeout = unpack_uatype('Double', data)
-        obj.MaxResponseMessageSize = unpack_uatype('UInt32', data)
-        obj.ClientConnectionTime = unpack_uatype('DateTime', data)
-        obj.ClientLastContactTime = unpack_uatype('DateTime', data)
-        obj.CurrentSubscriptionsCount = unpack_uatype('UInt32', data)
-        obj.CurrentMonitoredItemsCount = unpack_uatype('UInt32', data)
-        obj.CurrentPublishRequestsInQueue = unpack_uatype('UInt32', data)
-        obj.TotalRequestCount = ServiceCounterDataType.from_binary(data)
-        obj.UnauthorizedRequestCount = unpack_uatype('UInt32', data)
-        obj.ReadCount = ServiceCounterDataType.from_binary(data)
-        obj.HistoryReadCount = ServiceCounterDataType.from_binary(data)
-        obj.WriteCount = ServiceCounterDataType.from_binary(data)
-        obj.HistoryUpdateCount = ServiceCounterDataType.from_binary(data)
-        obj.CallCount = ServiceCounterDataType.from_binary(data)
-        obj.CreateMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
-        obj.ModifyMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
-        obj.SetMonitoringModeCount = ServiceCounterDataType.from_binary(data)
-        obj.SetTriggeringCount = ServiceCounterDataType.from_binary(data)
-        obj.DeleteMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
-        obj.CreateSubscriptionCount = ServiceCounterDataType.from_binary(data)
-        obj.ModifySubscriptionCount = ServiceCounterDataType.from_binary(data)
-        obj.SetPublishingModeCount = ServiceCounterDataType.from_binary(data)
-        obj.PublishCount = ServiceCounterDataType.from_binary(data)
-        obj.RepublishCount = ServiceCounterDataType.from_binary(data)
-        obj.TransferSubscriptionsCount = ServiceCounterDataType.from_binary(data)
-        obj.DeleteSubscriptionsCount = ServiceCounterDataType.from_binary(data)
-        obj.AddNodesCount = ServiceCounterDataType.from_binary(data)
-        obj.AddReferencesCount = ServiceCounterDataType.from_binary(data)
-        obj.DeleteNodesCount = ServiceCounterDataType.from_binary(data)
-        obj.DeleteReferencesCount = ServiceCounterDataType.from_binary(data)
-        obj.BrowseCount = ServiceCounterDataType.from_binary(data)
-        obj.BrowseNextCount = ServiceCounterDataType.from_binary(data)
-        obj.TranslateBrowsePathsToNodeIdsCount = ServiceCounterDataType.from_binary(data)
-        obj.QueryFirstCount = ServiceCounterDataType.from_binary(data)
-        obj.QueryNextCount = ServiceCounterDataType.from_binary(data)
-        obj.RegisterNodesCount = ServiceCounterDataType.from_binary(data)
-        obj.UnregisterNodesCount = ServiceCounterDataType.from_binary(data)
-        return obj
-    
+        return SessionDiagnosticsDataType(data)
+
+    def _binary_init(self, data):
+        self.SessionId = NodeId.from_binary(data)
+        self.SessionName = unpack_uatype('String', data)
+        self.ClientDescription = ApplicationDescription.from_binary(data)
+        self.ServerUri = unpack_uatype('String', data)
+        self.EndpointUrl = unpack_uatype('String', data)
+        self.LocaleIds = unpack_uatype_array('String', data)
+        self.ActualSessionTimeout = unpack_uatype('Double', data)
+        self.MaxResponseMessageSize = unpack_uatype('UInt32', data)
+        self.ClientConnectionTime = unpack_uatype('DateTime', data)
+        self.ClientLastContactTime = unpack_uatype('DateTime', data)
+        self.CurrentSubscriptionsCount = unpack_uatype('UInt32', data)
+        self.CurrentMonitoredItemsCount = unpack_uatype('UInt32', data)
+        self.CurrentPublishRequestsInQueue = unpack_uatype('UInt32', data)
+        self.TotalRequestCount = ServiceCounterDataType.from_binary(data)
+        self.UnauthorizedRequestCount = unpack_uatype('UInt32', data)
+        self.ReadCount = ServiceCounterDataType.from_binary(data)
+        self.HistoryReadCount = ServiceCounterDataType.from_binary(data)
+        self.WriteCount = ServiceCounterDataType.from_binary(data)
+        self.HistoryUpdateCount = ServiceCounterDataType.from_binary(data)
+        self.CallCount = ServiceCounterDataType.from_binary(data)
+        self.CreateMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
+        self.ModifyMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
+        self.SetMonitoringModeCount = ServiceCounterDataType.from_binary(data)
+        self.SetTriggeringCount = ServiceCounterDataType.from_binary(data)
+        self.DeleteMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
+        self.CreateSubscriptionCount = ServiceCounterDataType.from_binary(data)
+        self.ModifySubscriptionCount = ServiceCounterDataType.from_binary(data)
+        self.SetPublishingModeCount = ServiceCounterDataType.from_binary(data)
+        self.PublishCount = ServiceCounterDataType.from_binary(data)
+        self.RepublishCount = ServiceCounterDataType.from_binary(data)
+        self.TransferSubscriptionsCount = ServiceCounterDataType.from_binary(data)
+        self.DeleteSubscriptionsCount = ServiceCounterDataType.from_binary(data)
+        self.AddNodesCount = ServiceCounterDataType.from_binary(data)
+        self.AddReferencesCount = ServiceCounterDataType.from_binary(data)
+        self.DeleteNodesCount = ServiceCounterDataType.from_binary(data)
+        self.DeleteReferencesCount = ServiceCounterDataType.from_binary(data)
+        self.BrowseCount = ServiceCounterDataType.from_binary(data)
+        self.BrowseNextCount = ServiceCounterDataType.from_binary(data)
+        self.TranslateBrowsePathsToNodeIdsCount = ServiceCounterDataType.from_binary(data)
+        self.QueryFirstCount = ServiceCounterDataType.from_binary(data)
+        self.QueryNextCount = ServiceCounterDataType.from_binary(data)
+        self.RegisterNodesCount = ServiceCounterDataType.from_binary(data)
+        self.UnregisterNodesCount = ServiceCounterDataType.from_binary(data)
+
     def __str__(self):
-        return 'SessionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', '  + \
-             'SessionName:' + str(self.SessionName) + ', '  + \
-             'ClientDescription:' + str(self.ClientDescription) + ', '  + \
-             'ServerUri:' + str(self.ServerUri) + ', '  + \
-             'EndpointUrl:' + str(self.EndpointUrl) + ', '  + \
-             'LocaleIds:' + str(self.LocaleIds) + ', '  + \
-             'ActualSessionTimeout:' + str(self.ActualSessionTimeout) + ', '  + \
-             'MaxResponseMessageSize:' + str(self.MaxResponseMessageSize) + ', '  + \
-             'ClientConnectionTime:' + str(self.ClientConnectionTime) + ', '  + \
-             'ClientLastContactTime:' + str(self.ClientLastContactTime) + ', '  + \
-             'CurrentSubscriptionsCount:' + str(self.CurrentSubscriptionsCount) + ', '  + \
-             'CurrentMonitoredItemsCount:' + str(self.CurrentMonitoredItemsCount) + ', '  + \
-             'CurrentPublishRequestsInQueue:' + str(self.CurrentPublishRequestsInQueue) + ', '  + \
-             'TotalRequestCount:' + str(self.TotalRequestCount) + ', '  + \
-             'UnauthorizedRequestCount:' + str(self.UnauthorizedRequestCount) + ', '  + \
-             'ReadCount:' + str(self.ReadCount) + ', '  + \
-             'HistoryReadCount:' + str(self.HistoryReadCount) + ', '  + \
-             'WriteCount:' + str(self.WriteCount) + ', '  + \
-             'HistoryUpdateCount:' + str(self.HistoryUpdateCount) + ', '  + \
-             'CallCount:' + str(self.CallCount) + ', '  + \
-             'CreateMonitoredItemsCount:' + str(self.CreateMonitoredItemsCount) + ', '  + \
-             'ModifyMonitoredItemsCount:' + str(self.ModifyMonitoredItemsCount) + ', '  + \
-             'SetMonitoringModeCount:' + str(self.SetMonitoringModeCount) + ', '  + \
-             'SetTriggeringCount:' + str(self.SetTriggeringCount) + ', '  + \
-             'DeleteMonitoredItemsCount:' + str(self.DeleteMonitoredItemsCount) + ', '  + \
-             'CreateSubscriptionCount:' + str(self.CreateSubscriptionCount) + ', '  + \
-             'ModifySubscriptionCount:' + str(self.ModifySubscriptionCount) + ', '  + \
-             'SetPublishingModeCount:' + str(self.SetPublishingModeCount) + ', '  + \
-             'PublishCount:' + str(self.PublishCount) + ', '  + \
-             'RepublishCount:' + str(self.RepublishCount) + ', '  + \
-             'TransferSubscriptionsCount:' + str(self.TransferSubscriptionsCount) + ', '  + \
-             'DeleteSubscriptionsCount:' + str(self.DeleteSubscriptionsCount) + ', '  + \
-             'AddNodesCount:' + str(self.AddNodesCount) + ', '  + \
-             'AddReferencesCount:' + str(self.AddReferencesCount) + ', '  + \
-             'DeleteNodesCount:' + str(self.DeleteNodesCount) + ', '  + \
-             'DeleteReferencesCount:' + str(self.DeleteReferencesCount) + ', '  + \
-             'BrowseCount:' + str(self.BrowseCount) + ', '  + \
-             'BrowseNextCount:' + str(self.BrowseNextCount) + ', '  + \
-             'TranslateBrowsePathsToNodeIdsCount:' + str(self.TranslateBrowsePathsToNodeIdsCount) + ', '  + \
-             'QueryFirstCount:' + str(self.QueryFirstCount) + ', '  + \
-             'QueryNextCount:' + str(self.QueryNextCount) + ', '  + \
-             'RegisterNodesCount:' + str(self.RegisterNodesCount) + ', '  + \
+        return 'SessionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
+             'SessionName:' + str(self.SessionName) + ', ' + \
+             'ClientDescription:' + str(self.ClientDescription) + ', ' + \
+             'ServerUri:' + str(self.ServerUri) + ', ' + \
+             'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
+             'LocaleIds:' + str(self.LocaleIds) + ', ' + \
+             'ActualSessionTimeout:' + str(self.ActualSessionTimeout) + ', ' + \
+             'MaxResponseMessageSize:' + str(self.MaxResponseMessageSize) + ', ' + \
+             'ClientConnectionTime:' + str(self.ClientConnectionTime) + ', ' + \
+             'ClientLastContactTime:' + str(self.ClientLastContactTime) + ', ' + \
+             'CurrentSubscriptionsCount:' + str(self.CurrentSubscriptionsCount) + ', ' + \
+             'CurrentMonitoredItemsCount:' + str(self.CurrentMonitoredItemsCount) + ', ' + \
+             'CurrentPublishRequestsInQueue:' + str(self.CurrentPublishRequestsInQueue) + ', ' + \
+             'TotalRequestCount:' + str(self.TotalRequestCount) + ', ' + \
+             'UnauthorizedRequestCount:' + str(self.UnauthorizedRequestCount) + ', ' + \
+             'ReadCount:' + str(self.ReadCount) + ', ' + \
+             'HistoryReadCount:' + str(self.HistoryReadCount) + ', ' + \
+             'WriteCount:' + str(self.WriteCount) + ', ' + \
+             'HistoryUpdateCount:' + str(self.HistoryUpdateCount) + ', ' + \
+             'CallCount:' + str(self.CallCount) + ', ' + \
+             'CreateMonitoredItemsCount:' + str(self.CreateMonitoredItemsCount) + ', ' + \
+             'ModifyMonitoredItemsCount:' + str(self.ModifyMonitoredItemsCount) + ', ' + \
+             'SetMonitoringModeCount:' + str(self.SetMonitoringModeCount) + ', ' + \
+             'SetTriggeringCount:' + str(self.SetTriggeringCount) + ', ' + \
+             'DeleteMonitoredItemsCount:' + str(self.DeleteMonitoredItemsCount) + ', ' + \
+             'CreateSubscriptionCount:' + str(self.CreateSubscriptionCount) + ', ' + \
+             'ModifySubscriptionCount:' + str(self.ModifySubscriptionCount) + ', ' + \
+             'SetPublishingModeCount:' + str(self.SetPublishingModeCount) + ', ' + \
+             'PublishCount:' + str(self.PublishCount) + ', ' + \
+             'RepublishCount:' + str(self.RepublishCount) + ', ' + \
+             'TransferSubscriptionsCount:' + str(self.TransferSubscriptionsCount) + ', ' + \
+             'DeleteSubscriptionsCount:' + str(self.DeleteSubscriptionsCount) + ', ' + \
+             'AddNodesCount:' + str(self.AddNodesCount) + ', ' + \
+             'AddReferencesCount:' + str(self.AddReferencesCount) + ', ' + \
+             'DeleteNodesCount:' + str(self.DeleteNodesCount) + ', ' + \
+             'DeleteReferencesCount:' + str(self.DeleteReferencesCount) + ', ' + \
+             'BrowseCount:' + str(self.BrowseCount) + ', ' + \
+             'BrowseNextCount:' + str(self.BrowseNextCount) + ', ' + \
+             'TranslateBrowsePathsToNodeIdsCount:' + str(self.TranslateBrowsePathsToNodeIdsCount) + ', ' + \
+             'QueryFirstCount:' + str(self.QueryFirstCount) + ', ' + \
+             'QueryNextCount:' + str(self.QueryNextCount) + ', ' + \
+             'RegisterNodesCount:' + str(self.RegisterNodesCount) + ', ' + \
              'UnregisterNodesCount:' + str(self.UnregisterNodesCount) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SessionSecurityDiagnosticsDataType(object):
     '''
-    :ivar SessionId: 
-    :vartype SessionId: NodeId 
-    :ivar ClientUserIdOfSession: 
-    :vartype ClientUserIdOfSession: String 
-    :ivar ClientUserIdHistory: 
-    :vartype ClientUserIdHistory: String 
-    :ivar AuthenticationMechanism: 
-    :vartype AuthenticationMechanism: String 
-    :ivar Encoding: 
-    :vartype Encoding: String 
-    :ivar TransportProtocol: 
-    :vartype TransportProtocol: String 
-    :ivar SecurityMode: 
-    :vartype SecurityMode: MessageSecurityMode 
-    :ivar SecurityPolicyUri: 
-    :vartype SecurityPolicyUri: String 
-    :ivar ClientCertificate: 
-    :vartype ClientCertificate: ByteString 
+    :ivar SessionId:
+    :vartype SessionId: NodeId
+    :ivar ClientUserIdOfSession:
+    :vartype ClientUserIdOfSession: String
+    :ivar ClientUserIdHistory:
+    :vartype ClientUserIdHistory: String
+    :ivar AuthenticationMechanism:
+    :vartype AuthenticationMechanism: String
+    :ivar Encoding:
+    :vartype Encoding: String
+    :ivar TransportProtocol:
+    :vartype TransportProtocol: String
+    :ivar SecurityMode:
+    :vartype SecurityMode: MessageSecurityMode
+    :ivar SecurityPolicyUri:
+    :vartype SecurityPolicyUri: String
+    :ivar ClientCertificate:
+    :vartype ClientCertificate: ByteString
     '''
-    
+
     __slots__ = [
         "SessionId",
         "ClientUserIdOfSession",
@@ -13237,8 +14782,11 @@ class SessionSecurityDiagnosticsDataType(object):
         "SecurityPolicyUri",
         "ClientCertificate",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SessionId = NodeId()
         self.ClientUserIdOfSession = ''
         self.ClientUserIdHistory = []
@@ -13248,7 +14796,7 @@ class SessionSecurityDiagnosticsDataType(object):
         self.SecurityMode = 0
         self.SecurityPolicyUri = ''
         self.ClientCertificate = b''
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.SessionId.to_binary())
@@ -13263,172 +14811,184 @@ class SessionSecurityDiagnosticsDataType(object):
         packet.append(pack_uatype('String', self.SecurityPolicyUri))
         packet.append(pack_uatype('ByteString', self.ClientCertificate))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SessionSecurityDiagnosticsDataType()
-        obj.SessionId = NodeId.from_binary(data)
-        obj.ClientUserIdOfSession = unpack_uatype('String', data)
-        obj.ClientUserIdHistory = unpack_uatype_array('String', data)
-        obj.AuthenticationMechanism = unpack_uatype('String', data)
-        obj.Encoding = unpack_uatype('String', data)
-        obj.TransportProtocol = unpack_uatype('String', data)
-        obj.SecurityMode = unpack_uatype('UInt32', data)
-        obj.SecurityPolicyUri = unpack_uatype('String', data)
-        obj.ClientCertificate = unpack_uatype('ByteString', data)
-        return obj
-    
+        return SessionSecurityDiagnosticsDataType(data)
+
+    def _binary_init(self, data):
+        self.SessionId = NodeId.from_binary(data)
+        self.ClientUserIdOfSession = unpack_uatype('String', data)
+        self.ClientUserIdHistory = unpack_uatype_array('String', data)
+        self.AuthenticationMechanism = unpack_uatype('String', data)
+        self.Encoding = unpack_uatype('String', data)
+        self.TransportProtocol = unpack_uatype('String', data)
+        self.SecurityMode = unpack_uatype('UInt32', data)
+        self.SecurityPolicyUri = unpack_uatype('String', data)
+        self.ClientCertificate = unpack_uatype('ByteString', data)
+
     def __str__(self):
-        return 'SessionSecurityDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', '  + \
-             'ClientUserIdOfSession:' + str(self.ClientUserIdOfSession) + ', '  + \
-             'ClientUserIdHistory:' + str(self.ClientUserIdHistory) + ', '  + \
-             'AuthenticationMechanism:' + str(self.AuthenticationMechanism) + ', '  + \
-             'Encoding:' + str(self.Encoding) + ', '  + \
-             'TransportProtocol:' + str(self.TransportProtocol) + ', '  + \
-             'SecurityMode:' + str(self.SecurityMode) + ', '  + \
-             'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', '  + \
+        return 'SessionSecurityDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
+             'ClientUserIdOfSession:' + str(self.ClientUserIdOfSession) + ', ' + \
+             'ClientUserIdHistory:' + str(self.ClientUserIdHistory) + ', ' + \
+             'AuthenticationMechanism:' + str(self.AuthenticationMechanism) + ', ' + \
+             'Encoding:' + str(self.Encoding) + ', ' + \
+             'TransportProtocol:' + str(self.TransportProtocol) + ', ' + \
+             'SecurityMode:' + str(self.SecurityMode) + ', ' + \
+             'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', ' + \
              'ClientCertificate:' + str(self.ClientCertificate) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ServiceCounterDataType(object):
     '''
-    :ivar TotalCount: 
-    :vartype TotalCount: UInt32 
-    :ivar ErrorCount: 
-    :vartype ErrorCount: UInt32 
+    :ivar TotalCount:
+    :vartype TotalCount: UInt32
+    :ivar ErrorCount:
+    :vartype ErrorCount: UInt32
     '''
-    
+
     __slots__ = [
         "TotalCount",
         "ErrorCount",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.TotalCount = 0
         self.ErrorCount = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('UInt32', self.TotalCount))
         packet.append(pack_uatype('UInt32', self.ErrorCount))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ServiceCounterDataType()
-        obj.TotalCount = unpack_uatype('UInt32', data)
-        obj.ErrorCount = unpack_uatype('UInt32', data)
-        return obj
-    
+        return ServiceCounterDataType(data)
+
+    def _binary_init(self, data):
+        self.TotalCount = unpack_uatype('UInt32', data)
+        self.ErrorCount = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'ServiceCounterDataType(' + 'TotalCount:' + str(self.TotalCount) + ', '  + \
+        return 'ServiceCounterDataType(' + 'TotalCount:' + str(self.TotalCount) + ', ' + \
              'ErrorCount:' + str(self.ErrorCount) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class StatusResult(object):
     '''
-    :ivar StatusCode: 
-    :vartype StatusCode: StatusCode 
-    :ivar DiagnosticInfo: 
-    :vartype DiagnosticInfo: DiagnosticInfo 
+    :ivar StatusCode:
+    :vartype StatusCode: StatusCode
+    :ivar DiagnosticInfo:
+    :vartype DiagnosticInfo: DiagnosticInfo
     '''
-    
+
     __slots__ = [
         "StatusCode",
         "DiagnosticInfo",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.StatusCode = StatusCode()
         self.DiagnosticInfo = DiagnosticInfo()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
         packet.append(self.DiagnosticInfo.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = StatusResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        obj.DiagnosticInfo = DiagnosticInfo.from_binary(data)
-        return obj
-    
+        return StatusResult(data)
+
+    def _binary_init(self, data):
+        self.StatusCode = StatusCode.from_binary(data)
+        self.DiagnosticInfo = DiagnosticInfo.from_binary(data)
+
     def __str__(self):
-        return 'StatusResult(' + 'StatusCode:' + str(self.StatusCode) + ', '  + \
+        return 'StatusResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
              'DiagnosticInfo:' + str(self.DiagnosticInfo) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SubscriptionDiagnosticsDataType(object):
     '''
-    :ivar SessionId: 
-    :vartype SessionId: NodeId 
-    :ivar SubscriptionId: 
-    :vartype SubscriptionId: UInt32 
-    :ivar Priority: 
-    :vartype Priority: Byte 
-    :ivar PublishingInterval: 
-    :vartype PublishingInterval: Double 
-    :ivar MaxKeepAliveCount: 
-    :vartype MaxKeepAliveCount: UInt32 
-    :ivar MaxLifetimeCount: 
-    :vartype MaxLifetimeCount: UInt32 
-    :ivar MaxNotificationsPerPublish: 
-    :vartype MaxNotificationsPerPublish: UInt32 
-    :ivar PublishingEnabled: 
-    :vartype PublishingEnabled: Boolean 
-    :ivar ModifyCount: 
-    :vartype ModifyCount: UInt32 
-    :ivar EnableCount: 
-    :vartype EnableCount: UInt32 
-    :ivar DisableCount: 
-    :vartype DisableCount: UInt32 
-    :ivar RepublishRequestCount: 
-    :vartype RepublishRequestCount: UInt32 
-    :ivar RepublishMessageRequestCount: 
-    :vartype RepublishMessageRequestCount: UInt32 
-    :ivar RepublishMessageCount: 
-    :vartype RepublishMessageCount: UInt32 
-    :ivar TransferRequestCount: 
-    :vartype TransferRequestCount: UInt32 
-    :ivar TransferredToAltClientCount: 
-    :vartype TransferredToAltClientCount: UInt32 
-    :ivar TransferredToSameClientCount: 
-    :vartype TransferredToSameClientCount: UInt32 
-    :ivar PublishRequestCount: 
-    :vartype PublishRequestCount: UInt32 
-    :ivar DataChangeNotificationsCount: 
-    :vartype DataChangeNotificationsCount: UInt32 
-    :ivar EventNotificationsCount: 
-    :vartype EventNotificationsCount: UInt32 
-    :ivar NotificationsCount: 
-    :vartype NotificationsCount: UInt32 
-    :ivar LatePublishRequestCount: 
-    :vartype LatePublishRequestCount: UInt32 
-    :ivar CurrentKeepAliveCount: 
-    :vartype CurrentKeepAliveCount: UInt32 
-    :ivar CurrentLifetimeCount: 
-    :vartype CurrentLifetimeCount: UInt32 
-    :ivar UnacknowledgedMessageCount: 
-    :vartype UnacknowledgedMessageCount: UInt32 
-    :ivar DiscardedMessageCount: 
-    :vartype DiscardedMessageCount: UInt32 
-    :ivar MonitoredItemCount: 
-    :vartype MonitoredItemCount: UInt32 
-    :ivar DisabledMonitoredItemCount: 
-    :vartype DisabledMonitoredItemCount: UInt32 
-    :ivar MonitoringQueueOverflowCount: 
-    :vartype MonitoringQueueOverflowCount: UInt32 
-    :ivar NextSequenceNumber: 
-    :vartype NextSequenceNumber: UInt32 
-    :ivar EventQueueOverFlowCount: 
-    :vartype EventQueueOverFlowCount: UInt32 
+    :ivar SessionId:
+    :vartype SessionId: NodeId
+    :ivar SubscriptionId:
+    :vartype SubscriptionId: UInt32
+    :ivar Priority:
+    :vartype Priority: Byte
+    :ivar PublishingInterval:
+    :vartype PublishingInterval: Double
+    :ivar MaxKeepAliveCount:
+    :vartype MaxKeepAliveCount: UInt32
+    :ivar MaxLifetimeCount:
+    :vartype MaxLifetimeCount: UInt32
+    :ivar MaxNotificationsPerPublish:
+    :vartype MaxNotificationsPerPublish: UInt32
+    :ivar PublishingEnabled:
+    :vartype PublishingEnabled: Boolean
+    :ivar ModifyCount:
+    :vartype ModifyCount: UInt32
+    :ivar EnableCount:
+    :vartype EnableCount: UInt32
+    :ivar DisableCount:
+    :vartype DisableCount: UInt32
+    :ivar RepublishRequestCount:
+    :vartype RepublishRequestCount: UInt32
+    :ivar RepublishMessageRequestCount:
+    :vartype RepublishMessageRequestCount: UInt32
+    :ivar RepublishMessageCount:
+    :vartype RepublishMessageCount: UInt32
+    :ivar TransferRequestCount:
+    :vartype TransferRequestCount: UInt32
+    :ivar TransferredToAltClientCount:
+    :vartype TransferredToAltClientCount: UInt32
+    :ivar TransferredToSameClientCount:
+    :vartype TransferredToSameClientCount: UInt32
+    :ivar PublishRequestCount:
+    :vartype PublishRequestCount: UInt32
+    :ivar DataChangeNotificationsCount:
+    :vartype DataChangeNotificationsCount: UInt32
+    :ivar EventNotificationsCount:
+    :vartype EventNotificationsCount: UInt32
+    :ivar NotificationsCount:
+    :vartype NotificationsCount: UInt32
+    :ivar LatePublishRequestCount:
+    :vartype LatePublishRequestCount: UInt32
+    :ivar CurrentKeepAliveCount:
+    :vartype CurrentKeepAliveCount: UInt32
+    :ivar CurrentLifetimeCount:
+    :vartype CurrentLifetimeCount: UInt32
+    :ivar UnacknowledgedMessageCount:
+    :vartype UnacknowledgedMessageCount: UInt32
+    :ivar DiscardedMessageCount:
+    :vartype DiscardedMessageCount: UInt32
+    :ivar MonitoredItemCount:
+    :vartype MonitoredItemCount: UInt32
+    :ivar DisabledMonitoredItemCount:
+    :vartype DisabledMonitoredItemCount: UInt32
+    :ivar MonitoringQueueOverflowCount:
+    :vartype MonitoringQueueOverflowCount: UInt32
+    :ivar NextSequenceNumber:
+    :vartype NextSequenceNumber: UInt32
+    :ivar EventQueueOverFlowCount:
+    :vartype EventQueueOverFlowCount: UInt32
     '''
-    
+
     __slots__ = [
         "SessionId",
         "SubscriptionId",
@@ -13462,8 +15022,11 @@ class SubscriptionDiagnosticsDataType(object):
         "NextSequenceNumber",
         "EventQueueOverFlowCount",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.SessionId = NodeId()
         self.SubscriptionId = 0
         self.Priority = 0
@@ -13495,7 +15058,7 @@ class SubscriptionDiagnosticsDataType(object):
         self.MonitoringQueueOverflowCount = 0
         self.NextSequenceNumber = 0
         self.EventQueueOverFlowCount = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.SessionId.to_binary())
@@ -13530,218 +15093,238 @@ class SubscriptionDiagnosticsDataType(object):
         packet.append(pack_uatype('UInt32', self.NextSequenceNumber))
         packet.append(pack_uatype('UInt32', self.EventQueueOverFlowCount))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SubscriptionDiagnosticsDataType()
-        obj.SessionId = NodeId.from_binary(data)
-        obj.SubscriptionId = unpack_uatype('UInt32', data)
-        obj.Priority = unpack_uatype('Byte', data)
-        obj.PublishingInterval = unpack_uatype('Double', data)
-        obj.MaxKeepAliveCount = unpack_uatype('UInt32', data)
-        obj.MaxLifetimeCount = unpack_uatype('UInt32', data)
-        obj.MaxNotificationsPerPublish = unpack_uatype('UInt32', data)
-        obj.PublishingEnabled = unpack_uatype('Boolean', data)
-        obj.ModifyCount = unpack_uatype('UInt32', data)
-        obj.EnableCount = unpack_uatype('UInt32', data)
-        obj.DisableCount = unpack_uatype('UInt32', data)
-        obj.RepublishRequestCount = unpack_uatype('UInt32', data)
-        obj.RepublishMessageRequestCount = unpack_uatype('UInt32', data)
-        obj.RepublishMessageCount = unpack_uatype('UInt32', data)
-        obj.TransferRequestCount = unpack_uatype('UInt32', data)
-        obj.TransferredToAltClientCount = unpack_uatype('UInt32', data)
-        obj.TransferredToSameClientCount = unpack_uatype('UInt32', data)
-        obj.PublishRequestCount = unpack_uatype('UInt32', data)
-        obj.DataChangeNotificationsCount = unpack_uatype('UInt32', data)
-        obj.EventNotificationsCount = unpack_uatype('UInt32', data)
-        obj.NotificationsCount = unpack_uatype('UInt32', data)
-        obj.LatePublishRequestCount = unpack_uatype('UInt32', data)
-        obj.CurrentKeepAliveCount = unpack_uatype('UInt32', data)
-        obj.CurrentLifetimeCount = unpack_uatype('UInt32', data)
-        obj.UnacknowledgedMessageCount = unpack_uatype('UInt32', data)
-        obj.DiscardedMessageCount = unpack_uatype('UInt32', data)
-        obj.MonitoredItemCount = unpack_uatype('UInt32', data)
-        obj.DisabledMonitoredItemCount = unpack_uatype('UInt32', data)
-        obj.MonitoringQueueOverflowCount = unpack_uatype('UInt32', data)
-        obj.NextSequenceNumber = unpack_uatype('UInt32', data)
-        obj.EventQueueOverFlowCount = unpack_uatype('UInt32', data)
-        return obj
-    
+        return SubscriptionDiagnosticsDataType(data)
+
+    def _binary_init(self, data):
+        self.SessionId = NodeId.from_binary(data)
+        self.SubscriptionId = unpack_uatype('UInt32', data)
+        self.Priority = unpack_uatype('Byte', data)
+        self.PublishingInterval = unpack_uatype('Double', data)
+        self.MaxKeepAliveCount = unpack_uatype('UInt32', data)
+        self.MaxLifetimeCount = unpack_uatype('UInt32', data)
+        self.MaxNotificationsPerPublish = unpack_uatype('UInt32', data)
+        self.PublishingEnabled = unpack_uatype('Boolean', data)
+        self.ModifyCount = unpack_uatype('UInt32', data)
+        self.EnableCount = unpack_uatype('UInt32', data)
+        self.DisableCount = unpack_uatype('UInt32', data)
+        self.RepublishRequestCount = unpack_uatype('UInt32', data)
+        self.RepublishMessageRequestCount = unpack_uatype('UInt32', data)
+        self.RepublishMessageCount = unpack_uatype('UInt32', data)
+        self.TransferRequestCount = unpack_uatype('UInt32', data)
+        self.TransferredToAltClientCount = unpack_uatype('UInt32', data)
+        self.TransferredToSameClientCount = unpack_uatype('UInt32', data)
+        self.PublishRequestCount = unpack_uatype('UInt32', data)
+        self.DataChangeNotificationsCount = unpack_uatype('UInt32', data)
+        self.EventNotificationsCount = unpack_uatype('UInt32', data)
+        self.NotificationsCount = unpack_uatype('UInt32', data)
+        self.LatePublishRequestCount = unpack_uatype('UInt32', data)
+        self.CurrentKeepAliveCount = unpack_uatype('UInt32', data)
+        self.CurrentLifetimeCount = unpack_uatype('UInt32', data)
+        self.UnacknowledgedMessageCount = unpack_uatype('UInt32', data)
+        self.DiscardedMessageCount = unpack_uatype('UInt32', data)
+        self.MonitoredItemCount = unpack_uatype('UInt32', data)
+        self.DisabledMonitoredItemCount = unpack_uatype('UInt32', data)
+        self.MonitoringQueueOverflowCount = unpack_uatype('UInt32', data)
+        self.NextSequenceNumber = unpack_uatype('UInt32', data)
+        self.EventQueueOverFlowCount = unpack_uatype('UInt32', data)
+
     def __str__(self):
-        return 'SubscriptionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', '  + \
-             'SubscriptionId:' + str(self.SubscriptionId) + ', '  + \
-             'Priority:' + str(self.Priority) + ', '  + \
-             'PublishingInterval:' + str(self.PublishingInterval) + ', '  + \
-             'MaxKeepAliveCount:' + str(self.MaxKeepAliveCount) + ', '  + \
-             'MaxLifetimeCount:' + str(self.MaxLifetimeCount) + ', '  + \
-             'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', '  + \
-             'PublishingEnabled:' + str(self.PublishingEnabled) + ', '  + \
-             'ModifyCount:' + str(self.ModifyCount) + ', '  + \
-             'EnableCount:' + str(self.EnableCount) + ', '  + \
-             'DisableCount:' + str(self.DisableCount) + ', '  + \
-             'RepublishRequestCount:' + str(self.RepublishRequestCount) + ', '  + \
-             'RepublishMessageRequestCount:' + str(self.RepublishMessageRequestCount) + ', '  + \
-             'RepublishMessageCount:' + str(self.RepublishMessageCount) + ', '  + \
-             'TransferRequestCount:' + str(self.TransferRequestCount) + ', '  + \
-             'TransferredToAltClientCount:' + str(self.TransferredToAltClientCount) + ', '  + \
-             'TransferredToSameClientCount:' + str(self.TransferredToSameClientCount) + ', '  + \
-             'PublishRequestCount:' + str(self.PublishRequestCount) + ', '  + \
-             'DataChangeNotificationsCount:' + str(self.DataChangeNotificationsCount) + ', '  + \
-             'EventNotificationsCount:' + str(self.EventNotificationsCount) + ', '  + \
-             'NotificationsCount:' + str(self.NotificationsCount) + ', '  + \
-             'LatePublishRequestCount:' + str(self.LatePublishRequestCount) + ', '  + \
-             'CurrentKeepAliveCount:' + str(self.CurrentKeepAliveCount) + ', '  + \
-             'CurrentLifetimeCount:' + str(self.CurrentLifetimeCount) + ', '  + \
-             'UnacknowledgedMessageCount:' + str(self.UnacknowledgedMessageCount) + ', '  + \
-             'DiscardedMessageCount:' + str(self.DiscardedMessageCount) + ', '  + \
-             'MonitoredItemCount:' + str(self.MonitoredItemCount) + ', '  + \
-             'DisabledMonitoredItemCount:' + str(self.DisabledMonitoredItemCount) + ', '  + \
-             'MonitoringQueueOverflowCount:' + str(self.MonitoringQueueOverflowCount) + ', '  + \
-             'NextSequenceNumber:' + str(self.NextSequenceNumber) + ', '  + \
+        return 'SubscriptionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
+             'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
+             'Priority:' + str(self.Priority) + ', ' + \
+             'PublishingInterval:' + str(self.PublishingInterval) + ', ' + \
+             'MaxKeepAliveCount:' + str(self.MaxKeepAliveCount) + ', ' + \
+             'MaxLifetimeCount:' + str(self.MaxLifetimeCount) + ', ' + \
+             'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
+             'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
+             'ModifyCount:' + str(self.ModifyCount) + ', ' + \
+             'EnableCount:' + str(self.EnableCount) + ', ' + \
+             'DisableCount:' + str(self.DisableCount) + ', ' + \
+             'RepublishRequestCount:' + str(self.RepublishRequestCount) + ', ' + \
+             'RepublishMessageRequestCount:' + str(self.RepublishMessageRequestCount) + ', ' + \
+             'RepublishMessageCount:' + str(self.RepublishMessageCount) + ', ' + \
+             'TransferRequestCount:' + str(self.TransferRequestCount) + ', ' + \
+             'TransferredToAltClientCount:' + str(self.TransferredToAltClientCount) + ', ' + \
+             'TransferredToSameClientCount:' + str(self.TransferredToSameClientCount) + ', ' + \
+             'PublishRequestCount:' + str(self.PublishRequestCount) + ', ' + \
+             'DataChangeNotificationsCount:' + str(self.DataChangeNotificationsCount) + ', ' + \
+             'EventNotificationsCount:' + str(self.EventNotificationsCount) + ', ' + \
+             'NotificationsCount:' + str(self.NotificationsCount) + ', ' + \
+             'LatePublishRequestCount:' + str(self.LatePublishRequestCount) + ', ' + \
+             'CurrentKeepAliveCount:' + str(self.CurrentKeepAliveCount) + ', ' + \
+             'CurrentLifetimeCount:' + str(self.CurrentLifetimeCount) + ', ' + \
+             'UnacknowledgedMessageCount:' + str(self.UnacknowledgedMessageCount) + ', ' + \
+             'DiscardedMessageCount:' + str(self.DiscardedMessageCount) + ', ' + \
+             'MonitoredItemCount:' + str(self.MonitoredItemCount) + ', ' + \
+             'DisabledMonitoredItemCount:' + str(self.DisabledMonitoredItemCount) + ', ' + \
+             'MonitoringQueueOverflowCount:' + str(self.MonitoringQueueOverflowCount) + ', ' + \
+             'NextSequenceNumber:' + str(self.NextSequenceNumber) + ', ' + \
              'EventQueueOverFlowCount:' + str(self.EventQueueOverFlowCount) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ModelChangeStructureDataType(object):
     '''
-    :ivar Affected: 
-    :vartype Affected: NodeId 
-    :ivar AffectedType: 
-    :vartype AffectedType: NodeId 
-    :ivar Verb: 
-    :vartype Verb: Byte 
+    :ivar Affected:
+    :vartype Affected: NodeId
+    :ivar AffectedType:
+    :vartype AffectedType: NodeId
+    :ivar Verb:
+    :vartype Verb: Byte
     '''
-    
+
     __slots__ = [
         "Affected",
         "AffectedType",
         "Verb",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Affected = NodeId()
         self.AffectedType = NodeId()
         self.Verb = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.Affected.to_binary())
         packet.append(self.AffectedType.to_binary())
         packet.append(pack_uatype('Byte', self.Verb))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ModelChangeStructureDataType()
-        obj.Affected = NodeId.from_binary(data)
-        obj.AffectedType = NodeId.from_binary(data)
-        obj.Verb = unpack_uatype('Byte', data)
-        return obj
-    
+        return ModelChangeStructureDataType(data)
+
+    def _binary_init(self, data):
+        self.Affected = NodeId.from_binary(data)
+        self.AffectedType = NodeId.from_binary(data)
+        self.Verb = unpack_uatype('Byte', data)
+
     def __str__(self):
-        return 'ModelChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', '  + \
-             'AffectedType:' + str(self.AffectedType) + ', '  + \
+        return 'ModelChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', ' + \
+             'AffectedType:' + str(self.AffectedType) + ', ' + \
              'Verb:' + str(self.Verb) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class SemanticChangeStructureDataType(object):
     '''
-    :ivar Affected: 
-    :vartype Affected: NodeId 
-    :ivar AffectedType: 
-    :vartype AffectedType: NodeId 
+    :ivar Affected:
+    :vartype Affected: NodeId
+    :ivar AffectedType:
+    :vartype AffectedType: NodeId
     '''
-    
+
     __slots__ = [
         "Affected",
         "AffectedType",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Affected = NodeId()
         self.AffectedType = NodeId()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.Affected.to_binary())
         packet.append(self.AffectedType.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = SemanticChangeStructureDataType()
-        obj.Affected = NodeId.from_binary(data)
-        obj.AffectedType = NodeId.from_binary(data)
-        return obj
-    
+        return SemanticChangeStructureDataType(data)
+
+    def _binary_init(self, data):
+        self.Affected = NodeId.from_binary(data)
+        self.AffectedType = NodeId.from_binary(data)
+
     def __str__(self):
-        return 'SemanticChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', '  + \
+        return 'SemanticChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', ' + \
              'AffectedType:' + str(self.AffectedType) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class Range(object):
     '''
-    :ivar Low: 
-    :vartype Low: Double 
-    :ivar High: 
-    :vartype High: Double 
+    :ivar Low:
+    :vartype Low: Double
+    :ivar High:
+    :vartype High: Double
     '''
-    
+
     __slots__ = [
         "Low",
         "High",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Low = 0
         self.High = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Double', self.Low))
         packet.append(pack_uatype('Double', self.High))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = Range()
-        obj.Low = unpack_uatype('Double', data)
-        obj.High = unpack_uatype('Double', data)
-        return obj
-    
+        return Range(data)
+
+    def _binary_init(self, data):
+        self.Low = unpack_uatype('Double', data)
+        self.High = unpack_uatype('Double', data)
+
     def __str__(self):
-        return 'Range(' + 'Low:' + str(self.Low) + ', '  + \
+        return 'Range(' + 'Low:' + str(self.Low) + ', ' + \
              'High:' + str(self.High) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class EUInformation(object):
     '''
-    :ivar NamespaceUri: 
-    :vartype NamespaceUri: String 
-    :ivar UnitId: 
-    :vartype UnitId: Int32 
-    :ivar DisplayName: 
-    :vartype DisplayName: LocalizedText 
-    :ivar Description: 
-    :vartype Description: LocalizedText 
+    :ivar NamespaceUri:
+    :vartype NamespaceUri: String
+    :ivar UnitId:
+    :vartype UnitId: Int32
+    :ivar DisplayName:
+    :vartype DisplayName: LocalizedText
+    :ivar Description:
+    :vartype Description: LocalizedText
     '''
-    
+
     __slots__ = [
         "NamespaceUri",
         "UnitId",
         "DisplayName",
         "Description",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.NamespaceUri = ''
         self.UnitId = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.NamespaceUri))
@@ -13749,110 +15332,122 @@ class EUInformation(object):
         packet.append(self.DisplayName.to_binary())
         packet.append(self.Description.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = EUInformation()
-        obj.NamespaceUri = unpack_uatype('String', data)
-        obj.UnitId = unpack_uatype('Int32', data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        return obj
-    
+        return EUInformation(data)
+
+    def _binary_init(self, data):
+        self.NamespaceUri = unpack_uatype('String', data)
+        self.UnitId = unpack_uatype('Int32', data)
+        self.DisplayName = LocalizedText.from_binary(data)
+        self.Description = LocalizedText.from_binary(data)
+
     def __str__(self):
-        return 'EUInformation(' + 'NamespaceUri:' + str(self.NamespaceUri) + ', '  + \
-             'UnitId:' + str(self.UnitId) + ', '  + \
-             'DisplayName:' + str(self.DisplayName) + ', '  + \
+        return 'EUInformation(' + 'NamespaceUri:' + str(self.NamespaceUri) + ', ' + \
+             'UnitId:' + str(self.UnitId) + ', ' + \
+             'DisplayName:' + str(self.DisplayName) + ', ' + \
              'Description:' + str(self.Description) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ComplexNumberType(object):
     '''
-    :ivar Real: 
-    :vartype Real: Float 
-    :ivar Imaginary: 
-    :vartype Imaginary: Float 
+    :ivar Real:
+    :vartype Real: Float
+    :ivar Imaginary:
+    :vartype Imaginary: Float
     '''
-    
+
     __slots__ = [
         "Real",
         "Imaginary",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Real = 0
         self.Imaginary = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Float', self.Real))
         packet.append(pack_uatype('Float', self.Imaginary))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ComplexNumberType()
-        obj.Real = unpack_uatype('Float', data)
-        obj.Imaginary = unpack_uatype('Float', data)
-        return obj
-    
+        return ComplexNumberType(data)
+
+    def _binary_init(self, data):
+        self.Real = unpack_uatype('Float', data)
+        self.Imaginary = unpack_uatype('Float', data)
+
     def __str__(self):
-        return 'ComplexNumberType(' + 'Real:' + str(self.Real) + ', '  + \
+        return 'ComplexNumberType(' + 'Real:' + str(self.Real) + ', ' + \
              'Imaginary:' + str(self.Imaginary) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class DoubleComplexNumberType(object):
     '''
-    :ivar Real: 
-    :vartype Real: Double 
-    :ivar Imaginary: 
-    :vartype Imaginary: Double 
+    :ivar Real:
+    :vartype Real: Double
+    :ivar Imaginary:
+    :vartype Imaginary: Double
     '''
-    
+
     __slots__ = [
         "Real",
         "Imaginary",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Real = 0
         self.Imaginary = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Double', self.Real))
         packet.append(pack_uatype('Double', self.Imaginary))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = DoubleComplexNumberType()
-        obj.Real = unpack_uatype('Double', data)
-        obj.Imaginary = unpack_uatype('Double', data)
-        return obj
-    
+        return DoubleComplexNumberType(data)
+
+    def _binary_init(self, data):
+        self.Real = unpack_uatype('Double', data)
+        self.Imaginary = unpack_uatype('Double', data)
+
     def __str__(self):
-        return 'DoubleComplexNumberType(' + 'Real:' + str(self.Real) + ', '  + \
+        return 'DoubleComplexNumberType(' + 'Real:' + str(self.Real) + ', ' + \
              'Imaginary:' + str(self.Imaginary) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class AxisInformation(object):
     '''
-    :ivar EngineeringUnits: 
-    :vartype EngineeringUnits: EUInformation 
-    :ivar EURange: 
-    :vartype EURange: Range 
-    :ivar Title: 
-    :vartype Title: LocalizedText 
-    :ivar AxisScaleType: 
-    :vartype AxisScaleType: AxisScaleEnumeration 
-    :ivar AxisSteps: 
-    :vartype AxisSteps: Double 
+    :ivar EngineeringUnits:
+    :vartype EngineeringUnits: EUInformation
+    :ivar EURange:
+    :vartype EURange: Range
+    :ivar Title:
+    :vartype Title: LocalizedText
+    :ivar AxisScaleType:
+    :vartype AxisScaleType: AxisScaleEnumeration
+    :ivar AxisSteps:
+    :vartype AxisSteps: Double
     '''
-    
+
     __slots__ = [
         "EngineeringUnits",
         "EURange",
@@ -13860,14 +15455,17 @@ class AxisInformation(object):
         "AxisScaleType",
         "AxisSteps",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.EngineeringUnits = EUInformation()
         self.EURange = Range()
         self.Title = LocalizedText()
         self.AxisScaleType = 0
         self.AxisSteps = []
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.EngineeringUnits.to_binary())
@@ -13878,86 +15476,93 @@ class AxisInformation(object):
         for fieldname in self.AxisSteps:
             packet.append(pack_uatype('Double', fieldname))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = AxisInformation()
-        obj.EngineeringUnits = EUInformation.from_binary(data)
-        obj.EURange = Range.from_binary(data)
-        obj.Title = LocalizedText.from_binary(data)
-        obj.AxisScaleType = unpack_uatype('UInt32', data)
-        obj.AxisSteps = unpack_uatype_array('Double', data)
-        return obj
-    
+        return AxisInformation(data)
+
+    def _binary_init(self, data):
+        self.EngineeringUnits = EUInformation.from_binary(data)
+        self.EURange = Range.from_binary(data)
+        self.Title = LocalizedText.from_binary(data)
+        self.AxisScaleType = unpack_uatype('UInt32', data)
+        self.AxisSteps = unpack_uatype_array('Double', data)
+
     def __str__(self):
-        return 'AxisInformation(' + 'EngineeringUnits:' + str(self.EngineeringUnits) + ', '  + \
-             'EURange:' + str(self.EURange) + ', '  + \
-             'Title:' + str(self.Title) + ', '  + \
-             'AxisScaleType:' + str(self.AxisScaleType) + ', '  + \
+        return 'AxisInformation(' + 'EngineeringUnits:' + str(self.EngineeringUnits) + ', ' + \
+             'EURange:' + str(self.EURange) + ', ' + \
+             'Title:' + str(self.Title) + ', ' + \
+             'AxisScaleType:' + str(self.AxisScaleType) + ', ' + \
              'AxisSteps:' + str(self.AxisSteps) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class XVType(object):
     '''
-    :ivar X: 
-    :vartype X: Double 
-    :ivar Value: 
-    :vartype Value: Float 
+    :ivar X:
+    :vartype X: Double
+    :ivar Value:
+    :vartype Value: Float
     '''
-    
+
     __slots__ = [
         "X",
         "Value",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.X = 0
         self.Value = 0
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('Double', self.X))
         packet.append(pack_uatype('Float', self.Value))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = XVType()
-        obj.X = unpack_uatype('Double', data)
-        obj.Value = unpack_uatype('Float', data)
-        return obj
-    
+        return XVType(data)
+
+    def _binary_init(self, data):
+        self.X = unpack_uatype('Double', data)
+        self.Value = unpack_uatype('Float', data)
+
     def __str__(self):
-        return 'XVType(' + 'X:' + str(self.X) + ', '  + \
+        return 'XVType(' + 'X:' + str(self.X) + ', ' + \
              'Value:' + str(self.Value) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class ProgramDiagnosticDataType(object):
     '''
-    :ivar CreateSessionId: 
-    :vartype CreateSessionId: NodeId 
-    :ivar CreateClientName: 
-    :vartype CreateClientName: String 
-    :ivar InvocationCreationTime: 
-    :vartype InvocationCreationTime: DateTime 
-    :ivar LastTransitionTime: 
-    :vartype LastTransitionTime: DateTime 
-    :ivar LastMethodCall: 
-    :vartype LastMethodCall: String 
-    :ivar LastMethodSessionId: 
-    :vartype LastMethodSessionId: NodeId 
-    :ivar LastMethodInputArguments: 
-    :vartype LastMethodInputArguments: Argument 
-    :ivar LastMethodOutputArguments: 
-    :vartype LastMethodOutputArguments: Argument 
-    :ivar LastMethodCallTime: 
-    :vartype LastMethodCallTime: DateTime 
-    :ivar LastMethodReturnStatus: 
-    :vartype LastMethodReturnStatus: StatusResult 
+    :ivar CreateSessionId:
+    :vartype CreateSessionId: NodeId
+    :ivar CreateClientName:
+    :vartype CreateClientName: String
+    :ivar InvocationCreationTime:
+    :vartype InvocationCreationTime: DateTime
+    :ivar LastTransitionTime:
+    :vartype LastTransitionTime: DateTime
+    :ivar LastMethodCall:
+    :vartype LastMethodCall: String
+    :ivar LastMethodSessionId:
+    :vartype LastMethodSessionId: NodeId
+    :ivar LastMethodInputArguments:
+    :vartype LastMethodInputArguments: Argument
+    :ivar LastMethodOutputArguments:
+    :vartype LastMethodOutputArguments: Argument
+    :ivar LastMethodCallTime:
+    :vartype LastMethodCallTime: DateTime
+    :ivar LastMethodReturnStatus:
+    :vartype LastMethodReturnStatus: StatusResult
     '''
-    
+
     __slots__ = [
         "CreateSessionId",
         "CreateClientName",
@@ -13970,8 +15575,11 @@ class ProgramDiagnosticDataType(object):
         "LastMethodCallTime",
         "LastMethodReturnStatus",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.CreateSessionId = NodeId()
         self.CreateClientName = ''
         self.InvocationCreationTime = datetime.now()
@@ -13982,7 +15590,7 @@ class ProgramDiagnosticDataType(object):
         self.LastMethodOutputArguments = []
         self.LastMethodCallTime = datetime.now()
         self.LastMethodReturnStatus = StatusResult()
-    
+
     def to_binary(self):
         packet = []
         packet.append(self.CreateSessionId.to_binary())
@@ -14000,83 +15608,93 @@ class ProgramDiagnosticDataType(object):
         packet.append(pack_uatype('DateTime', self.LastMethodCallTime))
         packet.append(self.LastMethodReturnStatus.to_binary())
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = ProgramDiagnosticDataType()
-        obj.CreateSessionId = NodeId.from_binary(data)
-        obj.CreateClientName = unpack_uatype('String', data)
-        obj.InvocationCreationTime = unpack_uatype('DateTime', data)
-        obj.LastTransitionTime = unpack_uatype('DateTime', data)
-        obj.LastMethodCall = unpack_uatype('String', data)
-        obj.LastMethodSessionId = NodeId.from_binary(data)
+        return ProgramDiagnosticDataType(data)
+
+    def _binary_init(self, data):
+        self.CreateSessionId = NodeId.from_binary(data)
+        self.CreateClientName = unpack_uatype('String', data)
+        self.InvocationCreationTime = unpack_uatype('DateTime', data)
+        self.LastTransitionTime = unpack_uatype('DateTime', data)
+        self.LastMethodCall = unpack_uatype('String', data)
+        self.LastMethodSessionId = NodeId.from_binary(data)
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.LastMethodInputArguments.append(Argument.from_binary(data))
+                array.append(Argument.from_binary(data))
+        self.LastMethodInputArguments = array
         length = struct.unpack('<i', data.read(4))[0]
+        array = []
         if length != -1:
             for _ in range(0, length):
-                obj.LastMethodOutputArguments.append(Argument.from_binary(data))
-        obj.LastMethodCallTime = unpack_uatype('DateTime', data)
-        obj.LastMethodReturnStatus = StatusResult.from_binary(data)
-        return obj
-    
+                array.append(Argument.from_binary(data))
+        self.LastMethodOutputArguments = array
+        self.LastMethodCallTime = unpack_uatype('DateTime', data)
+        self.LastMethodReturnStatus = StatusResult.from_binary(data)
+
     def __str__(self):
-        return 'ProgramDiagnosticDataType(' + 'CreateSessionId:' + str(self.CreateSessionId) + ', '  + \
-             'CreateClientName:' + str(self.CreateClientName) + ', '  + \
-             'InvocationCreationTime:' + str(self.InvocationCreationTime) + ', '  + \
-             'LastTransitionTime:' + str(self.LastTransitionTime) + ', '  + \
-             'LastMethodCall:' + str(self.LastMethodCall) + ', '  + \
-             'LastMethodSessionId:' + str(self.LastMethodSessionId) + ', '  + \
-             'LastMethodInputArguments:' + str(self.LastMethodInputArguments) + ', '  + \
-             'LastMethodOutputArguments:' + str(self.LastMethodOutputArguments) + ', '  + \
-             'LastMethodCallTime:' + str(self.LastMethodCallTime) + ', '  + \
+        return 'ProgramDiagnosticDataType(' + 'CreateSessionId:' + str(self.CreateSessionId) + ', ' + \
+             'CreateClientName:' + str(self.CreateClientName) + ', ' + \
+             'InvocationCreationTime:' + str(self.InvocationCreationTime) + ', ' + \
+             'LastTransitionTime:' + str(self.LastTransitionTime) + ', ' + \
+             'LastMethodCall:' + str(self.LastMethodCall) + ', ' + \
+             'LastMethodSessionId:' + str(self.LastMethodSessionId) + ', ' + \
+             'LastMethodInputArguments:' + str(self.LastMethodInputArguments) + ', ' + \
+             'LastMethodOutputArguments:' + str(self.LastMethodOutputArguments) + ', ' + \
+             'LastMethodCallTime:' + str(self.LastMethodCallTime) + ', ' + \
              'LastMethodReturnStatus:' + str(self.LastMethodReturnStatus) + ')'
-    
+
     __repr__ = __str__
-    
+
+
 class Annotation(object):
     '''
-    :ivar Message: 
-    :vartype Message: String 
-    :ivar UserName: 
-    :vartype UserName: String 
-    :ivar AnnotationTime: 
-    :vartype AnnotationTime: DateTime 
+    :ivar Message:
+    :vartype Message: String
+    :ivar UserName:
+    :vartype UserName: String
+    :ivar AnnotationTime:
+    :vartype AnnotationTime: DateTime
     '''
-    
+
     __slots__ = [
         "Message",
         "UserName",
         "AnnotationTime",
     ]
-    
-    def __init__(self):
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            return
         self.Message = ''
         self.UserName = ''
         self.AnnotationTime = datetime.now()
-    
+
     def to_binary(self):
         packet = []
         packet.append(pack_uatype('String', self.Message))
         packet.append(pack_uatype('String', self.UserName))
         packet.append(pack_uatype('DateTime', self.AnnotationTime))
         return b''.join(packet)
-        
+
     @staticmethod
     def from_binary(data):
-        obj = Annotation()
-        obj.Message = unpack_uatype('String', data)
-        obj.UserName = unpack_uatype('String', data)
-        obj.AnnotationTime = unpack_uatype('DateTime', data)
-        return obj
-    
+        return Annotation(data)
+
+    def _binary_init(self, data):
+        self.Message = unpack_uatype('String', data)
+        self.UserName = unpack_uatype('String', data)
+        self.AnnotationTime = unpack_uatype('DateTime', data)
+
     def __str__(self):
-        return 'Annotation(' + 'Message:' + str(self.Message) + ', '  + \
-             'UserName:' + str(self.UserName) + ', '  + \
+        return 'Annotation(' + 'Message:' + str(self.Message) + ', ' + \
+             'UserName:' + str(self.UserName) + ', ' + \
              'AnnotationTime:' + str(self.AnnotationTime) + ')'
-    
+
     __repr__ = __str__
 
 ExtensionClasses = {
