@@ -470,6 +470,10 @@ def uaserver():
                         "--populate",
                         action="store_false",
                         help="Populate address space with some sample nodes")
+    parser.add_argument("-c",
+                        "--disable-clock",
+                        action="store_true",
+                        help="Disable clock, to avoid seeing many write if debugging an application")
     parser.add_argument("-s",
                         "--shell",
                         action="store_true",
@@ -479,6 +483,7 @@ def uaserver():
 
     server = Server()
     server.set_endpoint(args.url)
+    server.disable_clock(args.disable_clock)
     server.set_server_name("FreeOpcUa Example Server")
     if args.xml:
         server.import_xml(args.xml)

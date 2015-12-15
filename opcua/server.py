@@ -64,6 +64,12 @@ class Server(object):
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
         sa_node.set_value([self.application_uri])
 
+    def disable_clock(self, val=True):
+        """
+        for debugging you may want to disable clock that write every second
+        to address space
+        """
+        self.iserver.disabled_clock = val
 
     def set_application_uri(self, uri):
         """
@@ -75,10 +81,12 @@ class Server(object):
         """
         self.application_uri = uri
 
-    def find_servers(self, uris=[]):
+    def find_servers(self, uris=None):
         """
         find_servers. mainly implemented for simmetry with client
         """
+        if uris is None:
+            uris = []
         params = ua.FindServersParameters()
         params.EndpointUrl = self.endpoint.geturl()
         params.ServerUris = uris

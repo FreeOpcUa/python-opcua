@@ -46,6 +46,7 @@ class InternalServer(object):
         self.endpoints = []
         self._channel_id_counter = 5
         self.allow_remote_admin = True
+        self.disabled_clock = False  # for debugging we may want to disable clock that writes too much in log
         self._known_servers = {}  # used if we are a discovery server
 
         self.aspace = AddressSpace()
@@ -83,7 +84,8 @@ class InternalServer(object):
         self.loop.start()
         Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_State)).set_value(0)
         Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_StartTime)).set_value(datetime.now())
-        self._set_current_time()
+        if not self.disabled_clock:
+            self._set_current_time()
 
     def stop(self):
         self.logger.info("stopping internal server")
