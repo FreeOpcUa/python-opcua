@@ -5,19 +5,19 @@ cdef class Buffer(object):
     alternative to io.BytesIO making debug easier
     and added a few conveniance methods
     """
-    cdef public bytes data
-    cdef int rsize
+    cdef bytes _data
+    cdef int rsize, data_len
     def __init__(self, bytes data):
-        # self.logger = logging.getLogger(__name__)
-        self.data = data
+        self._data = data
+        self.data_len  = len(data)
         self.rsize = 0
 
     def __str__(self):
-        return "Buffer(size:{}, data:{})".format(len(self.data), self.data)
+        return "Buffer(size:{}, data:{})".format(self.data_len - self.rsize, self.data)
     __repr__ = __str__
 
     def __len__(self):
-        return len(self.data) - self.rsize
+        return  self.data_len - self.rsize
 
     def read(self, int size):
         """
@@ -25,30 +25,36 @@ cdef class Buffer(object):
         """
         cdef int rsize, nrsize
         rsize = self.rsize
-        if size < 0:
-            return self.data[rsize:]
         nrsize = rsize + size
-        if nrsize > len(self.data):
+        if nrsize > self.data_len:
             raise Exception("Not enough data left in buffer, request for {}, we have {}".format(size, self))
-        #self.logger.debug("Request for %s bytes, from %s", size, self)
-        data = self.data[rsize:nrsize]
+        data = self._data[rsize:nrsize]
         self.rsize = nrsize
-        #self.logger.debug("Returning: %s ", data)
         return data
 
-    def copy(self, size=None):
+    def copy(self, int size=-1):
         """
         return a copy, optionnaly only copy 'size' bytes
         """
-        if size is None:
-            return Buffer(self.data[self.rsize:])
+        if size == -1:
+            return Buffer(self._data[self.rsize:])
         else:
-            return Buffer(self.data[self.rsize:self.rsize + size])
+            return Buffer(self._data[self.rsize:self.rsize + size])
 
-    def test_read(self, size):
+    def test_read(self, int size):
         """
         read 'size' bytes from buffer, without removing them from buffer
         """
-        if size > len(self.data):
+        if size + self.rsize > self.data_len:
             raise Exception("Not enough data left in buffer, request for {}, we have {}".format(size, self))
-        return self.data[:size]
+        return self.data[self.rsize:self.rsize + size]
+
+    property data:
+
+        def __get__(self):
+            return self._data[self.rsize:] 
+
+        def __set__(self, v):
+            self._data = v
+            self.data_len  = len(v)
+            self.rsize = 0

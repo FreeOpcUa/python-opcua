@@ -27,15 +27,15 @@ class Buffer2(object):
 
     def __init__(self, data):
         # self.logger = logging.getLogger(__name__)
-        self.data = data
+        self._data = data
         self.rsize = 0
 
     def __str__(self):
-        return "Buffer(size:{}, data:{})".format(len(self.data), self.data)
+        return "Buffer(size:{}, data:{})".format(len(self), self.data)
     __repr__ = __str__
 
     def __len__(self):
-        return len(self.data)
+        return len(self._data) - self.rsize
 
     def read(self, size):
         """
@@ -43,10 +43,11 @@ class Buffer2(object):
         """
         rsize = self.rsize
         nrsize = rsize + size
-        if nrsize > len(self.data):
+        mydata = self._data
+        if nrsize > len(mydata):
             raise Exception("Not enough data left in buffer, request for {}, we have {}".format(size, self))
         #self.logger.debug("Request for %s bytes, from %s", size, self)
-        data = self.data[rsize:nrsize]
+        data = mydata[rsize:nrsize]
         self.rsize = nrsize
         #self.logger.debug("Returning: %s ", data)
         return data
@@ -56,21 +57,30 @@ class Buffer2(object):
         return a copy, optionnaly only copy 'size' bytes
         """
         if size is None:
-            return Buffer(self.data[self.rsize:])
+            return Buffer(self._data[self.rsize:])
         else:
-            return Buffer(self.data[self.rsize:self.rsize + size])
+            return Buffer(self._data[self.rsize:self.rsize + size])
 
     def test_read(self, size):
         """
         read 'size' bytes from buffer, without removing them from buffer
         """
-        if size > len(self.data):
+        if self.rsize + size > len(self._data):
             raise Exception("Not enough data left in buffer, request for {}, we have {}".format(size, self))
-        return self.data[:size]
+        return self._data[self.rsize:self.rsize + size]
+
+    def get_data(self):
+        return self._data[self.rsize:]
+
+    def set_data(self, v):
+        self._data = v
+        self.rsize = 0
+
+    data = property(get_data, set_data)
 
 try:
     from _buffer import Buffer
-except:
+except ImportError:
     Buffer = Buffer2
 
 class SocketClosedException(Exception):
