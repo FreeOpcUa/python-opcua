@@ -18,7 +18,7 @@ class ServiceError(Exception):
 class NotEnoughData(Exception):
     pass
 
-class Buffer(object):
+class Buffer2(object):
 
     """
     alternative to io.BytesIO making debug easier
@@ -67,6 +67,11 @@ class Buffer(object):
         if size > len(self.data):
             raise Exception("Not enough data left in buffer, request for {}, we have {}".format(size, self))
         return self.data[:size]
+
+try:
+    from _buffer import Buffer
+except:
+    Buffer = Buffer2
 
 class SocketClosedException(Exception):
     pass
