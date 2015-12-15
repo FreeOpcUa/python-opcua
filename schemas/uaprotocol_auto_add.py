@@ -1,3 +1,4 @@
+
 def extensionobject_from_binary(data):
     """
     Convert binary-coded ExtensionObject to a Python object.
@@ -11,6 +12,7 @@ def extensionobject_from_binary(data):
         return None
     klass = ExtensionClasses[TypeId.Identifier]
     return klass.from_binary(Buffer(Body))
+
 
 def extensionobject_to_binary(obj):
     """

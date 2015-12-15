@@ -470,6 +470,10 @@ def uaserver():
                         "--populate",
                         action="store_false",
                         help="Populate address space with some sample nodes")
+    parser.add_argument("-c",
+                        "--disable-clock",
+                        action="store_true",
+                        help="Disable clock, to avoid seeing many write if debugging an application")
     parser.add_argument("-s",
                         "--shell",
                         action="store_true",
@@ -479,6 +483,7 @@ def uaserver():
 
     server = Server()
     server.set_endpoint(args.url)
+    server.disable_clock(args.disable_clock)
     server.set_server_name("FreeOpcUa Example Server")
     if args.xml:
         server.import_xml(args.xml)
@@ -515,9 +520,6 @@ def uaserver():
     sys.exit(0)
 
 
-
-
-
 def uadiscover():
     parser = argparse.ArgumentParser(description="Performs OPC UA discovery and prints information on servers and endpoints.")
     add_minimum_args(parser)
@@ -535,8 +537,9 @@ def uadiscover():
                         #help="send a GetEndpoints request to server")
     args = parse_args(parser)
     
+    client = Client(args.url, timeout=args.timeout)
+
     if args.network:
-        client = Client(args.url, timeout=args.timeout)
         print("Performing discovery at {}\n".format(args.url))
         for i, server in enumerate(client.find_all_servers_on_network(), start=1):
             print('Server {}:'.format(i))
@@ -544,7 +547,6 @@ def uadiscover():
                 #print('  {}: {}'.format(n, v))
             print('')
 
-    client = Client(args.url, timeout=args.timeout)
     print("Performing discovery at {}\n".format(args.url))
     for i, server in enumerate(client.find_all_servers(), start=1):
         print('Server {}:'.format(i))
@@ -552,7 +554,6 @@ def uadiscover():
             print('  {}: {}'.format(n, v))
         print('')
 
-    client = Client(args.url, timeout=args.timeout)
     for i, ep in enumerate(client.get_server_endpoints(), start=1):
         print('Endpoint {}:'.format(i))
         for (n, v) in endpoint_to_strings(ep):

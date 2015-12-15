@@ -106,7 +106,18 @@ class Client(object):
         with open(path, "br") as f:
             self.private_key = f.read()
 
-    def get_server_endpoints(self):
+    def connect_and_register_server(self):
+        """
+        Connect to discovery server, register my server, and disconnect
+        """
+        self.connect_socket()
+        self.send_hello()
+        self.open_secure_channel()
+        self.register_server()
+        self.close_secure_channel()
+        self.disconnect_socket()
+
+    def connect_and_get_server_endpoints(self):
         """
         Connect, ask server for endpoints, and disconnect
         """
@@ -118,19 +129,19 @@ class Client(object):
         self.disconnect_socket()
         return endpoints
 
-    def find_all_servers(self):
+    def connect_and_find_servers(self):
         """
         Connect, ask server for a list of known servers, and disconnect
         """
         self.connect_socket()
         self.send_hello()
-        self.open_secure_channel()
+        self.open_secure_channel()  # spec says it should not be necessary to open channel
         servers = self.find_servers()
         self.close_secure_channel()
         self.disconnect_socket()
         return servers
 
-    def find_all_servers_on_network(self):
+    def connect_and_find_servers_on_network(self):
         """
         Connect, ask server for a list of known servers on network, and disconnect
         """
@@ -141,8 +152,6 @@ class Client(object):
         self.close_secure_channel()
         self.disconnect_socket()
         return servers
-
-
 
     def connect(self):
         """
@@ -203,8 +212,35 @@ class Client(object):
         params.EndpointUrl = self.server_url.geturl()
         return self.bclient.get_endpoints(params)
 
-    def find_servers(self):
+    def register_server(self, server, discovery_configuration=None):
+        """
+        register a server to discovery server
+        if discovery_configuration is provided, the newer register_server2 service call is used
+        """
+        serv = ua.RegisteredServer()
+        serv.ServerUri = server.application_uri
+        serv.ProductUri = server.product_uri
+        serv.DiscoveryUrls = [server.endpoint.geturl()]
+        serv.ServerType = server.application_type
+        serv.ServerNames = [ua.LocalizedText(server.name)]
+        serv.IsOnline = True
+        if discovery_configuration:
+            params = ua.registerServer2Parameters()
+            params.Server = serv
+            params.DiscoveryConfiguration
+            return self.bclient.register_server2(params)
+        else:
+            return self.bclient.register_server(serv)
+
+    def find_servers(self, uris=[]):
+        """
+        send a FindServer request to the server. The answer should be a list of
+        servers the server knows about
+        A list of uris can be provided, only server having matching uris will be returned
+        """
         params = ua.FindServersParameters()
+        params.EndpointUrl = self.server_url.geturl()
+        params.ServerUris = uris 
         return self.bclient.find_servers(params)
 
     def find_servers_on_network(self):

@@ -218,6 +218,29 @@ class UAProcessor(object):
             self.logger.info("sending find servers response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
+        elif typeid == ua.NodeId(ua.ObjectIds.RegisterServerRequest_Encoding_DefaultBinary):
+            self.logger.info("register server request")
+            serv = ua.RegisteredServer.from_binary(body)
+
+            self.iserver.register_server(serv)
+
+            response = ua.RegisterServerResponse()
+
+            self.logger.info("sending register server response")
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.RegisterServer2Request_Encoding_DefaultBinary):
+            self.logger.info("register server 2 request")
+            params = ua.RegisterServer2Parameters.from_binary(body)
+
+            results = self.iserver.register_server2(params)
+
+            response = ua.RegisterServer2Response()
+            response.ConfigurationResults = results
+
+            self.logger.info("sending register server 2 response")
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
         elif typeid == ua.NodeId(ua.ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary):
             self.logger.info("translate browsepaths to nodeids request")
             params = ua.TranslateBrowsePathsToNodeIdsParameters.from_binary(body)
