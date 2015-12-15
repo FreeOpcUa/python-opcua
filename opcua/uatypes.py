@@ -177,6 +177,15 @@ def unpack_uatype_array(uatype, data):
     length = uatype_struct_Int32.unpack(data.read(4))[0]
     if length == -1:
         return None
+    elif length == 0:
+        return []
+    elif uatype in uatype2struct:
+        st = uatype2struct[uatype]
+        if length == 1:
+            return list(st.unpack(data.read(st.size)))
+        else:
+            arrst = struct.Struct("<%d%s" % (length, st.format[1]))
+            return list(arrst.unpack(data.read(arrst.size)))
     else:
         result = []
         for _ in range(0, length):
