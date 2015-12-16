@@ -541,20 +541,20 @@ def uadiscover():
 
     if args.network:
         print("Performing discovery at {}\n".format(args.url))
-        for i, server in enumerate(client.find_all_servers_on_network(), start=1):
+        for i, server in enumerate(client.connect_and_find_servers_on_network(), start=1):
             print('Server {}:'.format(i))
             #for (n, v) in application_to_strings(server):
                 #print('  {}: {}'.format(n, v))
             print('')
 
     print("Performing discovery at {}\n".format(args.url))
-    for i, server in enumerate(client.find_all_servers(), start=1):
+    for i, server in enumerate(client.connect_and_find_servers(), start=1):
         print('Server {}:'.format(i))
         for (n, v) in application_to_strings(server):
             print('  {}: {}'.format(n, v))
         print('')
 
-    for i, ep in enumerate(client.get_server_endpoints(), start=1):
+    for i, ep in enumerate(client.connect_and_get_server_endpoints(), start=1):
         print('Endpoint {}:'.format(i))
         for (n, v) in endpoint_to_strings(ep):
             print('  {}: {}'.format(n, v))
