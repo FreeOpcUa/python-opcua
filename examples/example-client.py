@@ -49,7 +49,7 @@ if __name__ == "__main__":
         root = client.get_root_node()
         print("Root node is: ", root)
         objects = client.get_objects_node()
-        print("Objects node is: ", root)
+        print("Objects node is: ", objects)
 
         # Node objects have methods to read and write node attributes as well as browse or populate address space
         print("Children of root are: ", root.get_children())
