@@ -52,51 +52,32 @@ def win_epoch_to_datetime(epch):
     return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch // 10)
 
 
-def uatype_to_fmt(uatype):
-    if uatype == "Char":
-        return "B"
-    elif uatype == "SByte":
-        return "b"
-    elif uatype == "Int8":
-        return "b"
-    elif uatype == "Int16":
-        return "h"
-    elif uatype == "Int32":
-        return "i"
-    elif uatype == "Int64":
-        return "q"
-    elif uatype == "UInt8":
-        return "B"
-    elif uatype == "UInt16":
-        return "H"
-    elif uatype == "UInt32":
-        return "I"
-    elif uatype == "UInt64":
-        return "Q"
-    elif uatype == "Boolean":
-        return "?"
-    elif uatype == "Double":
-        return "d"
-    elif uatype == "Float":
-        return "f"
-    elif uatype == "Byte":
-        return "B"
+def pack_uatype_array_primitive(st, value, length):
+    if length == 1:
+        return b'\x01\x00\x00\x00' + st.pack(value[0])
     else:
-        raise Exception("Error unknown uatype: " + uatype)
+        return struct.pack("<i%d%s" % (length, st.format[1]), length, *value)
 
 
 def pack_uatype_array(uatype, value):
     if value is None:
-        return struct.pack("<i", -1)
+        return b'\xff\xff\xff\xff'
+    length = len(value)
+    if length == 0:
+        return b'\x00\x00\x00\x00'
+    if uatype in uatype2struct:
+        return pack_uatype_array_primitive(uatype2struct[uatype], value, length)
     b = []
-    b.append(struct.pack("<i", len(value)))
+    b.append(uatype_struct_Int32.pack(length))
     for val in value:
         b.append(pack_uatype(uatype, val))
     return b"".join(b)
 
 
 def pack_uatype(uatype, value):
-    if uatype == "Null":
+    if uatype in uatype2struct:
+        return uatype2struct[uatype].pack(value)
+    elif uatype == "Null":
         return b''
     elif uatype == "String":
         return pack_string(value)
@@ -104,10 +85,7 @@ def pack_uatype(uatype, value):
         return pack_bytes(value)
     elif uatype == "DateTime":
         epch = datetime_to_win_epoch(value)
-        return struct.pack('<q', epch)
-    elif uatype in UaTypes:
-        fmt = '<' + uatype_to_fmt(uatype)
-        return struct.pack(fmt, value)
+        return uatype_struct_Int64.pack(epch)
     elif uatype == "ExtensionObject":
         # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
         # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
@@ -154,7 +132,7 @@ def unpack_uatype(uatype, data):
     if uatype in uatype2struct:
         st = uatype2struct[uatype]
         return st.unpack(data.read(st.size))[0]
-    if uatype == "String":
+    elif uatype == "String":
         return unpack_string(data)
     elif uatype in ("CharArray", "ByteString"):
         return unpack_bytes(data)
@@ -198,8 +176,8 @@ def pack_string(string):
         string = string.encode('utf-8')
     length = len(string)
     if length == 0:
-        return struct.pack("<i", -1)
-    return struct.pack("<i", length) + string
+        return b'\xff\xff\xff\xff'
+    return uatype_struct_Int32.pack(length) + string
 
 pack_bytes = pack_string
 
