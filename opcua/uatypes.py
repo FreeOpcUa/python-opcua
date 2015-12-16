@@ -213,12 +213,18 @@ class Guid(object):
         self.uuid = uuid.uuid4()
 
     def to_binary(self):
-        return self.uuid.bytes
+        return self.uuid.bytes_le #bytes -> bytes_le
 
     @staticmethod
     def from_binary(data):
         g = Guid()
         g.uuid = uuid.UUID(bytes=data.read(16))
+        return g
+
+    @staticmethod
+    def from_string(identifier):
+        g = Guid()
+        g.uuid = uuid.UUID(hex=identifier)
         return g
 
     def __eq__(self, other):
@@ -356,7 +362,7 @@ class NodeId(FrozenClass):
                 identifier = v
             elif k == "g":
                 ntype = NodeIdType.Guid
-                identifier = v
+                identifier = Guid.from_string(v)
             elif k == "b":
                 ntype = NodeIdType.ByteString
                 identifier = v
@@ -848,5 +854,3 @@ def generate_nodeid(idx):
     global __nodeid_counter
     __nodeid_counter += 1
     return NodeId(__nodeid_counter, idx)
-
-

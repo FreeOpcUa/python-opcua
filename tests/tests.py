@@ -117,6 +117,9 @@ class Unit(unittest.TestCase):
         self.assertEqual(bs, ua.NodeId.from_binary(ua.utils.Buffer(bs.to_binary())))
         self.assertEqual(guid, ua.NodeId.from_binary(ua.utils.Buffer(guid.to_binary())))
 
+        gid_string = "ns=4;g=f26a287f-d804-4487-be4f-6879a29b7a47"
+        self.assert isinstance(ua.NodeId.from_string(gid_string).Identifier, ua.Guid())
+
     def test_nodeid_string(self):
         nid0 = ua.NodeId(45)
         self.assertEqual(nid0, ua.NodeId.from_string("i=45"))
@@ -423,7 +426,7 @@ class CommonTests(object):
     def test_utf8(self):
         objects = self.opc.get_objects_node()
         utf_string = "æøå@%&"
-        bn = ua.QualifiedName(utf_string, 3) 
+        bn = ua.QualifiedName(utf_string, 3)
         nid = ua.NodeId("æølå", 3)
         val = "æøå"
         v = objects.add_variable(nid, bn, val)
@@ -683,7 +686,7 @@ class CommonTests(object):
         o = self.opc.get_objects_node()
 
         # subscribe to a variable
-        startv1 = True 
+        startv1 = True
         v1 = o.add_variable(3, 'SubscriptionVariableBool', startv1)
         sub = self.opc.create_subscription(100, msclt)
         handle1 = sub.subscribe_data_change(v1)
@@ -858,7 +861,7 @@ class AdminTestClient(unittest.TestCase, CommonTests):
         #stop our clients
         self.ro_clt.disconnect()
         self.clt.disconnect()
-        # stop the server 
+        # stop the server
         self.srv.stop()
 
     def test_service_fault(self):
