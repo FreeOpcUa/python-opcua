@@ -205,7 +205,7 @@ def _val_to_variant(val, args):
     elif args.datatype in ("qualifiedname", "browsename"):
         return _arg_to_variant(val, array, ua.QualifiedName.from_string, ua.VariantType.QualifiedName)
     elif args.datatype == "LocalizedText":
-        return _arg_to_variant(val, array, ua.LocalizedText, ua.VariantTypeLocalizedText)
+        return _arg_to_variant(val, array, ua.LocalizedText, ua.VariantType.LocalizedText)
 
 
 def uawrite():
@@ -435,9 +435,9 @@ def uaclient():
     client = Client(args.url, timeout=args.timeout)
     client.connect()
     if args.certificate:
-        client.load_certificate(args.certificate)
+        client.load_client_certificate(args.certificate)
     if args.private_key:
-        client.load_certificate(args.private_key)
+        client.load_private_key(args.private_key)
     try:
         root = client.get_root_node()
         objects = client.get_objects_node()
