@@ -3,6 +3,7 @@ import logging
 
 import opcua.uaprotocol_auto as auto
 import opcua.uatypes as uatypes
+from opcua.uatypes import uatype_UInt32
 import opcua.utils as utils
 from opcua.object_ids import ObjectIds
 from opcua.attribute_ids import AttributeIds
@@ -43,22 +44,22 @@ class Hello(object):
 
     def to_binary(self):
         b = []
-        b.append(struct.pack("<I", self.ProtocolVersion))
-        b.append(struct.pack("<I", self.ReceiveBufferSize))
-        b.append(struct.pack("<I", self.SendBufferSize))
-        b.append(struct.pack("<I", self.MaxMessageSize))
-        b.append(struct.pack("<I", self.MaxChunkCount))
+        b.append(uatype_UInt32.pack(self.ProtocolVersion))
+        b.append(uatype_UInt32.pack(self.ReceiveBufferSize))
+        b.append(uatype_UInt32.pack(self.SendBufferSize))
+        b.append(uatype_UInt32.pack(self.MaxMessageSize))
+        b.append(uatype_UInt32.pack(self.MaxChunkCount))
         b.append(uatypes.pack_string(self.EndpointUrl))
         return b"".join(b)
 
     @staticmethod
     def from_binary(data):
         hello = Hello()
-        hello.ProtocolVersion = struct.unpack("<I", data.read(4))[0]
-        hello.ReceiveBufferSize = struct.unpack("<I", data.read(4))[0]
-        hello.SendBufferSize = struct.unpack("<I", data.read(4))[0]
-        hello.MaxMessageSize = struct.unpack("<I", data.read(4))[0]
-        hello.MaxChunkCount = struct.unpack("<I", data.read(4))[0]
+        hello.ProtocolVersion = uatype_UInt32.unpack(data.read(4))[0]
+        hello.ReceiveBufferSize = uatype_UInt32.unpack(data.read(4))[0]
+        hello.SendBufferSize = uatype_UInt32.unpack(data.read(4))[0]
+        hello.MaxMessageSize = uatype_UInt32.unpack(data.read(4))[0]
+        hello.MaxChunkCount = uatype_UInt32.unpack(data.read(4))[0]
         hello.EndpointUrl = uatypes.unpack_string(data)
         return hello
 
@@ -101,26 +102,23 @@ class Header(object):
 
     def to_binary(self):
         b = []
-        b.append(struct.pack("<3s", self.MessageType))
-        b.append(struct.pack("<s", self.ChunkType))
+        b.append(struct.pack("<3ss", self.MessageType, self.ChunkType))
         size = self.body_size + 8
         if self.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
             size += 4
-        b.append(struct.pack("<I", size))
+        b.append(uatype_UInt32.pack(size))
         if self.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
-            b.append(struct.pack("<I", self.ChannelId))
+            b.append(uatype_UInt32.pack(self.ChannelId))
         return b"".join(b)
 
     @staticmethod
     def from_string(data):
         hdr = Header()
-        hdr.MessageType = struct.unpack("<3s", data.read(3))[0]
-        hdr.ChunkType = struct.unpack("<c", data.read(1))[0]
-        hdr.packet_size = struct.unpack("<I", data.read(4))[0]
-        hdr.body_size =  hdr.packet_size - 8
+        hdr.MessageType, hdr.ChunkType, hdr.packet_size = struct.unpack("<3scI", data.read(8))
+        hdr.body_size = hdr.packet_size - 8
         if hdr.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
             hdr.body_size -= 4
-            hdr.ChannelId = struct.unpack("<I", data.read(4))[0]
+            hdr.ChannelId = uatype_UInt32.unpack(data.read(4))[0]
         return hdr
 
     def __str__(self):
@@ -173,22 +171,19 @@ class Acknowledge(object):
         self.MaxChunkCount = 0  # No limits
 
     def to_binary(self):
-        b = []
-        b.append(struct.pack("<I", self.ProtocolVersion))
-        b.append(struct.pack("<I", self.ReceiveBufferSize))
-        b.append(struct.pack("<I", self.SendBufferSize))
-        b.append(struct.pack("<I", self.MaxMessageSize))
-        b.append(struct.pack("<I", self.MaxChunkCount))
-        return b"".join(b)
+        return struct.pack(
+            "<5I",
+            self.ProtocolVersion,
+            self.ReceiveBufferSize,
+            self.SendBufferSize,
+            self.MaxMessageSize,
+            self.MaxChunkCount)
 
     @staticmethod
     def from_binary(data):
         ack = Acknowledge()
-        ack.ProtocolVersion = struct.unpack("<I", data.read(4))[0]
-        ack.ReceiveBufferSize = struct.unpack("<I", data.read(4))[0]
-        ack.SendBufferSize = struct.unpack("<I", data.read(4))[0]
-        ack.MaxMessageSize = struct.unpack("<I", data.read(4))[0]
-        ack.MaxChunkCount = struct.unpack("<I", data.read(4))[0]
+        ack.ProtocolVersion, ack.ReceiveBufferSize, ack.SendBufferSize, ack.MaxMessageSize, ack.MaxChunkCount \
+            = struct.unpack("<5I", data.read(20))
         return ack
 
 
@@ -235,11 +230,11 @@ class SymmetricAlgorithmHeader(object):
     @staticmethod
     def from_binary(data):
         obj = SymmetricAlgorithmHeader()
-        obj.TokenId = struct.unpack("<I", data.read(4))[0]
+        obj.TokenId = uatype_UInt32.unpack(data.read(4))[0]
         return obj
 
     def to_binary(self):
-        return struct.pack("<I", self.TokenId)
+        return uatype_UInt32.pack(self.TokenId)
 
     def __str__(self):
         return "{}(TokenId:{} )".format(self.__class__.__name__, self.TokenId)
@@ -259,14 +254,14 @@ class SequenceHeader(object):
     @staticmethod
     def from_binary(data):
         obj = SequenceHeader()
-        obj.SequenceNumber = struct.unpack("<I", data.read(4))[0]
-        obj.RequestId = struct.unpack("<I", data.read(4))[0]
+        obj.SequenceNumber = uatype_UInt32.unpack(data.read(4))[0]
+        obj.RequestId = uatype_UInt32.unpack(data.read(4))[0]
         return obj
 
     def to_binary(self):
         b = []
-        b.append(struct.pack("<I", self.SequenceNumber))
-        b.append(struct.pack("<I", self.RequestId))
+        b.append(uatype_UInt32.pack(self.SequenceNumber))
+        b.append(uatype_UInt32.pack(self.RequestId))
         return b"".join(b)
 
     def __str__(self):

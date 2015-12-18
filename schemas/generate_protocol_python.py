@@ -172,15 +172,15 @@ class CodeGenerator(object):
                 self.write("if self.{}: ".format(field.name))
                 self.iidx += 1
             if field.length:
-                self.write("{}.append(struct.pack('<i', len(self.{})))".format(listname, field.name))
+                self.write("{}.append(uatype_Int32.pack(len(self.{})))".format(listname, field.name))
                 self.write("for fieldname in self.{}:".format(field.name))
                 fname = "fieldname"
                 self.iidx += 1
             if field.is_native_type():
-                self.write("{}.append(pack_uatype('{}', {}))".format(listname, field.uatype, fname))
+                self.write_pack_uatype(listname, fname, field.uatype)
             elif field.uatype in self.model.enum_list:
                 uatype = self.model.get_enum(field.uatype).uatype
-                self.write("{}.append(pack_uatype('{}', {}))".format(listname, uatype, fname))
+                self.write_pack_uatype(listname, fname, uatype)
             elif field.uatype in ("ExtensionObject"):
                 self.write("{}.append(extensionobject_to_binary({}))".format(listname, fname))
             else:
@@ -226,17 +226,17 @@ class CodeGenerator(object):
                 if field.length:
                     self.write("self.{} = unpack_uatype_array('{}', data)".format(field.name, field.uatype))
                 else:
-                    self.write("self.{} = unpack_uatype('{}', data)".format(field.name, field.uatype))
+                    self.write_unpack_uatype(field.name, field.uatype)
             elif field.uatype in self.model.enum_list:
                 uatype = self.model.get_enum(field.uatype).uatype
-                self.write("self.{} = unpack_uatype('{}', data)".format(field.name, uatype))
+                self.write_unpack_uatype(field.name, uatype)
             else:
                 if field.uatype in ("ExtensionObject"):
                     frombinary = "extensionobject_from_binary(data)"
                 else:
                     frombinary = "{}.from_binary(data)".format(field.uatype)
                 if field.length:
-                    self.write("length = struct.unpack('<i', data.read(4))[0]")
+                    self.write("length = uatype_Int32.unpack(data.read(4))[0]")
                     self.write("array = []")
                     self.write("if length != -1:")
                     self.iidx += 1
@@ -278,60 +278,31 @@ class CodeGenerator(object):
 
         self.iix = 0
 
-    def write_unpack_uatype_array(self, name, uatype):
-        if uatype in (
-            "String",
-            "DateTime",
-            "Int8",
-            "Int16",
-            "Int32",
-            "Int64",
-            "UInt8",
-            "UInt16",
-            "UInt32",
-            "UInt64",
-            "Double",
-            "Float",
-            "Sbyte",
-            "Byte",
-            "Char",
-            "Boolean",
-            "CharArray",
-            "ByteString",
-        ):
-            uatype = uatype.lower()
-        else:
-            self.write("self.{} = unpack_uatype_array('{}', data)".format(name, uatype))
-            return
-        self.write('length = data.read_int32()')
-        self.write("self.{} = None if length==-1 else data.read_array_{}(length)".format(name, uatype))
-
     def write_unpack_uatype(self, name, uatype):
-        if uatype in (
-            "String",
-            "DateTime",
-            "Int8",
-            "Int16",
-            "Int32",
-            "Int64",
-            "UInt8",
-            "UInt16",
-            "UInt32",
-            "UInt64",
-            "Double",
-            "Float",
-            "Sbyte",
-            "Byte",
-            "Char",
-            "Boolean",
-            "CharArray",
-            "ByteString",
-        ):
-            uatype = uatype.lower()
+        if uatype in ("Int8", "UInt8", "Sbyte", "Byte", "Char", "Boolean"):
+            size = 1
+        elif uatype in ("Int16", "UInt16"):
+            size = 2
+        elif uatype in ("Int32", "UInt32", "Float"):
+            size = 4
+        elif uatype in ("Int64", "UInt64", "Double"):
+            size = 8
         else:
             self.write("self.{} = unpack_uatype('{}', data)".format(name, uatype))
             return
-        self.write("self.{} = data.read_{}()".format(name, uatype))
+        self.write("self.{} = uatype_{}.unpack(data.read({}))[0]".format(name, uatype, size))
+
+    def write_pack_uatype(self, listname, name, uatype):
+        if uatype in (
+            "Int8", "UInt8", "Sbyte", "Byte", "Char", "Boolean",
+            "Int16", "UInt16",
+            "Int32", "UInt32", "Float",
+            "Int64", "UInt64", "Double"
+        ):
+            self.write("{}.append(uatype_{}.pack({}))".format(listname, uatype, name))
+        else:
+            self.write("{}.append(pack_uatype('{}', {}))".format(listname, uatype, name))
+            return
 
     def get_default_value(self, field):
         if field.uatype in self.model.enum_list:
