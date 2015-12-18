@@ -84,8 +84,7 @@ def pack_uatype(uatype, value):
     elif uatype in ("CharArray", "ByteString"):
         return pack_bytes(value)
     elif uatype == "DateTime":
-        epch = datetime_to_win_epoch(value)
-        return uatype_Int64.pack(epch)
+        return pack_datetime(value)
     elif uatype == "ExtensionObject":
         # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
         # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
@@ -137,8 +136,7 @@ def unpack_uatype(uatype, data):
     elif uatype in ("CharArray", "ByteString"):
         return unpack_bytes(data)
     elif uatype == "DateTime":
-        epch = uatype_Int64.unpack(data.read(8))[0]
-        return win_epoch_to_datetime(epch)
+        return unpack_datetime(data)
     elif uatype == "ExtensionObject":
         # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
         # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
@@ -146,9 +144,12 @@ def unpack_uatype(uatype, data):
         from opcua.uaprotocol_auto import extensionobject_from_binary
         return extensionobject_from_binary(data)
     else:
-        code = "{}.from_binary(data)".format(uatype)
-        tmp = eval(code)
-        return tmp
+        glbs = globals()
+        if uatype in glbs:
+            klass = glbs[uatype]
+            if hasattr(klass, 'from_binary'):
+                return klass.from_binary(data)
+        raise Exception("can not unpack unknown uatype %s" % uatype)
 
 
 def unpack_uatype_array(uatype, data):
@@ -171,6 +172,16 @@ def unpack_uatype_array(uatype, data):
         return result
 
 
+def pack_datetime(value):
+    epch = datetime_to_win_epoch(value)
+    return uatype_Int64.pack(epch)
+
+
+def unpack_datetime(data):
+    epch = uatype_Int64.unpack(data.read(8))[0]
+    return win_epoch_to_datetime(epch)
+
+
 def pack_string(string):
     if type(string) is unicode:
         string = string.encode('utf-8')
@@ -189,11 +200,15 @@ def unpack_bytes(data):
     return data.read(length)
 
 
-def unpack_string(data):
+def py3_unpack_string(data):
     b = unpack_bytes(data)
-    if sys.version_info.major < 3:
-        return str(b)
     return b.decode("utf-8")
+
+
+if sys.version_info.major < 3:
+    unpack_string = unpack_bytes
+else:
+    unpack_string = py3_unpack_string
 
 
 def test_bit(data, offset):
@@ -598,9 +613,9 @@ class LocalizedText(object):
             self.Encoding |= (1 << 1)
         packet.append(uatype_UInt8.pack(self.Encoding))
         if self.Locale:
-            packet.append(pack_uatype('CharArray', self.Locale))
+            packet.append(pack_bytes(self.Locale))
         if self.Text:
-            packet.append(pack_uatype('CharArray', self.Text))
+            packet.append(pack_bytes(self.Text))
         return b''.join(packet)
 
     @staticmethod
@@ -608,9 +623,9 @@ class LocalizedText(object):
         obj = LocalizedText()
         obj.Encoding = ord(data.read(1))
         if obj.Encoding & (1 << 0):
-            obj.Locale = unpack_uatype('CharArray', data)
+            obj.Locale = unpack_bytes(data)
         if obj.Encoding & (1 << 1):
-            obj.Text = unpack_uatype('CharArray', data)
+            obj.Text = unpack_bytes(data)
         return obj
 
     def to_string(self):
@@ -850,9 +865,9 @@ class DataValue(object):
         if self.StatusCode:
             packet.append(self.StatusCode.to_binary())
         if self.SourceTimestamp:
-            packet.append(pack_uatype('DateTime', self.SourceTimestamp))  # self.SourceTimestamp.to_binary())
+            packet.append(pack_datetime(self.SourceTimestamp))  # self.SourceTimestamp.to_binary())
         if self.ServerTimestamp:
-            packet.append(pack_uatype('DateTime', self.ServerTimestamp))  # self.ServerTimestamp.to_binary())
+            packet.append(pack_datetime(self.ServerTimestamp))  # self.ServerTimestamp.to_binary())
         if self.SourcePicoseconds:
             packet.append(uatype_UInt16.pack(self.SourcePicoseconds))
         if self.ServerPicoseconds:
@@ -873,13 +888,13 @@ class DataValue(object):
         obj = DataValue(value, status)
         obj.Encoding = encoding
         if obj.Encoding & (1 << 2):
-            obj.SourceTimestamp = unpack_uatype('DateTime', data)  # DateTime.from_binary(data)
+            obj.SourceTimestamp = unpack_datetime(data)  # DateTime.from_binary(data)
         if obj.Encoding & (1 << 3):
-            obj.ServerTimestamp = unpack_uatype('DateTime', data)  # DateTime.from_binary(data)
+            obj.ServerTimestamp = unpack_datetime(data)  # DateTime.from_binary(data)
         if obj.Encoding & (1 << 4):
-            obj.SourcePicoseconds = uatype_UInt16.unpack('UInt16', data.read(2))[0]
+            obj.SourcePicoseconds = uatype_UInt16.unpack(data.read(2))[0]
         if obj.Encoding & (1 << 5):
-            obj.ServerPicoseconds = uatype_UInt16.unpack('UInt16', data.read(2))[0]
+            obj.ServerPicoseconds = uatype_UInt16.unpack(data.read(2))[0]
         return obj
 
     def __str__(self):

@@ -287,6 +287,15 @@ class CodeGenerator(object):
             size = 4
         elif uatype in ("Int64", "UInt64", "Double"):
             size = 8
+        elif uatype == "String":
+            self.write("self.{} = unpack_string(data)".format(name))
+            return
+        elif uatype in ("CharArray", "ByteString"):
+            self.write("self.{} = unpack_bytes(data)".format(name))
+            return
+        elif uatype == "DateTime":
+            self.write("self.{} = unpack_datetime(data)".format(name))
+            return
         else:
             self.write("self.{} = unpack_uatype('{}', data)".format(name, uatype))
             return
@@ -300,6 +309,16 @@ class CodeGenerator(object):
             "Int64", "UInt64", "Double"
         ):
             self.write("{}.append(uatype_{}.pack({}))".format(listname, uatype, name))
+            return
+        elif uatype == "String":
+            self.write("{}.append(pack_string({}))".format(listname, name))
+            return
+        elif uatype in ("CharArray", "ByteString"):
+            self.write("{}.append(pack_bytes({}))".format(listname, name))
+            return
+        elif uatype == "DateTime":
+            self.write("{}.append(pack_datetime({}))".format(listname, name))
+            return
         else:
             self.write("{}.append(pack_uatype('{}', {}))".format(listname, uatype, name))
             return

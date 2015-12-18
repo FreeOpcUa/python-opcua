@@ -824,7 +824,7 @@ class DiagnosticInfo(object):
         if self.LocalizedText:
             packet.append(uatype_Int32.pack(self.LocalizedText))
         if self.AdditionalInfo:
-            packet.append(pack_uatype('CharArray', self.AdditionalInfo))
+            packet.append(pack_bytes(self.AdditionalInfo))
         if self.InnerStatusCode:
             packet.append(self.InnerStatusCode.to_binary())
         if self.InnerDiagnosticInfo:
@@ -854,7 +854,7 @@ class DiagnosticInfo(object):
         else:
             self.LocalizedText = 0
         if self.Encoding & (1 << 4):
-            self.AdditionalInfo = unpack_uatype('CharArray', data)
+            self.AdditionalInfo = unpack_bytes(data)
         else:
             self.AdditionalInfo = b''
         if self.Encoding & (1 << 5):
@@ -916,16 +916,16 @@ class TrustListDataType(object):
         packet.append(uatype_UInt32.pack(self.SpecifiedLists))
         packet.append(uatype_Int32.pack(len(self.TrustedCertificates)))
         for fieldname in self.TrustedCertificates:
-            packet.append(pack_uatype('ByteString', fieldname))
+            packet.append(pack_bytes(fieldname))
         packet.append(uatype_Int32.pack(len(self.TrustedCrls)))
         for fieldname in self.TrustedCrls:
-            packet.append(pack_uatype('ByteString', fieldname))
+            packet.append(pack_bytes(fieldname))
         packet.append(uatype_Int32.pack(len(self.IssuerCertificates)))
         for fieldname in self.IssuerCertificates:
-            packet.append(pack_uatype('ByteString', fieldname))
+            packet.append(pack_bytes(fieldname))
         packet.append(uatype_Int32.pack(len(self.IssuerCrls)))
         for fieldname in self.IssuerCrls:
-            packet.append(pack_uatype('ByteString', fieldname))
+            packet.append(pack_bytes(fieldname))
         return b''.join(packet)
 
     @staticmethod
@@ -985,7 +985,7 @@ class Argument(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.Name))
+        packet.append(pack_string(self.Name))
         packet.append(self.DataType.to_binary())
         packet.append(uatype_Int32.pack(self.ValueRank))
         packet.append(uatype_Int32.pack(len(self.ArrayDimensions)))
@@ -999,7 +999,7 @@ class Argument(object):
         return Argument(data)
 
     def _binary_init(self, data):
-        self.Name = unpack_uatype('String', data)
+        self.Name = unpack_string(data)
         self.DataType = NodeId.from_binary(data)
         self.ValueRank = uatype_Int32.unpack(data.read(4))[0]
         self.ArrayDimensions = unpack_uatype_array('UInt32', data)
@@ -1089,8 +1089,8 @@ class OptionSet(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('ByteString', self.Value))
-        packet.append(pack_uatype('ByteString', self.ValidBits))
+        packet.append(pack_bytes(self.Value))
+        packet.append(pack_bytes(self.ValidBits))
         return b''.join(packet)
 
     @staticmethod
@@ -1098,8 +1098,8 @@ class OptionSet(object):
         return OptionSet(data)
 
     def _binary_init(self, data):
-        self.Value = unpack_uatype('ByteString', data)
-        self.ValidBits = unpack_uatype('ByteString', data)
+        self.Value = unpack_bytes(data)
+        self.ValidBits = unpack_bytes(data)
 
     def __str__(self):
         return 'OptionSet(' + 'Value:' + str(self.Value) + ', ' + \
@@ -1224,15 +1224,15 @@ class ApplicationDescription(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.ApplicationUri))
-        packet.append(pack_uatype('String', self.ProductUri))
+        packet.append(pack_string(self.ApplicationUri))
+        packet.append(pack_string(self.ProductUri))
         packet.append(self.ApplicationName.to_binary())
         packet.append(uatype_UInt32.pack(self.ApplicationType))
-        packet.append(pack_uatype('String', self.GatewayServerUri))
-        packet.append(pack_uatype('String', self.DiscoveryProfileUri))
+        packet.append(pack_string(self.GatewayServerUri))
+        packet.append(pack_string(self.DiscoveryProfileUri))
         packet.append(uatype_Int32.pack(len(self.DiscoveryUrls)))
         for fieldname in self.DiscoveryUrls:
-            packet.append(pack_uatype('String', fieldname))
+            packet.append(pack_string(fieldname))
         return b''.join(packet)
 
     @staticmethod
@@ -1240,12 +1240,12 @@ class ApplicationDescription(object):
         return ApplicationDescription(data)
 
     def _binary_init(self, data):
-        self.ApplicationUri = unpack_uatype('String', data)
-        self.ProductUri = unpack_uatype('String', data)
+        self.ApplicationUri = unpack_string(data)
+        self.ProductUri = unpack_string(data)
         self.ApplicationName = LocalizedText.from_binary(data)
         self.ApplicationType = uatype_UInt32.unpack(data.read(4))[0]
-        self.GatewayServerUri = unpack_uatype('String', data)
-        self.DiscoveryProfileUri = unpack_uatype('String', data)
+        self.GatewayServerUri = unpack_string(data)
+        self.DiscoveryProfileUri = unpack_string(data)
         self.DiscoveryUrls = unpack_uatype_array('String', data)
 
     def __str__(self):
@@ -1305,10 +1305,10 @@ class RequestHeader(object):
     def to_binary(self):
         packet = []
         packet.append(self.AuthenticationToken.to_binary())
-        packet.append(pack_uatype('DateTime', self.Timestamp))
+        packet.append(pack_datetime(self.Timestamp))
         packet.append(uatype_UInt32.pack(self.RequestHandle))
         packet.append(uatype_UInt32.pack(self.ReturnDiagnostics))
-        packet.append(pack_uatype('String', self.AuditEntryId))
+        packet.append(pack_string(self.AuditEntryId))
         packet.append(uatype_UInt32.pack(self.TimeoutHint))
         packet.append(extensionobject_to_binary(self.AdditionalHeader))
         return b''.join(packet)
@@ -1319,10 +1319,10 @@ class RequestHeader(object):
 
     def _binary_init(self, data):
         self.AuthenticationToken = NodeId.from_binary(data)
-        self.Timestamp = unpack_uatype('DateTime', data)
+        self.Timestamp = unpack_datetime(data)
         self.RequestHandle = uatype_UInt32.unpack(data.read(4))[0]
         self.ReturnDiagnostics = uatype_UInt32.unpack(data.read(4))[0]
-        self.AuditEntryId = unpack_uatype('String', data)
+        self.AuditEntryId = unpack_string(data)
         self.TimeoutHint = uatype_UInt32.unpack(data.read(4))[0]
         self.AdditionalHeader = extensionobject_from_binary(data)
 
@@ -1378,13 +1378,13 @@ class ResponseHeader(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('DateTime', self.Timestamp))
+        packet.append(pack_datetime(self.Timestamp))
         packet.append(uatype_UInt32.pack(self.RequestHandle))
         packet.append(self.ServiceResult.to_binary())
         packet.append(self.ServiceDiagnostics.to_binary())
         packet.append(uatype_Int32.pack(len(self.StringTable)))
         for fieldname in self.StringTable:
-            packet.append(pack_uatype('String', fieldname))
+            packet.append(pack_string(fieldname))
         packet.append(extensionobject_to_binary(self.AdditionalHeader))
         return b''.join(packet)
 
@@ -1393,7 +1393,7 @@ class ResponseHeader(object):
         return ResponseHeader(data)
 
     def _binary_init(self, data):
-        self.Timestamp = unpack_uatype('DateTime', data)
+        self.Timestamp = unpack_datetime(data)
         self.RequestHandle = uatype_UInt32.unpack(data.read(4))[0]
         self.ServiceResult = StatusCode.from_binary(data)
         self.ServiceDiagnostics = DiagnosticInfo.from_binary(data)
@@ -1480,13 +1480,13 @@ class FindServersParameters(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.EndpointUrl))
+        packet.append(pack_string(self.EndpointUrl))
         packet.append(uatype_Int32.pack(len(self.LocaleIds)))
         for fieldname in self.LocaleIds:
-            packet.append(pack_uatype('String', fieldname))
+            packet.append(pack_string(fieldname))
         packet.append(uatype_Int32.pack(len(self.ServerUris)))
         for fieldname in self.ServerUris:
-            packet.append(pack_uatype('String', fieldname))
+            packet.append(pack_string(fieldname))
         return b''.join(packet)
 
     @staticmethod
@@ -1494,7 +1494,7 @@ class FindServersParameters(object):
         return FindServersParameters(data)
 
     def _binary_init(self, data):
-        self.EndpointUrl = unpack_uatype('String', data)
+        self.EndpointUrl = unpack_string(data)
         self.LocaleIds = unpack_uatype_array('String', data)
         self.ServerUris = unpack_uatype_array('String', data)
 
@@ -1644,11 +1644,11 @@ class ServerOnNetwork(object):
     def to_binary(self):
         packet = []
         packet.append(uatype_UInt32.pack(self.RecordId))
-        packet.append(pack_uatype('String', self.ServerName))
-        packet.append(pack_uatype('String', self.DiscoveryUrl))
+        packet.append(pack_string(self.ServerName))
+        packet.append(pack_string(self.DiscoveryUrl))
         packet.append(uatype_Int32.pack(len(self.ServerCapabilities)))
         for fieldname in self.ServerCapabilities:
-            packet.append(pack_uatype('String', fieldname))
+            packet.append(pack_string(fieldname))
         return b''.join(packet)
 
     @staticmethod
@@ -1657,8 +1657,8 @@ class ServerOnNetwork(object):
 
     def _binary_init(self, data):
         self.RecordId = uatype_UInt32.unpack(data.read(4))[0]
-        self.ServerName = unpack_uatype('String', data)
-        self.DiscoveryUrl = unpack_uatype('String', data)
+        self.ServerName = unpack_string(data)
+        self.DiscoveryUrl = unpack_string(data)
         self.ServerCapabilities = unpack_uatype_array('String', data)
 
     def __str__(self):
@@ -1700,7 +1700,7 @@ class FindServersOnNetworkParameters(object):
         packet.append(uatype_UInt32.pack(self.MaxRecordsToReturn))
         packet.append(uatype_Int32.pack(len(self.ServerCapabilityFilter)))
         for fieldname in self.ServerCapabilityFilter:
-            packet.append(pack_uatype('String', fieldname))
+            packet.append(pack_string(fieldname))
         return b''.join(packet)
 
     @staticmethod
@@ -1790,7 +1790,7 @@ class FindServersOnNetworkResult(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('DateTime', self.LastCounterResetTime))
+        packet.append(pack_datetime(self.LastCounterResetTime))
         packet.append(uatype_Int32.pack(len(self.Servers)))
         for fieldname in self.Servers:
             packet.append(fieldname.to_binary())
@@ -1801,7 +1801,7 @@ class FindServersOnNetworkResult(object):
         return FindServersOnNetworkResult(data)
 
     def _binary_init(self, data):
-        self.LastCounterResetTime = unpack_uatype('DateTime', data)
+        self.LastCounterResetTime = unpack_datetime(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -1900,11 +1900,11 @@ class UserTokenPolicy(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.PolicyId))
+        packet.append(pack_string(self.PolicyId))
         packet.append(uatype_UInt32.pack(self.TokenType))
-        packet.append(pack_uatype('String', self.IssuedTokenType))
-        packet.append(pack_uatype('String', self.IssuerEndpointUrl))
-        packet.append(pack_uatype('String', self.SecurityPolicyUri))
+        packet.append(pack_string(self.IssuedTokenType))
+        packet.append(pack_string(self.IssuerEndpointUrl))
+        packet.append(pack_string(self.SecurityPolicyUri))
         return b''.join(packet)
 
     @staticmethod
@@ -1912,11 +1912,11 @@ class UserTokenPolicy(object):
         return UserTokenPolicy(data)
 
     def _binary_init(self, data):
-        self.PolicyId = unpack_uatype('String', data)
+        self.PolicyId = unpack_string(data)
         self.TokenType = uatype_UInt32.unpack(data.read(4))[0]
-        self.IssuedTokenType = unpack_uatype('String', data)
-        self.IssuerEndpointUrl = unpack_uatype('String', data)
-        self.SecurityPolicyUri = unpack_uatype('String', data)
+        self.IssuedTokenType = unpack_string(data)
+        self.IssuerEndpointUrl = unpack_string(data)
+        self.SecurityPolicyUri = unpack_string(data)
 
     def __str__(self):
         return 'UserTokenPolicy(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
@@ -1976,15 +1976,15 @@ class EndpointDescription(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.EndpointUrl))
+        packet.append(pack_string(self.EndpointUrl))
         packet.append(self.Server.to_binary())
-        packet.append(pack_uatype('ByteString', self.ServerCertificate))
+        packet.append(pack_bytes(self.ServerCertificate))
         packet.append(uatype_UInt32.pack(self.SecurityMode))
-        packet.append(pack_uatype('String', self.SecurityPolicyUri))
+        packet.append(pack_string(self.SecurityPolicyUri))
         packet.append(uatype_Int32.pack(len(self.UserIdentityTokens)))
         for fieldname in self.UserIdentityTokens:
             packet.append(fieldname.to_binary())
-        packet.append(pack_uatype('String', self.TransportProfileUri))
+        packet.append(pack_string(self.TransportProfileUri))
         packet.append(uatype_Byte.pack(self.SecurityLevel))
         return b''.join(packet)
 
@@ -1993,18 +1993,18 @@ class EndpointDescription(object):
         return EndpointDescription(data)
 
     def _binary_init(self, data):
-        self.EndpointUrl = unpack_uatype('String', data)
+        self.EndpointUrl = unpack_string(data)
         self.Server = ApplicationDescription.from_binary(data)
-        self.ServerCertificate = unpack_uatype('ByteString', data)
+        self.ServerCertificate = unpack_bytes(data)
         self.SecurityMode = uatype_UInt32.unpack(data.read(4))[0]
-        self.SecurityPolicyUri = unpack_uatype('String', data)
+        self.SecurityPolicyUri = unpack_string(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
             for _ in range(0, length):
                 array.append(UserTokenPolicy.from_binary(data))
         self.UserIdentityTokens = array
-        self.TransportProfileUri = unpack_uatype('String', data)
+        self.TransportProfileUri = unpack_string(data)
         self.SecurityLevel = uatype_Byte.unpack(data.read(1))[0]
 
     def __str__(self):
@@ -2046,13 +2046,13 @@ class GetEndpointsParameters(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.EndpointUrl))
+        packet.append(pack_string(self.EndpointUrl))
         packet.append(uatype_Int32.pack(len(self.LocaleIds)))
         for fieldname in self.LocaleIds:
-            packet.append(pack_uatype('String', fieldname))
+            packet.append(pack_string(fieldname))
         packet.append(uatype_Int32.pack(len(self.ProfileUris)))
         for fieldname in self.ProfileUris:
-            packet.append(pack_uatype('String', fieldname))
+            packet.append(pack_string(fieldname))
         return b''.join(packet)
 
     @staticmethod
@@ -2060,7 +2060,7 @@ class GetEndpointsParameters(object):
         return GetEndpointsParameters(data)
 
     def _binary_init(self, data):
-        self.EndpointUrl = unpack_uatype('String', data)
+        self.EndpointUrl = unpack_string(data)
         self.LocaleIds = unpack_uatype_array('String', data)
         self.ProfileUris = unpack_uatype_array('String', data)
 
@@ -2227,17 +2227,17 @@ class RegisteredServer(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.ServerUri))
-        packet.append(pack_uatype('String', self.ProductUri))
+        packet.append(pack_string(self.ServerUri))
+        packet.append(pack_string(self.ProductUri))
         packet.append(uatype_Int32.pack(len(self.ServerNames)))
         for fieldname in self.ServerNames:
             packet.append(fieldname.to_binary())
         packet.append(uatype_UInt32.pack(self.ServerType))
-        packet.append(pack_uatype('String', self.GatewayServerUri))
+        packet.append(pack_string(self.GatewayServerUri))
         packet.append(uatype_Int32.pack(len(self.DiscoveryUrls)))
         for fieldname in self.DiscoveryUrls:
-            packet.append(pack_uatype('String', fieldname))
-        packet.append(pack_uatype('String', self.SemaphoreFilePath))
+            packet.append(pack_string(fieldname))
+        packet.append(pack_string(self.SemaphoreFilePath))
         packet.append(uatype_Boolean.pack(self.IsOnline))
         return b''.join(packet)
 
@@ -2246,8 +2246,8 @@ class RegisteredServer(object):
         return RegisteredServer(data)
 
     def _binary_init(self, data):
-        self.ServerUri = unpack_uatype('String', data)
-        self.ProductUri = unpack_uatype('String', data)
+        self.ServerUri = unpack_string(data)
+        self.ProductUri = unpack_string(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -2255,9 +2255,9 @@ class RegisteredServer(object):
                 array.append(LocalizedText.from_binary(data))
         self.ServerNames = array
         self.ServerType = uatype_UInt32.unpack(data.read(4))[0]
-        self.GatewayServerUri = unpack_uatype('String', data)
+        self.GatewayServerUri = unpack_string(data)
         self.DiscoveryUrls = unpack_uatype_array('String', data)
-        self.SemaphoreFilePath = unpack_uatype('String', data)
+        self.SemaphoreFilePath = unpack_string(data)
         self.IsOnline = uatype_Boolean.unpack(data.read(1))[0]
 
     def __str__(self):
@@ -2455,10 +2455,10 @@ class MdnsDiscoveryConfiguration(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.MdnsServerName))
+        packet.append(pack_string(self.MdnsServerName))
         packet.append(uatype_Int32.pack(len(self.ServerCapabilities)))
         for fieldname in self.ServerCapabilities:
-            packet.append(pack_uatype('String', fieldname))
+            packet.append(pack_string(fieldname))
         return b''.join(packet)
 
     @staticmethod
@@ -2466,7 +2466,7 @@ class MdnsDiscoveryConfiguration(object):
         return MdnsDiscoveryConfiguration(data)
 
     def _binary_init(self, data):
-        self.MdnsServerName = unpack_uatype('String', data)
+        self.MdnsServerName = unpack_string(data)
         self.ServerCapabilities = unpack_uatype_array('String', data)
 
     def __str__(self):
@@ -2709,7 +2709,7 @@ class ChannelSecurityToken(object):
         packet = []
         packet.append(uatype_UInt32.pack(self.ChannelId))
         packet.append(uatype_UInt32.pack(self.TokenId))
-        packet.append(pack_uatype('DateTime', self.CreatedAt))
+        packet.append(pack_datetime(self.CreatedAt))
         packet.append(uatype_UInt32.pack(self.RevisedLifetime))
         return b''.join(packet)
 
@@ -2720,7 +2720,7 @@ class ChannelSecurityToken(object):
     def _binary_init(self, data):
         self.ChannelId = uatype_UInt32.unpack(data.read(4))[0]
         self.TokenId = uatype_UInt32.unpack(data.read(4))[0]
-        self.CreatedAt = unpack_uatype('DateTime', data)
+        self.CreatedAt = unpack_datetime(data)
         self.RevisedLifetime = uatype_UInt32.unpack(data.read(4))[0]
 
     def __str__(self):
@@ -2769,7 +2769,7 @@ class OpenSecureChannelParameters(object):
         packet.append(uatype_UInt32.pack(self.ClientProtocolVersion))
         packet.append(uatype_UInt32.pack(self.RequestType))
         packet.append(uatype_UInt32.pack(self.SecurityMode))
-        packet.append(pack_uatype('ByteString', self.ClientNonce))
+        packet.append(pack_bytes(self.ClientNonce))
         packet.append(uatype_UInt32.pack(self.RequestedLifetime))
         return b''.join(packet)
 
@@ -2781,7 +2781,7 @@ class OpenSecureChannelParameters(object):
         self.ClientProtocolVersion = uatype_UInt32.unpack(data.read(4))[0]
         self.RequestType = uatype_UInt32.unpack(data.read(4))[0]
         self.SecurityMode = uatype_UInt32.unpack(data.read(4))[0]
-        self.ClientNonce = unpack_uatype('ByteString', data)
+        self.ClientNonce = unpack_bytes(data)
         self.RequestedLifetime = uatype_UInt32.unpack(data.read(4))[0]
 
     def __str__(self):
@@ -2872,7 +2872,7 @@ class OpenSecureChannelResult(object):
         packet = []
         packet.append(uatype_UInt32.pack(self.ServerProtocolVersion))
         packet.append(self.SecurityToken.to_binary())
-        packet.append(pack_uatype('ByteString', self.ServerNonce))
+        packet.append(pack_bytes(self.ServerNonce))
         return b''.join(packet)
 
     @staticmethod
@@ -2882,7 +2882,7 @@ class OpenSecureChannelResult(object):
     def _binary_init(self, data):
         self.ServerProtocolVersion = uatype_UInt32.unpack(data.read(4))[0]
         self.SecurityToken = ChannelSecurityToken.from_binary(data)
-        self.ServerNonce = unpack_uatype('ByteString', data)
+        self.ServerNonce = unpack_bytes(data)
 
     def __str__(self):
         return 'OpenSecureChannelResult(' + 'ServerProtocolVersion:' + str(self.ServerProtocolVersion) + ', ' + \
@@ -3052,8 +3052,8 @@ class SignedSoftwareCertificate(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('ByteString', self.CertificateData))
-        packet.append(pack_uatype('ByteString', self.Signature))
+        packet.append(pack_bytes(self.CertificateData))
+        packet.append(pack_bytes(self.Signature))
         return b''.join(packet)
 
     @staticmethod
@@ -3061,8 +3061,8 @@ class SignedSoftwareCertificate(object):
         return SignedSoftwareCertificate(data)
 
     def _binary_init(self, data):
-        self.CertificateData = unpack_uatype('ByteString', data)
-        self.Signature = unpack_uatype('ByteString', data)
+        self.CertificateData = unpack_bytes(data)
+        self.Signature = unpack_bytes(data)
 
     def __str__(self):
         return 'SignedSoftwareCertificate(' + 'CertificateData:' + str(self.CertificateData) + ', ' + \
@@ -3095,8 +3095,8 @@ class SignatureData(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.Algorithm))
-        packet.append(pack_uatype('ByteString', self.Signature))
+        packet.append(pack_string(self.Algorithm))
+        packet.append(pack_bytes(self.Signature))
         return b''.join(packet)
 
     @staticmethod
@@ -3104,8 +3104,8 @@ class SignatureData(object):
         return SignatureData(data)
 
     def _binary_init(self, data):
-        self.Algorithm = unpack_uatype('String', data)
-        self.Signature = unpack_uatype('ByteString', data)
+        self.Algorithm = unpack_string(data)
+        self.Signature = unpack_bytes(data)
 
     def __str__(self):
         return 'SignatureData(' + 'Algorithm:' + str(self.Algorithm) + ', ' + \
@@ -3161,11 +3161,11 @@ class CreateSessionParameters(object):
     def to_binary(self):
         packet = []
         packet.append(self.ClientDescription.to_binary())
-        packet.append(pack_uatype('String', self.ServerUri))
-        packet.append(pack_uatype('String', self.EndpointUrl))
-        packet.append(pack_uatype('String', self.SessionName))
-        packet.append(pack_uatype('ByteString', self.ClientNonce))
-        packet.append(pack_uatype('ByteString', self.ClientCertificate))
+        packet.append(pack_string(self.ServerUri))
+        packet.append(pack_string(self.EndpointUrl))
+        packet.append(pack_string(self.SessionName))
+        packet.append(pack_bytes(self.ClientNonce))
+        packet.append(pack_bytes(self.ClientCertificate))
         packet.append(uatype_Double.pack(self.RequestedSessionTimeout))
         packet.append(uatype_UInt32.pack(self.MaxResponseMessageSize))
         return b''.join(packet)
@@ -3176,11 +3176,11 @@ class CreateSessionParameters(object):
 
     def _binary_init(self, data):
         self.ClientDescription = ApplicationDescription.from_binary(data)
-        self.ServerUri = unpack_uatype('String', data)
-        self.EndpointUrl = unpack_uatype('String', data)
-        self.SessionName = unpack_uatype('String', data)
-        self.ClientNonce = unpack_uatype('ByteString', data)
-        self.ClientCertificate = unpack_uatype('ByteString', data)
+        self.ServerUri = unpack_string(data)
+        self.EndpointUrl = unpack_string(data)
+        self.SessionName = unpack_string(data)
+        self.ClientNonce = unpack_bytes(data)
+        self.ClientCertificate = unpack_bytes(data)
         self.RequestedSessionTimeout = uatype_Double.unpack(data.read(8))[0]
         self.MaxResponseMessageSize = uatype_UInt32.unpack(data.read(4))[0]
 
@@ -3300,8 +3300,8 @@ class CreateSessionResult(object):
         packet.append(self.SessionId.to_binary())
         packet.append(self.AuthenticationToken.to_binary())
         packet.append(uatype_Double.pack(self.RevisedSessionTimeout))
-        packet.append(pack_uatype('ByteString', self.ServerNonce))
-        packet.append(pack_uatype('ByteString', self.ServerCertificate))
+        packet.append(pack_bytes(self.ServerNonce))
+        packet.append(pack_bytes(self.ServerCertificate))
         packet.append(uatype_Int32.pack(len(self.ServerEndpoints)))
         for fieldname in self.ServerEndpoints:
             packet.append(fieldname.to_binary())
@@ -3320,8 +3320,8 @@ class CreateSessionResult(object):
         self.SessionId = NodeId.from_binary(data)
         self.AuthenticationToken = NodeId.from_binary(data)
         self.RevisedSessionTimeout = uatype_Double.unpack(data.read(8))[0]
-        self.ServerNonce = unpack_uatype('ByteString', data)
-        self.ServerCertificate = unpack_uatype('ByteString', data)
+        self.ServerNonce = unpack_bytes(data)
+        self.ServerCertificate = unpack_bytes(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -3421,7 +3421,7 @@ class UserIdentityToken(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.PolicyId))
+        packet.append(pack_string(self.PolicyId))
         return b''.join(packet)
 
     @staticmethod
@@ -3429,7 +3429,7 @@ class UserIdentityToken(object):
         return UserIdentityToken(data)
 
     def _binary_init(self, data):
-        self.PolicyId = unpack_uatype('String', data)
+        self.PolicyId = unpack_string(data)
 
     def __str__(self):
         return 'UserIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ')'
@@ -3457,7 +3457,7 @@ class AnonymousIdentityToken(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.PolicyId))
+        packet.append(pack_string(self.PolicyId))
         return b''.join(packet)
 
     @staticmethod
@@ -3465,7 +3465,7 @@ class AnonymousIdentityToken(object):
         return AnonymousIdentityToken(data)
 
     def _binary_init(self, data):
-        self.PolicyId = unpack_uatype('String', data)
+        self.PolicyId = unpack_string(data)
 
     def __str__(self):
         return 'AnonymousIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ')'
@@ -3505,10 +3505,10 @@ class UserNameIdentityToken(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.PolicyId))
-        packet.append(pack_uatype('String', self.UserName))
-        packet.append(pack_uatype('ByteString', self.Password))
-        packet.append(pack_uatype('String', self.EncryptionAlgorithm))
+        packet.append(pack_string(self.PolicyId))
+        packet.append(pack_string(self.UserName))
+        packet.append(pack_bytes(self.Password))
+        packet.append(pack_string(self.EncryptionAlgorithm))
         return b''.join(packet)
 
     @staticmethod
@@ -3516,10 +3516,10 @@ class UserNameIdentityToken(object):
         return UserNameIdentityToken(data)
 
     def _binary_init(self, data):
-        self.PolicyId = unpack_uatype('String', data)
-        self.UserName = unpack_uatype('String', data)
-        self.Password = unpack_uatype('ByteString', data)
-        self.EncryptionAlgorithm = unpack_uatype('String', data)
+        self.PolicyId = unpack_string(data)
+        self.UserName = unpack_string(data)
+        self.Password = unpack_bytes(data)
+        self.EncryptionAlgorithm = unpack_string(data)
 
     def __str__(self):
         return 'UserNameIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
@@ -3554,8 +3554,8 @@ class X509IdentityToken(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.PolicyId))
-        packet.append(pack_uatype('ByteString', self.CertificateData))
+        packet.append(pack_string(self.PolicyId))
+        packet.append(pack_bytes(self.CertificateData))
         return b''.join(packet)
 
     @staticmethod
@@ -3563,8 +3563,8 @@ class X509IdentityToken(object):
         return X509IdentityToken(data)
 
     def _binary_init(self, data):
-        self.PolicyId = unpack_uatype('String', data)
-        self.CertificateData = unpack_uatype('ByteString', data)
+        self.PolicyId = unpack_string(data)
+        self.CertificateData = unpack_bytes(data)
 
     def __str__(self):
         return 'X509IdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
@@ -3595,8 +3595,8 @@ class KerberosIdentityToken(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.PolicyId))
-        packet.append(pack_uatype('ByteString', self.TicketData))
+        packet.append(pack_string(self.PolicyId))
+        packet.append(pack_bytes(self.TicketData))
         return b''.join(packet)
 
     @staticmethod
@@ -3604,8 +3604,8 @@ class KerberosIdentityToken(object):
         return KerberosIdentityToken(data)
 
     def _binary_init(self, data):
-        self.PolicyId = unpack_uatype('String', data)
-        self.TicketData = unpack_uatype('ByteString', data)
+        self.PolicyId = unpack_string(data)
+        self.TicketData = unpack_bytes(data)
 
     def __str__(self):
         return 'KerberosIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
@@ -3642,9 +3642,9 @@ class IssuedIdentityToken(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.PolicyId))
-        packet.append(pack_uatype('ByteString', self.TokenData))
-        packet.append(pack_uatype('String', self.EncryptionAlgorithm))
+        packet.append(pack_string(self.PolicyId))
+        packet.append(pack_bytes(self.TokenData))
+        packet.append(pack_string(self.EncryptionAlgorithm))
         return b''.join(packet)
 
     @staticmethod
@@ -3652,9 +3652,9 @@ class IssuedIdentityToken(object):
         return IssuedIdentityToken(data)
 
     def _binary_init(self, data):
-        self.PolicyId = unpack_uatype('String', data)
-        self.TokenData = unpack_uatype('ByteString', data)
-        self.EncryptionAlgorithm = unpack_uatype('String', data)
+        self.PolicyId = unpack_string(data)
+        self.TokenData = unpack_bytes(data)
+        self.EncryptionAlgorithm = unpack_string(data)
 
     def __str__(self):
         return 'IssuedIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
@@ -3704,7 +3704,7 @@ class ActivateSessionParameters(object):
             packet.append(fieldname.to_binary())
         packet.append(uatype_Int32.pack(len(self.LocaleIds)))
         for fieldname in self.LocaleIds:
-            packet.append(pack_uatype('String', fieldname))
+            packet.append(pack_string(fieldname))
         packet.append(extensionobject_to_binary(self.UserIdentityToken))
         packet.append(self.UserTokenSignature.to_binary())
         return b''.join(packet)
@@ -3811,7 +3811,7 @@ class ActivateSessionResult(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('ByteString', self.ServerNonce))
+        packet.append(pack_bytes(self.ServerNonce))
         packet.append(uatype_Int32.pack(len(self.Results)))
         for fieldname in self.Results:
             packet.append(fieldname.to_binary())
@@ -3825,7 +3825,7 @@ class ActivateSessionResult(object):
         return ActivateSessionResult(data)
 
     def _binary_init(self, data):
-        self.ServerNonce = unpack_uatype('ByteString', data)
+        self.ServerNonce = unpack_bytes(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -5225,7 +5225,7 @@ class AddReferencesItem(object):
         packet.append(self.SourceNodeId.to_binary())
         packet.append(self.ReferenceTypeId.to_binary())
         packet.append(uatype_Boolean.pack(self.IsForward))
-        packet.append(pack_uatype('String', self.TargetServerUri))
+        packet.append(pack_string(self.TargetServerUri))
         packet.append(self.TargetNodeId.to_binary())
         packet.append(uatype_UInt32.pack(self.TargetNodeClass))
         return b''.join(packet)
@@ -5238,7 +5238,7 @@ class AddReferencesItem(object):
         self.SourceNodeId = NodeId.from_binary(data)
         self.ReferenceTypeId = NodeId.from_binary(data)
         self.IsForward = uatype_Boolean.unpack(data.read(1))[0]
-        self.TargetServerUri = unpack_uatype('String', data)
+        self.TargetServerUri = unpack_string(data)
         self.TargetNodeId = ExpandedNodeId.from_binary(data)
         self.TargetNodeClass = uatype_UInt32.unpack(data.read(4))[0]
 
@@ -5909,7 +5909,7 @@ class ViewDescription(object):
     def to_binary(self):
         packet = []
         packet.append(self.ViewId.to_binary())
-        packet.append(pack_uatype('DateTime', self.Timestamp))
+        packet.append(pack_datetime(self.Timestamp))
         packet.append(uatype_UInt32.pack(self.ViewVersion))
         return b''.join(packet)
 
@@ -5919,7 +5919,7 @@ class ViewDescription(object):
 
     def _binary_init(self, data):
         self.ViewId = NodeId.from_binary(data)
-        self.Timestamp = unpack_uatype('DateTime', data)
+        self.Timestamp = unpack_datetime(data)
         self.ViewVersion = uatype_UInt32.unpack(data.read(4))[0]
 
     def __str__(self):
@@ -6108,7 +6108,7 @@ class BrowseResult(object):
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
-        packet.append(pack_uatype('ByteString', self.ContinuationPoint))
+        packet.append(pack_bytes(self.ContinuationPoint))
         packet.append(uatype_Int32.pack(len(self.References)))
         for fieldname in self.References:
             packet.append(fieldname.to_binary())
@@ -6120,7 +6120,7 @@ class BrowseResult(object):
 
     def _binary_init(self, data):
         self.StatusCode = StatusCode.from_binary(data)
-        self.ContinuationPoint = unpack_uatype('ByteString', data)
+        self.ContinuationPoint = unpack_bytes(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -6337,7 +6337,7 @@ class BrowseNextParameters(object):
         packet.append(uatype_Boolean.pack(self.ReleaseContinuationPoints))
         packet.append(uatype_Int32.pack(len(self.ContinuationPoints)))
         for fieldname in self.ContinuationPoints:
-            packet.append(pack_uatype('ByteString', fieldname))
+            packet.append(pack_bytes(fieldname))
         return b''.join(packet)
 
     @staticmethod
@@ -7352,14 +7352,14 @@ class SupportedProfile(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.OrganizationUri))
-        packet.append(pack_uatype('String', self.ProfileId))
-        packet.append(pack_uatype('String', self.ComplianceTool))
-        packet.append(pack_uatype('DateTime', self.ComplianceDate))
+        packet.append(pack_string(self.OrganizationUri))
+        packet.append(pack_string(self.ProfileId))
+        packet.append(pack_string(self.ComplianceTool))
+        packet.append(pack_datetime(self.ComplianceDate))
         packet.append(uatype_UInt32.pack(self.ComplianceLevel))
         packet.append(uatype_Int32.pack(len(self.UnsupportedUnitIds)))
         for fieldname in self.UnsupportedUnitIds:
-            packet.append(pack_uatype('String', fieldname))
+            packet.append(pack_string(fieldname))
         return b''.join(packet)
 
     @staticmethod
@@ -7367,10 +7367,10 @@ class SupportedProfile(object):
         return SupportedProfile(data)
 
     def _binary_init(self, data):
-        self.OrganizationUri = unpack_uatype('String', data)
-        self.ProfileId = unpack_uatype('String', data)
-        self.ComplianceTool = unpack_uatype('String', data)
-        self.ComplianceDate = unpack_uatype('DateTime', data)
+        self.OrganizationUri = unpack_string(data)
+        self.ProfileId = unpack_string(data)
+        self.ComplianceTool = unpack_string(data)
+        self.ComplianceDate = unpack_datetime(data)
         self.ComplianceLevel = uatype_UInt32.unpack(data.read(4))[0]
         self.UnsupportedUnitIds = unpack_uatype_array('String', data)
 
@@ -7439,15 +7439,15 @@ class SoftwareCertificate(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.ProductName))
-        packet.append(pack_uatype('String', self.ProductUri))
-        packet.append(pack_uatype('String', self.VendorName))
-        packet.append(pack_uatype('ByteString', self.VendorProductCertificate))
-        packet.append(pack_uatype('String', self.SoftwareVersion))
-        packet.append(pack_uatype('String', self.BuildNumber))
-        packet.append(pack_uatype('DateTime', self.BuildDate))
-        packet.append(pack_uatype('String', self.IssuedBy))
-        packet.append(pack_uatype('DateTime', self.IssueDate))
+        packet.append(pack_string(self.ProductName))
+        packet.append(pack_string(self.ProductUri))
+        packet.append(pack_string(self.VendorName))
+        packet.append(pack_bytes(self.VendorProductCertificate))
+        packet.append(pack_string(self.SoftwareVersion))
+        packet.append(pack_string(self.BuildNumber))
+        packet.append(pack_datetime(self.BuildDate))
+        packet.append(pack_string(self.IssuedBy))
+        packet.append(pack_datetime(self.IssueDate))
         packet.append(uatype_Int32.pack(len(self.SupportedProfiles)))
         for fieldname in self.SupportedProfiles:
             packet.append(fieldname.to_binary())
@@ -7458,15 +7458,15 @@ class SoftwareCertificate(object):
         return SoftwareCertificate(data)
 
     def _binary_init(self, data):
-        self.ProductName = unpack_uatype('String', data)
-        self.ProductUri = unpack_uatype('String', data)
-        self.VendorName = unpack_uatype('String', data)
-        self.VendorProductCertificate = unpack_uatype('ByteString', data)
-        self.SoftwareVersion = unpack_uatype('String', data)
-        self.BuildNumber = unpack_uatype('String', data)
-        self.BuildDate = unpack_uatype('DateTime', data)
-        self.IssuedBy = unpack_uatype('String', data)
-        self.IssueDate = unpack_uatype('DateTime', data)
+        self.ProductName = unpack_string(data)
+        self.ProductUri = unpack_string(data)
+        self.VendorName = unpack_string(data)
+        self.VendorProductCertificate = unpack_bytes(data)
+        self.SoftwareVersion = unpack_string(data)
+        self.BuildNumber = unpack_string(data)
+        self.BuildDate = unpack_datetime(data)
+        self.IssuedBy = unpack_string(data)
+        self.IssueDate = unpack_datetime(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -7517,7 +7517,7 @@ class QueryDataDescription(object):
         packet = []
         packet.append(self.RelativePath.to_binary())
         packet.append(uatype_UInt32.pack(self.AttributeId))
-        packet.append(pack_uatype('String', self.IndexRange))
+        packet.append(pack_string(self.IndexRange))
         return b''.join(packet)
 
     @staticmethod
@@ -7527,7 +7527,7 @@ class QueryDataDescription(object):
     def _binary_init(self, data):
         self.RelativePath = RelativePath.from_binary(data)
         self.AttributeId = uatype_UInt32.unpack(data.read(4))[0]
-        self.IndexRange = unpack_uatype('String', data)
+        self.IndexRange = unpack_string(data)
 
     def __str__(self):
         return 'QueryDataDescription(' + 'RelativePath:' + str(self.RelativePath) + ', ' + \
@@ -7901,10 +7901,10 @@ class AttributeOperand(object):
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
-        packet.append(pack_uatype('String', self.Alias))
+        packet.append(pack_string(self.Alias))
         packet.append(self.BrowsePath.to_binary())
         packet.append(uatype_UInt32.pack(self.AttributeId))
-        packet.append(pack_uatype('String', self.IndexRange))
+        packet.append(pack_string(self.IndexRange))
         return b''.join(packet)
 
     @staticmethod
@@ -7913,10 +7913,10 @@ class AttributeOperand(object):
 
     def _binary_init(self, data):
         self.NodeId = NodeId.from_binary(data)
-        self.Alias = unpack_uatype('String', data)
+        self.Alias = unpack_string(data)
         self.BrowsePath = RelativePath.from_binary(data)
         self.AttributeId = uatype_UInt32.unpack(data.read(4))[0]
-        self.IndexRange = unpack_uatype('String', data)
+        self.IndexRange = unpack_string(data)
 
     def __str__(self):
         return 'AttributeOperand(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -7963,7 +7963,7 @@ class SimpleAttributeOperand(object):
         for fieldname in self.BrowsePath:
             packet.append(fieldname.to_binary())
         packet.append(uatype_UInt32.pack(self.AttributeId))
-        packet.append(pack_uatype('String', self.IndexRange))
+        packet.append(pack_string(self.IndexRange))
         return b''.join(packet)
 
     @staticmethod
@@ -7979,7 +7979,7 @@ class SimpleAttributeOperand(object):
                 array.append(QualifiedName.from_binary(data))
         self.BrowsePath = array
         self.AttributeId = uatype_UInt32.unpack(data.read(4))[0]
-        self.IndexRange = unpack_uatype('String', data)
+        self.IndexRange = unpack_string(data)
 
     def __str__(self):
         return 'SimpleAttributeOperand(' + 'TypeDefinitionId:' + str(self.TypeDefinitionId) + ', ' + \
@@ -8323,7 +8323,7 @@ class QueryFirstResult(object):
         packet.append(uatype_Int32.pack(len(self.QueryDataSets)))
         for fieldname in self.QueryDataSets:
             packet.append(fieldname.to_binary())
-        packet.append(pack_uatype('ByteString', self.ContinuationPoint))
+        packet.append(pack_bytes(self.ContinuationPoint))
         packet.append(uatype_Int32.pack(len(self.ParsingResults)))
         for fieldname in self.ParsingResults:
             packet.append(fieldname.to_binary())
@@ -8344,7 +8344,7 @@ class QueryFirstResult(object):
             for _ in range(0, length):
                 array.append(QueryDataSet.from_binary(data))
         self.QueryDataSets = array
-        self.ContinuationPoint = unpack_uatype('ByteString', data)
+        self.ContinuationPoint = unpack_bytes(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -8440,7 +8440,7 @@ class QueryNextParameters(object):
     def to_binary(self):
         packet = []
         packet.append(uatype_Boolean.pack(self.ReleaseContinuationPoint))
-        packet.append(pack_uatype('ByteString', self.ContinuationPoint))
+        packet.append(pack_bytes(self.ContinuationPoint))
         return b''.join(packet)
 
     @staticmethod
@@ -8449,7 +8449,7 @@ class QueryNextParameters(object):
 
     def _binary_init(self, data):
         self.ReleaseContinuationPoint = uatype_Boolean.unpack(data.read(1))[0]
-        self.ContinuationPoint = unpack_uatype('ByteString', data)
+        self.ContinuationPoint = unpack_bytes(data)
 
     def __str__(self):
         return 'QueryNextParameters(' + 'ReleaseContinuationPoint:' + str(self.ReleaseContinuationPoint) + ', ' + \
@@ -8531,7 +8531,7 @@ class QueryNextResult(object):
         packet.append(uatype_Int32.pack(len(self.QueryDataSets)))
         for fieldname in self.QueryDataSets:
             packet.append(fieldname.to_binary())
-        packet.append(pack_uatype('ByteString', self.RevisedContinuationPoint))
+        packet.append(pack_bytes(self.RevisedContinuationPoint))
         return b''.join(packet)
 
     @staticmethod
@@ -8545,7 +8545,7 @@ class QueryNextResult(object):
             for _ in range(0, length):
                 array.append(QueryDataSet.from_binary(data))
         self.QueryDataSets = array
-        self.RevisedContinuationPoint = unpack_uatype('ByteString', data)
+        self.RevisedContinuationPoint = unpack_bytes(data)
 
     def __str__(self):
         return 'QueryNextResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', ' + \
@@ -8634,7 +8634,7 @@ class ReadValueId(object):
         packet = []
         packet.append(self.NodeId.to_binary())
         packet.append(uatype_UInt32.pack(self.AttributeId))
-        packet.append(pack_uatype('String', self.IndexRange))
+        packet.append(pack_string(self.IndexRange))
         packet.append(self.DataEncoding.to_binary())
         return b''.join(packet)
 
@@ -8645,7 +8645,7 @@ class ReadValueId(object):
     def _binary_init(self, data):
         self.NodeId = NodeId.from_binary(data)
         self.AttributeId = uatype_UInt32.unpack(data.read(4))[0]
-        self.IndexRange = unpack_uatype('String', data)
+        self.IndexRange = unpack_string(data)
         self.DataEncoding = QualifiedName.from_binary(data)
 
     def __str__(self):
@@ -8860,9 +8860,9 @@ class HistoryReadValueId(object):
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
-        packet.append(pack_uatype('String', self.IndexRange))
+        packet.append(pack_string(self.IndexRange))
         packet.append(self.DataEncoding.to_binary())
-        packet.append(pack_uatype('ByteString', self.ContinuationPoint))
+        packet.append(pack_bytes(self.ContinuationPoint))
         return b''.join(packet)
 
     @staticmethod
@@ -8871,9 +8871,9 @@ class HistoryReadValueId(object):
 
     def _binary_init(self, data):
         self.NodeId = NodeId.from_binary(data)
-        self.IndexRange = unpack_uatype('String', data)
+        self.IndexRange = unpack_string(data)
         self.DataEncoding = QualifiedName.from_binary(data)
-        self.ContinuationPoint = unpack_uatype('ByteString', data)
+        self.ContinuationPoint = unpack_bytes(data)
 
     def __str__(self):
         return 'HistoryReadValueId(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -8911,7 +8911,7 @@ class HistoryReadResult(object):
     def to_binary(self):
         packet = []
         packet.append(self.StatusCode.to_binary())
-        packet.append(pack_uatype('ByteString', self.ContinuationPoint))
+        packet.append(pack_bytes(self.ContinuationPoint))
         packet.append(extensionobject_to_binary(self.HistoryData))
         return b''.join(packet)
 
@@ -8921,7 +8921,7 @@ class HistoryReadResult(object):
 
     def _binary_init(self, data):
         self.StatusCode = StatusCode.from_binary(data)
-        self.ContinuationPoint = unpack_uatype('ByteString', data)
+        self.ContinuationPoint = unpack_bytes(data)
         self.HistoryData = extensionobject_from_binary(data)
 
     def __str__(self):
@@ -8992,8 +8992,8 @@ class ReadEventDetails(object):
     def to_binary(self):
         packet = []
         packet.append(uatype_UInt32.pack(self.NumValuesPerNode))
-        packet.append(pack_uatype('DateTime', self.StartTime))
-        packet.append(pack_uatype('DateTime', self.EndTime))
+        packet.append(pack_datetime(self.StartTime))
+        packet.append(pack_datetime(self.EndTime))
         packet.append(self.Filter.to_binary())
         return b''.join(packet)
 
@@ -9003,8 +9003,8 @@ class ReadEventDetails(object):
 
     def _binary_init(self, data):
         self.NumValuesPerNode = uatype_UInt32.unpack(data.read(4))[0]
-        self.StartTime = unpack_uatype('DateTime', data)
-        self.EndTime = unpack_uatype('DateTime', data)
+        self.StartTime = unpack_datetime(data)
+        self.EndTime = unpack_datetime(data)
         self.Filter = EventFilter.from_binary(data)
 
     def __str__(self):
@@ -9051,8 +9051,8 @@ class ReadRawModifiedDetails(object):
     def to_binary(self):
         packet = []
         packet.append(uatype_Boolean.pack(self.IsReadModified))
-        packet.append(pack_uatype('DateTime', self.StartTime))
-        packet.append(pack_uatype('DateTime', self.EndTime))
+        packet.append(pack_datetime(self.StartTime))
+        packet.append(pack_datetime(self.EndTime))
         packet.append(uatype_UInt32.pack(self.NumValuesPerNode))
         packet.append(uatype_Boolean.pack(self.ReturnBounds))
         return b''.join(packet)
@@ -9063,8 +9063,8 @@ class ReadRawModifiedDetails(object):
 
     def _binary_init(self, data):
         self.IsReadModified = uatype_Boolean.unpack(data.read(1))[0]
-        self.StartTime = unpack_uatype('DateTime', data)
-        self.EndTime = unpack_uatype('DateTime', data)
+        self.StartTime = unpack_datetime(data)
+        self.EndTime = unpack_datetime(data)
         self.NumValuesPerNode = uatype_UInt32.unpack(data.read(4))[0]
         self.ReturnBounds = uatype_Boolean.unpack(data.read(1))[0]
 
@@ -9112,8 +9112,8 @@ class ReadProcessedDetails(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('DateTime', self.StartTime))
-        packet.append(pack_uatype('DateTime', self.EndTime))
+        packet.append(pack_datetime(self.StartTime))
+        packet.append(pack_datetime(self.EndTime))
         packet.append(uatype_Double.pack(self.ProcessingInterval))
         packet.append(uatype_Int32.pack(len(self.AggregateType)))
         for fieldname in self.AggregateType:
@@ -9126,8 +9126,8 @@ class ReadProcessedDetails(object):
         return ReadProcessedDetails(data)
 
     def _binary_init(self, data):
-        self.StartTime = unpack_uatype('DateTime', data)
-        self.EndTime = unpack_uatype('DateTime', data)
+        self.StartTime = unpack_datetime(data)
+        self.EndTime = unpack_datetime(data)
         self.ProcessingInterval = uatype_Double.unpack(data.read(8))[0]
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
@@ -9171,7 +9171,7 @@ class ReadAtTimeDetails(object):
         packet = []
         packet.append(uatype_Int32.pack(len(self.ReqTimes)))
         for fieldname in self.ReqTimes:
-            packet.append(pack_uatype('DateTime', fieldname))
+            packet.append(pack_datetime(fieldname))
         packet.append(uatype_Boolean.pack(self.UseSimpleBounds))
         return b''.join(packet)
 
@@ -9257,9 +9257,9 @@ class ModificationInfo(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('DateTime', self.ModificationTime))
+        packet.append(pack_datetime(self.ModificationTime))
         packet.append(uatype_UInt32.pack(self.UpdateType))
-        packet.append(pack_uatype('String', self.UserName))
+        packet.append(pack_string(self.UserName))
         return b''.join(packet)
 
     @staticmethod
@@ -9267,9 +9267,9 @@ class ModificationInfo(object):
         return ModificationInfo(data)
 
     def _binary_init(self, data):
-        self.ModificationTime = unpack_uatype('DateTime', data)
+        self.ModificationTime = unpack_datetime(data)
         self.UpdateType = uatype_UInt32.unpack(data.read(4))[0]
-        self.UserName = unpack_uatype('String', data)
+        self.UserName = unpack_string(data)
 
     def __str__(self):
         return 'ModificationInfo(' + 'ModificationTime:' + str(self.ModificationTime) + ', ' + \
@@ -9586,7 +9586,7 @@ class WriteValue(object):
         packet = []
         packet.append(self.NodeId.to_binary())
         packet.append(uatype_UInt32.pack(self.AttributeId))
-        packet.append(pack_uatype('String', self.IndexRange))
+        packet.append(pack_string(self.IndexRange))
         packet.append(self.Value.to_binary())
         return b''.join(packet)
 
@@ -9597,7 +9597,7 @@ class WriteValue(object):
     def _binary_init(self, data):
         self.NodeId = NodeId.from_binary(data)
         self.AttributeId = uatype_UInt32.unpack(data.read(4))[0]
-        self.IndexRange = unpack_uatype('String', data)
+        self.IndexRange = unpack_string(data)
         self.Value = DataValue.from_binary(data)
 
     def __str__(self):
@@ -10005,8 +10005,8 @@ class DeleteRawModifiedDetails(object):
         packet = []
         packet.append(self.NodeId.to_binary())
         packet.append(uatype_Boolean.pack(self.IsDeleteModified))
-        packet.append(pack_uatype('DateTime', self.StartTime))
-        packet.append(pack_uatype('DateTime', self.EndTime))
+        packet.append(pack_datetime(self.StartTime))
+        packet.append(pack_datetime(self.EndTime))
         return b''.join(packet)
 
     @staticmethod
@@ -10016,8 +10016,8 @@ class DeleteRawModifiedDetails(object):
     def _binary_init(self, data):
         self.NodeId = NodeId.from_binary(data)
         self.IsDeleteModified = uatype_Boolean.unpack(data.read(1))[0]
-        self.StartTime = unpack_uatype('DateTime', data)
-        self.EndTime = unpack_uatype('DateTime', data)
+        self.StartTime = unpack_datetime(data)
+        self.EndTime = unpack_datetime(data)
 
     def __str__(self):
         return 'DeleteRawModifiedDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -10053,7 +10053,7 @@ class DeleteAtTimeDetails(object):
         packet.append(self.NodeId.to_binary())
         packet.append(uatype_Int32.pack(len(self.ReqTimes)))
         for fieldname in self.ReqTimes:
-            packet.append(pack_uatype('DateTime', fieldname))
+            packet.append(pack_datetime(fieldname))
         return b''.join(packet)
 
     @staticmethod
@@ -10096,7 +10096,7 @@ class DeleteEventDetails(object):
         packet.append(self.NodeId.to_binary())
         packet.append(uatype_Int32.pack(len(self.EventIds)))
         for fieldname in self.EventIds:
-            packet.append(pack_uatype('ByteString', fieldname))
+            packet.append(pack_bytes(fieldname))
         return b''.join(packet)
 
     @staticmethod
@@ -10840,7 +10840,7 @@ class AggregateFilter(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('DateTime', self.StartTime))
+        packet.append(pack_datetime(self.StartTime))
         packet.append(self.AggregateType.to_binary())
         packet.append(uatype_Double.pack(self.ProcessingInterval))
         packet.append(self.AggregateConfiguration.to_binary())
@@ -10851,7 +10851,7 @@ class AggregateFilter(object):
         return AggregateFilter(data)
 
     def _binary_init(self, data):
-        self.StartTime = unpack_uatype('DateTime', data)
+        self.StartTime = unpack_datetime(data)
         self.AggregateType = NodeId.from_binary(data)
         self.ProcessingInterval = uatype_Double.unpack(data.read(8))[0]
         self.AggregateConfiguration = AggregateConfiguration.from_binary(data)
@@ -10982,7 +10982,7 @@ class AggregateFilterResult(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('DateTime', self.RevisedStartTime))
+        packet.append(pack_datetime(self.RevisedStartTime))
         packet.append(uatype_Double.pack(self.RevisedProcessingInterval))
         packet.append(self.RevisedAggregateConfiguration.to_binary())
         return b''.join(packet)
@@ -10992,7 +10992,7 @@ class AggregateFilterResult(object):
         return AggregateFilterResult(data)
 
     def _binary_init(self, data):
-        self.RevisedStartTime = unpack_uatype('DateTime', data)
+        self.RevisedStartTime = unpack_datetime(data)
         self.RevisedProcessingInterval = uatype_Double.unpack(data.read(8))[0]
         self.RevisedAggregateConfiguration = AggregateConfiguration.from_binary(data)
 
@@ -12869,7 +12869,7 @@ class NotificationMessage(object):
     def to_binary(self):
         packet = []
         packet.append(uatype_UInt32.pack(self.SequenceNumber))
-        packet.append(pack_uatype('DateTime', self.PublishTime))
+        packet.append(pack_datetime(self.PublishTime))
         packet.append(uatype_Int32.pack(len(self.NotificationData)))
         for fieldname in self.NotificationData:
             packet.append(extensionobject_to_binary(fieldname))
@@ -12881,7 +12881,7 @@ class NotificationMessage(object):
 
     def _binary_init(self, data):
         self.SequenceNumber = uatype_UInt32.unpack(data.read(4))[0]
-        self.PublishTime = unpack_uatype('DateTime', data)
+        self.PublishTime = unpack_datetime(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -14021,12 +14021,12 @@ class BuildInfo(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.ProductUri))
-        packet.append(pack_uatype('String', self.ManufacturerName))
-        packet.append(pack_uatype('String', self.ProductName))
-        packet.append(pack_uatype('String', self.SoftwareVersion))
-        packet.append(pack_uatype('String', self.BuildNumber))
-        packet.append(pack_uatype('DateTime', self.BuildDate))
+        packet.append(pack_string(self.ProductUri))
+        packet.append(pack_string(self.ManufacturerName))
+        packet.append(pack_string(self.ProductName))
+        packet.append(pack_string(self.SoftwareVersion))
+        packet.append(pack_string(self.BuildNumber))
+        packet.append(pack_datetime(self.BuildDate))
         return b''.join(packet)
 
     @staticmethod
@@ -14034,12 +14034,12 @@ class BuildInfo(object):
         return BuildInfo(data)
 
     def _binary_init(self, data):
-        self.ProductUri = unpack_uatype('String', data)
-        self.ManufacturerName = unpack_uatype('String', data)
-        self.ProductName = unpack_uatype('String', data)
-        self.SoftwareVersion = unpack_uatype('String', data)
-        self.BuildNumber = unpack_uatype('String', data)
-        self.BuildDate = unpack_uatype('DateTime', data)
+        self.ProductUri = unpack_string(data)
+        self.ManufacturerName = unpack_string(data)
+        self.ProductName = unpack_string(data)
+        self.SoftwareVersion = unpack_string(data)
+        self.BuildNumber = unpack_string(data)
+        self.BuildDate = unpack_datetime(data)
 
     def __str__(self):
         return 'BuildInfo(' + 'ProductUri:' + str(self.ProductUri) + ', ' + \
@@ -14078,7 +14078,7 @@ class RedundantServerDataType(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.ServerId))
+        packet.append(pack_string(self.ServerId))
         packet.append(uatype_Byte.pack(self.ServiceLevel))
         packet.append(uatype_UInt32.pack(self.ServerState))
         return b''.join(packet)
@@ -14088,7 +14088,7 @@ class RedundantServerDataType(object):
         return RedundantServerDataType(data)
 
     def _binary_init(self, data):
-        self.ServerId = unpack_uatype('String', data)
+        self.ServerId = unpack_string(data)
         self.ServiceLevel = uatype_Byte.unpack(data.read(1))[0]
         self.ServerState = uatype_UInt32.unpack(data.read(4))[0]
 
@@ -14120,7 +14120,7 @@ class EndpointUrlListDataType(object):
         packet = []
         packet.append(uatype_Int32.pack(len(self.EndpointUrlList)))
         for fieldname in self.EndpointUrlList:
-            packet.append(pack_uatype('String', fieldname))
+            packet.append(pack_string(fieldname))
         return b''.join(packet)
 
     @staticmethod
@@ -14158,7 +14158,7 @@ class NetworkGroupDataType(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.ServerUri))
+        packet.append(pack_string(self.ServerUri))
         packet.append(uatype_Int32.pack(len(self.NetworkPaths)))
         for fieldname in self.NetworkPaths:
             packet.append(fieldname.to_binary())
@@ -14169,7 +14169,7 @@ class NetworkGroupDataType(object):
         return NetworkGroupDataType(data)
 
     def _binary_init(self, data):
-        self.ServerUri = unpack_uatype('String', data)
+        self.ServerUri = unpack_string(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -14388,8 +14388,8 @@ class ServerStatusDataType(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('DateTime', self.StartTime))
-        packet.append(pack_uatype('DateTime', self.CurrentTime))
+        packet.append(pack_datetime(self.StartTime))
+        packet.append(pack_datetime(self.CurrentTime))
         packet.append(uatype_UInt32.pack(self.State))
         packet.append(self.BuildInfo.to_binary())
         packet.append(uatype_UInt32.pack(self.SecondsTillShutdown))
@@ -14401,8 +14401,8 @@ class ServerStatusDataType(object):
         return ServerStatusDataType(data)
 
     def _binary_init(self, data):
-        self.StartTime = unpack_uatype('DateTime', data)
-        self.CurrentTime = unpack_uatype('DateTime', data)
+        self.StartTime = unpack_datetime(data)
+        self.CurrentTime = unpack_datetime(data)
         self.State = uatype_UInt32.unpack(data.read(4))[0]
         self.BuildInfo = BuildInfo.from_binary(data)
         self.SecondsTillShutdown = uatype_UInt32.unpack(data.read(4))[0]
@@ -14606,17 +14606,17 @@ class SessionDiagnosticsDataType(object):
     def to_binary(self):
         packet = []
         packet.append(self.SessionId.to_binary())
-        packet.append(pack_uatype('String', self.SessionName))
+        packet.append(pack_string(self.SessionName))
         packet.append(self.ClientDescription.to_binary())
-        packet.append(pack_uatype('String', self.ServerUri))
-        packet.append(pack_uatype('String', self.EndpointUrl))
+        packet.append(pack_string(self.ServerUri))
+        packet.append(pack_string(self.EndpointUrl))
         packet.append(uatype_Int32.pack(len(self.LocaleIds)))
         for fieldname in self.LocaleIds:
-            packet.append(pack_uatype('String', fieldname))
+            packet.append(pack_string(fieldname))
         packet.append(uatype_Double.pack(self.ActualSessionTimeout))
         packet.append(uatype_UInt32.pack(self.MaxResponseMessageSize))
-        packet.append(pack_uatype('DateTime', self.ClientConnectionTime))
-        packet.append(pack_uatype('DateTime', self.ClientLastContactTime))
+        packet.append(pack_datetime(self.ClientConnectionTime))
+        packet.append(pack_datetime(self.ClientLastContactTime))
         packet.append(uatype_UInt32.pack(self.CurrentSubscriptionsCount))
         packet.append(uatype_UInt32.pack(self.CurrentMonitoredItemsCount))
         packet.append(uatype_UInt32.pack(self.CurrentPublishRequestsInQueue))
@@ -14658,15 +14658,15 @@ class SessionDiagnosticsDataType(object):
 
     def _binary_init(self, data):
         self.SessionId = NodeId.from_binary(data)
-        self.SessionName = unpack_uatype('String', data)
+        self.SessionName = unpack_string(data)
         self.ClientDescription = ApplicationDescription.from_binary(data)
-        self.ServerUri = unpack_uatype('String', data)
-        self.EndpointUrl = unpack_uatype('String', data)
+        self.ServerUri = unpack_string(data)
+        self.EndpointUrl = unpack_string(data)
         self.LocaleIds = unpack_uatype_array('String', data)
         self.ActualSessionTimeout = uatype_Double.unpack(data.read(8))[0]
         self.MaxResponseMessageSize = uatype_UInt32.unpack(data.read(4))[0]
-        self.ClientConnectionTime = unpack_uatype('DateTime', data)
-        self.ClientLastContactTime = unpack_uatype('DateTime', data)
+        self.ClientConnectionTime = unpack_datetime(data)
+        self.ClientLastContactTime = unpack_datetime(data)
         self.CurrentSubscriptionsCount = uatype_UInt32.unpack(data.read(4))[0]
         self.CurrentMonitoredItemsCount = uatype_UInt32.unpack(data.read(4))[0]
         self.CurrentPublishRequestsInQueue = uatype_UInt32.unpack(data.read(4))[0]
@@ -14800,16 +14800,16 @@ class SessionSecurityDiagnosticsDataType(object):
     def to_binary(self):
         packet = []
         packet.append(self.SessionId.to_binary())
-        packet.append(pack_uatype('String', self.ClientUserIdOfSession))
+        packet.append(pack_string(self.ClientUserIdOfSession))
         packet.append(uatype_Int32.pack(len(self.ClientUserIdHistory)))
         for fieldname in self.ClientUserIdHistory:
-            packet.append(pack_uatype('String', fieldname))
-        packet.append(pack_uatype('String', self.AuthenticationMechanism))
-        packet.append(pack_uatype('String', self.Encoding))
-        packet.append(pack_uatype('String', self.TransportProtocol))
+            packet.append(pack_string(fieldname))
+        packet.append(pack_string(self.AuthenticationMechanism))
+        packet.append(pack_string(self.Encoding))
+        packet.append(pack_string(self.TransportProtocol))
         packet.append(uatype_UInt32.pack(self.SecurityMode))
-        packet.append(pack_uatype('String', self.SecurityPolicyUri))
-        packet.append(pack_uatype('ByteString', self.ClientCertificate))
+        packet.append(pack_string(self.SecurityPolicyUri))
+        packet.append(pack_bytes(self.ClientCertificate))
         return b''.join(packet)
 
     @staticmethod
@@ -14818,14 +14818,14 @@ class SessionSecurityDiagnosticsDataType(object):
 
     def _binary_init(self, data):
         self.SessionId = NodeId.from_binary(data)
-        self.ClientUserIdOfSession = unpack_uatype('String', data)
+        self.ClientUserIdOfSession = unpack_string(data)
         self.ClientUserIdHistory = unpack_uatype_array('String', data)
-        self.AuthenticationMechanism = unpack_uatype('String', data)
-        self.Encoding = unpack_uatype('String', data)
-        self.TransportProtocol = unpack_uatype('String', data)
+        self.AuthenticationMechanism = unpack_string(data)
+        self.Encoding = unpack_string(data)
+        self.TransportProtocol = unpack_string(data)
         self.SecurityMode = uatype_UInt32.unpack(data.read(4))[0]
-        self.SecurityPolicyUri = unpack_uatype('String', data)
-        self.ClientCertificate = unpack_uatype('ByteString', data)
+        self.SecurityPolicyUri = unpack_string(data)
+        self.ClientCertificate = unpack_bytes(data)
 
     def __str__(self):
         return 'SessionSecurityDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
@@ -15327,7 +15327,7 @@ class EUInformation(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.NamespaceUri))
+        packet.append(pack_string(self.NamespaceUri))
         packet.append(uatype_Int32.pack(self.UnitId))
         packet.append(self.DisplayName.to_binary())
         packet.append(self.Description.to_binary())
@@ -15338,7 +15338,7 @@ class EUInformation(object):
         return EUInformation(data)
 
     def _binary_init(self, data):
-        self.NamespaceUri = unpack_uatype('String', data)
+        self.NamespaceUri = unpack_string(data)
         self.UnitId = uatype_Int32.unpack(data.read(4))[0]
         self.DisplayName = LocalizedText.from_binary(data)
         self.Description = LocalizedText.from_binary(data)
@@ -15594,10 +15594,10 @@ class ProgramDiagnosticDataType(object):
     def to_binary(self):
         packet = []
         packet.append(self.CreateSessionId.to_binary())
-        packet.append(pack_uatype('String', self.CreateClientName))
-        packet.append(pack_uatype('DateTime', self.InvocationCreationTime))
-        packet.append(pack_uatype('DateTime', self.LastTransitionTime))
-        packet.append(pack_uatype('String', self.LastMethodCall))
+        packet.append(pack_string(self.CreateClientName))
+        packet.append(pack_datetime(self.InvocationCreationTime))
+        packet.append(pack_datetime(self.LastTransitionTime))
+        packet.append(pack_string(self.LastMethodCall))
         packet.append(self.LastMethodSessionId.to_binary())
         packet.append(uatype_Int32.pack(len(self.LastMethodInputArguments)))
         for fieldname in self.LastMethodInputArguments:
@@ -15605,7 +15605,7 @@ class ProgramDiagnosticDataType(object):
         packet.append(uatype_Int32.pack(len(self.LastMethodOutputArguments)))
         for fieldname in self.LastMethodOutputArguments:
             packet.append(fieldname.to_binary())
-        packet.append(pack_uatype('DateTime', self.LastMethodCallTime))
+        packet.append(pack_datetime(self.LastMethodCallTime))
         packet.append(self.LastMethodReturnStatus.to_binary())
         return b''.join(packet)
 
@@ -15615,10 +15615,10 @@ class ProgramDiagnosticDataType(object):
 
     def _binary_init(self, data):
         self.CreateSessionId = NodeId.from_binary(data)
-        self.CreateClientName = unpack_uatype('String', data)
-        self.InvocationCreationTime = unpack_uatype('DateTime', data)
-        self.LastTransitionTime = unpack_uatype('DateTime', data)
-        self.LastMethodCall = unpack_uatype('String', data)
+        self.CreateClientName = unpack_string(data)
+        self.InvocationCreationTime = unpack_datetime(data)
+        self.LastTransitionTime = unpack_datetime(data)
+        self.LastMethodCall = unpack_string(data)
         self.LastMethodSessionId = NodeId.from_binary(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
@@ -15632,7 +15632,7 @@ class ProgramDiagnosticDataType(object):
             for _ in range(0, length):
                 array.append(Argument.from_binary(data))
         self.LastMethodOutputArguments = array
-        self.LastMethodCallTime = unpack_uatype('DateTime', data)
+        self.LastMethodCallTime = unpack_datetime(data)
         self.LastMethodReturnStatus = StatusResult.from_binary(data)
 
     def __str__(self):
@@ -15676,9 +15676,9 @@ class Annotation(object):
 
     def to_binary(self):
         packet = []
-        packet.append(pack_uatype('String', self.Message))
-        packet.append(pack_uatype('String', self.UserName))
-        packet.append(pack_uatype('DateTime', self.AnnotationTime))
+        packet.append(pack_string(self.Message))
+        packet.append(pack_string(self.UserName))
+        packet.append(pack_datetime(self.AnnotationTime))
         return b''.join(packet)
 
     @staticmethod
@@ -15686,9 +15686,9 @@ class Annotation(object):
         return Annotation(data)
 
     def _binary_init(self, data):
-        self.Message = unpack_uatype('String', data)
-        self.UserName = unpack_uatype('String', data)
-        self.AnnotationTime = unpack_uatype('DateTime', data)
+        self.Message = unpack_string(data)
+        self.UserName = unpack_string(data)
+        self.AnnotationTime = unpack_datetime(data)
 
     def __str__(self):
         return 'Annotation(' + 'Message:' + str(self.Message) + ', ' + \
