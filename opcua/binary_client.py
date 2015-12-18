@@ -11,6 +11,15 @@ import opcua.uaprotocol as ua
 import opcua.utils as utils
 
 
+class FakeRequest(object):
+    # HACK to remove duplicate call Request.to_binary
+    def __init__(self, binary):
+        self.binary = binary
+
+    def to_binary(self):
+        return self.binary
+
+
 class UASocketClient(object):
     """
     handle socket connection and send ua messages
@@ -44,11 +53,15 @@ class UASocketClient(object):
         send request to server.
         timeout is the timeout written in ua header
         """
-        # HACK to make sure we can convert our request to binary before increasing request counter etc ...
-        request.to_binary()
-        # END HACK
         with self._lock:
             request.RequestHeader = self._create_request_header(timeout)
+            try:
+                fakereq = FakeRequest(request.to_binary())
+            except:
+                # reset reqeust handle if any error
+                # see self._create_request_header
+                self._request_handle -= 1
+                raise
             hdr = ua.Header(ua.MessageType.SecureMessage, ua.ChunkType.Single, self._security_token.ChannelId)
             symhdr = self._create_sym_algo_header()
             seqhdr = self._create_sequence_header()
@@ -56,7 +69,7 @@ class UASocketClient(object):
             if callback:
                 future.add_done_callback(callback)
             self._callbackmap[seqhdr.RequestId] = future
-            self._write_socket(hdr, symhdr, seqhdr, request)
+            self._write_socket(hdr, symhdr, seqhdr, fakereq)
         if not callback:
             data = future.result(self.timeout)
             self.check_answer(data, " in response to " + request.__class__.__name__)
