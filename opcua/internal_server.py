@@ -123,8 +123,10 @@ class InternalServer(object):
             return [desc.Server for desc in self._known_servers.values()] 
         servers = []
         for serv in self._known_servers.values():
+            serv_uri = serv.Server.ApplicationUri.split(":")
             for uri in params.ServerUris:
-                if serv.Server.ApplicationUri.startswith(uri):
+                uri = uri.split(":")
+                if serv_uri[:len(uri)] == uri:
                     servers.append(serv.Server)
                     break
         return servers
@@ -137,7 +139,6 @@ class InternalServer(object):
         appdesc.ApplicationType = server.ServerType
         appdesc.GatewayServerUri = server.GatewayServerUri
         appdesc.DiscoveryUrls = server.DiscoveryUrls  # FIXME: select discovery uri using reachability from client network
-        print("Registring new server: ",  server.ServerUri)
         self._known_servers[server.ServerUri] = ServerDesc(appdesc, conf)
 
     def register_server2(self, params):
