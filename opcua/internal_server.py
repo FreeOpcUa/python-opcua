@@ -81,6 +81,8 @@ class InternalServer(object):
 
     def start(self):
         self.logger.info("starting internal server")
+        for edp in self.endpoints:
+            self._known_servers[edp.Server.ApplicationUri] = ServerDesc(edp.Server)
         self.loop.start()
         Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_State)).set_value(0)
         Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_StartTime)).set_value(datetime.now())
@@ -117,11 +119,15 @@ class InternalServer(object):
         return self.endpoints[:]
 
     def find_servers(self, params):
-        #FIXME: implement filtering from parmams.uri 
+        if not params.ServerUris:
+            return [desc.Server for desc in self._known_servers.values()] 
         servers = []
-        for edp in self.endpoints:
-            servers.append(edp.Server)
-        return servers + [desc.Server for desc in self._known_servers.values()]
+        for serv in self._known_servers.values():
+            for uri in params.ServerUris:
+                if serv.Server.ApplicationUri.startswith(uri):
+                    servers.append(serv.Server)
+                    break
+        return servers
 
     def register_server(self, server, conf=None):
         appdesc = ua.ApplicationDescription()
@@ -131,6 +137,7 @@ class InternalServer(object):
         appdesc.ApplicationType = server.ServerType
         appdesc.GatewayServerUri = server.GatewayServerUri
         appdesc.DiscoveryUrls = server.DiscoveryUrls  # FIXME: select discovery uri using reachability from client network
+        print("Registring new server: ",  server.ServerUri)
         self._known_servers[server.ServerUri] = ServerDesc(appdesc, conf)
 
     def register_server2(self, params):
@@ -189,7 +196,7 @@ class InternalSession(object):
     def activate_session(self, params):
         self.logger.info("activate session")
         result = ua.ActivateSessionResult()
-        if not self.state == SessionState.Created:
+        if self.state != SessionState.Created:
             raise utils.ServiceError(ua.StatusCodes.BadSessionIdInvalid)
         result.ServerNonce = self.nonce
         for _ in params.ClientSoftwareCertificates:

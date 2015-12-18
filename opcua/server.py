@@ -56,7 +56,7 @@ class Server(object):
         self.default_timeout = 3600000
         self.iserver = InternalServer()
         self.bserver = None
-        self._discovery_client = None
+        self._discovery_clients = {}
         self._discovery_period = 60
 
         # setup some expected values
@@ -92,21 +92,32 @@ class Server(object):
         params.ServerUris = uris
         return self.iserver.find_servers(params)
 
-    def register_to_discovery(self, url, period=60):
+    def register_to_discovery(self, url="opc.tcp://localhost:4840", period=60):
         """
-        Register to a OPC-UA Discovery server. Registering must be renewed at
+        Register to an OPC-UA Discovery server. Registering must be renewed at
         least every 10 minutes, so this method will use our asyncio thread to
         re-register every period seconds
         """
+        if url in self._discovery_clients:
+            self._discovery_clients[url].disconnect()
+        self._discovery_clients[url] = Client(url)
+        self._discovery_clients[url].connect()
+        self._discovery_clients[url].register_server(self)
         self._discovery_period = period
-        self._discovery_client = Client(url)
-        self._discovery_client.connect()
         self.iserver.loop.call_soon(self._renew_registration)
 
     def _renew_registration(self):
-        if self._discovery_client:
-            self._discovery_client.register_server(self)
+        for client in self._discovery_clients.values():
+            client.register_server(self)
             self.iserver.loop.call_later(self._discovery_period, self._renew_registration)
+
+    def get_client_to_discovery(self, url="opc.tcp://localhost:4840"):
+        """
+        Create a client to discovery server and return it
+        """
+        client = Client(url)
+        client.connect()
+        return client
 
     def allow_remote_admin(self, allow):
         """
@@ -165,8 +176,8 @@ class Server(object):
         """
         Start to listen on network
         """
-        self.iserver.start()
         self._setup_server_nodes()
+        self.iserver.start()
         self.bserver = BinaryServer(self.iserver, self.endpoint.hostname, self.endpoint.port)
         self.bserver.start()
 
@@ -174,8 +185,8 @@ class Server(object):
         """
         Stop server
         """
-        if self._discovery_client:
-            self._discovery_client.disconnect()
+        for client in self._discovery_clients.values():
+            client.disconnect()
         self.bserver.stop()
         self.iserver.stop()
 

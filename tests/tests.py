@@ -926,16 +926,50 @@ class TestServer(unittest.TestCase, CommonTests):
     def test_discovery(self):
         client = Client(self.discovery.endpoint.geturl())
         client.connect()
-        servers = client.find_servers()
-        new_app_uri = "urn:freeopcua:python:server::test_discovery"
-        self.srv.application_uri = new_app_uri
-        self.srv.register_to_discovery(self.discovery.endpoint.geturl(), 1)
-        time.sleep(0.1) # let server register registration
-        new_servers = client.find_servers()
-        self.assertEqual(len(new_servers) - len(servers) , 1)
-        self.assertFalse(new_app_uri in [s.ApplicationUri for s in servers])
-        self.assertTrue(new_app_uri in [s.ApplicationUri for s in new_servers])
-        client.disconnect()
+        try:
+            servers = client.find_servers()
+            new_app_uri = "urn:freeopcua:python:server:test_discovery"
+            self.srv.application_uri = new_app_uri
+            self.srv.register_to_discovery(self.discovery.endpoint.geturl(), 1)
+            time.sleep(0.1) # let server register registration
+            new_servers = client.find_servers()
+            self.assertEqual(len(new_servers) - len(servers) , 1)
+            self.assertFalse(new_app_uri in [s.ApplicationUri for s in servers])
+            self.assertTrue(new_app_uri in [s.ApplicationUri for s in new_servers])
+        finally:
+            client.disconnect()
+    
+    def test_find_servers2(self):
+        client = Client(self.discovery.endpoint.geturl())
+        client.connect()
+        try:
+            servers = client.find_servers()
+            new_app_uri1 = "urn:freeopcua:python:server:test_discovery1"
+            self.srv.application_uri = new_app_uri1
+            self.srv.register_to_discovery(self.discovery.endpoint.geturl())
+            new_app_uri2 = "urn:freeopcua:python:test_discovery2"
+            self.srv.application_uri = new_app_uri2
+            self.srv.register_to_discovery(self.discovery.endpoint.geturl())
+            time.sleep(0.1) # let server register registration
+            new_servers = client.find_servers()
+            self.assertEqual(len(new_servers) - len(servers) , 2)
+            self.assertFalse(new_app_uri1 in [s.ApplicationUri for s in servers])
+            self.assertFalse(new_app_uri2 in [s.ApplicationUri for s in servers])
+            self.assertTrue(new_app_uri1 in [s.ApplicationUri for s in new_servers])
+            self.assertTrue(new_app_uri2 in [s.ApplicationUri for s in new_servers])
+            # now do a query with filer
+            new_servers = client.find_servers(["urn:freeopcua:python:server"])
+            self.assertEqual(len(new_servers) - len(servers) , 0)
+            self.assertTrue(new_app_uri1 in [s.ApplicationUri for s in new_servers])
+            self.assertFalse(new_app_uri2 in [s.ApplicationUri for s in new_servers])
+            # now do a query with filer
+            new_servers = client.find_servers(["urn:freeopcua:python"])
+            self.assertEqual(len(new_servers) - len(servers) , 2)
+            self.assertTrue(new_app_uri1 in [s.ApplicationUri for s in new_servers])
+            self.assertTrue(new_app_uri2 in [s.ApplicationUri for s in new_servers])
+        finally:
+            client.disconnect()
+
 
     """
     # not sure if this test is necessary, and there is a lot repetition with previous test

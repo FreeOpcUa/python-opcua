@@ -89,9 +89,9 @@ class Client(object):
         self.secure_channel_timeout = self.default_timeout
         self.session_timeout = self.default_timeout
         self._policy_ids = []
-        self.server_certificate = ""
-        self.client_certificate = ""
-        self.private_key = ""
+        self.server_certificate = b""
+        self.client_certificate = b""
+        self.private_key = b""
         self.bclient = BinaryClient(timeout)
         self._nonce = None
         self._session_counter = 1
