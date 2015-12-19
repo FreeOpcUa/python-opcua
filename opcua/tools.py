@@ -205,7 +205,7 @@ def _val_to_variant(val, args):
     elif args.datatype in ("qualifiedname", "browsename"):
         return _arg_to_variant(val, array, ua.QualifiedName.from_string, ua.VariantType.QualifiedName)
     elif args.datatype == "LocalizedText":
-        return _arg_to_variant(val, array, ua.LocalizedText, ua.VariantTypeLocalizedText)
+        return _arg_to_variant(val, array, ua.LocalizedText, ua.VariantType.LocalizedText)
 
 
 def uawrite():
@@ -435,9 +435,9 @@ def uaclient():
     client = Client(args.url, timeout=args.timeout)
     client.connect()
     if args.certificate:
-        client.load_certificate(args.certificate)
+        client.load_client_certificate(args.certificate)
     if args.private_key:
-        client.load_certificate(args.private_key)
+        client.load_private_key(args.private_key)
     try:
         root = client.get_root_node()
         objects = client.get_objects_node()
@@ -470,6 +470,10 @@ def uaserver():
                         "--populate",
                         action="store_false",
                         help="Populate address space with some sample nodes")
+    parser.add_argument("-c",
+                        "--disable-clock",
+                        action="store_true",
+                        help="Disable clock, to avoid seeing many write if debugging an application")
     parser.add_argument("-s",
                         "--shell",
                         action="store_true",
@@ -479,6 +483,7 @@ def uaserver():
 
     server = Server()
     server.set_endpoint(args.url)
+    server.disable_clock(args.disable_clock)
     server.set_server_name("FreeOpcUa Example Server")
     if args.xml:
         server.import_xml(args.xml)
@@ -515,9 +520,6 @@ def uaserver():
     sys.exit(0)
 
 
-
-
-
 def uadiscover():
     parser = argparse.ArgumentParser(description="Performs OPC UA discovery and prints information on servers and endpoints.")
     add_minimum_args(parser)
@@ -535,25 +537,24 @@ def uadiscover():
                         #help="send a GetEndpoints request to server")
     args = parse_args(parser)
     
+    client = Client(args.url, timeout=args.timeout)
+
     if args.network:
-        client = Client(args.url, timeout=args.timeout)
         print("Performing discovery at {}\n".format(args.url))
-        for i, server in enumerate(client.find_all_servers_on_network(), start=1):
+        for i, server in enumerate(client.connect_and_find_servers_on_network(), start=1):
             print('Server {}:'.format(i))
             #for (n, v) in application_to_strings(server):
                 #print('  {}: {}'.format(n, v))
             print('')
 
-    client = Client(args.url, timeout=args.timeout)
     print("Performing discovery at {}\n".format(args.url))
-    for i, server in enumerate(client.find_all_servers(), start=1):
+    for i, server in enumerate(client.connect_and_find_servers(), start=1):
         print('Server {}:'.format(i))
         for (n, v) in application_to_strings(server):
             print('  {}: {}'.format(n, v))
         print('')
 
-    client = Client(args.url, timeout=args.timeout)
-    for i, ep in enumerate(client.get_server_endpoints(), start=1):
+    for i, ep in enumerate(client.connect_and_get_server_endpoints(), start=1):
         print('Endpoint {}:'.format(i))
         for (n, v) in endpoint_to_strings(ep):
             print('  {}: {}'.format(n, v))

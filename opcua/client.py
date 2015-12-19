@@ -10,7 +10,12 @@ except ImportError:  # support for python2
 from opcua import uaprotocol as ua
 from opcua import BinaryClient, Node, Subscription
 from opcua import utils
-from opcua import uacrypto
+use_crypto = True
+try:
+    from opcua import uacrypto
+except:
+    print("pycrypto is not installed, use of crypto disabled")
+    use_crypto = False
 
 
 class KeepAlive(Thread):
@@ -84,9 +89,9 @@ class Client(object):
         self.secure_channel_timeout = self.default_timeout
         self.session_timeout = self.default_timeout
         self._policy_ids = []
-        self.server_certificate = ""
-        self.client_certificate = ""
-        self.private_key = ""
+        self.server_certificate = b""
+        self.client_certificate = b""
+        self.private_key = b""
         self.bclient = BinaryClient(timeout)
         self._nonce = None
         self._session_counter = 1
@@ -106,7 +111,7 @@ class Client(object):
         with open(path, "br") as f:
             self.private_key = f.read()
 
-    def get_server_endpoints(self):
+    def connect_and_get_server_endpoints(self):
         """
         Connect, ask server for endpoints, and disconnect
         """
@@ -118,19 +123,19 @@ class Client(object):
         self.disconnect_socket()
         return endpoints
 
-    def find_all_servers(self):
+    def connect_and_find_servers(self):
         """
         Connect, ask server for a list of known servers, and disconnect
         """
         self.connect_socket()
         self.send_hello()
-        self.open_secure_channel()
+        self.open_secure_channel()  # spec says it should not be necessary to open channel
         servers = self.find_servers()
         self.close_secure_channel()
         self.disconnect_socket()
         return servers
 
-    def find_all_servers_on_network(self):
+    def connect_and_find_servers_on_network(self):
         """
         Connect, ask server for a list of known servers on network, and disconnect
         """
@@ -141,8 +146,6 @@ class Client(object):
         self.close_secure_channel()
         self.disconnect_socket()
         return servers
-
-
 
     def connect(self):
         """
@@ -203,8 +206,37 @@ class Client(object):
         params.EndpointUrl = self.server_url.geturl()
         return self.bclient.get_endpoints(params)
 
-    def find_servers(self):
+    def register_server(self, server, discovery_configuration=None):
+        """
+        register a server to discovery server
+        if discovery_configuration is provided, the newer register_server2 service call is used
+        """
+        serv = ua.RegisteredServer()
+        serv.ServerUri = server.application_uri
+        serv.ProductUri = server.product_uri
+        serv.DiscoveryUrls = [server.endpoint.geturl()]
+        serv.ServerType = server.application_type
+        serv.ServerNames = [ua.LocalizedText(server.name)]
+        serv.IsOnline = True
+        if discovery_configuration:
+            params = ua.RegisterServer2Parameters()
+            params.Server = serv
+            params.DiscoveryConfiguration = discovery_configuration
+            return self.bclient.register_server2(params)
+        else:
+            return self.bclient.register_server(serv)
+
+    def find_servers(self, uris=None):
+        """
+        send a FindServer request to the server. The answer should be a list of
+        servers the server knows about
+        A list of uris can be provided, only server having matching uris will be returned
+        """
+        if uris is None:
+            uris = []
         params = ua.FindServersParameters()
+        params.EndpointUrl = self.server_url.geturl()
+        params.ServerUris = uris 
         return self.bclient.find_servers(params)
 
     def find_servers_on_network(self):

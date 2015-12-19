@@ -9,8 +9,6 @@ from opcua.uatypes import *
 from opcua.object_ids import ObjectIds
 
 
-
-
 class NamingRuleType(object):
     '''
     :ivar Mandatory:
@@ -754,7 +752,7 @@ class XmlElement(object):
 
     def __str__(self):
         return 'XmlElement(' + 'Length:' + str(self.Length) + ', ' + \
-             'Value:' + str(self.Value) + ')'
+               'Value:' + str(self.Value) + ')'
 
     __repr__ = __str__
 
@@ -815,19 +813,19 @@ class DiagnosticInfo(object):
         if self.InnerStatusCode: self.Encoding |= (1 << 5)
         if self.InnerDiagnosticInfo: self.Encoding |= (1 << 6)
         packet.append(uatype_UInt8.pack(self.Encoding))
-        if self.SymbolicId:
+        if self.SymbolicId: 
             packet.append(uatype_Int32.pack(self.SymbolicId))
-        if self.NamespaceURI:
+        if self.NamespaceURI: 
             packet.append(uatype_Int32.pack(self.NamespaceURI))
-        if self.Locale:
+        if self.Locale: 
             packet.append(uatype_Int32.pack(self.Locale))
-        if self.LocalizedText:
+        if self.LocalizedText: 
             packet.append(uatype_Int32.pack(self.LocalizedText))
-        if self.AdditionalInfo:
+        if self.AdditionalInfo: 
             packet.append(pack_bytes(self.AdditionalInfo))
-        if self.InnerStatusCode:
+        if self.InnerStatusCode: 
             packet.append(self.InnerStatusCode.to_binary())
-        if self.InnerDiagnosticInfo:
+        if self.InnerDiagnosticInfo: 
             packet.append(self.InnerDiagnosticInfo.to_binary())
         return b''.join(packet)
 
@@ -868,13 +866,13 @@ class DiagnosticInfo(object):
 
     def __str__(self):
         return 'DiagnosticInfo(' + 'Encoding:' + str(self.Encoding) + ', ' + \
-             'SymbolicId:' + str(self.SymbolicId) + ', ' + \
-             'NamespaceURI:' + str(self.NamespaceURI) + ', ' + \
-             'Locale:' + str(self.Locale) + ', ' + \
-             'LocalizedText:' + str(self.LocalizedText) + ', ' + \
-             'AdditionalInfo:' + str(self.AdditionalInfo) + ', ' + \
-             'InnerStatusCode:' + str(self.InnerStatusCode) + ', ' + \
-             'InnerDiagnosticInfo:' + str(self.InnerDiagnosticInfo) + ')'
+               'SymbolicId:' + str(self.SymbolicId) + ', ' + \
+               'NamespaceURI:' + str(self.NamespaceURI) + ', ' + \
+               'Locale:' + str(self.Locale) + ', ' + \
+               'LocalizedText:' + str(self.LocalizedText) + ', ' + \
+               'AdditionalInfo:' + str(self.AdditionalInfo) + ', ' + \
+               'InnerStatusCode:' + str(self.InnerStatusCode) + ', ' + \
+               'InnerDiagnosticInfo:' + str(self.InnerDiagnosticInfo) + ')'
 
     __repr__ = __str__
 
@@ -941,10 +939,10 @@ class TrustListDataType(object):
 
     def __str__(self):
         return 'TrustListDataType(' + 'SpecifiedLists:' + str(self.SpecifiedLists) + ', ' + \
-             'TrustedCertificates:' + str(self.TrustedCertificates) + ', ' + \
-             'TrustedCrls:' + str(self.TrustedCrls) + ', ' + \
-             'IssuerCertificates:' + str(self.IssuerCertificates) + ', ' + \
-             'IssuerCrls:' + str(self.IssuerCrls) + ')'
+               'TrustedCertificates:' + str(self.TrustedCertificates) + ', ' + \
+               'TrustedCrls:' + str(self.TrustedCrls) + ', ' + \
+               'IssuerCertificates:' + str(self.IssuerCertificates) + ', ' + \
+               'IssuerCrls:' + str(self.IssuerCrls) + ')'
 
     __repr__ = __str__
 
@@ -1007,10 +1005,10 @@ class Argument(object):
 
     def __str__(self):
         return 'Argument(' + 'Name:' + str(self.Name) + ', ' + \
-             'DataType:' + str(self.DataType) + ', ' + \
-             'ValueRank:' + str(self.ValueRank) + ', ' + \
-             'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
-             'Description:' + str(self.Description) + ')'
+               'DataType:' + str(self.DataType) + ', ' + \
+               'ValueRank:' + str(self.ValueRank) + ', ' + \
+               'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
+               'Description:' + str(self.Description) + ')'
 
     __repr__ = __str__
 
@@ -1059,8 +1057,8 @@ class EnumValueType(object):
 
     def __str__(self):
         return 'EnumValueType(' + 'Value:' + str(self.Value) + ', ' + \
-             'DisplayName:' + str(self.DisplayName) + ', ' + \
-             'Description:' + str(self.Description) + ')'
+               'DisplayName:' + str(self.DisplayName) + ', ' + \
+               'Description:' + str(self.Description) + ')'
 
     __repr__ = __str__
 
@@ -1103,7 +1101,7 @@ class OptionSet(object):
 
     def __str__(self):
         return 'OptionSet(' + 'Value:' + str(self.Value) + ', ' + \
-             'ValidBits:' + str(self.ValidBits) + ')'
+               'ValidBits:' + str(self.ValidBits) + ')'
 
     __repr__ = __str__
 
@@ -1175,7 +1173,7 @@ class TimeZoneDataType(object):
 
     def __str__(self):
         return 'TimeZoneDataType(' + 'Offset:' + str(self.Offset) + ', ' + \
-             'DaylightSavingInOffset:' + str(self.DaylightSavingInOffset) + ')'
+               'DaylightSavingInOffset:' + str(self.DaylightSavingInOffset) + ')'
 
     __repr__ = __str__
 
@@ -1250,12 +1248,12 @@ class ApplicationDescription(object):
 
     def __str__(self):
         return 'ApplicationDescription(' + 'ApplicationUri:' + str(self.ApplicationUri) + ', ' + \
-             'ProductUri:' + str(self.ProductUri) + ', ' + \
-             'ApplicationName:' + str(self.ApplicationName) + ', ' + \
-             'ApplicationType:' + str(self.ApplicationType) + ', ' + \
-             'GatewayServerUri:' + str(self.GatewayServerUri) + ', ' + \
-             'DiscoveryProfileUri:' + str(self.DiscoveryProfileUri) + ', ' + \
-             'DiscoveryUrls:' + str(self.DiscoveryUrls) + ')'
+               'ProductUri:' + str(self.ProductUri) + ', ' + \
+               'ApplicationName:' + str(self.ApplicationName) + ', ' + \
+               'ApplicationType:' + str(self.ApplicationType) + ', ' + \
+               'GatewayServerUri:' + str(self.GatewayServerUri) + ', ' + \
+               'DiscoveryProfileUri:' + str(self.DiscoveryProfileUri) + ', ' + \
+               'DiscoveryUrls:' + str(self.DiscoveryUrls) + ')'
 
     __repr__ = __str__
 
@@ -1328,12 +1326,12 @@ class RequestHeader(object):
 
     def __str__(self):
         return 'RequestHeader(' + 'AuthenticationToken:' + str(self.AuthenticationToken) + ', ' + \
-             'Timestamp:' + str(self.Timestamp) + ', ' + \
-             'RequestHandle:' + str(self.RequestHandle) + ', ' + \
-             'ReturnDiagnostics:' + str(self.ReturnDiagnostics) + ', ' + \
-             'AuditEntryId:' + str(self.AuditEntryId) + ', ' + \
-             'TimeoutHint:' + str(self.TimeoutHint) + ', ' + \
-             'AdditionalHeader:' + str(self.AdditionalHeader) + ')'
+               'Timestamp:' + str(self.Timestamp) + ', ' + \
+               'RequestHandle:' + str(self.RequestHandle) + ', ' + \
+               'ReturnDiagnostics:' + str(self.ReturnDiagnostics) + ', ' + \
+               'AuditEntryId:' + str(self.AuditEntryId) + ', ' + \
+               'TimeoutHint:' + str(self.TimeoutHint) + ', ' + \
+               'AdditionalHeader:' + str(self.AdditionalHeader) + ')'
 
     __repr__ = __str__
 
@@ -1402,11 +1400,11 @@ class ResponseHeader(object):
 
     def __str__(self):
         return 'ResponseHeader(' + 'Timestamp:' + str(self.Timestamp) + ', ' + \
-             'RequestHandle:' + str(self.RequestHandle) + ', ' + \
-             'ServiceResult:' + str(self.ServiceResult) + ', ' + \
-             'ServiceDiagnostics:' + str(self.ServiceDiagnostics) + ', ' + \
-             'StringTable:' + str(self.StringTable) + ', ' + \
-             'AdditionalHeader:' + str(self.AdditionalHeader) + ')'
+               'RequestHandle:' + str(self.RequestHandle) + ', ' + \
+               'ServiceResult:' + str(self.ServiceResult) + ', ' + \
+               'ServiceDiagnostics:' + str(self.ServiceDiagnostics) + ', ' + \
+               'StringTable:' + str(self.StringTable) + ', ' + \
+               'AdditionalHeader:' + str(self.AdditionalHeader) + ')'
 
     __repr__ = __str__
 
@@ -1449,7 +1447,7 @@ class ServiceFault(object):
 
     def __str__(self):
         return 'ServiceFault(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ')'
 
     __repr__ = __str__
 
@@ -1500,8 +1498,8 @@ class FindServersParameters(object):
 
     def __str__(self):
         return 'FindServersParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-             'LocaleIds:' + str(self.LocaleIds) + ', ' + \
-             'ServerUris:' + str(self.ServerUris) + ')'
+               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
+               'ServerUris:' + str(self.ServerUris) + ')'
 
     __repr__ = __str__
 
@@ -1550,8 +1548,8 @@ class FindServersRequest(object):
 
     def __str__(self):
         return 'FindServersRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -1607,8 +1605,8 @@ class FindServersResponse(object):
 
     def __str__(self):
         return 'FindServersResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Servers:' + str(self.Servers) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Servers:' + str(self.Servers) + ')'
 
     __repr__ = __str__
 
@@ -1663,9 +1661,9 @@ class ServerOnNetwork(object):
 
     def __str__(self):
         return 'ServerOnNetwork(' + 'RecordId:' + str(self.RecordId) + ', ' + \
-             'ServerName:' + str(self.ServerName) + ', ' + \
-             'DiscoveryUrl:' + str(self.DiscoveryUrl) + ', ' + \
-             'ServerCapabilities:' + str(self.ServerCapabilities) + ')'
+               'ServerName:' + str(self.ServerName) + ', ' + \
+               'DiscoveryUrl:' + str(self.DiscoveryUrl) + ', ' + \
+               'ServerCapabilities:' + str(self.ServerCapabilities) + ')'
 
     __repr__ = __str__
 
@@ -1714,8 +1712,8 @@ class FindServersOnNetworkParameters(object):
 
     def __str__(self):
         return 'FindServersOnNetworkParameters(' + 'StartingRecordId:' + str(self.StartingRecordId) + ', ' + \
-             'MaxRecordsToReturn:' + str(self.MaxRecordsToReturn) + ', ' + \
-             'ServerCapabilityFilter:' + str(self.ServerCapabilityFilter) + ')'
+               'MaxRecordsToReturn:' + str(self.MaxRecordsToReturn) + ', ' + \
+               'ServerCapabilityFilter:' + str(self.ServerCapabilityFilter) + ')'
 
     __repr__ = __str__
 
@@ -1762,8 +1760,8 @@ class FindServersOnNetworkRequest(object):
 
     def __str__(self):
         return 'FindServersOnNetworkRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -1811,7 +1809,7 @@ class FindServersOnNetworkResult(object):
 
     def __str__(self):
         return 'FindServersOnNetworkResult(' + 'LastCounterResetTime:' + str(self.LastCounterResetTime) + ', ' + \
-             'Servers:' + str(self.Servers) + ')'
+               'Servers:' + str(self.Servers) + ')'
 
     __repr__ = __str__
 
@@ -1858,8 +1856,8 @@ class FindServersOnNetworkResponse(object):
 
     def __str__(self):
         return 'FindServersOnNetworkResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -1920,10 +1918,10 @@ class UserTokenPolicy(object):
 
     def __str__(self):
         return 'UserTokenPolicy(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-             'TokenType:' + str(self.TokenType) + ', ' + \
-             'IssuedTokenType:' + str(self.IssuedTokenType) + ', ' + \
-             'IssuerEndpointUrl:' + str(self.IssuerEndpointUrl) + ', ' + \
-             'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ')'
+               'TokenType:' + str(self.TokenType) + ', ' + \
+               'IssuedTokenType:' + str(self.IssuedTokenType) + ', ' + \
+               'IssuerEndpointUrl:' + str(self.IssuerEndpointUrl) + ', ' + \
+               'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ')'
 
     __repr__ = __str__
 
@@ -2009,13 +2007,13 @@ class EndpointDescription(object):
 
     def __str__(self):
         return 'EndpointDescription(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-             'Server:' + str(self.Server) + ', ' + \
-             'ServerCertificate:' + str(self.ServerCertificate) + ', ' + \
-             'SecurityMode:' + str(self.SecurityMode) + ', ' + \
-             'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', ' + \
-             'UserIdentityTokens:' + str(self.UserIdentityTokens) + ', ' + \
-             'TransportProfileUri:' + str(self.TransportProfileUri) + ', ' + \
-             'SecurityLevel:' + str(self.SecurityLevel) + ')'
+               'Server:' + str(self.Server) + ', ' + \
+               'ServerCertificate:' + str(self.ServerCertificate) + ', ' + \
+               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
+               'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', ' + \
+               'UserIdentityTokens:' + str(self.UserIdentityTokens) + ', ' + \
+               'TransportProfileUri:' + str(self.TransportProfileUri) + ', ' + \
+               'SecurityLevel:' + str(self.SecurityLevel) + ')'
 
     __repr__ = __str__
 
@@ -2066,8 +2064,8 @@ class GetEndpointsParameters(object):
 
     def __str__(self):
         return 'GetEndpointsParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-             'LocaleIds:' + str(self.LocaleIds) + ', ' + \
-             'ProfileUris:' + str(self.ProfileUris) + ')'
+               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
+               'ProfileUris:' + str(self.ProfileUris) + ')'
 
     __repr__ = __str__
 
@@ -2116,8 +2114,8 @@ class GetEndpointsRequest(object):
 
     def __str__(self):
         return 'GetEndpointsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -2173,8 +2171,8 @@ class GetEndpointsResponse(object):
 
     def __str__(self):
         return 'GetEndpointsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Endpoints:' + str(self.Endpoints) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Endpoints:' + str(self.Endpoints) + ')'
 
     __repr__ = __str__
 
@@ -2262,47 +2260,13 @@ class RegisteredServer(object):
 
     def __str__(self):
         return 'RegisteredServer(' + 'ServerUri:' + str(self.ServerUri) + ', ' + \
-             'ProductUri:' + str(self.ProductUri) + ', ' + \
-             'ServerNames:' + str(self.ServerNames) + ', ' + \
-             'ServerType:' + str(self.ServerType) + ', ' + \
-             'GatewayServerUri:' + str(self.GatewayServerUri) + ', ' + \
-             'DiscoveryUrls:' + str(self.DiscoveryUrls) + ', ' + \
-             'SemaphoreFilePath:' + str(self.SemaphoreFilePath) + ', ' + \
-             'IsOnline:' + str(self.IsOnline) + ')'
-
-    __repr__ = __str__
-
-
-class RegisterServerParameters(object):
-    '''
-    :ivar Server:
-    :vartype Server: RegisteredServer
-    '''
-
-    __slots__ = [
-        "Server",
-    ]
-
-    def __init__(self, binary=None):
-        if binary is not None:
-            self._binary_init(binary)
-            return
-        self.Server = RegisteredServer()
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.Server.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        return RegisterServerParameters(data)
-
-    def _binary_init(self, data):
-        self.Server = RegisteredServer.from_binary(data)
-
-    def __str__(self):
-        return 'RegisterServerParameters(' + 'Server:' + str(self.Server) + ')'
+               'ProductUri:' + str(self.ProductUri) + ', ' + \
+               'ServerNames:' + str(self.ServerNames) + ', ' + \
+               'ServerType:' + str(self.ServerType) + ', ' + \
+               'GatewayServerUri:' + str(self.GatewayServerUri) + ', ' + \
+               'DiscoveryUrls:' + str(self.DiscoveryUrls) + ', ' + \
+               'SemaphoreFilePath:' + str(self.SemaphoreFilePath) + ', ' + \
+               'IsOnline:' + str(self.IsOnline) + ')'
 
     __repr__ = __str__
 
@@ -2315,14 +2279,14 @@ class RegisterServerRequest(object):
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
-    :ivar Parameters:
-    :vartype Parameters: RegisterServerParameters
+    :ivar Server:
+    :vartype Server: RegisteredServer
     '''
 
     __slots__ = [
         "TypeId",
         "RequestHeader",
-        "Parameters",
+        "Server",
     ]
 
     def __init__(self, binary=None):
@@ -2331,13 +2295,13 @@ class RegisterServerRequest(object):
             return
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServerRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
-        self.Parameters = RegisterServerParameters()
+        self.Server = RegisteredServer()
 
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
+        packet.append(self.Server.to_binary())
         return b''.join(packet)
 
     @staticmethod
@@ -2347,12 +2311,12 @@ class RegisterServerRequest(object):
     def _binary_init(self, data):
         self.TypeId = NodeId.from_binary(data)
         self.RequestHeader = RequestHeader.from_binary(data)
-        self.Parameters = RegisterServerParameters.from_binary(data)
+        self.Server = RegisteredServer.from_binary(data)
 
     def __str__(self):
         return 'RegisterServerRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Server:' + str(self.Server) + ')'
 
     __repr__ = __str__
 
@@ -2395,7 +2359,7 @@ class RegisterServerResponse(object):
 
     def __str__(self):
         return 'RegisterServerResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ')'
 
     __repr__ = __str__
 
@@ -2471,7 +2435,7 @@ class MdnsDiscoveryConfiguration(object):
 
     def __str__(self):
         return 'MdnsDiscoveryConfiguration(' + 'MdnsServerName:' + str(self.MdnsServerName) + ', ' + \
-             'ServerCapabilities:' + str(self.ServerCapabilities) + ')'
+               'ServerCapabilities:' + str(self.ServerCapabilities) + ')'
 
     __repr__ = __str__
 
@@ -2519,7 +2483,7 @@ class RegisterServer2Parameters(object):
 
     def __str__(self):
         return 'RegisterServer2Parameters(' + 'Server:' + str(self.Server) + ', ' + \
-             'DiscoveryConfiguration:' + str(self.DiscoveryConfiguration) + ')'
+               'DiscoveryConfiguration:' + str(self.DiscoveryConfiguration) + ')'
 
     __repr__ = __str__
 
@@ -2566,14 +2530,18 @@ class RegisterServer2Request(object):
 
     def __str__(self):
         return 'RegisterServer2Request(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
 
-class RegisterServer2Result(object):
+class RegisterServer2Response(object):
     '''
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
     :ivar ConfigurationResults:
     :vartype ConfigurationResults: StatusCode
     :ivar DiagnosticInfos:
@@ -2581,6 +2549,8 @@ class RegisterServer2Result(object):
     '''
 
     __slots__ = [
+        "TypeId",
+        "ResponseHeader",
         "ConfigurationResults",
         "DiagnosticInfos",
     ]
@@ -2589,11 +2559,15 @@ class RegisterServer2Result(object):
         if binary is not None:
             self._binary_init(binary)
             return
+        self.TypeId = FourByteNodeId(ObjectIds.RegisterServer2Response_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
         self.ConfigurationResults = []
         self.DiagnosticInfos = []
 
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
         packet.append(uatype_Int32.pack(len(self.ConfigurationResults)))
         for fieldname in self.ConfigurationResults:
             packet.append(fieldname.to_binary())
@@ -2604,9 +2578,11 @@ class RegisterServer2Result(object):
 
     @staticmethod
     def from_binary(data):
-        return RegisterServer2Result(data)
+        return RegisterServer2Response(data)
 
     def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -2621,56 +2597,10 @@ class RegisterServer2Result(object):
         self.DiagnosticInfos = array
 
     def __str__(self):
-        return 'RegisterServer2Result(' + 'ConfigurationResults:' + str(self.ConfigurationResults) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-
-    __repr__ = __str__
-
-
-class RegisterServer2Response(object):
-    '''
-    :ivar TypeId:
-    :vartype TypeId: NodeId
-    :ivar ResponseHeader:
-    :vartype ResponseHeader: ResponseHeader
-    :ivar Parameters:
-    :vartype Parameters: RegisterServer2Result
-    '''
-
-    __slots__ = [
-        "TypeId",
-        "ResponseHeader",
-        "Parameters",
-    ]
-
-    def __init__(self, binary=None):
-        if binary is not None:
-            self._binary_init(binary)
-            return
-        self.TypeId = FourByteNodeId(ObjectIds.RegisterServer2Response_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = RegisterServer2Result()
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        return RegisterServer2Response(data)
-
-    def _binary_init(self, data):
-        self.TypeId = NodeId.from_binary(data)
-        self.ResponseHeader = ResponseHeader.from_binary(data)
-        self.Parameters = RegisterServer2Result.from_binary(data)
-
-    def __str__(self):
         return 'RegisterServer2Response(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'ConfigurationResults:' + str(self.ConfigurationResults) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -2725,9 +2655,9 @@ class ChannelSecurityToken(object):
 
     def __str__(self):
         return 'ChannelSecurityToken(' + 'ChannelId:' + str(self.ChannelId) + ', ' + \
-             'TokenId:' + str(self.TokenId) + ', ' + \
-             'CreatedAt:' + str(self.CreatedAt) + ', ' + \
-             'RevisedLifetime:' + str(self.RevisedLifetime) + ')'
+               'TokenId:' + str(self.TokenId) + ', ' + \
+               'CreatedAt:' + str(self.CreatedAt) + ', ' + \
+               'RevisedLifetime:' + str(self.RevisedLifetime) + ')'
 
     __repr__ = __str__
 
@@ -2786,10 +2716,10 @@ class OpenSecureChannelParameters(object):
 
     def __str__(self):
         return 'OpenSecureChannelParameters(' + 'ClientProtocolVersion:' + str(self.ClientProtocolVersion) + ', ' + \
-             'RequestType:' + str(self.RequestType) + ', ' + \
-             'SecurityMode:' + str(self.SecurityMode) + ', ' + \
-             'ClientNonce:' + str(self.ClientNonce) + ', ' + \
-             'RequestedLifetime:' + str(self.RequestedLifetime) + ')'
+               'RequestType:' + str(self.RequestType) + ', ' + \
+               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
+               'ClientNonce:' + str(self.ClientNonce) + ', ' + \
+               'RequestedLifetime:' + str(self.RequestedLifetime) + ')'
 
     __repr__ = __str__
 
@@ -2838,8 +2768,8 @@ class OpenSecureChannelRequest(object):
 
     def __str__(self):
         return 'OpenSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -2886,8 +2816,8 @@ class OpenSecureChannelResult(object):
 
     def __str__(self):
         return 'OpenSecureChannelResult(' + 'ServerProtocolVersion:' + str(self.ServerProtocolVersion) + ', ' + \
-             'SecurityToken:' + str(self.SecurityToken) + ', ' + \
-             'ServerNonce:' + str(self.ServerNonce) + ')'
+               'SecurityToken:' + str(self.SecurityToken) + ', ' + \
+               'ServerNonce:' + str(self.ServerNonce) + ')'
 
     __repr__ = __str__
 
@@ -2936,8 +2866,8 @@ class OpenSecureChannelResponse(object):
 
     def __str__(self):
         return 'OpenSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -2980,7 +2910,7 @@ class CloseSecureChannelRequest(object):
 
     def __str__(self):
         return 'CloseSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ')'
 
     __repr__ = __str__
 
@@ -3023,7 +2953,7 @@ class CloseSecureChannelResponse(object):
 
     def __str__(self):
         return 'CloseSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ')'
 
     __repr__ = __str__
 
@@ -3066,7 +2996,7 @@ class SignedSoftwareCertificate(object):
 
     def __str__(self):
         return 'SignedSoftwareCertificate(' + 'CertificateData:' + str(self.CertificateData) + ', ' + \
-             'Signature:' + str(self.Signature) + ')'
+               'Signature:' + str(self.Signature) + ')'
 
     __repr__ = __str__
 
@@ -3109,7 +3039,7 @@ class SignatureData(object):
 
     def __str__(self):
         return 'SignatureData(' + 'Algorithm:' + str(self.Algorithm) + ', ' + \
-             'Signature:' + str(self.Signature) + ')'
+               'Signature:' + str(self.Signature) + ')'
 
     __repr__ = __str__
 
@@ -3186,13 +3116,13 @@ class CreateSessionParameters(object):
 
     def __str__(self):
         return 'CreateSessionParameters(' + 'ClientDescription:' + str(self.ClientDescription) + ', ' + \
-             'ServerUri:' + str(self.ServerUri) + ', ' + \
-             'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-             'SessionName:' + str(self.SessionName) + ', ' + \
-             'ClientNonce:' + str(self.ClientNonce) + ', ' + \
-             'ClientCertificate:' + str(self.ClientCertificate) + ', ' + \
-             'RequestedSessionTimeout:' + str(self.RequestedSessionTimeout) + ', ' + \
-             'MaxResponseMessageSize:' + str(self.MaxResponseMessageSize) + ')'
+               'ServerUri:' + str(self.ServerUri) + ', ' + \
+               'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
+               'SessionName:' + str(self.SessionName) + ', ' + \
+               'ClientNonce:' + str(self.ClientNonce) + ', ' + \
+               'ClientCertificate:' + str(self.ClientCertificate) + ', ' + \
+               'RequestedSessionTimeout:' + str(self.RequestedSessionTimeout) + ', ' + \
+               'MaxResponseMessageSize:' + str(self.MaxResponseMessageSize) + ')'
 
     __repr__ = __str__
 
@@ -3241,8 +3171,8 @@ class CreateSessionRequest(object):
 
     def __str__(self):
         return 'CreateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -3339,14 +3269,14 @@ class CreateSessionResult(object):
 
     def __str__(self):
         return 'CreateSessionResult(' + 'SessionId:' + str(self.SessionId) + ', ' + \
-             'AuthenticationToken:' + str(self.AuthenticationToken) + ', ' + \
-             'RevisedSessionTimeout:' + str(self.RevisedSessionTimeout) + ', ' + \
-             'ServerNonce:' + str(self.ServerNonce) + ', ' + \
-             'ServerCertificate:' + str(self.ServerCertificate) + ', ' + \
-             'ServerEndpoints:' + str(self.ServerEndpoints) + ', ' + \
-             'ServerSoftwareCertificates:' + str(self.ServerSoftwareCertificates) + ', ' + \
-             'ServerSignature:' + str(self.ServerSignature) + ', ' + \
-             'MaxRequestMessageSize:' + str(self.MaxRequestMessageSize) + ')'
+               'AuthenticationToken:' + str(self.AuthenticationToken) + ', ' + \
+               'RevisedSessionTimeout:' + str(self.RevisedSessionTimeout) + ', ' + \
+               'ServerNonce:' + str(self.ServerNonce) + ', ' + \
+               'ServerCertificate:' + str(self.ServerCertificate) + ', ' + \
+               'ServerEndpoints:' + str(self.ServerEndpoints) + ', ' + \
+               'ServerSoftwareCertificates:' + str(self.ServerSoftwareCertificates) + ', ' + \
+               'ServerSignature:' + str(self.ServerSignature) + ', ' + \
+               'MaxRequestMessageSize:' + str(self.MaxRequestMessageSize) + ')'
 
     __repr__ = __str__
 
@@ -3395,8 +3325,8 @@ class CreateSessionResponse(object):
 
     def __str__(self):
         return 'CreateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -3523,9 +3453,9 @@ class UserNameIdentityToken(object):
 
     def __str__(self):
         return 'UserNameIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-             'UserName:' + str(self.UserName) + ', ' + \
-             'Password:' + str(self.Password) + ', ' + \
-             'EncryptionAlgorithm:' + str(self.EncryptionAlgorithm) + ')'
+               'UserName:' + str(self.UserName) + ', ' + \
+               'Password:' + str(self.Password) + ', ' + \
+               'EncryptionAlgorithm:' + str(self.EncryptionAlgorithm) + ')'
 
     __repr__ = __str__
 
@@ -3568,7 +3498,7 @@ class X509IdentityToken(object):
 
     def __str__(self):
         return 'X509IdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-             'CertificateData:' + str(self.CertificateData) + ')'
+               'CertificateData:' + str(self.CertificateData) + ')'
 
     __repr__ = __str__
 
@@ -3609,7 +3539,7 @@ class KerberosIdentityToken(object):
 
     def __str__(self):
         return 'KerberosIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-             'TicketData:' + str(self.TicketData) + ')'
+               'TicketData:' + str(self.TicketData) + ')'
 
     __repr__ = __str__
 
@@ -3658,8 +3588,8 @@ class IssuedIdentityToken(object):
 
     def __str__(self):
         return 'IssuedIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-             'TokenData:' + str(self.TokenData) + ', ' + \
-             'EncryptionAlgorithm:' + str(self.EncryptionAlgorithm) + ')'
+               'TokenData:' + str(self.TokenData) + ', ' + \
+               'EncryptionAlgorithm:' + str(self.EncryptionAlgorithm) + ')'
 
     __repr__ = __str__
 
@@ -3727,10 +3657,10 @@ class ActivateSessionParameters(object):
 
     def __str__(self):
         return 'ActivateSessionParameters(' + 'ClientSignature:' + str(self.ClientSignature) + ', ' + \
-             'ClientSoftwareCertificates:' + str(self.ClientSoftwareCertificates) + ', ' + \
-             'LocaleIds:' + str(self.LocaleIds) + ', ' + \
-             'UserIdentityToken:' + str(self.UserIdentityToken) + ', ' + \
-             'UserTokenSignature:' + str(self.UserTokenSignature) + ')'
+               'ClientSoftwareCertificates:' + str(self.ClientSoftwareCertificates) + ', ' + \
+               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
+               'UserIdentityToken:' + str(self.UserIdentityToken) + ', ' + \
+               'UserTokenSignature:' + str(self.UserTokenSignature) + ')'
 
     __repr__ = __str__
 
@@ -3779,8 +3709,8 @@ class ActivateSessionRequest(object):
 
     def __str__(self):
         return 'ActivateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -3841,8 +3771,8 @@ class ActivateSessionResult(object):
 
     def __str__(self):
         return 'ActivateSessionResult(' + 'ServerNonce:' + str(self.ServerNonce) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -3891,8 +3821,8 @@ class ActivateSessionResponse(object):
 
     def __str__(self):
         return 'ActivateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -3941,8 +3871,8 @@ class CloseSessionRequest(object):
 
     def __str__(self):
         return 'CloseSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'DeleteSubscriptions:' + str(self.DeleteSubscriptions) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'DeleteSubscriptions:' + str(self.DeleteSubscriptions) + ')'
 
     __repr__ = __str__
 
@@ -3985,7 +3915,7 @@ class CloseSessionResponse(object):
 
     def __str__(self):
         return 'CloseSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ')'
 
     __repr__ = __str__
 
@@ -4068,8 +3998,8 @@ class CancelRequest(object):
 
     def __str__(self):
         return 'CancelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -4152,8 +4082,8 @@ class CancelResponse(object):
 
     def __str__(self):
         return 'CancelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -4214,10 +4144,10 @@ class NodeAttributes(object):
 
     def __str__(self):
         return 'NodeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-             'DisplayName:' + str(self.DisplayName) + ', ' + \
-             'Description:' + str(self.Description) + ', ' + \
-             'WriteMask:' + str(self.WriteMask) + ', ' + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ')'
+               'DisplayName:' + str(self.DisplayName) + ', ' + \
+               'Description:' + str(self.Description) + ', ' + \
+               'WriteMask:' + str(self.WriteMask) + ', ' + \
+               'UserWriteMask:' + str(self.UserWriteMask) + ')'
 
     __repr__ = __str__
 
@@ -4284,11 +4214,11 @@ class ObjectAttributes(object):
 
     def __str__(self):
         return 'ObjectAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-             'DisplayName:' + str(self.DisplayName) + ', ' + \
-             'Description:' + str(self.Description) + ', ' + \
-             'WriteMask:' + str(self.WriteMask) + ', ' + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-             'EventNotifier:' + str(self.EventNotifier) + ')'
+               'DisplayName:' + str(self.DisplayName) + ', ' + \
+               'Description:' + str(self.Description) + ', ' + \
+               'WriteMask:' + str(self.WriteMask) + ', ' + \
+               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
+               'EventNotifier:' + str(self.EventNotifier) + ')'
 
     __repr__ = __str__
 
@@ -4399,18 +4329,18 @@ class VariableAttributes(object):
 
     def __str__(self):
         return 'VariableAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-             'DisplayName:' + str(self.DisplayName) + ', ' + \
-             'Description:' + str(self.Description) + ', ' + \
-             'WriteMask:' + str(self.WriteMask) + ', ' + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-             'Value:' + str(self.Value) + ', ' + \
-             'DataType:' + str(self.DataType) + ', ' + \
-             'ValueRank:' + str(self.ValueRank) + ', ' + \
-             'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
-             'AccessLevel:' + str(self.AccessLevel) + ', ' + \
-             'UserAccessLevel:' + str(self.UserAccessLevel) + ', ' + \
-             'MinimumSamplingInterval:' + str(self.MinimumSamplingInterval) + ', ' + \
-             'Historizing:' + str(self.Historizing) + ')'
+               'DisplayName:' + str(self.DisplayName) + ', ' + \
+               'Description:' + str(self.Description) + ', ' + \
+               'WriteMask:' + str(self.WriteMask) + ', ' + \
+               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
+               'Value:' + str(self.Value) + ', ' + \
+               'DataType:' + str(self.DataType) + ', ' + \
+               'ValueRank:' + str(self.ValueRank) + ', ' + \
+               'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
+               'AccessLevel:' + str(self.AccessLevel) + ', ' + \
+               'UserAccessLevel:' + str(self.UserAccessLevel) + ', ' + \
+               'MinimumSamplingInterval:' + str(self.MinimumSamplingInterval) + ', ' + \
+               'Historizing:' + str(self.Historizing) + ')'
 
     __repr__ = __str__
 
@@ -4483,12 +4413,12 @@ class MethodAttributes(object):
 
     def __str__(self):
         return 'MethodAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-             'DisplayName:' + str(self.DisplayName) + ', ' + \
-             'Description:' + str(self.Description) + ', ' + \
-             'WriteMask:' + str(self.WriteMask) + ', ' + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-             'Executable:' + str(self.Executable) + ', ' + \
-             'UserExecutable:' + str(self.UserExecutable) + ')'
+               'DisplayName:' + str(self.DisplayName) + ', ' + \
+               'Description:' + str(self.Description) + ', ' + \
+               'WriteMask:' + str(self.WriteMask) + ', ' + \
+               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
+               'Executable:' + str(self.Executable) + ', ' + \
+               'UserExecutable:' + str(self.UserExecutable) + ')'
 
     __repr__ = __str__
 
@@ -4555,11 +4485,11 @@ class ObjectTypeAttributes(object):
 
     def __str__(self):
         return 'ObjectTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-             'DisplayName:' + str(self.DisplayName) + ', ' + \
-             'Description:' + str(self.Description) + ', ' + \
-             'WriteMask:' + str(self.WriteMask) + ', ' + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-             'IsAbstract:' + str(self.IsAbstract) + ')'
+               'DisplayName:' + str(self.DisplayName) + ', ' + \
+               'Description:' + str(self.Description) + ', ' + \
+               'WriteMask:' + str(self.WriteMask) + ', ' + \
+               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
+               'IsAbstract:' + str(self.IsAbstract) + ')'
 
     __repr__ = __str__
 
@@ -4652,15 +4582,15 @@ class VariableTypeAttributes(object):
 
     def __str__(self):
         return 'VariableTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-             'DisplayName:' + str(self.DisplayName) + ', ' + \
-             'Description:' + str(self.Description) + ', ' + \
-             'WriteMask:' + str(self.WriteMask) + ', ' + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-             'Value:' + str(self.Value) + ', ' + \
-             'DataType:' + str(self.DataType) + ', ' + \
-             'ValueRank:' + str(self.ValueRank) + ', ' + \
-             'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
-             'IsAbstract:' + str(self.IsAbstract) + ')'
+               'DisplayName:' + str(self.DisplayName) + ', ' + \
+               'Description:' + str(self.Description) + ', ' + \
+               'WriteMask:' + str(self.WriteMask) + ', ' + \
+               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
+               'Value:' + str(self.Value) + ', ' + \
+               'DataType:' + str(self.DataType) + ', ' + \
+               'ValueRank:' + str(self.ValueRank) + ', ' + \
+               'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
+               'IsAbstract:' + str(self.IsAbstract) + ')'
 
     __repr__ = __str__
 
@@ -4739,13 +4669,13 @@ class ReferenceTypeAttributes(object):
 
     def __str__(self):
         return 'ReferenceTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-             'DisplayName:' + str(self.DisplayName) + ', ' + \
-             'Description:' + str(self.Description) + ', ' + \
-             'WriteMask:' + str(self.WriteMask) + ', ' + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-             'IsAbstract:' + str(self.IsAbstract) + ', ' + \
-             'Symmetric:' + str(self.Symmetric) + ', ' + \
-             'InverseName:' + str(self.InverseName) + ')'
+               'DisplayName:' + str(self.DisplayName) + ', ' + \
+               'Description:' + str(self.Description) + ', ' + \
+               'WriteMask:' + str(self.WriteMask) + ', ' + \
+               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
+               'IsAbstract:' + str(self.IsAbstract) + ', ' + \
+               'Symmetric:' + str(self.Symmetric) + ', ' + \
+               'InverseName:' + str(self.InverseName) + ')'
 
     __repr__ = __str__
 
@@ -4812,11 +4742,11 @@ class DataTypeAttributes(object):
 
     def __str__(self):
         return 'DataTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-             'DisplayName:' + str(self.DisplayName) + ', ' + \
-             'Description:' + str(self.Description) + ', ' + \
-             'WriteMask:' + str(self.WriteMask) + ', ' + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-             'IsAbstract:' + str(self.IsAbstract) + ')'
+               'DisplayName:' + str(self.DisplayName) + ', ' + \
+               'Description:' + str(self.Description) + ', ' + \
+               'WriteMask:' + str(self.WriteMask) + ', ' + \
+               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
+               'IsAbstract:' + str(self.IsAbstract) + ')'
 
     __repr__ = __str__
 
@@ -4889,12 +4819,12 @@ class ViewAttributes(object):
 
     def __str__(self):
         return 'ViewAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-             'DisplayName:' + str(self.DisplayName) + ', ' + \
-             'Description:' + str(self.Description) + ', ' + \
-             'WriteMask:' + str(self.WriteMask) + ', ' + \
-             'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-             'ContainsNoLoops:' + str(self.ContainsNoLoops) + ', ' + \
-             'EventNotifier:' + str(self.EventNotifier) + ')'
+               'DisplayName:' + str(self.DisplayName) + ', ' + \
+               'Description:' + str(self.Description) + ', ' + \
+               'WriteMask:' + str(self.WriteMask) + ', ' + \
+               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
+               'ContainsNoLoops:' + str(self.ContainsNoLoops) + ', ' + \
+               'EventNotifier:' + str(self.EventNotifier) + ')'
 
     __repr__ = __str__
 
@@ -4967,12 +4897,12 @@ class AddNodesItem(object):
 
     def __str__(self):
         return 'AddNodesItem(' + 'ParentNodeId:' + str(self.ParentNodeId) + ', ' + \
-             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-             'RequestedNewNodeId:' + str(self.RequestedNewNodeId) + ', ' + \
-             'BrowseName:' + str(self.BrowseName) + ', ' + \
-             'NodeClass:' + str(self.NodeClass) + ', ' + \
-             'NodeAttributes:' + str(self.NodeAttributes) + ', ' + \
-             'TypeDefinition:' + str(self.TypeDefinition) + ')'
+               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
+               'RequestedNewNodeId:' + str(self.RequestedNewNodeId) + ', ' + \
+               'BrowseName:' + str(self.BrowseName) + ', ' + \
+               'NodeClass:' + str(self.NodeClass) + ', ' + \
+               'NodeAttributes:' + str(self.NodeAttributes) + ', ' + \
+               'TypeDefinition:' + str(self.TypeDefinition) + ')'
 
     __repr__ = __str__
 
@@ -5015,7 +4945,7 @@ class AddNodesResult(object):
 
     def __str__(self):
         return 'AddNodesResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-             'AddedNodeId:' + str(self.AddedNodeId) + ')'
+               'AddedNodeId:' + str(self.AddedNodeId) + ')'
 
     __repr__ = __str__
 
@@ -5105,8 +5035,8 @@ class AddNodesRequest(object):
 
     def __str__(self):
         return 'AddNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -5175,9 +5105,9 @@ class AddNodesResponse(object):
 
     def __str__(self):
         return 'AddNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -5244,11 +5174,11 @@ class AddReferencesItem(object):
 
     def __str__(self):
         return 'AddReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', ' + \
-             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-             'IsForward:' + str(self.IsForward) + ', ' + \
-             'TargetServerUri:' + str(self.TargetServerUri) + ', ' + \
-             'TargetNodeId:' + str(self.TargetNodeId) + ', ' + \
-             'TargetNodeClass:' + str(self.TargetNodeClass) + ')'
+               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
+               'IsForward:' + str(self.IsForward) + ', ' + \
+               'TargetServerUri:' + str(self.TargetServerUri) + ', ' + \
+               'TargetNodeId:' + str(self.TargetNodeId) + ', ' + \
+               'TargetNodeClass:' + str(self.TargetNodeClass) + ')'
 
     __repr__ = __str__
 
@@ -5304,8 +5234,8 @@ class AddReferencesRequest(object):
 
     def __str__(self):
         return 'AddReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'ReferencesToAdd:' + str(self.ReferencesToAdd) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'ReferencesToAdd:' + str(self.ReferencesToAdd) + ')'
 
     __repr__ = __str__
 
@@ -5374,9 +5304,9 @@ class AddReferencesResponse(object):
 
     def __str__(self):
         return 'AddReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -5419,7 +5349,7 @@ class DeleteNodesItem(object):
 
     def __str__(self):
         return 'DeleteNodesItem(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-             'DeleteTargetReferences:' + str(self.DeleteTargetReferences) + ')'
+               'DeleteTargetReferences:' + str(self.DeleteTargetReferences) + ')'
 
     __repr__ = __str__
 
@@ -5509,8 +5439,8 @@ class DeleteNodesRequest(object):
 
     def __str__(self):
         return 'DeleteNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -5565,7 +5495,7 @@ class DeleteNodesResult(object):
 
     def __str__(self):
         return 'DeleteNodesResult(' + 'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -5614,8 +5544,8 @@ class DeleteNodesResponse(object):
 
     def __str__(self):
         return 'DeleteNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -5676,10 +5606,10 @@ class DeleteReferencesItem(object):
 
     def __str__(self):
         return 'DeleteReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', ' + \
-             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-             'IsForward:' + str(self.IsForward) + ', ' + \
-             'TargetNodeId:' + str(self.TargetNodeId) + ', ' + \
-             'DeleteBidirectional:' + str(self.DeleteBidirectional) + ')'
+               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
+               'IsForward:' + str(self.IsForward) + ', ' + \
+               'TargetNodeId:' + str(self.TargetNodeId) + ', ' + \
+               'DeleteBidirectional:' + str(self.DeleteBidirectional) + ')'
 
     __repr__ = __str__
 
@@ -5769,8 +5699,8 @@ class DeleteReferencesRequest(object):
 
     def __str__(self):
         return 'DeleteReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -5825,7 +5755,7 @@ class DeleteReferencesResult(object):
 
     def __str__(self):
         return 'DeleteReferencesResult(' + 'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -5874,8 +5804,8 @@ class DeleteReferencesResponse(object):
 
     def __str__(self):
         return 'DeleteReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -5924,8 +5854,8 @@ class ViewDescription(object):
 
     def __str__(self):
         return 'ViewDescription(' + 'ViewId:' + str(self.ViewId) + ', ' + \
-             'Timestamp:' + str(self.Timestamp) + ', ' + \
-             'ViewVersion:' + str(self.ViewVersion) + ')'
+               'Timestamp:' + str(self.Timestamp) + ', ' + \
+               'ViewVersion:' + str(self.ViewVersion) + ')'
 
     __repr__ = __str__
 
@@ -5992,11 +5922,11 @@ class BrowseDescription(object):
 
     def __str__(self):
         return 'BrowseDescription(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-             'BrowseDirection:' + str(self.BrowseDirection) + ', ' + \
-             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-             'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', ' + \
-             'NodeClassMask:' + str(self.NodeClassMask) + ', ' + \
-             'ResultMask:' + str(self.ResultMask) + ')'
+               'BrowseDirection:' + str(self.BrowseDirection) + ', ' + \
+               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
+               'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', ' + \
+               'NodeClassMask:' + str(self.NodeClassMask) + ', ' + \
+               'ResultMask:' + str(self.ResultMask) + ')'
 
     __repr__ = __str__
 
@@ -6069,12 +5999,12 @@ class ReferenceDescription(object):
 
     def __str__(self):
         return 'ReferenceDescription(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-             'IsForward:' + str(self.IsForward) + ', ' + \
-             'NodeId:' + str(self.NodeId) + ', ' + \
-             'BrowseName:' + str(self.BrowseName) + ', ' + \
-             'DisplayName:' + str(self.DisplayName) + ', ' + \
-             'NodeClass:' + str(self.NodeClass) + ', ' + \
-             'TypeDefinition:' + str(self.TypeDefinition) + ')'
+               'IsForward:' + str(self.IsForward) + ', ' + \
+               'NodeId:' + str(self.NodeId) + ', ' + \
+               'BrowseName:' + str(self.BrowseName) + ', ' + \
+               'DisplayName:' + str(self.DisplayName) + ', ' + \
+               'NodeClass:' + str(self.NodeClass) + ', ' + \
+               'TypeDefinition:' + str(self.TypeDefinition) + ')'
 
     __repr__ = __str__
 
@@ -6130,8 +6060,8 @@ class BrowseResult(object):
 
     def __str__(self):
         return 'BrowseResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-             'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
-             'References:' + str(self.References) + ')'
+               'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
+               'References:' + str(self.References) + ')'
 
     __repr__ = __str__
 
@@ -6185,8 +6115,8 @@ class BrowseParameters(object):
 
     def __str__(self):
         return 'BrowseParameters(' + 'View:' + str(self.View) + ', ' + \
-             'RequestedMaxReferencesPerNode:' + str(self.RequestedMaxReferencesPerNode) + ', ' + \
-             'NodesToBrowse:' + str(self.NodesToBrowse) + ')'
+               'RequestedMaxReferencesPerNode:' + str(self.RequestedMaxReferencesPerNode) + ', ' + \
+               'NodesToBrowse:' + str(self.NodesToBrowse) + ')'
 
     __repr__ = __str__
 
@@ -6235,8 +6165,8 @@ class BrowseRequest(object):
 
     def __str__(self):
         return 'BrowseRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -6305,9 +6235,9 @@ class BrowseResponse(object):
 
     def __str__(self):
         return 'BrowseResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -6350,7 +6280,7 @@ class BrowseNextParameters(object):
 
     def __str__(self):
         return 'BrowseNextParameters(' + 'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', ' + \
-             'ContinuationPoints:' + str(self.ContinuationPoints) + ')'
+               'ContinuationPoints:' + str(self.ContinuationPoints) + ')'
 
     __repr__ = __str__
 
@@ -6399,8 +6329,8 @@ class BrowseNextRequest(object):
 
     def __str__(self):
         return 'BrowseNextRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -6455,7 +6385,7 @@ class BrowseNextResult(object):
 
     def __str__(self):
         return 'BrowseNextResult(' + 'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -6504,8 +6434,8 @@ class BrowseNextResponse(object):
 
     def __str__(self):
         return 'BrowseNextResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -6560,9 +6490,9 @@ class RelativePathElement(object):
 
     def __str__(self):
         return 'RelativePathElement(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-             'IsInverse:' + str(self.IsInverse) + ', ' + \
-             'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', ' + \
-             'TargetName:' + str(self.TargetName) + ')'
+               'IsInverse:' + str(self.IsInverse) + ', ' + \
+               'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', ' + \
+               'TargetName:' + str(self.TargetName) + ')'
 
     __repr__ = __str__
 
@@ -6648,7 +6578,7 @@ class BrowsePath(object):
 
     def __str__(self):
         return 'BrowsePath(' + 'StartingNode:' + str(self.StartingNode) + ', ' + \
-             'RelativePath:' + str(self.RelativePath) + ')'
+               'RelativePath:' + str(self.RelativePath) + ')'
 
     __repr__ = __str__
 
@@ -6691,7 +6621,7 @@ class BrowsePathTarget(object):
 
     def __str__(self):
         return 'BrowsePathTarget(' + 'TargetId:' + str(self.TargetId) + ', ' + \
-             'RemainingPathIndex:' + str(self.RemainingPathIndex) + ')'
+               'RemainingPathIndex:' + str(self.RemainingPathIndex) + ')'
 
     __repr__ = __str__
 
@@ -6741,7 +6671,7 @@ class BrowsePathResult(object):
 
     def __str__(self):
         return 'BrowsePathResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-             'Targets:' + str(self.Targets) + ')'
+               'Targets:' + str(self.Targets) + ')'
 
     __repr__ = __str__
 
@@ -6831,8 +6761,8 @@ class TranslateBrowsePathsToNodeIdsRequest(object):
 
     def __str__(self):
         return 'TranslateBrowsePathsToNodeIdsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -6901,9 +6831,9 @@ class TranslateBrowsePathsToNodeIdsResponse(object):
 
     def __str__(self):
         return 'TranslateBrowsePathsToNodeIdsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -6993,8 +6923,8 @@ class RegisterNodesRequest(object):
 
     def __str__(self):
         return 'RegisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -7084,8 +7014,8 @@ class RegisterNodesResponse(object):
 
     def __str__(self):
         return 'RegisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -7175,8 +7105,8 @@ class UnregisterNodesRequest(object):
 
     def __str__(self):
         return 'UnregisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -7219,7 +7149,7 @@ class UnregisterNodesResponse(object):
 
     def __str__(self):
         return 'UnregisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ')'
 
     __repr__ = __str__
 
@@ -7302,14 +7232,14 @@ class EndpointConfiguration(object):
 
     def __str__(self):
         return 'EndpointConfiguration(' + 'OperationTimeout:' + str(self.OperationTimeout) + ', ' + \
-             'UseBinaryEncoding:' + str(self.UseBinaryEncoding) + ', ' + \
-             'MaxStringLength:' + str(self.MaxStringLength) + ', ' + \
-             'MaxByteStringLength:' + str(self.MaxByteStringLength) + ', ' + \
-             'MaxArrayLength:' + str(self.MaxArrayLength) + ', ' + \
-             'MaxMessageSize:' + str(self.MaxMessageSize) + ', ' + \
-             'MaxBufferSize:' + str(self.MaxBufferSize) + ', ' + \
-             'ChannelLifetime:' + str(self.ChannelLifetime) + ', ' + \
-             'SecurityTokenLifetime:' + str(self.SecurityTokenLifetime) + ')'
+               'UseBinaryEncoding:' + str(self.UseBinaryEncoding) + ', ' + \
+               'MaxStringLength:' + str(self.MaxStringLength) + ', ' + \
+               'MaxByteStringLength:' + str(self.MaxByteStringLength) + ', ' + \
+               'MaxArrayLength:' + str(self.MaxArrayLength) + ', ' + \
+               'MaxMessageSize:' + str(self.MaxMessageSize) + ', ' + \
+               'MaxBufferSize:' + str(self.MaxBufferSize) + ', ' + \
+               'ChannelLifetime:' + str(self.ChannelLifetime) + ', ' + \
+               'SecurityTokenLifetime:' + str(self.SecurityTokenLifetime) + ')'
 
     __repr__ = __str__
 
@@ -7376,11 +7306,11 @@ class SupportedProfile(object):
 
     def __str__(self):
         return 'SupportedProfile(' + 'OrganizationUri:' + str(self.OrganizationUri) + ', ' + \
-             'ProfileId:' + str(self.ProfileId) + ', ' + \
-             'ComplianceTool:' + str(self.ComplianceTool) + ', ' + \
-             'ComplianceDate:' + str(self.ComplianceDate) + ', ' + \
-             'ComplianceLevel:' + str(self.ComplianceLevel) + ', ' + \
-             'UnsupportedUnitIds:' + str(self.UnsupportedUnitIds) + ')'
+               'ProfileId:' + str(self.ProfileId) + ', ' + \
+               'ComplianceTool:' + str(self.ComplianceTool) + ', ' + \
+               'ComplianceDate:' + str(self.ComplianceDate) + ', ' + \
+               'ComplianceLevel:' + str(self.ComplianceLevel) + ', ' + \
+               'UnsupportedUnitIds:' + str(self.UnsupportedUnitIds) + ')'
 
     __repr__ = __str__
 
@@ -7476,15 +7406,15 @@ class SoftwareCertificate(object):
 
     def __str__(self):
         return 'SoftwareCertificate(' + 'ProductName:' + str(self.ProductName) + ', ' + \
-             'ProductUri:' + str(self.ProductUri) + ', ' + \
-             'VendorName:' + str(self.VendorName) + ', ' + \
-             'VendorProductCertificate:' + str(self.VendorProductCertificate) + ', ' + \
-             'SoftwareVersion:' + str(self.SoftwareVersion) + ', ' + \
-             'BuildNumber:' + str(self.BuildNumber) + ', ' + \
-             'BuildDate:' + str(self.BuildDate) + ', ' + \
-             'IssuedBy:' + str(self.IssuedBy) + ', ' + \
-             'IssueDate:' + str(self.IssueDate) + ', ' + \
-             'SupportedProfiles:' + str(self.SupportedProfiles) + ')'
+               'ProductUri:' + str(self.ProductUri) + ', ' + \
+               'VendorName:' + str(self.VendorName) + ', ' + \
+               'VendorProductCertificate:' + str(self.VendorProductCertificate) + ', ' + \
+               'SoftwareVersion:' + str(self.SoftwareVersion) + ', ' + \
+               'BuildNumber:' + str(self.BuildNumber) + ', ' + \
+               'BuildDate:' + str(self.BuildDate) + ', ' + \
+               'IssuedBy:' + str(self.IssuedBy) + ', ' + \
+               'IssueDate:' + str(self.IssueDate) + ', ' + \
+               'SupportedProfiles:' + str(self.SupportedProfiles) + ')'
 
     __repr__ = __str__
 
@@ -7531,8 +7461,8 @@ class QueryDataDescription(object):
 
     def __str__(self):
         return 'QueryDataDescription(' + 'RelativePath:' + str(self.RelativePath) + ', ' + \
-             'AttributeId:' + str(self.AttributeId) + ', ' + \
-             'IndexRange:' + str(self.IndexRange) + ')'
+               'AttributeId:' + str(self.AttributeId) + ', ' + \
+               'IndexRange:' + str(self.IndexRange) + ')'
 
     __repr__ = __str__
 
@@ -7586,8 +7516,8 @@ class NodeTypeDescription(object):
 
     def __str__(self):
         return 'NodeTypeDescription(' + 'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', ' + \
-             'IncludeSubTypes:' + str(self.IncludeSubTypes) + ', ' + \
-             'DataToReturn:' + str(self.DataToReturn) + ')'
+               'IncludeSubTypes:' + str(self.IncludeSubTypes) + ', ' + \
+               'DataToReturn:' + str(self.DataToReturn) + ')'
 
     __repr__ = __str__
 
@@ -7641,8 +7571,8 @@ class QueryDataSet(object):
 
     def __str__(self):
         return 'QueryDataSet(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-             'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', ' + \
-             'Values:' + str(self.Values) + ')'
+               'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', ' + \
+               'Values:' + str(self.Values) + ')'
 
     __repr__ = __str__
 
@@ -7702,9 +7632,9 @@ class NodeReference(object):
 
     def __str__(self):
         return 'NodeReference(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-             'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-             'IsForward:' + str(self.IsForward) + ', ' + \
-             'ReferencedNodeIds:' + str(self.ReferencedNodeIds) + ')'
+               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
+               'IsForward:' + str(self.IsForward) + ', ' + \
+               'ReferencedNodeIds:' + str(self.ReferencedNodeIds) + ')'
 
     __repr__ = __str__
 
@@ -7752,7 +7682,7 @@ class ContentFilterElement(object):
 
     def __str__(self):
         return 'ContentFilterElement(' + 'FilterOperator:' + str(self.FilterOperator) + ', ' + \
-             'FilterOperands:' + str(self.FilterOperands) + ')'
+               'FilterOperands:' + str(self.FilterOperands) + ')'
 
     __repr__ = __str__
 
@@ -7920,10 +7850,10 @@ class AttributeOperand(object):
 
     def __str__(self):
         return 'AttributeOperand(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-             'Alias:' + str(self.Alias) + ', ' + \
-             'BrowsePath:' + str(self.BrowsePath) + ', ' + \
-             'AttributeId:' + str(self.AttributeId) + ', ' + \
-             'IndexRange:' + str(self.IndexRange) + ')'
+               'Alias:' + str(self.Alias) + ', ' + \
+               'BrowsePath:' + str(self.BrowsePath) + ', ' + \
+               'AttributeId:' + str(self.AttributeId) + ', ' + \
+               'IndexRange:' + str(self.IndexRange) + ')'
 
     __repr__ = __str__
 
@@ -7983,9 +7913,9 @@ class SimpleAttributeOperand(object):
 
     def __str__(self):
         return 'SimpleAttributeOperand(' + 'TypeDefinitionId:' + str(self.TypeDefinitionId) + ', ' + \
-             'BrowsePath:' + str(self.BrowsePath) + ', ' + \
-             'AttributeId:' + str(self.AttributeId) + ', ' + \
-             'IndexRange:' + str(self.IndexRange) + ')'
+               'BrowsePath:' + str(self.BrowsePath) + ', ' + \
+               'AttributeId:' + str(self.AttributeId) + ', ' + \
+               'IndexRange:' + str(self.IndexRange) + ')'
 
     __repr__ = __str__
 
@@ -8046,8 +7976,8 @@ class ContentFilterElementResult(object):
 
     def __str__(self):
         return 'ContentFilterElementResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-             'OperandStatusCodes:' + str(self.OperandStatusCodes) + ', ' + \
-             'OperandDiagnosticInfos:' + str(self.OperandDiagnosticInfos) + ')'
+               'OperandStatusCodes:' + str(self.OperandStatusCodes) + ', ' + \
+               'OperandDiagnosticInfos:' + str(self.OperandDiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -8102,7 +8032,7 @@ class ContentFilterResult(object):
 
     def __str__(self):
         return 'ContentFilterResult(' + 'ElementResults:' + str(self.ElementResults) + ', ' + \
-             'ElementDiagnosticInfos:' + str(self.ElementDiagnosticInfos) + ')'
+               'ElementDiagnosticInfos:' + str(self.ElementDiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -8163,8 +8093,8 @@ class ParsingResult(object):
 
     def __str__(self):
         return 'ParsingResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-             'DataStatusCodes:' + str(self.DataStatusCodes) + ', ' + \
-             'DataDiagnosticInfos:' + str(self.DataDiagnosticInfos) + ')'
+               'DataStatusCodes:' + str(self.DataStatusCodes) + ', ' + \
+               'DataDiagnosticInfos:' + str(self.DataDiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -8230,10 +8160,10 @@ class QueryFirstParameters(object):
 
     def __str__(self):
         return 'QueryFirstParameters(' + 'View:' + str(self.View) + ', ' + \
-             'NodeTypes:' + str(self.NodeTypes) + ', ' + \
-             'Filter:' + str(self.Filter) + ', ' + \
-             'MaxDataSetsToReturn:' + str(self.MaxDataSetsToReturn) + ', ' + \
-             'MaxReferencesToReturn:' + str(self.MaxReferencesToReturn) + ')'
+               'NodeTypes:' + str(self.NodeTypes) + ', ' + \
+               'Filter:' + str(self.Filter) + ', ' + \
+               'MaxDataSetsToReturn:' + str(self.MaxDataSetsToReturn) + ', ' + \
+               'MaxReferencesToReturn:' + str(self.MaxReferencesToReturn) + ')'
 
     __repr__ = __str__
 
@@ -8280,8 +8210,8 @@ class QueryFirstRequest(object):
 
     def __str__(self):
         return 'QueryFirstRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -8361,10 +8291,10 @@ class QueryFirstResult(object):
 
     def __str__(self):
         return 'QueryFirstResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', ' + \
-             'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
-             'ParsingResults:' + str(self.ParsingResults) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ', ' + \
-             'FilterResult:' + str(self.FilterResult) + ')'
+               'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
+               'ParsingResults:' + str(self.ParsingResults) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ', ' + \
+               'FilterResult:' + str(self.FilterResult) + ')'
 
     __repr__ = __str__
 
@@ -8411,8 +8341,8 @@ class QueryFirstResponse(object):
 
     def __str__(self):
         return 'QueryFirstResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -8453,7 +8383,7 @@ class QueryNextParameters(object):
 
     def __str__(self):
         return 'QueryNextParameters(' + 'ReleaseContinuationPoint:' + str(self.ReleaseContinuationPoint) + ', ' + \
-             'ContinuationPoint:' + str(self.ContinuationPoint) + ')'
+               'ContinuationPoint:' + str(self.ContinuationPoint) + ')'
 
     __repr__ = __str__
 
@@ -8500,8 +8430,8 @@ class QueryNextRequest(object):
 
     def __str__(self):
         return 'QueryNextRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -8549,7 +8479,7 @@ class QueryNextResult(object):
 
     def __str__(self):
         return 'QueryNextResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', ' + \
-             'RevisedContinuationPoint:' + str(self.RevisedContinuationPoint) + ')'
+               'RevisedContinuationPoint:' + str(self.RevisedContinuationPoint) + ')'
 
     __repr__ = __str__
 
@@ -8596,8 +8526,8 @@ class QueryNextResponse(object):
 
     def __str__(self):
         return 'QueryNextResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -8650,9 +8580,9 @@ class ReadValueId(object):
 
     def __str__(self):
         return 'ReadValueId(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-             'AttributeId:' + str(self.AttributeId) + ', ' + \
-             'IndexRange:' + str(self.IndexRange) + ', ' + \
-             'DataEncoding:' + str(self.DataEncoding) + ')'
+               'AttributeId:' + str(self.AttributeId) + ', ' + \
+               'IndexRange:' + str(self.IndexRange) + ', ' + \
+               'DataEncoding:' + str(self.DataEncoding) + ')'
 
     __repr__ = __str__
 
@@ -8706,8 +8636,8 @@ class ReadParameters(object):
 
     def __str__(self):
         return 'ReadParameters(' + 'MaxAge:' + str(self.MaxAge) + ', ' + \
-             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
-             'NodesToRead:' + str(self.NodesToRead) + ')'
+               'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
+               'NodesToRead:' + str(self.NodesToRead) + ')'
 
     __repr__ = __str__
 
@@ -8754,8 +8684,8 @@ class ReadRequest(object):
 
     def __str__(self):
         return 'ReadRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -8822,9 +8752,9 @@ class ReadResponse(object):
 
     def __str__(self):
         return 'ReadResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -8877,9 +8807,9 @@ class HistoryReadValueId(object):
 
     def __str__(self):
         return 'HistoryReadValueId(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-             'IndexRange:' + str(self.IndexRange) + ', ' + \
-             'DataEncoding:' + str(self.DataEncoding) + ', ' + \
-             'ContinuationPoint:' + str(self.ContinuationPoint) + ')'
+               'IndexRange:' + str(self.IndexRange) + ', ' + \
+               'DataEncoding:' + str(self.DataEncoding) + ', ' + \
+               'ContinuationPoint:' + str(self.ContinuationPoint) + ')'
 
     __repr__ = __str__
 
@@ -8926,8 +8856,8 @@ class HistoryReadResult(object):
 
     def __str__(self):
         return 'HistoryReadResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-             'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
-             'HistoryData:' + str(self.HistoryData) + ')'
+               'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
+               'HistoryData:' + str(self.HistoryData) + ')'
 
     __repr__ = __str__
 
@@ -9009,9 +8939,9 @@ class ReadEventDetails(object):
 
     def __str__(self):
         return 'ReadEventDetails(' + 'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', ' + \
-             'StartTime:' + str(self.StartTime) + ', ' + \
-             'EndTime:' + str(self.EndTime) + ', ' + \
-             'Filter:' + str(self.Filter) + ')'
+               'StartTime:' + str(self.StartTime) + ', ' + \
+               'EndTime:' + str(self.EndTime) + ', ' + \
+               'Filter:' + str(self.Filter) + ')'
 
     __repr__ = __str__
 
@@ -9070,10 +9000,10 @@ class ReadRawModifiedDetails(object):
 
     def __str__(self):
         return 'ReadRawModifiedDetails(' + 'IsReadModified:' + str(self.IsReadModified) + ', ' + \
-             'StartTime:' + str(self.StartTime) + ', ' + \
-             'EndTime:' + str(self.EndTime) + ', ' + \
-             'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', ' + \
-             'ReturnBounds:' + str(self.ReturnBounds) + ')'
+               'StartTime:' + str(self.StartTime) + ', ' + \
+               'EndTime:' + str(self.EndTime) + ', ' + \
+               'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', ' + \
+               'ReturnBounds:' + str(self.ReturnBounds) + ')'
 
     __repr__ = __str__
 
@@ -9139,10 +9069,10 @@ class ReadProcessedDetails(object):
 
     def __str__(self):
         return 'ReadProcessedDetails(' + 'StartTime:' + str(self.StartTime) + ', ' + \
-             'EndTime:' + str(self.EndTime) + ', ' + \
-             'ProcessingInterval:' + str(self.ProcessingInterval) + ', ' + \
-             'AggregateType:' + str(self.AggregateType) + ', ' + \
-             'AggregateConfiguration:' + str(self.AggregateConfiguration) + ')'
+               'EndTime:' + str(self.EndTime) + ', ' + \
+               'ProcessingInterval:' + str(self.ProcessingInterval) + ', ' + \
+               'AggregateType:' + str(self.AggregateType) + ', ' + \
+               'AggregateConfiguration:' + str(self.AggregateConfiguration) + ')'
 
     __repr__ = __str__
 
@@ -9185,7 +9115,7 @@ class ReadAtTimeDetails(object):
 
     def __str__(self):
         return 'ReadAtTimeDetails(' + 'ReqTimes:' + str(self.ReqTimes) + ', ' + \
-             'UseSimpleBounds:' + str(self.UseSimpleBounds) + ')'
+               'UseSimpleBounds:' + str(self.UseSimpleBounds) + ')'
 
     __repr__ = __str__
 
@@ -9273,8 +9203,8 @@ class ModificationInfo(object):
 
     def __str__(self):
         return 'ModificationInfo(' + 'ModificationTime:' + str(self.ModificationTime) + ', ' + \
-             'UpdateType:' + str(self.UpdateType) + ', ' + \
-             'UserName:' + str(self.UserName) + ')'
+               'UpdateType:' + str(self.UpdateType) + ', ' + \
+               'UserName:' + str(self.UserName) + ')'
 
     __repr__ = __str__
 
@@ -9329,7 +9259,7 @@ class HistoryModifiedData(object):
 
     def __str__(self):
         return 'HistoryModifiedData(' + 'DataValues:' + str(self.DataValues) + ', ' + \
-             'ModificationInfos:' + str(self.ModificationInfos) + ')'
+               'ModificationInfos:' + str(self.ModificationInfos) + ')'
 
     __repr__ = __str__
 
@@ -9430,9 +9360,9 @@ class HistoryReadParameters(object):
 
     def __str__(self):
         return 'HistoryReadParameters(' + 'HistoryReadDetails:' + str(self.HistoryReadDetails) + ', ' + \
-             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
-             'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', ' + \
-             'NodesToRead:' + str(self.NodesToRead) + ')'
+               'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
+               'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', ' + \
+               'NodesToRead:' + str(self.NodesToRead) + ')'
 
     __repr__ = __str__
 
@@ -9479,8 +9409,8 @@ class HistoryReadRequest(object):
 
     def __str__(self):
         return 'HistoryReadRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -9547,9 +9477,9 @@ class HistoryReadResponse(object):
 
     def __str__(self):
         return 'HistoryReadResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -9602,9 +9532,9 @@ class WriteValue(object):
 
     def __str__(self):
         return 'WriteValue(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-             'AttributeId:' + str(self.AttributeId) + ', ' + \
-             'IndexRange:' + str(self.IndexRange) + ', ' + \
-             'Value:' + str(self.Value) + ')'
+               'AttributeId:' + str(self.AttributeId) + ', ' + \
+               'IndexRange:' + str(self.IndexRange) + ', ' + \
+               'Value:' + str(self.Value) + ')'
 
     __repr__ = __str__
 
@@ -9692,8 +9622,8 @@ class WriteRequest(object):
 
     def __str__(self):
         return 'WriteRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -9760,9 +9690,9 @@ class WriteResponse(object):
 
     def __str__(self):
         return 'WriteResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -9850,8 +9780,8 @@ class UpdateDataDetails(object):
 
     def __str__(self):
         return 'UpdateDataDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-             'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
-             'UpdateValues:' + str(self.UpdateValues) + ')'
+               'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
+               'UpdateValues:' + str(self.UpdateValues) + ')'
 
     __repr__ = __str__
 
@@ -9905,8 +9835,8 @@ class UpdateStructureDataDetails(object):
 
     def __str__(self):
         return 'UpdateStructureDataDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-             'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
-             'UpdateValues:' + str(self.UpdateValues) + ')'
+               'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
+               'UpdateValues:' + str(self.UpdateValues) + ')'
 
     __repr__ = __str__
 
@@ -9966,9 +9896,9 @@ class UpdateEventDetails(object):
 
     def __str__(self):
         return 'UpdateEventDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-             'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
-             'Filter:' + str(self.Filter) + ', ' + \
-             'EventData:' + str(self.EventData) + ')'
+               'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
+               'Filter:' + str(self.Filter) + ', ' + \
+               'EventData:' + str(self.EventData) + ')'
 
     __repr__ = __str__
 
@@ -10021,9 +9951,9 @@ class DeleteRawModifiedDetails(object):
 
     def __str__(self):
         return 'DeleteRawModifiedDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-             'IsDeleteModified:' + str(self.IsDeleteModified) + ', ' + \
-             'StartTime:' + str(self.StartTime) + ', ' + \
-             'EndTime:' + str(self.EndTime) + ')'
+               'IsDeleteModified:' + str(self.IsDeleteModified) + ', ' + \
+               'StartTime:' + str(self.StartTime) + ', ' + \
+               'EndTime:' + str(self.EndTime) + ')'
 
     __repr__ = __str__
 
@@ -10066,7 +9996,7 @@ class DeleteAtTimeDetails(object):
 
     def __str__(self):
         return 'DeleteAtTimeDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-             'ReqTimes:' + str(self.ReqTimes) + ')'
+               'ReqTimes:' + str(self.ReqTimes) + ')'
 
     __repr__ = __str__
 
@@ -10109,7 +10039,7 @@ class DeleteEventDetails(object):
 
     def __str__(self):
         return 'DeleteEventDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-             'EventIds:' + str(self.EventIds) + ')'
+               'EventIds:' + str(self.EventIds) + ')'
 
     __repr__ = __str__
 
@@ -10170,8 +10100,8 @@ class HistoryUpdateResult(object):
 
     def __str__(self):
         return 'HistoryUpdateResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-             'OperationResults:' + str(self.OperationResults) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'OperationResults:' + str(self.OperationResults) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -10259,8 +10189,8 @@ class HistoryUpdateRequest(object):
 
     def __str__(self):
         return 'HistoryUpdateRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -10327,9 +10257,9 @@ class HistoryUpdateResponse(object):
 
     def __str__(self):
         return 'HistoryUpdateResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -10383,8 +10313,8 @@ class CallMethodRequest(object):
 
     def __str__(self):
         return 'CallMethodRequest(' + 'ObjectId:' + str(self.ObjectId) + ', ' + \
-             'MethodId:' + str(self.MethodId) + ', ' + \
-             'InputArguments:' + str(self.InputArguments) + ')'
+               'MethodId:' + str(self.MethodId) + ', ' + \
+               'InputArguments:' + str(self.InputArguments) + ')'
 
     __repr__ = __str__
 
@@ -10458,9 +10388,9 @@ class CallMethodResult(object):
 
     def __str__(self):
         return 'CallMethodResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-             'InputArgumentResults:' + str(self.InputArgumentResults) + ', ' + \
-             'InputArgumentDiagnosticInfos:' + str(self.InputArgumentDiagnosticInfos) + ', ' + \
-             'OutputArguments:' + str(self.OutputArguments) + ')'
+               'InputArgumentResults:' + str(self.InputArgumentResults) + ', ' + \
+               'InputArgumentDiagnosticInfos:' + str(self.InputArgumentDiagnosticInfos) + ', ' + \
+               'OutputArguments:' + str(self.OutputArguments) + ')'
 
     __repr__ = __str__
 
@@ -10548,8 +10478,8 @@ class CallRequest(object):
 
     def __str__(self):
         return 'CallRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -10616,9 +10546,9 @@ class CallResponse(object):
 
     def __str__(self):
         return 'CallResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -10694,8 +10624,8 @@ class DataChangeFilter(object):
 
     def __str__(self):
         return 'DataChangeFilter(' + 'Trigger:' + str(self.Trigger) + ', ' + \
-             'DeadbandType:' + str(self.DeadbandType) + ', ' + \
-             'DeadbandValue:' + str(self.DeadbandValue) + ')'
+               'DeadbandType:' + str(self.DeadbandType) + ', ' + \
+               'DeadbandValue:' + str(self.DeadbandValue) + ')'
 
     __repr__ = __str__
 
@@ -10743,7 +10673,7 @@ class EventFilter(object):
 
     def __str__(self):
         return 'EventFilter(' + 'SelectClauses:' + str(self.SelectClauses) + ', ' + \
-             'WhereClause:' + str(self.WhereClause) + ')'
+               'WhereClause:' + str(self.WhereClause) + ')'
 
     __repr__ = __str__
 
@@ -10802,10 +10732,10 @@ class AggregateConfiguration(object):
 
     def __str__(self):
         return 'AggregateConfiguration(' + 'UseServerCapabilitiesDefaults:' + str(self.UseServerCapabilitiesDefaults) + ', ' + \
-             'TreatUncertainAsBad:' + str(self.TreatUncertainAsBad) + ', ' + \
-             'PercentDataBad:' + str(self.PercentDataBad) + ', ' + \
-             'PercentDataGood:' + str(self.PercentDataGood) + ', ' + \
-             'UseSlopedExtrapolation:' + str(self.UseSlopedExtrapolation) + ')'
+               'TreatUncertainAsBad:' + str(self.TreatUncertainAsBad) + ', ' + \
+               'PercentDataBad:' + str(self.PercentDataBad) + ', ' + \
+               'PercentDataGood:' + str(self.PercentDataGood) + ', ' + \
+               'UseSlopedExtrapolation:' + str(self.UseSlopedExtrapolation) + ')'
 
     __repr__ = __str__
 
@@ -10858,9 +10788,9 @@ class AggregateFilter(object):
 
     def __str__(self):
         return 'AggregateFilter(' + 'StartTime:' + str(self.StartTime) + ', ' + \
-             'AggregateType:' + str(self.AggregateType) + ', ' + \
-             'ProcessingInterval:' + str(self.ProcessingInterval) + ', ' + \
-             'AggregateConfiguration:' + str(self.AggregateConfiguration) + ')'
+               'AggregateType:' + str(self.AggregateType) + ', ' + \
+               'ProcessingInterval:' + str(self.ProcessingInterval) + ', ' + \
+               'AggregateConfiguration:' + str(self.AggregateConfiguration) + ')'
 
     __repr__ = __str__
 
@@ -10950,8 +10880,8 @@ class EventFilterResult(object):
 
     def __str__(self):
         return 'EventFilterResult(' + 'SelectClauseResults:' + str(self.SelectClauseResults) + ', ' + \
-             'SelectClauseDiagnosticInfos:' + str(self.SelectClauseDiagnosticInfos) + ', ' + \
-             'WhereClauseResult:' + str(self.WhereClauseResult) + ')'
+               'SelectClauseDiagnosticInfos:' + str(self.SelectClauseDiagnosticInfos) + ', ' + \
+               'WhereClauseResult:' + str(self.WhereClauseResult) + ')'
 
     __repr__ = __str__
 
@@ -10998,8 +10928,8 @@ class AggregateFilterResult(object):
 
     def __str__(self):
         return 'AggregateFilterResult(' + 'RevisedStartTime:' + str(self.RevisedStartTime) + ', ' + \
-             'RevisedProcessingInterval:' + str(self.RevisedProcessingInterval) + ', ' + \
-             'RevisedAggregateConfiguration:' + str(self.RevisedAggregateConfiguration) + ')'
+               'RevisedProcessingInterval:' + str(self.RevisedProcessingInterval) + ', ' + \
+               'RevisedAggregateConfiguration:' + str(self.RevisedAggregateConfiguration) + ')'
 
     __repr__ = __str__
 
@@ -11058,10 +10988,10 @@ class MonitoringParameters(object):
 
     def __str__(self):
         return 'MonitoringParameters(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
-             'SamplingInterval:' + str(self.SamplingInterval) + ', ' + \
-             'Filter:' + str(self.Filter) + ', ' + \
-             'QueueSize:' + str(self.QueueSize) + ', ' + \
-             'DiscardOldest:' + str(self.DiscardOldest) + ')'
+               'SamplingInterval:' + str(self.SamplingInterval) + ', ' + \
+               'Filter:' + str(self.Filter) + ', ' + \
+               'QueueSize:' + str(self.QueueSize) + ', ' + \
+               'DiscardOldest:' + str(self.DiscardOldest) + ')'
 
     __repr__ = __str__
 
@@ -11108,8 +11038,8 @@ class MonitoredItemCreateRequest(object):
 
     def __str__(self):
         return 'MonitoredItemCreateRequest(' + 'ItemToMonitor:' + str(self.ItemToMonitor) + ', ' + \
-             'MonitoringMode:' + str(self.MonitoringMode) + ', ' + \
-             'RequestedParameters:' + str(self.RequestedParameters) + ')'
+               'MonitoringMode:' + str(self.MonitoringMode) + ', ' + \
+               'RequestedParameters:' + str(self.RequestedParameters) + ')'
 
     __repr__ = __str__
 
@@ -11168,10 +11098,10 @@ class MonitoredItemCreateResult(object):
 
     def __str__(self):
         return 'MonitoredItemCreateResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-             'MonitoredItemId:' + str(self.MonitoredItemId) + ', ' + \
-             'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', ' + \
-             'RevisedQueueSize:' + str(self.RevisedQueueSize) + ', ' + \
-             'FilterResult:' + str(self.FilterResult) + ')'
+               'MonitoredItemId:' + str(self.MonitoredItemId) + ', ' + \
+               'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', ' + \
+               'RevisedQueueSize:' + str(self.RevisedQueueSize) + ', ' + \
+               'FilterResult:' + str(self.FilterResult) + ')'
 
     __repr__ = __str__
 
@@ -11225,8 +11155,8 @@ class CreateMonitoredItemsParameters(object):
 
     def __str__(self):
         return 'CreateMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
-             'ItemsToCreate:' + str(self.ItemsToCreate) + ')'
+               'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
+               'ItemsToCreate:' + str(self.ItemsToCreate) + ')'
 
     __repr__ = __str__
 
@@ -11273,8 +11203,8 @@ class CreateMonitoredItemsRequest(object):
 
     def __str__(self):
         return 'CreateMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -11341,9 +11271,9 @@ class CreateMonitoredItemsResponse(object):
 
     def __str__(self):
         return 'CreateMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -11384,7 +11314,7 @@ class MonitoredItemModifyRequest(object):
 
     def __str__(self):
         return 'MonitoredItemModifyRequest(' + 'MonitoredItemId:' + str(self.MonitoredItemId) + ', ' + \
-             'RequestedParameters:' + str(self.RequestedParameters) + ')'
+               'RequestedParameters:' + str(self.RequestedParameters) + ')'
 
     __repr__ = __str__
 
@@ -11437,9 +11367,9 @@ class MonitoredItemModifyResult(object):
 
     def __str__(self):
         return 'MonitoredItemModifyResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-             'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', ' + \
-             'RevisedQueueSize:' + str(self.RevisedQueueSize) + ', ' + \
-             'FilterResult:' + str(self.FilterResult) + ')'
+               'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', ' + \
+               'RevisedQueueSize:' + str(self.RevisedQueueSize) + ', ' + \
+               'FilterResult:' + str(self.FilterResult) + ')'
 
     __repr__ = __str__
 
@@ -11493,8 +11423,8 @@ class ModifyMonitoredItemsParameters(object):
 
     def __str__(self):
         return 'ModifyMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-             'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
-             'ItemsToModify:' + str(self.ItemsToModify) + ')'
+               'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
+               'ItemsToModify:' + str(self.ItemsToModify) + ')'
 
     __repr__ = __str__
 
@@ -11541,8 +11471,8 @@ class ModifyMonitoredItemsRequest(object):
 
     def __str__(self):
         return 'ModifyMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -11609,9 +11539,9 @@ class ModifyMonitoredItemsResponse(object):
 
     def __str__(self):
         return 'ModifyMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -11660,8 +11590,8 @@ class SetMonitoringModeParameters(object):
 
     def __str__(self):
         return 'SetMonitoringModeParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-             'MonitoringMode:' + str(self.MonitoringMode) + ', ' + \
-             'MonitoredItemIds:' + str(self.MonitoredItemIds) + ')'
+               'MonitoringMode:' + str(self.MonitoringMode) + ', ' + \
+               'MonitoredItemIds:' + str(self.MonitoredItemIds) + ')'
 
     __repr__ = __str__
 
@@ -11708,8 +11638,8 @@ class SetMonitoringModeRequest(object):
 
     def __str__(self):
         return 'SetMonitoringModeRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -11764,7 +11694,7 @@ class SetMonitoringModeResult(object):
 
     def __str__(self):
         return 'SetMonitoringModeResult(' + 'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -11811,8 +11741,8 @@ class SetMonitoringModeResponse(object):
 
     def __str__(self):
         return 'SetMonitoringModeResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -11869,9 +11799,9 @@ class SetTriggeringParameters(object):
 
     def __str__(self):
         return 'SetTriggeringParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-             'TriggeringItemId:' + str(self.TriggeringItemId) + ', ' + \
-             'LinksToAdd:' + str(self.LinksToAdd) + ', ' + \
-             'LinksToRemove:' + str(self.LinksToRemove) + ')'
+               'TriggeringItemId:' + str(self.TriggeringItemId) + ', ' + \
+               'LinksToAdd:' + str(self.LinksToAdd) + ', ' + \
+               'LinksToRemove:' + str(self.LinksToRemove) + ')'
 
     __repr__ = __str__
 
@@ -11918,8 +11848,8 @@ class SetTriggeringRequest(object):
 
     def __str__(self):
         return 'SetTriggeringRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -12000,9 +11930,9 @@ class SetTriggeringResult(object):
 
     def __str__(self):
         return 'SetTriggeringResult(' + 'AddResults:' + str(self.AddResults) + ', ' + \
-             'AddDiagnosticInfos:' + str(self.AddDiagnosticInfos) + ', ' + \
-             'RemoveResults:' + str(self.RemoveResults) + ', ' + \
-             'RemoveDiagnosticInfos:' + str(self.RemoveDiagnosticInfos) + ')'
+               'AddDiagnosticInfos:' + str(self.AddDiagnosticInfos) + ', ' + \
+               'RemoveResults:' + str(self.RemoveResults) + ', ' + \
+               'RemoveDiagnosticInfos:' + str(self.RemoveDiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -12049,8 +11979,8 @@ class SetTriggeringResponse(object):
 
     def __str__(self):
         return 'SetTriggeringResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -12093,7 +12023,7 @@ class DeleteMonitoredItemsParameters(object):
 
     def __str__(self):
         return 'DeleteMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-             'MonitoredItemIds:' + str(self.MonitoredItemIds) + ')'
+               'MonitoredItemIds:' + str(self.MonitoredItemIds) + ')'
 
     __repr__ = __str__
 
@@ -12140,8 +12070,8 @@ class DeleteMonitoredItemsRequest(object):
 
     def __str__(self):
         return 'DeleteMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -12208,9 +12138,9 @@ class DeleteMonitoredItemsResponse(object):
 
     def __str__(self):
         return 'DeleteMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -12275,11 +12205,11 @@ class CreateSubscriptionParameters(object):
 
     def __str__(self):
         return 'CreateSubscriptionParameters(' + 'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', ' + \
-             'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', ' + \
-             'RequestedMaxKeepAliveCount:' + str(self.RequestedMaxKeepAliveCount) + ', ' + \
-             'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
-             'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
-             'Priority:' + str(self.Priority) + ')'
+               'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', ' + \
+               'RequestedMaxKeepAliveCount:' + str(self.RequestedMaxKeepAliveCount) + ', ' + \
+               'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
+               'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
+               'Priority:' + str(self.Priority) + ')'
 
     __repr__ = __str__
 
@@ -12326,8 +12256,8 @@ class CreateSubscriptionRequest(object):
 
     def __str__(self):
         return 'CreateSubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -12380,9 +12310,9 @@ class CreateSubscriptionResult(object):
 
     def __str__(self):
         return 'CreateSubscriptionResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-             'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', ' + \
-             'RevisedLifetimeCount:' + str(self.RevisedLifetimeCount) + ', ' + \
-             'RevisedMaxKeepAliveCount:' + str(self.RevisedMaxKeepAliveCount) + ')'
+               'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', ' + \
+               'RevisedLifetimeCount:' + str(self.RevisedLifetimeCount) + ', ' + \
+               'RevisedMaxKeepAliveCount:' + str(self.RevisedMaxKeepAliveCount) + ')'
 
     __repr__ = __str__
 
@@ -12429,8 +12359,8 @@ class CreateSubscriptionResponse(object):
 
     def __str__(self):
         return 'CreateSubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -12495,11 +12425,11 @@ class ModifySubscriptionParameters(object):
 
     def __str__(self):
         return 'ModifySubscriptionParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-             'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', ' + \
-             'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', ' + \
-             'RequestedMaxKeepAliveCount:' + str(self.RequestedMaxKeepAliveCount) + ', ' + \
-             'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
-             'Priority:' + str(self.Priority) + ')'
+               'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', ' + \
+               'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', ' + \
+               'RequestedMaxKeepAliveCount:' + str(self.RequestedMaxKeepAliveCount) + ', ' + \
+               'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
+               'Priority:' + str(self.Priority) + ')'
 
     __repr__ = __str__
 
@@ -12546,8 +12476,8 @@ class ModifySubscriptionRequest(object):
 
     def __str__(self):
         return 'ModifySubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -12594,8 +12524,8 @@ class ModifySubscriptionResult(object):
 
     def __str__(self):
         return 'ModifySubscriptionResult(' + 'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', ' + \
-             'RevisedLifetimeCount:' + str(self.RevisedLifetimeCount) + ', ' + \
-             'RevisedMaxKeepAliveCount:' + str(self.RevisedMaxKeepAliveCount) + ')'
+               'RevisedLifetimeCount:' + str(self.RevisedLifetimeCount) + ', ' + \
+               'RevisedMaxKeepAliveCount:' + str(self.RevisedMaxKeepAliveCount) + ')'
 
     __repr__ = __str__
 
@@ -12642,8 +12572,8 @@ class ModifySubscriptionResponse(object):
 
     def __str__(self):
         return 'ModifySubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -12686,7 +12616,7 @@ class SetPublishingModeParameters(object):
 
     def __str__(self):
         return 'SetPublishingModeParameters(' + 'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
-             'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
+               'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
 
     __repr__ = __str__
 
@@ -12733,8 +12663,8 @@ class SetPublishingModeRequest(object):
 
     def __str__(self):
         return 'SetPublishingModeRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -12789,7 +12719,7 @@ class SetPublishingModeResult(object):
 
     def __str__(self):
         return 'SetPublishingModeResult(' + 'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -12836,8 +12766,8 @@ class SetPublishingModeResponse(object):
 
     def __str__(self):
         return 'SetPublishingModeResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -12891,8 +12821,8 @@ class NotificationMessage(object):
 
     def __str__(self):
         return 'NotificationMessage(' + 'SequenceNumber:' + str(self.SequenceNumber) + ', ' + \
-             'PublishTime:' + str(self.PublishTime) + ', ' + \
-             'NotificationData:' + str(self.NotificationData) + ')'
+               'PublishTime:' + str(self.PublishTime) + ', ' + \
+               'NotificationData:' + str(self.NotificationData) + ')'
 
     __repr__ = __str__
 
@@ -12976,7 +12906,7 @@ class DataChangeNotification(object):
 
     def __str__(self):
         return 'DataChangeNotification(' + 'MonitoredItems:' + str(self.MonitoredItems) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -13017,7 +12947,7 @@ class MonitoredItemNotification(object):
 
     def __str__(self):
         return 'MonitoredItemNotification(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
-             'Value:' + str(self.Value) + ')'
+               'Value:' + str(self.Value) + ')'
 
     __repr__ = __str__
 
@@ -13106,7 +13036,7 @@ class EventFieldList(object):
 
     def __str__(self):
         return 'EventFieldList(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
-             'EventFields:' + str(self.EventFields) + ')'
+               'EventFields:' + str(self.EventFields) + ')'
 
     __repr__ = __str__
 
@@ -13188,7 +13118,7 @@ class StatusChangeNotification(object):
 
     def __str__(self):
         return 'StatusChangeNotification(' + 'Status:' + str(self.Status) + ', ' + \
-             'DiagnosticInfo:' + str(self.DiagnosticInfo) + ')'
+               'DiagnosticInfo:' + str(self.DiagnosticInfo) + ')'
 
     __repr__ = __str__
 
@@ -13229,7 +13159,7 @@ class SubscriptionAcknowledgement(object):
 
     def __str__(self):
         return 'SubscriptionAcknowledgement(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-             'SequenceNumber:' + str(self.SequenceNumber) + ')'
+               'SequenceNumber:' + str(self.SequenceNumber) + ')'
 
     __repr__ = __str__
 
@@ -13317,8 +13247,8 @@ class PublishRequest(object):
 
     def __str__(self):
         return 'PublishRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -13399,11 +13329,11 @@ class PublishResult(object):
 
     def __str__(self):
         return 'PublishResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-             'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ', ' + \
-             'MoreNotifications:' + str(self.MoreNotifications) + ', ' + \
-             'NotificationMessage:' + str(self.NotificationMessage) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ', ' + \
+               'MoreNotifications:' + str(self.MoreNotifications) + ', ' + \
+               'NotificationMessage:' + str(self.NotificationMessage) + ', ' + \
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -13450,8 +13380,8 @@ class PublishResponse(object):
 
     def __str__(self):
         return 'PublishResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -13492,7 +13422,7 @@ class RepublishParameters(object):
 
     def __str__(self):
         return 'RepublishParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-             'RetransmitSequenceNumber:' + str(self.RetransmitSequenceNumber) + ')'
+               'RetransmitSequenceNumber:' + str(self.RetransmitSequenceNumber) + ')'
 
     __repr__ = __str__
 
@@ -13539,8 +13469,8 @@ class RepublishRequest(object):
 
     def __str__(self):
         return 'RepublishRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -13587,8 +13517,8 @@ class RepublishResponse(object):
 
     def __str__(self):
         return 'RepublishResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'NotificationMessage:' + str(self.NotificationMessage) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'NotificationMessage:' + str(self.NotificationMessage) + ')'
 
     __repr__ = __str__
 
@@ -13631,7 +13561,7 @@ class TransferResult(object):
 
     def __str__(self):
         return 'TransferResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-             'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ')'
+               'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ')'
 
     __repr__ = __str__
 
@@ -13674,7 +13604,7 @@ class TransferSubscriptionsParameters(object):
 
     def __str__(self):
         return 'TransferSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ', ' + \
-             'SendInitialValues:' + str(self.SendInitialValues) + ')'
+               'SendInitialValues:' + str(self.SendInitialValues) + ')'
 
     __repr__ = __str__
 
@@ -13721,8 +13651,8 @@ class TransferSubscriptionsRequest(object):
 
     def __str__(self):
         return 'TransferSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -13777,7 +13707,7 @@ class TransferSubscriptionsResult(object):
 
     def __str__(self):
         return 'TransferSubscriptionsResult(' + 'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -13824,8 +13754,8 @@ class TransferSubscriptionsResponse(object):
 
     def __str__(self):
         return 'TransferSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -13908,8 +13838,8 @@ class DeleteSubscriptionsRequest(object):
 
     def __str__(self):
         return 'DeleteSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-             'Parameters:' + str(self.Parameters) + ')'
+               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -13976,9 +13906,9 @@ class DeleteSubscriptionsResponse(object):
 
     def __str__(self):
         return 'DeleteSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-             'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-             'Results:' + str(self.Results) + ', ' + \
-             'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -14043,11 +13973,11 @@ class BuildInfo(object):
 
     def __str__(self):
         return 'BuildInfo(' + 'ProductUri:' + str(self.ProductUri) + ', ' + \
-             'ManufacturerName:' + str(self.ManufacturerName) + ', ' + \
-             'ProductName:' + str(self.ProductName) + ', ' + \
-             'SoftwareVersion:' + str(self.SoftwareVersion) + ', ' + \
-             'BuildNumber:' + str(self.BuildNumber) + ', ' + \
-             'BuildDate:' + str(self.BuildDate) + ')'
+               'ManufacturerName:' + str(self.ManufacturerName) + ', ' + \
+               'ProductName:' + str(self.ProductName) + ', ' + \
+               'SoftwareVersion:' + str(self.SoftwareVersion) + ', ' + \
+               'BuildNumber:' + str(self.BuildNumber) + ', ' + \
+               'BuildDate:' + str(self.BuildDate) + ')'
 
     __repr__ = __str__
 
@@ -14094,8 +14024,8 @@ class RedundantServerDataType(object):
 
     def __str__(self):
         return 'RedundantServerDataType(' + 'ServerId:' + str(self.ServerId) + ', ' + \
-             'ServiceLevel:' + str(self.ServiceLevel) + ', ' + \
-             'ServerState:' + str(self.ServerState) + ')'
+               'ServiceLevel:' + str(self.ServiceLevel) + ', ' + \
+               'ServerState:' + str(self.ServerState) + ')'
 
     __repr__ = __str__
 
@@ -14179,7 +14109,7 @@ class NetworkGroupDataType(object):
 
     def __str__(self):
         return 'NetworkGroupDataType(' + 'ServerUri:' + str(self.ServerUri) + ', ' + \
-             'NetworkPaths:' + str(self.NetworkPaths) + ')'
+               'NetworkPaths:' + str(self.NetworkPaths) + ')'
 
     __repr__ = __str__
 
@@ -14232,9 +14162,9 @@ class SamplingIntervalDiagnosticsDataType(object):
 
     def __str__(self):
         return 'SamplingIntervalDiagnosticsDataType(' + 'SamplingInterval:' + str(self.SamplingInterval) + ', ' + \
-             'MonitoredItemCount:' + str(self.MonitoredItemCount) + ', ' + \
-             'MaxMonitoredItemCount:' + str(self.MaxMonitoredItemCount) + ', ' + \
-             'DisabledMonitoredItemCount:' + str(self.DisabledMonitoredItemCount) + ')'
+               'MonitoredItemCount:' + str(self.MonitoredItemCount) + ', ' + \
+               'MaxMonitoredItemCount:' + str(self.MaxMonitoredItemCount) + ', ' + \
+               'DisabledMonitoredItemCount:' + str(self.DisabledMonitoredItemCount) + ')'
 
     __repr__ = __str__
 
@@ -14335,17 +14265,17 @@ class ServerDiagnosticsSummaryDataType(object):
 
     def __str__(self):
         return 'ServerDiagnosticsSummaryDataType(' + 'ServerViewCount:' + str(self.ServerViewCount) + ', ' + \
-             'CurrentSessionCount:' + str(self.CurrentSessionCount) + ', ' + \
-             'CumulatedSessionCount:' + str(self.CumulatedSessionCount) + ', ' + \
-             'SecurityRejectedSessionCount:' + str(self.SecurityRejectedSessionCount) + ', ' + \
-             'RejectedSessionCount:' + str(self.RejectedSessionCount) + ', ' + \
-             'SessionTimeoutCount:' + str(self.SessionTimeoutCount) + ', ' + \
-             'SessionAbortCount:' + str(self.SessionAbortCount) + ', ' + \
-             'CurrentSubscriptionCount:' + str(self.CurrentSubscriptionCount) + ', ' + \
-             'CumulatedSubscriptionCount:' + str(self.CumulatedSubscriptionCount) + ', ' + \
-             'PublishingIntervalCount:' + str(self.PublishingIntervalCount) + ', ' + \
-             'SecurityRejectedRequestsCount:' + str(self.SecurityRejectedRequestsCount) + ', ' + \
-             'RejectedRequestsCount:' + str(self.RejectedRequestsCount) + ')'
+               'CurrentSessionCount:' + str(self.CurrentSessionCount) + ', ' + \
+               'CumulatedSessionCount:' + str(self.CumulatedSessionCount) + ', ' + \
+               'SecurityRejectedSessionCount:' + str(self.SecurityRejectedSessionCount) + ', ' + \
+               'RejectedSessionCount:' + str(self.RejectedSessionCount) + ', ' + \
+               'SessionTimeoutCount:' + str(self.SessionTimeoutCount) + ', ' + \
+               'SessionAbortCount:' + str(self.SessionAbortCount) + ', ' + \
+               'CurrentSubscriptionCount:' + str(self.CurrentSubscriptionCount) + ', ' + \
+               'CumulatedSubscriptionCount:' + str(self.CumulatedSubscriptionCount) + ', ' + \
+               'PublishingIntervalCount:' + str(self.PublishingIntervalCount) + ', ' + \
+               'SecurityRejectedRequestsCount:' + str(self.SecurityRejectedRequestsCount) + ', ' + \
+               'RejectedRequestsCount:' + str(self.RejectedRequestsCount) + ')'
 
     __repr__ = __str__
 
@@ -14410,11 +14340,11 @@ class ServerStatusDataType(object):
 
     def __str__(self):
         return 'ServerStatusDataType(' + 'StartTime:' + str(self.StartTime) + ', ' + \
-             'CurrentTime:' + str(self.CurrentTime) + ', ' + \
-             'State:' + str(self.State) + ', ' + \
-             'BuildInfo:' + str(self.BuildInfo) + ', ' + \
-             'SecondsTillShutdown:' + str(self.SecondsTillShutdown) + ', ' + \
-             'ShutdownReason:' + str(self.ShutdownReason) + ')'
+               'CurrentTime:' + str(self.CurrentTime) + ', ' + \
+               'State:' + str(self.State) + ', ' + \
+               'BuildInfo:' + str(self.BuildInfo) + ', ' + \
+               'SecondsTillShutdown:' + str(self.SecondsTillShutdown) + ', ' + \
+               'ShutdownReason:' + str(self.ShutdownReason) + ')'
 
     __repr__ = __str__
 
@@ -14703,48 +14633,48 @@ class SessionDiagnosticsDataType(object):
 
     def __str__(self):
         return 'SessionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
-             'SessionName:' + str(self.SessionName) + ', ' + \
-             'ClientDescription:' + str(self.ClientDescription) + ', ' + \
-             'ServerUri:' + str(self.ServerUri) + ', ' + \
-             'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-             'LocaleIds:' + str(self.LocaleIds) + ', ' + \
-             'ActualSessionTimeout:' + str(self.ActualSessionTimeout) + ', ' + \
-             'MaxResponseMessageSize:' + str(self.MaxResponseMessageSize) + ', ' + \
-             'ClientConnectionTime:' + str(self.ClientConnectionTime) + ', ' + \
-             'ClientLastContactTime:' + str(self.ClientLastContactTime) + ', ' + \
-             'CurrentSubscriptionsCount:' + str(self.CurrentSubscriptionsCount) + ', ' + \
-             'CurrentMonitoredItemsCount:' + str(self.CurrentMonitoredItemsCount) + ', ' + \
-             'CurrentPublishRequestsInQueue:' + str(self.CurrentPublishRequestsInQueue) + ', ' + \
-             'TotalRequestCount:' + str(self.TotalRequestCount) + ', ' + \
-             'UnauthorizedRequestCount:' + str(self.UnauthorizedRequestCount) + ', ' + \
-             'ReadCount:' + str(self.ReadCount) + ', ' + \
-             'HistoryReadCount:' + str(self.HistoryReadCount) + ', ' + \
-             'WriteCount:' + str(self.WriteCount) + ', ' + \
-             'HistoryUpdateCount:' + str(self.HistoryUpdateCount) + ', ' + \
-             'CallCount:' + str(self.CallCount) + ', ' + \
-             'CreateMonitoredItemsCount:' + str(self.CreateMonitoredItemsCount) + ', ' + \
-             'ModifyMonitoredItemsCount:' + str(self.ModifyMonitoredItemsCount) + ', ' + \
-             'SetMonitoringModeCount:' + str(self.SetMonitoringModeCount) + ', ' + \
-             'SetTriggeringCount:' + str(self.SetTriggeringCount) + ', ' + \
-             'DeleteMonitoredItemsCount:' + str(self.DeleteMonitoredItemsCount) + ', ' + \
-             'CreateSubscriptionCount:' + str(self.CreateSubscriptionCount) + ', ' + \
-             'ModifySubscriptionCount:' + str(self.ModifySubscriptionCount) + ', ' + \
-             'SetPublishingModeCount:' + str(self.SetPublishingModeCount) + ', ' + \
-             'PublishCount:' + str(self.PublishCount) + ', ' + \
-             'RepublishCount:' + str(self.RepublishCount) + ', ' + \
-             'TransferSubscriptionsCount:' + str(self.TransferSubscriptionsCount) + ', ' + \
-             'DeleteSubscriptionsCount:' + str(self.DeleteSubscriptionsCount) + ', ' + \
-             'AddNodesCount:' + str(self.AddNodesCount) + ', ' + \
-             'AddReferencesCount:' + str(self.AddReferencesCount) + ', ' + \
-             'DeleteNodesCount:' + str(self.DeleteNodesCount) + ', ' + \
-             'DeleteReferencesCount:' + str(self.DeleteReferencesCount) + ', ' + \
-             'BrowseCount:' + str(self.BrowseCount) + ', ' + \
-             'BrowseNextCount:' + str(self.BrowseNextCount) + ', ' + \
-             'TranslateBrowsePathsToNodeIdsCount:' + str(self.TranslateBrowsePathsToNodeIdsCount) + ', ' + \
-             'QueryFirstCount:' + str(self.QueryFirstCount) + ', ' + \
-             'QueryNextCount:' + str(self.QueryNextCount) + ', ' + \
-             'RegisterNodesCount:' + str(self.RegisterNodesCount) + ', ' + \
-             'UnregisterNodesCount:' + str(self.UnregisterNodesCount) + ')'
+               'SessionName:' + str(self.SessionName) + ', ' + \
+               'ClientDescription:' + str(self.ClientDescription) + ', ' + \
+               'ServerUri:' + str(self.ServerUri) + ', ' + \
+               'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
+               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
+               'ActualSessionTimeout:' + str(self.ActualSessionTimeout) + ', ' + \
+               'MaxResponseMessageSize:' + str(self.MaxResponseMessageSize) + ', ' + \
+               'ClientConnectionTime:' + str(self.ClientConnectionTime) + ', ' + \
+               'ClientLastContactTime:' + str(self.ClientLastContactTime) + ', ' + \
+               'CurrentSubscriptionsCount:' + str(self.CurrentSubscriptionsCount) + ', ' + \
+               'CurrentMonitoredItemsCount:' + str(self.CurrentMonitoredItemsCount) + ', ' + \
+               'CurrentPublishRequestsInQueue:' + str(self.CurrentPublishRequestsInQueue) + ', ' + \
+               'TotalRequestCount:' + str(self.TotalRequestCount) + ', ' + \
+               'UnauthorizedRequestCount:' + str(self.UnauthorizedRequestCount) + ', ' + \
+               'ReadCount:' + str(self.ReadCount) + ', ' + \
+               'HistoryReadCount:' + str(self.HistoryReadCount) + ', ' + \
+               'WriteCount:' + str(self.WriteCount) + ', ' + \
+               'HistoryUpdateCount:' + str(self.HistoryUpdateCount) + ', ' + \
+               'CallCount:' + str(self.CallCount) + ', ' + \
+               'CreateMonitoredItemsCount:' + str(self.CreateMonitoredItemsCount) + ', ' + \
+               'ModifyMonitoredItemsCount:' + str(self.ModifyMonitoredItemsCount) + ', ' + \
+               'SetMonitoringModeCount:' + str(self.SetMonitoringModeCount) + ', ' + \
+               'SetTriggeringCount:' + str(self.SetTriggeringCount) + ', ' + \
+               'DeleteMonitoredItemsCount:' + str(self.DeleteMonitoredItemsCount) + ', ' + \
+               'CreateSubscriptionCount:' + str(self.CreateSubscriptionCount) + ', ' + \
+               'ModifySubscriptionCount:' + str(self.ModifySubscriptionCount) + ', ' + \
+               'SetPublishingModeCount:' + str(self.SetPublishingModeCount) + ', ' + \
+               'PublishCount:' + str(self.PublishCount) + ', ' + \
+               'RepublishCount:' + str(self.RepublishCount) + ', ' + \
+               'TransferSubscriptionsCount:' + str(self.TransferSubscriptionsCount) + ', ' + \
+               'DeleteSubscriptionsCount:' + str(self.DeleteSubscriptionsCount) + ', ' + \
+               'AddNodesCount:' + str(self.AddNodesCount) + ', ' + \
+               'AddReferencesCount:' + str(self.AddReferencesCount) + ', ' + \
+               'DeleteNodesCount:' + str(self.DeleteNodesCount) + ', ' + \
+               'DeleteReferencesCount:' + str(self.DeleteReferencesCount) + ', ' + \
+               'BrowseCount:' + str(self.BrowseCount) + ', ' + \
+               'BrowseNextCount:' + str(self.BrowseNextCount) + ', ' + \
+               'TranslateBrowsePathsToNodeIdsCount:' + str(self.TranslateBrowsePathsToNodeIdsCount) + ', ' + \
+               'QueryFirstCount:' + str(self.QueryFirstCount) + ', ' + \
+               'QueryNextCount:' + str(self.QueryNextCount) + ', ' + \
+               'RegisterNodesCount:' + str(self.RegisterNodesCount) + ', ' + \
+               'UnregisterNodesCount:' + str(self.UnregisterNodesCount) + ')'
 
     __repr__ = __str__
 
@@ -14829,14 +14759,14 @@ class SessionSecurityDiagnosticsDataType(object):
 
     def __str__(self):
         return 'SessionSecurityDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
-             'ClientUserIdOfSession:' + str(self.ClientUserIdOfSession) + ', ' + \
-             'ClientUserIdHistory:' + str(self.ClientUserIdHistory) + ', ' + \
-             'AuthenticationMechanism:' + str(self.AuthenticationMechanism) + ', ' + \
-             'Encoding:' + str(self.Encoding) + ', ' + \
-             'TransportProtocol:' + str(self.TransportProtocol) + ', ' + \
-             'SecurityMode:' + str(self.SecurityMode) + ', ' + \
-             'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', ' + \
-             'ClientCertificate:' + str(self.ClientCertificate) + ')'
+               'ClientUserIdOfSession:' + str(self.ClientUserIdOfSession) + ', ' + \
+               'ClientUserIdHistory:' + str(self.ClientUserIdHistory) + ', ' + \
+               'AuthenticationMechanism:' + str(self.AuthenticationMechanism) + ', ' + \
+               'Encoding:' + str(self.Encoding) + ', ' + \
+               'TransportProtocol:' + str(self.TransportProtocol) + ', ' + \
+               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
+               'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', ' + \
+               'ClientCertificate:' + str(self.ClientCertificate) + ')'
 
     __repr__ = __str__
 
@@ -14877,7 +14807,7 @@ class ServiceCounterDataType(object):
 
     def __str__(self):
         return 'ServiceCounterDataType(' + 'TotalCount:' + str(self.TotalCount) + ', ' + \
-             'ErrorCount:' + str(self.ErrorCount) + ')'
+               'ErrorCount:' + str(self.ErrorCount) + ')'
 
     __repr__ = __str__
 
@@ -14918,7 +14848,7 @@ class StatusResult(object):
 
     def __str__(self):
         return 'StatusResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-             'DiagnosticInfo:' + str(self.DiagnosticInfo) + ')'
+               'DiagnosticInfo:' + str(self.DiagnosticInfo) + ')'
 
     __repr__ = __str__
 
@@ -15133,36 +15063,36 @@ class SubscriptionDiagnosticsDataType(object):
 
     def __str__(self):
         return 'SubscriptionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
-             'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-             'Priority:' + str(self.Priority) + ', ' + \
-             'PublishingInterval:' + str(self.PublishingInterval) + ', ' + \
-             'MaxKeepAliveCount:' + str(self.MaxKeepAliveCount) + ', ' + \
-             'MaxLifetimeCount:' + str(self.MaxLifetimeCount) + ', ' + \
-             'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
-             'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
-             'ModifyCount:' + str(self.ModifyCount) + ', ' + \
-             'EnableCount:' + str(self.EnableCount) + ', ' + \
-             'DisableCount:' + str(self.DisableCount) + ', ' + \
-             'RepublishRequestCount:' + str(self.RepublishRequestCount) + ', ' + \
-             'RepublishMessageRequestCount:' + str(self.RepublishMessageRequestCount) + ', ' + \
-             'RepublishMessageCount:' + str(self.RepublishMessageCount) + ', ' + \
-             'TransferRequestCount:' + str(self.TransferRequestCount) + ', ' + \
-             'TransferredToAltClientCount:' + str(self.TransferredToAltClientCount) + ', ' + \
-             'TransferredToSameClientCount:' + str(self.TransferredToSameClientCount) + ', ' + \
-             'PublishRequestCount:' + str(self.PublishRequestCount) + ', ' + \
-             'DataChangeNotificationsCount:' + str(self.DataChangeNotificationsCount) + ', ' + \
-             'EventNotificationsCount:' + str(self.EventNotificationsCount) + ', ' + \
-             'NotificationsCount:' + str(self.NotificationsCount) + ', ' + \
-             'LatePublishRequestCount:' + str(self.LatePublishRequestCount) + ', ' + \
-             'CurrentKeepAliveCount:' + str(self.CurrentKeepAliveCount) + ', ' + \
-             'CurrentLifetimeCount:' + str(self.CurrentLifetimeCount) + ', ' + \
-             'UnacknowledgedMessageCount:' + str(self.UnacknowledgedMessageCount) + ', ' + \
-             'DiscardedMessageCount:' + str(self.DiscardedMessageCount) + ', ' + \
-             'MonitoredItemCount:' + str(self.MonitoredItemCount) + ', ' + \
-             'DisabledMonitoredItemCount:' + str(self.DisabledMonitoredItemCount) + ', ' + \
-             'MonitoringQueueOverflowCount:' + str(self.MonitoringQueueOverflowCount) + ', ' + \
-             'NextSequenceNumber:' + str(self.NextSequenceNumber) + ', ' + \
-             'EventQueueOverFlowCount:' + str(self.EventQueueOverFlowCount) + ')'
+               'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
+               'Priority:' + str(self.Priority) + ', ' + \
+               'PublishingInterval:' + str(self.PublishingInterval) + ', ' + \
+               'MaxKeepAliveCount:' + str(self.MaxKeepAliveCount) + ', ' + \
+               'MaxLifetimeCount:' + str(self.MaxLifetimeCount) + ', ' + \
+               'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
+               'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
+               'ModifyCount:' + str(self.ModifyCount) + ', ' + \
+               'EnableCount:' + str(self.EnableCount) + ', ' + \
+               'DisableCount:' + str(self.DisableCount) + ', ' + \
+               'RepublishRequestCount:' + str(self.RepublishRequestCount) + ', ' + \
+               'RepublishMessageRequestCount:' + str(self.RepublishMessageRequestCount) + ', ' + \
+               'RepublishMessageCount:' + str(self.RepublishMessageCount) + ', ' + \
+               'TransferRequestCount:' + str(self.TransferRequestCount) + ', ' + \
+               'TransferredToAltClientCount:' + str(self.TransferredToAltClientCount) + ', ' + \
+               'TransferredToSameClientCount:' + str(self.TransferredToSameClientCount) + ', ' + \
+               'PublishRequestCount:' + str(self.PublishRequestCount) + ', ' + \
+               'DataChangeNotificationsCount:' + str(self.DataChangeNotificationsCount) + ', ' + \
+               'EventNotificationsCount:' + str(self.EventNotificationsCount) + ', ' + \
+               'NotificationsCount:' + str(self.NotificationsCount) + ', ' + \
+               'LatePublishRequestCount:' + str(self.LatePublishRequestCount) + ', ' + \
+               'CurrentKeepAliveCount:' + str(self.CurrentKeepAliveCount) + ', ' + \
+               'CurrentLifetimeCount:' + str(self.CurrentLifetimeCount) + ', ' + \
+               'UnacknowledgedMessageCount:' + str(self.UnacknowledgedMessageCount) + ', ' + \
+               'DiscardedMessageCount:' + str(self.DiscardedMessageCount) + ', ' + \
+               'MonitoredItemCount:' + str(self.MonitoredItemCount) + ', ' + \
+               'DisabledMonitoredItemCount:' + str(self.DisabledMonitoredItemCount) + ', ' + \
+               'MonitoringQueueOverflowCount:' + str(self.MonitoringQueueOverflowCount) + ', ' + \
+               'NextSequenceNumber:' + str(self.NextSequenceNumber) + ', ' + \
+               'EventQueueOverFlowCount:' + str(self.EventQueueOverFlowCount) + ')'
 
     __repr__ = __str__
 
@@ -15209,8 +15139,8 @@ class ModelChangeStructureDataType(object):
 
     def __str__(self):
         return 'ModelChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', ' + \
-             'AffectedType:' + str(self.AffectedType) + ', ' + \
-             'Verb:' + str(self.Verb) + ')'
+               'AffectedType:' + str(self.AffectedType) + ', ' + \
+               'Verb:' + str(self.Verb) + ')'
 
     __repr__ = __str__
 
@@ -15251,7 +15181,7 @@ class SemanticChangeStructureDataType(object):
 
     def __str__(self):
         return 'SemanticChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', ' + \
-             'AffectedType:' + str(self.AffectedType) + ')'
+               'AffectedType:' + str(self.AffectedType) + ')'
 
     __repr__ = __str__
 
@@ -15292,7 +15222,7 @@ class Range(object):
 
     def __str__(self):
         return 'Range(' + 'Low:' + str(self.Low) + ', ' + \
-             'High:' + str(self.High) + ')'
+               'High:' + str(self.High) + ')'
 
     __repr__ = __str__
 
@@ -15345,9 +15275,9 @@ class EUInformation(object):
 
     def __str__(self):
         return 'EUInformation(' + 'NamespaceUri:' + str(self.NamespaceUri) + ', ' + \
-             'UnitId:' + str(self.UnitId) + ', ' + \
-             'DisplayName:' + str(self.DisplayName) + ', ' + \
-             'Description:' + str(self.Description) + ')'
+               'UnitId:' + str(self.UnitId) + ', ' + \
+               'DisplayName:' + str(self.DisplayName) + ', ' + \
+               'Description:' + str(self.Description) + ')'
 
     __repr__ = __str__
 
@@ -15388,7 +15318,7 @@ class ComplexNumberType(object):
 
     def __str__(self):
         return 'ComplexNumberType(' + 'Real:' + str(self.Real) + ', ' + \
-             'Imaginary:' + str(self.Imaginary) + ')'
+               'Imaginary:' + str(self.Imaginary) + ')'
 
     __repr__ = __str__
 
@@ -15429,7 +15359,7 @@ class DoubleComplexNumberType(object):
 
     def __str__(self):
         return 'DoubleComplexNumberType(' + 'Real:' + str(self.Real) + ', ' + \
-             'Imaginary:' + str(self.Imaginary) + ')'
+               'Imaginary:' + str(self.Imaginary) + ')'
 
     __repr__ = __str__
 
@@ -15490,10 +15420,10 @@ class AxisInformation(object):
 
     def __str__(self):
         return 'AxisInformation(' + 'EngineeringUnits:' + str(self.EngineeringUnits) + ', ' + \
-             'EURange:' + str(self.EURange) + ', ' + \
-             'Title:' + str(self.Title) + ', ' + \
-             'AxisScaleType:' + str(self.AxisScaleType) + ', ' + \
-             'AxisSteps:' + str(self.AxisSteps) + ')'
+               'EURange:' + str(self.EURange) + ', ' + \
+               'Title:' + str(self.Title) + ', ' + \
+               'AxisScaleType:' + str(self.AxisScaleType) + ', ' + \
+               'AxisSteps:' + str(self.AxisSteps) + ')'
 
     __repr__ = __str__
 
@@ -15534,7 +15464,7 @@ class XVType(object):
 
     def __str__(self):
         return 'XVType(' + 'X:' + str(self.X) + ', ' + \
-             'Value:' + str(self.Value) + ')'
+               'Value:' + str(self.Value) + ')'
 
     __repr__ = __str__
 
@@ -15637,15 +15567,15 @@ class ProgramDiagnosticDataType(object):
 
     def __str__(self):
         return 'ProgramDiagnosticDataType(' + 'CreateSessionId:' + str(self.CreateSessionId) + ', ' + \
-             'CreateClientName:' + str(self.CreateClientName) + ', ' + \
-             'InvocationCreationTime:' + str(self.InvocationCreationTime) + ', ' + \
-             'LastTransitionTime:' + str(self.LastTransitionTime) + ', ' + \
-             'LastMethodCall:' + str(self.LastMethodCall) + ', ' + \
-             'LastMethodSessionId:' + str(self.LastMethodSessionId) + ', ' + \
-             'LastMethodInputArguments:' + str(self.LastMethodInputArguments) + ', ' + \
-             'LastMethodOutputArguments:' + str(self.LastMethodOutputArguments) + ', ' + \
-             'LastMethodCallTime:' + str(self.LastMethodCallTime) + ', ' + \
-             'LastMethodReturnStatus:' + str(self.LastMethodReturnStatus) + ')'
+               'CreateClientName:' + str(self.CreateClientName) + ', ' + \
+               'InvocationCreationTime:' + str(self.InvocationCreationTime) + ', ' + \
+               'LastTransitionTime:' + str(self.LastTransitionTime) + ', ' + \
+               'LastMethodCall:' + str(self.LastMethodCall) + ', ' + \
+               'LastMethodSessionId:' + str(self.LastMethodSessionId) + ', ' + \
+               'LastMethodInputArguments:' + str(self.LastMethodInputArguments) + ', ' + \
+               'LastMethodOutputArguments:' + str(self.LastMethodOutputArguments) + ', ' + \
+               'LastMethodCallTime:' + str(self.LastMethodCallTime) + ', ' + \
+               'LastMethodReturnStatus:' + str(self.LastMethodReturnStatus) + ')'
 
     __repr__ = __str__
 
@@ -15692,223 +15622,225 @@ class Annotation(object):
 
     def __str__(self):
         return 'Annotation(' + 'Message:' + str(self.Message) + ', ' + \
-             'UserName:' + str(self.UserName) + ', ' + \
-             'AnnotationTime:' + str(self.AnnotationTime) + ')'
+               'UserName:' + str(self.UserName) + ', ' + \
+               'AnnotationTime:' + str(self.AnnotationTime) + ')'
 
     __repr__ = __str__
 
+
 ExtensionClasses = {
-    ObjectIds.TrustListDataType_Encoding_DefaultBinary : TrustListDataType,
-    ObjectIds.Argument_Encoding_DefaultBinary : Argument,
-    ObjectIds.EnumValueType_Encoding_DefaultBinary : EnumValueType,
-    ObjectIds.OptionSet_Encoding_DefaultBinary : OptionSet,
-    ObjectIds.Union_Encoding_DefaultBinary : Union,
-    ObjectIds.TimeZoneDataType_Encoding_DefaultBinary : TimeZoneDataType,
-    ObjectIds.ApplicationDescription_Encoding_DefaultBinary : ApplicationDescription,
-    ObjectIds.RequestHeader_Encoding_DefaultBinary : RequestHeader,
-    ObjectIds.ResponseHeader_Encoding_DefaultBinary : ResponseHeader,
-    ObjectIds.ServiceFault_Encoding_DefaultBinary : ServiceFault,
-    ObjectIds.FindServersRequest_Encoding_DefaultBinary : FindServersRequest,
-    ObjectIds.FindServersResponse_Encoding_DefaultBinary : FindServersResponse,
-    ObjectIds.ServerOnNetwork_Encoding_DefaultBinary : ServerOnNetwork,
-    ObjectIds.FindServersOnNetworkRequest_Encoding_DefaultBinary : FindServersOnNetworkRequest,
-    ObjectIds.FindServersOnNetworkResponse_Encoding_DefaultBinary : FindServersOnNetworkResponse,
-    ObjectIds.UserTokenPolicy_Encoding_DefaultBinary : UserTokenPolicy,
-    ObjectIds.EndpointDescription_Encoding_DefaultBinary : EndpointDescription,
-    ObjectIds.GetEndpointsRequest_Encoding_DefaultBinary : GetEndpointsRequest,
-    ObjectIds.GetEndpointsResponse_Encoding_DefaultBinary : GetEndpointsResponse,
-    ObjectIds.RegisteredServer_Encoding_DefaultBinary : RegisteredServer,
-    ObjectIds.RegisterServerRequest_Encoding_DefaultBinary : RegisterServerRequest,
-    ObjectIds.RegisterServerResponse_Encoding_DefaultBinary : RegisterServerResponse,
-    ObjectIds.DiscoveryConfiguration_Encoding_DefaultBinary : DiscoveryConfiguration,
-    ObjectIds.MdnsDiscoveryConfiguration_Encoding_DefaultBinary : MdnsDiscoveryConfiguration,
-    ObjectIds.RegisterServer2Request_Encoding_DefaultBinary : RegisterServer2Request,
-    ObjectIds.RegisterServer2Response_Encoding_DefaultBinary : RegisterServer2Response,
-    ObjectIds.ChannelSecurityToken_Encoding_DefaultBinary : ChannelSecurityToken,
-    ObjectIds.OpenSecureChannelRequest_Encoding_DefaultBinary : OpenSecureChannelRequest,
-    ObjectIds.OpenSecureChannelResponse_Encoding_DefaultBinary : OpenSecureChannelResponse,
-    ObjectIds.CloseSecureChannelRequest_Encoding_DefaultBinary : CloseSecureChannelRequest,
-    ObjectIds.CloseSecureChannelResponse_Encoding_DefaultBinary : CloseSecureChannelResponse,
-    ObjectIds.SignedSoftwareCertificate_Encoding_DefaultBinary : SignedSoftwareCertificate,
-    ObjectIds.SignatureData_Encoding_DefaultBinary : SignatureData,
-    ObjectIds.CreateSessionRequest_Encoding_DefaultBinary : CreateSessionRequest,
-    ObjectIds.CreateSessionResponse_Encoding_DefaultBinary : CreateSessionResponse,
-    ObjectIds.UserIdentityToken_Encoding_DefaultBinary : UserIdentityToken,
-    ObjectIds.AnonymousIdentityToken_Encoding_DefaultBinary : AnonymousIdentityToken,
-    ObjectIds.UserNameIdentityToken_Encoding_DefaultBinary : UserNameIdentityToken,
-    ObjectIds.X509IdentityToken_Encoding_DefaultBinary : X509IdentityToken,
-    ObjectIds.KerberosIdentityToken_Encoding_DefaultBinary : KerberosIdentityToken,
-    ObjectIds.IssuedIdentityToken_Encoding_DefaultBinary : IssuedIdentityToken,
-    ObjectIds.ActivateSessionRequest_Encoding_DefaultBinary : ActivateSessionRequest,
-    ObjectIds.ActivateSessionResponse_Encoding_DefaultBinary : ActivateSessionResponse,
-    ObjectIds.CloseSessionRequest_Encoding_DefaultBinary : CloseSessionRequest,
-    ObjectIds.CloseSessionResponse_Encoding_DefaultBinary : CloseSessionResponse,
-    ObjectIds.CancelRequest_Encoding_DefaultBinary : CancelRequest,
-    ObjectIds.CancelResponse_Encoding_DefaultBinary : CancelResponse,
-    ObjectIds.NodeAttributes_Encoding_DefaultBinary : NodeAttributes,
-    ObjectIds.ObjectAttributes_Encoding_DefaultBinary : ObjectAttributes,
-    ObjectIds.VariableAttributes_Encoding_DefaultBinary : VariableAttributes,
-    ObjectIds.MethodAttributes_Encoding_DefaultBinary : MethodAttributes,
-    ObjectIds.ObjectTypeAttributes_Encoding_DefaultBinary : ObjectTypeAttributes,
-    ObjectIds.VariableTypeAttributes_Encoding_DefaultBinary : VariableTypeAttributes,
-    ObjectIds.ReferenceTypeAttributes_Encoding_DefaultBinary : ReferenceTypeAttributes,
-    ObjectIds.DataTypeAttributes_Encoding_DefaultBinary : DataTypeAttributes,
-    ObjectIds.ViewAttributes_Encoding_DefaultBinary : ViewAttributes,
-    ObjectIds.AddNodesItem_Encoding_DefaultBinary : AddNodesItem,
-    ObjectIds.AddNodesResult_Encoding_DefaultBinary : AddNodesResult,
-    ObjectIds.AddNodesRequest_Encoding_DefaultBinary : AddNodesRequest,
-    ObjectIds.AddNodesResponse_Encoding_DefaultBinary : AddNodesResponse,
-    ObjectIds.AddReferencesItem_Encoding_DefaultBinary : AddReferencesItem,
-    ObjectIds.AddReferencesRequest_Encoding_DefaultBinary : AddReferencesRequest,
-    ObjectIds.AddReferencesResponse_Encoding_DefaultBinary : AddReferencesResponse,
-    ObjectIds.DeleteNodesItem_Encoding_DefaultBinary : DeleteNodesItem,
-    ObjectIds.DeleteNodesRequest_Encoding_DefaultBinary : DeleteNodesRequest,
-    ObjectIds.DeleteNodesResponse_Encoding_DefaultBinary : DeleteNodesResponse,
-    ObjectIds.DeleteReferencesItem_Encoding_DefaultBinary : DeleteReferencesItem,
-    ObjectIds.DeleteReferencesRequest_Encoding_DefaultBinary : DeleteReferencesRequest,
-    ObjectIds.DeleteReferencesResponse_Encoding_DefaultBinary : DeleteReferencesResponse,
-    ObjectIds.ViewDescription_Encoding_DefaultBinary : ViewDescription,
-    ObjectIds.BrowseDescription_Encoding_DefaultBinary : BrowseDescription,
-    ObjectIds.ReferenceDescription_Encoding_DefaultBinary : ReferenceDescription,
-    ObjectIds.BrowseResult_Encoding_DefaultBinary : BrowseResult,
-    ObjectIds.BrowseRequest_Encoding_DefaultBinary : BrowseRequest,
-    ObjectIds.BrowseResponse_Encoding_DefaultBinary : BrowseResponse,
-    ObjectIds.BrowseNextRequest_Encoding_DefaultBinary : BrowseNextRequest,
-    ObjectIds.BrowseNextResponse_Encoding_DefaultBinary : BrowseNextResponse,
-    ObjectIds.RelativePathElement_Encoding_DefaultBinary : RelativePathElement,
-    ObjectIds.RelativePath_Encoding_DefaultBinary : RelativePath,
-    ObjectIds.BrowsePath_Encoding_DefaultBinary : BrowsePath,
-    ObjectIds.BrowsePathTarget_Encoding_DefaultBinary : BrowsePathTarget,
-    ObjectIds.BrowsePathResult_Encoding_DefaultBinary : BrowsePathResult,
-    ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary : TranslateBrowsePathsToNodeIdsRequest,
-    ObjectIds.TranslateBrowsePathsToNodeIdsResponse_Encoding_DefaultBinary : TranslateBrowsePathsToNodeIdsResponse,
-    ObjectIds.RegisterNodesRequest_Encoding_DefaultBinary : RegisterNodesRequest,
-    ObjectIds.RegisterNodesResponse_Encoding_DefaultBinary : RegisterNodesResponse,
-    ObjectIds.UnregisterNodesRequest_Encoding_DefaultBinary : UnregisterNodesRequest,
-    ObjectIds.UnregisterNodesResponse_Encoding_DefaultBinary : UnregisterNodesResponse,
-    ObjectIds.EndpointConfiguration_Encoding_DefaultBinary : EndpointConfiguration,
-    ObjectIds.SupportedProfile_Encoding_DefaultBinary : SupportedProfile,
-    ObjectIds.SoftwareCertificate_Encoding_DefaultBinary : SoftwareCertificate,
-    ObjectIds.QueryDataDescription_Encoding_DefaultBinary : QueryDataDescription,
-    ObjectIds.NodeTypeDescription_Encoding_DefaultBinary : NodeTypeDescription,
-    ObjectIds.QueryDataSet_Encoding_DefaultBinary : QueryDataSet,
-    ObjectIds.NodeReference_Encoding_DefaultBinary : NodeReference,
-    ObjectIds.ContentFilterElement_Encoding_DefaultBinary : ContentFilterElement,
-    ObjectIds.ContentFilter_Encoding_DefaultBinary : ContentFilter,
-    ObjectIds.ElementOperand_Encoding_DefaultBinary : ElementOperand,
-    ObjectIds.LiteralOperand_Encoding_DefaultBinary : LiteralOperand,
-    ObjectIds.AttributeOperand_Encoding_DefaultBinary : AttributeOperand,
-    ObjectIds.SimpleAttributeOperand_Encoding_DefaultBinary : SimpleAttributeOperand,
-    ObjectIds.ContentFilterElementResult_Encoding_DefaultBinary : ContentFilterElementResult,
-    ObjectIds.ContentFilterResult_Encoding_DefaultBinary : ContentFilterResult,
-    ObjectIds.ParsingResult_Encoding_DefaultBinary : ParsingResult,
-    ObjectIds.QueryFirstRequest_Encoding_DefaultBinary : QueryFirstRequest,
-    ObjectIds.QueryFirstResponse_Encoding_DefaultBinary : QueryFirstResponse,
-    ObjectIds.QueryNextRequest_Encoding_DefaultBinary : QueryNextRequest,
-    ObjectIds.QueryNextResponse_Encoding_DefaultBinary : QueryNextResponse,
-    ObjectIds.ReadValueId_Encoding_DefaultBinary : ReadValueId,
-    ObjectIds.ReadRequest_Encoding_DefaultBinary : ReadRequest,
-    ObjectIds.ReadResponse_Encoding_DefaultBinary : ReadResponse,
-    ObjectIds.HistoryReadValueId_Encoding_DefaultBinary : HistoryReadValueId,
-    ObjectIds.HistoryReadResult_Encoding_DefaultBinary : HistoryReadResult,
-    ObjectIds.HistoryReadDetails_Encoding_DefaultBinary : HistoryReadDetails,
-    ObjectIds.ReadEventDetails_Encoding_DefaultBinary : ReadEventDetails,
-    ObjectIds.ReadRawModifiedDetails_Encoding_DefaultBinary : ReadRawModifiedDetails,
-    ObjectIds.ReadProcessedDetails_Encoding_DefaultBinary : ReadProcessedDetails,
-    ObjectIds.ReadAtTimeDetails_Encoding_DefaultBinary : ReadAtTimeDetails,
-    ObjectIds.HistoryData_Encoding_DefaultBinary : HistoryData,
-    ObjectIds.ModificationInfo_Encoding_DefaultBinary : ModificationInfo,
-    ObjectIds.HistoryModifiedData_Encoding_DefaultBinary : HistoryModifiedData,
-    ObjectIds.HistoryEvent_Encoding_DefaultBinary : HistoryEvent,
-    ObjectIds.HistoryReadRequest_Encoding_DefaultBinary : HistoryReadRequest,
-    ObjectIds.HistoryReadResponse_Encoding_DefaultBinary : HistoryReadResponse,
-    ObjectIds.WriteValue_Encoding_DefaultBinary : WriteValue,
-    ObjectIds.WriteRequest_Encoding_DefaultBinary : WriteRequest,
-    ObjectIds.WriteResponse_Encoding_DefaultBinary : WriteResponse,
-    ObjectIds.HistoryUpdateDetails_Encoding_DefaultBinary : HistoryUpdateDetails,
-    ObjectIds.UpdateDataDetails_Encoding_DefaultBinary : UpdateDataDetails,
-    ObjectIds.UpdateStructureDataDetails_Encoding_DefaultBinary : UpdateStructureDataDetails,
-    ObjectIds.UpdateEventDetails_Encoding_DefaultBinary : UpdateEventDetails,
-    ObjectIds.DeleteRawModifiedDetails_Encoding_DefaultBinary : DeleteRawModifiedDetails,
-    ObjectIds.DeleteAtTimeDetails_Encoding_DefaultBinary : DeleteAtTimeDetails,
-    ObjectIds.DeleteEventDetails_Encoding_DefaultBinary : DeleteEventDetails,
-    ObjectIds.HistoryUpdateResult_Encoding_DefaultBinary : HistoryUpdateResult,
-    ObjectIds.HistoryUpdateRequest_Encoding_DefaultBinary : HistoryUpdateRequest,
-    ObjectIds.HistoryUpdateResponse_Encoding_DefaultBinary : HistoryUpdateResponse,
-    ObjectIds.CallMethodRequest_Encoding_DefaultBinary : CallMethodRequest,
-    ObjectIds.CallMethodResult_Encoding_DefaultBinary : CallMethodResult,
-    ObjectIds.CallRequest_Encoding_DefaultBinary : CallRequest,
-    ObjectIds.CallResponse_Encoding_DefaultBinary : CallResponse,
-    ObjectIds.MonitoringFilter_Encoding_DefaultBinary : MonitoringFilter,
-    ObjectIds.DataChangeFilter_Encoding_DefaultBinary : DataChangeFilter,
-    ObjectIds.EventFilter_Encoding_DefaultBinary : EventFilter,
-    ObjectIds.AggregateConfiguration_Encoding_DefaultBinary : AggregateConfiguration,
-    ObjectIds.AggregateFilter_Encoding_DefaultBinary : AggregateFilter,
-    ObjectIds.MonitoringFilterResult_Encoding_DefaultBinary : MonitoringFilterResult,
-    ObjectIds.EventFilterResult_Encoding_DefaultBinary : EventFilterResult,
-    ObjectIds.AggregateFilterResult_Encoding_DefaultBinary : AggregateFilterResult,
-    ObjectIds.MonitoringParameters_Encoding_DefaultBinary : MonitoringParameters,
-    ObjectIds.MonitoredItemCreateRequest_Encoding_DefaultBinary : MonitoredItemCreateRequest,
-    ObjectIds.MonitoredItemCreateResult_Encoding_DefaultBinary : MonitoredItemCreateResult,
-    ObjectIds.CreateMonitoredItemsRequest_Encoding_DefaultBinary : CreateMonitoredItemsRequest,
-    ObjectIds.CreateMonitoredItemsResponse_Encoding_DefaultBinary : CreateMonitoredItemsResponse,
-    ObjectIds.MonitoredItemModifyRequest_Encoding_DefaultBinary : MonitoredItemModifyRequest,
-    ObjectIds.MonitoredItemModifyResult_Encoding_DefaultBinary : MonitoredItemModifyResult,
-    ObjectIds.ModifyMonitoredItemsRequest_Encoding_DefaultBinary : ModifyMonitoredItemsRequest,
-    ObjectIds.ModifyMonitoredItemsResponse_Encoding_DefaultBinary : ModifyMonitoredItemsResponse,
-    ObjectIds.SetMonitoringModeRequest_Encoding_DefaultBinary : SetMonitoringModeRequest,
-    ObjectIds.SetMonitoringModeResponse_Encoding_DefaultBinary : SetMonitoringModeResponse,
-    ObjectIds.SetTriggeringRequest_Encoding_DefaultBinary : SetTriggeringRequest,
-    ObjectIds.SetTriggeringResponse_Encoding_DefaultBinary : SetTriggeringResponse,
-    ObjectIds.DeleteMonitoredItemsRequest_Encoding_DefaultBinary : DeleteMonitoredItemsRequest,
-    ObjectIds.DeleteMonitoredItemsResponse_Encoding_DefaultBinary : DeleteMonitoredItemsResponse,
-    ObjectIds.CreateSubscriptionRequest_Encoding_DefaultBinary : CreateSubscriptionRequest,
-    ObjectIds.CreateSubscriptionResponse_Encoding_DefaultBinary : CreateSubscriptionResponse,
-    ObjectIds.ModifySubscriptionRequest_Encoding_DefaultBinary : ModifySubscriptionRequest,
-    ObjectIds.ModifySubscriptionResponse_Encoding_DefaultBinary : ModifySubscriptionResponse,
-    ObjectIds.SetPublishingModeRequest_Encoding_DefaultBinary : SetPublishingModeRequest,
-    ObjectIds.SetPublishingModeResponse_Encoding_DefaultBinary : SetPublishingModeResponse,
-    ObjectIds.NotificationMessage_Encoding_DefaultBinary : NotificationMessage,
-    ObjectIds.NotificationData_Encoding_DefaultBinary : NotificationData,
-    ObjectIds.DataChangeNotification_Encoding_DefaultBinary : DataChangeNotification,
-    ObjectIds.MonitoredItemNotification_Encoding_DefaultBinary : MonitoredItemNotification,
-    ObjectIds.EventNotificationList_Encoding_DefaultBinary : EventNotificationList,
-    ObjectIds.EventFieldList_Encoding_DefaultBinary : EventFieldList,
-    ObjectIds.HistoryEventFieldList_Encoding_DefaultBinary : HistoryEventFieldList,
-    ObjectIds.StatusChangeNotification_Encoding_DefaultBinary : StatusChangeNotification,
-    ObjectIds.SubscriptionAcknowledgement_Encoding_DefaultBinary : SubscriptionAcknowledgement,
-    ObjectIds.PublishRequest_Encoding_DefaultBinary : PublishRequest,
-    ObjectIds.PublishResponse_Encoding_DefaultBinary : PublishResponse,
-    ObjectIds.RepublishRequest_Encoding_DefaultBinary : RepublishRequest,
-    ObjectIds.RepublishResponse_Encoding_DefaultBinary : RepublishResponse,
-    ObjectIds.TransferResult_Encoding_DefaultBinary : TransferResult,
-    ObjectIds.TransferSubscriptionsRequest_Encoding_DefaultBinary : TransferSubscriptionsRequest,
-    ObjectIds.TransferSubscriptionsResponse_Encoding_DefaultBinary : TransferSubscriptionsResponse,
-    ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary : DeleteSubscriptionsRequest,
-    ObjectIds.DeleteSubscriptionsResponse_Encoding_DefaultBinary : DeleteSubscriptionsResponse,
-    ObjectIds.BuildInfo_Encoding_DefaultBinary : BuildInfo,
-    ObjectIds.RedundantServerDataType_Encoding_DefaultBinary : RedundantServerDataType,
-    ObjectIds.EndpointUrlListDataType_Encoding_DefaultBinary : EndpointUrlListDataType,
-    ObjectIds.NetworkGroupDataType_Encoding_DefaultBinary : NetworkGroupDataType,
-    ObjectIds.SamplingIntervalDiagnosticsDataType_Encoding_DefaultBinary : SamplingIntervalDiagnosticsDataType,
-    ObjectIds.ServerDiagnosticsSummaryDataType_Encoding_DefaultBinary : ServerDiagnosticsSummaryDataType,
-    ObjectIds.ServerStatusDataType_Encoding_DefaultBinary : ServerStatusDataType,
-    ObjectIds.SessionDiagnosticsDataType_Encoding_DefaultBinary : SessionDiagnosticsDataType,
-    ObjectIds.SessionSecurityDiagnosticsDataType_Encoding_DefaultBinary : SessionSecurityDiagnosticsDataType,
-    ObjectIds.ServiceCounterDataType_Encoding_DefaultBinary : ServiceCounterDataType,
-    ObjectIds.StatusResult_Encoding_DefaultBinary : StatusResult,
-    ObjectIds.SubscriptionDiagnosticsDataType_Encoding_DefaultBinary : SubscriptionDiagnosticsDataType,
-    ObjectIds.ModelChangeStructureDataType_Encoding_DefaultBinary : ModelChangeStructureDataType,
-    ObjectIds.SemanticChangeStructureDataType_Encoding_DefaultBinary : SemanticChangeStructureDataType,
-    ObjectIds.Range_Encoding_DefaultBinary : Range,
-    ObjectIds.EUInformation_Encoding_DefaultBinary : EUInformation,
-    ObjectIds.ComplexNumberType_Encoding_DefaultBinary : ComplexNumberType,
-    ObjectIds.DoubleComplexNumberType_Encoding_DefaultBinary : DoubleComplexNumberType,
-    ObjectIds.AxisInformation_Encoding_DefaultBinary : AxisInformation,
-    ObjectIds.XVType_Encoding_DefaultBinary : XVType,
-    ObjectIds.ProgramDiagnosticDataType_Encoding_DefaultBinary : ProgramDiagnosticDataType,
-    ObjectIds.Annotation_Encoding_DefaultBinary : Annotation,
+    ObjectIds.TrustListDataType_Encoding_DefaultBinary: TrustListDataType,
+    ObjectIds.Argument_Encoding_DefaultBinary: Argument,
+    ObjectIds.EnumValueType_Encoding_DefaultBinary: EnumValueType,
+    ObjectIds.OptionSet_Encoding_DefaultBinary: OptionSet,
+    ObjectIds.Union_Encoding_DefaultBinary: Union,
+    ObjectIds.TimeZoneDataType_Encoding_DefaultBinary: TimeZoneDataType,
+    ObjectIds.ApplicationDescription_Encoding_DefaultBinary: ApplicationDescription,
+    ObjectIds.RequestHeader_Encoding_DefaultBinary: RequestHeader,
+    ObjectIds.ResponseHeader_Encoding_DefaultBinary: ResponseHeader,
+    ObjectIds.ServiceFault_Encoding_DefaultBinary: ServiceFault,
+    ObjectIds.FindServersRequest_Encoding_DefaultBinary: FindServersRequest,
+    ObjectIds.FindServersResponse_Encoding_DefaultBinary: FindServersResponse,
+    ObjectIds.ServerOnNetwork_Encoding_DefaultBinary: ServerOnNetwork,
+    ObjectIds.FindServersOnNetworkRequest_Encoding_DefaultBinary: FindServersOnNetworkRequest,
+    ObjectIds.FindServersOnNetworkResponse_Encoding_DefaultBinary: FindServersOnNetworkResponse,
+    ObjectIds.UserTokenPolicy_Encoding_DefaultBinary: UserTokenPolicy,
+    ObjectIds.EndpointDescription_Encoding_DefaultBinary: EndpointDescription,
+    ObjectIds.GetEndpointsRequest_Encoding_DefaultBinary: GetEndpointsRequest,
+    ObjectIds.GetEndpointsResponse_Encoding_DefaultBinary: GetEndpointsResponse,
+    ObjectIds.RegisteredServer_Encoding_DefaultBinary: RegisteredServer,
+    ObjectIds.RegisterServerRequest_Encoding_DefaultBinary: RegisterServerRequest,
+    ObjectIds.RegisterServerResponse_Encoding_DefaultBinary: RegisterServerResponse,
+    ObjectIds.DiscoveryConfiguration_Encoding_DefaultBinary: DiscoveryConfiguration,
+    ObjectIds.MdnsDiscoveryConfiguration_Encoding_DefaultBinary: MdnsDiscoveryConfiguration,
+    ObjectIds.RegisterServer2Request_Encoding_DefaultBinary: RegisterServer2Request,
+    ObjectIds.RegisterServer2Response_Encoding_DefaultBinary: RegisterServer2Response,
+    ObjectIds.ChannelSecurityToken_Encoding_DefaultBinary: ChannelSecurityToken,
+    ObjectIds.OpenSecureChannelRequest_Encoding_DefaultBinary: OpenSecureChannelRequest,
+    ObjectIds.OpenSecureChannelResponse_Encoding_DefaultBinary: OpenSecureChannelResponse,
+    ObjectIds.CloseSecureChannelRequest_Encoding_DefaultBinary: CloseSecureChannelRequest,
+    ObjectIds.CloseSecureChannelResponse_Encoding_DefaultBinary: CloseSecureChannelResponse,
+    ObjectIds.SignedSoftwareCertificate_Encoding_DefaultBinary: SignedSoftwareCertificate,
+    ObjectIds.SignatureData_Encoding_DefaultBinary: SignatureData,
+    ObjectIds.CreateSessionRequest_Encoding_DefaultBinary: CreateSessionRequest,
+    ObjectIds.CreateSessionResponse_Encoding_DefaultBinary: CreateSessionResponse,
+    ObjectIds.UserIdentityToken_Encoding_DefaultBinary: UserIdentityToken,
+    ObjectIds.AnonymousIdentityToken_Encoding_DefaultBinary: AnonymousIdentityToken,
+    ObjectIds.UserNameIdentityToken_Encoding_DefaultBinary: UserNameIdentityToken,
+    ObjectIds.X509IdentityToken_Encoding_DefaultBinary: X509IdentityToken,
+    ObjectIds.KerberosIdentityToken_Encoding_DefaultBinary: KerberosIdentityToken,
+    ObjectIds.IssuedIdentityToken_Encoding_DefaultBinary: IssuedIdentityToken,
+    ObjectIds.ActivateSessionRequest_Encoding_DefaultBinary: ActivateSessionRequest,
+    ObjectIds.ActivateSessionResponse_Encoding_DefaultBinary: ActivateSessionResponse,
+    ObjectIds.CloseSessionRequest_Encoding_DefaultBinary: CloseSessionRequest,
+    ObjectIds.CloseSessionResponse_Encoding_DefaultBinary: CloseSessionResponse,
+    ObjectIds.CancelRequest_Encoding_DefaultBinary: CancelRequest,
+    ObjectIds.CancelResponse_Encoding_DefaultBinary: CancelResponse,
+    ObjectIds.NodeAttributes_Encoding_DefaultBinary: NodeAttributes,
+    ObjectIds.ObjectAttributes_Encoding_DefaultBinary: ObjectAttributes,
+    ObjectIds.VariableAttributes_Encoding_DefaultBinary: VariableAttributes,
+    ObjectIds.MethodAttributes_Encoding_DefaultBinary: MethodAttributes,
+    ObjectIds.ObjectTypeAttributes_Encoding_DefaultBinary: ObjectTypeAttributes,
+    ObjectIds.VariableTypeAttributes_Encoding_DefaultBinary: VariableTypeAttributes,
+    ObjectIds.ReferenceTypeAttributes_Encoding_DefaultBinary: ReferenceTypeAttributes,
+    ObjectIds.DataTypeAttributes_Encoding_DefaultBinary: DataTypeAttributes,
+    ObjectIds.ViewAttributes_Encoding_DefaultBinary: ViewAttributes,
+    ObjectIds.AddNodesItem_Encoding_DefaultBinary: AddNodesItem,
+    ObjectIds.AddNodesResult_Encoding_DefaultBinary: AddNodesResult,
+    ObjectIds.AddNodesRequest_Encoding_DefaultBinary: AddNodesRequest,
+    ObjectIds.AddNodesResponse_Encoding_DefaultBinary: AddNodesResponse,
+    ObjectIds.AddReferencesItem_Encoding_DefaultBinary: AddReferencesItem,
+    ObjectIds.AddReferencesRequest_Encoding_DefaultBinary: AddReferencesRequest,
+    ObjectIds.AddReferencesResponse_Encoding_DefaultBinary: AddReferencesResponse,
+    ObjectIds.DeleteNodesItem_Encoding_DefaultBinary: DeleteNodesItem,
+    ObjectIds.DeleteNodesRequest_Encoding_DefaultBinary: DeleteNodesRequest,
+    ObjectIds.DeleteNodesResponse_Encoding_DefaultBinary: DeleteNodesResponse,
+    ObjectIds.DeleteReferencesItem_Encoding_DefaultBinary: DeleteReferencesItem,
+    ObjectIds.DeleteReferencesRequest_Encoding_DefaultBinary: DeleteReferencesRequest,
+    ObjectIds.DeleteReferencesResponse_Encoding_DefaultBinary: DeleteReferencesResponse,
+    ObjectIds.ViewDescription_Encoding_DefaultBinary: ViewDescription,
+    ObjectIds.BrowseDescription_Encoding_DefaultBinary: BrowseDescription,
+    ObjectIds.ReferenceDescription_Encoding_DefaultBinary: ReferenceDescription,
+    ObjectIds.BrowseResult_Encoding_DefaultBinary: BrowseResult,
+    ObjectIds.BrowseRequest_Encoding_DefaultBinary: BrowseRequest,
+    ObjectIds.BrowseResponse_Encoding_DefaultBinary: BrowseResponse,
+    ObjectIds.BrowseNextRequest_Encoding_DefaultBinary: BrowseNextRequest,
+    ObjectIds.BrowseNextResponse_Encoding_DefaultBinary: BrowseNextResponse,
+    ObjectIds.RelativePathElement_Encoding_DefaultBinary: RelativePathElement,
+    ObjectIds.RelativePath_Encoding_DefaultBinary: RelativePath,
+    ObjectIds.BrowsePath_Encoding_DefaultBinary: BrowsePath,
+    ObjectIds.BrowsePathTarget_Encoding_DefaultBinary: BrowsePathTarget,
+    ObjectIds.BrowsePathResult_Encoding_DefaultBinary: BrowsePathResult,
+    ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary: TranslateBrowsePathsToNodeIdsRequest,
+    ObjectIds.TranslateBrowsePathsToNodeIdsResponse_Encoding_DefaultBinary: TranslateBrowsePathsToNodeIdsResponse,
+    ObjectIds.RegisterNodesRequest_Encoding_DefaultBinary: RegisterNodesRequest,
+    ObjectIds.RegisterNodesResponse_Encoding_DefaultBinary: RegisterNodesResponse,
+    ObjectIds.UnregisterNodesRequest_Encoding_DefaultBinary: UnregisterNodesRequest,
+    ObjectIds.UnregisterNodesResponse_Encoding_DefaultBinary: UnregisterNodesResponse,
+    ObjectIds.EndpointConfiguration_Encoding_DefaultBinary: EndpointConfiguration,
+    ObjectIds.SupportedProfile_Encoding_DefaultBinary: SupportedProfile,
+    ObjectIds.SoftwareCertificate_Encoding_DefaultBinary: SoftwareCertificate,
+    ObjectIds.QueryDataDescription_Encoding_DefaultBinary: QueryDataDescription,
+    ObjectIds.NodeTypeDescription_Encoding_DefaultBinary: NodeTypeDescription,
+    ObjectIds.QueryDataSet_Encoding_DefaultBinary: QueryDataSet,
+    ObjectIds.NodeReference_Encoding_DefaultBinary: NodeReference,
+    ObjectIds.ContentFilterElement_Encoding_DefaultBinary: ContentFilterElement,
+    ObjectIds.ContentFilter_Encoding_DefaultBinary: ContentFilter,
+    ObjectIds.ElementOperand_Encoding_DefaultBinary: ElementOperand,
+    ObjectIds.LiteralOperand_Encoding_DefaultBinary: LiteralOperand,
+    ObjectIds.AttributeOperand_Encoding_DefaultBinary: AttributeOperand,
+    ObjectIds.SimpleAttributeOperand_Encoding_DefaultBinary: SimpleAttributeOperand,
+    ObjectIds.ContentFilterElementResult_Encoding_DefaultBinary: ContentFilterElementResult,
+    ObjectIds.ContentFilterResult_Encoding_DefaultBinary: ContentFilterResult,
+    ObjectIds.ParsingResult_Encoding_DefaultBinary: ParsingResult,
+    ObjectIds.QueryFirstRequest_Encoding_DefaultBinary: QueryFirstRequest,
+    ObjectIds.QueryFirstResponse_Encoding_DefaultBinary: QueryFirstResponse,
+    ObjectIds.QueryNextRequest_Encoding_DefaultBinary: QueryNextRequest,
+    ObjectIds.QueryNextResponse_Encoding_DefaultBinary: QueryNextResponse,
+    ObjectIds.ReadValueId_Encoding_DefaultBinary: ReadValueId,
+    ObjectIds.ReadRequest_Encoding_DefaultBinary: ReadRequest,
+    ObjectIds.ReadResponse_Encoding_DefaultBinary: ReadResponse,
+    ObjectIds.HistoryReadValueId_Encoding_DefaultBinary: HistoryReadValueId,
+    ObjectIds.HistoryReadResult_Encoding_DefaultBinary: HistoryReadResult,
+    ObjectIds.HistoryReadDetails_Encoding_DefaultBinary: HistoryReadDetails,
+    ObjectIds.ReadEventDetails_Encoding_DefaultBinary: ReadEventDetails,
+    ObjectIds.ReadRawModifiedDetails_Encoding_DefaultBinary: ReadRawModifiedDetails,
+    ObjectIds.ReadProcessedDetails_Encoding_DefaultBinary: ReadProcessedDetails,
+    ObjectIds.ReadAtTimeDetails_Encoding_DefaultBinary: ReadAtTimeDetails,
+    ObjectIds.HistoryData_Encoding_DefaultBinary: HistoryData,
+    ObjectIds.ModificationInfo_Encoding_DefaultBinary: ModificationInfo,
+    ObjectIds.HistoryModifiedData_Encoding_DefaultBinary: HistoryModifiedData,
+    ObjectIds.HistoryEvent_Encoding_DefaultBinary: HistoryEvent,
+    ObjectIds.HistoryReadRequest_Encoding_DefaultBinary: HistoryReadRequest,
+    ObjectIds.HistoryReadResponse_Encoding_DefaultBinary: HistoryReadResponse,
+    ObjectIds.WriteValue_Encoding_DefaultBinary: WriteValue,
+    ObjectIds.WriteRequest_Encoding_DefaultBinary: WriteRequest,
+    ObjectIds.WriteResponse_Encoding_DefaultBinary: WriteResponse,
+    ObjectIds.HistoryUpdateDetails_Encoding_DefaultBinary: HistoryUpdateDetails,
+    ObjectIds.UpdateDataDetails_Encoding_DefaultBinary: UpdateDataDetails,
+    ObjectIds.UpdateStructureDataDetails_Encoding_DefaultBinary: UpdateStructureDataDetails,
+    ObjectIds.UpdateEventDetails_Encoding_DefaultBinary: UpdateEventDetails,
+    ObjectIds.DeleteRawModifiedDetails_Encoding_DefaultBinary: DeleteRawModifiedDetails,
+    ObjectIds.DeleteAtTimeDetails_Encoding_DefaultBinary: DeleteAtTimeDetails,
+    ObjectIds.DeleteEventDetails_Encoding_DefaultBinary: DeleteEventDetails,
+    ObjectIds.HistoryUpdateResult_Encoding_DefaultBinary: HistoryUpdateResult,
+    ObjectIds.HistoryUpdateRequest_Encoding_DefaultBinary: HistoryUpdateRequest,
+    ObjectIds.HistoryUpdateResponse_Encoding_DefaultBinary: HistoryUpdateResponse,
+    ObjectIds.CallMethodRequest_Encoding_DefaultBinary: CallMethodRequest,
+    ObjectIds.CallMethodResult_Encoding_DefaultBinary: CallMethodResult,
+    ObjectIds.CallRequest_Encoding_DefaultBinary: CallRequest,
+    ObjectIds.CallResponse_Encoding_DefaultBinary: CallResponse,
+    ObjectIds.MonitoringFilter_Encoding_DefaultBinary: MonitoringFilter,
+    ObjectIds.DataChangeFilter_Encoding_DefaultBinary: DataChangeFilter,
+    ObjectIds.EventFilter_Encoding_DefaultBinary: EventFilter,
+    ObjectIds.AggregateConfiguration_Encoding_DefaultBinary: AggregateConfiguration,
+    ObjectIds.AggregateFilter_Encoding_DefaultBinary: AggregateFilter,
+    ObjectIds.MonitoringFilterResult_Encoding_DefaultBinary: MonitoringFilterResult,
+    ObjectIds.EventFilterResult_Encoding_DefaultBinary: EventFilterResult,
+    ObjectIds.AggregateFilterResult_Encoding_DefaultBinary: AggregateFilterResult,
+    ObjectIds.MonitoringParameters_Encoding_DefaultBinary: MonitoringParameters,
+    ObjectIds.MonitoredItemCreateRequest_Encoding_DefaultBinary: MonitoredItemCreateRequest,
+    ObjectIds.MonitoredItemCreateResult_Encoding_DefaultBinary: MonitoredItemCreateResult,
+    ObjectIds.CreateMonitoredItemsRequest_Encoding_DefaultBinary: CreateMonitoredItemsRequest,
+    ObjectIds.CreateMonitoredItemsResponse_Encoding_DefaultBinary: CreateMonitoredItemsResponse,
+    ObjectIds.MonitoredItemModifyRequest_Encoding_DefaultBinary: MonitoredItemModifyRequest,
+    ObjectIds.MonitoredItemModifyResult_Encoding_DefaultBinary: MonitoredItemModifyResult,
+    ObjectIds.ModifyMonitoredItemsRequest_Encoding_DefaultBinary: ModifyMonitoredItemsRequest,
+    ObjectIds.ModifyMonitoredItemsResponse_Encoding_DefaultBinary: ModifyMonitoredItemsResponse,
+    ObjectIds.SetMonitoringModeRequest_Encoding_DefaultBinary: SetMonitoringModeRequest,
+    ObjectIds.SetMonitoringModeResponse_Encoding_DefaultBinary: SetMonitoringModeResponse,
+    ObjectIds.SetTriggeringRequest_Encoding_DefaultBinary: SetTriggeringRequest,
+    ObjectIds.SetTriggeringResponse_Encoding_DefaultBinary: SetTriggeringResponse,
+    ObjectIds.DeleteMonitoredItemsRequest_Encoding_DefaultBinary: DeleteMonitoredItemsRequest,
+    ObjectIds.DeleteMonitoredItemsResponse_Encoding_DefaultBinary: DeleteMonitoredItemsResponse,
+    ObjectIds.CreateSubscriptionRequest_Encoding_DefaultBinary: CreateSubscriptionRequest,
+    ObjectIds.CreateSubscriptionResponse_Encoding_DefaultBinary: CreateSubscriptionResponse,
+    ObjectIds.ModifySubscriptionRequest_Encoding_DefaultBinary: ModifySubscriptionRequest,
+    ObjectIds.ModifySubscriptionResponse_Encoding_DefaultBinary: ModifySubscriptionResponse,
+    ObjectIds.SetPublishingModeRequest_Encoding_DefaultBinary: SetPublishingModeRequest,
+    ObjectIds.SetPublishingModeResponse_Encoding_DefaultBinary: SetPublishingModeResponse,
+    ObjectIds.NotificationMessage_Encoding_DefaultBinary: NotificationMessage,
+    ObjectIds.NotificationData_Encoding_DefaultBinary: NotificationData,
+    ObjectIds.DataChangeNotification_Encoding_DefaultBinary: DataChangeNotification,
+    ObjectIds.MonitoredItemNotification_Encoding_DefaultBinary: MonitoredItemNotification,
+    ObjectIds.EventNotificationList_Encoding_DefaultBinary: EventNotificationList,
+    ObjectIds.EventFieldList_Encoding_DefaultBinary: EventFieldList,
+    ObjectIds.HistoryEventFieldList_Encoding_DefaultBinary: HistoryEventFieldList,
+    ObjectIds.StatusChangeNotification_Encoding_DefaultBinary: StatusChangeNotification,
+    ObjectIds.SubscriptionAcknowledgement_Encoding_DefaultBinary: SubscriptionAcknowledgement,
+    ObjectIds.PublishRequest_Encoding_DefaultBinary: PublishRequest,
+    ObjectIds.PublishResponse_Encoding_DefaultBinary: PublishResponse,
+    ObjectIds.RepublishRequest_Encoding_DefaultBinary: RepublishRequest,
+    ObjectIds.RepublishResponse_Encoding_DefaultBinary: RepublishResponse,
+    ObjectIds.TransferResult_Encoding_DefaultBinary: TransferResult,
+    ObjectIds.TransferSubscriptionsRequest_Encoding_DefaultBinary: TransferSubscriptionsRequest,
+    ObjectIds.TransferSubscriptionsResponse_Encoding_DefaultBinary: TransferSubscriptionsResponse,
+    ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary: DeleteSubscriptionsRequest,
+    ObjectIds.DeleteSubscriptionsResponse_Encoding_DefaultBinary: DeleteSubscriptionsResponse,
+    ObjectIds.BuildInfo_Encoding_DefaultBinary: BuildInfo,
+    ObjectIds.RedundantServerDataType_Encoding_DefaultBinary: RedundantServerDataType,
+    ObjectIds.EndpointUrlListDataType_Encoding_DefaultBinary: EndpointUrlListDataType,
+    ObjectIds.NetworkGroupDataType_Encoding_DefaultBinary: NetworkGroupDataType,
+    ObjectIds.SamplingIntervalDiagnosticsDataType_Encoding_DefaultBinary: SamplingIntervalDiagnosticsDataType,
+    ObjectIds.ServerDiagnosticsSummaryDataType_Encoding_DefaultBinary: ServerDiagnosticsSummaryDataType,
+    ObjectIds.ServerStatusDataType_Encoding_DefaultBinary: ServerStatusDataType,
+    ObjectIds.SessionDiagnosticsDataType_Encoding_DefaultBinary: SessionDiagnosticsDataType,
+    ObjectIds.SessionSecurityDiagnosticsDataType_Encoding_DefaultBinary: SessionSecurityDiagnosticsDataType,
+    ObjectIds.ServiceCounterDataType_Encoding_DefaultBinary: ServiceCounterDataType,
+    ObjectIds.StatusResult_Encoding_DefaultBinary: StatusResult,
+    ObjectIds.SubscriptionDiagnosticsDataType_Encoding_DefaultBinary: SubscriptionDiagnosticsDataType,
+    ObjectIds.ModelChangeStructureDataType_Encoding_DefaultBinary: ModelChangeStructureDataType,
+    ObjectIds.SemanticChangeStructureDataType_Encoding_DefaultBinary: SemanticChangeStructureDataType,
+    ObjectIds.Range_Encoding_DefaultBinary: Range,
+    ObjectIds.EUInformation_Encoding_DefaultBinary: EUInformation,
+    ObjectIds.ComplexNumberType_Encoding_DefaultBinary: ComplexNumberType,
+    ObjectIds.DoubleComplexNumberType_Encoding_DefaultBinary: DoubleComplexNumberType,
+    ObjectIds.AxisInformation_Encoding_DefaultBinary: AxisInformation,
+    ObjectIds.XVType_Encoding_DefaultBinary: XVType,
+    ObjectIds.ProgramDiagnosticDataType_Encoding_DefaultBinary: ProgramDiagnosticDataType,
+    ObjectIds.Annotation_Encoding_DefaultBinary: Annotation,
 }
+
 
 def extensionobject_from_binary(data):
     """
@@ -15923,6 +15855,7 @@ def extensionobject_from_binary(data):
         return None
     klass = ExtensionClasses[TypeId.Identifier]
     return klass.from_binary(Buffer(Body))
+
 
 def extensionobject_to_binary(obj):
     """
