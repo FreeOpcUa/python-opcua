@@ -52,11 +52,25 @@ def win_epoch_to_datetime(epch):
     return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch // 10)
 
 
+def build_array_format_py2(prefix, length, foramt_char):
+    return prefix + str(length) + foramt_char
+
+
+def build_array_format_py3(prefix, length, foramt_char):
+    return prefix + str(length) + chr(foramt_char)
+
+
+if sys.version_info.major < 3:
+    build_array_format = build_array_format_py2
+else:
+    build_array_format = build_array_format_py3
+
+
 def pack_uatype_array_primitive(st, value, length):
     if length == 1:
         return b'\x01\x00\x00\x00' + st.pack(value[0])
     else:
-        return struct.pack(b"<i%d%s" % (length, st.format[1:]), length, *value)
+        return struct.pack(build_array_format("<i", length, st.format[1]), length, *value)
 
 
 def pack_uatype_array(uatype, value):
@@ -163,7 +177,7 @@ def unpack_uatype_array(uatype, data):
         if length == 1:
             return list(st.unpack(data.read(st.size)))
         else:
-            arrst = struct.Struct(b"<%d%s" % (length, st.format[1:]))
+            arrst = struct.Struct(build_array_format("<", length, st.format[1]))
             return list(arrst.unpack(data.read(arrst.size)))
     else:
         result = []
