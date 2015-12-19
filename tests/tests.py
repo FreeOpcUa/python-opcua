@@ -225,7 +225,7 @@ class Unit(unittest.TestCase):
         dv = ua.DataValue('abc')
         self.assertEqual(dv.Value, ua.Variant('abc'))
         now = datetime.now()
-        dv.source_timestamp = now
+        dv.SourceTimestamp = now
 
     def test_variant(self):
         dv = ua.Variant(True, ua.VariantType.Boolean)

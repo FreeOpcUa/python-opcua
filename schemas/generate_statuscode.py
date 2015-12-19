@@ -5,13 +5,13 @@ def status_codes():
     inputfile = open("StatusCodes_add.csv")
     additional = {}
     for line in inputfile:
-        name, val, doc = line.split(",", maxsplit=2)
+        name, val, doc = line.split(",", 2)
         additional[int(val, 0)] = (name, val, doc)
 
     inputfile = open("StatusCodes.csv")
     result = []
     for line in inputfile:
-        name, val, doc = line.split(",", maxsplit=2)
+        name, val, doc = line.split(",", 2)
         result.append((name, val, doc))
         additional.pop(int(val, 0), None)
     add = [ additional[k] for k in sorted(additional.keys()) ]
@@ -25,23 +25,28 @@ if __name__ == "__main__":
     #outputfile.write("from enum import Enum\n")
     outputfile.write("\n")
 
-    outputfile.write("class StatusCodes:\n")
+    outputfile.write("class StatusCodes(object):\n")
     for name, val, doc in codes:
         doc = doc.strip()
         outputfile.write("    {} = {}\n".format(name, val))
     outputfile.write("\n")
     outputfile.write("\n")
 
-    outputfile.write("def get_name_and_doc(val):\n")
-    kword = "if"
+    outputfile.write("code_to_name_doc = {\n")
     for name, val, doc in codes:
         doc = doc.strip()
         doc = doc.replace("'", '"')
-        outputfile.write("    {} val == {}:\n".format(kword, val))
-        outputfile.write("        return '{}', '{}'\n".format(name, doc))
-        kword = "elif"
-    outputfile.write("    else:\n".format(val))
-    outputfile.write("        return 'UnknownUaError', 'Unknown StatusCode value: {}'.format(val)\n")
+        outputfile.write("    {}: ('{}', '{}'),\n".format(val, name, doc))
+    outputfile.write("}\n")
+    outputfile.write("\n")
+    outputfile.write("\n")
+
+    outputfile.write("""def get_name_and_doc(val):
+    if val in code_to_name_doc:
+        return code_to_name_doc[val]
+    else:
+        return 'UnknownUaError', 'Unknown StatusCode value: {}'.format(val)
+""")
     '''
     outputfile.write("class StatusCode(Enum):\n")
     outputfile.write("    Good = 0\n")
