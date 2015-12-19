@@ -56,7 +56,7 @@ def pack_uatype_array_primitive(st, value, length):
     if length == 1:
         return b'\x01\x00\x00\x00' + st.pack(value[0])
     else:
-        return struct.pack("<i%d%s" % (length, st.format[1]), length, *value)
+        return struct.pack(b"<i%d%s" % (length, st.format[1:]), length, *value)
 
 
 def pack_uatype_array(uatype, value):
@@ -163,7 +163,7 @@ def unpack_uatype_array(uatype, data):
         if length == 1:
             return list(st.unpack(data.read(st.size)))
         else:
-            arrst = struct.Struct("<%d%s" % (length, st.format[1]))
+            arrst = struct.Struct(b"<%d%s" % (length, st.format[1:]))
             return list(arrst.unpack(data.read(arrst.size)))
     else:
         result = []
