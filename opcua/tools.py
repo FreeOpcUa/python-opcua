@@ -19,6 +19,7 @@ from opcua import Client
 from opcua import Server
 from opcua import Node
 from opcua import uamethod
+from opcua import security_policies
 
 
 def add_minimum_args(parser):
@@ -58,7 +59,29 @@ def add_common_args(parser):
                         type=int,
                         default=0,
                         metavar="NAMESPACE")
+    parser.add_argument("--security",
+                        help="Security settings, for example: Basic256,SignAndEncrypt,cert.der,pk.pem[,server_cert.der]. Default: None",
+                        default='')
 
+
+def client_security(security, url, timeout):
+    parts = security.split(',')
+    if len(parts) < 4:
+        raise Exception('Wrong format: `{}`, expected at least 4 comma-separated values'.format(security))
+    policy_class = getattr(security_policies, 'SecurityPolicy' + parts[0])
+    mode = getattr(ua.MessageSecurityMode, parts[1])
+    cert = open(parts[2], 'rb').read()
+    pk = open(parts[3], 'rb').read()
+    server_cert = None
+    if len(parts) == 5:
+        server_cert = open(parts[4], 'rb').read()
+    else:
+        # we need server's certificate too. Let's get it from the list of endpoints
+        client = Client(url, timeout=timeout)
+        for ep in client.connect_and_get_server_endpoints():
+            if ep.EndpointUrl.startswith(ua.OPC_TCP_SCHEME) and ep.SecurityMode == mode and ep.SecurityPolicyUri == policy_class.URI:
+                server_cert = ep.ServerCertificate
+    return policy_class(server_cert, cert, pk, mode)
 
 def parse_args(parser, requirenodeid=False):
     args = parser.parse_args()
@@ -66,6 +89,8 @@ def parse_args(parser, requirenodeid=False):
     if args.url and '://' not in args.url:
         logging.info("Adding default scheme %s to URL %s", ua.OPC_TCP_SCHEME, args.url)
         args.url = ua.OPC_TCP_SCHEME + '://' + args.url
+    if hasattr(args, 'security') and args.security:
+        args.security = client_security(args.security, args.url, args.timeout)
     # check that a nodeid has been given explicitly, a bit hackish...
     if requirenodeid and args.nodeid == "i=84" and args.path == "":
         parser.print_usage()
@@ -99,7 +124,7 @@ def uaread():
 
     args = parse_args(parser, requirenodeid=True)
 
-    client = Client(args.url, timeout=args.timeout)
+    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
     client.connect()
     try:
         node = get_node(client, args)
@@ -235,7 +260,7 @@ def uawrite():
                         metavar="VALUE")
     args = parse_args(parser, requirenodeid=True)
 
-    client = Client(args.url, timeout=args.timeout)
+    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
     client.connect()
     try:
         node = get_node(client, args)
@@ -266,7 +291,7 @@ def uals():
     if args.long_format is None:
         args.long_format = 1
 
-    client = Client(args.url, timeout=args.timeout)
+    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
     client.connect()
     try:
         node = get_node(client, args)
@@ -351,7 +376,7 @@ def uasubscribe():
 
     args = parse_args(parser, requirenodeid=True)
 
-    client = Client(args.url, timeout=args.timeout)
+    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
     client.connect()
     try:
         node = get_node(client, args)
@@ -432,7 +457,7 @@ def uaclient():
                         help="set client private key")
     args = parse_args(parser)
 
-    client = Client(args.url, timeout=args.timeout)
+    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
     client.connect()
     if args.certificate:
         client.load_client_certificate(args.certificate)
@@ -593,7 +618,7 @@ def uahistoryread():
 
     args = parse_args(parser, requirenodeid=True)
 
-    client = Client(args.url, timeout=args.timeout)
+    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
     client.connect()
     try:
         node = get_node(client, args)
