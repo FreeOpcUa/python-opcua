@@ -669,8 +669,8 @@ class Variant(FrozenClass):
     :vartype VariantType: VariantType
     """
 
-    def __init__(self, value=None, varianttype=None):
-        self.Encoding = 0
+    def __init__(self, value=None, varianttype=None, encoding=0):
+        self.Encoding = encoding
         self.Value = value
         self.VariantType = varianttype
         if isinstance(value, Variant):
@@ -731,17 +731,15 @@ class Variant(FrozenClass):
 
     @staticmethod
     def from_binary(data):
-        obj = Variant()
-        obj.Encoding = unpack_uatype('UInt8', data)
-        val = obj.Encoding & 0b01111111
-        obj.VariantType = VariantType(val)
-        if obj.VariantType == VariantType.Null:
-            return obj
-        if obj.Encoding & (1 << 7):
-            obj.Value = unpack_uatype_array(obj.VariantType.name, data)
+        encoding = unpack_uatype("UInt8", data)
+        vtype = VariantType(encoding & 0b01111111)
+        if vtype == VariantType.Null:
+            return Variant(None, vtype, encoding)
+        if encoding & (1 << 7):
+            value = unpack_uatype_array(vtype.name, data)
         else:
-            obj.Value = unpack_uatype(obj.VariantType.name, data)
-        return obj
+            value = unpack_uatype(vtype.name, data)
+        return Variant(value, vtype, encoding)
 
 
 class DataValue(FrozenClass):
@@ -765,12 +763,15 @@ class DataValue(FrozenClass):
 
     '''
 
-    def __init__(self, variant=None):
+    def __init__(self, variant=None, status=None):
         self.Encoding = 0
         if not isinstance(variant, Variant):
             variant = Variant(variant)
         self.Value = variant
-        self.StatusCode = StatusCode()
+        if status is None:
+            self.StatusCode = StatusCode()
+        else:
+            self.StatusCode = status
         self.SourceTimestamp = None  # DateTime()
         self.SourcePicoseconds = None
         self.ServerTimestamp = None  # DateTime()
@@ -807,12 +808,17 @@ class DataValue(FrozenClass):
 
     @staticmethod
     def from_binary(data):
-        obj = DataValue()
-        obj.Encoding = unpack_uatype('UInt8', data)
-        if obj.Encoding & (1 << 0):
-            obj.Value = Variant.from_binary(data)
-        if obj.Encoding & (1 << 1):
-            obj.StatusCode = StatusCode.from_binary(data)
+        encoding = unpack_uatype("UInt8", data)
+        if encoding & (1 << 0):
+            value = Variant.from_binary(data)
+        else:
+            value = None
+        if encoding & (1 << 1):
+            status = StatusCode.from_binary(data)
+        else:
+            status = None
+        obj = DataValue(value, status)
+        obj.Encoding = encoding
         if obj.Encoding & (1 << 2):
             obj.SourceTimestamp = unpack_uatype('DateTime', data)  # DateTime.from_binary(data)
         if obj.Encoding & (1 << 3):
