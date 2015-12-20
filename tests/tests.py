@@ -934,8 +934,9 @@ class TestCmdLines(unittest.TestCase):
         self.srv_url = 'opc.tcp://localhost:%d' % port_num2
         self.srv.set_endpoint(self.srv_url)
         objects = self.srv.get_objects_node()
-        obj = objects.add_object(4, "browsetest")
+        obj = objects.add_object(4, "directory")
         var = obj.add_variable(4, "variable", 1.999)
+        var2 = obj.add_variable(4, "variable2", 1.777)
         self.srv.start()
 
     def test_uals(self):
@@ -945,6 +946,11 @@ class TestCmdLines(unittest.TestCase):
         self.assertNotIn(b"1.999", s)
         s = subprocess.check_output(["python3", "tools/uals", "--url", self.srv_url, "-d", "3"])
         self.assertIn(b"1.999", s)
+
+    def test_uaread(self):
+        s = subprocess.check_output(["python3", "tools/uaread", "--url", self.srv_url, "--path", "0:Objects,4:directory,4:variable2"])
+        self.assertIn(b"1.777", s)
+        self.assertNotIn(b"1.999", s)
 
     @classmethod
     def tearDownClass(self):
