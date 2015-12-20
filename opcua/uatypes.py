@@ -6,6 +6,7 @@ from enum import Enum
 from datetime import datetime, timedelta, tzinfo
 from calendar import timegm
 import sys
+import os
 if sys.version_info.major > 2:
     unicode = str
 
@@ -235,28 +236,30 @@ def set_bit(data, offset):
     return data | mask
 
 
-class FrozenClass(object):
+class _FrozenClass(object):
 
     """
     make it impossible to add members to a class.
     This is a hack since I found out that most bugs are due to misspelling a variable in protocol
     """
-    __isfrozen = False
+    _freeze = False
 
     def __setattr__(self, key, value):
-        if self.__isfrozen and not hasattr(self, key):
+        if self._freeze and not hasattr(self, key):
             raise TypeError("Error adding member '{}' to class '{}', class is frozen, members are {}".format(key, self.__class__.__name__, self.__dict__.keys()))
         object.__setattr__(self, key, value)
 
-    def _freeze(self):
-        self.__isfrozen = True
+if "PYOPCUA_NO_TYPO_CHECK" in os.environ:
+    FrozenClass = object
+else:
+    FrozenClass = _FrozenClass
 
 
 class Guid(FrozenClass):
 
     def __init__(self):
         self.uuid = uuid.uuid4()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         return self.uuid.bytes
@@ -285,7 +288,7 @@ class StatusCode(FrozenClass):
     def __init__(self, value=0):
         self.value = value
         self.name, self.doc = status_code.get_name_and_doc(value)
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         return uatype_UInt32.pack(self.value)
@@ -353,7 +356,7 @@ class NodeId(FrozenClass):
         self.NodeIdType = nodeidtype
         self.NamespaceUri = ""
         self.ServerIndex = 0
-        self._freeze()
+        self._freeze = True
         if self.Identifier is None:
             self.Identifier = 0
             self.NodeIdType = NodeIdType.TwoByte
@@ -544,7 +547,7 @@ class QualifiedName(FrozenClass):
     def __init__(self, name="", namespaceidx=0):
         self.NamespaceIndex = namespaceidx
         self.Name = name
-        self._freeze()
+        self._freeze = True
 
     def to_string(self):
         return "{}:{}".format(self.NamespaceIndex, self.Name)
@@ -594,7 +597,7 @@ class LocalizedText(FrozenClass):
         if self.Text:
             self.Encoding |= (1 << 1)
         self.Locale = b''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -726,7 +729,7 @@ class Variant(FrozenClass):
                 self.VariantType = self._guess_type(self.Value[0])
             else:
                 self.VariantType = self._guess_type(self.Value)
-        self._freeze()
+        self._freeze = True
 
     def __eq__(self, other):
         if isinstance(other, Variant) and self.VariantType == other.VariantType and self.Value == other.Value:
@@ -821,7 +824,7 @@ class DataValue(FrozenClass):
         self.SourcePicoseconds = None
         self.ServerTimestamp = None  # DateTime()
         self.ServerPicoseconds = None
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []

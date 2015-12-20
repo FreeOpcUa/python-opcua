@@ -32,7 +32,7 @@ class Hello(uatypes.FrozenClass):
         self.MaxMessageSize = 0
         self.MaxChunkCount = 0
         self.EndpointUrl = ""
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         b = []
@@ -81,7 +81,7 @@ class Header(uatypes.FrozenClass):
         self.ChannelId = channelid
         self.body_size = 0
         self.packet_size = 0
-        self._freeze()
+        self._freeze = True
 
     def add_size(self, size):
         self.body_size += size
@@ -117,7 +117,7 @@ class ErrorMessage(uatypes.FrozenClass):
     def __init__(self):
         self.Error = uatypes.StatusCode()
         self.Reason = ""
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         b = []
@@ -145,7 +145,7 @@ class Acknowledge(uatypes.FrozenClass):
         self.SendBufferSize = 65536
         self.MaxMessageSize = 0  # No limits
         self.MaxChunkCount = 0  # No limits
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         return struct.pack(
@@ -170,7 +170,7 @@ class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
         self.SecurityPolicyURI = "http://opcfoundation.org/UA/SecurityPolicy#None"
         self.SenderCertificate = b""
         self.ReceiverCertificateThumbPrint = b""
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         b = []
@@ -196,7 +196,7 @@ class SymmetricAlgorithmHeader(uatypes.FrozenClass):
 
     def __init__(self):
         self.TokenId = 0
-        self._freeze()
+        self._freeze = True
 
     @staticmethod
     def from_binary(data):
@@ -217,7 +217,7 @@ class SequenceHeader(uatypes.FrozenClass):
     def __init__(self):
         self.SequenceNumber = None
         self.RequestId = None
-        self._freeze()
+        self._freeze = True
 
     @staticmethod
     def from_binary(data):

@@ -97,7 +97,7 @@ class CodeGenerator(object):
         self.write("if binary is not None:")
         self.iidx += 1
         self.write("self._binary_init(binary)")
-        self.write("self._freeze()")
+        self.write("self._freeze = True")
         self.write("return")
         self.iidx -= 1
 
@@ -115,7 +115,7 @@ class CodeGenerator(object):
                 self.write("self.TypeId = FourByteNodeId(ObjectIds.{}_Encoding_DefaultBinary)".format(obj.name))
             else:
                 self.write("self.{} = {}".format(field.name, "[]" if field.length else self.get_default_value(field)))
-        self.write("self._freeze()")
+        self.write("self._freeze = True")
         self.iidx = 1
 
         # serialize code
