@@ -89,9 +89,9 @@ class Client(object):
         self.secure_channel_timeout = self.default_timeout
         self.session_timeout = self.default_timeout
         self._policy_ids = []
-        self.server_certificate = b""
-        self.client_certificate = b""
-        self.private_key = b""
+        self.server_certificate = None
+        self.client_certificate = None
+        self.private_key = None 
         self.bclient = BinaryClient(timeout)
         self._nonce = None
         self._session_counter = 1
@@ -101,15 +101,10 @@ class Client(object):
         """
         load our certificate from file, either pem or der
         """
-        _, ext = os.path.splitext(path)
-        with open(path, "br") as f:
-            self.client_certificate = f.read()
-        if ext == ".pem":
-            self.client_certificate = uacrypto.dem_to_der(self.client_certificate)
+        self.client_certificate = uacrypto.load_certificate(path)
 
     def load_private_key(self, path):
-        with open(path, "br") as f:
-            self.private_key = f.read()
+        self.private_key = uacrypto.load_private_key(path)
 
     def connect_and_get_server_endpoints(self):
         """
@@ -258,9 +253,9 @@ class Client(object):
         params.SessionName = self.description + " Session" + str(self._session_counter)
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0  # means no max size
-        params.ClientCertificate = self.client_certificate
+        params.ClientCertificate = uacrypto.der_from_x509(self.client_certificate)
         response = self.bclient.create_session(params)
-        self.server_certificate = response.ServerCertificate
+        self.server_certificate = uacrypto.x509_from_der(response.ServerCertificate)
         for ep in response.ServerEndpoints:
             if urlparse(ep.EndpointUrl).scheme == self.server_url.scheme and ep.SecurityMode == self.security_mode:
                 # remember PolicyId's: we will use them in activate_session()
@@ -292,7 +287,7 @@ class Client(object):
         elif certificate:
             params.UserIdentityToken = ua.X509IdentityToken()
             params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Certificate, b"certificate_basic256")
-            params.UserIdentityToken.CertificateData = certificate
+            params.UserIdentityToken.CertificateData = uacrypto.der_from_x509(self.client_certificate)
             sig = uacrypto.sign_sha1(self.private_key, certificate)
             params.UserTokenSignature = ua.SignatureData()
             params.UserTokenSignature.Algorithm = b"http://www.w3.org/2000/09/xmldsig#rsa-sha1"
@@ -301,8 +296,8 @@ class Client(object):
             params.UserIdentityToken = ua.UserNameIdentityToken()
             params.UserIdentityToken.UserName = username 
             if self.server_url.password:
-                pubkey = uacrypto.pubkey_from_dercert(self.server_certificate)
-                data = uacrypto.encrypt_rsa_oaep(pubkey, bytes(password, "utf8"))
+                pubkey = self.server_certificate.publick_key()
+                data = uacrypto.encrypt_basic256(pubkey, bytes(password, "utf8"))
                 params.UserIdentityToken.Password = data
             params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")
             params.UserIdentityToken.EncryptionAlgorithm = 'http://www.w3.org/2001/04/xmlenc#rsa-oaep'

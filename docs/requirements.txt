@@ -1,4 +1,4 @@
 sphinx
 sphinxcontrib-napoleon
 futures
-pycrypto
+cryptography
