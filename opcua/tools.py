@@ -89,8 +89,11 @@ def parse_args(parser, requirenodeid=False):
     if args.url and '://' not in args.url:
         logging.info("Adding default scheme %s to URL %s", ua.OPC_TCP_SCHEME, args.url)
         args.url = ua.OPC_TCP_SCHEME + '://' + args.url
-    if hasattr(args, 'security') and args.security:
-        args.security = client_security(args.security, args.url, args.timeout)
+    if hasattr(args, 'security'):
+        if args.security:
+            args.security = client_security(args.security, args.url, args.timeout)
+        else:
+            args.security = ua.SecurityPolicy()
     # check that a nodeid has been given explicitly, a bit hackish...
     if requirenodeid and args.nodeid == "i=84" and args.path == "":
         parser.print_usage()
