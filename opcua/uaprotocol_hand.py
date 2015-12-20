@@ -254,7 +254,7 @@ class CryptographyNone:
     """
     Base class for symmetric/asymmetric cryprography
     """
-    def __init__(self, mode=auto.MessageSecurityMode.None_):
+    def __init__(self):
         pass
 
     def plain_block_size(self):
@@ -309,16 +309,16 @@ class SecurityPolicy:
     """
     Base class for security policy
     """
+    URI = "http://opcfoundation.org/UA/SecurityPolicy#None"
+    signature_key_size = 0
+    symmetric_key_size = 0
+
     def __init__(self):
         self.asymmetric_cryptography = CryptographyNone()
         self.symmetric_cryptography = CryptographyNone()
         self.Mode = auto.MessageSecurityMode.None_
-        self.URI = "http://opcfoundation.org/UA/SecurityPolicy#None"
         self.server_certificate = b""
         self.client_certificate = b""
-
-    def symmetric_key_size(self):
-        return 0
 
     def make_symmetric_key(self, a, b):
         pass
@@ -431,6 +431,33 @@ class MessageChunk(uatypes.FrozenClass):
         return "{}({}, {}, {}, {} bytes)".format(self.__class__.__name__,
                 self.MessageHeader, self.SequenceHeader, self.SecurityHeader, len(self.Body))
     __repr__ = __str__
+
+
+def tcp_message_from_header_and_body(security_policy, header, body):
+    """
+    Convert binary stream to OPC UA TCP message (see OPC UA specs Part 6, 7.1)
+    The only supported message types are Hello, Acknowledge and Error
+    """
+    if header.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
+        return MessageChunk.from_header_and_body(security_policy, header, body)
+    elif header.MessageType == MessageType.Hello:
+        return Hello.from_binary(body)
+    elif header.MessageType == MessageType.Acknowledge:
+        return Acknowledge.from_binary(body)
+    elif header.MessageType == MessageType.Error:
+        return ErrorMessage.from_binary(body)
+    else:
+        raise Exception("Unsupported message type {}".format(header.MessageType))
+
+
+def tcp_message_from_socket(security_policy, socket):
+    logger.debug("Waiting for header")
+    header = Header.from_string(socket)
+    logger.info("received header: %s", header)
+    body = socket.read(header.body_size)
+    if len(body) != header.body_size:
+        raise Exception("{} bytes expected, {} available".format(header.body_size, len(body)))
+    return tcp_message_from_header_and_body(security_policy, header, utils.Buffer(body))
 
 
 # FIXES for missing switchfield in NodeAttributes classes
