@@ -67,7 +67,7 @@ class Client(object):
     which offers a raw OPC-UA interface.
     """
 
-    def __init__(self, url, timeout=1):
+    def __init__(self, url, timeout=1, security_policy=ua.SecurityPolicy()):
         """
         used url argument to connect to server.
         if you are unsure of url, write at least hostname and port
@@ -82,8 +82,7 @@ class Client(object):
         self.description = self.name
         self.application_uri = "urn:freeopcua:client"
         self.product_uri = "urn:freeopcua.github.no:client"
-        self.security_policy_uri = "http://opcfoundation.org/UA/SecurityPolicy#None"
-        self.security_mode = ua.MessageSecurityMode.None_
+        self.security_policy = security_policy
         self.secure_channel_id = None
         self.default_timeout = 3600000
         self.secure_channel_timeout = self.default_timeout
@@ -92,8 +91,7 @@ class Client(object):
         self.server_certificate = b""
         self.client_certificate = b""
         self.private_key = b""
-        self.bclient = BinaryClient(timeout)
-        self._nonce = None
+        self.bclient = BinaryClient(timeout, security_policy=security_policy)
         self._session_counter = 1
         self.keepalive = None
 
@@ -192,10 +190,12 @@ class Client(object):
         params.RequestType = ua.SecurityTokenRequestType.Issue
         if renew:
             params.RequestType = ua.SecurityTokenRequestType.Renew
-        params.SecurityMode = self.security_mode
+        params.SecurityMode = self.security_policy.Mode
         params.RequestedLifetime = self.secure_channel_timeout
-        params.ClientNonce = '\x00'
+        nonce = utils.create_nonce(self.security_policy.symmetric_key_size)   # length should be equal to the length of key of symmetric encryption
+        params.ClientNonce = nonce	# this nonce is used to create a symmetric key
         result = self.bclient.open_secure_channel(params)
+        self.security_policy.make_symmetric_key(nonce, result.ServerNonce)
         self.secure_channel_timeout = result.SecurityToken.RevisedLifetime
 
     def close_secure_channel(self):
@@ -251,18 +251,20 @@ class Client(object):
         desc.ApplicationType = ua.ApplicationType.Client
 
         params = ua.CreateSessionParameters()
-        params.ClientNonce = utils.create_nonce()
-        params.ClientCertificate = b''
+        nonce = utils.create_nonce(32)	# at least 32 random bytes for server to prove possession of private key (specs part 4, 5.6.2.2)
+        params.ClientNonce = nonce
+        params.ClientCertificate = self.security_policy.client_certificate
         params.ClientDescription = desc
         params.EndpointUrl = self.server_url.geturl()
         params.SessionName = self.description + " Session" + str(self._session_counter)
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0  # means no max size
-        params.ClientCertificate = self.client_certificate
         response = self.bclient.create_session(params)
+        self.security_policy.asymmetric_cryptography.verify(self.security_policy.client_certificate + nonce, response.ServerSignature.Signature)
+        self._server_nonce = response.ServerNonce
         self.server_certificate = response.ServerCertificate
         for ep in response.ServerEndpoints:
-            if urlparse(ep.EndpointUrl).scheme == self.server_url.scheme and ep.SecurityMode == self.security_mode:
+            if urlparse(ep.EndpointUrl).scheme == self.server_url.scheme and ep.SecurityMode == self.security_policy.Mode:
                 # remember PolicyId's: we will use them in activate_session()
                 self._policy_ids = ep.UserIdentityTokens
         self.session_timeout = response.RevisedSessionTimeout
@@ -285,6 +287,9 @@ class Client(object):
         Activate session using either username and password or private_key
         """
         params = ua.ActivateSessionParameters()
+        challenge = self.security_policy.server_certificate + self._server_nonce
+        params.ClientSignature.Algorithm = b"http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+        params.ClientSignature.Signature = self.security_policy.asymmetric_cryptography.signature(challenge)
         params.LocaleIds.append("en")
         if not username and not certificate:
             params.UserIdentityToken = ua.AnonymousIdentityToken()

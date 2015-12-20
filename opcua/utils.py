@@ -1,5 +1,5 @@
 import logging
-import uuid
+import os
 from concurrent.futures import Future
 import functools
 import threading
@@ -108,8 +108,8 @@ class SocketWrapper(object):
 
 
 
-def create_nonce():
-    return uuid.uuid4().bytes + uuid.uuid4().bytes  # seems we need at least 32 bytes not 16 as python gives us...
+def create_nonce(size=32):
+    return os.urandom(size)
 
 
 
