@@ -28,17 +28,20 @@ class UAProcessor(object):
         self._socketlock = Lock()
         self._datalock = Lock()
         self._publishdata_queue = []
-        self._seq_number = 1
+        self._seq_number = 0
+        self._security_policy = ua.SecurityPolicy()
+        self._max_chunk_size = 65536
 
     def send_response(self, requesthandle, algohdr, seqhdr, response, msgtype=ua.MessageType.SecureMessage):
         with self._socketlock:
             response.ResponseHeader.RequestHandle = requesthandle
-            seqhdr.SequenceNumber = self._seq_number
-            self._seq_number += 1
-            hdr = ua.Header(msgtype, ua.ChunkType.Single, self.channel.SecurityToken.ChannelId)
-            if isinstance(algohdr, ua.SymmetricAlgorithmHeader):
-                algohdr.TokenId = self.channel.SecurityToken.TokenId
-            self._write_socket(hdr, algohdr, seqhdr, response)
+            for chunk in ua.MessageChunk.message_to_chunks(self._security_policy, response.to_binary(), self._max_chunk_size, msgtype,
+                    channel_id=self.channel.SecurityToken.ChannelId,
+                    token_id=self.channel.SecurityToken.TokenId,
+                    request_id=seqhdr.RequestId):
+                self._seq_number += 1
+                chunk.SequenceHeader.SequenceNumber = self._seq_number
+                self.socket.write(chunk.to_binary())
 
     def _write_socket(self, hdr, *args):
         alle = []
@@ -81,6 +84,7 @@ class UAProcessor(object):
             hello = ua.Hello.from_binary(body)
             hdr = ua.Header(ua.MessageType.Acknowledge, ua.ChunkType.Single)
             ack = ua.Acknowledge()
+            self._max_chunk_size = hello.ReceiveBufferSize
             ack.ReceiveBufferSize = hello.ReceiveBufferSize
             ack.SendBufferSize = hello.SendBufferSize
             self._write_socket(hdr, ack)

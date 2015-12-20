@@ -1,5 +1,6 @@
 import struct
 import logging
+import hashlib
 
 import opcua.uaprotocol_auto as auto
 import opcua.uatypes as uatypes
@@ -70,7 +71,7 @@ class ChunkType(object):
     Invalid = b"0"  # FIXME check
     Single = b"F"
     Intermediate = b"C"
-    Final = b"A"
+    Abort = b"A"    # when an error occurred and the Message is aborted (body is ErrorMessage)
 
 
 class Header(uatypes.FrozenClass):
@@ -106,6 +107,10 @@ class Header(uatypes.FrozenClass):
             hdr.body_size -= 4
             hdr.ChannelId = uatype_UInt32.unpack(data.read(4))[0]
         return hdr
+
+    @staticmethod
+    def max_size():
+        return struct.calcsize("<3scII")
 
     def __str__(self):
         return "Header(type:{}, chunk_type:{}, body_size:{}, channel:{})".format(self.MessageType, self.ChunkType, self.body_size, self.ChannelId)
@@ -207,6 +212,10 @@ class SymmetricAlgorithmHeader(uatypes.FrozenClass):
     def to_binary(self):
         return uatype_UInt32.pack(self.TokenId)
 
+    @staticmethod
+    def max_size():
+        return struct.calcsize("<I")
+
     def __str__(self):
         return "{}(TokenId:{} )".format(self.__class__.__name__, self.TokenId)
     __repr__ = __str__
@@ -232,9 +241,197 @@ class SequenceHeader(uatypes.FrozenClass):
         b.append(uatype_UInt32.pack(self.RequestId))
         return b"".join(b)
 
+    @staticmethod
+    def max_size():
+        return struct.calcsize("<II")
+
     def __str__(self):
         return "{}(SequenceNumber:{}, RequestId:{} )".format(self.__class__.__name__, self.SequenceNumber, self.RequestId)
     __repr__ = __str__
+
+
+class CryptographyNone:
+    """
+    Base class for symmetric/asymmetric cryprography
+    """
+    def __init__(self, mode=auto.MessageSecurityMode.None_):
+        pass
+
+    def plain_block_size(self):
+        """
+        Size of plain text block for block cipher.
+        """
+        return 1
+
+    def encrypted_block_size(self):
+        """
+        Size of encrypted text block for block cipher.
+        """
+        return 1
+
+    def padding(self, size):
+        """
+        Create padding for a block of given size.
+        plain_size = size + len(padding) + signature_size()
+        plain_size = N * plain_block_size()
+        """
+        return b''
+
+    def min_padding_size(self):
+        return 0
+
+    def signature_size(self):
+        return 0
+
+    def signature(self, data):
+        return b''
+
+    def encrypt(self, data):
+        return data
+
+    def decrypt(self, data):
+        return data
+
+    def vsignature_size(self):
+        return 0
+
+    def verify(self, data, signature):
+        """
+        Verify signature and raise exception if signature is invalid
+        """
+        pass
+
+    def remove_padding(self, data):
+        return data
+
+
+class SecurityPolicy:
+    """
+    Base class for security policy
+    """
+    def __init__(self):
+        self.asymmetric_cryptography = CryptographyNone()
+        self.symmetric_cryptography = CryptographyNone()
+        self.Mode = auto.MessageSecurityMode.None_
+        self.URI = "http://opcfoundation.org/UA/SecurityPolicy#None"
+        self.server_certificate = b""
+        self.client_certificate = b""
+
+    def symmetric_key_size(self):
+        return 0
+
+    def make_symmetric_key(self, a, b):
+        pass
+
+
+class MessageChunk(uatypes.FrozenClass):
+    """
+    Message Chunk, as described in OPC UA specs Part 6, 6.7.2.
+    """
+    def __init__(self, security_policy, body=b'', msg_type=MessageType.SecureMessage, chunk_type=ChunkType.Single):
+        self.MessageHeader = Header(msg_type, chunk_type)
+        if msg_type in (MessageType.SecureMessage, MessageType.SecureClose):
+            self.SecurityHeader = SymmetricAlgorithmHeader()
+        elif msg_type == MessageType.SecureOpen:
+            self.SecurityHeader = AsymmetricAlgorithmHeader()
+        else:
+            raise Exception("Unsupported message type: {}".format(msg_type))
+        self.SequenceHeader = SequenceHeader()
+        self.Body = body
+        self._security_policy = security_policy
+
+    @staticmethod
+    def from_binary(security_policy, data):
+        h = Header.from_string(data)
+        return MessageChunk.from_header_and_body(security_policy, h, data)
+
+    @staticmethod
+    def from_header_and_body(security_policy, header, data):
+        if header.MessageType in (MessageType.SecureMessage, MessageType.SecureClose):
+            security_header = SymmetricAlgorithmHeader.from_binary(data)
+            crypto = security_policy.symmetric_cryptography
+        elif header.MessageType == MessageType.SecureOpen:
+            security_header = AsymmetricAlgorithmHeader.from_binary(data)
+            crypto = security_policy.asymmetric_cryptography
+        else:
+            raise Exception("Unsupported message type: {}".format(header.MessageType))
+        obj = MessageChunk(crypto)
+        obj.MessageHeader = header
+        obj.SecurityHeader = security_header
+        decrypted = crypto.decrypt(data.read(len(data)))
+        signature_size = crypto.vsignature_size()
+        if signature_size > 0:
+            signature = decrypted[-signature_size:]
+            decrypted = decrypted[:-signature_size]
+            crypto.verify(obj.MessageHeader.to_binary() + obj.SecurityHeader.to_binary() + decrypted, signature)
+        data = utils.Buffer(crypto.remove_padding(decrypted))
+        obj.SequenceHeader = SequenceHeader.from_binary(data)
+        obj.Body = data.read(len(data))
+        return obj
+
+    def encrypted_size(self, plain_size):
+        size = plain_size + self._security_policy.signature_size()
+        pbs = self._security_policy.plain_block_size()
+        assert(size % pbs == 0)
+        return size // pbs * self._security_policy.encrypted_block_size()
+
+    def to_binary(self):
+        security = self.SecurityHeader.to_binary()
+        encrypted_part = self.SequenceHeader.to_binary() + self.Body
+        encrypted_part += self._security_policy.padding(len(encrypted_part))
+        self.MessageHeader.body_size = len(security) + self.encrypted_size(len(encrypted_part))
+        header = self.MessageHeader.to_binary()
+        encrypted_part += self._security_policy.signature(header + security + encrypted_part)
+        return header + security + self._security_policy.encrypt(encrypted_part)
+
+    @staticmethod
+    def max_body_size(crypto, max_chunk_size):
+        max_encrypted_size = max_chunk_size - Header.max_size() - SymmetricAlgorithmHeader.max_size()
+        max_plain_size = (max_encrypted_size // crypto.encrypted_block_size()) * crypto.plain_block_size()
+        return max_plain_size - SequenceHeader.max_size() - crypto.signature_size() - crypto.min_padding_size()
+
+    @staticmethod
+    def message_to_chunks(security_policy, body, max_chunk_size, message_type=MessageType.SecureMessage, channel_id=1, request_id=1, token_id=1):
+        """
+        Pack message body (as binary string) into one or more chunks.
+        Size of each chunk will not exceed max_chunk_size.
+        Returns a list of MessageChunks. SequenceNumber is not initialized here,
+        it must be set by Secure Channel driver.
+        """
+        if message_type == MessageType.SecureOpen:
+            # SecureOpen message must be in a single chunk (specs, Part 6, 6.7.2)
+            chunk = MessageChunk(security_policy.asymmetric_cryptography, body, message_type, ChunkType.Single)
+            chunk.SecurityHeader.SecurityPolicyURI = security_policy.URI
+            if security_policy.client_certificate:
+                chunk.SecurityHeader.SenderCertificate = security_policy.client_certificate
+            if security_policy.server_certificate:
+                chunk.SecurityHeader.ReceiverCertificateThumbPrint = hashlib.sha1(security_policy.server_certificate).digest()
+            chunk.MessageHeader.ChannelId = channel_id
+            chunk.SequenceHeader.RequestId = request_id
+            return [chunk]
+
+        crypto = security_policy.symmetric_cryptography
+        max_size = MessageChunk.max_body_size(crypto, max_chunk_size)
+
+        chunks = []
+        for i in range(0, len(body), max_size):
+            part = body[i:i+max_size]
+            if i+max_size >= len(body):
+                chunk_type = ChunkType.Single
+            else:
+                chunk_type = ChunkType.Intermediate
+            chunk = MessageChunk(crypto, part, message_type, chunk_type)
+            chunk.SecurityHeader.TokenId = token_id
+            chunk.MessageHeader.ChannelId = channel_id
+            chunk.SequenceHeader.RequestId = request_id
+            chunks.append(chunk)
+        return chunks
+
+    def __str__(self):
+        return "{}({}, {}, {}, {} bytes)".format(self.__class__.__name__,
+                self.MessageHeader, self.SequenceHeader, self.SecurityHeader, len(self.Body))
+    __repr__ = __str__
+
 
 # FIXES for missing switchfield in NodeAttributes classes
 ana = auto.NodeAttributesMask

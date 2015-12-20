@@ -24,7 +24,7 @@ class UASocketClient(object):
     handle socket connection and send ua messages
     timeout is the timeout used while waiting for an ua answer from server
     """
-    def __init__(self, timeout=1):
+    def __init__(self, timeout=1, security_policy=ua.SecurityPolicy()):
         self.logger = logging.getLogger(__name__ + "Socket")
         self._thread = None
         self._lock = Lock()
@@ -37,6 +37,8 @@ class UASocketClient(object):
         self._request_id = 0
         self._request_handle = 0
         self._callbackmap = {}
+        self._security_policy = security_policy
+        self._max_chunk_size = 65536
 
     def start(self):
         """
@@ -47,28 +49,43 @@ class UASocketClient(object):
         self._thread = Thread(target=self._run)
         self._thread.start()
 
-    def send_request(self, request, callback=None, timeout=1000):
+    def _send_request(self, request, callback=None, timeout=1000, message_type=ua.MessageType.SecureMessage):
         """
-        send request to server.
+        send request to server, lower-level method
         timeout is the timeout written in ua header
+        returns future
         """
         with self._lock:
             request.RequestHeader = self._create_request_header(timeout)
             try:
-                cachedreq = CachedRequest(request.to_binary())
+                binreq = request.to_binary()
             except:
                 # reset reqeust handle if any error
                 # see self._create_request_header
                 self._request_handle -= 1
                 raise
-            hdr = ua.Header(ua.MessageType.SecureMessage, ua.ChunkType.Single, self._security_token.ChannelId)
-            symhdr = self._create_sym_algo_header()
-            seqhdr = self._create_sequence_header()
+            self._request_id += 1
             future = Future()
             if callback:
                 future.add_done_callback(callback)
-            self._callbackmap[seqhdr.RequestId] = future
-            self._write_socket(hdr, symhdr, seqhdr, cachedreq)
+            self._callbackmap[self._request_id] = future
+            for chunk in ua.MessageChunk.message_to_chunks(self._security_policy, binreq, self._max_chunk_size,
+                    message_type=message_type,
+                    channel_id=self._security_token.ChannelId,
+                    request_id=self._request_id,
+                    token_id=self._security_token.TokenId):
+                self._sequence_number += 1
+                chunk.SequenceHeader.SequenceNumber = self._sequence_number
+                self._socket.write(chunk.to_binary())
+        return future
+
+    def send_request(self, request, callback=None, timeout=1000, message_type=ua.MessageType.SecureMessage):
+        """
+        send request to server.
+        timeout is the timeout written in ua header
+        returns response object if no callback is provided
+        """
+        future = self._send_request(request, callback, timeout, message_type)
         if not callback:
             data = future.result(self.timeout)
             self.check_answer(data, " in response to " + request.__class__.__name__)
@@ -179,19 +196,6 @@ class UASocketClient(object):
         hdr.TimeoutHint = timeout
         return hdr
 
-    def _create_sym_algo_header(self):
-        hdr = ua.SymmetricAlgorithmHeader()
-        hdr.TokenId = self._security_token.TokenId
-        return hdr
-
-    def _create_sequence_header(self):
-        hdr = ua.SequenceHeader()
-        self._sequence_number += 1
-        hdr.SequenceNumber = self._sequence_number
-        self._request_id += 1
-        hdr.RequestId = self._request_id
-        return hdr
-
     def connect_socket(self, host, port):
         """
         connect to server socket and start receiving thread
@@ -215,22 +219,15 @@ class UASocketClient(object):
         with self._lock:
             self._callbackmap[0] = future
         self._write_socket(header, hello)
-        return ua.Acknowledge.from_binary(future.result(self.timeout))
+        ack = ua.Acknowledge.from_binary(future.result(self.timeout))
+        self._max_chunk_size = ack.SendBufferSize	# client shouldn't send chunks larger than this
+        return ack
 
     def open_secure_channel(self, params):
         self.logger.info("open_secure_channel")
-        with self._lock:
-            request = ua.OpenSecureChannelRequest()
-            request.Parameters = params
-            request.RequestHeader = self._create_request_header()
-
-            hdr = ua.Header(ua.MessageType.SecureOpen, ua.ChunkType.Single, self._security_token.ChannelId)
-            asymhdr = ua.AsymmetricAlgorithmHeader()
-            seqhdr = self._create_sequence_header()
-
-            future = Future()
-            self._callbackmap[seqhdr.RequestId] = future
-            self._write_socket(hdr, asymhdr, seqhdr, request)
+        request = ua.OpenSecureChannelRequest()
+        request.Parameters = params
+        future = self._send_request(request, message_type=ua.MessageType.SecureOpen)
 
         response = ua.OpenSecureChannelResponse.from_binary(future.result(self.timeout))
         response.ResponseHeader.ServiceResult.check()
@@ -240,17 +237,16 @@ class UASocketClient(object):
     def close_secure_channel(self):
         """
         close secure channel. It seems to trigger a shutdown of socket
-        in most servers, so be prepare to reconnect
+        in most servers, so be prepare to reconnect.
+        OPC UA specs Part 6, 7.1.4 say that Server does not send a CloseSecureChannel response and should just close socket
         """
-        self.logger.info("get_endpoint")
+        self.logger.info("close_secure_channel")
+        request = ua.CloseSecureChannelRequest()
+        future = self._send_request(request, message_type=ua.MessageType.SecureClose)
         with self._lock:
-            request = ua.CloseSecureChannelRequest()
-            request.RequestHeader = self._create_request_header()
-
-            hdr = ua.Header(ua.MessageType.SecureClose, ua.ChunkType.Single, self._security_token.ChannelId)
-            symhdr = self._create_sym_algo_header()
-            seqhdr = self._create_sequence_header()
-            self._write_socket(hdr, symhdr, seqhdr, request)
+            # don't expect any more answers
+            future.cancel()
+            self._callbackmap.clear()
 
         # some servers send a response here, most do not ... so we ignore
 

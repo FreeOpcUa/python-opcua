@@ -266,6 +266,29 @@ class Unit(unittest.TestCase):
         t4 = ua.LocalizedText.from_binary(ua.utils.Buffer(t1.to_binary()))
         self.assertEqual(t1, t4)
 
+    def test_message_chunk(self):
+        pol = ua.SecurityPolicy()
+        chunks = ua.MessageChunk.message_to_chunks(pol, b'123', 65536)
+        self.assertEqual(len(chunks), 1)
+        seq = 0
+        for chunk in chunks:
+            seq += 1
+            chunk.SequenceHeader.SequenceNumber = seq
+        chunk2 = ua.MessageChunk.from_binary(pol, ua.utils.Buffer(chunks[0].to_binary()))
+        self.assertEqual(chunks[0].to_binary(), chunk2.to_binary())
+
+        # for policy None, MessageChunk overhead is 12+4+8 = 24 bytes
+        # Let's pack 11 bytes into 28-byte chunks. The message must be split as 4+4+3
+        chunks = ua.MessageChunk.message_to_chunks(pol, b'12345678901', 28)
+        self.assertEqual(len(chunks), 3)
+        self.assertEqual(chunks[0].Body, b'1234')
+        self.assertEqual(chunks[1].Body, b'5678')
+        self.assertEqual(chunks[2].Body, b'901')
+        for chunk in chunks:
+            seq += 1
+            chunk.SequenceHeader.SequenceNumber = seq
+            self.assertTrue(len(chunk.to_binary()) <= 28)
+
 
 class CommonTests(object):
 
