@@ -11,8 +11,7 @@ import opcua.uaprotocol as ua
 import opcua.utils as utils
 
 
-class FakeRequest(object):
-    # HACK to remove duplicate call Request.to_binary
+class CachedRequest(object):
     def __init__(self, binary):
         self.binary = binary
 
@@ -56,7 +55,7 @@ class UASocketClient(object):
         with self._lock:
             request.RequestHeader = self._create_request_header(timeout)
             try:
-                fakereq = FakeRequest(request.to_binary())
+                cachedreq = CachedRequest(request.to_binary())
             except:
                 # reset reqeust handle if any error
                 # see self._create_request_header
@@ -69,7 +68,7 @@ class UASocketClient(object):
             if callback:
                 future.add_done_callback(callback)
             self._callbackmap[seqhdr.RequestId] = future
-            self._write_socket(hdr, symhdr, seqhdr, fakereq)
+            self._write_socket(hdr, symhdr, seqhdr, cachedreq)
         if not callback:
             data = future.result(self.timeout)
             self.check_answer(data, " in response to " + request.__class__.__name__)
