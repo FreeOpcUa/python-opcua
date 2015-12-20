@@ -724,11 +724,11 @@ class XmlElement(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Length = 0
         self.Value = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -777,7 +777,7 @@ class DiagnosticInfo(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Encoding = 0
         self.SymbolicId = 0
@@ -787,7 +787,7 @@ class DiagnosticInfo(FrozenClass):
         self.AdditionalInfo = b''
         self.InnerStatusCode = StatusCode()
         self.InnerDiagnosticInfo = None
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -879,14 +879,14 @@ class TrustListDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SpecifiedLists = 0
         self.TrustedCertificates = []
         self.TrustedCrls = []
         self.IssuerCertificates = []
         self.IssuerCrls = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -944,14 +944,14 @@ class Argument(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Name = ''
         self.DataType = NodeId()
         self.ValueRank = 0
         self.ArrayDimensions = []
         self.Description = LocalizedText()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -999,12 +999,12 @@ class EnumValueType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Value = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1042,11 +1042,11 @@ class OptionSet(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Value = b''
         self.ValidBits = b''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1077,9 +1077,9 @@ class Union(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1108,11 +1108,11 @@ class TimeZoneDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Offset = 0
         self.DaylightSavingInOffset = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1157,7 +1157,7 @@ class ApplicationDescription(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ApplicationUri = ''
         self.ProductUri = ''
@@ -1166,7 +1166,7 @@ class ApplicationDescription(FrozenClass):
         self.GatewayServerUri = ''
         self.DiscoveryProfileUri = ''
         self.DiscoveryUrls = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1228,7 +1228,7 @@ class RequestHeader(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.AuthenticationToken = NodeId()
         self.Timestamp = datetime.now()
@@ -1237,7 +1237,7 @@ class RequestHeader(FrozenClass):
         self.AuditEntryId = ''
         self.TimeoutHint = 0
         self.AdditionalHeader = None
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1295,7 +1295,7 @@ class ResponseHeader(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Timestamp = datetime.now()
         self.RequestHandle = 0
@@ -1303,7 +1303,7 @@ class ResponseHeader(FrozenClass):
         self.ServiceDiagnostics = DiagnosticInfo()
         self.StringTable = []
         self.AdditionalHeader = None
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1352,11 +1352,11 @@ class ServiceFault(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.ServiceFault_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1391,12 +1391,12 @@ class FindServersParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.EndpointUrl = ''
         self.LocaleIds = []
         self.ServerUris = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1440,12 +1440,12 @@ class FindServersRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.FindServersRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = FindServersParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1485,12 +1485,12 @@ class FindServersResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.FindServersResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Servers = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1537,13 +1537,13 @@ class ServerOnNetwork(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.RecordId = 0
         self.ServerName = ''
         self.DiscoveryUrl = ''
         self.ServerCapabilities = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1586,12 +1586,12 @@ class FindServersOnNetworkParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StartingRecordId = 0
         self.MaxRecordsToReturn = 0
         self.ServerCapabilityFilter = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1631,12 +1631,12 @@ class FindServersOnNetworkRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.FindServersOnNetworkRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = FindServersOnNetworkParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1672,11 +1672,11 @@ class FindServersOnNetworkResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.LastCounterResetTime = datetime.now()
         self.Servers = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1718,12 +1718,12 @@ class FindServersOnNetworkResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.FindServersOnNetworkResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = FindServersOnNetworkResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1767,14 +1767,14 @@ class UserTokenPolicy(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.PolicyId = ''
         self.TokenType = 0
         self.IssuedTokenType = ''
         self.IssuerEndpointUrl = ''
         self.SecurityPolicyUri = ''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1830,7 +1830,7 @@ class EndpointDescription(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.EndpointUrl = ''
         self.Server = ApplicationDescription()
@@ -1840,7 +1840,7 @@ class EndpointDescription(FrozenClass):
         self.UserIdentityTokens = []
         self.TransportProfileUri = ''
         self.SecurityLevel = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1900,12 +1900,12 @@ class GetEndpointsParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.EndpointUrl = ''
         self.LocaleIds = []
         self.ProfileUris = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1949,12 +1949,12 @@ class GetEndpointsRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.GetEndpointsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = GetEndpointsParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -1994,12 +1994,12 @@ class GetEndpointsResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.GetEndpointsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Endpoints = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2056,7 +2056,7 @@ class RegisteredServer(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ServerUri = ''
         self.ProductUri = ''
@@ -2066,7 +2066,7 @@ class RegisteredServer(FrozenClass):
         self.DiscoveryUrls = []
         self.SemaphoreFilePath = ''
         self.IsOnline = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2130,12 +2130,12 @@ class RegisterServerRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServerRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Server = RegisteredServer()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2173,11 +2173,11 @@ class RegisterServerResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServerResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2208,9 +2208,9 @@ class DiscoveryConfiguration(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2241,11 +2241,11 @@ class MdnsDiscoveryConfiguration(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.MdnsServerName = ''
         self.ServerCapabilities = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2280,11 +2280,11 @@ class RegisterServer2Parameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Server = RegisteredServer()
         self.DiscoveryConfiguration = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2326,12 +2326,12 @@ class RegisterServer2Request(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServer2Request_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = RegisterServer2Parameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2371,13 +2371,13 @@ class RegisterServer2Response(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServer2Response_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.ConfigurationResults = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2436,13 +2436,13 @@ class ChannelSecurityToken(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ChannelId = 0
         self.TokenId = 0
         self.CreatedAt = datetime.now()
         self.RevisedLifetime = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2487,14 +2487,14 @@ class OpenSecureChannelParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ClientProtocolVersion = 0
         self.RequestType = 0
         self.SecurityMode = 0
         self.ClientNonce = b''
         self.RequestedLifetime = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2540,12 +2540,12 @@ class OpenSecureChannelRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.OpenSecureChannelRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = OpenSecureChannelParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2583,12 +2583,12 @@ class OpenSecureChannelResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ServerProtocolVersion = 0
         self.SecurityToken = ChannelSecurityToken()
         self.ServerNonce = b''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2628,12 +2628,12 @@ class OpenSecureChannelResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.OpenSecureChannelResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = OpenSecureChannelResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2671,11 +2671,11 @@ class CloseSecureChannelRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.CloseSecureChannelRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2710,11 +2710,11 @@ class CloseSecureChannelResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.CloseSecureChannelResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2749,11 +2749,11 @@ class SignedSoftwareCertificate(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.CertificateData = b''
         self.Signature = b''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2788,11 +2788,11 @@ class SignatureData(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Algorithm = ''
         self.Signature = b''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2837,7 +2837,7 @@ class CreateSessionParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ClientDescription = ApplicationDescription()
         self.ServerUri = ''
@@ -2847,7 +2847,7 @@ class CreateSessionParameters(FrozenClass):
         self.ClientCertificate = b''
         self.RequestedSessionTimeout = 0
         self.MaxResponseMessageSize = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2902,12 +2902,12 @@ class CreateSessionRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.CreateSessionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CreateSessionParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -2957,7 +2957,7 @@ class CreateSessionResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SessionId = NodeId()
         self.AuthenticationToken = NodeId()
@@ -2968,7 +2968,7 @@ class CreateSessionResult(FrozenClass):
         self.ServerSoftwareCertificates = []
         self.ServerSignature = SignatureData()
         self.MaxRequestMessageSize = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3040,12 +3040,12 @@ class CreateSessionResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.CreateSessionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = CreateSessionResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3081,10 +3081,10 @@ class UserIdentityToken(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.PolicyId = ''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3114,10 +3114,10 @@ class AnonymousIdentityToken(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.PolicyId = ''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3153,13 +3153,13 @@ class UserNameIdentityToken(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.PolicyId = ''
         self.UserName = ''
         self.Password = b''
         self.EncryptionAlgorithm = ''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3200,11 +3200,11 @@ class X509IdentityToken(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.PolicyId = ''
         self.CertificateData = b''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3237,11 +3237,11 @@ class KerberosIdentityToken(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.PolicyId = ''
         self.TicketData = b''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3278,12 +3278,12 @@ class IssuedIdentityToken(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.PolicyId = ''
         self.TokenData = b''
         self.EncryptionAlgorithm = ''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3325,14 +3325,14 @@ class ActivateSessionParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ClientSignature = SignatureData()
         self.ClientSoftwareCertificates = []
         self.LocaleIds = []
         self.UserIdentityToken = None
         self.UserTokenSignature = SignatureData()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3387,12 +3387,12 @@ class ActivateSessionRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.ActivateSessionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = ActivateSessionParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3430,12 +3430,12 @@ class ActivateSessionResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ServerNonce = b''
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3489,12 +3489,12 @@ class ActivateSessionResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.ActivateSessionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = ActivateSessionResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3534,12 +3534,12 @@ class CloseSessionRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.CloseSessionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.DeleteSubscriptions = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3577,11 +3577,11 @@ class CloseSessionResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.CloseSessionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3612,10 +3612,10 @@ class CancelParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.RequestHandle = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3649,12 +3649,12 @@ class CancelRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.CancelRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CancelParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3688,10 +3688,10 @@ class CancelResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.CancelCount = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3725,12 +3725,12 @@ class CancelResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.CancelResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = CancelResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3774,14 +3774,14 @@ class NodeAttributes(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
         self.WriteMask = 0
         self.UserWriteMask = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3833,7 +3833,7 @@ class ObjectAttributes(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -3841,7 +3841,7 @@ class ObjectAttributes(FrozenClass):
         self.WriteMask = 0
         self.UserWriteMask = 0
         self.EventNotifier = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -3910,7 +3910,7 @@ class VariableAttributes(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -3925,7 +3925,7 @@ class VariableAttributes(FrozenClass):
         self.UserAccessLevel = 0
         self.MinimumSamplingInterval = 0
         self.Historizing = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4005,7 +4005,7 @@ class MethodAttributes(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -4014,7 +4014,7 @@ class MethodAttributes(FrozenClass):
         self.UserWriteMask = 0
         self.Executable = True
         self.UserExecutable = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4072,7 +4072,7 @@ class ObjectTypeAttributes(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -4080,7 +4080,7 @@ class ObjectTypeAttributes(FrozenClass):
         self.WriteMask = 0
         self.UserWriteMask = 0
         self.IsAbstract = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4143,7 +4143,7 @@ class VariableTypeAttributes(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -4155,7 +4155,7 @@ class VariableTypeAttributes(FrozenClass):
         self.ValueRank = 0
         self.ArrayDimensions = []
         self.IsAbstract = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4228,7 +4228,7 @@ class ReferenceTypeAttributes(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -4238,7 +4238,7 @@ class ReferenceTypeAttributes(FrozenClass):
         self.IsAbstract = True
         self.Symmetric = True
         self.InverseName = LocalizedText()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4299,7 +4299,7 @@ class DataTypeAttributes(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -4307,7 +4307,7 @@ class DataTypeAttributes(FrozenClass):
         self.WriteMask = 0
         self.UserWriteMask = 0
         self.IsAbstract = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4364,7 +4364,7 @@ class ViewAttributes(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -4373,7 +4373,7 @@ class ViewAttributes(FrozenClass):
         self.UserWriteMask = 0
         self.ContainsNoLoops = True
         self.EventNotifier = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4433,7 +4433,7 @@ class AddNodesItem(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ParentNodeId = ExpandedNodeId()
         self.ReferenceTypeId = NodeId()
@@ -4442,7 +4442,7 @@ class AddNodesItem(FrozenClass):
         self.NodeClass = 0
         self.NodeAttributes = None
         self.TypeDefinition = ExpandedNodeId()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4492,11 +4492,11 @@ class AddNodesResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StatusCode = StatusCode()
         self.AddedNodeId = NodeId()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4527,10 +4527,10 @@ class AddNodesParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodesToAdd = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4571,12 +4571,12 @@ class AddNodesRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.AddNodesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = AddNodesParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4618,13 +4618,13 @@ class AddNodesResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.AddNodesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4687,7 +4687,7 @@ class AddReferencesItem(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SourceNodeId = NodeId()
         self.ReferenceTypeId = NodeId()
@@ -4695,7 +4695,7 @@ class AddReferencesItem(FrozenClass):
         self.TargetServerUri = ''
         self.TargetNodeId = ExpandedNodeId()
         self.TargetNodeClass = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4744,12 +4744,12 @@ class AddReferencesRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.AddReferencesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.ReferencesToAdd = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4798,13 +4798,13 @@ class AddReferencesResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.AddReferencesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4859,11 +4859,11 @@ class DeleteNodesItem(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = NodeId()
         self.DeleteTargetReferences = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4894,10 +4894,10 @@ class DeleteNodesParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodesToDelete = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4938,12 +4938,12 @@ class DeleteNodesRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteNodesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteNodesParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -4979,11 +4979,11 @@ class DeleteNodesResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5034,12 +5034,12 @@ class DeleteNodesResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteNodesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = DeleteNodesResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5083,14 +5083,14 @@ class DeleteReferencesItem(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SourceNodeId = NodeId()
         self.ReferenceTypeId = NodeId()
         self.IsForward = True
         self.TargetNodeId = ExpandedNodeId()
         self.DeleteBidirectional = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5130,10 +5130,10 @@ class DeleteReferencesParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ReferencesToDelete = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5174,12 +5174,12 @@ class DeleteReferencesRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteReferencesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteReferencesParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5215,11 +5215,11 @@ class DeleteReferencesResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5270,12 +5270,12 @@ class DeleteReferencesResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteReferencesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = DeleteReferencesResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5315,12 +5315,12 @@ class ViewDescription(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ViewId = NodeId()
         self.Timestamp = datetime.now()
         self.ViewVersion = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5366,7 +5366,7 @@ class BrowseDescription(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = NodeId()
         self.BrowseDirection = 0
@@ -5374,7 +5374,7 @@ class BrowseDescription(FrozenClass):
         self.IncludeSubtypes = True
         self.NodeClassMask = 0
         self.ResultMask = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5431,7 +5431,7 @@ class ReferenceDescription(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ReferenceTypeId = NodeId()
         self.IsForward = True
@@ -5440,7 +5440,7 @@ class ReferenceDescription(FrozenClass):
         self.DisplayName = LocalizedText()
         self.NodeClass = 0
         self.TypeDefinition = ExpandedNodeId()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5492,12 +5492,12 @@ class BrowseResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StatusCode = StatusCode()
         self.ContinuationPoint = b''
         self.References = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5542,12 +5542,12 @@ class BrowseParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.View = ViewDescription()
         self.RequestedMaxReferencesPerNode = 0
         self.NodesToBrowse = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5594,12 +5594,12 @@ class BrowseRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.BrowseRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = BrowseParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5641,13 +5641,13 @@ class BrowseResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.BrowseResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5700,11 +5700,11 @@ class BrowseNextParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ReleaseContinuationPoints = True
         self.ContinuationPoints = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5743,12 +5743,12 @@ class BrowseNextRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.BrowseNextRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = BrowseNextParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5784,11 +5784,11 @@ class BrowseNextResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5839,12 +5839,12 @@ class BrowseNextResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.BrowseNextResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = BrowseNextResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5886,13 +5886,13 @@ class RelativePathElement(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ReferenceTypeId = NodeId()
         self.IsInverse = True
         self.IncludeSubtypes = True
         self.TargetName = QualifiedName()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5931,10 +5931,10 @@ class RelativePath(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Elements = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -5973,11 +5973,11 @@ class BrowsePath(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StartingNode = NodeId()
         self.RelativePath = RelativePath()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6012,11 +6012,11 @@ class BrowsePathTarget(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TargetId = ExpandedNodeId()
         self.RemainingPathIndex = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6051,11 +6051,11 @@ class BrowsePathResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StatusCode = StatusCode()
         self.Targets = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6093,10 +6093,10 @@ class TranslateBrowsePathsToNodeIdsParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.BrowsePaths = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6137,12 +6137,12 @@ class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = TranslateBrowsePathsToNodeIdsParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6184,13 +6184,13 @@ class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6241,10 +6241,10 @@ class RegisterNodesParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodesToRegister = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6285,12 +6285,12 @@ class RegisterNodesRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.RegisterNodesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = RegisterNodesParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6324,10 +6324,10 @@ class RegisterNodesResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.RegisteredNodeIds = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6368,12 +6368,12 @@ class RegisterNodesResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.RegisterNodesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = RegisterNodesResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6407,10 +6407,10 @@ class UnregisterNodesParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodesToUnregister = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6451,12 +6451,12 @@ class UnregisterNodesRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.UnregisterNodesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = UnregisterNodesParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6494,11 +6494,11 @@ class UnregisterNodesResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.UnregisterNodesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6545,7 +6545,7 @@ class EndpointConfiguration(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.OperationTimeout = 0
         self.UseBinaryEncoding = True
@@ -6556,7 +6556,7 @@ class EndpointConfiguration(FrozenClass):
         self.MaxBufferSize = 0
         self.ChannelLifetime = 0
         self.SecurityTokenLifetime = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6618,7 +6618,7 @@ class SupportedProfile(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.OrganizationUri = ''
         self.ProfileId = ''
@@ -6626,7 +6626,7 @@ class SupportedProfile(FrozenClass):
         self.ComplianceDate = datetime.now()
         self.ComplianceLevel = 0
         self.UnsupportedUnitIds = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6689,7 +6689,7 @@ class SoftwareCertificate(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ProductName = ''
         self.ProductUri = ''
@@ -6701,7 +6701,7 @@ class SoftwareCertificate(FrozenClass):
         self.IssuedBy = ''
         self.IssueDate = datetime.now()
         self.SupportedProfiles = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6767,12 +6767,12 @@ class QueryDataDescription(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.RelativePath = RelativePath()
         self.AttributeId = 0
         self.IndexRange = ''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6810,12 +6810,12 @@ class NodeTypeDescription(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeDefinitionNode = ExpandedNodeId()
         self.IncludeSubTypes = True
         self.DataToReturn = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6860,12 +6860,12 @@ class QueryDataSet(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = ExpandedNodeId()
         self.TypeDefinitionNode = ExpandedNodeId()
         self.Values = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6912,13 +6912,13 @@ class NodeReference(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = NodeId()
         self.ReferenceTypeId = NodeId()
         self.IsForward = True
         self.ReferencedNodeIds = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -6964,11 +6964,11 @@ class ContentFilterElement(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.FilterOperator = 0
         self.FilterOperands = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7006,10 +7006,10 @@ class ContentFilter(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Elements = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7044,10 +7044,10 @@ class ElementOperand(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Index = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7075,10 +7075,10 @@ class LiteralOperand(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Value = Variant()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7114,14 +7114,14 @@ class AttributeOperand(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = NodeId()
         self.Alias = ''
         self.BrowsePath = RelativePath()
         self.AttributeId = 0
         self.IndexRange = ''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7167,13 +7167,13 @@ class SimpleAttributeOperand(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeDefinitionId = NodeId()
         self.BrowsePath = []
         self.AttributeId = 0
         self.IndexRange = ''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7221,12 +7221,12 @@ class ContentFilterElementResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StatusCode = StatusCode()
         self.OperandStatusCodes = []
         self.OperandDiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7276,11 +7276,11 @@ class ContentFilterResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ElementResults = []
         self.ElementDiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7329,12 +7329,12 @@ class ParsingResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StatusCode = StatusCode()
         self.DataStatusCodes = []
         self.DataDiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7390,14 +7390,14 @@ class QueryFirstParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.View = ViewDescription()
         self.NodeTypes = []
         self.Filter = ContentFilter()
         self.MaxDataSetsToReturn = 0
         self.MaxReferencesToReturn = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7448,12 +7448,12 @@ class QueryFirstRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.QueryFirstRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = QueryFirstParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7495,14 +7495,14 @@ class QueryFirstResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.QueryDataSets = []
         self.ContinuationPoint = b''
         self.ParsingResults = []
         self.DiagnosticInfos = []
         self.FilterResult = ContentFilterResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7567,12 +7567,12 @@ class QueryFirstResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.QueryFirstResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = QueryFirstResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7608,11 +7608,11 @@ class QueryNextParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ReleaseContinuationPoint = True
         self.ContinuationPoint = b''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7647,12 +7647,12 @@ class QueryNextRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.QueryNextRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = QueryNextParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7688,11 +7688,11 @@ class QueryNextResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.QueryDataSets = []
         self.RevisedContinuationPoint = b''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7734,12 +7734,12 @@ class QueryNextResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.QueryNextResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = QueryNextResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7779,13 +7779,13 @@ class ReadValueId(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = NodeId()
         self.AttributeId = 0
         self.IndexRange = ''
         self.DataEncoding = QualifiedName()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7826,12 +7826,12 @@ class ReadParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.MaxAge = 0
         self.TimestampsToReturn = 0
         self.NodesToRead = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7876,12 +7876,12 @@ class ReadRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.ReadRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = ReadParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7921,13 +7921,13 @@ class ReadResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.ReadResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -7984,13 +7984,13 @@ class HistoryReadValueId(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = NodeId()
         self.IndexRange = ''
         self.DataEncoding = QualifiedName()
         self.ContinuationPoint = b''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8031,12 +8031,12 @@ class HistoryReadResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StatusCode = StatusCode()
         self.ContinuationPoint = b''
         self.HistoryData = None
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8068,9 +8068,9 @@ class HistoryReadDetails(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8103,13 +8103,13 @@ class ReadEventDetails(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NumValuesPerNode = 0
         self.StartTime = datetime.now()
         self.EndTime = datetime.now()
         self.Filter = EventFilter()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8154,14 +8154,14 @@ class ReadRawModifiedDetails(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.IsReadModified = True
         self.StartTime = datetime.now()
         self.EndTime = datetime.now()
         self.NumValuesPerNode = 0
         self.ReturnBounds = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8209,14 +8209,14 @@ class ReadProcessedDetails(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StartTime = datetime.now()
         self.EndTime = datetime.now()
         self.ProcessingInterval = 0
         self.AggregateType = []
         self.AggregateConfiguration = AggregateConfiguration()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8265,11 +8265,11 @@ class ReadAtTimeDetails(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ReqTimes = []
         self.UseSimpleBounds = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8302,10 +8302,10 @@ class HistoryData(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.DataValues = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8344,12 +8344,12 @@ class ModificationInfo(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ModificationTime = datetime.now()
         self.UpdateType = 0
         self.UserName = ''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8385,11 +8385,11 @@ class HistoryModifiedData(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.DataValues = []
         self.ModificationInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8434,10 +8434,10 @@ class HistoryEvent(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Events = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8478,13 +8478,13 @@ class HistoryReadParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.HistoryReadDetails = None
         self.TimestampsToReturn = 0
         self.ReleaseContinuationPoints = True
         self.NodesToRead = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8532,12 +8532,12 @@ class HistoryReadRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.HistoryReadRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = HistoryReadParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8577,13 +8577,13 @@ class HistoryReadResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.HistoryReadResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8640,13 +8640,13 @@ class WriteValue(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = NodeId()
         self.AttributeId = 0
         self.IndexRange = ''
         self.Value = DataValue()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8683,10 +8683,10 @@ class WriteParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodesToWrite = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8725,12 +8725,12 @@ class WriteRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.WriteRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = WriteParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8770,13 +8770,13 @@ class WriteResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.WriteResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8827,10 +8827,10 @@ class HistoryUpdateDetails(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = NodeId()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8862,12 +8862,12 @@ class UpdateDataDetails(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = NodeId()
         self.PerformInsertReplace = 0
         self.UpdateValues = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8912,12 +8912,12 @@ class UpdateStructureDataDetails(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = NodeId()
         self.PerformInsertReplace = 0
         self.UpdateValues = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -8964,13 +8964,13 @@ class UpdateEventDetails(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = NodeId()
         self.PerformInsertReplace = 0
         self.Filter = EventFilter()
         self.EventData = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9020,13 +9020,13 @@ class DeleteRawModifiedDetails(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = NodeId()
         self.IsDeleteModified = True
         self.StartTime = datetime.now()
         self.EndTime = datetime.now()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9065,11 +9065,11 @@ class DeleteAtTimeDetails(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = NodeId()
         self.ReqTimes = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9104,11 +9104,11 @@ class DeleteEventDetails(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NodeId = NodeId()
         self.EventIds = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9145,12 +9145,12 @@ class HistoryUpdateResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StatusCode = StatusCode()
         self.OperationResults = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9198,10 +9198,10 @@ class HistoryUpdateParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.HistoryUpdateDetails = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9240,12 +9240,12 @@ class HistoryUpdateRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.HistoryUpdateRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = HistoryUpdateParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9285,13 +9285,13 @@ class HistoryUpdateResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.HistoryUpdateResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9346,12 +9346,12 @@ class CallMethodRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ObjectId = NodeId()
         self.MethodId = NodeId()
         self.InputArguments = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9398,13 +9398,13 @@ class CallMethodResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StatusCode = StatusCode()
         self.InputArgumentResults = []
         self.InputArgumentDiagnosticInfos = []
         self.OutputArguments = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9462,10 +9462,10 @@ class CallParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.MethodsToCall = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9504,12 +9504,12 @@ class CallRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.CallRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CallParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9549,13 +9549,13 @@ class CallResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.CallResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9604,9 +9604,9 @@ class MonitoringFilter(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9637,12 +9637,12 @@ class DataChangeFilter(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Trigger = 0
         self.DeadbandType = 0
         self.DeadbandValue = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9678,11 +9678,11 @@ class EventFilter(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SelectClauses = []
         self.WhereClause = ContentFilter()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9728,14 +9728,14 @@ class AggregateConfiguration(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.UseServerCapabilitiesDefaults = True
         self.TreatUncertainAsBad = True
         self.PercentDataBad = 0
         self.PercentDataGood = 0
         self.UseSlopedExtrapolation = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9781,13 +9781,13 @@ class AggregateFilter(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StartTime = datetime.now()
         self.AggregateType = NodeId()
         self.ProcessingInterval = 0
         self.AggregateConfiguration = AggregateConfiguration()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9822,9 +9822,9 @@ class MonitoringFilterResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9855,12 +9855,12 @@ class EventFilterResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SelectClauseResults = []
         self.SelectClauseDiagnosticInfos = []
         self.WhereClauseResult = ContentFilterResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9912,12 +9912,12 @@ class AggregateFilterResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.RevisedStartTime = datetime.now()
         self.RevisedProcessingInterval = 0
         self.RevisedAggregateConfiguration = AggregateConfiguration()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -9959,14 +9959,14 @@ class MonitoringParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ClientHandle = 0
         self.SamplingInterval = 0
         self.Filter = None
         self.QueueSize = 0
         self.DiscardOldest = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10010,12 +10010,12 @@ class MonitoredItemCreateRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ItemToMonitor = ReadValueId()
         self.MonitoringMode = 0
         self.RequestedParameters = MonitoringParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10057,14 +10057,14 @@ class MonitoredItemCreateResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StatusCode = StatusCode()
         self.MonitoredItemId = 0
         self.RevisedSamplingInterval = 0
         self.RevisedQueueSize = 0
         self.FilterResult = None
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10108,12 +10108,12 @@ class CreateMonitoredItemsParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SubscriptionId = 0
         self.TimestampsToReturn = 0
         self.ItemsToCreate = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10158,12 +10158,12 @@ class CreateMonitoredItemsRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.CreateMonitoredItemsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CreateMonitoredItemsParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10203,13 +10203,13 @@ class CreateMonitoredItemsResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.CreateMonitoredItemsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10262,11 +10262,11 @@ class MonitoredItemModifyRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.MonitoredItemId = 0
         self.RequestedParameters = MonitoringParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10303,13 +10303,13 @@ class MonitoredItemModifyResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StatusCode = StatusCode()
         self.RevisedSamplingInterval = 0
         self.RevisedQueueSize = 0
         self.FilterResult = None
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10350,12 +10350,12 @@ class ModifyMonitoredItemsParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SubscriptionId = 0
         self.TimestampsToReturn = 0
         self.ItemsToModify = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10400,12 +10400,12 @@ class ModifyMonitoredItemsRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.ModifyMonitoredItemsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = ModifyMonitoredItemsParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10445,13 +10445,13 @@ class ModifyMonitoredItemsResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.ModifyMonitoredItemsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10506,12 +10506,12 @@ class SetMonitoringModeParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SubscriptionId = 0
         self.MonitoringMode = 0
         self.MonitoredItemIds = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10551,12 +10551,12 @@ class SetMonitoringModeRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.SetMonitoringModeRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = SetMonitoringModeParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10592,11 +10592,11 @@ class SetMonitoringModeResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10645,12 +10645,12 @@ class SetMonitoringModeResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.SetMonitoringModeResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = SetMonitoringModeResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10690,13 +10690,13 @@ class SetTriggeringParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SubscriptionId = 0
         self.TriggeringItemId = 0
         self.LinksToAdd = []
         self.LinksToRemove = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10741,12 +10741,12 @@ class SetTriggeringRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.SetTriggeringRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = SetTriggeringParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10786,13 +10786,13 @@ class SetTriggeringResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.AddResults = []
         self.AddDiagnosticInfos = []
         self.RemoveResults = []
         self.RemoveDiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10861,12 +10861,12 @@ class SetTriggeringResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.SetTriggeringResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = SetTriggeringResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10902,11 +10902,11 @@ class DeleteMonitoredItemsParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SubscriptionId = 0
         self.MonitoredItemIds = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10943,12 +10943,12 @@ class DeleteMonitoredItemsRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteMonitoredItemsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteMonitoredItemsParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -10988,13 +10988,13 @@ class DeleteMonitoredItemsResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteMonitoredItemsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11055,7 +11055,7 @@ class CreateSubscriptionParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.RequestedPublishingInterval = 0
         self.RequestedLifetimeCount = 0
@@ -11063,7 +11063,7 @@ class CreateSubscriptionParameters(FrozenClass):
         self.MaxNotificationsPerPublish = 0
         self.PublishingEnabled = True
         self.Priority = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11110,12 +11110,12 @@ class CreateSubscriptionRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.CreateSubscriptionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CreateSubscriptionParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11155,13 +11155,13 @@ class CreateSubscriptionResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SubscriptionId = 0
         self.RevisedPublishingInterval = 0
         self.RevisedLifetimeCount = 0
         self.RevisedMaxKeepAliveCount = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11202,12 +11202,12 @@ class CreateSubscriptionResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.CreateSubscriptionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = CreateSubscriptionResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11251,7 +11251,7 @@ class ModifySubscriptionParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SubscriptionId = 0
         self.RequestedPublishingInterval = 0
@@ -11259,7 +11259,7 @@ class ModifySubscriptionParameters(FrozenClass):
         self.RequestedMaxKeepAliveCount = 0
         self.MaxNotificationsPerPublish = 0
         self.Priority = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11306,12 +11306,12 @@ class ModifySubscriptionRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.ModifySubscriptionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = ModifySubscriptionParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11349,12 +11349,12 @@ class ModifySubscriptionResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.RevisedPublishingInterval = 0
         self.RevisedLifetimeCount = 0
         self.RevisedMaxKeepAliveCount = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11392,12 +11392,12 @@ class ModifySubscriptionResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.ModifySubscriptionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = ModifySubscriptionResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11433,11 +11433,11 @@ class SetPublishingModeParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.PublishingEnabled = True
         self.SubscriptionIds = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11474,12 +11474,12 @@ class SetPublishingModeRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.SetPublishingModeRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = SetPublishingModeParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11515,11 +11515,11 @@ class SetPublishingModeResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11568,12 +11568,12 @@ class SetPublishingModeResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.SetPublishingModeResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = SetPublishingModeResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11611,12 +11611,12 @@ class NotificationMessage(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SequenceNumber = 0
         self.PublishTime = datetime.now()
         self.NotificationData = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11655,9 +11655,9 @@ class NotificationData(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11686,11 +11686,11 @@ class DataChangeNotification(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.MonitoredItems = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11737,11 +11737,11 @@ class MonitoredItemNotification(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ClientHandle = 0
         self.Value = DataValue()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11772,10 +11772,10 @@ class EventNotificationList(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Events = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11812,11 +11812,11 @@ class EventFieldList(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ClientHandle = 0
         self.EventFields = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11854,10 +11854,10 @@ class HistoryEventFieldList(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.EventFields = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11894,11 +11894,11 @@ class StatusChangeNotification(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Status = StatusCode()
         self.DiagnosticInfo = DiagnosticInfo()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11931,11 +11931,11 @@ class SubscriptionAcknowledgement(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SubscriptionId = 0
         self.SequenceNumber = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -11966,10 +11966,10 @@ class PublishParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SubscriptionAcknowledgements = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12008,12 +12008,12 @@ class PublishRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.PublishRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = PublishParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12057,7 +12057,7 @@ class PublishResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SubscriptionId = 0
         self.AvailableSequenceNumbers = []
@@ -12065,7 +12065,7 @@ class PublishResult(FrozenClass):
         self.NotificationMessage = NotificationMessage()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12128,12 +12128,12 @@ class PublishResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.PublishResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = PublishResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12169,11 +12169,11 @@ class RepublishParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SubscriptionId = 0
         self.RetransmitSequenceNumber = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12208,12 +12208,12 @@ class RepublishRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.RepublishRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = RepublishParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12251,12 +12251,12 @@ class RepublishResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.RepublishResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.NotificationMessage = NotificationMessage()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12292,11 +12292,11 @@ class TransferResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StatusCode = StatusCode()
         self.AvailableSequenceNumbers = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12331,11 +12331,11 @@ class TransferSubscriptionsParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SubscriptionIds = []
         self.SendInitialValues = True
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12372,12 +12372,12 @@ class TransferSubscriptionsRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.TransferSubscriptionsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = TransferSubscriptionsParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12413,11 +12413,11 @@ class TransferSubscriptionsResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12466,12 +12466,12 @@ class TransferSubscriptionsResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.TransferSubscriptionsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = TransferSubscriptionsResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12505,10 +12505,10 @@ class DeleteSubscriptionsParameters(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SubscriptionIds = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12542,12 +12542,12 @@ class DeleteSubscriptionsRequest(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteSubscriptionsParameters()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12587,13 +12587,13 @@ class DeleteSubscriptionsResponse(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12654,7 +12654,7 @@ class BuildInfo(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ProductUri = ''
         self.ManufacturerName = ''
@@ -12662,7 +12662,7 @@ class BuildInfo(FrozenClass):
         self.SoftwareVersion = ''
         self.BuildNumber = ''
         self.BuildDate = datetime.now()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12709,12 +12709,12 @@ class RedundantServerDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ServerId = ''
         self.ServiceLevel = 0
         self.ServerState = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12748,10 +12748,10 @@ class EndpointUrlListDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.EndpointUrlList = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12783,11 +12783,11 @@ class NetworkGroupDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ServerUri = ''
         self.NetworkPaths = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12831,13 +12831,13 @@ class SamplingIntervalDiagnosticsDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SamplingInterval = 0
         self.MonitoredItemCount = 0
         self.MaxMonitoredItemCount = 0
         self.DisabledMonitoredItemCount = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12896,7 +12896,7 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.ServerViewCount = 0
         self.CurrentSessionCount = 0
@@ -12910,7 +12910,7 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
         self.PublishingIntervalCount = 0
         self.SecurityRejectedRequestsCount = 0
         self.RejectedRequestsCount = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -12981,7 +12981,7 @@ class ServerStatusDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StartTime = datetime.now()
         self.CurrentTime = datetime.now()
@@ -12989,7 +12989,7 @@ class ServerStatusDataType(FrozenClass):
         self.BuildInfo = BuildInfo()
         self.SecondsTillShutdown = 0
         self.ShutdownReason = LocalizedText()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -13116,7 +13116,7 @@ class SessionDiagnosticsDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SessionId = NodeId()
         self.SessionName = ''
@@ -13161,7 +13161,7 @@ class SessionDiagnosticsDataType(FrozenClass):
         self.QueryNextCount = ServiceCounterDataType()
         self.RegisterNodesCount = ServiceCounterDataType()
         self.UnregisterNodesCount = ServiceCounterDataType()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -13333,7 +13333,7 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SessionId = NodeId()
         self.ClientUserIdOfSession = ''
@@ -13344,7 +13344,7 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
         self.SecurityMode = 0
         self.SecurityPolicyUri = ''
         self.ClientCertificate = b''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -13400,11 +13400,11 @@ class ServiceCounterDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.TotalCount = 0
         self.ErrorCount = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -13437,11 +13437,11 @@ class StatusResult(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.StatusCode = StatusCode()
         self.DiagnosticInfo = DiagnosticInfo()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -13532,7 +13532,7 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.SessionId = NodeId()
         self.SubscriptionId = 0
@@ -13565,7 +13565,7 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
         self.MonitoringQueueOverflowCount = 0
         self.NextSequenceNumber = 0
         self.EventQueueOverFlowCount = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -13687,12 +13687,12 @@ class ModelChangeStructureDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Affected = NodeId()
         self.AffectedType = NodeId()
         self.Verb = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -13728,11 +13728,11 @@ class SemanticChangeStructureDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Affected = NodeId()
         self.AffectedType = NodeId()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -13765,11 +13765,11 @@ class Range(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Low = 0
         self.High = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -13806,13 +13806,13 @@ class EUInformation(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.NamespaceUri = ''
         self.UnitId = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -13851,11 +13851,11 @@ class ComplexNumberType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Real = 0
         self.Imaginary = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -13888,11 +13888,11 @@ class DoubleComplexNumberType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Real = 0
         self.Imaginary = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -13931,14 +13931,14 @@ class AxisInformation(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.EngineeringUnits = EUInformation()
         self.EURange = Range()
         self.Title = LocalizedText()
         self.AxisScaleType = 0
         self.AxisSteps = []
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -13982,11 +13982,11 @@ class XVType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.X = 0
         self.Value = 0
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -14035,7 +14035,7 @@ class ProgramDiagnosticDataType(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.CreateSessionId = NodeId()
         self.CreateClientName = ''
@@ -14047,7 +14047,7 @@ class ProgramDiagnosticDataType(FrozenClass):
         self.LastMethodOutputArguments = []
         self.LastMethodCallTime = datetime.now()
         self.LastMethodReturnStatus = StatusResult()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -14120,12 +14120,12 @@ class Annotation(FrozenClass):
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
-            self._freeze()
+            self._freeze = True
             return
         self.Message = ''
         self.UserName = ''
         self.AnnotationTime = datetime.now()
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
