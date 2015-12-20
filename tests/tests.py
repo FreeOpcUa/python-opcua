@@ -3,6 +3,7 @@
 import sys
 sys.path.insert(0, "..")
 sys.path.insert(0, ".")
+import subprocess
 import time
 import logging
 import math
@@ -921,6 +922,33 @@ class AdminTestClient(unittest.TestCase, CommonTests):
             v_ro.set_value(9)
         self.assertEqual(v_ro.get_value(), 2)
 
+
+class TestCmdLines(unittest.TestCase):
+
+    '''
+    Test command lines
+    '''
+    @classmethod
+    def setUpClass(self):
+        self.srv = Server()
+        self.srv_url = 'opc.tcp://localhost:%d' % port_num2
+        self.srv.set_endpoint(self.srv_url)
+        objects = self.srv.get_objects_node()
+        obj = objects.add_object(4, "browsetest")
+        var = obj.add_variable(4, "variable", 1.999)
+        self.srv.start()
+
+    def test_uals(self):
+        s = subprocess.check_output(["python3", "tools/uals", "--url", self.srv_url])
+        self.assertIn(b"i=85", s)
+        self.assertNotIn(b"i=89", s)
+        self.assertNotIn(b"1.999", s)
+        s = subprocess.check_output(["python3", "tools/uals", "--url", self.srv_url, "-d", "3"])
+        self.assertIn(b"1.999", s)
+
+    @classmethod
+    def tearDownClass(self):
+        self.srv.stop()
 
 
 class TestServer(unittest.TestCase, CommonTests):
