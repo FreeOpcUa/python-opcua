@@ -252,10 +252,11 @@ class FrozenClass(object):
         self.__isfrozen = True
 
 
-class Guid(object):
+class Guid(FrozenClass):
 
     def __init__(self):
         self.uuid = uuid.uuid4()
+        self._freeze()
 
     def to_binary(self):
         return self.uuid.bytes
@@ -284,6 +285,7 @@ class StatusCode(FrozenClass):
     def __init__(self, value=0):
         self.value = value
         self.name, self.doc = status_code.get_name_and_doc(value)
+        self._freeze()
 
     def to_binary(self):
         return uatype_UInt32.pack(self.value)
@@ -351,6 +353,7 @@ class NodeId(FrozenClass):
         self.NodeIdType = nodeidtype
         self.NamespaceUri = ""
         self.ServerIndex = 0
+        self._freeze()
         if self.Identifier is None:
             self.Identifier = 0
             self.NodeIdType = NodeIdType.TwoByte
@@ -541,6 +544,7 @@ class QualifiedName(FrozenClass):
     def __init__(self, name="", namespaceidx=0):
         self.NamespaceIndex = namespaceidx
         self.Name = name
+        self._freeze()
 
     def to_string(self):
         return "{}:{}".format(self.NamespaceIndex, self.Name)
@@ -722,6 +726,7 @@ class Variant(FrozenClass):
                 self.VariantType = self._guess_type(self.Value[0])
             else:
                 self.VariantType = self._guess_type(self.Value)
+        self._freeze()
 
     def __eq__(self, other):
         if isinstance(other, Variant) and self.VariantType == other.VariantType and self.Value == other.Value:
@@ -816,6 +821,7 @@ class DataValue(FrozenClass):
         self.SourcePicoseconds = None
         self.ServerTimestamp = None  # DateTime()
         self.ServerPicoseconds = None
+        self._freeze()
 
     def to_binary(self):
         packet = []
