@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from Crypto.Util.asn1 import DerSequence
 from ssl import PEM_cert_to_DER_cert
 from ssl import DER_cert_to_PEM_cert

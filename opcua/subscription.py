@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 high level interface to subscriptions
 """

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Internal server implementing opcu-ua interface. can be used on server side or to implement binary/https opc-ua servers
 """

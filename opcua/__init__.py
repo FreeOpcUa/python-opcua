@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Pure Python OPC-UA library
 """

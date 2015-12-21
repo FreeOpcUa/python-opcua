@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Socket server forwarding request to internal server
 """

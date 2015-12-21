@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from opcua.attribute_ids import AttributeIds
 from opcua.object_ids import ObjectIds
 from opcua.status_code import StatusCodes

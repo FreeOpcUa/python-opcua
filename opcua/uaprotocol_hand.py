@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import struct
 import logging
 import hashlib

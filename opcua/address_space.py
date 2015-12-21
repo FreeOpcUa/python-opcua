@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from threading import RLock
 import logging
 import pickle

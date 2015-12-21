@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import division  # support for python2
 import os
 from threading import Thread, Condition

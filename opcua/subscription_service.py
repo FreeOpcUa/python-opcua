@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 server side implementation of subscription service
 """

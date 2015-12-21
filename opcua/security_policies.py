@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from opcua.uaprotocol import SecurityPolicy, MessageSecurityMode, CryptographyNone
 try:
     from cryptography import x509, exceptions

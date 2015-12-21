@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 '''
 Autogenerate code from xml spec
 '''
@@ -14364,6 +14366,7 @@ ExtensionClasses = {
     ObjectIds.Annotation_Encoding_DefaultBinary: Annotation,
 }
 
+# -*- coding: utf-8 -*-
 
 def extensionobject_from_binary(data):
     """

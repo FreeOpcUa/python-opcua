@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 def extensionobject_from_binary(data):
     """
