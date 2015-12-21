@@ -6,12 +6,22 @@ def extensionobject_from_binary(data):
     """
     TypeId = NodeId.from_binary(data)
     Encoding = ord(data.read(1))
+    body = None
     if Encoding & (1 << 0):
-        Body = unpack_bytes(data)
+        length = uatype_Int32.unpack(data.read(4))[0]
+        if length < 1:
+            body = Buffer(b"")
+        else:
+            body = data.copy(length)
+            data.skip(length)
     if TypeId.Identifier == 0:
         return None
+    elif TypeId.Identifier not in ExtensionClasses:
+        raise Exception("unknown ExtensionObject Type: {}".format(TypeId))
     klass = ExtensionClasses[TypeId.Identifier]
-    return klass.from_binary(Buffer(Body))
+    if body is None:
+        raise Exception("parsing ExtensionObject {} without data".format(klass.__name__))
+    return klass.from_binary(body)
 
 
 def extensionobject_to_binary(obj):

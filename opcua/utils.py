@@ -25,58 +25,54 @@ class Buffer(object):
     and added a few conveniance methods
     """
 
-    def __init__(self, data):
+    def __init__(self, data, start_pos=0, size=-1):
         # self.logger = logging.getLogger(__name__)
         self._data = data
-        self.rsize = 0
+        self._cur_pos = start_pos
+        if size == -1:
+            size = len(data) - start_pos
+        self._size = size
 
     def __str__(self):
-        return "Buffer(size:{}, data:{})".format(len(self), self.data)
+        return "Buffer(size:{}, data:{})".format(
+            self._size,
+            self._data[self._cur_pos:self._cur_pos + self._size])
     __repr__ = __str__
 
     def __len__(self):
-        return len(self._data) - self.rsize
+        return self._size
 
     def read(self, size):
         """
         read and pop number of bytes for buffer
         """
-        rsize = self.rsize
-        nrsize = rsize + size
-        mydata = self._data
-        if nrsize > len(mydata):
-            raise Exception("Not enough data left in buffer, request for {}, we have {}".format(size, self))
-        #self.logger.debug("Request for %s bytes, from %s", size, self)
-        data = mydata[rsize:nrsize]
-        self.rsize = nrsize
-        #self.logger.debug("Returning: %s ", data)
+        if size > self._size:
+            raise NotEnoughData("Not enough data left in buffer, request for {}, we have {}".format(size, self))
+        # self.logger.debug("Request for %s bytes, from %s", size, self)
+        self._size -= size
+        pos = self._cur_pos
+        self._cur_pos += size
+        data = self._data[pos:self._cur_pos]
+        # self.logger.debug("Returning: %s ", data)
         return data
 
-    def copy(self, size=None):
+    def copy(self, size=-1):
         """
-        return a copy, optionnaly only copy 'size' bytes
+        return a shadow copy, optionnaly only copy 'size' bytes
         """
-        if size is None:
-            return Buffer(self._data[self.rsize:])
-        else:
-            return Buffer(self._data[self.rsize:self.rsize + size])
+        if size == -1 or size > self._size:
+            size = self._size
+        return Buffer(self._data, self._cur_pos, size)
 
-    def test_read(self, size):
+    def skip(self, size):
         """
-        read 'size' bytes from buffer, without removing them from buffer
+        skip size bytes in buffer
         """
-        if self.rsize + size > len(self._data):
-            raise Exception("Not enough data left in buffer, request for {}, we have {}".format(size, self))
-        return self._data[self.rsize:self.rsize + size]
+        if size > self._size:
+            raise NotEnoughData("Not enough data left in buffer, request for {}, we have {}".format(size, self))
+        self._size -= size
+        self._cur_pos += size
 
-    def get_data(self):
-        return self._data[self.rsize:]
-
-    def set_data(self, v):
-        self._data = v
-        self.rsize = 0
-
-    data = property(get_data, set_data)
 
 
 class SocketClosedException(Exception):

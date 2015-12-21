@@ -83,7 +83,7 @@ class UASocketClient(object):
             return data
 
     def check_answer(self, data, context):
-        data = data.copy(50)  # FIXME check max length nodeid + responseheader
+        data = data.copy()
         typeid = ua.NodeId.from_binary(data)
         if typeid == ua.FourByteNodeId(ua.ObjectIds.ServiceFault_Encoding_DefaultBinary):
             self.logger.warning("ServiceFault from server received %s", context)
