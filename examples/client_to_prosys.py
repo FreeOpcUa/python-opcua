@@ -1,5 +1,6 @@
 import sys
 sys.path.insert(0, "..")
+import time
 import logging
 
 from opcua import Client
@@ -57,6 +58,7 @@ if __name__ == "__main__":
         print("Mehtod result is: ", result)
 
         #embed()
+        time.sleep(3)
         sub.unsubscribe(handle)
         sub.delete()
         #client.close_session()
