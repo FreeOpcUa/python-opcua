@@ -1,4 +1,6 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from __future__ import print_function
 
 # https://opcfoundation.org/UA/schemas/OPC%20UA%20Schema%20Files%20Readme.xls

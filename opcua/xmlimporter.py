@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 add node defined in XML to address space
 format is the one from opc-ua specification

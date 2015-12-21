@@ -1,4 +1,5 @@
-# temporary hack
+# -*- coding: utf-8 -*-
+
 import generate_model as gm
 
 IgnoredEnums = ["NodeIdType"]
@@ -50,6 +51,8 @@ class CodeGenerator(object):
         self.output_file.write(line + "\n")
 
     def make_header(self):
+        self.write("# -*- coding: utf-8 -*-")
+        self.write("")
         self.write("'''")
         self.write("Autogenerate code from xml spec")
         self.write("'''")

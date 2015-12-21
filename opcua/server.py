@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 High level interface to pure python OPC-UA server
 """

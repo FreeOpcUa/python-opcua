@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Generate address space c++ code from xml file specification
 """

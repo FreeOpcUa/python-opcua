@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 High level node object, to access node attribute
 and browse address space

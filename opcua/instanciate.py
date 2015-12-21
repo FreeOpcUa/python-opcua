@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Instanciate a node from a node type.
 Can also be used to duplicate a node tree
