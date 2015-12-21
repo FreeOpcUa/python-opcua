@@ -75,7 +75,6 @@ class MonitoredItemService(object):
             result = ua.MonitoredItemCreateResult()
             result.RevisedSamplingInterval = self.isub.data.RevisedPublishingInterval
             result.RevisedQueueSize = params.RequestedParameters.QueueSize
-            result.FilterResult = params.RequestedParameters.Filter
             self._monitored_item_counter += 1
             result.MonitoredItemId = self._monitored_item_counter
             self.logger.debug("Creating MonitoredItem with id %s", result.MonitoredItemId)
@@ -84,15 +83,21 @@ class MonitoredItemService(object):
             mdata.parameters = result
             mdata.mode = params.MonitoringMode
             mdata.client_handle = params.RequestedParameters.ClientHandle
+            mdata.mfilter = params.RequestedParameters.Filter
             mdata.monitored_item_id = result.MonitoredItemId
 
             self._monitored_items[result.MonitoredItemId] = mdata
 
             if params.ItemToMonitor.AttributeId == ua.AttributeIds.EventNotifier:
                 self.logger.info("request to subscribe to events for node %s and attribute %s", params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+                result.FilterResult = ua.EventFilterResult()
+                for _ in params.RequestedParameters.Filter.SelectClauses:
+                    result.FilterResult.SelectClauseResults.append(ua.StatusCode())
+                # FIXME: where clause result
                 self._monitored_events[params.ItemToMonitor.NodeId] = result.MonitoredItemId
             else:
                 self.logger.info("request to subscribe to datachange for node %s and attribute %s", params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+                result.FilterResult = params.RequestedParameters.Filter
                 result.StatusCode, handle = self.aspace.add_datachange_callback(params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId, self.datachange_callback)
                 self.logger.debug("adding callback return status %s and handle %s", result.StatusCode, handle)
                 mdata.callback_handle = handle
@@ -153,7 +158,7 @@ class MonitoredItemService(object):
             mdata = self._monitored_items[mid]
             fieldlist = ua.EventFieldList()
             fieldlist.ClientHandle = mdata.client_handle
-            fieldlist.EventFields = self._get_event_fields(mdata.parameters.FilterResult, event)
+            fieldlist.EventFields = self._get_event_fields(mdata.mfilter, event)
             self.isub.enqueue_event(mid, fieldlist, mdata.parameters.RevisedQueueSize)
             return True
 

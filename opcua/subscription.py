@@ -220,7 +220,8 @@ class Subscription(object):
                 data.node = Node(self.server, mi.ItemToMonitor.NodeId)
                 data.attribute = mi.ItemToMonitor.AttributeId
                 data.server_handle = result.MonitoredItemId
-                data.mfilter = result.FilterResult
+                #data.mfilter = result.FilterResult
+                data.mfilter = mi.RequestedParameters.Filter
                 self._monitoreditems_map[mi.RequestedParameters.ClientHandle] = data
 
                 mids.append(result.MonitoredItemId)
