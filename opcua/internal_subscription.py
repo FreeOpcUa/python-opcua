@@ -256,10 +256,11 @@ class InternalSubscription(object):
         self._keep_alive_count = 0
         self._startup = False
         result.NotificationMessage.SequenceNumber = self._notification_seq
-        self._notification_seq += 1
+        if len(result.NotificationMessage.NotificationData) != 0:
+            self._notification_seq += 1
+            self._not_acknowledged_results[result.NotificationMessage.SequenceNumber] = result
         result.MoreNotifications = False
         result.AvailableSequenceNumbers = list(self._not_acknowledged_results.keys())
-        self._not_acknowledged_results[result.NotificationMessage.SequenceNumber] = result
         return result
 
     def _pop_triggered_datachanges(self, result):

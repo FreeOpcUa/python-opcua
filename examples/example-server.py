@@ -59,8 +59,8 @@ if __name__ == "__main__":
     # logger.setLevel(logging.DEBUG)
     #logger = logging.getLogger("opcua.uaprocessor")
     # logger.setLevel(logging.DEBUG)
-    #logger = logging.getLogger("opcua.subscription_service")
-    # logger.setLevel(logging.DEBUG)
+    logger = logging.getLogger("opcua.subscription_service")
+    logger.setLevel(logging.DEBUG)
 
     # now setup our server
     server = Server()
