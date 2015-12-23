@@ -395,13 +395,17 @@ class AddressSpace(object):
             attval = node.attributes[attr]
             old = attval.value
             attval.value = value
+            cbs = []
             if old.Value != value.Value:  # only send call callback when a value change has happend
-                for k, v in attval.datachange_callbacks.items():
-                    try:
-                        v(k, value)
-                    except Exception as ex:
-                        self.logger.exception("Error calling datachange callback %s, %s, %s", k, v, ex)
-            return ua.StatusCode()
+                cbs = list(attval.datachange_callbacks.items())
+
+        for k, v in cbs:
+            try:
+                v(k, value)
+            except Exception as ex:
+                self.logger.exception("Error calling datachange callback %s, %s, %s", k, v, ex)
+
+        return ua.StatusCode()
 
     def add_datachange_callback(self, nodeid, attr, callback):
         with self._lock:
