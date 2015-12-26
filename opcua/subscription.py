@@ -1,7 +1,6 @@
 """
 high level interface to subscriptions
 """
-import io
 import time
 import logging
 from threading import Lock
@@ -13,21 +12,60 @@ from opcua import AttributeIds
 #from opcua import Event
 
 
-class EventResult():
+class SubHandler(object):
+    """
+    Subscription Handler. To receive events from server for a subscription
+    This class is just a sample class. Whatever class having these methods can be used
+    """
 
+    def data_change(self, handle, node, val, attr):
+        """
+        Deprecated, use datachange_notification
+        """
+        pass
+
+    def datachange_notification(self, node, val, data):
+        """
+        called for every datachange notfication from server
+        """
+        pass
+
+    def event(self, handle, event):
+        """
+        called for every event notfication from server
+        """
+        pass
+
+
+class EventResult():
     def __str__(self):
         return "EventResult({})".format([str(k) + ":" + str(v) for k, v in self.__dict__.items()])
     __repr__ = __str__
 
 
 class SubscriptionItemData():
-
+    """
+    To store usefull data from a monitored item
+    """
     def __init__(self):
         self.node = None
         self.client_handle = None
         self.server_handle = None
         self.attribute = None
         self.mfilter = None
+
+
+class DataChangeNotif():
+    """
+    To be send to clients for every notification from server
+    """
+    def __init__(self, subscription_data, monitored_item):
+        self.monitored_item = monitored_item
+        self.subscription_data = subscription_data
+
+    def __str__(self):
+        return "DataChangeNotfication({}, {})".format(self.suscription_data, self.monitored_item)
+    __repr__ = __str__
 
 
 class Subscription(object):
@@ -88,7 +126,14 @@ class Subscription(object):
                     continue
                 data = self._monitoreditems_map[item.ClientHandle]
             try:
-                self._handler.data_change(data.server_handle, data.node, item.Value.Value.Value, data.attribute)
+                if hasattr(self._handler, "datachange_notification"):
+                    event_data = DataChangeNotif(data, item)
+                    self._handler.datachange_notification(data.node, item.Value.Value.Value, event_data)
+                elif hasattr(self._handler, "data_change"): 
+                    self.logger.warning("data_change method is deprecated, use datavalue_changed")
+                    self._handler.data_change(data.server_handle, data.node, item.Value.Value.Value, data.attribute)
+                else:
+                    self.logger.error("DataChange subscription created but handler has no datachange_notification method")
             except Exception:
                 self.logger.exception("Exception calling data change handler")
 
