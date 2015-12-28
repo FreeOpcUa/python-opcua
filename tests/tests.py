@@ -384,6 +384,16 @@ class CommonTests(object):
         sub.unsubscribe(handle)
         sub.delete()
 
+    def test_subscribe_events_to_wrong_node(self):
+        sub = self.opc.create_subscription(100, sclt)
+        with self.assertRaises(Exception):
+            handle = sub.subscribe_events(self.opc.get_node("i=85"))
+        o = self.opc.get_objects_node()
+        v = o.add_variable(3, 'VariableNoEventNofierAttribute', 4)
+        with self.assertRaises(Exception):
+            handle = sub.subscribe_events(v)
+        sub.delete()
+
     def test_events_deprecated(self):
         msclt = MySubHandlerDeprecated()
         sub = self.opc.create_subscription(100, msclt)
