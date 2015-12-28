@@ -34,14 +34,14 @@ class SubHandler():
         Dummy subscription client
     '''
 
-    def data_change(self, handle, node, val, attr):
+    def datachange_notification(self, node, val, data):
         pass
 
-    def event(self, handle, event):
+    def event_notification(self, event):
         pass
 
 
-class MySubHandler():
+class MySubHandlerDeprecated():
 
     '''
     More advanced subscription client using Future, so we can wait for events in tests
@@ -59,16 +59,34 @@ class MySubHandler():
     def event(self, handle, event):
         self.future.set_result((handle, event))
 
+class MySubHandler():
+
+    '''
+    More advanced subscription client using Future, so we can wait for events in tests
+    '''
+
+    def __init__(self):
+        self.future = Future()
+
+    def reset(self):
+        self.future = Future()
+
+    def datachange_notification(self, node, val, data):
+        self.future.set_result((node, val, data))
+
+    def event_notification(self, event):
+        self.future.set_result(event)
+
 
 class MySubHandler2():
     def __init__(self):
         self.results = [] 
 
-    def data_change(self, handle, node, val, attr):
+    def datachange_notification(self, node, val, data):
         self.results.append((node, val))
 
-    def event(self, handle, event):
-        self.results.append((node, val))
+    def event_notification(self, event):
+        self.results.append(event)
 
 
 class Unit(unittest.TestCase):
@@ -366,9 +384,8 @@ class CommonTests(object):
         sub.unsubscribe(handle)
         sub.delete()
 
-    def test_events(self):
-        msclt = MySubHandler()
-        #cond = msclt.setup()
+    def test_events_deprecated(self):
+        msclt = MySubHandlerDeprecated()
         sub = self.opc.create_subscription(100, msclt)
         handle = sub.subscribe_events()
 
@@ -377,16 +394,34 @@ class CommonTests(object):
         ev.Message.Text = msg
         tid = datetime.now()
         ev.Time = tid
-        #ev.source_node = self.opc.get_server_node().nodeid
-        #ev.source_name = "our server node"
         ev.Severity = 500
         ev.trigger()
 
         clthandle, ev = msclt.future.result()
-        # with cond:
-        #ret = cond.wait(50000)
-        # if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
-        # else: pass # python2
+        self.assertIsNot(ev, None)  # we did not receive event
+        self.assertEqual(ev.Message.Text, msg)
+        #self.assertEqual(msclt.ev.Time, tid)
+        self.assertEqual(ev.Severity, 500)
+        self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
+
+        # time.sleep(0.1)
+        sub.unsubscribe(handle)
+        sub.delete()
+
+    def test_events(self):
+        msclt = MySubHandler()
+        sub = self.opc.create_subscription(100, msclt)
+        handle = sub.subscribe_events()
+
+        ev = Event(self.srv.iserver.isession)
+        msg = b"this is my msg "
+        ev.Message.Text = msg
+        tid = datetime.now()
+        ev.Time = tid
+        ev.Severity = 500
+        ev.trigger()
+
+        ev = msclt.future.result()
         self.assertIsNot(ev, None)  # we did not receive event
         self.assertEqual(ev.Message.Text, msg)
         #self.assertEqual(msclt.ev.Time, tid)
@@ -646,6 +681,46 @@ class CommonTests(object):
         for s in subs:
             s.delete()
 
+    def test_subscription_data_change_depcrecated(self):
+        '''
+        test subscriptions. This is far too complicated for
+        a unittest but, setting up subscriptions requires a lot
+        of code, so when we first set it up, it is best
+        to test as many things as possible
+        '''
+        msclt = MySubHandlerDeprecated()
+
+        o = self.opc.get_objects_node()
+
+        # subscribe to a variable
+        startv1 = [1, 2, 3]
+        v1 = o.add_variable(3, 'SubscriptionVariableDeprecatedV1', startv1)
+        sub = self.opc.create_subscription(100, msclt)
+        handle1 = sub.subscribe_data_change(v1)
+
+        # Now check we get the start value
+        clthandle, node, val, attr = msclt.future.result()
+        self.assertEqual(val, startv1)
+        self.assertEqual(node, v1)
+
+        msclt.reset()  # reset future object
+
+        # modify v1 and check we get value
+        v1.set_value([5])
+        clthandle, node, val, attr = msclt.future.result()
+
+        self.assertEqual(node, v1)
+        self.assertEqual(val, [5])
+
+        with self.assertRaises(Exception):
+            sub.unsubscribe(999)  # non existing handle
+        sub.unsubscribe(handle1)
+        with self.assertRaises(Exception):
+            sub.unsubscribe(handle1)  # second try should fail
+        sub.delete()
+        with self.assertRaises(Exception):
+            sub.unsubscribe(handle1)  # sub does not exist anymore
+
     def test_subscription_data_change(self):
         '''
         test subscriptions. This is far too complicated for
@@ -654,7 +729,6 @@ class CommonTests(object):
         to test as many things as possible
         '''
         msclt = MySubHandler()
-        #cond = msclt.setup()
 
         o = self.opc.get_objects_node()
 
@@ -665,11 +739,7 @@ class CommonTests(object):
         handle1 = sub.subscribe_data_change(v1)
 
         # Now check we get the start value
-        clthandle, node, val, attr = msclt.future.result()
-        # with cond:
-        #ret = cond.wait(0.5)
-        # if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
-        # else: pass # XXX
+        node, val, data = msclt.future.result()
         self.assertEqual(val, startv1)
         self.assertEqual(node, v1)
 
@@ -677,11 +747,8 @@ class CommonTests(object):
 
         # modify v1 and check we get value
         v1.set_value([5])
-        clthandle, node, val, attr = msclt.future.result()
-        # with cond:
-        #ret = cond.wait(0.5)
-        # if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
-        # else: pass # XXX
+        node, val, data = msclt.future.result()
+
         self.assertEqual(node, v1)
         self.assertEqual(val, [5])
 
@@ -713,7 +780,7 @@ class CommonTests(object):
         handle1 = sub.subscribe_data_change(v1)
 
         # Now check we get the start value
-        clthandle, node, val, attr = msclt.future.result()
+        node, val, data = msclt.future.result()
         self.assertEqual(val, startv1)
         self.assertEqual(node, v1)
 
@@ -721,7 +788,7 @@ class CommonTests(object):
 
         # modify v1 and check we get value
         v1.set_value(False)
-        clthandle, node, val, attr = msclt.future.result()
+        node, val, data = msclt.future.result()
         self.assertEqual(node, v1)
         self.assertEqual(val, False)
 
@@ -774,7 +841,7 @@ class CommonTests(object):
         sub = self.opc.create_subscription(200, msclt)
         handle = sub.subscribe_data_change(server_time_node)
 
-        clthandle, node, val, attr = msclt.future.result()
+        node, val, data = msclt.future.result()
         self.assertEqual(node, server_time_node)
         delta = datetime.now() - val
         self.assertTrue(delta < timedelta(seconds=2))

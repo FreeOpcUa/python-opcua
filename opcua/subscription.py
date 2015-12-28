@@ -30,14 +30,27 @@ class SubHandler(object):
         """
         pass
 
-    def event(self, handle, event):
+    def event_notification(self, event):
         """
         called for every event notfication from server
         """
         pass
 
+    def event(self, handle, event):
+        """
+        Deprecated use event_notification
+        """
+        pass
+
 
 class EventResult():
+    """
+    To be sent to clients for every events from server
+    """
+
+    def __init__(self):
+        self.server_handle = None
+
     def __str__(self):
         return "EventResult({})".format([str(k) + ":" + str(v) for k, v in self.__dict__.items()])
     __repr__ = __str__
@@ -57,14 +70,14 @@ class SubscriptionItemData():
 
 class DataChangeNotif():
     """
-    To be send to clients for every notification from server
+    To be send to clients for every datachange notification from server
     """
     def __init__(self, subscription_data, monitored_item):
         self.monitored_item = monitored_item
         self.subscription_data = subscription_data
 
     def __str__(self):
-        return "DataChangeNotfication({}, {})".format(self.suscription_data, self.monitored_item)
+        return "DataChangeNotfication({}, {})".format(self.subscription_data, self.monitored_item)
     __repr__ = __str__
 
 
@@ -129,7 +142,7 @@ class Subscription(object):
                 if hasattr(self._handler, "datachange_notification"):
                     event_data = DataChangeNotif(data, item)
                     self._handler.datachange_notification(data.node, item.Value.Value.Value, event_data)
-                elif hasattr(self._handler, "data_change"): 
+                elif hasattr(self._handler, "data_change"):  # deprecated API
                     self.logger.warning("data_change method is deprecated, use datavalue_changed")
                     self._handler.data_change(data.server_handle, data.node, item.Value.Value.Value, data.attribute)
                 else:
@@ -144,6 +157,7 @@ class Subscription(object):
             try:
                 #fields = {}
                 result = EventResult()
+                result.server_handle = data.server_handle
                 for idx, sattr in enumerate(data.mfilter.SelectClauses):
 
                     if len(sattr.BrowsePath) == 0:
@@ -151,8 +165,12 @@ class Subscription(object):
                         setattr(result, ua.AttributeIdsInv[sattr.AttributeId], event.EventFields[idx].Value)
                     else:
                         setattr(result, sattr.BrowsePath[0].Name, event.EventFields[idx].Value)
-                #self._handler.event(data.server_handle, fields)
-                self._handler.event(data.server_handle, result)
+                if hasattr(self._handler, "event_notification"):
+                    self._handler.event_notification(result)
+                elif hasattr(self._handler, "event"):  # depcrecated API
+                    self._handler.event(data.server_handle, result)
+                else:
+                    self.logger.error("Event subscription created but handler has no event_notification method")
             except Exception:
                 self.logger.exception("Exception calling event handler")
 

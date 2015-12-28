@@ -41,12 +41,12 @@ def add_minimum_args(parser):
                         help="Set socket timeout (NOT the diverse UA timeouts)")
 
 
-def add_common_args(parser):
+def add_common_args(parser, default_node='i=84'):
     add_minimum_args(parser)
     parser.add_argument("-n",
                         "--nodeid",
                         help="Fully-qualified node ID (for example: i=85). Default: root node",
-                        default='i=84',
+                        default=default_node,
                         metavar="NODE")
     parser.add_argument("-p",
                         "--path",
@@ -83,6 +83,15 @@ def client_security(security, url, timeout):
                 server_cert = ep.ServerCertificate
     return policy_class(server_cert, cert, pk, mode)
 
+
+def _require_nodeid(parser, args):
+    # check that a nodeid has been given explicitly, a bit hackish...
+    if args.nodeid == "i=84" and args.path == "":
+        parser.print_usage()
+        print("{}: error: A NodeId or BrowsePath is required".format(parser.prog))
+        sys.exit(1)
+
+
 def parse_args(parser, requirenodeid=False):
     args = parser.parse_args()
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
@@ -94,11 +103,8 @@ def parse_args(parser, requirenodeid=False):
             args.security = client_security(args.security, args.url, args.timeout)
         else:
             args.security = ua.SecurityPolicy()
-    # check that a nodeid has been given explicitly, a bit hackish...
-    if requirenodeid and args.nodeid == "i=84" and args.path == "":
-        parser.print_usage()
-        print("{}: error: A NodeId or BrowsePath is required".format(parser.prog))
-        sys.exit(1)
+    if requirenodeid:
+        _require_nodeid(parser, args)
     return args
 
 
@@ -360,11 +366,11 @@ def _lsprint_long(pnode, depth, indent=""):
 
 class SubHandler(object):
 
-    def data_change(self, handle, node, val, attr):
-        print("New data change event", handle, node, val, attr)
+    def datachange_notification(self, node, val, data):
+        print("New data change event", node, val, data)
 
-    def event(self, handle, event):
-        print("New event", handle, event)
+    def event_notification(self, event):
+        print("New event", event)
 
 
 def uasubscribe():
@@ -377,7 +383,13 @@ def uasubscribe():
                         choices=['datachange', 'event'],
                         help="Event type to subscribe to")
 
-    args = parse_args(parser, requirenodeid=True)
+    args = parse_args(parser, requirenodeid=False)
+    if args.eventtype == "datachange":
+        _require_nodeid(parser, args)
+    else:
+        # FIXME: this is broken, someone may have written i=84 on purpose
+        if args.nodeid == "i=84" and args.path == "":
+            args.nodeid = "i=2253"
 
     client = Client(args.url, timeout=args.timeout, security_policy=args.security)
     client.connect()
