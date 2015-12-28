@@ -108,7 +108,8 @@ class XMLParser(object):
         elif key == "IsAbstract":
             obj.abstract = val
         elif key == "EventNotifier":
-            obj.eventnotifier = True if val == "true" else False
+            print("Notfiier", key, val)
+            obj.eventnotifier = 1 if val == "1" else 0
         elif key == "ValueRank":
             obj.rank = int(val)
         elif key == "ArrayDimensions":
