@@ -61,26 +61,27 @@ class BinaryServer(object):
                 self._process_data(data)
 
             def _process_data(self, data):
+                buf = ua.utils.Buffer(data)
                 while True:
                     try:
-                        buf = ua.utils.Buffer(data[:])
-                        hdr = ua.Header.from_string(buf)
+                        backup_buf = buf.copy()
+                        try:
+                            hdr = ua.Header.from_string(buf)
+                        except ua.utils.NotEnoughData:
+                            logger.info("We did not receive enough data from client, waiting for more")
+                            self.data = backup_buf.read(len(backup_buf))
+                            return
                         if len(buf) < hdr.body_size:
-                            logger.warning("We did not receive enough data from server, waiting for more")
-                            self.data = data
+                            logger.info("We did not receive enough data from client, waiting for more")
+                            self.data = backup_buf.read(len(backup_buf))
                             return
                         ret = self.processor.process(hdr, buf)
                         if not ret:
                             logger.warning("processor returned False, we close connection from %s", self.peername)
                             self.transport.close()
                             return
-                        if len(data) <= hdr.packet_size:
+                        if len(buf) == 0:
                             return
-                        data = data[hdr.packet_size:]
-                    except ua.utils.NotEnoughData:
-                        logger.warning("Not a complete packet in data from client, waiting for more data")
-                        self.data = buf.data
-                        break
                     except Exception:
                         logger.exception("Exception raised while parsing message from client, closing")
                         self.transport.close()

@@ -10,7 +10,12 @@ except ImportError:  # support for python2
 from opcua import uaprotocol as ua
 from opcua import BinaryClient, Node, Subscription
 from opcua import utils
-from opcua import uacrypto
+use_crypto = True
+try:
+    from opcua import uacrypto
+except:
+    print("pycrypto is not installed, use of crypto disabled")
+    use_crypto = False
 
 
 class KeepAlive(Thread):
@@ -62,7 +67,7 @@ class Client(object):
     which offers a raw OPC-UA interface.
     """
 
-    def __init__(self, url, timeout=1):
+    def __init__(self, url, timeout=1, security_policy=ua.SecurityPolicy()):
         """
         used url argument to connect to server.
         if you are unsure of url, write at least hostname and port
@@ -77,18 +82,16 @@ class Client(object):
         self.description = self.name
         self.application_uri = "urn:freeopcua:client"
         self.product_uri = "urn:freeopcua.github.no:client"
-        self.security_policy_uri = "http://opcfoundation.org/UA/SecurityPolicy#None"
-        self.security_mode = ua.MessageSecurityMode.None_
+        self.security_policy = security_policy
         self.secure_channel_id = None
         self.default_timeout = 3600000
         self.secure_channel_timeout = self.default_timeout
         self.session_timeout = self.default_timeout
         self._policy_ids = []
-        self.server_certificate = ""
-        self.client_certificate = ""
-        self.private_key = ""
-        self.bclient = BinaryClient(timeout)
-        self._nonce = None
+        self.server_certificate = b""
+        self.client_certificate = b""
+        self.private_key = b""
+        self.bclient = BinaryClient(timeout, security_policy=security_policy)
         self._session_counter = 1
         self.keepalive = None
 
@@ -106,7 +109,7 @@ class Client(object):
         with open(path, "br") as f:
             self.private_key = f.read()
 
-    def get_server_endpoints(self):
+    def connect_and_get_server_endpoints(self):
         """
         Connect, ask server for endpoints, and disconnect
         """
@@ -118,19 +121,19 @@ class Client(object):
         self.disconnect_socket()
         return endpoints
 
-    def find_all_servers(self):
+    def connect_and_find_servers(self):
         """
         Connect, ask server for a list of known servers, and disconnect
         """
         self.connect_socket()
         self.send_hello()
-        self.open_secure_channel()
+        self.open_secure_channel()  # spec says it should not be necessary to open channel
         servers = self.find_servers()
         self.close_secure_channel()
         self.disconnect_socket()
         return servers
 
-    def find_all_servers_on_network(self):
+    def connect_and_find_servers_on_network(self):
         """
         Connect, ask server for a list of known servers on network, and disconnect
         """
@@ -141,8 +144,6 @@ class Client(object):
         self.close_secure_channel()
         self.disconnect_socket()
         return servers
-
-
 
     def connect(self):
         """
@@ -189,10 +190,12 @@ class Client(object):
         params.RequestType = ua.SecurityTokenRequestType.Issue
         if renew:
             params.RequestType = ua.SecurityTokenRequestType.Renew
-        params.SecurityMode = self.security_mode
+        params.SecurityMode = self.security_policy.Mode
         params.RequestedLifetime = self.secure_channel_timeout
-        params.ClientNonce = '\x00'
+        nonce = utils.create_nonce(self.security_policy.symmetric_key_size)   # length should be equal to the length of key of symmetric encryption
+        params.ClientNonce = nonce	# this nonce is used to create a symmetric key
         result = self.bclient.open_secure_channel(params)
+        self.security_policy.make_symmetric_key(nonce, result.ServerNonce)
         self.secure_channel_timeout = result.SecurityToken.RevisedLifetime
 
     def close_secure_channel(self):
@@ -203,8 +206,37 @@ class Client(object):
         params.EndpointUrl = self.server_url.geturl()
         return self.bclient.get_endpoints(params)
 
-    def find_servers(self):
+    def register_server(self, server, discovery_configuration=None):
+        """
+        register a server to discovery server
+        if discovery_configuration is provided, the newer register_server2 service call is used
+        """
+        serv = ua.RegisteredServer()
+        serv.ServerUri = server.application_uri
+        serv.ProductUri = server.product_uri
+        serv.DiscoveryUrls = [server.endpoint.geturl()]
+        serv.ServerType = server.application_type
+        serv.ServerNames = [ua.LocalizedText(server.name)]
+        serv.IsOnline = True
+        if discovery_configuration:
+            params = ua.RegisterServer2Parameters()
+            params.Server = serv
+            params.DiscoveryConfiguration = discovery_configuration
+            return self.bclient.register_server2(params)
+        else:
+            return self.bclient.register_server(serv)
+
+    def find_servers(self, uris=None):
+        """
+        send a FindServer request to the server. The answer should be a list of
+        servers the server knows about
+        A list of uris can be provided, only server having matching uris will be returned
+        """
+        if uris is None:
+            uris = []
         params = ua.FindServersParameters()
+        params.EndpointUrl = self.server_url.geturl()
+        params.ServerUris = uris 
         return self.bclient.find_servers(params)
 
     def find_servers_on_network(self):
@@ -219,18 +251,20 @@ class Client(object):
         desc.ApplicationType = ua.ApplicationType.Client
 
         params = ua.CreateSessionParameters()
-        params.ClientNonce = utils.create_nonce()
-        params.ClientCertificate = b''
+        nonce = utils.create_nonce(32)	# at least 32 random bytes for server to prove possession of private key (specs part 4, 5.6.2.2)
+        params.ClientNonce = nonce
+        params.ClientCertificate = self.security_policy.client_certificate
         params.ClientDescription = desc
         params.EndpointUrl = self.server_url.geturl()
         params.SessionName = self.description + " Session" + str(self._session_counter)
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0  # means no max size
-        params.ClientCertificate = self.client_certificate
         response = self.bclient.create_session(params)
+        self.security_policy.asymmetric_cryptography.verify(self.security_policy.client_certificate + nonce, response.ServerSignature.Signature)
+        self._server_nonce = response.ServerNonce
         self.server_certificate = response.ServerCertificate
         for ep in response.ServerEndpoints:
-            if ep.SecurityMode == self.security_mode:
+            if urlparse(ep.EndpointUrl).scheme == self.server_url.scheme and ep.SecurityMode == self.security_policy.Mode:
                 # remember PolicyId's: we will use them in activate_session()
                 self._policy_ids = ep.UserIdentityTokens
         self.session_timeout = response.RevisedSessionTimeout
@@ -238,18 +272,31 @@ class Client(object):
         self.keepalive.start()
         return response
 
+    def server_policy_id(self, token_type, default):
+        """
+        Find PolicyId of server's UserTokenPolicy by token_type.
+        Return default if there's no matching UserTokenPolicy.
+        """
+        for policy in self._policy_ids:
+            if policy.TokenType == token_type:
+                return policy.PolicyId
+        return default
+
     def activate_session(self, username=None, password=None, certificate=None):
         """
         Activate session using either username and password or private_key
         """
         params = ua.ActivateSessionParameters()
+        challenge = self.security_policy.server_certificate + self._server_nonce
+        params.ClientSignature.Algorithm = b"http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+        params.ClientSignature.Signature = self.security_policy.asymmetric_cryptography.signature(challenge)
         params.LocaleIds.append("en")
         if not username and not certificate:
             params.UserIdentityToken = ua.AnonymousIdentityToken()
-            params.UserIdentityToken.PolicyId = b"anonymous" 
+            params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Anonymous, b"anonymous")
         elif certificate:
             params.UserIdentityToken = ua.X509IdentityToken()
-            params.UserIdentityToken.PolicyId = b"certificate_basic256"  
+            params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Certificate, b"certificate_basic256")
             params.UserIdentityToken.CertificateData = certificate
             sig = uacrypto.sign_sha1(self.private_key, certificate)
             params.UserTokenSignature = ua.SignatureData()
@@ -262,7 +309,7 @@ class Client(object):
                 pubkey = uacrypto.pubkey_from_dercert(self.server_certificate)
                 data = uacrypto.encrypt_rsa_oaep(pubkey, bytes(password, "utf8"))
                 params.UserIdentityToken.Password = data
-            params.UserIdentityToken.PolicyId = b"username_basic256" 
+            params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")
             params.UserIdentityToken.EncryptionAlgorithm = 'http://www.w3.org/2001/04/xmlenc#rsa-oaep'
         return self.bclient.activate_session(params)
 
@@ -305,7 +352,7 @@ class Client(object):
         params.RequestedPublishingInterval = period
         params.RequestedLifetimeCount = 3000
         params.RequestedMaxKeepAliveCount = 10000
-        params.MaxNotificationsPerPublish = 4294967295
+        params.MaxNotificationsPerPublish = 10000
         params.PublishingEnabled = True
         params.Priority = 0
         return Subscription(self.bclient, params, handler)

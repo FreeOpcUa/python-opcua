@@ -59,11 +59,12 @@ if __name__ == "__main__":
     # logger.setLevel(logging.DEBUG)
     #logger = logging.getLogger("opcua.uaprocessor")
     # logger.setLevel(logging.DEBUG)
-    #logger = logging.getLogger("opcua.subscription_service")
-    # logger.setLevel(logging.DEBUG)
+    logger = logging.getLogger("opcua.subscription_service")
+    logger.setLevel(logging.DEBUG)
 
     # now setup our server
     server = Server()
+    #server.disable_clock()
     #server.set_endpoint("opc.tcp://localhost:4841/freeopcua/server/")
     server.set_endpoint("opc.tcp://0.0.0.0:4841/freeopcua/server/")
     server.set_server_name("FreeOpcUa Example Server")

@@ -6,6 +6,7 @@ from enum import Enum
 from datetime import datetime, timedelta, tzinfo
 from calendar import timegm
 import sys
+import os
 if sys.version_info.major > 2:
     unicode = str
 
@@ -52,64 +53,53 @@ def win_epoch_to_datetime(epch):
     return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch // 10)
 
 
-def uatype_to_fmt(uatype):
-    if uatype == "Char":
-        return "B"
-    elif uatype == "SByte":
-        return "B"
-    elif uatype == "Int6":
-        return "b"
-    elif uatype == "Int8":
-        return "b"
-    elif uatype == "Int16":
-        return "h"
-    elif uatype == "Int32":
-        return "i"
-    elif uatype == "Int64":
-        return "q"
-    elif uatype == "UInt8":
-        return "B"
-    elif uatype == "UInt16":
-        return "H"
-    elif uatype == "UInt32":
-        return "I"
-    elif uatype == "UInt64":
-        return "Q"
-    elif uatype == "Boolean":
-        return "?"
-    elif uatype == "Double":
-        return "d"
-    elif uatype == "Float":
-        return "f"
-    elif uatype == "Byte":
-        return "B"
+def build_array_format_py2(prefix, length, fmtchar):
+    return prefix + str(length) + fmtchar
+
+
+def build_array_format_py3(prefix, length, fmtchar):
+    return prefix + str(length) + chr(fmtchar)
+
+
+if sys.version_info.major < 3:
+    build_array_format = build_array_format_py2
+else:
+    build_array_format = build_array_format_py3
+
+
+def pack_uatype_array_primitive(st, value, length):
+    if length == 1:
+        return b'\x01\x00\x00\x00' + st.pack(value[0])
     else:
-        raise Exception("Error unknown uatype: " + uatype)
+        return struct.pack(build_array_format("<i", length, st.format[1]), length, *value)
 
 
 def pack_uatype_array(uatype, value):
     if value is None:
-        return struct.pack("<i", -1)
+        return b'\xff\xff\xff\xff'
+    length = len(value)
+    if length == 0:
+        return b'\x00\x00\x00\x00'
+    if uatype in uatype2struct:
+        return pack_uatype_array_primitive(uatype2struct[uatype], value, length)
     b = []
-    b.append(struct.pack("<i", len(value)))
+    b.append(uatype_Int32.pack(length))
     for val in value:
         b.append(pack_uatype(uatype, val))
     return b"".join(b)
 
 
 def pack_uatype(uatype, value):
-    if uatype == "Null":
+    if uatype in uatype2struct:
+        return uatype2struct[uatype].pack(value)
+    elif uatype == "Null":
         return b''
     elif uatype == "String":
         return pack_string(value)
     elif uatype in ("CharArray", "ByteString"):
         return pack_bytes(value)
     elif uatype == "DateTime":
-        epch = datetime_to_win_epoch(value)
-        return struct.pack('<q', epch)
-    elif uatype in UaTypes:
-        fmt = '<' + uatype_to_fmt(uatype)
-        return struct.pack(fmt, value)
+        return pack_datetime(value)
     elif uatype == "ExtensionObject":
         # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
         # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
@@ -119,19 +109,49 @@ def pack_uatype(uatype, value):
     else:
         return value.to_binary()
 
+uatype_Int8 = struct.Struct("<b")
+uatype_SByte = uatype_Int8
+uatype_Int16 = struct.Struct("<h")
+uatype_Int32 = struct.Struct("<i")
+uatype_Int64 = struct.Struct("<q")
+uatype_UInt8 = struct.Struct("<B")
+uatype_Char = uatype_UInt8
+uatype_Byte = uatype_UInt8
+uatype_UInt16 = struct.Struct("<H")
+uatype_UInt32 = struct.Struct("<I")
+uatype_UInt64 = struct.Struct("<Q")
+uatype_Boolean = struct.Struct("<?")
+uatype_Double = struct.Struct("<d")
+uatype_Float = struct.Struct("<f")
+
+uatype2struct = {
+    "Int8": uatype_Int8,
+    "SByte": uatype_SByte,
+    "Int16": uatype_Int16,
+    "Int32": uatype_Int32,
+    "Int64": uatype_Int64,
+    "UInt8": uatype_UInt8,
+    "Char": uatype_Char,
+    "Byte": uatype_Byte,
+    "UInt16": uatype_UInt16,
+    "UInt32": uatype_UInt32,
+    "UInt64": uatype_UInt64,
+    "Boolean": uatype_Boolean,
+    "Double": uatype_Double,
+    "Float": uatype_Float,
+}
+
 
 def unpack_uatype(uatype, data):
-    if uatype == "String":
+    if uatype in uatype2struct:
+        st = uatype2struct[uatype]
+        return st.unpack(data.read(st.size))[0]
+    elif uatype == "String":
         return unpack_string(data)
     elif uatype in ("CharArray", "ByteString"):
         return unpack_bytes(data)
     elif uatype == "DateTime":
-        epch = struct.unpack('<q', data.read(8))[0]
-        return win_epoch_to_datetime(epch)
-    elif uatype in UaTypes:
-        fmt = '<' + uatype_to_fmt(uatype)
-        size = struct.calcsize(fmt)
-        return struct.unpack(fmt, data.read(size))[0]
+        return unpack_datetime(data)
     elif uatype == "ExtensionObject":
         # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
         # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
@@ -139,15 +159,27 @@ def unpack_uatype(uatype, data):
         from opcua.uaprotocol_auto import extensionobject_from_binary
         return extensionobject_from_binary(data)
     else:
-        code = "{}.from_binary(data)".format(uatype)
-        tmp = eval(code)
-        return tmp
+        glbs = globals()
+        if uatype in glbs:
+            klass = glbs[uatype]
+            if hasattr(klass, 'from_binary'):
+                return klass.from_binary(data)
+        raise Exception("can not unpack unknown uatype %s" % uatype)
 
 
 def unpack_uatype_array(uatype, data):
-    length = struct.unpack('<i', data.read(4))[0]
+    length = uatype_Int32.unpack(data.read(4))[0]
     if length == -1:
         return None
+    elif length == 0:
+        return []
+    elif uatype in uatype2struct:
+        st = uatype2struct[uatype]
+        if length == 1:
+            return list(st.unpack(data.read(st.size)))
+        else:
+            arrst = struct.Struct(build_array_format("<", length, st.format[1]))
+            return list(arrst.unpack(data.read(arrst.size)))
     else:
         result = []
         for _ in range(0, length):
@@ -155,29 +187,43 @@ def unpack_uatype_array(uatype, data):
         return result
 
 
+def pack_datetime(value):
+    epch = datetime_to_win_epoch(value)
+    return uatype_Int64.pack(epch)
+
+
+def unpack_datetime(data):
+    epch = uatype_Int64.unpack(data.read(8))[0]
+    return win_epoch_to_datetime(epch)
+
+
 def pack_string(string):
     if type(string) is unicode:
         string = string.encode('utf-8')
     length = len(string)
     if length == 0:
-        return struct.pack("<i", -1)
-    return struct.pack("<i", length) + string
+        return b'\xff\xff\xff\xff'
+    return uatype_Int32.pack(length) + string
 
 pack_bytes = pack_string
 
 
 def unpack_bytes(data):
-    length = struct.unpack("<i", data.read(4))[0]
+    length = uatype_Int32.unpack(data.read(4))[0]
     if length == -1:
         return b''
     return data.read(length)
 
 
-def unpack_string(data):
+def py3_unpack_string(data):
     b = unpack_bytes(data)
-    if sys.version_info.major < 3:
-        return str(b)
     return b.decode("utf-8")
+
+
+if sys.version_info.major < 3:
+    unpack_string = unpack_bytes
+else:
+    unpack_string = py3_unpack_string
 
 
 def test_bit(data, offset):
@@ -190,27 +236,34 @@ def set_bit(data, offset):
     return data | mask
 
 
-class FrozenClass(object):
+class _FrozenClass(object):
 
     """
     make it impossible to add members to a class.
     This is a hack since I found out that most bugs are due to misspelling a variable in protocol
     """
-    __isfrozen = False
+    _freeze = False
 
     def __setattr__(self, key, value):
-        if self.__isfrozen and not hasattr(self, key):
+        if self._freeze and not hasattr(self, key):
             raise TypeError("Error adding member '{}' to class '{}', class is frozen, members are {}".format(key, self.__class__.__name__, self.__dict__.keys()))
         object.__setattr__(self, key, value)
 
-    def _freeze(self):
-        self.__isfrozen = True
+if "PYOPCUA_NO_TYPO_CHECK" in os.environ:
+    # typo check is cpu consuming, but it will make debug easy.
+    # if typo check is not need (in production), please set env PYOPCUA_NO_TYPO_CHECK.
+    # this will make all uatype class inherit from object intead of _FrozenClass
+    # and skip the typo check.
+    FrozenClass = object
+else:
+    FrozenClass = _FrozenClass
 
 
-class Guid(object):
+class Guid(FrozenClass):
 
     def __init__(self):
         self.uuid = uuid.uuid4()
+        self._freeze = True
 
     def to_binary(self):
         return self.uuid.bytes
@@ -239,13 +292,14 @@ class StatusCode(FrozenClass):
     def __init__(self, value=0):
         self.value = value
         self.name, self.doc = status_code.get_name_and_doc(value)
+        self._freeze = True
 
     def to_binary(self):
-        return struct.pack("<I", self.value)
+        return uatype_UInt32.pack(self.value)
 
     @staticmethod
     def from_binary(data):
-        val = struct.unpack("<I", data.read(4))[0]
+        val = uatype_UInt32.unpack(data.read(4))[0]
         sc = StatusCode(val)
         return sc
 
@@ -306,6 +360,7 @@ class NodeId(FrozenClass):
         self.NodeIdType = nodeidtype
         self.NamespaceUri = ""
         self.ServerIndex = 0
+        self._freeze = True
         if self.Identifier is None:
             self.Identifier = 0
             self.NodeIdType = NodeIdType.TwoByte
@@ -400,45 +455,42 @@ class NodeId(FrozenClass):
     __repr__ = __str__
 
     def to_binary(self):
-        b = []
-        b.append(struct.pack("<B", self.NodeIdType))
         if self.NodeIdType == NodeIdType.TwoByte:
-            b.append(struct.pack("<B", self.Identifier))
+            return struct.pack("<BB", self.NodeIdType, self.Identifier)
         elif self.NodeIdType == NodeIdType.FourByte:
-            b.append(struct.pack("<BH", self.NamespaceIndex, self.Identifier))
+            return struct.pack("<BBH", self.NodeIdType, self.NamespaceIndex, self.Identifier)
         elif self.NodeIdType == NodeIdType.Numeric:
-            b.append(struct.pack("<HI", self.NamespaceIndex, self.Identifier))
+            return struct.pack("<BHI", self.NodeIdType, self.NamespaceIndex, self.Identifier)
         elif self.NodeIdType == NodeIdType.String:
-            b.append(struct.pack("<H", self.NamespaceIndex))
-            b.append(pack_string(self.Identifier))
+            return struct.pack("<BH", self.NodeIdType, self.NamespaceIndex) + \
+                pack_string(self.Identifier)
         elif self.NodeIdType == NodeIdType.ByteString:
-            b.append(struct.pack("<H", self.NamespaceIndex))
-            b.append(pack_bytes(self.Identifier))
+            return struct.pack("<BH", self.NodeIdType, self.NamespaceIndex) + \
+                pack_bytes(self.Identifier)
         else:
-            b.append(struct.pack("<H", self.NamespaceIndex))
-            b.append(self.Identifier.to_binary())
-        return b"".join(b)
+            return struct.pack("<BH", self.NodeIdType, self.NamespaceIndex) + \
+                self.Identifier.to_binary()
 
     @staticmethod
     def from_binary(data):
         nid = NodeId()
-        encoding = struct.unpack("<B", data.read(1))[0]
+        encoding = ord(data.read(1))
         nid.NodeIdType = encoding & 0b00111111
 
         if nid.NodeIdType == NodeIdType.TwoByte:
-            nid.Identifier = struct.unpack("<B", data.read(1))[0]
+            nid.Identifier = ord(data.read(1))
         elif nid.NodeIdType == NodeIdType.FourByte:
             nid.NamespaceIndex, nid.Identifier = struct.unpack("<BH", data.read(3))
         elif nid.NodeIdType == NodeIdType.Numeric:
             nid.NamespaceIndex, nid.Identifier = struct.unpack("<HI", data.read(6))
         elif nid.NodeIdType == NodeIdType.String:
-            nid.NamespaceIndex = struct.unpack("<H", data.read(2))[0]
+            nid.NamespaceIndex = uatype_UInt16.unpack(data.read(2))[0]
             nid.Identifier = unpack_string(data)
         elif nid.NodeIdType == NodeIdType.ByteString:
-            nid.NamespaceIndex = struct.unpack("<H", data.read(2))[0]
+            nid.NamespaceIndex = uatype_UInt16.unpack(data.read(2))[0]
             nid.Identifier = unpack_bytes(data)
         elif nid.NodeIdType == NodeIdType.Guid:
-            nid.NamespaceIndex = struct.unpack("<H", data.read(2))[0]
+            nid.NamespaceIndex = uatype_UInt16.unpack(data.read(2))[0]
             nid.Identifier = Guid.from_binary(data)
         else:
             raise Exception("Unknown NodeId encoding: " + str(nid.NodeIdType))
@@ -446,7 +498,7 @@ class NodeId(FrozenClass):
         if test_bit(encoding, 6):
             nid.NamespaceUri = unpack_string(data)
         if test_bit(encoding, 7):
-            nid.ServerIndex = struct.unpack("<I", data.read(4))[0]
+            nid.ServerIndex = uatype_UInt32.unpack(data.read(4))[0]
 
         return nid
 
@@ -499,6 +551,7 @@ class QualifiedName(FrozenClass):
     def __init__(self, name="", namespaceidx=0):
         self.NamespaceIndex = namespaceidx
         self.Name = name
+        self._freeze = True
 
     def to_string(self):
         return "{}:{}".format(self.NamespaceIndex, self.Name)
@@ -514,16 +567,14 @@ class QualifiedName(FrozenClass):
 
     def to_binary(self):
         packet = []
-        fmt = '<H'
-        packet.append(struct.pack(fmt, self.NamespaceIndex))
+        packet.append(uatype_UInt16.pack(self.NamespaceIndex))
         packet.append(pack_string(self.Name))
         return b''.join(packet)
 
     @staticmethod
     def from_binary(data):
         obj = QualifiedName()
-        fmt = '<H'
-        obj.NamespaceIndex = struct.unpack(fmt, data.read(2))[0]
+        obj.NamespaceIndex = uatype_UInt16.unpack(data.read(2))[0]
         obj.Name = unpack_string(data)
         return obj
 
@@ -550,7 +601,7 @@ class LocalizedText(FrozenClass):
         if self.Text:
             self.Encoding |= (1 << 1)
         self.Locale = b''
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -558,21 +609,21 @@ class LocalizedText(FrozenClass):
             self.Encoding |= (1 << 0)
         if self.Text:
             self.Encoding |= (1 << 1)
-        packet.append(pack_uatype('UInt8', self.Encoding))
+        packet.append(uatype_UInt8.pack(self.Encoding))
         if self.Locale:
-            packet.append(pack_uatype('CharArray', self.Locale))
+            packet.append(pack_bytes(self.Locale))
         if self.Text:
-            packet.append(pack_uatype('CharArray', self.Text))
+            packet.append(pack_bytes(self.Text))
         return b''.join(packet)
 
     @staticmethod
     def from_binary(data):
         obj = LocalizedText()
-        obj.Encoding = unpack_uatype('UInt8', data)
+        obj.Encoding = ord(data.read(1))
         if obj.Encoding & (1 << 0):
-            obj.Locale = unpack_uatype('CharArray', data)
+            obj.Locale = unpack_bytes(data)
         if obj.Encoding & (1 << 1):
-            obj.Text = unpack_uatype('CharArray', data)
+            obj.Text = unpack_bytes(data)
         return obj
 
     def to_string(self):
@@ -589,7 +640,6 @@ class LocalizedText(FrozenClass):
         if isinstance(other, LocalizedText) and self.Locale == other.Locale and self.Text == other.Text:
             return True
         return False
-
 
 
 class VariantType(Enum):
@@ -669,8 +719,8 @@ class Variant(FrozenClass):
     :vartype VariantType: VariantType
     """
 
-    def __init__(self, value=None, varianttype=None):
-        self.Encoding = 0
+    def __init__(self, value=None, varianttype=None, encoding=0):
+        self.Encoding = encoding
         self.Value = value
         self.VariantType = varianttype
         if isinstance(value, Variant):
@@ -683,6 +733,7 @@ class Variant(FrozenClass):
                 self.VariantType = self._guess_type(self.Value[0])
             else:
                 self.VariantType = self._guess_type(self.Value)
+        self._freeze = True
 
     def __eq__(self, other):
         if isinstance(other, Variant) and self.VariantType == other.VariantType and self.Value == other.Value:
@@ -723,25 +774,24 @@ class Variant(FrozenClass):
         self.Encoding = (self.VariantType.value | mask)
         if type(self.Value) in (list, tuple):
             self.Encoding |= (1 << 7)
+            b.append(uatype_UInt8.pack(self.Encoding))
             b.append(pack_uatype_array(self.VariantType.name, self.Value))
         else:
+            b.append(uatype_UInt8.pack(self.Encoding))
             b.append(pack_uatype(self.VariantType.name, self.Value))
-        b.insert(0, struct.pack("<B", self.Encoding))
         return b"".join(b)
 
     @staticmethod
     def from_binary(data):
-        obj = Variant()
-        obj.Encoding = unpack_uatype('UInt8', data)
-        val = obj.Encoding & 0b01111111
-        obj.VariantType = VariantType(val)
-        if obj.VariantType == VariantType.Null:
-            return obj
-        if obj.Encoding & (1 << 7):
-            obj.Value = unpack_uatype_array(obj.VariantType.name, data)
+        encoding = ord(data.read(1))
+        vtype = VariantType(encoding & 0b01111111)
+        if vtype == VariantType.Null:
+            return Variant(None, vtype, encoding)
+        if encoding & (1 << 7):
+            value = unpack_uatype_array(vtype.name, data)
         else:
-            obj.Value = unpack_uatype(obj.VariantType.name, data)
-        return obj
+            value = unpack_uatype(vtype.name, data)
+        return Variant(value, vtype, encoding)
 
 
 class DataValue(FrozenClass):
@@ -765,16 +815,20 @@ class DataValue(FrozenClass):
 
     '''
 
-    def __init__(self, variant=None):
+    def __init__(self, variant=None, status=None):
         self.Encoding = 0
         if not isinstance(variant, Variant):
             variant = Variant(variant)
         self.Value = variant
-        self.StatusCode = StatusCode()
+        if status is None:
+            self.StatusCode = StatusCode()
+        else:
+            self.StatusCode = status
         self.SourceTimestamp = None  # DateTime()
         self.SourcePicoseconds = None
         self.ServerTimestamp = None  # DateTime()
         self.ServerPicoseconds = None
+        self._freeze = True
 
     def to_binary(self):
         packet = []
@@ -790,37 +844,42 @@ class DataValue(FrozenClass):
             self.Encoding |= (1 << 4)
         if self.ServerPicoseconds:
             self.Encoding |= (1 << 5)
-        packet.append(pack_uatype('UInt8', self.Encoding))
+        packet.append(uatype_UInt8.pack(self.Encoding))
         if self.Value:
             packet.append(self.Value.to_binary())
         if self.StatusCode:
             packet.append(self.StatusCode.to_binary())
         if self.SourceTimestamp:
-            packet.append(pack_uatype('DateTime', self.SourceTimestamp))  # self.SourceTimestamp.to_binary())
+            packet.append(pack_datetime(self.SourceTimestamp))  # self.SourceTimestamp.to_binary())
         if self.ServerTimestamp:
-            packet.append(pack_uatype('DateTime', self.ServerTimestamp))  # self.ServerTimestamp.to_binary())
+            packet.append(pack_datetime(self.ServerTimestamp))  # self.ServerTimestamp.to_binary())
         if self.SourcePicoseconds:
-            packet.append(pack_uatype('UInt16', self.SourcePicoseconds))
+            packet.append(uatype_UInt16.pack(self.SourcePicoseconds))
         if self.ServerPicoseconds:
-            packet.append(pack_uatype('UInt16', self.ServerPicoseconds))
+            packet.append(uatype_UInt16.pack(self.ServerPicoseconds))
         return b''.join(packet)
 
     @staticmethod
     def from_binary(data):
-        obj = DataValue()
-        obj.Encoding = unpack_uatype('UInt8', data)
-        if obj.Encoding & (1 << 0):
-            obj.Value = Variant.from_binary(data)
-        if obj.Encoding & (1 << 1):
-            obj.StatusCode = StatusCode.from_binary(data)
+        encoding = ord(data.read(1))
+        if encoding & (1 << 0):
+            value = Variant.from_binary(data)
+        else:
+            value = None
+        if encoding & (1 << 1):
+            status = StatusCode.from_binary(data)
+        else:
+            status = None
+        obj = DataValue(value, status)
+        obj.Encoding = encoding
         if obj.Encoding & (1 << 2):
-            obj.SourceTimestamp = unpack_uatype('DateTime', data)  # DateTime.from_binary(data)
+            obj.SourceTimestamp = unpack_datetime(data)  # DateTime.from_binary(data)
         if obj.Encoding & (1 << 3):
-            obj.ServerTimestamp = unpack_uatype('DateTime', data)  # DateTime.from_binary(data)
+            obj.ServerTimestamp = unpack_datetime(data)  # DateTime.from_binary(data)
         if obj.Encoding & (1 << 4):
-            obj.SourcePicoseconds = unpack_uatype('UInt16', data)
+            obj.SourcePicoseconds = uatype_UInt16.unpack(data.read(2))[0]
         if obj.Encoding & (1 << 5):
-            obj.ServerPicoseconds = unpack_uatype('UInt16', data)
+            obj.ServerPicoseconds = uatype_UInt16.unpack(data.read(2))[0]
         return obj
 
     def __str__(self):
@@ -848,5 +907,3 @@ def generate_nodeid(idx):
     global __nodeid_counter
     __nodeid_counter += 1
     return NodeId(__nodeid_counter, idx)
-
-

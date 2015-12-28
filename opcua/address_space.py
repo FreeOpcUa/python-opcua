@@ -136,7 +136,7 @@ class ViewService(object):
     def _translate_browsepath_to_nodeid(self, path):
         self.logger.debug("looking at path: %s", path)
         res = ua.BrowsePathResult()
-        if not path.StartingNode in self._aspace:
+        if path.StartingNode not in self._aspace:
             res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdInvalid)
             return res
         current = path.StartingNode
@@ -193,7 +193,7 @@ class NodeManagementService(object):
         if item.ParentNodeId == ua.NodeId():
             #self.logger.warning("add_node: creating node %s without parent", item.RequestedNewNodeId)
             pass
-        elif not item.ParentNodeId in self._aspace:
+        elif item.ParentNodeId not in self._aspace:
             #self.logger.warning("add_node: while adding node %s, requested parent node %s does not exists", item.RequestedNewNodeId, item.ParentNodeId)
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
             return result
@@ -365,7 +365,7 @@ class AddressSpace(object):
     def get_attribute_value(self, nodeid, attr):
         with self._lock:
             #self.logger.debug("get attr val: %s %s", nodeid, attr)
-            if not nodeid in self._nodes:
+            if nodeid not in self._nodes:
                 dv = ua.DataValue()
                 dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
                 return dv
@@ -382,10 +382,10 @@ class AddressSpace(object):
     def set_attribute_value(self, nodeid, attr, value):
         with self._lock:
             self.logger.debug("set attr val: %s %s %s", nodeid, attr, value)
-            if not nodeid in self._nodes:
+            if nodeid not in self._nodes:
                 return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
             node = self._nodes[nodeid]
-            if not attr in node.attributes:
+            if attr not in node.attributes:
                 return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
             if not value.SourceTimestamp:
                 value.SourceTimestamp = datetime.now()
@@ -393,23 +393,27 @@ class AddressSpace(object):
                 value.ServerTimestamp = datetime.now()
 
             attval = node.attributes[attr]
+            old = attval.value
             attval.value = value
-            if attval.value_callback:
-                return attval.value_callback(nodeid, attr, value)
-            for k, v in attval.datachange_callbacks.items():
-                try:
-                    v(k, value)
-                except Exception as ex:
-                    self.logger.exception("Error calling datachange callback %s, %s, %s", k, v, ex)
-            return ua.StatusCode()
+            cbs = []
+            if old.Value != value.Value:  # only send call callback when a value change has happend
+                cbs = list(attval.datachange_callbacks.items())
+
+        for k, v in cbs:
+            try:
+                v(k, value)
+            except Exception as ex:
+                self.logger.exception("Error calling datachange callback %s, %s, %s", k, v, ex)
+
+        return ua.StatusCode()
 
     def add_datachange_callback(self, nodeid, attr, callback):
         with self._lock:
             self.logger.debug("set attr callback: %s %s %s", nodeid, attr, callback)
-            if not nodeid in self._nodes:
+            if nodeid not in self._nodes:
                 return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown), 0
             node = self._nodes[nodeid]
-            if not attr in node.attributes:
+            if attr not in node.attributes:
                 return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid), 0
             attval = node.attributes[attr]
             self._datachange_callback_counter += 1
@@ -427,4 +431,3 @@ class AddressSpace(object):
         with self._lock:
             node = self._nodes[methodid]
             node.call = callback
-

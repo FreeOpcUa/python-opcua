@@ -1,16 +1,28 @@
+
 def extensionobject_from_binary(data):
     """
     Convert binary-coded ExtensionObject to a Python object.
     Returns an object, or None if TypeId is zero
     """
     TypeId = NodeId.from_binary(data)
-    Encoding = unpack_uatype('UInt8', data)
+    Encoding = ord(data.read(1))
+    body = None
     if Encoding & (1 << 0):
-        Body = unpack_uatype('ByteString', data)
+        length = uatype_Int32.unpack(data.read(4))[0]
+        if length < 1:
+            body = Buffer(b"")
+        else:
+            body = data.copy(length)
+            data.skip(length)
     if TypeId.Identifier == 0:
         return None
+    elif TypeId.Identifier not in ExtensionClasses:
+        raise Exception("unknown ExtensionObject Type: {}".format(TypeId))
     klass = ExtensionClasses[TypeId.Identifier]
-    return klass.from_binary(Buffer(Body))
+    if body is None:
+        raise Exception("parsing ExtensionObject {} without data".format(klass.__name__))
+    return klass.from_binary(body)
+
 
 def extensionobject_to_binary(obj):
     """
@@ -27,7 +39,7 @@ def extensionobject_to_binary(obj):
         Body = obj.to_binary()
     packet = []
     packet.append(TypeId.to_binary())
-    packet.append(pack_uatype('UInt8', Encoding))
+    packet.append(uatype_UInt8.pack(Encoding))
     if Body:
-        packet.append(pack_uatype('ByteString', Body))
+        packet.append(pack_bytes(Body))
     return b''.join(packet)

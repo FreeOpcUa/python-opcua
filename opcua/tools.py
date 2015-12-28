@@ -19,6 +19,7 @@ from opcua import Client
 from opcua import Server
 from opcua import Node
 from opcua import uamethod
+from opcua import security_policies
 
 
 def add_minimum_args(parser):
@@ -40,12 +41,12 @@ def add_minimum_args(parser):
                         help="Set socket timeout (NOT the diverse UA timeouts)")
 
 
-def add_common_args(parser):
+def add_common_args(parser, default_node='i=84'):
     add_minimum_args(parser)
     parser.add_argument("-n",
                         "--nodeid",
                         help="Fully-qualified node ID (for example: i=85). Default: root node",
-                        default='i=84',
+                        default=default_node,
                         metavar="NODE")
     parser.add_argument("-p",
                         "--path",
@@ -58,12 +59,60 @@ def add_common_args(parser):
                         type=int,
                         default=0,
                         metavar="NAMESPACE")
+    parser.add_argument("--security",
+                        help="Security settings, for example: Basic256,SignAndEncrypt,cert.der,pk.pem[,server_cert.der]. Default: None",
+                        default='')
+
+
+def client_security(security, url, timeout):
+    parts = security.split(',')
+    if len(parts) < 4:
+        raise Exception('Wrong format: `{}`, expected at least 4 comma-separated values'.format(security))
+    policy_class = getattr(security_policies, 'SecurityPolicy' + parts[0])
+    mode = getattr(ua.MessageSecurityMode, parts[1])
+    cert = open(parts[2], 'rb').read()
+    pk = open(parts[3], 'rb').read()
+    server_cert = None
+    if len(parts) == 5:
+        server_cert = open(parts[4], 'rb').read()
+    else:
+        # we need server's certificate too. Let's get it from the list of endpoints
+        client = Client(url, timeout=timeout)
+        for ep in client.connect_and_get_server_endpoints():
+            if ep.EndpointUrl.startswith(ua.OPC_TCP_SCHEME) and ep.SecurityMode == mode and ep.SecurityPolicyUri == policy_class.URI:
+                server_cert = ep.ServerCertificate
+    return policy_class(server_cert, cert, pk, mode)
+
+
+def _require_nodeid(parser, args):
+    # check that a nodeid has been given explicitly, a bit hackish...
+    if args.nodeid == "i=84" and args.path == "":
+        parser.print_usage()
+        print("{}: error: A NodeId or BrowsePath is required".format(parser.prog))
+        sys.exit(1)
+
+
+def parse_args(parser, requirenodeid=False):
+    args = parser.parse_args()
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+    if args.url and '://' not in args.url:
+        logging.info("Adding default scheme %s to URL %s", ua.OPC_TCP_SCHEME, args.url)
+        args.url = ua.OPC_TCP_SCHEME + '://' + args.url
+    if hasattr(args, 'security'):
+        if args.security:
+            args.security = client_security(args.security, args.url, args.timeout)
+        else:
+            args.security = ua.SecurityPolicy()
+    if requirenodeid:
+        _require_nodeid(parser, args)
+    return args
 
 
 def get_node(client, args):
     node = client.get_node(args.nodeid)
     if args.path:
         node = node.get_child(args.path.split(","))
+    return node
 
 
 def uaread():
@@ -82,19 +131,12 @@ def uaread():
                         choices=['python', 'variant', 'datavalue'],
                         help="Data type to return")
 
-    args = parser.parse_args()
-    if args.nodeid == "i=84" and args.path == "" and args.attribute == ua.AttributeIds.Value:
-        parser.print_usage()
-        print("uaread: error: A NodeId or BrowsePath is required")
-        sys.exit(1)
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+    args = parse_args(parser, requirenodeid=True)
 
-    client = Client(args.url, timeout=args.timeout)
+    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         attr = node.get_attribute(args.attribute)
         if args.datatype == "python":
             print(attr.Value.Value)
@@ -197,7 +239,7 @@ def _val_to_variant(val, args):
     elif args.datatype in ("qualifiedname", "browsename"):
         return _arg_to_variant(val, array, ua.QualifiedName.from_string, ua.VariantType.QualifiedName)
     elif args.datatype == "LocalizedText":
-        return _arg_to_variant(val, array, ua.LocalizedText, ua.VariantTypeLocalizedText)
+        return _arg_to_variant(val, array, ua.LocalizedText, ua.VariantType.LocalizedText)
 
 
 def uawrite():
@@ -225,19 +267,12 @@ def uawrite():
     parser.add_argument("value",
                         help="Value to be written",
                         metavar="VALUE")
-    args = parser.parse_args()
-    if args.nodeid == "i=84" and args.path == "" and args.attribute == ua.AttributeIds.Value:
-        parser.print_usage()
-        print("uaread: error: A NodeId or BrowsePath is required")
-        sys.exit(1)
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+    args = parse_args(parser, requirenodeid=True)
 
-    client = Client(args.url, timeout=args.timeout)
+    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         val = _val_to_variant(args.value, args)
         node.set_attribute(args.attribute, ua.DataValue(val))
     finally:
@@ -261,17 +296,14 @@ def uals():
                         type=int,
                         help="Browse depth")
 
-    args = parser.parse_args()
+    args = parse_args(parser)
     if args.long_format is None:
         args.long_format = 1
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
-    client = Client(args.url, timeout=args.timeout)
+    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         print("Browsing node {} at {}\n".format(node, args.url))
         if args.long_format == 0:
             _lsprint_0(node, args.depth - 1)
@@ -334,11 +366,11 @@ def _lsprint_long(pnode, depth, indent=""):
 
 class SubHandler(object):
 
-    def data_change(self, handle, node, val, attr):
-        print("New data change event", handle, node, val, attr)
+    def datachange_notification(self, node, val, data):
+        print("New data change event", node, val, data)
 
-    def event(self, handle, event):
-        print("New event", handle, event)
+    def event_notification(self, event):
+        print("New event", event)
 
 
 def uasubscribe():
@@ -351,19 +383,18 @@ def uasubscribe():
                         choices=['datachange', 'event'],
                         help="Event type to subscribe to")
 
-    args = parser.parse_args()
-    if args.nodeid == "i=84" and args.path == "":
-        parser.print_usage()
-        print("uaread: error: The NodeId or BrowsePath of a variable is required")
-        sys.exit(1)
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+    args = parse_args(parser, requirenodeid=False)
+    if args.eventtype == "datachange":
+        _require_nodeid(parser, args)
+    else:
+        # FIXME: this is broken, someone may have written i=84 on purpose
+        if args.nodeid == "i=84" and args.path == "":
+            args.nodeid = "i=2253"
 
-    client = Client(args.url, timeout=args.timeout)
+    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         handler = SubHandler()
         sub = client.create_subscription(500, handler)
         if args.eventtype == "datachange":
@@ -439,21 +470,18 @@ def uaclient():
     parser.add_argument("-k",
                         "--private_key",
                         help="set client private key")
-    args = parser.parse_args()
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+    args = parse_args(parser)
 
-    client = Client(args.url, timeout=args.timeout)
+    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
     client.connect()
     if args.certificate:
-        client.load_certificate(args.certificate)
+        client.load_client_certificate(args.certificate)
     if args.private_key:
-        client.load_certificate(args.private_key)
+        client.load_private_key(args.private_key)
     try:
         root = client.get_root_node()
         objects = client.get_objects_node()
-        mynode = client.get_node(args.nodeid)
-        if args.path:
-            mynode = mynode.get_child(args.path.split(","))
+        mynode = get_node(client, args)
         embed()
     finally:
         client.disconnect()
@@ -466,7 +494,7 @@ def uaserver():
     parser.add_argument("-u",
                         "--url",
                         help="URL of OPC UA server, default is opc.tcp://0.0.0.0:4841",
-                        default='opc.tcp://0.0.0:4841',
+                        default='opc.tcp://0.0.0.0:4841',
                         metavar="URL")
     parser.add_argument("-v",
                         "--verbose",
@@ -482,6 +510,10 @@ def uaserver():
                         "--populate",
                         action="store_false",
                         help="Populate address space with some sample nodes")
+    parser.add_argument("-c",
+                        "--disable-clock",
+                        action="store_true",
+                        help="Disable clock, to avoid seeing many write if debugging an application")
     parser.add_argument("-s",
                         "--shell",
                         action="store_true",
@@ -491,6 +523,7 @@ def uaserver():
 
     server = Server()
     server.set_endpoint(args.url)
+    server.disable_clock(args.disable_clock)
     server.set_server_name("FreeOpcUa Example Server")
     if args.xml:
         server.import_xml(args.xml)
@@ -527,9 +560,6 @@ def uaserver():
     sys.exit(0)
 
 
-
-
-
 def uadiscover():
     parser = argparse.ArgumentParser(description="Performs OPC UA discovery and prints information on servers and endpoints.")
     add_minimum_args(parser)
@@ -545,28 +575,26 @@ def uadiscover():
                         #"--endpoints",
                         #action="store_false",
                         #help="send a GetEndpoints request to server")
-    args = parser.parse_args()
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+    args = parse_args(parser)
     
+    client = Client(args.url, timeout=args.timeout)
+
     if args.network:
-        client = Client(args.url, timeout=args.timeout)
         print("Performing discovery at {}\n".format(args.url))
-        for i, server in enumerate(client.find_all_servers_on_network(), start=1):
+        for i, server in enumerate(client.connect_and_find_servers_on_network(), start=1):
             print('Server {}:'.format(i))
             #for (n, v) in application_to_strings(server):
                 #print('  {}: {}'.format(n, v))
             print('')
 
-    client = Client(args.url, timeout=args.timeout)
     print("Performing discovery at {}\n".format(args.url))
-    for i, server in enumerate(client.find_all_servers(), start=1):
+    for i, server in enumerate(client.connect_and_find_servers(), start=1):
         print('Server {}:'.format(i))
         for (n, v) in application_to_strings(server):
             print('  {}: {}'.format(n, v))
         print('')
 
-    client = Client(args.url, timeout=args.timeout)
-    for i, ep in enumerate(client.get_server_endpoints(), start=1):
+    for i, ep in enumerate(client.connect_and_get_server_endpoints(), start=1):
         print('Endpoint {}:'.format(i))
         for (n, v) in endpoint_to_strings(ep):
             print('  {}: {}'.format(n, v))
@@ -603,19 +631,12 @@ def uahistoryread():
                         default="",
                         help="End time, formatted as YYYY-MM-DD [HH:MM[:SS]]. Default: current time")
 
-    args = parser.parse_args()
-    if args.nodeid == "i=84" and args.path == "":
-        parser.print_usage()
-        print("uahistoryread: error: A NodeId or BrowsePath is required")
-        sys.exit(1)
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
+    args = parse_args(parser, requirenodeid=True)
 
-    client = Client(args.url, timeout=args.timeout)
+    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
     client.connect()
     try:
-        node = client.get_node(args.nodeid)
-        if args.path:
-            node = node.get_child(args.path.split(","))
+        node = get_node(client, args)
         starttime = str_to_datetime(args.starttime)
         endtime = str_to_datetime(args.endtime)
         print("Reading raw history of node {} at {}; start at {}, end at {}\n".format(node, args.url, starttime, endtime))

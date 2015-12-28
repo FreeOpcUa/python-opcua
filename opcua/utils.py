@@ -1,5 +1,5 @@
 import logging
-import uuid
+import os
 from concurrent.futures import Future
 import functools
 import threading
@@ -25,45 +25,55 @@ class Buffer(object):
     and added a few conveniance methods
     """
 
-    def __init__(self, data):
-        self.logger = logging.getLogger(__name__)
-        self.data = data
+    def __init__(self, data, start_pos=0, size=-1):
+        # self.logger = logging.getLogger(__name__)
+        self._data = data
+        self._cur_pos = start_pos
+        if size == -1:
+            size = len(data) - start_pos
+        self._size = size
 
     def __str__(self):
-        return "Buffer(size:{}, data:{})".format(len(self.data), self.data)
+        return "Buffer(size:{}, data:{})".format(
+            self._size,
+            self._data[self._cur_pos:self._cur_pos + self._size])
     __repr__ = __str__
 
     def __len__(self):
-        return len(self.data)
+        return self._size
 
     def read(self, size):
         """
         read and pop number of bytes for buffer
         """
-        if size > len(self.data):
-            raise Exception("Not enough data left in buffer, request for {}, we have {}".format(size, self))
-        #self.logger.debug("Request for %s bytes, from %s", size, self)
-        data = self.data[:size]
-        self.data = self.data[size:]
-        #self.logger.debug("Returning: %s ", data)
+        if size > self._size:
+            raise NotEnoughData("Not enough data left in buffer, request for {}, we have {}".format(size, self))
+        # self.logger.debug("Request for %s bytes, from %s", size, self)
+        self._size -= size
+        pos = self._cur_pos
+        self._cur_pos += size
+        data = self._data[pos:self._cur_pos]
+        # self.logger.debug("Returning: %s ", data)
         return data
 
-    def copy(self, size=None):
+    def copy(self, size=-1):
         """
-        return a copy, optionnaly only copy 'size' bytes
+        return a shadow copy, optionnaly only copy 'size' bytes
         """
-        if size is None:
-            return Buffer(self.data)
-        else:
-            return Buffer(self.data[:size])
+        if size == -1 or size > self._size:
+            size = self._size
+        return Buffer(self._data, self._cur_pos, size)
 
-    def test_read(self, size):
+    def skip(self, size):
         """
-        read 'size' bytes from buffer, without removing them from buffer
+        skip size bytes in buffer
         """
-        if size > len(self.data):
-            raise Exception("Not enough data left in buffer, request for {}, we have {}".format(size, self))
-        return self.data[:size]
+        if size > self._size:
+            raise NotEnoughData("Not enough data left in buffer, request for {}, we have {}".format(size, self))
+        self._size -= size
+        self._cur_pos += size
+
+
 
 class SocketClosedException(Exception):
     pass
@@ -94,8 +104,8 @@ class SocketWrapper(object):
 
 
 
-def create_nonce():
-    return uuid.uuid4().bytes + uuid.uuid4().bytes  # seems we need at least 32 bytes not 16 as python gives us...
+def create_nonce(size=32):
+    return os.urandom(size)
 
 
 

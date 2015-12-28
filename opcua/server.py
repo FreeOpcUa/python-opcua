@@ -15,6 +15,7 @@ from opcua.binary_server_asyncio import BinaryServer
 from opcua.internal_server import InternalServer
 from opcua import Node, Subscription, ObjectIds, Event
 from opcua import xmlimporter
+from opcua import Client
 
 
 class Server(object):
@@ -23,42 +24,100 @@ class Server(object):
     High level Server class
     Create an opcua server with default values
     The class is very short. Users are adviced to read the code.
-    Create your own namespace and then populate your server address space 
+    Create your own namespace and then populate your server address space
     using use the get_root() or get_objects() to get Node objects.
     and get_event_object() to fire events.
     Then start server. See example_server.py
     All methods are threadsafe
 
 
-    :ivar server_uri: 
-    :vartype server_uri: uri 
-    :ivar product_uri: 
-    :vartype product_uri: uri 
-    :ivar name: 
-    :vartype name: string 
+    :ivar application_uri:
+    :vartype application_uri: uri
+    :ivar product_uri:
+    :vartype product_uri: uri
+    :ivar name:
+    :vartype name: string
     :ivar default_timeout: timout in milliseconds for sessions and secure channel
-    :vartype default_timeout: int 
-    :ivar iserver: internal server object 
-    :vartype default_timeout: InternalServer 
-    :ivar bserver: binary protocol server 
-    :vartype bserver: BinaryServer 
+    :vartype default_timeout: int
+    :ivar iserver: internal server object
+    :vartype default_timeout: InternalServer
+    :ivar bserver: binary protocol server
+    :vartype bserver: BinaryServer
 
     """
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.endpoint = "opc.tcp://localhost:4841/freeopcua/server/"
-        self.server_uri = "urn:freeopcua:python:server"
+        self.endpoint = urlparse("opc.tcp://0.0.0.0:4841/freeopcua/server/")
+        self.application_uri = "urn:freeopcua:python:server"
         self.product_uri = "urn:freeopcua.github.no:python:server"
         self.name = "FreeOpcUa Python Server"
+        self.application_type = ua.ApplicationType.ClientAndServer
         self.default_timeout = 3600000
         self.iserver = InternalServer()
         self.bserver = None
+        self._discovery_clients = {}
+        self._discovery_period = 60
 
         # setup some expected values
-        self.register_namespace(self.server_uri)
+        self.register_namespace(self.application_uri)
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
-        sa_node.set_value([self.server_uri])
+        sa_node.set_value([self.application_uri])
+
+    def disable_clock(self, val=True):
+        """
+        for debugging you may want to disable clock that write every second
+        to address space
+        """
+        self.iserver.disabled_clock = val
+
+    def set_application_uri(self, uri):
+        """
+        Set application/server URI.
+        This uri is supposed to be unique. If you intent to register
+        your server to a discovery server, it really should be unique in
+        your system!
+        default is : "urn:freeopcua:python:server"
+        """
+        self.application_uri = uri
+
+    def find_servers(self, uris=None):
+        """
+        find_servers. mainly implemented for simmetry with client
+        """
+        if uris is None:
+            uris = []
+        params = ua.FindServersParameters()
+        params.EndpointUrl = self.endpoint.geturl()
+        params.ServerUris = uris
+        return self.iserver.find_servers(params)
+
+    def register_to_discovery(self, url="opc.tcp://localhost:4840", period=60):
+        """
+        Register to an OPC-UA Discovery server. Registering must be renewed at
+        least every 10 minutes, so this method will use our asyncio thread to
+        re-register every period seconds
+        """
+        if url in self._discovery_clients:
+            self._discovery_clients[url].disconnect()
+        self._discovery_clients[url] = Client(url)
+        self._discovery_clients[url].connect()
+        self._discovery_clients[url].register_server(self)
+        self._discovery_period = period
+        self.iserver.loop.call_soon(self._renew_registration)
+
+    def _renew_registration(self):
+        for client in self._discovery_clients.values():
+            client.register_server(self)
+            self.iserver.loop.call_later(self._discovery_period, self._renew_registration)
+
+    def get_client_to_discovery(self, url="opc.tcp://localhost:4840"):
+        """
+        Create a client to discovery server and return it
+        """
+        client = Client(url)
+        client.connect()
+        return client
 
     def allow_remote_admin(self, allow):
         """
@@ -81,10 +140,22 @@ class Server(object):
         idtoken.PolicyId = 'anonymous'
         idtoken.TokenType = ua.UserTokenType.Anonymous
 
+        idtoken2 = ua.UserTokenPolicy()
+        idtoken2.PolicyId = 'certificate_basic256'
+        idtoken2.TokenType = ua.UserTokenType.Certificate
+
+        idtoken3 = ua.UserTokenPolicy()
+        idtoken3.PolicyId = 'certificate_basic128'
+        idtoken3.TokenType = ua.UserTokenType.Certificate
+
+        idtoken4 = ua.UserTokenPolicy()
+        idtoken4.PolicyId = 'username'
+        idtoken4.TokenType = ua.UserTokenType.UserName
+
         appdesc = ua.ApplicationDescription()
         appdesc.ApplicationName = ua.LocalizedText(self.name)
-        appdesc.ApplicationUri = self.server_uri
-        appdesc.ApplicationType = ua.ApplicationType.Server
+        appdesc.ApplicationUri = self.application_uri
+        appdesc.ApplicationType = self.application_type
         appdesc.ProductUri = self.product_uri
         appdesc.DiscoveryUrls.append(self.endpoint.geturl())
 
@@ -93,10 +164,9 @@ class Server(object):
         edp.Server = appdesc
         edp.SecurityMode = ua.MessageSecurityMode.None_
         edp.SecurityPolicyUri = 'http://opcfoundation.org/UA/SecurityPolicy#None'
-        edp.UserIdentityTokens = [idtoken]
+        edp.UserIdentityTokens = [idtoken, idtoken2, idtoken3]
         edp.TransportProfileUri = 'http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary'
         edp.SecurityLevel = 0
-
         self.iserver.add_endpoint(edp)
 
     def set_server_name(self, name):
@@ -104,17 +174,19 @@ class Server(object):
 
     def start(self):
         """
-        Start to listen on network 
+        Start to listen on network
         """
-        self.iserver.start()
         self._setup_server_nodes()
+        self.iserver.start()
         self.bserver = BinaryServer(self.iserver, self.endpoint.hostname, self.endpoint.port)
         self.bserver.start()
 
     def stop(self):
         """
-        Stop server  
+        Stop server
         """
+        for client in self._discovery_clients.values():
+            client.disconnect()
         self.bserver.stop()
         self.iserver.stop()
 
@@ -194,4 +266,3 @@ class Server(object):
         """
         importer = xmlimporter.XmlImporter(self.iserver.node_mgt_service)
         importer.import_xml(path)
-

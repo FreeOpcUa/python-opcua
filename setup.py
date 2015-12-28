@@ -6,17 +6,17 @@ import sys
 if sys.version_info[0] < 3:
     install_requires = ["enum34", "trollius", "futures", "pycrypto"]
 else:
-    install_requires = []
+    install_requires = ["pycrypto"]
 
 setup(name="freeopcua", 
-      version="0.9.18",
+      version="0.9.20",
       description="Pure Python OPC-UA client and server library",
       author="Olivier Roulet-Dubonnet",
       author_email="olivier.roulet@gmail.com",
       url='http://freeopcua.github.io/',
       packages=["opcua"],
       provides=["opcua"],
-      license="GNU Lesser General Public License",
+      license="GNU Lesser General Public License v3 or later",
       install_requires=install_requires,
       classifiers=["Programming Language :: Python",
                    "Programming Language :: Python :: 3",
@@ -24,6 +24,7 @@ setup(name="freeopcua",
                    "Development Status :: 4 - Beta",
                    "Intended Audience :: Developers",
                    "Operating System :: OS Independent",
+                   "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
                    "Topic :: Software Development :: Libraries :: Python Modules",
                    ],
       entry_points={'console_scripts': 

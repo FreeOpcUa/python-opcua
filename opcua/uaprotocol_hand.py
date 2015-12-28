@@ -1,14 +1,17 @@
 import struct
 import logging
+import hashlib
 
 import opcua.uaprotocol_auto as auto
 import opcua.uatypes as uatypes
+from opcua.uatypes import uatype_UInt32
 import opcua.utils as utils
 from opcua.object_ids import ObjectIds
 from opcua.attribute_ids import AttributeIds
 
 logger = logging.getLogger('opcua.uaprotocol')
 
+OPC_TCP_SCHEME = 'opc.tcp'
 
 class AccessLevelMask(object):
     """
@@ -30,26 +33,26 @@ class Hello(uatypes.FrozenClass):
         self.MaxMessageSize = 0
         self.MaxChunkCount = 0
         self.EndpointUrl = ""
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         b = []
-        b.append(struct.pack("<I", self.ProtocolVersion))
-        b.append(struct.pack("<I", self.ReceiveBufferSize))
-        b.append(struct.pack("<I", self.SendBufferSize))
-        b.append(struct.pack("<I", self.MaxMessageSize))
-        b.append(struct.pack("<I", self.MaxChunkCount))
+        b.append(uatype_UInt32.pack(self.ProtocolVersion))
+        b.append(uatype_UInt32.pack(self.ReceiveBufferSize))
+        b.append(uatype_UInt32.pack(self.SendBufferSize))
+        b.append(uatype_UInt32.pack(self.MaxMessageSize))
+        b.append(uatype_UInt32.pack(self.MaxChunkCount))
         b.append(uatypes.pack_string(self.EndpointUrl))
         return b"".join(b)
 
     @staticmethod
     def from_binary(data):
         hello = Hello()
-        hello.ProtocolVersion = struct.unpack("<I", data.read(4))[0]
-        hello.ReceiveBufferSize = struct.unpack("<I", data.read(4))[0]
-        hello.SendBufferSize = struct.unpack("<I", data.read(4))[0]
-        hello.MaxMessageSize = struct.unpack("<I", data.read(4))[0]
-        hello.MaxChunkCount = struct.unpack("<I", data.read(4))[0]
+        hello.ProtocolVersion = uatype_UInt32.unpack(data.read(4))[0]
+        hello.ReceiveBufferSize = uatype_UInt32.unpack(data.read(4))[0]
+        hello.SendBufferSize = uatype_UInt32.unpack(data.read(4))[0]
+        hello.MaxMessageSize = uatype_UInt32.unpack(data.read(4))[0]
+        hello.MaxChunkCount = uatype_UInt32.unpack(data.read(4))[0]
         hello.EndpointUrl = uatypes.unpack_string(data)
         return hello
 
@@ -68,7 +71,7 @@ class ChunkType(object):
     Invalid = b"0"  # FIXME check
     Single = b"F"
     Intermediate = b"C"
-    Final = b"A"
+    Abort = b"A"    # when an error occurred and the Message is aborted (body is ErrorMessage)
 
 
 class Header(uatypes.FrozenClass):
@@ -79,34 +82,35 @@ class Header(uatypes.FrozenClass):
         self.ChannelId = channelid
         self.body_size = 0
         self.packet_size = 0
-        self._freeze()
+        self._freeze = True
 
     def add_size(self, size):
         self.body_size += size
 
     def to_binary(self):
         b = []
-        b.append(struct.pack("<3s", self.MessageType))
-        b.append(struct.pack("<s", self.ChunkType))
+        b.append(struct.pack("<3ss", self.MessageType, self.ChunkType))
         size = self.body_size + 8
         if self.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
             size += 4
-        b.append(struct.pack("<I", size))
+        b.append(uatype_UInt32.pack(size))
         if self.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
-            b.append(struct.pack("<I", self.ChannelId))
+            b.append(uatype_UInt32.pack(self.ChannelId))
         return b"".join(b)
 
     @staticmethod
     def from_string(data):
         hdr = Header()
-        hdr.MessageType = struct.unpack("<3s", data.read(3))[0]
-        hdr.ChunkType = struct.unpack("<c", data.read(1))[0]
-        hdr.packet_size = struct.unpack("<I", data.read(4))[0]
-        hdr.body_size =  hdr.packet_size - 8
+        hdr.MessageType, hdr.ChunkType, hdr.packet_size = struct.unpack("<3scI", data.read(8))
+        hdr.body_size = hdr.packet_size - 8
         if hdr.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
             hdr.body_size -= 4
-            hdr.ChannelId = struct.unpack("<I", data.read(4))[0]
+            hdr.ChannelId = uatype_UInt32.unpack(data.read(4))[0]
         return hdr
+
+    @staticmethod
+    def max_size():
+        return struct.calcsize("<3scII")
 
     def __str__(self):
         return "Header(type:{}, chunk_type:{}, body_size:{}, channel:{})".format(self.MessageType, self.ChunkType, self.body_size, self.ChannelId)
@@ -118,7 +122,7 @@ class ErrorMessage(uatypes.FrozenClass):
     def __init__(self):
         self.Error = uatypes.StatusCode()
         self.Reason = ""
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         b = []
@@ -146,25 +150,22 @@ class Acknowledge(uatypes.FrozenClass):
         self.SendBufferSize = 65536
         self.MaxMessageSize = 0  # No limits
         self.MaxChunkCount = 0  # No limits
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
-        b = []
-        b.append(struct.pack("<I", self.ProtocolVersion))
-        b.append(struct.pack("<I", self.ReceiveBufferSize))
-        b.append(struct.pack("<I", self.SendBufferSize))
-        b.append(struct.pack("<I", self.MaxMessageSize))
-        b.append(struct.pack("<I", self.MaxChunkCount))
-        return b"".join(b)
+        return struct.pack(
+            "<5I",
+            self.ProtocolVersion,
+            self.ReceiveBufferSize,
+            self.SendBufferSize,
+            self.MaxMessageSize,
+            self.MaxChunkCount)
 
     @staticmethod
     def from_binary(data):
         ack = Acknowledge()
-        ack.ProtocolVersion = struct.unpack("<I", data.read(4))[0]
-        ack.ReceiveBufferSize = struct.unpack("<I", data.read(4))[0]
-        ack.SendBufferSize = struct.unpack("<I", data.read(4))[0]
-        ack.MaxMessageSize = struct.unpack("<I", data.read(4))[0]
-        ack.MaxChunkCount = struct.unpack("<I", data.read(4))[0]
+        ack.ProtocolVersion, ack.ReceiveBufferSize, ack.SendBufferSize, ack.MaxMessageSize, ack.MaxChunkCount \
+            = struct.unpack("<5I", data.read(20))
         return ack
 
 
@@ -174,7 +175,7 @@ class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
         self.SecurityPolicyURI = "http://opcfoundation.org/UA/SecurityPolicy#None"
         self.SenderCertificate = b""
         self.ReceiverCertificateThumbPrint = b""
-        self._freeze()
+        self._freeze = True
 
     def to_binary(self):
         b = []
@@ -200,16 +201,20 @@ class SymmetricAlgorithmHeader(uatypes.FrozenClass):
 
     def __init__(self):
         self.TokenId = 0
-        self._freeze()
+        self._freeze = True
 
     @staticmethod
     def from_binary(data):
         obj = SymmetricAlgorithmHeader()
-        obj.TokenId = struct.unpack("<I", data.read(4))[0]
+        obj.TokenId = uatype_UInt32.unpack(data.read(4))[0]
         return obj
 
     def to_binary(self):
-        return struct.pack("<I", self.TokenId)
+        return uatype_UInt32.pack(self.TokenId)
+
+    @staticmethod
+    def max_size():
+        return struct.calcsize("<I")
 
     def __str__(self):
         return "{}(TokenId:{} )".format(self.__class__.__name__, self.TokenId)
@@ -221,24 +226,239 @@ class SequenceHeader(uatypes.FrozenClass):
     def __init__(self):
         self.SequenceNumber = None
         self.RequestId = None
-        self._freeze()
+        self._freeze = True
 
     @staticmethod
     def from_binary(data):
         obj = SequenceHeader()
-        obj.SequenceNumber = struct.unpack("<I", data.read(4))[0]
-        obj.RequestId = struct.unpack("<I", data.read(4))[0]
+        obj.SequenceNumber = uatype_UInt32.unpack(data.read(4))[0]
+        obj.RequestId = uatype_UInt32.unpack(data.read(4))[0]
         return obj
 
     def to_binary(self):
         b = []
-        b.append(struct.pack("<I", self.SequenceNumber))
-        b.append(struct.pack("<I", self.RequestId))
+        b.append(uatype_UInt32.pack(self.SequenceNumber))
+        b.append(uatype_UInt32.pack(self.RequestId))
         return b"".join(b)
+
+    @staticmethod
+    def max_size():
+        return struct.calcsize("<II")
 
     def __str__(self):
         return "{}(SequenceNumber:{}, RequestId:{} )".format(self.__class__.__name__, self.SequenceNumber, self.RequestId)
     __repr__ = __str__
+
+
+class CryptographyNone:
+    """
+    Base class for symmetric/asymmetric cryprography
+    """
+    def __init__(self):
+        pass
+
+    def plain_block_size(self):
+        """
+        Size of plain text block for block cipher.
+        """
+        return 1
+
+    def encrypted_block_size(self):
+        """
+        Size of encrypted text block for block cipher.
+        """
+        return 1
+
+    def padding(self, size):
+        """
+        Create padding for a block of given size.
+        plain_size = size + len(padding) + signature_size()
+        plain_size = N * plain_block_size()
+        """
+        return b''
+
+    def min_padding_size(self):
+        return 0
+
+    def signature_size(self):
+        return 0
+
+    def signature(self, data):
+        return b''
+
+    def encrypt(self, data):
+        return data
+
+    def decrypt(self, data):
+        return data
+
+    def vsignature_size(self):
+        return 0
+
+    def verify(self, data, signature):
+        """
+        Verify signature and raise exception if signature is invalid
+        """
+        pass
+
+    def remove_padding(self, data):
+        return data
+
+
+class SecurityPolicy:
+    """
+    Base class for security policy
+    """
+    URI = "http://opcfoundation.org/UA/SecurityPolicy#None"
+    signature_key_size = 0
+    symmetric_key_size = 0
+
+    def __init__(self):
+        self.asymmetric_cryptography = CryptographyNone()
+        self.symmetric_cryptography = CryptographyNone()
+        self.Mode = auto.MessageSecurityMode.None_
+        self.server_certificate = b""
+        self.client_certificate = b""
+
+    def make_symmetric_key(self, a, b):
+        pass
+
+
+class MessageChunk(uatypes.FrozenClass):
+    """
+    Message Chunk, as described in OPC UA specs Part 6, 6.7.2.
+    """
+    def __init__(self, security_policy, body=b'', msg_type=MessageType.SecureMessage, chunk_type=ChunkType.Single):
+        self.MessageHeader = Header(msg_type, chunk_type)
+        if msg_type in (MessageType.SecureMessage, MessageType.SecureClose):
+            self.SecurityHeader = SymmetricAlgorithmHeader()
+        elif msg_type == MessageType.SecureOpen:
+            self.SecurityHeader = AsymmetricAlgorithmHeader()
+        else:
+            raise Exception("Unsupported message type: {}".format(msg_type))
+        self.SequenceHeader = SequenceHeader()
+        self.Body = body
+        self._security_policy = security_policy
+
+    @staticmethod
+    def from_binary(security_policy, data):
+        h = Header.from_string(data)
+        return MessageChunk.from_header_and_body(security_policy, h, data)
+
+    @staticmethod
+    def from_header_and_body(security_policy, header, data):
+        if header.MessageType in (MessageType.SecureMessage, MessageType.SecureClose):
+            security_header = SymmetricAlgorithmHeader.from_binary(data)
+            crypto = security_policy.symmetric_cryptography
+        elif header.MessageType == MessageType.SecureOpen:
+            security_header = AsymmetricAlgorithmHeader.from_binary(data)
+            crypto = security_policy.asymmetric_cryptography
+        else:
+            raise Exception("Unsupported message type: {}".format(header.MessageType))
+        obj = MessageChunk(crypto)
+        obj.MessageHeader = header
+        obj.SecurityHeader = security_header
+        decrypted = crypto.decrypt(data.read(len(data)))
+        signature_size = crypto.vsignature_size()
+        if signature_size > 0:
+            signature = decrypted[-signature_size:]
+            decrypted = decrypted[:-signature_size]
+            crypto.verify(obj.MessageHeader.to_binary() + obj.SecurityHeader.to_binary() + decrypted, signature)
+        data = utils.Buffer(crypto.remove_padding(decrypted))
+        obj.SequenceHeader = SequenceHeader.from_binary(data)
+        obj.Body = data.read(len(data))
+        return obj
+
+    def encrypted_size(self, plain_size):
+        size = plain_size + self._security_policy.signature_size()
+        pbs = self._security_policy.plain_block_size()
+        assert(size % pbs == 0)
+        return size // pbs * self._security_policy.encrypted_block_size()
+
+    def to_binary(self):
+        security = self.SecurityHeader.to_binary()
+        encrypted_part = self.SequenceHeader.to_binary() + self.Body
+        encrypted_part += self._security_policy.padding(len(encrypted_part))
+        self.MessageHeader.body_size = len(security) + self.encrypted_size(len(encrypted_part))
+        header = self.MessageHeader.to_binary()
+        encrypted_part += self._security_policy.signature(header + security + encrypted_part)
+        return header + security + self._security_policy.encrypt(encrypted_part)
+
+    @staticmethod
+    def max_body_size(crypto, max_chunk_size):
+        max_encrypted_size = max_chunk_size - Header.max_size() - SymmetricAlgorithmHeader.max_size()
+        max_plain_size = (max_encrypted_size // crypto.encrypted_block_size()) * crypto.plain_block_size()
+        return max_plain_size - SequenceHeader.max_size() - crypto.signature_size() - crypto.min_padding_size()
+
+    @staticmethod
+    def message_to_chunks(security_policy, body, max_chunk_size, message_type=MessageType.SecureMessage, channel_id=1, request_id=1, token_id=1):
+        """
+        Pack message body (as binary string) into one or more chunks.
+        Size of each chunk will not exceed max_chunk_size.
+        Returns a list of MessageChunks. SequenceNumber is not initialized here,
+        it must be set by Secure Channel driver.
+        """
+        if message_type == MessageType.SecureOpen:
+            # SecureOpen message must be in a single chunk (specs, Part 6, 6.7.2)
+            chunk = MessageChunk(security_policy.asymmetric_cryptography, body, message_type, ChunkType.Single)
+            chunk.SecurityHeader.SecurityPolicyURI = security_policy.URI
+            if security_policy.client_certificate:
+                chunk.SecurityHeader.SenderCertificate = security_policy.client_certificate
+            if security_policy.server_certificate:
+                chunk.SecurityHeader.ReceiverCertificateThumbPrint = hashlib.sha1(security_policy.server_certificate).digest()
+            chunk.MessageHeader.ChannelId = channel_id
+            chunk.SequenceHeader.RequestId = request_id
+            return [chunk]
+
+        crypto = security_policy.symmetric_cryptography
+        max_size = MessageChunk.max_body_size(crypto, max_chunk_size)
+
+        chunks = []
+        for i in range(0, len(body), max_size):
+            part = body[i:i+max_size]
+            if i+max_size >= len(body):
+                chunk_type = ChunkType.Single
+            else:
+                chunk_type = ChunkType.Intermediate
+            chunk = MessageChunk(crypto, part, message_type, chunk_type)
+            chunk.SecurityHeader.TokenId = token_id
+            chunk.MessageHeader.ChannelId = channel_id
+            chunk.SequenceHeader.RequestId = request_id
+            chunks.append(chunk)
+        return chunks
+
+    def __str__(self):
+        return "{}({}, {}, {}, {} bytes)".format(self.__class__.__name__,
+                self.MessageHeader, self.SequenceHeader, self.SecurityHeader, len(self.Body))
+    __repr__ = __str__
+
+
+def tcp_message_from_header_and_body(security_policy, header, body):
+    """
+    Convert binary stream to OPC UA TCP message (see OPC UA specs Part 6, 7.1)
+    The only supported message types are Hello, Acknowledge and Error
+    """
+    if header.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
+        return MessageChunk.from_header_and_body(security_policy, header, body)
+    elif header.MessageType == MessageType.Hello:
+        return Hello.from_binary(body)
+    elif header.MessageType == MessageType.Acknowledge:
+        return Acknowledge.from_binary(body)
+    elif header.MessageType == MessageType.Error:
+        return ErrorMessage.from_binary(body)
+    else:
+        raise Exception("Unsupported message type {}".format(header.MessageType))
+
+
+def tcp_message_from_socket(security_policy, socket):
+    logger.debug("Waiting for header")
+    header = Header.from_string(socket)
+    logger.info("received header: %s", header)
+    body = socket.read(header.body_size)
+    if len(body) != header.body_size:
+        raise Exception("{} bytes expected, {} available".format(header.body_size, len(body)))
+    return tcp_message_from_header_and_body(security_policy, header, utils.Buffer(body))
+
 
 # FIXES for missing switchfield in NodeAttributes classes
 ana = auto.NodeAttributesMask

@@ -3,6 +3,7 @@
 import sys
 sys.path.insert(0, "..")
 sys.path.insert(0, ".")
+import subprocess
 import time
 import logging
 import math
@@ -24,6 +25,7 @@ from opcua.uaprotocol import extensionobject_to_binary
 
 port_num1 = 48510
 port_num2 = 48530
+port_discovery = 48550
 
 
 class SubHandler():
@@ -32,14 +34,14 @@ class SubHandler():
         Dummy subscription client
     '''
 
-    def data_change(self, handle, node, val, attr):
+    def datachange_notification(self, node, val, data):
         pass
 
-    def event(self, handle, event):
+    def event_notification(self, event):
         pass
 
 
-class MySubHandler():
+class MySubHandlerDeprecated():
 
     '''
     More advanced subscription client using Future, so we can wait for events in tests
@@ -57,16 +59,34 @@ class MySubHandler():
     def event(self, handle, event):
         self.future.set_result((handle, event))
 
+class MySubHandler():
+
+    '''
+    More advanced subscription client using Future, so we can wait for events in tests
+    '''
+
+    def __init__(self):
+        self.future = Future()
+
+    def reset(self):
+        self.future = Future()
+
+    def datachange_notification(self, node, val, data):
+        self.future.set_result((node, val, data))
+
+    def event_notification(self, event):
+        self.future.set_result(event)
+
 
 class MySubHandler2():
     def __init__(self):
         self.results = [] 
 
-    def data_change(self, handle, node, val, attr):
+    def datachange_notification(self, node, val, data):
         self.results.append((node, val))
 
-    def event(self, handle, event):
-        self.results.append((node, val))
+    def event_notification(self, event):
+        self.results.append(event)
 
 
 class Unit(unittest.TestCase):
@@ -224,7 +244,7 @@ class Unit(unittest.TestCase):
         dv = ua.DataValue('abc')
         self.assertEqual(dv.Value, ua.Variant('abc'))
         now = datetime.now()
-        dv.source_timestamp = now
+        dv.SourceTimestamp = now
 
     def test_variant(self):
         dv = ua.Variant(True, ua.VariantType.Boolean)
@@ -265,6 +285,29 @@ class Unit(unittest.TestCase):
         t4 = ua.LocalizedText.from_binary(ua.utils.Buffer(t1.to_binary()))
         self.assertEqual(t1, t4)
 
+    def test_message_chunk(self):
+        pol = ua.SecurityPolicy()
+        chunks = ua.MessageChunk.message_to_chunks(pol, b'123', 65536)
+        self.assertEqual(len(chunks), 1)
+        seq = 0
+        for chunk in chunks:
+            seq += 1
+            chunk.SequenceHeader.SequenceNumber = seq
+        chunk2 = ua.MessageChunk.from_binary(pol, ua.utils.Buffer(chunks[0].to_binary()))
+        self.assertEqual(chunks[0].to_binary(), chunk2.to_binary())
+
+        # for policy None, MessageChunk overhead is 12+4+8 = 24 bytes
+        # Let's pack 11 bytes into 28-byte chunks. The message must be split as 4+4+3
+        chunks = ua.MessageChunk.message_to_chunks(pol, b'12345678901', 28)
+        self.assertEqual(len(chunks), 3)
+        self.assertEqual(chunks[0].Body, b'1234')
+        self.assertEqual(chunks[1].Body, b'5678')
+        self.assertEqual(chunks[2].Body, b'901')
+        for chunk in chunks:
+            seq += 1
+            chunk.SequenceHeader.SequenceNumber = seq
+            self.assertTrue(len(chunk.to_binary()) <= 28)
+
 
 class CommonTests(object):
 
@@ -273,6 +316,11 @@ class CommonTests(object):
     client side since we have been carefull to have the exact
     same api on server and client side
     '''
+    opc = None
+
+    def test_find_servers(self):
+        servers = self.opc.find_servers()
+        # FIXME : finish
 
     def test_root(self):
         root = self.opc.get_root_node()
@@ -336,9 +384,18 @@ class CommonTests(object):
         sub.unsubscribe(handle)
         sub.delete()
 
-    def test_events(self):
-        msclt = MySubHandler()
-        #cond = msclt.setup()
+    def test_subscribe_events_to_wrong_node(self):
+        sub = self.opc.create_subscription(100, sclt)
+        with self.assertRaises(Exception):
+            handle = sub.subscribe_events(self.opc.get_node("i=85"))
+        o = self.opc.get_objects_node()
+        v = o.add_variable(3, 'VariableNoEventNofierAttribute', 4)
+        with self.assertRaises(Exception):
+            handle = sub.subscribe_events(v)
+        sub.delete()
+
+    def test_events_deprecated(self):
+        msclt = MySubHandlerDeprecated()
         sub = self.opc.create_subscription(100, msclt)
         handle = sub.subscribe_events()
 
@@ -347,16 +404,34 @@ class CommonTests(object):
         ev.Message.Text = msg
         tid = datetime.now()
         ev.Time = tid
-        #ev.source_node = self.opc.get_server_node().nodeid
-        #ev.source_name = "our server node"
         ev.Severity = 500
         ev.trigger()
 
         clthandle, ev = msclt.future.result()
-        # with cond:
-        #ret = cond.wait(50000)
-        # if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
-        # else: pass # python2
+        self.assertIsNot(ev, None)  # we did not receive event
+        self.assertEqual(ev.Message.Text, msg)
+        #self.assertEqual(msclt.ev.Time, tid)
+        self.assertEqual(ev.Severity, 500)
+        self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
+
+        # time.sleep(0.1)
+        sub.unsubscribe(handle)
+        sub.delete()
+
+    def test_events(self):
+        msclt = MySubHandler()
+        sub = self.opc.create_subscription(100, msclt)
+        handle = sub.subscribe_events()
+
+        ev = Event(self.srv.iserver.isession)
+        msg = b"this is my msg "
+        ev.Message.Text = msg
+        tid = datetime.now()
+        ev.Time = tid
+        ev.Severity = 500
+        ev.trigger()
+
+        ev = msclt.future.result()
         self.assertIsNot(ev, None)  # we did not receive event
         self.assertEqual(ev.Message.Text, msg)
         #self.assertEqual(msclt.ev.Time, tid)
@@ -616,6 +691,46 @@ class CommonTests(object):
         for s in subs:
             s.delete()
 
+    def test_subscription_data_change_depcrecated(self):
+        '''
+        test subscriptions. This is far too complicated for
+        a unittest but, setting up subscriptions requires a lot
+        of code, so when we first set it up, it is best
+        to test as many things as possible
+        '''
+        msclt = MySubHandlerDeprecated()
+
+        o = self.opc.get_objects_node()
+
+        # subscribe to a variable
+        startv1 = [1, 2, 3]
+        v1 = o.add_variable(3, 'SubscriptionVariableDeprecatedV1', startv1)
+        sub = self.opc.create_subscription(100, msclt)
+        handle1 = sub.subscribe_data_change(v1)
+
+        # Now check we get the start value
+        clthandle, node, val, attr = msclt.future.result()
+        self.assertEqual(val, startv1)
+        self.assertEqual(node, v1)
+
+        msclt.reset()  # reset future object
+
+        # modify v1 and check we get value
+        v1.set_value([5])
+        clthandle, node, val, attr = msclt.future.result()
+
+        self.assertEqual(node, v1)
+        self.assertEqual(val, [5])
+
+        with self.assertRaises(Exception):
+            sub.unsubscribe(999)  # non existing handle
+        sub.unsubscribe(handle1)
+        with self.assertRaises(Exception):
+            sub.unsubscribe(handle1)  # second try should fail
+        sub.delete()
+        with self.assertRaises(Exception):
+            sub.unsubscribe(handle1)  # sub does not exist anymore
+
     def test_subscription_data_change(self):
         '''
         test subscriptions. This is far too complicated for
@@ -624,7 +739,6 @@ class CommonTests(object):
         to test as many things as possible
         '''
         msclt = MySubHandler()
-        #cond = msclt.setup()
 
         o = self.opc.get_objects_node()
 
@@ -635,11 +749,7 @@ class CommonTests(object):
         handle1 = sub.subscribe_data_change(v1)
 
         # Now check we get the start value
-        clthandle, node, val, attr = msclt.future.result()
-        # with cond:
-        #ret = cond.wait(0.5)
-        # if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
-        # else: pass # XXX
+        node, val, data = msclt.future.result()
         self.assertEqual(val, startv1)
         self.assertEqual(node, v1)
 
@@ -647,11 +757,8 @@ class CommonTests(object):
 
         # modify v1 and check we get value
         v1.set_value([5])
-        clthandle, node, val, attr = msclt.future.result()
-        # with cond:
-        #ret = cond.wait(0.5)
-        # if sys.version_info.major>2: self.assertEqual(ret, True) # we went into timeout waiting for subcsription callback
-        # else: pass # XXX
+        node, val, data = msclt.future.result()
+
         self.assertEqual(node, v1)
         self.assertEqual(val, [5])
 
@@ -683,7 +790,7 @@ class CommonTests(object):
         handle1 = sub.subscribe_data_change(v1)
 
         # Now check we get the start value
-        clthandle, node, val, attr = msclt.future.result()
+        node, val, data = msclt.future.result()
         self.assertEqual(val, startv1)
         self.assertEqual(node, v1)
 
@@ -691,7 +798,7 @@ class CommonTests(object):
 
         # modify v1 and check we get value
         v1.set_value(False)
-        clthandle, node, val, attr = msclt.future.result()
+        node, val, data = msclt.future.result()
         self.assertEqual(node, v1)
         self.assertEqual(val, False)
 
@@ -744,7 +851,7 @@ class CommonTests(object):
         sub = self.opc.create_subscription(200, msclt)
         handle = sub.subscribe_data_change(server_time_node)
 
-        clthandle, node, val, attr = msclt.future.result()
+        node, val, data = msclt.future.result()
         self.assertEqual(node, server_time_node)
         delta = datetime.now() - val
         self.assertTrue(delta < timedelta(seconds=2))
@@ -893,6 +1000,51 @@ class AdminTestClient(unittest.TestCase, CommonTests):
         self.assertEqual(v_ro.get_value(), 2)
 
 
+class TestCmdLines(unittest.TestCase):
+
+    '''
+    Test command lines
+    '''
+    @classmethod
+    def setUpClass(self):
+        self.srv = Server()
+        self.srv_url = 'opc.tcp://localhost:%d' % port_num2
+        self.srv.set_endpoint(self.srv_url)
+        objects = self.srv.get_objects_node()
+        obj = objects.add_object(4, "directory")
+        var = obj.add_variable(4, "variable", 1.999)
+        var2 = obj.add_variable(4, "variable2", 1.777)
+        var2.set_writable()
+        self.srv.start()
+
+    def test_uals(self):
+        s = subprocess.check_output(["python", "tools/uals", "--url", self.srv_url])
+        self.assertIn(b"i=85", s)
+        self.assertNotIn(b"i=89", s)
+        self.assertNotIn(b"1.999", s)
+        s = subprocess.check_output(["python", "tools/uals", "--url", self.srv_url, "-d", "3"])
+        self.assertIn(b"1.999", s)
+
+    def test_uaread(self):
+        s = subprocess.check_output(["python", "tools/uaread", "--url", self.srv_url, "--path", "0:Objects,4:directory,4:variable"])
+        self.assertIn(b"1.999", s)
+
+    def test_uawrite(self):
+        s = subprocess.check_output(["python", "tools/uawrite", "--url", self.srv_url, "--path", "0:Objects,4:directory,4:variable2", "1.789"])
+        s = subprocess.check_output(["python", "tools/uaread", "--url", self.srv_url, "--path", "0:Objects,4:directory,4:variable2"])
+        self.assertIn(b"1.789", s)
+        self.assertNotIn(b"1.999", s)
+
+    def test_uadiscover(self):
+        s = subprocess.check_output(["python", "tools/uadiscover", "--url", self.srv_url])
+        self.assertIn(b"opc.tcp://localhost", s)
+        self.assertIn(b"FreeOpcUa", s)
+        self.assertIn(b"urn:freeopcua:python:server", s)
+
+    @classmethod
+    def tearDownClass(self):
+        self.srv.stop()
+
 
 class TestServer(unittest.TestCase, CommonTests):
 
@@ -907,10 +1059,77 @@ class TestServer(unittest.TestCase, CommonTests):
         add_server_methods(self.srv)
         self.srv.start()
         self.opc = self.srv
+        self.discovery = Server()
+        self.discovery.set_application_uri("urn:freeopcua:python:discovery")
+        self.discovery.set_endpoint('opc.tcp://localhost:%d' % port_discovery)
+        self.discovery.start()
 
     @classmethod
     def tearDownClass(self):
         self.srv.stop()
+        self.discovery.stop()
+
+    def test_discovery(self):
+        client = Client(self.discovery.endpoint.geturl())
+        client.connect()
+        try:
+            servers = client.find_servers()
+            new_app_uri = "urn:freeopcua:python:server:test_discovery"
+            self.srv.application_uri = new_app_uri
+            self.srv.register_to_discovery(self.discovery.endpoint.geturl(), 1)
+            time.sleep(0.1) # let server register registration
+            new_servers = client.find_servers()
+            self.assertEqual(len(new_servers) - len(servers) , 1)
+            self.assertFalse(new_app_uri in [s.ApplicationUri for s in servers])
+            self.assertTrue(new_app_uri in [s.ApplicationUri for s in new_servers])
+        finally:
+            client.disconnect()
+    
+    def test_find_servers2(self):
+        client = Client(self.discovery.endpoint.geturl())
+        client.connect()
+        try:
+            servers = client.find_servers()
+            new_app_uri1 = "urn:freeopcua:python:server:test_discovery1"
+            self.srv.application_uri = new_app_uri1
+            self.srv.register_to_discovery(self.discovery.endpoint.geturl())
+            new_app_uri2 = "urn:freeopcua:python:test_discovery2"
+            self.srv.application_uri = new_app_uri2
+            self.srv.register_to_discovery(self.discovery.endpoint.geturl())
+            time.sleep(0.1) # let server register registration
+            new_servers = client.find_servers()
+            self.assertEqual(len(new_servers) - len(servers) , 2)
+            self.assertFalse(new_app_uri1 in [s.ApplicationUri for s in servers])
+            self.assertFalse(new_app_uri2 in [s.ApplicationUri for s in servers])
+            self.assertTrue(new_app_uri1 in [s.ApplicationUri for s in new_servers])
+            self.assertTrue(new_app_uri2 in [s.ApplicationUri for s in new_servers])
+            # now do a query with filer
+            new_servers = client.find_servers(["urn:freeopcua:python:server"])
+            self.assertEqual(len(new_servers) - len(servers) , 0)
+            self.assertTrue(new_app_uri1 in [s.ApplicationUri for s in new_servers])
+            self.assertFalse(new_app_uri2 in [s.ApplicationUri for s in new_servers])
+            # now do a query with filer
+            new_servers = client.find_servers(["urn:freeopcua:python"])
+            self.assertEqual(len(new_servers) - len(servers) , 2)
+            self.assertTrue(new_app_uri1 in [s.ApplicationUri for s in new_servers])
+            self.assertTrue(new_app_uri2 in [s.ApplicationUri for s in new_servers])
+        finally:
+            client.disconnect()
+
+
+    """
+    # not sure if this test is necessary, and there is a lot repetition with previous test
+    def test_discovery_server_side(self):
+        servers = self.discovery.find_servers()
+        self.assertEqual(len(servers), 1)
+        self.srv.register_to_discovery(self.discovery.endpoint.geturl(), 1)
+        time.sleep(1) # let server register registration
+        servers = self.discovery.find_servers()
+        print("SERVERS 2", servers)
+        self.assertEqual(len(servers), 2)
+    """
+    #def test_register_server2(self):
+        #servers = self.opc.register_server()
 
     def test_register_namespace(self):
         uri = 'http://mycustom.Namespace.com'

@@ -19843,7 +19843,7 @@ def create_standard_address_space_Part5(server):
     node.TypeDefinition = ua.NodeId.from_string("i=2004")
     attrs = ua.ObjectAttributes()
     attrs.DisplayName = ua.LocalizedText("Server")
-    attrs.EventNotifier = False
+    attrs.EventNotifier = 1
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
