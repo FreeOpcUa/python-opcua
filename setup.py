@@ -4,9 +4,9 @@ from distutils.command.install_data import install_data
 import sys
 
 if sys.version_info[0] < 3:
-    install_requires = ["enum34", "trollius", "futures", "pycrypto"]
+    install_requires = ["enum34", "trollius", "futures", "cryptography"]
 else:
-    install_requires = ["pycrypto"]
+    install_requires = ["cryptography"]
 
 setup(name="freeopcua", 
       version="0.9.20",
