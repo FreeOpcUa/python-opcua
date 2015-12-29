@@ -5,6 +5,7 @@ python:
   - "pypy"
 # command to install dependencies
 install:
+  - pip install cryptography
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install futures ; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install trollius ; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install enum34 ; fi

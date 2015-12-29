@@ -14,7 +14,7 @@ use_crypto = True
 try:
     from opcua import uacrypto
 except:
-    print("pycrypto is not installed, use of crypto disabled")
+    print("cryptography is not installed, use of crypto disabled")
     use_crypto = False
 
 
@@ -254,7 +254,6 @@ class Client(object):
         params.SessionName = self.description + " Session" + str(self._session_counter)
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0  # means no max size
-        params.ClientCertificate = uacrypto.der_from_x509(self.client_certificate)
         response = self.bclient.create_session(params)
         self.security_policy.asymmetric_cryptography.verify(self.security_policy.client_certificate + nonce, response.ServerSignature.Signature)
         self._server_nonce = response.ServerNonce
