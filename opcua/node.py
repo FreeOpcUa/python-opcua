@@ -448,7 +448,11 @@ def _create_variable(server, parentnodeid, nodeid, qname, val, isproperty=False)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
     attrs.DataType = _guess_uatype(val)
     attrs.Value = val
-    attrs.ValueRank = 0
+    if isinstance(val, list) or isinstance(val, tuple):
+        attrs.ValueRank = 0
+    else:
+        attrs.ValueRank = -1
+    attrs.ArrayDimensions = 0
     attrs.WriteMask = ua.OpenFileMode.Read
     attrs.UserWriteMask = ua.OpenFileMode.Read
     attrs.Historizing = 0
