@@ -452,7 +452,7 @@ def _create_variable(server, parentnodeid, nodeid, qname, val, isproperty=False)
         attrs.ValueRank = 0
     else:
         attrs.ValueRank = -1
-    attrs.ArrayDimensions = 0
+    # attrs.ArrayDimensions = 0
     attrs.WriteMask = ua.OpenFileMode.Read
     attrs.UserWriteMask = ua.OpenFileMode.Read
     attrs.Historizing = 0
