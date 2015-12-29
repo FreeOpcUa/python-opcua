@@ -161,7 +161,7 @@ class XMLParser(object):
                 mytext = val.text
                 if mytext is None:  # support importing null strings
                     mytext = ""
-                mytext = val.text.replace('\n', '').replace('\r', '')
+                mytext = mytext.replace('\n', '').replace('\r', '')
                 # obj.value.append('b"{}"'.format(mytext))
                 obj.value = mytext
             elif ntag == "ListOfExtensionObject":
