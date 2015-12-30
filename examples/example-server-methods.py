@@ -16,20 +16,6 @@ except ImportError:
 
 from opcua import ua, uamethod, Server, Event, ObjectIds
 
-
-class SubHandler(object):
-
-    """
-    Subscription Handler. To receive events from server for a subscription
-    """
-
-    def data_change(self, handle, node, val, attr):
-        print("Python: New data change event", handle, node, val, attr)
-
-    def event(self, handle, event):
-        print("Python: New event", handle, event)
-
-
 # method to be exposed through server
 
 def func(parent, variant):
@@ -119,12 +105,6 @@ if __name__ == "__main__":
     server.start()
     print("Available loggers are: ", logging.Logger.manager.loggerDict.keys())
     try:
-        # enable following if you want to subscribe to nodes on server side
-        #handler = SubHandler()
-        #sub = server.create_subscription(500, handler)
-        #handle = sub.subscribe_data_change(myvar)
-        # trigger event, all subscribed clients wil receive it
-        myevent.trigger()
 
         embed()
     finally:
