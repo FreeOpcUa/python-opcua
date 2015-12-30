@@ -10,6 +10,7 @@ except ImportError:  # support for python2
 from opcua import uaprotocol as ua
 from opcua import BinaryClient, Node, Subscription
 from opcua import utils
+from opcua import security_policies
 use_crypto = True
 try:
     from opcua import uacrypto
@@ -67,7 +68,7 @@ class Client(object):
     which offers a raw OPC-UA interface.
     """
 
-    def __init__(self, url, timeout=1, security_policy=ua.SecurityPolicy()):
+    def __init__(self, url, timeout=1):
         """
         used url argument to connect to server.
         if you are unsure of url, write at least hostname and port
@@ -82,27 +83,79 @@ class Client(object):
         self.description = self.name
         self.application_uri = "urn:freeopcua:client"
         self.product_uri = "urn:freeopcua.github.no:client"
-        self.security_policy = security_policy
+        self.security_policy = ua.SecurityPolicy()
         self.secure_channel_id = None
         self.default_timeout = 3600000
         self.secure_channel_timeout = self.default_timeout
         self.session_timeout = self.default_timeout
         self._policy_ids = []
-        self.bclient = BinaryClient(timeout, security_policy=security_policy)
-        self.server_certificate = None
-        self.client_certificate = None
-        self.private_key = None 
+        self.bclient = BinaryClient(timeout)
+        self.user_certificate = None
+        self.user_private_key = None
         self._session_counter = 1
         self.keepalive = None
+
+    @staticmethod
+    def find_endpoint(endpoints, security_mode, policy_uri):
+        """
+        Find endpoint with required security mode and policy URI
+        """
+        for ep in endpoints:
+            if (ep.EndpointUrl.startswith(ua.OPC_TCP_SCHEME) and
+                    ep.SecurityMode == security_mode and
+                    ep.SecurityPolicyUri == policy_uri):
+                return ep
+        raise ValueError("No matching endpoints: {}, {}".format(
+                         security_mode, policy_uri))
+
+    def set_security_string(self, string):
+        """
+        Set SecureConnection mode. String format:
+        Policy,Mode,certificate,private_key[,server_private_key]
+        where Policy is Basic128Rsa15 or Basic256,
+            Mode is Sign or SignAndEncrypt
+            certificate, private_key and server_private_key are
+                paths to .pem or .der files
+        Call this before connect()
+        """
+        if not string:
+            return
+        parts = string.split(',')
+        if len(parts) < 4:
+            raise Exception('Wrong format: `{}`, expected at least 4 '
+                    'comma-separated values'.format(string))
+        policy_class = getattr(security_policies, 'SecurityPolicy' + parts[0])
+        mode = getattr(ua.MessageSecurityMode, parts[1])
+        return self.set_security(policy_class, parts[2], parts[3],
+                                 parts[4] if len(parts) >= 5 else None, mode)
+
+    def set_security(self, policy, certificate_path, private_key_path,
+                     server_certificate_path=None,
+                     mode=ua.MessageSecurityMode.SignAndEncrypt):
+        """
+        Set SecureConnection mode.
+        Call this before connect()
+        """
+        if server_certificate_path is None:
+            # load certificate from server's list of endpoints
+            endpoints = self.connect_and_get_server_endpoints()
+            endpoint = Client.find_endpoint(endpoints, mode, policy.URI)
+            server_cert = uacrypto.x509_from_der(endpoint.ServerCertificate)
+        else:
+            server_cert = uacrypto.load_certificate(server_certificate_path)
+        cert = uacrypto.load_certificate(certificate_path)
+        pk = uacrypto.load_private_key(private_key_path)
+        self.security_policy = policy(server_cert, cert, pk, mode)
+        self.bclient.set_security(self.security_policy)
 
     def load_client_certificate(self, path):
         """
         load our certificate from file, either pem or der
         """
-        self.client_certificate = uacrypto.load_certificate(path)
+        self.user_certificate = uacrypto.load_certificate(path)
 
     def load_private_key(self, path):
-        self.private_key = uacrypto.load_private_key(path)
+        self.user_private_key = uacrypto.load_private_key(path)
 
     def connect_and_get_server_endpoints(self):
         """
@@ -149,7 +202,7 @@ class Client(object):
         self.send_hello()
         self.open_secure_channel()
         self.create_session()
-        self.activate_session(username=self.server_url.username, password=self.server_url.password, certificate=self.client_certificate)
+        self.activate_session(username=self.server_url.username, password=self.server_url.password, certificate=self.user_certificate)
 
     def disconnect(self):
         """
@@ -257,11 +310,13 @@ class Client(object):
         response = self.bclient.create_session(params)
         self.security_policy.asymmetric_cryptography.verify(self.security_policy.client_certificate + nonce, response.ServerSignature.Signature)
         self._server_nonce = response.ServerNonce
-        self.server_certificate = response.ServerCertificate
-        for ep in response.ServerEndpoints:
-            if urlparse(ep.EndpointUrl).scheme == self.server_url.scheme and ep.SecurityMode == self.security_policy.Mode:
-                # remember PolicyId's: we will use them in activate_session()
-                self._policy_ids = ep.UserIdentityTokens
+        if not self.security_policy.server_certificate:
+            self.security_policy.server_certificate = response.ServerCertificate
+        elif self.security_policy.server_certificate != response.ServerCertificate:
+            raise Exception("Server certificate mismatch")
+        # remember PolicyId's: we will use them in activate_session()
+        ep = Client.find_endpoint(response.ServerEndpoints, self.security_policy.Mode, self.security_policy.URI)
+        self._policy_ids = ep.UserIdentityTokens
         self.session_timeout = response.RevisedSessionTimeout
         self.keepalive = KeepAlive(self, min(self.session_timeout, self.secure_channel_timeout) * 0.7)  # 0.7 is from spec
         self.keepalive.start()
@@ -292,8 +347,8 @@ class Client(object):
         elif certificate:
             params.UserIdentityToken = ua.X509IdentityToken()
             params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Certificate, b"certificate_basic256")
-            params.UserIdentityToken.CertificateData = uacrypto.der_from_x509(self.client_certificate)
-            sig = uacrypto.sign_sha1(self.private_key, certificate)
+            params.UserIdentityToken.CertificateData = uacrypto.der_from_x509(certificate)
+            sig = uacrypto.sign_sha1(self.user_private_key, certificate)
             params.UserTokenSignature = ua.SignatureData()
             params.UserTokenSignature.Algorithm = b"http://www.w3.org/2000/09/xmldsig#rsa-sha1"
             params.UserTokenSignature.Signature = sig
@@ -301,7 +356,7 @@ class Client(object):
             params.UserIdentityToken = ua.UserNameIdentityToken()
             params.UserIdentityToken.UserName = username 
             if self.server_url.password:
-                pubkey = self.server_certificate.publick_key()
+                pubkey = uacrypto.x509_from_der(self.security_policy.server_certificate).public_key()
                 data = uacrypto.encrypt_basic256(pubkey, bytes(password, "utf8"))
                 params.UserIdentityToken.Password = data
             params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")

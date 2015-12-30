@@ -212,13 +212,16 @@ class BinaryClient(object):
     uaprotocol_auto.py and uaprotocol_hand.py
     """
 
-    def __init__(self, timeout=1, security_policy=ua.SecurityPolicy()):
+    def __init__(self, timeout=1):
         self.logger = logging.getLogger(__name__)
         self._publishcallbacks = {}
         self._lock = Lock()
         self._timeout = timeout
         self._uasocket = None
-        self._security_policy = security_policy
+        self._security_policy = ua.SecurityPolicy()
+
+    def set_security(self, policy):
+        self._security_policy = policy
 
     def connect_socket(self, host, port):
         """

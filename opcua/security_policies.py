@@ -2,11 +2,7 @@ from opcua.uaprotocol import CryptographyNone, SecurityPolicy
 from opcua.uaprotocol import MessageSecurityMode
 from abc import ABCMeta, abstractmethod
 try:
-    from cryptography import x509, exceptions
-    from cryptography.hazmat.backends import default_backend
-    from cryptography.hazmat.primitives.asymmetric import padding
-    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-    from cryptography.hazmat.primitives import hashes, serialization, hmac
+    from opcua import uacrypto
     CRYPTOGRAPHY_AVAILABLE = True
 except ImportError:
     CRYPTOGRAPHY_AVAILABLE = False
@@ -175,43 +171,35 @@ class Cryptography(CryptographyNone):
 class SignerRsa(Signer):
     def __init__(self, client_pk):
         require_cryptography(self)
-        self.client_pk = serialization.load_pem_private_key(
-                client_pk, None, default_backend())
+        self.client_pk = client_pk
         self.key_size = self.client_pk.key_size // 8
 
     def signature_size(self):
         return self.key_size
 
     def signature(self, data):
-        signer = self.client_pk.signer(padding.PKCS1v15(), hashes.SHA1())
-        signer.update(data)
-        return signer.finalize()
+        return uacrypto.sign_sha1(self.client_pk, data)
 
 
 class VerifierRsa(Verifier):
     def __init__(self, server_cert):
         require_cryptography(self)
-        self.server_cert = x509.load_der_x509_certificate(
-                server_cert, default_backend())
+        self.server_cert = server_cert
         self.key_size = self.server_cert.public_key().key_size // 8
 
     def signature_size(self):
         return self.key_size
 
     def verify(self, data, signature):
-        verifier = self.server_cert.public_key().verifier(
-                signature, padding.PKCS1v15(), hashes.SHA1())
-        verifier.update(data)
-        verifier.verify()
+        uacrypto.verify_sha1(self.server_cert, data, signature)
 
 
 class EncryptorRsa(Encryptor):
-    def __init__(self, server_cert, padding_algorithm, padding_size):
+    def __init__(self, server_cert, enc_fn, padding_size):
         require_cryptography(self)
-        self.server_cert = x509.load_der_x509_certificate(
-                server_cert, default_backend())
+        self.server_cert = server_cert
         self.key_size = self.server_cert.public_key().key_size // 8
-        self.padding = padding_algorithm
+        self.encryptor = enc_fn
         self.padding_size = padding_size
 
     def plain_block_size(self):
@@ -224,18 +212,17 @@ class EncryptorRsa(Encryptor):
         encrypted = b''
         block_size = self.plain_block_size()
         for i in range(0, len(data), block_size):
-            encrypted += self.server_cert.public_key().encrypt(
-                    data[i : i+block_size], self.padding)
+            encrypted += self.encryptor(self.server_cert.public_key(),
+                    data[i : i+block_size])
         return encrypted
 
 
 class DecryptorRsa(Decryptor):
-    def __init__(self, client_pk, padding_algorithm, padding_size):
+    def __init__(self, client_pk, dec_fn, padding_size):
         require_cryptography(self)
-        self.client_pk = serialization.load_pem_private_key(
-                client_pk, None, default_backend())
+        self.client_pk = client_pk
         self.key_size = self.client_pk.key_size // 8
-        self.padding = padding_algorithm
+        self.decryptor = dec_fn
         self.padding_size = padding_size
 
     def plain_block_size(self):
@@ -248,8 +235,8 @@ class DecryptorRsa(Decryptor):
         decrypted = b''
         block_size = self.encrypted_block_size()
         for i in range(0, len(data), block_size):
-            decrypted += self.client_pk.decrypt(
-                    data[i : i+block_size], self.padding)
+            decrypted += self.decryptor(self.client_pk,
+                    data[i : i+block_size])
         return decrypted
 
 
@@ -259,12 +246,10 @@ class SignerAesCbc(Signer):
         self.key = key
 
     def signature_size(self):
-        return hashes.SHA1.digest_size
+        return uacrypto.sha1_size()
 
     def signature(self, data):
-        hasher = hmac.HMAC(self.key, hashes.SHA1(), backend=default_backend())
-        hasher.update(data)
-        return hasher.finalize()
+        return uacrypto.hash_hmac(self.key, data)
 
 
 class VerifierAesCbc(Verifier):
@@ -273,21 +258,18 @@ class VerifierAesCbc(Verifier):
         self.key = key
 
     def signature_size(self):
-        return hashes.SHA1.digest_size
+        return uacrypto.sha1_size()
 
     def verify(self, data, signature):
-        hasher = hmac.HMAC(self.key, hashes.SHA1(), backend=default_backend())
-        hasher.update(data)
-        expected = hasher.finalize()
+        expected = uacrypto.hash_hmac(self.key, data)
         if signature != expected:
-            raise exceptions.InvalidSignature
+            raise uacrypto.InvalidSignature
 
 
 class EncryptorAesCbc(Encryptor):
     def __init__(self, key, init_vec):
         require_cryptography(self)
-        self.cipher = Cipher(algorithms.AES(key), modes.CBC(init_vec),
-                             backend=default_backend())
+        self.cipher = uacrypto.cipher_aes_cbc(key, init_vec)
 
     def plain_block_size(self):
         return self.cipher.algorithm.key_size // 8
@@ -296,15 +278,13 @@ class EncryptorAesCbc(Encryptor):
         return self.cipher.algorithm.key_size // 8
 
     def encrypt(self, data):
-        encryptor = self.cipher.encryptor()
-        return encryptor.update(data) + encryptor.finalize()
+        return uacrypto.cipher_encrypt(self.cipher, data)
 
 
 class DecryptorAesCbc(Decryptor):
     def __init__(self, key, init_vec):
         require_cryptography(self)
-        self.cipher = Cipher(algorithms.AES(key), modes.CBC(init_vec),
-                             backend=default_backend())
+        self.cipher = uacrypto.cipher_aes_cbc(key, init_vec)
 
     def plain_block_size(self):
         return self.cipher.algorithm.key_size // 8
@@ -313,36 +293,7 @@ class DecryptorAesCbc(Decryptor):
         return self.cipher.algorithm.key_size // 8
 
     def decrypt(self, data):
-        decryptor = self.cipher.decryptor()
-        return decryptor.update(data) + decryptor.finalize()
-
-
-def hash_hmac(key, message):
-    hasher = hmac.HMAC(key, hashes.SHA1(), backend=default_backend())
-    hasher.update(message)
-    return hasher.finalize()
-
-
-def p_sha1(key, body, sizes=()):
-    """
-    Derive one or more keys from key and body.
-    Lengths of keys will match sizes argument
-    """
-    full_size = 0
-    for size in sizes:
-        full_size += size
-
-    result = b''
-    accum = body
-    while len(result) < full_size:
-        accum = hash_hmac(key, accum)
-        result += hash_hmac(key, accum + body)
-
-    parts = []
-    for size in sizes:
-        parts.append(result[:size])
-        result = result[size:]
-    return tuple(parts)
+        return uacrypto.cipher_decrypt(self.cipher, data)
 
 
 class SecurityPolicyBasic128Rsa15(SecurityPolicy):
@@ -384,28 +335,24 @@ class SecurityPolicyBasic128Rsa15(SecurityPolicy):
         self.asymmetric_cryptography.Signer = SignerRsa(client_pk)
         self.asymmetric_cryptography.Verifier = VerifierRsa(server_cert)
         self.asymmetric_cryptography.Encryptor = EncryptorRsa(
-                server_cert, padding.PKCS1v15(), 11)
+                server_cert, uacrypto.encrypt_rsa15, 11)
         self.asymmetric_cryptography.Decryptor = DecryptorRsa(
-                client_pk, padding.PKCS1v15(), 11)
+                client_pk, uacrypto.decrypt_rsa15, 11)
         self.symmetric_cryptography = Cryptography(mode)
         self.Mode = mode
-        self.server_certificate = server_cert
-        self.client_certificate = client_cert
+        self.server_certificate = uacrypto.der_from_x509(server_cert)
+        self.client_certificate = uacrypto.der_from_x509(client_cert)
 
     def make_symmetric_key(self, nonce1, nonce2):
         key_sizes = (self.signature_key_size, self.symmetric_key_size, 16)
 
-        (sigkey, key, init_vec) = p_sha1(nonce2, nonce1, key_sizes)
+        (sigkey, key, init_vec) = uacrypto.p_sha1(nonce2, nonce1, key_sizes)
         self.symmetric_cryptography.Signer = SignerAesCbc(sigkey)
         self.symmetric_cryptography.Encryptor = EncryptorAesCbc(key, init_vec)
 
-        (sigkey, key, init_vec) = p_sha1(nonce1, nonce2, key_sizes)
+        (sigkey, key, init_vec) = uacrypto.p_sha1(nonce1, nonce2, key_sizes)
         self.symmetric_cryptography.Verifier = VerifierAesCbc(sigkey)
         self.symmetric_cryptography.Decryptor = DecryptorAesCbc(key, init_vec)
-
-
-def oaep():
-    return padding.OAEP(padding.MGF1(hashes.SHA1()), hashes.SHA1(), None)
 
 
 class SecurityPolicyBasic256(SecurityPolicy):
@@ -447,21 +394,21 @@ class SecurityPolicyBasic256(SecurityPolicy):
         self.asymmetric_cryptography.Signer = SignerRsa(client_pk)
         self.asymmetric_cryptography.Verifier = VerifierRsa(server_cert)
         self.asymmetric_cryptography.Encryptor = EncryptorRsa(
-                server_cert, oaep(), 42)
+                server_cert, uacrypto.encrypt_rsa_oaep, 42)
         self.asymmetric_cryptography.Decryptor = DecryptorRsa(
-                client_pk, oaep(), 42)
+                client_pk, uacrypto.decrypt_rsa_oaep, 42)
         self.symmetric_cryptography = Cryptography(mode)
         self.Mode = mode
-        self.server_certificate = server_cert
-        self.client_certificate = client_cert
+        self.server_certificate = uacrypto.der_from_x509(server_cert)
+        self.client_certificate = uacrypto.der_from_x509(client_cert)
 
     def make_symmetric_key(self, nonce1, nonce2):
         key_sizes = (self.signature_key_size, self.symmetric_key_size, 16)
 
-        (sigkey, key, init_vec) = p_sha1(nonce2, nonce1, key_sizes)
+        (sigkey, key, init_vec) = uacrypto.p_sha1(nonce2, nonce1, key_sizes)
         self.symmetric_cryptography.Signer = SignerAesCbc(sigkey)
         self.symmetric_cryptography.Encryptor = EncryptorAesCbc(key, init_vec)
 
-        (sigkey, key, init_vec) = p_sha1(nonce1, nonce2, key_sizes)
+        (sigkey, key, init_vec) = uacrypto.p_sha1(nonce1, nonce2, key_sizes)
         self.symmetric_cryptography.Verifier = VerifierAesCbc(sigkey)
         self.symmetric_cryptography.Decryptor = DecryptorAesCbc(key, init_vec)
