@@ -4,9 +4,9 @@ from distutils.command.install_data import install_data
 import sys
 
 if sys.version_info[0] < 3:
-    install_requires = ["enum34", "trollius", "futures", "cryptography"]
+    install_requires = ["enum34", "trollius", "futures"]
 else:
-    install_requires = ["cryptography"]
+    install_requires = []
 
 setup(name="freeopcua", 
       version="0.10.0",
@@ -18,6 +18,9 @@ setup(name="freeopcua",
       provides=["opcua"],
       license="GNU Lesser General Public License v3 or later",
       install_requires=install_requires,
+      extras_require = {
+          'encryption': ['cryptography']
+      },
       classifiers=["Programming Language :: Python",
                    "Programming Language :: Python :: 3",
                    "Programming Language :: Python :: 2",
