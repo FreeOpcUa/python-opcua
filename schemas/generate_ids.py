@@ -5,7 +5,7 @@ if __name__ == "__main__":
     outputfile.write("\n")
     outputfile.write("from enum import IntEnum\n")
     outputfile.write("\n")
-    outputfile.write("class ObjectIds(IntEnum):\n")
+    outputfile.write("class ObjectIds(object):\n")
     for line in inputfile:
         name, nb, datatype = line.split(",")
         outputfile.write("    {} = {}\n".format(name, nb))

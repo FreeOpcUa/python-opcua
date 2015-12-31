@@ -2,7 +2,7 @@
 
 from enum import IntEnum
 
-class ObjectIds(IntEnum):
+class ObjectIds(object):
     Boolean = 1
     SByte = 2
     Byte = 3
