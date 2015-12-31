@@ -3,13 +3,14 @@ Autogenerate code from xml spec
 '''
 
 from datetime import datetime
+from enum import Enum, IntEnum
 
 from opcua.utils import Buffer
 from opcua.uatypes import *
 from opcua.object_ids import ObjectIds
 
 
-class NamingRuleType(object):
+class NamingRuleType(IntEnum):
     '''
     :ivar Mandatory:
     :vartype Mandatory: 1
@@ -23,7 +24,7 @@ class NamingRuleType(object):
     Constraint = 3
 
 
-class OpenFileMode(object):
+class OpenFileMode(IntEnum):
     '''
     :ivar Read:
     :vartype Read: 1
@@ -40,7 +41,7 @@ class OpenFileMode(object):
     Append = 8
 
 
-class TrustListMasks(object):
+class TrustListMasks(IntEnum):
     '''
     :ivar None_:
     :vartype None_: 0
@@ -63,7 +64,7 @@ class TrustListMasks(object):
     All = 15
 
 
-class IdType(object):
+class IdType(IntEnum):
     '''
     The type of identifier used in a node id.
 
@@ -82,7 +83,7 @@ class IdType(object):
     Opaque = 3
 
 
-class NodeClass(object):
+class NodeClass(IntEnum):
     '''
     A mask specifying the class of the node.
 
@@ -116,7 +117,7 @@ class NodeClass(object):
     View = 128
 
 
-class ApplicationType(object):
+class ApplicationType(IntEnum):
     '''
     The types of applications.
 
@@ -135,7 +136,7 @@ class ApplicationType(object):
     DiscoveryServer = 3
 
 
-class MessageSecurityMode(object):
+class MessageSecurityMode(IntEnum):
     '''
     The type of security to use on a message.
 
@@ -154,7 +155,7 @@ class MessageSecurityMode(object):
     SignAndEncrypt = 3
 
 
-class UserTokenType(object):
+class UserTokenType(IntEnum):
     '''
     The possible user token types.
 
@@ -176,7 +177,7 @@ class UserTokenType(object):
     Kerberos = 4
 
 
-class SecurityTokenRequestType(object):
+class SecurityTokenRequestType(IntEnum):
     '''
     Indicates whether a token if being created or renewed.
 
@@ -189,7 +190,7 @@ class SecurityTokenRequestType(object):
     Renew = 1
 
 
-class NodeAttributesMask(object):
+class NodeAttributesMask(IntEnum):
     '''
     The bits used to specify default attributes for a new node.
 
@@ -292,7 +293,7 @@ class NodeAttributesMask(object):
     View = 1335532
 
 
-class AttributeWriteMask(object):
+class AttributeWriteMask(IntEnum):
     '''
     Define bits used to indicate which attributes are writable.
 
@@ -368,7 +369,7 @@ class AttributeWriteMask(object):
     ValueForVariableType = 2097152
 
 
-class BrowseDirection(object):
+class BrowseDirection(IntEnum):
     '''
     The directions of the references to return.
 
@@ -384,7 +385,7 @@ class BrowseDirection(object):
     Both = 2
 
 
-class BrowseResultMask(object):
+class BrowseResultMask(IntEnum):
     '''
     A bit mask which specifies what should be returned in a browse response.
 
@@ -421,7 +422,7 @@ class BrowseResultMask(object):
     TargetInfo = 60
 
 
-class ComplianceLevel(object):
+class ComplianceLevel(IntEnum):
     '''
     :ivar Untested:
     :vartype Untested: 0
@@ -438,7 +439,7 @@ class ComplianceLevel(object):
     Certified = 3
 
 
-class FilterOperator(object):
+class FilterOperator(IntEnum):
     '''
     :ivar Equals:
     :vartype Equals: 0
@@ -497,7 +498,7 @@ class FilterOperator(object):
     BitwiseOr = 17
 
 
-class TimestampsToReturn(object):
+class TimestampsToReturn(IntEnum):
     '''
     :ivar Source:
     :vartype Source: 0
@@ -514,7 +515,7 @@ class TimestampsToReturn(object):
     Neither = 3
 
 
-class HistoryUpdateType(object):
+class HistoryUpdateType(IntEnum):
     '''
     :ivar Insert:
     :vartype Insert: 1
@@ -531,7 +532,7 @@ class HistoryUpdateType(object):
     Delete = 4
 
 
-class PerformUpdateType(object):
+class PerformUpdateType(IntEnum):
     '''
     :ivar Insert:
     :vartype Insert: 1
@@ -548,7 +549,7 @@ class PerformUpdateType(object):
     Remove = 4
 
 
-class MonitoringMode(object):
+class MonitoringMode(IntEnum):
     '''
     :ivar Disabled:
     :vartype Disabled: 0
@@ -562,7 +563,7 @@ class MonitoringMode(object):
     Reporting = 2
 
 
-class DataChangeTrigger(object):
+class DataChangeTrigger(IntEnum):
     '''
     :ivar Status:
     :vartype Status: 0
@@ -576,7 +577,7 @@ class DataChangeTrigger(object):
     StatusValueTimestamp = 2
 
 
-class DeadbandType(object):
+class DeadbandType(IntEnum):
     '''
     :ivar None_:
     :vartype None_: 0
@@ -590,7 +591,7 @@ class DeadbandType(object):
     Percent = 2
 
 
-class EnumeratedTestType(object):
+class EnumeratedTestType(IntEnum):
     '''
     A simple enumerated type used for testing.
 
@@ -606,7 +607,7 @@ class EnumeratedTestType(object):
     Green = 5
 
 
-class RedundancySupport(object):
+class RedundancySupport(IntEnum):
     '''
     :ivar None_:
     :vartype None_: 0
@@ -629,7 +630,7 @@ class RedundancySupport(object):
     HotAndMirrored = 5
 
 
-class ServerState(object):
+class ServerState(IntEnum):
     '''
     :ivar Running:
     :vartype Running: 0
@@ -658,7 +659,7 @@ class ServerState(object):
     Unknown = 7
 
 
-class ModelChangeStructureVerbMask(object):
+class ModelChangeStructureVerbMask(IntEnum):
     '''
     :ivar NodeAdded:
     :vartype NodeAdded: 1
@@ -678,7 +679,7 @@ class ModelChangeStructureVerbMask(object):
     DataTypeChanged = 16
 
 
-class AxisScaleEnumeration(object):
+class AxisScaleEnumeration(IntEnum):
     '''
     :ivar Linear:
     :vartype Linear: 0
@@ -692,7 +693,7 @@ class AxisScaleEnumeration(object):
     Ln = 2
 
 
-class ExceptionDeviationFormat(object):
+class ExceptionDeviationFormat(IntEnum):
     '''
     :ivar AbsoluteValue:
     :vartype AbsoluteValue: 0
@@ -1162,7 +1163,7 @@ class ApplicationDescription(FrozenClass):
         self.ApplicationUri = ''
         self.ProductUri = ''
         self.ApplicationName = LocalizedText()
-        self.ApplicationType = 0
+        self.ApplicationType = ApplicationType(0)
         self.GatewayServerUri = ''
         self.DiscoveryProfileUri = ''
         self.DiscoveryUrls = []
@@ -1173,7 +1174,7 @@ class ApplicationDescription(FrozenClass):
         packet.append(pack_string(self.ApplicationUri))
         packet.append(pack_string(self.ProductUri))
         packet.append(self.ApplicationName.to_binary())
-        packet.append(uatype_UInt32.pack(self.ApplicationType))
+        packet.append(uatype_UInt32.pack(self.ApplicationType.value))
         packet.append(pack_string(self.GatewayServerUri))
         packet.append(pack_string(self.DiscoveryProfileUri))
         packet.append(uatype_Int32.pack(len(self.DiscoveryUrls)))
@@ -1189,7 +1190,7 @@ class ApplicationDescription(FrozenClass):
         self.ApplicationUri = unpack_string(data)
         self.ProductUri = unpack_string(data)
         self.ApplicationName = LocalizedText.from_binary(data)
-        self.ApplicationType = uatype_UInt32.unpack(data.read(4))[0]
+        self.ApplicationType = ApplicationType(uatype_UInt32.unpack(data.read(4))[0])
         self.GatewayServerUri = unpack_string(data)
         self.DiscoveryProfileUri = unpack_string(data)
         self.DiscoveryUrls = unpack_uatype_array('String', data)
@@ -1770,7 +1771,7 @@ class UserTokenPolicy(FrozenClass):
             self._freeze = True
             return
         self.PolicyId = ''
-        self.TokenType = 0
+        self.TokenType = UserTokenType(0)
         self.IssuedTokenType = ''
         self.IssuerEndpointUrl = ''
         self.SecurityPolicyUri = ''
@@ -1779,7 +1780,7 @@ class UserTokenPolicy(FrozenClass):
     def to_binary(self):
         packet = []
         packet.append(pack_string(self.PolicyId))
-        packet.append(uatype_UInt32.pack(self.TokenType))
+        packet.append(uatype_UInt32.pack(self.TokenType.value))
         packet.append(pack_string(self.IssuedTokenType))
         packet.append(pack_string(self.IssuerEndpointUrl))
         packet.append(pack_string(self.SecurityPolicyUri))
@@ -1791,7 +1792,7 @@ class UserTokenPolicy(FrozenClass):
 
     def _binary_init(self, data):
         self.PolicyId = unpack_string(data)
-        self.TokenType = uatype_UInt32.unpack(data.read(4))[0]
+        self.TokenType = UserTokenType(uatype_UInt32.unpack(data.read(4))[0])
         self.IssuedTokenType = unpack_string(data)
         self.IssuerEndpointUrl = unpack_string(data)
         self.SecurityPolicyUri = unpack_string(data)
@@ -1835,7 +1836,7 @@ class EndpointDescription(FrozenClass):
         self.EndpointUrl = ''
         self.Server = ApplicationDescription()
         self.ServerCertificate = b''
-        self.SecurityMode = 0
+        self.SecurityMode = MessageSecurityMode(0)
         self.SecurityPolicyUri = ''
         self.UserIdentityTokens = []
         self.TransportProfileUri = ''
@@ -1847,7 +1848,7 @@ class EndpointDescription(FrozenClass):
         packet.append(pack_string(self.EndpointUrl))
         packet.append(self.Server.to_binary())
         packet.append(pack_bytes(self.ServerCertificate))
-        packet.append(uatype_UInt32.pack(self.SecurityMode))
+        packet.append(uatype_UInt32.pack(self.SecurityMode.value))
         packet.append(pack_string(self.SecurityPolicyUri))
         packet.append(uatype_Int32.pack(len(self.UserIdentityTokens)))
         for fieldname in self.UserIdentityTokens:
@@ -1864,7 +1865,7 @@ class EndpointDescription(FrozenClass):
         self.EndpointUrl = unpack_string(data)
         self.Server = ApplicationDescription.from_binary(data)
         self.ServerCertificate = unpack_bytes(data)
-        self.SecurityMode = uatype_UInt32.unpack(data.read(4))[0]
+        self.SecurityMode = MessageSecurityMode(uatype_UInt32.unpack(data.read(4))[0])
         self.SecurityPolicyUri = unpack_string(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
@@ -2061,7 +2062,7 @@ class RegisteredServer(FrozenClass):
         self.ServerUri = ''
         self.ProductUri = ''
         self.ServerNames = []
-        self.ServerType = 0
+        self.ServerType = ApplicationType(0)
         self.GatewayServerUri = ''
         self.DiscoveryUrls = []
         self.SemaphoreFilePath = ''
@@ -2075,7 +2076,7 @@ class RegisteredServer(FrozenClass):
         packet.append(uatype_Int32.pack(len(self.ServerNames)))
         for fieldname in self.ServerNames:
             packet.append(fieldname.to_binary())
-        packet.append(uatype_UInt32.pack(self.ServerType))
+        packet.append(uatype_UInt32.pack(self.ServerType.value))
         packet.append(pack_string(self.GatewayServerUri))
         packet.append(uatype_Int32.pack(len(self.DiscoveryUrls)))
         for fieldname in self.DiscoveryUrls:
@@ -2097,7 +2098,7 @@ class RegisteredServer(FrozenClass):
             for _ in range(0, length):
                 array.append(LocalizedText.from_binary(data))
         self.ServerNames = array
-        self.ServerType = uatype_UInt32.unpack(data.read(4))[0]
+        self.ServerType = ApplicationType(uatype_UInt32.unpack(data.read(4))[0])
         self.GatewayServerUri = unpack_string(data)
         self.DiscoveryUrls = unpack_uatype_array('String', data)
         self.SemaphoreFilePath = unpack_string(data)
@@ -2490,8 +2491,8 @@ class OpenSecureChannelParameters(FrozenClass):
             self._freeze = True
             return
         self.ClientProtocolVersion = 0
-        self.RequestType = 0
-        self.SecurityMode = 0
+        self.RequestType = SecurityTokenRequestType(0)
+        self.SecurityMode = MessageSecurityMode(0)
         self.ClientNonce = b''
         self.RequestedLifetime = 0
         self._freeze = True
@@ -2499,8 +2500,8 @@ class OpenSecureChannelParameters(FrozenClass):
     def to_binary(self):
         packet = []
         packet.append(uatype_UInt32.pack(self.ClientProtocolVersion))
-        packet.append(uatype_UInt32.pack(self.RequestType))
-        packet.append(uatype_UInt32.pack(self.SecurityMode))
+        packet.append(uatype_UInt32.pack(self.RequestType.value))
+        packet.append(uatype_UInt32.pack(self.SecurityMode.value))
         packet.append(pack_bytes(self.ClientNonce))
         packet.append(uatype_UInt32.pack(self.RequestedLifetime))
         return b''.join(packet)
@@ -2511,8 +2512,8 @@ class OpenSecureChannelParameters(FrozenClass):
 
     def _binary_init(self, data):
         self.ClientProtocolVersion = uatype_UInt32.unpack(data.read(4))[0]
-        self.RequestType = uatype_UInt32.unpack(data.read(4))[0]
-        self.SecurityMode = uatype_UInt32.unpack(data.read(4))[0]
+        self.RequestType = SecurityTokenRequestType(uatype_UInt32.unpack(data.read(4))[0])
+        self.SecurityMode = MessageSecurityMode(uatype_UInt32.unpack(data.read(4))[0])
         self.ClientNonce = unpack_bytes(data)
         self.RequestedLifetime = uatype_UInt32.unpack(data.read(4))[0]
 
@@ -4439,7 +4440,7 @@ class AddNodesItem(FrozenClass):
         self.ReferenceTypeId = NodeId()
         self.RequestedNewNodeId = ExpandedNodeId()
         self.BrowseName = QualifiedName()
-        self.NodeClass = 0
+        self.NodeClass = NodeClass(0)
         self.NodeAttributes = None
         self.TypeDefinition = ExpandedNodeId()
         self._freeze = True
@@ -4450,7 +4451,7 @@ class AddNodesItem(FrozenClass):
         packet.append(self.ReferenceTypeId.to_binary())
         packet.append(self.RequestedNewNodeId.to_binary())
         packet.append(self.BrowseName.to_binary())
-        packet.append(uatype_UInt32.pack(self.NodeClass))
+        packet.append(uatype_UInt32.pack(self.NodeClass.value))
         packet.append(extensionobject_to_binary(self.NodeAttributes))
         packet.append(self.TypeDefinition.to_binary())
         return b''.join(packet)
@@ -4464,7 +4465,7 @@ class AddNodesItem(FrozenClass):
         self.ReferenceTypeId = NodeId.from_binary(data)
         self.RequestedNewNodeId = ExpandedNodeId.from_binary(data)
         self.BrowseName = QualifiedName.from_binary(data)
-        self.NodeClass = uatype_UInt32.unpack(data.read(4))[0]
+        self.NodeClass = NodeClass(uatype_UInt32.unpack(data.read(4))[0])
         self.NodeAttributes = extensionobject_from_binary(data)
         self.TypeDefinition = ExpandedNodeId.from_binary(data)
 
@@ -4694,7 +4695,7 @@ class AddReferencesItem(FrozenClass):
         self.IsForward = True
         self.TargetServerUri = ''
         self.TargetNodeId = ExpandedNodeId()
-        self.TargetNodeClass = 0
+        self.TargetNodeClass = NodeClass(0)
         self._freeze = True
 
     def to_binary(self):
@@ -4704,7 +4705,7 @@ class AddReferencesItem(FrozenClass):
         packet.append(uatype_Boolean.pack(self.IsForward))
         packet.append(pack_string(self.TargetServerUri))
         packet.append(self.TargetNodeId.to_binary())
-        packet.append(uatype_UInt32.pack(self.TargetNodeClass))
+        packet.append(uatype_UInt32.pack(self.TargetNodeClass.value))
         return b''.join(packet)
 
     @staticmethod
@@ -4717,7 +4718,7 @@ class AddReferencesItem(FrozenClass):
         self.IsForward = uatype_Boolean.unpack(data.read(1))[0]
         self.TargetServerUri = unpack_string(data)
         self.TargetNodeId = ExpandedNodeId.from_binary(data)
-        self.TargetNodeClass = uatype_UInt32.unpack(data.read(4))[0]
+        self.TargetNodeClass = NodeClass(uatype_UInt32.unpack(data.read(4))[0])
 
     def __str__(self):
         return 'AddReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', ' + \
@@ -5369,7 +5370,7 @@ class BrowseDescription(FrozenClass):
             self._freeze = True
             return
         self.NodeId = NodeId()
-        self.BrowseDirection = 0
+        self.BrowseDirection = BrowseDirection(0)
         self.ReferenceTypeId = NodeId()
         self.IncludeSubtypes = True
         self.NodeClassMask = 0
@@ -5379,7 +5380,7 @@ class BrowseDescription(FrozenClass):
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
-        packet.append(uatype_UInt32.pack(self.BrowseDirection))
+        packet.append(uatype_UInt32.pack(self.BrowseDirection.value))
         packet.append(self.ReferenceTypeId.to_binary())
         packet.append(uatype_Boolean.pack(self.IncludeSubtypes))
         packet.append(uatype_UInt32.pack(self.NodeClassMask))
@@ -5392,7 +5393,7 @@ class BrowseDescription(FrozenClass):
 
     def _binary_init(self, data):
         self.NodeId = NodeId.from_binary(data)
-        self.BrowseDirection = uatype_UInt32.unpack(data.read(4))[0]
+        self.BrowseDirection = BrowseDirection(uatype_UInt32.unpack(data.read(4))[0])
         self.ReferenceTypeId = NodeId.from_binary(data)
         self.IncludeSubtypes = uatype_Boolean.unpack(data.read(1))[0]
         self.NodeClassMask = uatype_UInt32.unpack(data.read(4))[0]
@@ -5438,7 +5439,7 @@ class ReferenceDescription(FrozenClass):
         self.NodeId = ExpandedNodeId()
         self.BrowseName = QualifiedName()
         self.DisplayName = LocalizedText()
-        self.NodeClass = 0
+        self.NodeClass = NodeClass(0)
         self.TypeDefinition = ExpandedNodeId()
         self._freeze = True
 
@@ -5449,7 +5450,7 @@ class ReferenceDescription(FrozenClass):
         packet.append(self.NodeId.to_binary())
         packet.append(self.BrowseName.to_binary())
         packet.append(self.DisplayName.to_binary())
-        packet.append(uatype_UInt32.pack(self.NodeClass))
+        packet.append(uatype_UInt32.pack(self.NodeClass.value))
         packet.append(self.TypeDefinition.to_binary())
         return b''.join(packet)
 
@@ -5463,7 +5464,7 @@ class ReferenceDescription(FrozenClass):
         self.NodeId = ExpandedNodeId.from_binary(data)
         self.BrowseName = QualifiedName.from_binary(data)
         self.DisplayName = LocalizedText.from_binary(data)
-        self.NodeClass = uatype_UInt32.unpack(data.read(4))[0]
+        self.NodeClass = NodeClass(uatype_UInt32.unpack(data.read(4))[0])
         self.TypeDefinition = ExpandedNodeId.from_binary(data)
 
     def __str__(self):
@@ -6624,7 +6625,7 @@ class SupportedProfile(FrozenClass):
         self.ProfileId = ''
         self.ComplianceTool = ''
         self.ComplianceDate = datetime.now()
-        self.ComplianceLevel = 0
+        self.ComplianceLevel = ComplianceLevel(0)
         self.UnsupportedUnitIds = []
         self._freeze = True
 
@@ -6634,7 +6635,7 @@ class SupportedProfile(FrozenClass):
         packet.append(pack_string(self.ProfileId))
         packet.append(pack_string(self.ComplianceTool))
         packet.append(pack_datetime(self.ComplianceDate))
-        packet.append(uatype_UInt32.pack(self.ComplianceLevel))
+        packet.append(uatype_UInt32.pack(self.ComplianceLevel.value))
         packet.append(uatype_Int32.pack(len(self.UnsupportedUnitIds)))
         for fieldname in self.UnsupportedUnitIds:
             packet.append(pack_string(fieldname))
@@ -6649,7 +6650,7 @@ class SupportedProfile(FrozenClass):
         self.ProfileId = unpack_string(data)
         self.ComplianceTool = unpack_string(data)
         self.ComplianceDate = unpack_datetime(data)
-        self.ComplianceLevel = uatype_UInt32.unpack(data.read(4))[0]
+        self.ComplianceLevel = ComplianceLevel(uatype_UInt32.unpack(data.read(4))[0])
         self.UnsupportedUnitIds = unpack_uatype_array('String', data)
 
     def __str__(self):
@@ -6966,13 +6967,13 @@ class ContentFilterElement(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.FilterOperator = 0
+        self.FilterOperator = FilterOperator(0)
         self.FilterOperands = []
         self._freeze = True
 
     def to_binary(self):
         packet = []
-        packet.append(uatype_UInt32.pack(self.FilterOperator))
+        packet.append(uatype_UInt32.pack(self.FilterOperator.value))
         packet.append(uatype_Int32.pack(len(self.FilterOperands)))
         for fieldname in self.FilterOperands:
             packet.append(extensionobject_to_binary(fieldname))
@@ -6983,7 +6984,7 @@ class ContentFilterElement(FrozenClass):
         return ContentFilterElement(data)
 
     def _binary_init(self, data):
-        self.FilterOperator = uatype_UInt32.unpack(data.read(4))[0]
+        self.FilterOperator = FilterOperator(uatype_UInt32.unpack(data.read(4))[0])
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -7829,14 +7830,14 @@ class ReadParameters(FrozenClass):
             self._freeze = True
             return
         self.MaxAge = 0
-        self.TimestampsToReturn = 0
+        self.TimestampsToReturn = TimestampsToReturn(0)
         self.NodesToRead = []
         self._freeze = True
 
     def to_binary(self):
         packet = []
         packet.append(uatype_Double.pack(self.MaxAge))
-        packet.append(uatype_UInt32.pack(self.TimestampsToReturn))
+        packet.append(uatype_UInt32.pack(self.TimestampsToReturn.value))
         packet.append(uatype_Int32.pack(len(self.NodesToRead)))
         for fieldname in self.NodesToRead:
             packet.append(fieldname.to_binary())
@@ -7848,7 +7849,7 @@ class ReadParameters(FrozenClass):
 
     def _binary_init(self, data):
         self.MaxAge = uatype_Double.unpack(data.read(8))[0]
-        self.TimestampsToReturn = uatype_UInt32.unpack(data.read(4))[0]
+        self.TimestampsToReturn = TimestampsToReturn(uatype_UInt32.unpack(data.read(4))[0])
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -8347,14 +8348,14 @@ class ModificationInfo(FrozenClass):
             self._freeze = True
             return
         self.ModificationTime = datetime.now()
-        self.UpdateType = 0
+        self.UpdateType = HistoryUpdateType(0)
         self.UserName = ''
         self._freeze = True
 
     def to_binary(self):
         packet = []
         packet.append(pack_datetime(self.ModificationTime))
-        packet.append(uatype_UInt32.pack(self.UpdateType))
+        packet.append(uatype_UInt32.pack(self.UpdateType.value))
         packet.append(pack_string(self.UserName))
         return b''.join(packet)
 
@@ -8364,7 +8365,7 @@ class ModificationInfo(FrozenClass):
 
     def _binary_init(self, data):
         self.ModificationTime = unpack_datetime(data)
-        self.UpdateType = uatype_UInt32.unpack(data.read(4))[0]
+        self.UpdateType = HistoryUpdateType(uatype_UInt32.unpack(data.read(4))[0])
         self.UserName = unpack_string(data)
 
     def __str__(self):
@@ -8481,7 +8482,7 @@ class HistoryReadParameters(FrozenClass):
             self._freeze = True
             return
         self.HistoryReadDetails = None
-        self.TimestampsToReturn = 0
+        self.TimestampsToReturn = TimestampsToReturn(0)
         self.ReleaseContinuationPoints = True
         self.NodesToRead = []
         self._freeze = True
@@ -8489,7 +8490,7 @@ class HistoryReadParameters(FrozenClass):
     def to_binary(self):
         packet = []
         packet.append(extensionobject_to_binary(self.HistoryReadDetails))
-        packet.append(uatype_UInt32.pack(self.TimestampsToReturn))
+        packet.append(uatype_UInt32.pack(self.TimestampsToReturn.value))
         packet.append(uatype_Boolean.pack(self.ReleaseContinuationPoints))
         packet.append(uatype_Int32.pack(len(self.NodesToRead)))
         for fieldname in self.NodesToRead:
@@ -8502,7 +8503,7 @@ class HistoryReadParameters(FrozenClass):
 
     def _binary_init(self, data):
         self.HistoryReadDetails = extensionobject_from_binary(data)
-        self.TimestampsToReturn = uatype_UInt32.unpack(data.read(4))[0]
+        self.TimestampsToReturn = TimestampsToReturn(uatype_UInt32.unpack(data.read(4))[0])
         self.ReleaseContinuationPoints = uatype_Boolean.unpack(data.read(1))[0]
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
@@ -8865,14 +8866,14 @@ class UpdateDataDetails(FrozenClass):
             self._freeze = True
             return
         self.NodeId = NodeId()
-        self.PerformInsertReplace = 0
+        self.PerformInsertReplace = PerformUpdateType(0)
         self.UpdateValues = []
         self._freeze = True
 
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
-        packet.append(uatype_UInt32.pack(self.PerformInsertReplace))
+        packet.append(uatype_UInt32.pack(self.PerformInsertReplace.value))
         packet.append(uatype_Int32.pack(len(self.UpdateValues)))
         for fieldname in self.UpdateValues:
             packet.append(fieldname.to_binary())
@@ -8884,7 +8885,7 @@ class UpdateDataDetails(FrozenClass):
 
     def _binary_init(self, data):
         self.NodeId = NodeId.from_binary(data)
-        self.PerformInsertReplace = uatype_UInt32.unpack(data.read(4))[0]
+        self.PerformInsertReplace = PerformUpdateType(uatype_UInt32.unpack(data.read(4))[0])
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -8915,14 +8916,14 @@ class UpdateStructureDataDetails(FrozenClass):
             self._freeze = True
             return
         self.NodeId = NodeId()
-        self.PerformInsertReplace = 0
+        self.PerformInsertReplace = PerformUpdateType(0)
         self.UpdateValues = []
         self._freeze = True
 
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
-        packet.append(uatype_UInt32.pack(self.PerformInsertReplace))
+        packet.append(uatype_UInt32.pack(self.PerformInsertReplace.value))
         packet.append(uatype_Int32.pack(len(self.UpdateValues)))
         for fieldname in self.UpdateValues:
             packet.append(fieldname.to_binary())
@@ -8934,7 +8935,7 @@ class UpdateStructureDataDetails(FrozenClass):
 
     def _binary_init(self, data):
         self.NodeId = NodeId.from_binary(data)
-        self.PerformInsertReplace = uatype_UInt32.unpack(data.read(4))[0]
+        self.PerformInsertReplace = PerformUpdateType(uatype_UInt32.unpack(data.read(4))[0])
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -8967,7 +8968,7 @@ class UpdateEventDetails(FrozenClass):
             self._freeze = True
             return
         self.NodeId = NodeId()
-        self.PerformInsertReplace = 0
+        self.PerformInsertReplace = PerformUpdateType(0)
         self.Filter = EventFilter()
         self.EventData = []
         self._freeze = True
@@ -8975,7 +8976,7 @@ class UpdateEventDetails(FrozenClass):
     def to_binary(self):
         packet = []
         packet.append(self.NodeId.to_binary())
-        packet.append(uatype_UInt32.pack(self.PerformInsertReplace))
+        packet.append(uatype_UInt32.pack(self.PerformInsertReplace.value))
         packet.append(self.Filter.to_binary())
         packet.append(uatype_Int32.pack(len(self.EventData)))
         for fieldname in self.EventData:
@@ -8988,7 +8989,7 @@ class UpdateEventDetails(FrozenClass):
 
     def _binary_init(self, data):
         self.NodeId = NodeId.from_binary(data)
-        self.PerformInsertReplace = uatype_UInt32.unpack(data.read(4))[0]
+        self.PerformInsertReplace = PerformUpdateType(uatype_UInt32.unpack(data.read(4))[0])
         self.Filter = EventFilter.from_binary(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
@@ -9639,14 +9640,14 @@ class DataChangeFilter(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.Trigger = 0
+        self.Trigger = DataChangeTrigger(0)
         self.DeadbandType = 0
         self.DeadbandValue = 0
         self._freeze = True
 
     def to_binary(self):
         packet = []
-        packet.append(uatype_UInt32.pack(self.Trigger))
+        packet.append(uatype_UInt32.pack(self.Trigger.value))
         packet.append(uatype_UInt32.pack(self.DeadbandType))
         packet.append(uatype_Double.pack(self.DeadbandValue))
         return b''.join(packet)
@@ -9656,7 +9657,7 @@ class DataChangeFilter(FrozenClass):
         return DataChangeFilter(data)
 
     def _binary_init(self, data):
-        self.Trigger = uatype_UInt32.unpack(data.read(4))[0]
+        self.Trigger = DataChangeTrigger(uatype_UInt32.unpack(data.read(4))[0])
         self.DeadbandType = uatype_UInt32.unpack(data.read(4))[0]
         self.DeadbandValue = uatype_Double.unpack(data.read(8))[0]
 
@@ -10013,14 +10014,14 @@ class MonitoredItemCreateRequest(FrozenClass):
             self._freeze = True
             return
         self.ItemToMonitor = ReadValueId()
-        self.MonitoringMode = 0
+        self.MonitoringMode = MonitoringMode(0)
         self.RequestedParameters = MonitoringParameters()
         self._freeze = True
 
     def to_binary(self):
         packet = []
         packet.append(self.ItemToMonitor.to_binary())
-        packet.append(uatype_UInt32.pack(self.MonitoringMode))
+        packet.append(uatype_UInt32.pack(self.MonitoringMode.value))
         packet.append(self.RequestedParameters.to_binary())
         return b''.join(packet)
 
@@ -10030,7 +10031,7 @@ class MonitoredItemCreateRequest(FrozenClass):
 
     def _binary_init(self, data):
         self.ItemToMonitor = ReadValueId.from_binary(data)
-        self.MonitoringMode = uatype_UInt32.unpack(data.read(4))[0]
+        self.MonitoringMode = MonitoringMode(uatype_UInt32.unpack(data.read(4))[0])
         self.RequestedParameters = MonitoringParameters.from_binary(data)
 
     def __str__(self):
@@ -10111,14 +10112,14 @@ class CreateMonitoredItemsParameters(FrozenClass):
             self._freeze = True
             return
         self.SubscriptionId = 0
-        self.TimestampsToReturn = 0
+        self.TimestampsToReturn = TimestampsToReturn(0)
         self.ItemsToCreate = []
         self._freeze = True
 
     def to_binary(self):
         packet = []
         packet.append(uatype_UInt32.pack(self.SubscriptionId))
-        packet.append(uatype_UInt32.pack(self.TimestampsToReturn))
+        packet.append(uatype_UInt32.pack(self.TimestampsToReturn.value))
         packet.append(uatype_Int32.pack(len(self.ItemsToCreate)))
         for fieldname in self.ItemsToCreate:
             packet.append(fieldname.to_binary())
@@ -10130,7 +10131,7 @@ class CreateMonitoredItemsParameters(FrozenClass):
 
     def _binary_init(self, data):
         self.SubscriptionId = uatype_UInt32.unpack(data.read(4))[0]
-        self.TimestampsToReturn = uatype_UInt32.unpack(data.read(4))[0]
+        self.TimestampsToReturn = TimestampsToReturn(uatype_UInt32.unpack(data.read(4))[0])
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -10353,14 +10354,14 @@ class ModifyMonitoredItemsParameters(FrozenClass):
             self._freeze = True
             return
         self.SubscriptionId = 0
-        self.TimestampsToReturn = 0
+        self.TimestampsToReturn = TimestampsToReturn(0)
         self.ItemsToModify = []
         self._freeze = True
 
     def to_binary(self):
         packet = []
         packet.append(uatype_UInt32.pack(self.SubscriptionId))
-        packet.append(uatype_UInt32.pack(self.TimestampsToReturn))
+        packet.append(uatype_UInt32.pack(self.TimestampsToReturn.value))
         packet.append(uatype_Int32.pack(len(self.ItemsToModify)))
         for fieldname in self.ItemsToModify:
             packet.append(fieldname.to_binary())
@@ -10372,7 +10373,7 @@ class ModifyMonitoredItemsParameters(FrozenClass):
 
     def _binary_init(self, data):
         self.SubscriptionId = uatype_UInt32.unpack(data.read(4))[0]
-        self.TimestampsToReturn = uatype_UInt32.unpack(data.read(4))[0]
+        self.TimestampsToReturn = TimestampsToReturn(uatype_UInt32.unpack(data.read(4))[0])
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -10509,14 +10510,14 @@ class SetMonitoringModeParameters(FrozenClass):
             self._freeze = True
             return
         self.SubscriptionId = 0
-        self.MonitoringMode = 0
+        self.MonitoringMode = MonitoringMode(0)
         self.MonitoredItemIds = []
         self._freeze = True
 
     def to_binary(self):
         packet = []
         packet.append(uatype_UInt32.pack(self.SubscriptionId))
-        packet.append(uatype_UInt32.pack(self.MonitoringMode))
+        packet.append(uatype_UInt32.pack(self.MonitoringMode.value))
         packet.append(uatype_Int32.pack(len(self.MonitoredItemIds)))
         for fieldname in self.MonitoredItemIds:
             packet.append(uatype_UInt32.pack(fieldname))
@@ -10528,7 +10529,7 @@ class SetMonitoringModeParameters(FrozenClass):
 
     def _binary_init(self, data):
         self.SubscriptionId = uatype_UInt32.unpack(data.read(4))[0]
-        self.MonitoringMode = uatype_UInt32.unpack(data.read(4))[0]
+        self.MonitoringMode = MonitoringMode(uatype_UInt32.unpack(data.read(4))[0])
         self.MonitoredItemIds = unpack_uatype_array('UInt32', data)
 
     def __str__(self):
@@ -12713,14 +12714,14 @@ class RedundantServerDataType(FrozenClass):
             return
         self.ServerId = ''
         self.ServiceLevel = 0
-        self.ServerState = 0
+        self.ServerState = ServerState(0)
         self._freeze = True
 
     def to_binary(self):
         packet = []
         packet.append(pack_string(self.ServerId))
         packet.append(uatype_Byte.pack(self.ServiceLevel))
-        packet.append(uatype_UInt32.pack(self.ServerState))
+        packet.append(uatype_UInt32.pack(self.ServerState.value))
         return b''.join(packet)
 
     @staticmethod
@@ -12730,7 +12731,7 @@ class RedundantServerDataType(FrozenClass):
     def _binary_init(self, data):
         self.ServerId = unpack_string(data)
         self.ServiceLevel = uatype_Byte.unpack(data.read(1))[0]
-        self.ServerState = uatype_UInt32.unpack(data.read(4))[0]
+        self.ServerState = ServerState(uatype_UInt32.unpack(data.read(4))[0])
 
     def __str__(self):
         return 'RedundantServerDataType(' + 'ServerId:' + str(self.ServerId) + ', ' + \
@@ -12985,7 +12986,7 @@ class ServerStatusDataType(FrozenClass):
             return
         self.StartTime = datetime.now()
         self.CurrentTime = datetime.now()
-        self.State = 0
+        self.State = ServerState(0)
         self.BuildInfo = BuildInfo()
         self.SecondsTillShutdown = 0
         self.ShutdownReason = LocalizedText()
@@ -12995,7 +12996,7 @@ class ServerStatusDataType(FrozenClass):
         packet = []
         packet.append(pack_datetime(self.StartTime))
         packet.append(pack_datetime(self.CurrentTime))
-        packet.append(uatype_UInt32.pack(self.State))
+        packet.append(uatype_UInt32.pack(self.State.value))
         packet.append(self.BuildInfo.to_binary())
         packet.append(uatype_UInt32.pack(self.SecondsTillShutdown))
         packet.append(self.ShutdownReason.to_binary())
@@ -13008,7 +13009,7 @@ class ServerStatusDataType(FrozenClass):
     def _binary_init(self, data):
         self.StartTime = unpack_datetime(data)
         self.CurrentTime = unpack_datetime(data)
-        self.State = uatype_UInt32.unpack(data.read(4))[0]
+        self.State = ServerState(uatype_UInt32.unpack(data.read(4))[0])
         self.BuildInfo = BuildInfo.from_binary(data)
         self.SecondsTillShutdown = uatype_UInt32.unpack(data.read(4))[0]
         self.ShutdownReason = LocalizedText.from_binary(data)
@@ -13341,7 +13342,7 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
         self.AuthenticationMechanism = ''
         self.Encoding = ''
         self.TransportProtocol = ''
-        self.SecurityMode = 0
+        self.SecurityMode = MessageSecurityMode(0)
         self.SecurityPolicyUri = ''
         self.ClientCertificate = b''
         self._freeze = True
@@ -13356,7 +13357,7 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
         packet.append(pack_string(self.AuthenticationMechanism))
         packet.append(pack_string(self.Encoding))
         packet.append(pack_string(self.TransportProtocol))
-        packet.append(uatype_UInt32.pack(self.SecurityMode))
+        packet.append(uatype_UInt32.pack(self.SecurityMode.value))
         packet.append(pack_string(self.SecurityPolicyUri))
         packet.append(pack_bytes(self.ClientCertificate))
         return b''.join(packet)
@@ -13372,7 +13373,7 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
         self.AuthenticationMechanism = unpack_string(data)
         self.Encoding = unpack_string(data)
         self.TransportProtocol = unpack_string(data)
-        self.SecurityMode = uatype_UInt32.unpack(data.read(4))[0]
+        self.SecurityMode = MessageSecurityMode(uatype_UInt32.unpack(data.read(4))[0])
         self.SecurityPolicyUri = unpack_string(data)
         self.ClientCertificate = unpack_bytes(data)
 
@@ -13936,7 +13937,7 @@ class AxisInformation(FrozenClass):
         self.EngineeringUnits = EUInformation()
         self.EURange = Range()
         self.Title = LocalizedText()
-        self.AxisScaleType = 0
+        self.AxisScaleType = AxisScaleEnumeration(0)
         self.AxisSteps = []
         self._freeze = True
 
@@ -13945,7 +13946,7 @@ class AxisInformation(FrozenClass):
         packet.append(self.EngineeringUnits.to_binary())
         packet.append(self.EURange.to_binary())
         packet.append(self.Title.to_binary())
-        packet.append(uatype_UInt32.pack(self.AxisScaleType))
+        packet.append(uatype_UInt32.pack(self.AxisScaleType.value))
         packet.append(uatype_Int32.pack(len(self.AxisSteps)))
         for fieldname in self.AxisSteps:
             packet.append(uatype_Double.pack(fieldname))
@@ -13959,7 +13960,7 @@ class AxisInformation(FrozenClass):
         self.EngineeringUnits = EUInformation.from_binary(data)
         self.EURange = Range.from_binary(data)
         self.Title = LocalizedText.from_binary(data)
-        self.AxisScaleType = uatype_UInt32.unpack(data.read(4))[0]
+        self.AxisScaleType = AxisScaleEnumeration(uatype_UInt32.unpack(data.read(4))[0])
         self.AxisSteps = unpack_uatype_array('Double', data)
 
     def __str__(self):
