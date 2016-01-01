@@ -765,7 +765,7 @@ class Variant(FrozenClass):
                 raise Exception("Could not guess UA type of {} with type {}, specify UA type".format(val, type(val)))
 
     def __str__(self):
-        return "Variant(val:{},type:{})".format(self.Value, self.VariantType)
+        return "Variant(val:{!s},type:{})".format(self.Value, self.VariantType)
     __repr__ = __str__
 
     def to_binary(self):

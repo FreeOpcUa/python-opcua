@@ -289,6 +289,16 @@ class BinaryClient(object):
         data = self._uasocket.send_request(request)
         response = ua.ReadResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
+        # cast to Enum attributes that need to
+        for idx, rv in enumerate(parameters.NodesToRead):
+            if rv.AttributeId == ua.AttributeIds.NodeClass:
+                dv = response.Results[idx]
+                if dv.StatusCode.is_good():
+                    dv.Value.Value = ua.NodeClass(dv.Value.Value)
+            elif rv.AttributeId == ua.AttributeIds.ValueRank:
+                dv = response.Results[idx]
+                if dv.StatusCode.is_good() and dv.Value.Value in (-3, -2, -1, 0, 1, 2, 3, 4):
+                    dv.Value.Value = ua.ValueRank(dv.Value.Value)
         return response.Results
 
     def write(self, params):
