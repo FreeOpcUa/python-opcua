@@ -169,7 +169,8 @@ class MonitoredItemService(object):
         for sattr in evfilter.SelectClauses:
             try:
                 if not sattr.BrowsePath:
-                    val = getattr(event, ua.AttributeIdsInv[sattr.Attribute])
+                    #val = getattr(event, ua.AttributeIdsInv[sattr.Attribute])
+                    val = getattr(event, sattr.Attribute.name)
                     val = copy.deepcopy(val)
                     fields.append(ua.Variant(val))
                 else:

@@ -162,7 +162,8 @@ class Subscription(object):
 
                     if len(sattr.BrowsePath) == 0:
                         #fields[ua.AttributeIdsInv[sattr.AttributeId]] = event.EventFields[idx].Value
-                        setattr(result, ua.AttributeIdsInv[sattr.AttributeId], event.EventFields[idx].Value)
+                        #setattr(result, ua.AttributeIdsInv[sattr.AttributeId], event.EventFields[idx].Value)
+                        setattr(result, sattr.AttributeId.name, event.EventFields[idx].Value)
                     else:
                         setattr(result, sattr.BrowsePath[0].Name, event.EventFields[idx].Value)
                 if hasattr(self._handler, "event_notification"):
