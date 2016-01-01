@@ -28,7 +28,7 @@ def x509_from_der(data):
 
 
 def x509_to_der(cert):
-    if not data:
+    if not cert:
         return b''
     return cert.public_bytes(serialization.Encoding.DER)
 

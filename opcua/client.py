@@ -357,7 +357,11 @@ class Client(object):
             params.UserIdentityToken.UserName = username 
             if self.server_url.password:
                 pubkey = uacrypto.x509_from_der(self.security_policy.server_certificate).public_key()
-                data = uacrypto.encrypt_basic256(pubkey, bytes(password, "utf8"))
+                # see specs part 4, 7.36.3: if the token is encrypted, password
+                # shall be converted to UTF-8 and serialized with server nonce
+                etoken = ua.pack_bytes(bytes(password, "utf8") + self._server_nonce)
+                #data = uacrypto.encrypt_basic256(pubkey, etoken)
+                data = uacrypto.encrypt_rsa_oaep(pubkey, etoken)
                 params.UserIdentityToken.Password = data
             params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")
             params.UserIdentityToken.EncryptionAlgorithm = 'http://www.w3.org/2001/04/xmlenc#rsa-oaep'
