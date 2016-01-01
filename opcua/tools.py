@@ -159,7 +159,6 @@ def _val_to_variant(val, args):
     if args.datatype == "guess":
         if val in ("true", "True", "false", "False"):
             return _arg_to_variant(val, array, _arg_to_bool)
-        # FIXME: guess bool value
         try:
             return _arg_to_variant(val, array, int)
         except ValueError:
@@ -387,25 +386,13 @@ def uasubscribe():
     print(args)
 
 
-# converts numeric value to its enum name.
-def enum_to_string(klass, value):
-    if isinstance(value, Enum):
-        return value.name
-    # if value is not a subtype of Enum, try to find a constant
-    # with this value in this class
-    for k, v in vars(klass).items():
-        if not k.startswith('__') and v == value:
-            return k
-    return 'Unknown {} ({})'.format(klass.__name__, value)
-
-
 def application_to_strings(app):
     result = []
     result.append(('Application URI', app.ApplicationUri))
     optionals = [
         ('Product URI', app.ProductUri),
         ('Application Name', app.ApplicationName.to_string()),
-        ('Application Type', enum_to_string(ua.ApplicationType, app.ApplicationType)),
+        ('Application Type', str(app.ApplicationType)),
         ('Gateway Server URI', app.GatewayServerUri),
         ('Discovery Profile URI', app.DiscoveryProfileUri),
     ]
@@ -422,12 +409,12 @@ def endpoint_to_strings(ep):
     result += application_to_strings(ep.Server)
     result += [
         ('Server Certificate', len(ep.ServerCertificate)),
-        ('Security Mode', enum_to_string(ua.MessageSecurityMode, ep.SecurityMode)),
+        ('Security Mode', str(ep.SecurityMode)),
         ('Security Policy URI', ep.SecurityPolicyUri)]
     for tok in ep.UserIdentityTokens:
         result += [
             ('User policy', tok.PolicyId),
-            ('  Token type', enum_to_string(ua.UserTokenType, tok.TokenType))]
+            ('  Token type', str(tok.TokenType))]
         if tok.IssuedTokenType or tok.IssuerEndpointUrl:
             result += [
                 ('  Issued Token type', tok.IssuedTokenType),
@@ -593,7 +580,7 @@ def print_history(o):
 def str_to_datetime(s):
     if not s:
         return datetime.utcnow()
-    # try different datetime formats
+    # FIXME: try different datetime formats
     for fmt in ["%Y-%m-%d", "%Y-%m-%d %H:%M", "%Y-%m-%d %H:%M:%S"]:
         try:
             return datetime.strptime(s, fmt)
