@@ -115,7 +115,7 @@ class InternalServer(object):
                 url = url._replace(netloc=sockname[0] + ":" + str(sockname[1]))
                 edp1.EndpointUrl = url.geturl()
                 edps.append(edp1)
-                return edps
+            return edps
         return self.endpoints[:]
 
     def find_servers(self, params):

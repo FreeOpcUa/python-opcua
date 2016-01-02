@@ -212,7 +212,7 @@ class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
         return hdr
 
     def __str__(self):
-        return "{}(SecurytyPolicy:{}, certificatesize:{}, receiverCertificatesize:{} )".format(self.__class__.__name__, self.SecurityPolicyURI, len(self.SenderCertificate), len(self.ReceiverCertificateThumbPrint))
+        return "{}(SecurityPolicy:{}, certificatesize:{}, receiverCertificatesize:{} )".format(self.__class__.__name__, self.SecurityPolicyURI, len(self.SenderCertificate), len(self.ReceiverCertificateThumbPrint))
     __repr__ = __str__
 
 
