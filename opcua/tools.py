@@ -440,11 +440,11 @@ def uaclient():
 
     client = Client(args.url, timeout=args.timeout)
     client.set_security_string(args.security)
-    client.connect()
     if args.certificate:
         client.load_client_certificate(args.certificate)
     if args.private_key:
         client.load_private_key(args.private_key)
+    client.connect()
     try:
         root = client.get_root_node()
         objects = client.get_objects_node()
