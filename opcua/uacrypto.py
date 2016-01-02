@@ -129,7 +129,7 @@ def cipher_decrypt(cipher, data):
     return decryptor.update(data) + decryptor.finalize()
 
 
-def hash_hmac(key, message):
+def hmac_sha1(key, message):
     hasher = hmac.HMAC(key, hashes.SHA1(), backend=default_backend())
     hasher.update(message)
     return hasher.finalize()
@@ -139,9 +139,10 @@ def sha1_size():
     return hashes.SHA1.digest_size
 
 
-def p_sha1(key, body, sizes=()):
+def p_sha1(secret, seed, sizes=()):
     """
-    Derive one or more keys from key and body.
+    Derive one or more keys from secret and seed.
+    (See specs part 6, 6.7.5 and RFC 2246 - TLS v1.0)
     Lengths of keys will match sizes argument
     """
     full_size = 0
@@ -149,10 +150,10 @@ def p_sha1(key, body, sizes=()):
         full_size += size
 
     result = b''
-    accum = body
+    accum = seed
     while len(result) < full_size:
-        accum = hash_hmac(key, accum)
-        result += hash_hmac(key, accum + body)
+        accum = hmac_sha1(secret, accum)
+        result += hmac_sha1(secret, accum + seed)
 
     parts = []
     for size in sizes:

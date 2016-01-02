@@ -249,7 +249,7 @@ class SignerAesCbc(Signer):
         return uacrypto.sha1_size()
 
     def signature(self, data):
-        return uacrypto.hash_hmac(self.key, data)
+        return uacrypto.hmac_sha1(self.key, data)
 
 
 class VerifierAesCbc(Verifier):
@@ -261,7 +261,7 @@ class VerifierAesCbc(Verifier):
         return uacrypto.sha1_size()
 
     def verify(self, data, signature):
-        expected = uacrypto.hash_hmac(self.key, data)
+        expected = uacrypto.hmac_sha1(self.key, data)
         if signature != expected:
             raise uacrypto.InvalidSignature
 
@@ -403,6 +403,7 @@ class SecurityPolicyBasic256(SecurityPolicy):
         self.client_certificate = uacrypto.der_from_x509(client_cert)
 
     def make_symmetric_key(self, nonce1, nonce2):
+        # specs part 6, 6.7.5
         key_sizes = (self.signature_key_size, self.symmetric_key_size, 16)
 
         (sigkey, key, init_vec) = uacrypto.p_sha1(nonce2, nonce1, key_sizes)
