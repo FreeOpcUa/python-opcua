@@ -6,6 +6,7 @@ import logging
 import socket
 from threading import Thread, Lock
 from concurrent.futures import Future
+from functools import partial
 
 import opcua.uaprotocol as ua
 import opcua.utils as utils
@@ -214,8 +215,8 @@ class BinaryClient(object):
 
     def __init__(self, timeout=1):
         self.logger = logging.getLogger(__name__)
+        # _publishcallbacks should be accessed in recv thread only
         self._publishcallbacks = {}
-        self._lock = Lock()
         self._timeout = timeout
         self._uasocket = None
         self._security_policy = ua.SecurityPolicy()
@@ -368,24 +369,36 @@ class BinaryClient(object):
         self.logger.info("create_subscription")
         request = ua.CreateSubscriptionRequest()
         request.Parameters = params
-        data = self._uasocket.send_request(request)
+        resp_fut = Future()
+        mycallbak = partial(self._create_subscription_callback, callback, resp_fut)
+        self._uasocket.send_request(request, mycallbak)
+        return resp_fut.result(self._timeout)
+
+    def _create_subscription_callback(self, pub_callback, resp_fut, data_fut):
+        self.logger.info("_create_subscription_callback")
+        data = data_fut.result()
         response = ua.CreateSubscriptionResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
-        with self._lock:
-            self._publishcallbacks[response.Parameters.SubscriptionId] = callback
-        return response.Parameters
+        self._publishcallbacks[response.Parameters.SubscriptionId] = pub_callback
+        resp_fut.set_result(response.Parameters)
 
     def delete_subscriptions(self, subscriptionids):
         self.logger.info("delete_subscription")
         request = ua.DeleteSubscriptionsRequest()
         request.Parameters.SubscriptionIds = subscriptionids
-        data = self._uasocket.send_request(request)
+        resp_fut = Future()
+        mycallbak = partial(self._delete_subscriptions_callback, subscriptionids, resp_fut)
+        self._uasocket.send_request(request, mycallbak)
+        return resp_fut.result(self._timeout)
+
+    def _delete_subscriptions_callback(self, subscriptionids, resp_fut, data_fut):
+        self.logger.info("_delete_subscriptions_callback")
+        data = data_fut.result()
         response = ua.DeleteSubscriptionsResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         for sid in subscriptionids:
-            with self._lock:
-                self._publishcallbacks.pop(sid)
-        return response.Results
+            self._publishcallbacks.pop(sid)
+        resp_fut.set_result(response.Results)
 
     def publish(self, acks=None):
         self.logger.info("publish")
@@ -400,11 +413,10 @@ class BinaryClient(object):
         data = future.result()
         self._uasocket.check_answer(data, "ServiceFault received from server while waiting for publish response")
         response = ua.PublishResponse.from_binary(data)
-        with self._lock:
-            if response.Parameters.SubscriptionId not in self._publishcallbacks:
-                self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
-                return
-            callback = self._publishcallbacks[response.Parameters.SubscriptionId]
+        if response.Parameters.SubscriptionId not in self._publishcallbacks:
+            self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
+            return
+        callback = self._publishcallbacks[response.Parameters.SubscriptionId]
         try:
             callback(response.Parameters)
         except Exception:  # we call client code, catch everything!
