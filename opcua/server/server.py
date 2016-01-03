@@ -18,6 +18,13 @@ from opcua.common.event import Event
 from opcua.common.subscription import Subscription
 from opcua.common import xmlimporter
 from opcua.client.client import Client
+from opcua.crypto import security_policies
+use_crypto = True
+try:
+    from opcua.crypto import uacrypto
+except:
+    print("cryptography is not installed, use of crypto disabled")
+    use_crypto = False
 
 
 class Server(object):
@@ -60,11 +67,23 @@ class Server(object):
         self.bserver = None
         self._discovery_clients = {}
         self._discovery_period = 60
+        self.certificate = None
+        self.private_key = None
+        self._policies = []
 
         # setup some expected values
         self.register_namespace(self.application_uri)
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
         sa_node.set_value([self.application_uri])
+
+    def load_certificate(self, path):
+        """
+        load server certificate from file, either pem or der
+        """
+        self.certificate = uacrypto.load_certificate(path)
+
+    def load_private_key(self, path):
+        self.private_key = uacrypto.load_private_key(path)
 
     def disable_clock(self, val=True):
         """
@@ -136,8 +155,34 @@ class Server(object):
     def _setup_server_nodes(self):
         # to be called just before starting server since it needs all parameters to be setup
         self._set_endpoints()
+        self._policies = [ua.SecurityPolicyFactory()]
+        if self.certificate and self.private_key:
+            self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
+                                ua.MessageSecurityMode.SignAndEncrypt)
+            self._policies.append(ua.SecurityPolicyFactory(
+                                security_policies.SecurityPolicyBasic128Rsa15,
+                                ua.MessageSecurityMode.SignAndEncrypt,
+                                self.certificate, self.private_key))
+            self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
+                                ua.MessageSecurityMode.Sign)
+            self._policies.append(ua.SecurityPolicyFactory(
+                                security_policies.SecurityPolicyBasic128Rsa15,
+                                ua.MessageSecurityMode.Sign,
+                                self.certificate, self.private_key))
+            self._set_endpoints(security_policies.SecurityPolicyBasic256,
+                                ua.MessageSecurityMode.SignAndEncrypt)
+            self._policies.append(ua.SecurityPolicyFactory(
+                                security_policies.SecurityPolicyBasic256,
+                                ua.MessageSecurityMode.SignAndEncrypt,
+                                self.certificate, self.private_key))
+            self._set_endpoints(security_policies.SecurityPolicyBasic256,
+                                ua.MessageSecurityMode.Sign)
+            self._policies.append(ua.SecurityPolicyFactory(
+                                security_policies.SecurityPolicyBasic256,
+                                ua.MessageSecurityMode.Sign,
+                                self.certificate, self.private_key))
 
-    def _set_endpoints(self):
+    def _set_endpoints(self, policy=ua.SecurityPolicy, mode=ua.MessageSecurityMode.None_):
         idtoken = ua.UserTokenPolicy()
         idtoken.PolicyId = 'anonymous'
         idtoken.TokenType = ua.UserTokenType.Anonymous
@@ -164,8 +209,10 @@ class Server(object):
         edp = ua.EndpointDescription()
         edp.EndpointUrl = self.endpoint.geturl()
         edp.Server = appdesc
-        edp.SecurityMode = ua.MessageSecurityMode.None_
-        edp.SecurityPolicyUri = 'http://opcfoundation.org/UA/SecurityPolicy#None'
+        if self.certificate:
+            edp.ServerCertificate = uacrypto.der_from_x509(self.certificate)
+        edp.SecurityMode = mode
+        edp.SecurityPolicyUri = policy.URI
         edp.UserIdentityTokens = [idtoken, idtoken2, idtoken3]
         edp.TransportProfileUri = 'http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary'
         edp.SecurityLevel = 0
@@ -181,6 +228,7 @@ class Server(object):
         self._setup_server_nodes()
         self.iserver.start()
         self.bserver = BinaryServer(self.iserver, self.endpoint.hostname, self.endpoint.port)
+        self.bserver.set_policies(self._policies)
         self.bserver.start()
 
     def stop(self):

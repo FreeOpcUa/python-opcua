@@ -484,11 +484,19 @@ def uaserver():
                         "--shell",
                         action="store_true",
                         help="Start python shell instead of randomly changing node values")
+    parser.add_argument("--certificate",
+                        help="set server certificate")
+    parser.add_argument("--private_key",
+                        help="set server private key")
     args = parser.parse_args()
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
     server = Server()
     server.set_endpoint(args.url)
+    if args.certificate:
+        server.load_certificate(args.certificate)
+    if args.private_key:
+        server.load_private_key(args.private_key)
     server.disable_clock(args.disable_clock)
     server.set_server_name("FreeOpcUa Example Server")
     if args.xml:
