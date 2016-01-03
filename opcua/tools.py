@@ -475,7 +475,7 @@ def uaserver():
                         help="Populate address space with nodes defined in XML")
     parser.add_argument("-p",
                         "--populate",
-                        action="store_false",
+                        action="store_true",
                         help="Populate address space with some sample nodes")
     parser.add_argument("-c",
                         "--disable-clock",
@@ -515,13 +515,16 @@ def uaserver():
     try:
         if args.shell:
             embed()
-        else:
+        elif args.populate:
             count = 0
             while True:
                 time.sleep(1)
                 myvar.set_value(math.sin(count / 10))
                 myarrayvar.set_value([math.sin(count / 10), math.sin(count / 100)])
                 count += 1
+        else:
+            while True:
+                time.sleep(1)
     finally:
         server.stop()
     sys.exit(0)
