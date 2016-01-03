@@ -164,7 +164,6 @@ class InternalSession(object):
         InternalSession._counter += 1
         self.authentication_token = ua.NodeId(self._auth_counter)
         InternalSession._auth_counter += 1
-        self.nonce = utils.create_nonce()
         self.subscriptions = []
         #self.logger.debug("Created internal session %s for user %s", self.name, self.user)
         print("Created internal session {} for user {}".format(self.name, self.user))
@@ -184,6 +183,7 @@ class InternalSession(object):
         result.AuthenticationToken = self.authentication_token
         result.RevisedSessionTimeout = params.RequestedSessionTimeout
         result.MaxRequestMessageSize = 65536
+        self.nonce = utils.create_nonce(32)
         result.ServerNonce = self.nonce
         result.ServerEndpoints = self.get_endpoints(sockname=sockname)
 
@@ -199,6 +199,7 @@ class InternalSession(object):
         result = ua.ActivateSessionResult()
         if self.state != SessionState.Created:
             raise utils.ServiceError(ua.StatusCodes.BadSessionIdInvalid)
+        self.nonce = utils.create_nonce(32)
         result.ServerNonce = self.nonce
         for _ in params.ClientSoftwareCertificates:
             result.Results.append(ua.StatusCode())

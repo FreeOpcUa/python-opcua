@@ -24,6 +24,10 @@ class BinaryServer(object):
         self.iserver = internal_server
         self.loop = internal_server.loop
         self._server = None
+        self._policies = []
+
+    def set_policies(self, policies):
+        self._policies = policies
 
     def start(self):
 
@@ -39,12 +43,14 @@ class BinaryServer(object):
             iserver = self.iserver
             loop = self.loop
             logger = self.logger
+            policies = self._policies
 
             def connection_made(self, transport):
                 self.peername = transport.get_extra_info('peername')
                 self.logger.info('New connection from %s', self.peername)
                 self.transport = transport
                 self.processor = UAProcessor(self.iserver, self.transport)
+                self.processor.set_policies(self.policies)
                 self.data = b""
 
             def connection_lost(self, ex):

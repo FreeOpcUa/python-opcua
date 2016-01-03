@@ -28,39 +28,22 @@ class UAProcessor(object):
         self._socketlock = Lock()
         self._datalock = Lock()
         self._publishdata_queue = []
-        self._seq_number = 0
-        self._security_policy = ua.SecurityPolicy()
-        self._max_chunk_size = 65536
+        self._connection = ua.SecureConnection(ua.SecurityPolicy())
+
+    def set_policies(self, policies):
+        self._connection.set_policy_factories(policies)
 
     def send_response(self, requesthandle, algohdr, seqhdr, response, msgtype=ua.MessageType.SecureMessage):
         with self._socketlock:
             response.ResponseHeader.RequestHandle = requesthandle
-            for chunk in ua.MessageChunk.message_to_chunks(self._security_policy, response.to_binary(), self._max_chunk_size, msgtype,
-                    channel_id=self.channel.SecurityToken.ChannelId,
-                    token_id=self.channel.SecurityToken.TokenId,
-                    request_id=seqhdr.RequestId):
-                self._seq_number += 1
-                chunk.SequenceHeader.SequenceNumber = self._seq_number
-                self.socket.write(chunk.to_binary())
+            data = self._connection.message_to_binary(response.to_binary(),
+                    msgtype, seqhdr.RequestId)
+            self.socket.write(data)
 
-    def _write_socket(self, hdr, *args):
-        alle = []
-        for arg in args:
-            data = arg.to_binary()
-            hdr.add_size(len(data))
-            alle.append(data)
-        alle.insert(0, hdr.to_binary())
-        alle = b"".join(alle)
-        self.logger.info("writting %s bytes to socket, with header %s ", len(alle), hdr)
-        #self.logger.info("writting data %s", hdr, [i for i in args])
-        #self.logger.debug("data: %s", alle)
-        self.socket.write(alle)
-
-    def open_secure_channel(self, body):
-        algohdr = ua.AsymmetricAlgorithmHeader.from_binary(body)
-        seqhdr = ua.SequenceHeader.from_binary(body)
+    def open_secure_channel(self, algohdr, seqhdr, body):
         request = ua.OpenSecureChannelRequest.from_binary(body)
 
+        self._connection.select_policy(algohdr.SecurityPolicyURI, algohdr.SenderCertificate, request.Parameters.SecurityMode)
         channel = self._open_secure_channel(request.Parameters)
         # send response
         response = ua.OpenSecureChannelResponse()
@@ -80,33 +63,32 @@ class UAProcessor(object):
         self.send_response(requestdata.requesthdr.RequestHandle, requestdata.algohdr, requestdata.seqhdr, response)
 
     def process(self, header, body):
-        if header.MessageType == ua.MessageType.Hello:
-            hello = ua.Hello.from_binary(body)
-            hdr = ua.Header(ua.MessageType.Acknowledge, ua.ChunkType.Single)
+        msg = self._connection.receive_from_header_and_body(header, body)
+        if isinstance(msg, ua.Message):
+            if header.MessageType == ua.MessageType.SecureOpen:
+                self.open_secure_channel(msg.SecurityHeader(), msg.SequenceHeader(), msg.body())
+
+            elif header.MessageType == ua.MessageType.SecureClose:
+                if not self.channel or header.ChannelId != self.channel.SecurityToken.ChannelId:
+                    self.logger.warning("Request to close channel %s which was not issued, current channel is %s", header.ChannelId, self.channel)
+                return False
+
+            elif header.MessageType == ua.MessageType.SecureMessage:
+                return self.process_message(msg.SecurityHeader(), msg.SequenceHeader(), msg.body())
+
+        elif isinstance(msg, ua.Hello):
             ack = ua.Acknowledge()
-            self._max_chunk_size = hello.ReceiveBufferSize
-            ack.ReceiveBufferSize = hello.ReceiveBufferSize
-            ack.SendBufferSize = hello.SendBufferSize
-            self._write_socket(hdr, ack)
+            ack.ReceiveBufferSize = msg.ReceiveBufferSize
+            ack.SendBufferSize = msg.SendBufferSize
+            data = self._connection.tcp_to_binary(ua.MessageType.Acknowledge, ack)
+            self.socket.write(data)
 
-        elif header.MessageType == ua.MessageType.Error:
+        elif isinstance(msg, ua.ErrorMessage):
             self.logger.warning("Received an error message type")
-
-        elif header.MessageType == ua.MessageType.SecureOpen:
-            self.open_secure_channel(body)
-
-        elif header.MessageType == ua.MessageType.SecureClose:
-            if not self.channel or header.ChannelId != self.channel.SecurityToken.ChannelId:
-                self.logger.warning("Request to close channel %s which was not issued, current channel is %s", header.ChannelId, self.channel)
-            return False
-
-        elif header.MessageType == ua.MessageType.SecureMessage:
-            algohdr = ua.SymmetricAlgorithmHeader.from_binary(body)
-            seqhdr = ua.SequenceHeader.from_binary(body)
-            return self.process_message(algohdr, seqhdr, body)
 
         else:
             self.logger.warning("Unsupported message type: %s", header.MessageType)
+            raise utils.ServiceError(ua.StatusCodes.BadTcpMessageTypeInvalid)
         return True
 
     def process_message(self, algohdr, seqhdr, body):
@@ -132,6 +114,9 @@ class UAProcessor(object):
 
             response = ua.CreateSessionResponse()
             response.Parameters = sessiondata
+            response.Parameters.ServerCertificate = self._connection._security_policy.client_certificate
+            response.Parameters.ServerSignature.Signature = self._connection._security_policy.asymmetric_cryptography.signature(self._connection._security_policy.server_certificate + params.ClientNonce)
+            response.Parameters.ServerSignature.Algorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
 
             self.logger.info("sending create sesssion response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
@@ -153,6 +138,8 @@ class UAProcessor(object):
             if not self.session:
                 self.logger.info("request to activate non-existing session")
                 raise utils.ServiceError(ua.StatusCodes.BadSessionIdInvalid)
+
+            self._connection._security_policy.asymmetric_cryptography.verify(self._connection._security_policy.client_certificate + self.session.nonce, params.ClientSignature.Signature)
 
             result = self.session.activate_session(params)
 
@@ -390,7 +377,9 @@ class UAProcessor(object):
         self.channel.SecurityToken.TokenId += 1
         self.channel.SecurityToken.CreatedAt = datetime.now()
         self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
-        self.channel.ServerNonce = utils.create_nonce()
+        self.channel.ServerNonce = utils.create_nonce(self._connection._security_policy.symmetric_key_size)
+        self._connection.set_security_token(self.channel.SecurityToken)
+        self._connection._security_policy.make_symmetric_key(self.channel.ServerNonce, params.ClientNonce)
         return self.channel
 
     def close(self):

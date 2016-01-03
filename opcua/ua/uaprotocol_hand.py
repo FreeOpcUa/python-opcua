@@ -204,7 +204,7 @@ class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
     @staticmethod
     def from_binary(data):
         hdr = AsymmetricAlgorithmHeader()
-        hdr.SecurityPolicyURI = uatypes.unpack_bytes(data)
+        hdr.SecurityPolicyURI = uatypes.unpack_string(data)
         hdr.SenderCertificate = uatypes.unpack_bytes(data)
         hdr.ReceiverCertificateThumbPrint = uatypes.unpack_bytes(data)
         return hdr
@@ -322,7 +322,7 @@ class CryptographyNone:
         return data
 
 
-class SecurityPolicy:
+class SecurityPolicy(object):
     """
     Base class for security policy
     """
@@ -339,6 +339,31 @@ class SecurityPolicy:
 
     def make_symmetric_key(self, a, b):
         pass
+
+
+class SecurityPolicyFactory(object):
+    """
+    Helper class for creating server-side SecurityPolicy.
+    Server has one certificate and private key, but needs a separate
+    SecurityPolicy for every client and client's certificate
+    """
+    def __init__(self, cls=SecurityPolicy, mode=auto.MessageSecurityMode.None_,
+            certificate=None, private_key=None):
+        self.cls = cls
+        self.mode = mode
+        self.certificate = certificate
+        self.private_key = private_key
+
+    def matches(self, uri, mode=None):
+        return self.cls.URI == uri and (mode is None or self.mode == mode)
+
+    def create(self, peer_certificate):
+        if self.cls is SecurityPolicy:
+            return self.cls()
+        else:
+            return self.cls(peer_certificate,
+                            self.certificate, self.private_key,
+                            self.mode)
 
 
 class MessageChunk(uatypes.FrozenClass):
@@ -363,7 +388,10 @@ class MessageChunk(uatypes.FrozenClass):
         return MessageChunk.from_header_and_body(security_policy, h, data)
 
     @staticmethod
-    def from_header_and_body(security_policy, header, data):
+    def from_header_and_body(security_policy, header, buf):
+        assert len(buf) >= header.body_size, 'Full body expected here'
+        data = buf.copy(header.body_size)
+        buf.skip(header.body_size)
         if header.MessageType in (MessageType.SecureMessage, MessageType.SecureClose):
             security_header = SymmetricAlgorithmHeader.from_binary(data)
             crypto = security_policy.symmetric_cryptography
@@ -450,31 +478,187 @@ class MessageChunk(uatypes.FrozenClass):
     __repr__ = __str__
 
 
-def tcp_message_from_header_and_body(security_policy, header, body):
-    """
-    Convert binary stream to OPC UA TCP message (see OPC UA specs Part 6, 7.1)
-    The only supported message types are Hello, Acknowledge and Error
-    """
-    if header.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
-        return MessageChunk.from_header_and_body(security_policy, header, body)
-    elif header.MessageType == MessageType.Hello:
-        return Hello.from_binary(body)
-    elif header.MessageType == MessageType.Acknowledge:
-        return Acknowledge.from_binary(body)
-    elif header.MessageType == MessageType.Error:
-        return ErrorMessage.from_binary(body)
-    else:
-        raise Exception("Unsupported message type {}".format(header.MessageType))
+class Message(object):
+    def __init__(self, chunks):
+        self._chunks = chunks
+
+    def request_id(self):
+        return self._chunks[0].SequenceHeader.RequestId
+
+    def SequenceHeader(self):
+        return self._chunks[0].SequenceHeader
+
+    def SecurityHeader(self):
+        return self._chunks[0].SecurityHeader
+
+    def body(self):
+        body = b"".join([c.Body for c in self._chunks])
+        return utils.Buffer(body)
 
 
-def tcp_message_from_socket(security_policy, socket):
-    logger.debug("Waiting for header")
-    header = Header.from_string(socket)
-    logger.info("received header: %s", header)
-    body = socket.read(header.body_size)
-    if len(body) != header.body_size:
-        raise Exception("{} bytes expected, {} available".format(header.body_size, len(body)))
-    return tcp_message_from_header_and_body(security_policy, header, utils.Buffer(body))
+class SecureConnection(object):
+    """
+    Common logic for client and server
+    """
+    def __init__(self, security_policy):
+        self._sequence_number = 0
+        self._peer_sequence_number = None
+        self._incoming_parts = []
+        self._security_policy = security_policy
+        self._policies = []
+        self._security_token = auto.ChannelSecurityToken()
+        self._max_chunk_size = 65536
+
+    def set_policy_factories(self, policies):
+        """
+        Set a list of available security policies.
+        Use this in servers with multiple endpoints with different security
+        """
+        self._policies = policies
+
+    @staticmethod
+    def _policy_matches(policy, uri, mode=None):
+        return policy.URI == uri and (mode is None or policy.Mode == mode)
+
+    def select_policy(self, uri, peer_certificate, mode=None):
+        for policy in self._policies:
+            if policy.matches(uri, mode):
+                self._security_policy = policy.create(peer_certificate)
+                return
+        if self._security_policy.URI != uri or (mode is not None and
+                self._security_policy.Mode != mode):
+            raise Exception("No matching policy: {}, {}".format(uri, mode))
+
+    def set_security_token(self, tok):
+        self._security_token = tok
+
+    def tcp_to_binary(self, message_type, message):
+        """
+        Convert OPC UA TCP message (see OPC UA specs Part 6, 7.1) to binary.
+        The only supported types are Hello, Acknowledge and ErrorMessage
+        """
+        header = Header(message_type, ChunkType.Single)
+        binmsg = message.to_binary()
+        header.body_size = len(binmsg)
+        return header.to_binary() + binmsg
+
+    def message_to_binary(self, message,
+                message_type=MessageType.SecureMessage, request_id=0):
+        """
+        Convert OPC UA secure message to binary.
+        The only supported types are SecureOpen, SecureMessage, SecureClose
+        """
+        chunks = MessageChunk.message_to_chunks(
+                self._security_policy, message, self._max_chunk_size,
+                message_type=message_type,
+                channel_id=self._security_token.ChannelId,
+                request_id=request_id,
+                token_id=self._security_token.TokenId)
+        for chunk in chunks:
+            self._sequence_number += 1
+            if self._sequence_number >= (1 << 32):
+                logger.debug("Wrapping sequence number: %d -> 1",
+                                      self._sequence_number)
+                self._sequence_number = 1
+            chunk.SequenceHeader.SequenceNumber = self._sequence_number
+        return b"".join([chunk.to_binary() for chunk in chunks])
+
+    def _check_incoming_chunk(self, chunk):
+        assert isinstance(chunk, MessageChunk), "Expected chunk, got: {}".format(chunk)
+        if chunk.MessageHeader.MessageType != MessageType.SecureOpen:
+            if chunk.MessageHeader.ChannelId != self._security_token.ChannelId:
+                raise Exception("Wrong channel id {}, expected {}".format(
+                    chunk.MessageHeader.ChannelId,
+                    self._security_token.ChannelId))
+            if chunk.SecurityHeader.TokenId != self._security_token.TokenId:
+                raise Exception("Wrong token id {}, expected {}".format(
+                    chunk.SecurityHeader.TokenId,
+                    self._security_token.TokenId))
+        if self._incoming_parts:
+            if self._incoming_parts[0].SequenceHeader.RequestId != chunk.SequenceHeader.RequestId:
+                raise Exception("Wrong request id {}, expected {}".format(
+                    chunk.SequenceHeader.RequestId,
+                    self._incoming_parts[0].SequenceHeader.RequestId))
+
+        # sequence number must be incremented or wrapped
+        num = chunk.SequenceHeader.SequenceNumber
+        if self._peer_sequence_number is not None:
+            if num != self._peer_sequence_number + 1:
+                wrap = (1 << 32) - 1024
+                if num < 1024 and self._peer_sequence_number >= wrap:
+                    # specs Part 6, 6.7.2
+                    logger.debug("Sequence number wrapped: %d -> %d",
+                                      self._peer_sequence_number, num)
+                else:
+                    raise Exception(
+                        "Wrong sequence {} -> {} (server bug or replay attack)"
+                        .format(self._peer_sequence_number, num))
+        self._peer_sequence_number = num
+
+    def receive_from_header_and_body(self, header, body):
+        """
+        Convert MessageHeader and binary body to OPC UA TCP message (see OPC UA
+        specs Part 6, 7.1: Hello, Acknowledge or ErrorMessage), or a Message
+        object, or None (if intermediate chunk is received)
+        """
+        if header.MessageType == MessageType.SecureOpen:
+            data = body.copy(header.body_size)
+            security_header = AsymmetricAlgorithmHeader.from_binary(data)
+            self.select_policy(security_header.SecurityPolicyURI, security_header.SenderCertificate)
+
+        if header.MessageType in (MessageType.SecureMessage,
+                                  MessageType.SecureOpen,
+                                  MessageType.SecureClose):
+            chunk = MessageChunk.from_header_and_body(self._security_policy,
+                    header, body)
+            return self._receive(chunk)
+        elif header.MessageType == MessageType.Hello:
+            msg = Hello.from_binary(body)
+            self._max_chunk_size = msg.ReceiveBufferSize
+            return msg
+        elif header.MessageType == MessageType.Acknowledge:
+            msg = Acknowledge.from_binary(body)
+            self._max_chunk_size = msg.SendBufferSize
+            return msg
+        elif header.MessageType == MessageType.Error:
+            msg = ErrorMessage.from_binary(body)
+            logger.warning("Received an error: {}".format(msg))
+            return msg
+        else:
+            raise Exception("Unsupported message type {}".format(header.MessageType))
+
+    def receive_from_socket(self, socket):
+        """
+        Convert binary stream to OPC UA TCP message (see OPC UA
+        specs Part 6, 7.1: Hello, Acknowledge or ErrorMessage), or a Message
+        object, or None (if intermediate chunk is received)
+        """
+        logger.debug("Waiting for header")
+        header = Header.from_string(socket)
+        logger.info("received header: %s", header)
+        body = socket.read(header.body_size)
+        if len(body) != header.body_size:
+            raise Exception("{} bytes expected, {} available".format(header.body_size, len(body)))
+        return self.receive_from_header_and_body(header, utils.Buffer(body))
+
+    def _receive(self, msg):
+        self._check_incoming_chunk(msg)
+        self._incoming_parts.append(msg)
+        if msg.MessageHeader.ChunkType == ChunkType.Intermediate:
+            return None
+        if msg.MessageHeader.ChunkType == ChunkType.Abort:
+            err = ErrorMessage.from_binary(utils.Buffer(msg.Body))
+            logger.warning("Message {} aborted: {}".format(msg, err))
+            # specs Part 6, 6.7.3 say that aborted message shall be ignored
+            # and SecureChannel should not be closed
+            self._incoming_parts = []
+            return None
+        elif msg.MessageHeader.ChunkType == ChunkType.Single:
+            message = Message(self._incoming_parts)
+            self._incoming_parts = []
+            return message
+        else:
+            raise Exception("Unsupported chunk type: {}".format(msg))
 
 
 # FIXES for missing switchfield in NodeAttributes classes
