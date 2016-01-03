@@ -3,12 +3,10 @@ import logging
 import hashlib
 from enum import IntEnum
 
-import opcua.uaprotocol_auto as auto
-import opcua.uatypes as uatypes
-from opcua.uatypes import uatype_UInt32
-import opcua.utils as utils
-from opcua.object_ids import ObjectIds
-from opcua.attribute_ids import AttributeIds
+from opcua.ua import uaprotocol_auto as auto
+from opcua.ua import uatypes 
+from opcua.ua.uatypes import uatype_UInt32
+from opcua.common import utils 
 
 logger = logging.getLogger('opcua.uaprotocol')
 

@@ -20,8 +20,8 @@ from opcua import uamethod
 from opcua import Event
 from opcua import ObjectIds
 from opcua import AttributeIds
-from opcua.uaprotocol import extensionobject_from_binary
-from opcua.uaprotocol import extensionobject_to_binary
+from opcua.ua import extensionobject_from_binary
+from opcua.ua import extensionobject_to_binary
 
 port_num1 = 48510
 port_num2 = 48530

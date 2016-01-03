@@ -13,8 +13,7 @@ if sys.version_info.major > 2:
 import uuid
 import struct
 
-import opcua.status_code as status_code
-from opcua.object_ids import ObjectIds
+from opcua.ua import status_codes
 
 logger = logging.getLogger('opcua.uaprotocol')
 
@@ -104,7 +103,7 @@ def pack_uatype(uatype, value):
         # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
         # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
         # Using local import to avoid import loop
-        from opcua.uaprotocol_auto import extensionobject_to_binary
+        from opcua.ua.uaprotocol_auto import extensionobject_to_binary
         return extensionobject_to_binary(value)
     else:
         return value.to_binary()
@@ -156,7 +155,7 @@ def unpack_uatype(uatype, data):
         # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
         # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
         # Using local import to avoid import loop
-        from opcua.uaprotocol_auto import extensionobject_from_binary
+        from opcua.ua.uaprotocol_auto import extensionobject_from_binary
         return extensionobject_from_binary(data)
     else:
         glbs = globals()
@@ -291,7 +290,7 @@ class StatusCode(FrozenClass):
 
     def __init__(self, value=0):
         self.value = value
-        self.name, self.doc = status_code.get_name_and_doc(value)
+        self.name, self.doc = status_codes.get_name_and_doc(value)
         self._freeze = True
 
     def to_binary(self):

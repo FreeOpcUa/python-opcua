@@ -6,7 +6,7 @@ from threading import RLock
 import logging
 
 from opcua import ua
-from opcua.internal_subscription import InternalSubscription
+from opcua.server.internal_subscription import InternalSubscription
 
 
 class SubscriptionService(object):

@@ -4,7 +4,7 @@ from threading import Lock
 from datetime import datetime
 
 from opcua import ua
-from opcua import utils
+from opcua.common import utils
 
 
 class PublishRequestData(object):

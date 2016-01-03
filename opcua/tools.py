@@ -19,7 +19,6 @@ from opcua import Client
 from opcua import Server
 from opcua import Node
 from opcua import uamethod
-from opcua import security_policies
 
 
 def add_minimum_args(parser):

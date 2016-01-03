@@ -4,7 +4,7 @@ import pickle
 from datetime import datetime
 
 from opcua import ua
-from opcua.users import User
+from opcua.server.users import User
 
 
 class AttributeValue(object):

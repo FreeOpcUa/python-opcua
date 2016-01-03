@@ -7,9 +7,6 @@ from threading import Lock
 
 from opcua import ua
 from opcua import Node
-from opcua import ObjectIds
-from opcua import AttributeIds
-#from opcua import Event
 
 
 class SubHandler(object):
@@ -205,12 +202,12 @@ class Subscription(object):
         for desc in eventtype.get_children_descriptions(refs=ua.ObjectIds.HasProperty, nodeclassmask=ua.NodeClass.Variable):
             op = ua.SimpleAttributeOperand()
             op.TypeDefinitionId = eventtype.nodeid
-            op.AttributeId = AttributeIds.Value
+            op.AttributeId = ua.AttributeIds.Value
             op.BrowsePath = [desc.BrowseName]
             evfilter.SelectClauses.append(op)
         return evfilter
 
-    def subscribe_events(self, sourcenode=ObjectIds.Server, evtype=ObjectIds.BaseEventType):
+    def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtype=ua.ObjectIds.BaseEventType):
         """
         Subscribe to events from a node. Default node is Server node. 
         In most servers the server node is the only one you can subscribe to.
@@ -218,7 +215,7 @@ class Subscription(object):
         """
         sourcenode = self._get_node(sourcenode)
         evfilter = self._get_filter_from_event_type(evtype)
-        return self._subscribe(sourcenode, AttributeIds.EventNotifier, evfilter)
+        return self._subscribe(sourcenode, ua.AttributeIds.EventNotifier, evfilter)
 
     def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):
         is_list = True

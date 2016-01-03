@@ -58,9 +58,9 @@ class CodeGenerator(object):
         self.write("from datetime import datetime")
         self.write("from enum import Enum, IntEnum")
         self.write("")
-        self.write("from opcua.utils import Buffer")
-        self.write("from opcua.uatypes import *")
-        self.write("from opcua.object_ids import ObjectIds")
+        self.write("from opcua.common.utils import Buffer")
+        self.write("from opcua.ua.uatypes import *")
+        self.write("from opcua.ua.object_ids import ObjectIds")
 
     def generate_enum_code(self, enum):
         self.write("")
@@ -349,7 +349,7 @@ def fix_names(model):
 
 if __name__ == "__main__":
     xmlpath = "Opc.Ua.Types.bsd"
-    protocolpath = "../opcua/uaprotocol_auto.py"
+    protocolpath = "../opcua/ua/uaprotocol_auto.py"
     p = gm.Parser(xmlpath)
     model = p.parse()
     gm.add_basetype_members(model)

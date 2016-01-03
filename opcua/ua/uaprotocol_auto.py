@@ -5,9 +5,9 @@ Autogenerate code from xml spec
 from datetime import datetime
 from enum import Enum, IntEnum
 
-from opcua.utils import Buffer
-from opcua.uatypes import *
-from opcua.object_ids import ObjectIds
+from opcua.common.utils import Buffer
+from opcua.ua.uatypes import *
+from opcua.ua.object_ids import ObjectIds
 
 
 class NamingRuleType(IntEnum):
