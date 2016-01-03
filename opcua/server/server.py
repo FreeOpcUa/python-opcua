@@ -11,11 +11,13 @@ except ImportError:
 
 from opcua import ua
 #from opcua.binary_server import BinaryServer
-from opcua.binary_server_asyncio import BinaryServer
-from opcua.internal_server import InternalServer
-from opcua import Node, Subscription, ObjectIds, Event
-from opcua import xmlimporter
-from opcua import Client
+from opcua.server.binary_server_asyncio import BinaryServer
+from opcua.server.internal_server import InternalServer
+from opcua.common.node import Node
+from opcua.common.event import Event
+from opcua.common.subscription import Subscription
+from opcua.common import xmlimporter
+from opcua.client.client import Client
 
 
 class Server(object):
@@ -194,19 +196,19 @@ class Server(object):
         """
         Get Root node of server. Returns a Node object.
         """
-        return self.get_node(ua.TwoByteNodeId(ObjectIds.RootFolder))
+        return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.RootFolder))
 
     def get_objects_node(self):
         """
         Get Objects node of server. Returns a Node object.
         """
-        return self.get_node(ua.TwoByteNodeId(ObjectIds.ObjectsFolder))
+        return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.ObjectsFolder))
 
     def get_server_node(self):
         """
         Get Server node of server. Returns a Node object.
         """
-        return self.get_node(ua.TwoByteNodeId(ObjectIds.Server))
+        return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.Server))
 
     def get_node(self, nodeid):
         """
@@ -253,7 +255,7 @@ class Server(object):
         uries = self.get_namespace_array()
         return uries.index(uri)
 
-    def get_event_object(self, etype=ObjectIds.BaseEventType, source=ObjectIds.Server):
+    def get_event_object(self, etype=ua.ObjectIds.BaseEventType, source=ua.ObjectIds.Server):
         """
         Returns an event object using an event type from address space.
         Use this object to fire events

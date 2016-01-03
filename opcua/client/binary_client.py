@@ -7,8 +7,8 @@ import socket
 from threading import Thread, Lock
 from concurrent.futures import Future
 
-import opcua.uaprotocol as ua
-import opcua.utils as utils
+from opcua import ua
+from opcua.common import utils
 
 class UASocketClient(object):
     """

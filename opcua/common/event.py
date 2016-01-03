@@ -3,8 +3,6 @@ from datetime import datetime
 
 from opcua import ua
 from opcua import Node
-from opcua import ObjectIds
-from opcua import AttributeIds
 import uuid
 
 
@@ -18,7 +16,7 @@ class Event(object):
         etype: The event type, either an objectId, a NodeId or a Node object
     """
 
-    def __init__(self, isession, etype=ObjectIds.BaseEventType, source=ObjectIds.Server):
+    def __init__(self, isession, etype=ua.ObjectIds.BaseEventType, source=ua.ObjectIds.Server):
         self.isession = isession
 
         if isinstance(etype, Node):

@@ -1,5 +1,4 @@
 from __future__ import division  # support for python2
-import os
 from threading import Thread, Condition
 import logging
 try:
@@ -7,13 +6,15 @@ try:
 except ImportError:  # support for python2
     from urlparse import urlparse
 
-from opcua import uaprotocol as ua
-from opcua import BinaryClient, Node, Subscription
-from opcua import utils
-from opcua import security_policies
+from opcua import ua
+from opcua.client.binary_client import BinaryClient
+from opcua.common.node import Node
+from opcua.common.subscription import Subscription
+from opcua.common import utils
+from opcua.crypto import security_policies
 use_crypto = True
 try:
-    from opcua import uacrypto
+    from opcua.crypto import uacrypto
 except:
     print("cryptography is not installed, use of crypto disabled")
     use_crypto = False

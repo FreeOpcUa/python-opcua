@@ -2,7 +2,6 @@ build*
 MANIFEST
 .idea*
 htmlcov*
-_*
 docs/_*
 *.pyc
 dist

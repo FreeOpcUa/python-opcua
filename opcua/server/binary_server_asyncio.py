@@ -7,11 +7,10 @@ try:
     import asyncio
 except ImportError:
     import trollius as asyncio
-    from trollius import From
 
 
 from opcua import ua
-from opcua.uaprocessor import UAProcessor
+from opcua.server.uaprocessor import UAProcessor
 
 logger = logging.getLogger(__name__)
 

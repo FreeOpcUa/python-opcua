@@ -1,8 +1,8 @@
-from opcua.uaprotocol import CryptographyNone, SecurityPolicy
-from opcua.uaprotocol import MessageSecurityMode
+from opcua.ua import CryptographyNone, SecurityPolicy
+from opcua.ua import MessageSecurityMode
 from abc import ABCMeta, abstractmethod
 try:
-    from opcua import uacrypto
+    from opcua.crypto import uacrypto
     CRYPTOGRAPHY_AVAILABLE = True
 except ImportError:
     CRYPTOGRAPHY_AVAILABLE = False

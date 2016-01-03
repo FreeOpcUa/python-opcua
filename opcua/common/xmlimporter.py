@@ -6,7 +6,7 @@ import logging
 
 
 from opcua import ua
-from opcua import xmlparser
+from opcua.common import xmlparser
 
 
 class XmlImporter(object):

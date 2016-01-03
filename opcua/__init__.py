@@ -2,23 +2,22 @@
 Pure Python OPC-UA library
 """
 
-# the order is important! som classes must be overriden
-from opcua.binary_client import BinaryClient
-import opcua.uaprotocol as ua
-from opcua.node import Node
-from opcua.node import create_object
-from opcua.node import create_folder
-from opcua.node import create_variable
-from opcua.node import create_property
-from opcua.node import create_method
-from opcua.node import call_method
-from opcua.attribute_ids import AttributeIds
-from opcua.object_ids import ObjectIds
-from opcua.event import Event
-from opcua.subscription import Subscription
-from opcua.client import Client
-from opcua.server import Server
-from opcua.instanciate import instanciate_node
+from opcua.client.binary_client import BinaryClient
+from opcua.common.node import Node
+from opcua.common.node import create_object
+from opcua.common.node import create_folder
+from opcua.common.node import create_variable
+from opcua.common.node import create_property
+from opcua.common.node import create_method
+from opcua.common.node import call_method
+from opcua.common.event import Event
+from opcua.common.subscription import Subscription
+from opcua.client.client import Client
+from opcua.server.server import Server
+from opcua.common.instanciate import instanciate_node
+from opcua.ua import ObjectIds
+from opcua.ua import AttributeIds
+from opcua.ua import StatusCodes
 
 
 # next we have some methods which should really be moved somewhere else
