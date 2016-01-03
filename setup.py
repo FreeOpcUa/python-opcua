@@ -9,7 +9,7 @@ else:
     install_requires = []
 
 setup(name="freeopcua", 
-      version="0.10.1",
+      version="0.10.2",
       description="Pure Python OPC-UA client and server library",
       author="Olivier Roulet-Dubonnet",
       author_email="olivier.roulet@gmail.com",
