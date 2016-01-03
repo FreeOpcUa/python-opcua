@@ -6,6 +6,7 @@ import logging
 import socket
 from threading import Thread, Lock
 from concurrent.futures import Future
+from functools import partial
 
 from opcua import ua
 from opcua.common import utils
@@ -22,14 +23,11 @@ class UASocketClient(object):
         self.timeout = timeout
         self._socket = None
         self._do_stop = False
-        self._security_token = ua.ChannelSecurityToken()
         self.authentication_token = ua.NodeId()
-        self._sequence_number = 0
         self._request_id = 0
         self._request_handle = 0
         self._callbackmap = {}
-        self._security_policy = security_policy
-        self._max_chunk_size = 65536
+        self._connection = ua.SecureConnection(security_policy)
 
     def start(self):
         """
@@ -60,14 +58,9 @@ class UASocketClient(object):
             if callback:
                 future.add_done_callback(callback)
             self._callbackmap[self._request_id] = future
-            for chunk in ua.MessageChunk.message_to_chunks(self._security_policy, binreq, self._max_chunk_size,
-                    message_type=message_type,
-                    channel_id=self._security_token.ChannelId,
-                    request_id=self._request_id,
-                    token_id=self._security_token.TokenId):
-                self._sequence_number += 1
-                chunk.SequenceHeader.SequenceNumber = self._sequence_number
-                self._socket.write(chunk.to_binary())
+            msg = self._connection.message_to_binary(binreq,
+                    message_type, self._request_id)
+            self._socket.write(msg)
         return future
 
     def send_request(self, request, callback=None, timeout=1000, message_type=ua.MessageType.SecureMessage):
@@ -103,14 +96,11 @@ class UASocketClient(object):
         self.logger.info("Thread ended")
 
     def _receive(self):
-        msg = ua.tcp_message_from_socket(self._security_policy, self._socket)
-        if isinstance(msg, ua.MessageChunk):
-            chunks = [msg]
-            # TODO: check everything
-            while chunks[-1].MessageHeader.ChunkType == ua.ChunkType.Intermediate:
-                chunks.append(ua.tcp_message_from_socket(self._security_policy, self._socket))
-            body = b"".join([c.Body for c in chunks])
-            self._call_callback(msg.SequenceHeader.RequestId, utils.Buffer(body))
+        msg = self._connection.receive_from_socket(self._socket)
+        if msg is None:
+            return
+        elif isinstance(msg, ua.Message):
+            self._call_callback(msg.request_id(), msg.body())
         elif isinstance(msg, ua.Acknowledge):
             self._call_callback(0, msg)
         elif isinstance(msg, ua.ErrorMessage):
@@ -124,19 +114,6 @@ class UASocketClient(object):
             if future is None:
                 raise Exception("No future object found for request: {}, callbacks in list are {}".format(request_id, self._callbackmap.keys()))
         future.set_result(body)
-
-    def _write_socket(self, hdr, *args):
-        alle = []
-        for arg in args:
-            data = arg.to_binary()
-            hdr.add_size(len(data))
-            self.logger.debug("writting to socket: %s with length %s ", type(arg), len(data))
-            self.logger.debug("struct: %s", arg)
-            self.logger.debug("data: %s", data)
-            alle.append(data)
-        alle.insert(0, hdr.to_binary())
-        alle = b"".join(alle)
-        self._socket.write(alle)
 
     def _create_request_header(self, timeout=1000):
         hdr = ua.RequestHeader()
@@ -164,13 +141,12 @@ class UASocketClient(object):
     def send_hello(self, url):
         hello = ua.Hello()
         hello.EndpointUrl = url
-        header = ua.Header(ua.MessageType.Hello, ua.ChunkType.Single)
         future = Future()
         with self._lock:
             self._callbackmap[0] = future
-        self._write_socket(header, hello)
+        binmsg = self._connection.tcp_to_binary(ua.MessageType.Hello, hello)
+        self._socket.write(binmsg)
         ack = future.result(self.timeout)
-        self._max_chunk_size = ack.SendBufferSize	# client shouldn't send chunks larger than this
         return ack
 
     def open_secure_channel(self, params):
@@ -181,7 +157,7 @@ class UASocketClient(object):
 
         response = ua.OpenSecureChannelResponse.from_binary(future.result(self.timeout))
         response.ResponseHeader.ServiceResult.check()
-        self._security_token = response.Parameters.SecurityToken
+        self._connection.set_security_token(response.Parameters.SecurityToken)
         return response.Parameters
 
     def close_secure_channel(self):
@@ -214,8 +190,8 @@ class BinaryClient(object):
 
     def __init__(self, timeout=1):
         self.logger = logging.getLogger(__name__)
+        # _publishcallbacks should be accessed in recv thread only
         self._publishcallbacks = {}
-        self._lock = Lock()
         self._timeout = timeout
         self._uasocket = None
         self._security_policy = ua.SecurityPolicy()
@@ -368,24 +344,36 @@ class BinaryClient(object):
         self.logger.info("create_subscription")
         request = ua.CreateSubscriptionRequest()
         request.Parameters = params
-        data = self._uasocket.send_request(request)
+        resp_fut = Future()
+        mycallbak = partial(self._create_subscription_callback, callback, resp_fut)
+        self._uasocket.send_request(request, mycallbak)
+        return resp_fut.result(self._timeout)
+
+    def _create_subscription_callback(self, pub_callback, resp_fut, data_fut):
+        self.logger.info("_create_subscription_callback")
+        data = data_fut.result()
         response = ua.CreateSubscriptionResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
-        with self._lock:
-            self._publishcallbacks[response.Parameters.SubscriptionId] = callback
-        return response.Parameters
+        self._publishcallbacks[response.Parameters.SubscriptionId] = pub_callback
+        resp_fut.set_result(response.Parameters)
 
     def delete_subscriptions(self, subscriptionids):
         self.logger.info("delete_subscription")
         request = ua.DeleteSubscriptionsRequest()
         request.Parameters.SubscriptionIds = subscriptionids
-        data = self._uasocket.send_request(request)
+        resp_fut = Future()
+        mycallbak = partial(self._delete_subscriptions_callback, subscriptionids, resp_fut)
+        self._uasocket.send_request(request, mycallbak)
+        return resp_fut.result(self._timeout)
+
+    def _delete_subscriptions_callback(self, subscriptionids, resp_fut, data_fut):
+        self.logger.info("_delete_subscriptions_callback")
+        data = data_fut.result()
         response = ua.DeleteSubscriptionsResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         for sid in subscriptionids:
-            with self._lock:
-                self._publishcallbacks.pop(sid)
-        return response.Results
+            self._publishcallbacks.pop(sid)
+        resp_fut.set_result(response.Results)
 
     def publish(self, acks=None):
         self.logger.info("publish")
@@ -400,11 +388,10 @@ class BinaryClient(object):
         data = future.result()
         self._uasocket.check_answer(data, "ServiceFault received from server while waiting for publish response")
         response = ua.PublishResponse.from_binary(data)
-        with self._lock:
-            if response.Parameters.SubscriptionId not in self._publishcallbacks:
-                self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
-                return
-            callback = self._publishcallbacks[response.Parameters.SubscriptionId]
+        if response.Parameters.SubscriptionId not in self._publishcallbacks:
+            self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
+            return
+        callback = self._publishcallbacks[response.Parameters.SubscriptionId]
         try:
             callback(response.Parameters)
         except Exception:  # we call client code, catch everything!

@@ -328,6 +328,8 @@ class SecurityPolicyBasic128Rsa15(SecurityPolicy):
 
     def __init__(self, server_cert, client_cert, client_pk, mode):
         require_cryptography(self)
+        if isinstance(server_cert, bytes):
+            server_cert = uacrypto.x509_from_der(server_cert)
         # even in Sign mode we need to asymmetrically encrypt secrets
         # transmitted in OpenSecureChannel. So SignAndEncrypt here
         self.asymmetric_cryptography = Cryptography(
@@ -387,6 +389,8 @@ class SecurityPolicyBasic256(SecurityPolicy):
 
     def __init__(self, server_cert, client_cert, client_pk, mode):
         require_cryptography(self)
+        if isinstance(server_cert, bytes):
+            server_cert = uacrypto.x509_from_der(server_cert)
         # even in Sign mode we need to asymmetrically encrypt secrets
         # transmitted in OpenSecureChannel. So SignAndEncrypt here
         self.asymmetric_cryptography = Cryptography(
