@@ -1076,7 +1076,7 @@ class TestServer(unittest.TestCase, CommonTests):
             servers = client.find_servers()
             new_app_uri = "urn:freeopcua:python:server:test_discovery"
             self.srv.application_uri = new_app_uri
-            self.srv.register_to_discovery(self.discovery.endpoint.geturl(), 1)
+            self.srv.register_to_discovery(self.discovery.endpoint.geturl(), 0)
             time.sleep(0.1) # let server register registration
             new_servers = client.find_servers()
             self.assertEqual(len(new_servers) - len(servers) , 1)
@@ -1092,10 +1092,10 @@ class TestServer(unittest.TestCase, CommonTests):
             servers = client.find_servers()
             new_app_uri1 = "urn:freeopcua:python:server:test_discovery1"
             self.srv.application_uri = new_app_uri1
-            self.srv.register_to_discovery(self.discovery.endpoint.geturl())
+            self.srv.register_to_discovery(self.discovery.endpoint.geturl(), period=0)
             new_app_uri2 = "urn:freeopcua:python:test_discovery2"
             self.srv.application_uri = new_app_uri2
-            self.srv.register_to_discovery(self.discovery.endpoint.geturl())
+            self.srv.register_to_discovery(self.discovery.endpoint.geturl(), period=0)
             time.sleep(0.1) # let server register registration
             new_servers = client.find_servers()
             self.assertEqual(len(new_servers) - len(servers) , 2)

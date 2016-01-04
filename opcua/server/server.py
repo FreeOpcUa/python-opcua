@@ -118,14 +118,24 @@ class Server(object):
         Register to an OPC-UA Discovery server. Registering must be renewed at
         least every 10 minutes, so this method will use our asyncio thread to
         re-register every period seconds
+        if period is 0 registration is not automatically renewed
         """
+        # FIXME: habe a period per discovery 
         if url in self._discovery_clients:
             self._discovery_clients[url].disconnect()
         self._discovery_clients[url] = Client(url)
         self._discovery_clients[url].connect()
         self._discovery_clients[url].register_server(self)
         self._discovery_period = period
-        self.iserver.loop.call_soon(self._renew_registration)
+        if period:
+            self.iserver.loop.call_soon(self._renew_registration)
+
+    def unregister_to_discovery(self, url="opc.tcp://localhost:4840"):
+        """
+        stop registration thread
+        """
+        # FIXME: is there really no way to deregister?
+        self._discovery_clients[url].disconnect()
 
     def _renew_registration(self):
         for client in self._discovery_clients.values():
