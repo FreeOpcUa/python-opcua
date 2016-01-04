@@ -14,7 +14,7 @@ from cryptography.hazmat.primitives.ciphers import modes
 
 def load_certificate(path):
     _, ext = os.path.splitext(path)
-    with open(path, "br") as f:
+    with open(path, "rb") as f:
         if ext == ".pem":
             return x509.load_pem_x509_certificate(f.read(), default_backend())
         else:
@@ -35,7 +35,7 @@ def x509_to_der(cert):
 
 def load_private_key(path):
     _, ext = os.path.splitext(path)
-    with open(path, "br") as f:
+    with open(path, "rb") as f:
         if ext == ".pem":
             return serialization.load_pem_private_key(f.read(), password=None, backend=default_backend())
         else:
