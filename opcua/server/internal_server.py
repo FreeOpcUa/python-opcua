@@ -144,17 +144,18 @@ class InternalServer(object):
     def register_server2(self, params):
         return self.register_server(params.Server, params.DiscoveryConfiguration)
 
-    def create_session(self, name, user=User.Anonymous):
-        return InternalSession(self, self.aspace, self.subscription_service, name, user=user)
+    def create_session(self, name, user=User.Anonymous, external=False):
+        return InternalSession(self, self.aspace, self.subscription_service, name, user=user, external=external)
 
 
 class InternalSession(object):
     _counter = 10
     _auth_counter = 1000
 
-    def __init__(self, internal_server, aspace, submgr, name, user=User.Anonymous):
+    def __init__(self, internal_server, aspace, submgr, name, user=User.Anonymous, external=False):
         self.logger = logging.getLogger(__name__)
         self.iserver = internal_server
+        self.external = external  # define if session is external, we need to copy some objects if it is internal
         self.aspace = aspace
         self.subscription_service = submgr
         self.name = name
@@ -213,6 +214,11 @@ class InternalSession(object):
         return self.iserver.attribute_service.read(params)
 
     def write(self, params):
+        if not self.external:  
+            # If session is internal we need to store a copy og object, not a reference, 
+            #otherwise users may change it and we will not generate expected events
+            for ntw in params.NodesToWrite:
+                ntw.Value.Value.Value = copy(ntw.Value.Value.Value)
         return self.iserver.attribute_service.write(params, self.user)
 
     def browse(self, params):

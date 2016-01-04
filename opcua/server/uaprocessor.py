@@ -127,7 +127,7 @@ class UAProcessor(object):
             self.logger.info("Create session request")
             params = ua.CreateSessionParameters.from_binary(body)
 
-            self.session = self.iserver.create_session(self.name)  # create the session on server
+            self.session = self.iserver.create_session(self.name, external=True)  # create the session on server
             sessiondata = self.session.create_session(params, sockname=self.sockname)  # get a session creation result to send back
 
             response = ua.CreateSessionResponse()
