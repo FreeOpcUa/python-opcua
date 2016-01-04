@@ -225,6 +225,8 @@ class InternalSubscription(object):
             self.subservice.loop.call_later(self.data.RevisedPublishingInterval / 1000.0, self._sub_loop)
 
     def _sub_loop(self):
+        if self._stopev:
+            return
         self.publish_results()
         self._subscription_loop()
 
