@@ -1,5 +1,4 @@
-from distutils.core import setup
-from distutils.command.install_data import install_data
+from setuptools import setup, find_packages
 
 import sys
 
@@ -14,17 +13,11 @@ setup(name="freeopcua",
       author="Olivier Roulet-Dubonnet",
       author_email="olivier.roulet@gmail.com",
       url='http://freeopcua.github.io/',
-      packages=["opcua",
-          "opcua.client",
-          "opcua.server",
-          "opcua.server.standard_address_space",
-          "opcua.common",
-          "opcua.crypto",
-          "opcua.ua"],
+      packages=find_packages(exclude="schemas"),
       provides=["opcua"],
       license="GNU Lesser General Public License v3 or later",
       install_requires=install_requires,
-      extras_require = {
+      extras_require={
           'encryption': ['cryptography']
       },
       classifiers=["Programming Language :: Python",
