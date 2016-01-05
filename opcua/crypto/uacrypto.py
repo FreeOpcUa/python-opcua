@@ -156,6 +156,23 @@ def p_sha1(secret, seed, sizes=()):
     return tuple(parts)
 
 
+def x509_name_to_string(name):
+    parts = ["{}={}".format(attr.oid._name, attr.value) for attr in name]
+    return ', '.join(parts)
+
+
+def x509_to_string(cert):
+    """
+    Convert x509 certificate to human-readable string
+    """
+    if cert.subject == cert.issuer:
+        issuer = ' (self-signed)'
+    else:
+        issuer = ', issuer: {}'.format(x509_name_to_string(cert.issuer))
+    # TODO: show more information
+    return "{}{}, {} - {}".format(x509_name_to_string(cert.subject), issuer, cert.not_valid_before, cert.not_valid_after)
+
+
 if __name__ == "__main__":
     # Convert from PEM to DER
     cert = load_certificate("../examples/server_cert.pem")

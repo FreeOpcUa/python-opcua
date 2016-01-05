@@ -403,11 +403,22 @@ def application_to_strings(app):
     return result  # ['{}: {}'.format(n, v) for (n, v) in result]
 
 
+def cert_to_string(der):
+    if not der:
+        return '[no certificate]'
+    try:
+        from opcua.crypto import uacrypto
+    except ImportError:
+        return "{} bytes".format(len(der))
+    cert = uacrypto.x509_from_der(der)
+    return uacrypto.x509_to_string(cert)
+
+
 def endpoint_to_strings(ep):
     result = [('Endpoint URL', ep.EndpointUrl)]
     result += application_to_strings(ep.Server)
     result += [
-        ('Server Certificate', len(ep.ServerCertificate)),
+        ('Server Certificate', cert_to_string(ep.ServerCertificate)),
         ('Security Mode', str(ep.SecurityMode)),
         ('Security Policy URI', ep.SecurityPolicyUri)]
     for tok in ep.UserIdentityTokens:
