@@ -27,12 +27,6 @@ def x509_from_der(data):
     return x509.load_der_x509_certificate(data, default_backend())
 
 
-def x509_to_der(cert):
-    if not cert:
-        return b''
-    return cert.public_bytes(serialization.Encoding.DER)
-
-
 def load_private_key(path):
     _, ext = os.path.splitext(path)
     with open(path, "rb") as f:
