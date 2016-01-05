@@ -53,9 +53,9 @@ class KeepAlive(Thread):
 
     def stop(self):
         self.logger.debug("stoping keepalive thread")
+        self._dostop = True
         with self._cond:
             self._cond.notify_all()
-        self._dostop = True
 
 
 class Client(object):
