@@ -15,7 +15,7 @@ from opcua.crypto import security_policies
 use_crypto = True
 try:
     from opcua.crypto import uacrypto
-except:
+except ImportError:
     print("cryptography is not installed, use of crypto disabled")
     use_crypto = False
 
@@ -53,9 +53,9 @@ class KeepAlive(Thread):
 
     def stop(self):
         self.logger.debug("stoping keepalive thread")
+        self._dostop = True
         with self._cond:
             self._cond.notify_all()
-        self._dostop = True
 
 
 class Client(object):

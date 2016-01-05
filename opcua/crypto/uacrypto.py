@@ -27,12 +27,6 @@ def x509_from_der(data):
     return x509.load_der_x509_certificate(data, default_backend())
 
 
-def x509_to_der(cert):
-    if not cert:
-        return b''
-    return cert.public_bytes(serialization.Encoding.DER)
-
-
 def load_private_key(path):
     _, ext = os.path.splitext(path)
     with open(path, "rb") as f:
@@ -160,6 +154,23 @@ def p_sha1(secret, seed, sizes=()):
         parts.append(result[:size])
         result = result[size:]
     return tuple(parts)
+
+
+def x509_name_to_string(name):
+    parts = ["{}={}".format(attr.oid._name, attr.value) for attr in name]
+    return ', '.join(parts)
+
+
+def x509_to_string(cert):
+    """
+    Convert x509 certificate to human-readable string
+    """
+    if cert.subject == cert.issuer:
+        issuer = ' (self-signed)'
+    else:
+        issuer = ', issuer: {}'.format(x509_name_to_string(cert.issuer))
+    # TODO: show more information
+    return "{}{}, {} - {}".format(x509_name_to_string(cert.subject), issuer, cert.not_valid_before, cert.not_valid_after)
 
 
 if __name__ == "__main__":

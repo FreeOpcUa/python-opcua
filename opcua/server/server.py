@@ -22,7 +22,7 @@ from opcua.crypto import security_policies
 use_crypto = True
 try:
     from opcua.crypto import uacrypto
-except:
+except ImportError:
     print("cryptography is not installed, use of crypto disabled")
     use_crypto = False
 
