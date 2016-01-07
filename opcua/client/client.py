@@ -123,7 +123,7 @@ class Client(object):
             return
         parts = string.split(',')
         if len(parts) < 4:
-            raise Exception('Wrong format: `{}`, expected at least 4 '
+            raise UAError('Wrong format: `{}`, expected at least 4 '
                     'comma-separated values'.format(string))
         policy_class = getattr(security_policies, 'SecurityPolicy' + parts[0])
         mode = getattr(ua.MessageSecurityMode, parts[1])
@@ -314,7 +314,7 @@ class Client(object):
         if not self.security_policy.server_certificate:
             self.security_policy.server_certificate = response.ServerCertificate
         elif self.security_policy.server_certificate != response.ServerCertificate:
-            raise Exception("Server certificate mismatch")
+            raise UAError("Server certificate mismatch")
         # remember PolicyId's: we will use them in activate_session()
         ep = Client.find_endpoint(response.ServerEndpoints, self.security_policy.Mode, self.security_policy.URI)
         self._policy_ids = ep.UserIdentityTokens

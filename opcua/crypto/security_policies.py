@@ -14,7 +14,7 @@ def require_cryptography(obj):
     Call this function in constructors.
     """
     if not CRYPTOGRAPHY_AVAILABLE:
-        raise Exception("Can't use {}, cryptography module is not installed"
+        raise UAError("Can't use {}, cryptography module is not installed"
                         .format(obj.__class__.__name__))
 
 
