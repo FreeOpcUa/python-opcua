@@ -13,6 +13,7 @@ if sys.version_info.major > 2:
     unicode = str
 
 from opcua.ua import status_codes
+from opcua.common.utils import UAError
 
 
 logger = logging.getLogger('opcua.uaprotocol')
@@ -25,10 +26,6 @@ UaTypes = ("Boolean", "SByte", "Byte", "Int8", "UInt8", "Int16", "UInt16", "Int3
 EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
 HUNDREDS_OF_NANOSECONDS = 10000000
 FILETIME_EPOCH_AS_DATETIME = datetime(1601, 1, 1)
-
-
-class UAError(RuntimeError):
-    pass
 
 
 class UTC(tzinfo):
