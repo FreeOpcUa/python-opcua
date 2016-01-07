@@ -6,6 +6,7 @@ from datetime import datetime
 from enum import Enum, IntEnum
 
 from opcua.common.utils import Buffer
+from opcua.common.uaerrors import UAError
 from opcua.ua.uatypes import *
 from opcua.ua.object_ids import ObjectIds
 

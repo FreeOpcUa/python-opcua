@@ -386,11 +386,11 @@ class CommonTests(object):
 
     def test_subscribe_events_to_wrong_node(self):
         sub = self.opc.create_subscription(100, sclt)
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             handle = sub.subscribe_events(self.opc.get_node("i=85"))
         o = self.opc.get_objects_node()
         v = o.add_variable(3, 'VariableNoEventNofierAttribute', 4)
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             handle = sub.subscribe_events(v)
         sub.delete()
 
@@ -444,12 +444,12 @@ class CommonTests(object):
 
     def test_non_existing_path(self):
         root = self.opc.get_root_node()
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             server_time_node = root.get_child(['0:Objects', '0:Server', '0:nonexistingnode'])
 
     def test_bad_attribute(self):
         root = self.opc.get_root_node()
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             root.set_value(99)
 
     def test_get_node_by_nodeid(self):
@@ -578,7 +578,7 @@ class CommonTests(object):
     def test_add_exception(self):
         objects = self.opc.get_objects_node()
         o = objects.add_object('ns=2;i=103;', '2:AddReadObject')
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             o2 = objects.add_object('ns=2;i=103;', '2:AddReadObject')
 
     def test_negative_value(self):
@@ -595,13 +595,13 @@ class CommonTests(object):
 
     def test_bad_node(self):
         bad = self.opc.get_node(ua.NodeId(999, 999))
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             bad.get_browse_name()
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             bad.set_value(89)
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             bad.add_object(0, "0:myobj")
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             bad.get_child("0:myobj")
 
     def test_value(self):
@@ -660,7 +660,7 @@ class CommonTests(object):
         msclt = MySubHandler()
         o = self.opc.get_objects_node()
         sub = self.opc.create_subscription(100, msclt)
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             handle1 = sub.subscribe_data_change(o) # we can only subscribe to variables so this should fail
         sub.delete()
 
@@ -722,13 +722,13 @@ class CommonTests(object):
         self.assertEqual(node, v1)
         self.assertEqual(val, [5])
 
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             sub.unsubscribe(999)  # non existing handle
         sub.unsubscribe(handle1)
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             sub.unsubscribe(handle1)  # second try should fail
         sub.delete()
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             sub.unsubscribe(handle1)  # sub does not exist anymore
 
     def test_subscription_data_change(self):
@@ -762,13 +762,13 @@ class CommonTests(object):
         self.assertEqual(node, v1)
         self.assertEqual(val, [5])
 
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             sub.unsubscribe(999)  # non existing handle
         sub.unsubscribe(handle1)
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             sub.unsubscribe(handle1)  # second try should fail
         sub.delete()
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             sub.unsubscribe(handle1)  # sub does not exist anymore
 
 
@@ -872,10 +872,10 @@ class CommonTests(object):
         m = o.get_child("2:ServerMethod")
         result = o.call_method("2:ServerMethod", 2.1)
         self.assertEqual(result, 4.2)
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             # FIXME: we should raise a more precise exception
             result = o.call_method("2:ServerMethod", 2.1, 89, 9)
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             result = o.call_method(ua.NodeId(999), 2.1)  # non existing method
 
     def test_method_array(self):
@@ -965,14 +965,14 @@ class AdminTestClient(unittest.TestCase, CommonTests):
     def test_service_fault(self):
         request = ua.ReadRequest()
         request.TypeId = ua.FourByteNodeId(999)  # bad type!
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             self.clt.bclient._uasocket.send_request(request)
 
     def test_objects_anonymous(self):
         objects = self.ro_clt.get_objects_node()
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             objects.set_attribute(ua.AttributeIds.WriteMask, ua.DataValue(999))
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             f = objects.add_folder(3, 'MyFolder')
 
     def test_folder_anonymous(self):
@@ -980,7 +980,7 @@ class AdminTestClient(unittest.TestCase, CommonTests):
         f = objects.add_folder(3, 'MyFolderRO')
         f_ro = self.ro_clt.get_node(f.nodeid)
         self.assertEqual(f, f_ro)
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             f2 = f_ro.add_folder(3, 'MyFolder2')
 
     def test_variable_anonymous(self):
@@ -988,14 +988,14 @@ class AdminTestClient(unittest.TestCase, CommonTests):
         v = objects.add_variable(3, 'MyROVariable', 6)
         v.set_value(4) #this should work
         v_ro = self.ro_clt.get_node(v.nodeid)
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             v_ro.set_value(2)
         self.assertEqual(v_ro.get_value(), 4)
         v.set_writable(True)
         v_ro.set_value(2) #now it should work
         self.assertEqual(v_ro.get_value(), 2)
         v.set_writable(False)
-        with self.assertRaises(ua.UAError):
+        with self.assertRaises(ua.UAStatusCodeError):
             v_ro.set_value(9)
         self.assertEqual(v_ro.get_value(), 2)
 

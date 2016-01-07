@@ -13,7 +13,8 @@ if sys.version_info.major > 2:
     unicode = str
 
 from opcua.ua import status_codes
-from opcua.common.utils import UAError
+from opcua.common.uaerrors import UAError
+from opcua.common.uaerrors import UAStatusCodeError
 
 
 logger = logging.getLogger('opcua.uaprotocol')
@@ -310,7 +311,7 @@ class StatusCode(FrozenClass):
         use is is_good() method if not exception is desired
         """
         if self.value != 0:
-            raise UAError("{}({})".format(self.doc, self.name))
+            raise UAStatusCodeError("{}({})".format(self.doc, self.name))
 
     def is_good(self):
         """
