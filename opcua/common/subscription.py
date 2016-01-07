@@ -135,42 +135,44 @@ class Subscription(object):
                     self.logger.warning("Received a notification for unknown handle: %s", item.ClientHandle)
                     continue
                 data = self._monitoreditems_map[item.ClientHandle]
-            try:
-                if hasattr(self._handler, "datachange_notification"):
-                    event_data = DataChangeNotif(data, item)
+            if hasattr(self._handler, "datachange_notification"):
+                event_data = DataChangeNotif(data, item)
+                try:
                     self._handler.datachange_notification(data.node, item.Value.Value.Value, event_data)
-                elif hasattr(self._handler, "data_change"):  # deprecated API
-                    self.logger.warning("data_change method is deprecated, use datavalue_changed")
+                except Exception:
+                    self.logger.exception("Exception calling data change handler")
+            elif hasattr(self._handler, "data_change"):  # deprecated API
+                self.logger.warning("data_change method is deprecated, use datavalue_changed")
+                try:
                     self._handler.data_change(data.server_handle, data.node, item.Value.Value.Value, data.attribute)
-                else:
-                    self.logger.error("DataChange subscription created but handler has no datachange_notification method")
-            except Exception:
-                self.logger.exception("Exception calling data change handler")
+                except Exception:
+                    self.logger.exception("Exception calling deprecated data change handler")
+            else:
+                self.logger.error("DataChange subscription created but handler has no datachange_notification method")
 
     def _call_event(self, eventlist):
         for event in eventlist.Events:
             with self._lock:
                 data = self._monitoreditems_map[event.ClientHandle]
-            try:
-                #fields = {}
-                result = EventResult()
-                result.server_handle = data.server_handle
-                for idx, sattr in enumerate(data.mfilter.SelectClauses):
-
-                    if len(sattr.BrowsePath) == 0:
-                        #fields[ua.AttributeIdsInv[sattr.AttributeId]] = event.EventFields[idx].Value
-                        #setattr(result, ua.AttributeIdsInv[sattr.AttributeId], event.EventFields[idx].Value)
-                        setattr(result, sattr.AttributeId.name, event.EventFields[idx].Value)
-                    else:
-                        setattr(result, sattr.BrowsePath[0].Name, event.EventFields[idx].Value)
-                if hasattr(self._handler, "event_notification"):
-                    self._handler.event_notification(result)
-                elif hasattr(self._handler, "event"):  # depcrecated API
-                    self._handler.event(data.server_handle, result)
+            result = EventResult()
+            result.server_handle = data.server_handle
+            for idx, sattr in enumerate(data.mfilter.SelectClauses):
+                if len(sattr.BrowsePath) == 0:
+                    setattr(result, sattr.AttributeId.name, event.EventFields[idx].Value)
                 else:
-                    self.logger.error("Event subscription created but handler has no event_notification method")
-            except Exception:
-                self.logger.exception("Exception calling event handler")
+                    setattr(result, sattr.BrowsePath[0].Name, event.EventFields[idx].Value)
+            if hasattr(self._handler, "event_notification"):
+                try:
+                    self._handler.event_notification(result)
+                except Exception:
+                    self.logger.exception("Exception calling event handler")
+            elif hasattr(self._handler, "event"):  # depcrecated API
+                try:
+                    self._handler.event(data.server_handle, result)
+                except Exception:
+                    self.logger.exception("Exception calling deprecated event handler")
+            else:
+                self.logger.error("Event subscription created but handler has no event_notification method")
 
     def _call_status(self, status):
         try:
