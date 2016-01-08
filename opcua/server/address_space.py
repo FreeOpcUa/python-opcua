@@ -1,7 +1,10 @@
 from threading import RLock
 import logging
-import pickle
 from datetime import datetime
+try:
+    import cPickle as pickle
+except:
+    import pickle
 
 from opcua import ua
 from opcua.server.users import User
@@ -353,7 +356,7 @@ class AddressSpace(object):
         dump address space as binary to file
         """
         with open(path, 'wb') as f:
-            pickle.dump(self._nodes, f)
+            pickle.dump(self._nodes, f, pickle.HIGHEST_PROTOCOL)
 
     def load(self, path):
         """
