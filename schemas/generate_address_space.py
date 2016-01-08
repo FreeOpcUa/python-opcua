@@ -39,6 +39,7 @@ class CodeGenerator(object):
                 self.make_method_code(node)
             else:
                 sys.stderr.write("Not implemented node type: " + node.nodetype + "\n")
+        self.output_file.close()
 
     def writecode(self, *args):
         self.output_file.write(" ".join(args) + "\n")
