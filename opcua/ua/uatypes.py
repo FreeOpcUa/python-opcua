@@ -200,7 +200,7 @@ def unpack_datetime(data):
 
 
 def pack_string(string):
-    if type(string) is unicode:
+    if isinstance(string, unicode):
         string = string.encode('utf-8')
     length = len(string)
     if length == 0:
@@ -600,7 +600,7 @@ class LocalizedText(FrozenClass):
     def __init__(self, text=""):
         self.Encoding = 0
         self.Text = text
-        if type(self.Text) is unicode:
+        if isinstance(self.Text, unicode):
             self.Text = self.Text.encode('utf-8')
         if self.Text:
             self.Encoding |= (1 << 1)

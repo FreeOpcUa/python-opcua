@@ -113,7 +113,7 @@ class Node(object):
         elif isinstance(nodeid, int):
             self.nodeid = ua.NodeId(nodeid, 0)
         else:
-            raise UAError("argument to node must be a NodeId object or a string defining a nodeid found {} of type {}".format(nodeid, type(nodeid)))
+            raise ua.UAError("argument to node must be a NodeId object or a string defining a nodeid found {} of type {}".format(nodeid, type(nodeid)))
 
     def __eq__(self, other):
         if isinstance(other, Node) and self.nodeid == other.nodeid:
@@ -514,10 +514,10 @@ def _vtype_to_argument(vtype):
 def _guess_uatype(variant):
     if variant.VariantType == ua.VariantType.ExtensionObject:
         if variant.Value is None:
-            raise UAError("Cannot guess DataType from Null ExtensionObject")
+            raise ua.UAError("Cannot guess DataType from Null ExtensionObject")
         if type(variant.Value) in (list, tuple):
             if len(variant.Value) == 0:
-                raise UAError("Cannot guess DataType from Null ExtensionObject")
+                raise ua.UAError("Cannot guess DataType from Null ExtensionObject")
             extobj = variant.Value[0]
         else:
             extobj = variant.Value

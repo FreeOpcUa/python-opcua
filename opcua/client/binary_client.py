@@ -11,6 +11,7 @@ from functools import partial
 from opcua import ua
 from opcua.common import utils
 
+
 class UASocketClient(object):
     """
     handle socket connection and send ua messages
@@ -58,8 +59,7 @@ class UASocketClient(object):
             if callback:
                 future.add_done_callback(callback)
             self._callbackmap[self._request_id] = future
-            msg = self._connection.message_to_binary(binreq,
-                    message_type, self._request_id)
+            msg = self._connection.message_to_binary(binreq, message_type, self._request_id)
             self._socket.write(msg)
         return future
 
@@ -106,13 +106,13 @@ class UASocketClient(object):
         elif isinstance(msg, ua.ErrorMessage):
             self.logger.warning("Received an error: {}".format(msg))
         else:
-            raise UAError("Unsupported message type: {}".format(msg))
+            raise ua.UAError("Unsupported message type: {}".format(msg))
 
     def _call_callback(self, request_id, body):
         with self._lock:
             future = self._callbackmap.pop(request_id, None)
             if future is None:
-                raise UAError("No future object found for request: {}, callbacks in list are {}".format(request_id, self._callbackmap.keys()))
+                raise ua.UAError("No future object found for request: {}, callbacks in list are {}".format(request_id, self._callbackmap.keys()))
         future.set_result(body)
 
     def _create_request_header(self, timeout=1000):
@@ -175,7 +175,6 @@ class UASocketClient(object):
             self._callbackmap.clear()
 
         # some servers send a response here, most do not ... so we ignore
-
 
 
 class BinaryClient(object):
