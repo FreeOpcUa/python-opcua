@@ -385,7 +385,7 @@ class Client(object):
         return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.ObjectsFolder))
 
     def get_server_node(self):
-        return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.Server))
+        return self.get_node(ua.FourByteNodeId(ua.ObjectIds.Server))
 
     def get_node(self, nodeid):
         """

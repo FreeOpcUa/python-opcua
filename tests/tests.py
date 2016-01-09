@@ -316,11 +316,16 @@ class CommonTests(object):
     client side since we have been carefull to have the exact
     same api on server and client side
     '''
+    # jyst to avoid editor warnings
     opc = None
 
     def test_find_servers(self):
         servers = self.opc.find_servers()
         # FIXME : finish
+
+    def test_server_node(self):
+        node = self.opc.get_server_node()
+        self.assertEqual(ua.QualifiedName('Server', 0), node.get_browse_name())
 
     def test_root(self):
         root = self.opc.get_root_node()
