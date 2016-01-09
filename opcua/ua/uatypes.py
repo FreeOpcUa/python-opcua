@@ -326,7 +326,7 @@ class StatusCode(FrozenClass):
     __repr__ = __str__
 
 
-class NodeIdType(object):
+class NodeIdType(Enum):
     TwoByte = 0
     FourByte = 1
     Numeric = 2
@@ -458,26 +458,26 @@ class NodeId(FrozenClass):
 
     def to_binary(self):
         if self.NodeIdType == NodeIdType.TwoByte:
-            return struct.pack("<BB", self.NodeIdType, self.Identifier)
+            return struct.pack("<BB", self.NodeIdType.value, self.Identifier)
         elif self.NodeIdType == NodeIdType.FourByte:
-            return struct.pack("<BBH", self.NodeIdType, self.NamespaceIndex, self.Identifier)
+            return struct.pack("<BBH", self.NodeIdType.value, self.NamespaceIndex, self.Identifier)
         elif self.NodeIdType == NodeIdType.Numeric:
-            return struct.pack("<BHI", self.NodeIdType, self.NamespaceIndex, self.Identifier)
+            return struct.pack("<BHI", self.NodeIdType.value, self.NamespaceIndex, self.Identifier)
         elif self.NodeIdType == NodeIdType.String:
-            return struct.pack("<BH", self.NodeIdType, self.NamespaceIndex) + \
+            return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
                 pack_string(self.Identifier)
         elif self.NodeIdType == NodeIdType.ByteString:
-            return struct.pack("<BH", self.NodeIdType, self.NamespaceIndex) + \
+            return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
                 pack_bytes(self.Identifier)
         else:
-            return struct.pack("<BH", self.NodeIdType, self.NamespaceIndex) + \
+            return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
                 self.Identifier.to_binary()
 
     @staticmethod
     def from_binary(data):
         nid = NodeId()
         encoding = ord(data.read(1))
-        nid.NodeIdType = encoding & 0b00111111
+        nid.NodeIdType = NodeIdType(encoding & 0b00111111)
 
         if nid.NodeIdType == NodeIdType.TwoByte:
             nid.Identifier = ord(data.read(1))
@@ -551,6 +551,8 @@ class QualifiedName(FrozenClass):
     '''
 
     def __init__(self, name="", namespaceidx=0):
+        if not isinstance(namespaceidx, int):
+            raise UAError("namespaceidx must be an int")
         self.NamespaceIndex = namespaceidx
         self.Name = name
         self._freeze = True
