@@ -37,9 +37,9 @@ class Event(object):
         # set some default values for attributes from BaseEventType, thus that all event must have
         self.EventId = uuid.uuid4().bytes
         self.EventType = self.node.nodeid
-        self.LocaleTime = datetime.now()
-        self.ReceiveTime = datetime.now()
-        self.Time = datetime.now()
+        self.LocaleTime = datetime.utcnow()
+        self.ReceiveTime = datetime.utcnow()
+        self.Time = datetime.utcnow()
         self.Message = ua.LocalizedText()
         self.Severity = ua.Variant(1, ua.VariantType.UInt16)
         self.SourceName = "Server"

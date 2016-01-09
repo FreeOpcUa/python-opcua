@@ -167,7 +167,7 @@ class Unit(unittest.TestCase):
         self.assertEqual(v1.VariantType, v2.VariantType)
 
     def test_datetime(self):
-        now = datetime.now()
+        now = datetime.utcnow()
         epch = ua.datetime_to_win_epoch(now)
         dt = ua.win_epoch_to_datetime(epch)
         self.assertEqual(now, dt)
@@ -243,14 +243,14 @@ class Unit(unittest.TestCase):
         self.assertEqual(type(dv.Value), ua.Variant)
         dv = ua.DataValue('abc')
         self.assertEqual(dv.Value, ua.Variant('abc'))
-        now = datetime.now()
+        now = datetime.utcnow()
         dv.SourceTimestamp = now
 
     def test_variant(self):
         dv = ua.Variant(True, ua.VariantType.Boolean)
         self.assertEqual(dv.Value, True)
         self.assertEqual(type(dv.Value), bool)
-        now = datetime.now()
+        now = datetime.utcnow()
         v = ua.Variant(now)
         self.assertEqual(v.Value, now)
         self.assertEqual(v.VariantType, ua.VariantType.DateTime)
@@ -268,7 +268,7 @@ class Unit(unittest.TestCase):
         self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
 
-        now = datetime.now()
+        now = datetime.utcnow()
         v = ua.Variant([now])
         self.assertEqual(v.Value[0], now)
         self.assertEqual(v.VariantType, ua.VariantType.DateTime)
@@ -407,7 +407,7 @@ class CommonTests(object):
         ev = Event(self.srv.iserver.isession)
         msg = b"this is my msg "
         ev.Message.Text = msg
-        tid = datetime.now()
+        tid = datetime.utcnow()
         ev.Time = tid
         ev.Severity = 500
         ev.trigger()
@@ -431,7 +431,7 @@ class CommonTests(object):
         ev = Event(self.srv.iserver.isession)
         msg = b"this is my msg "
         ev.Message.Text = msg
-        tid = datetime.now()
+        tid = datetime.utcnow()
         ev.Time = tid
         ev.Severity = 500
         ev.trigger()
@@ -472,7 +472,7 @@ class CommonTests(object):
 
     def test_datetime_write(self):
         time_node = self.opc.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
-        now = datetime.now()
+        now = datetime.utcnow()
         objects = self.opc.get_objects_node()
         v1 = objects.add_variable(4, "test_datetime", now)
         tid = v1.get_value()
@@ -858,7 +858,7 @@ class CommonTests(object):
 
         node, val, data = msclt.future.result()
         self.assertEqual(node, server_time_node)
-        delta = datetime.now() - val
+        delta = datetime.utcnow() - val
         self.assertTrue(delta < timedelta(seconds=2))
 
         sub.unsubscribe(handle)

@@ -85,7 +85,7 @@ class InternalServer(object):
             self._known_servers[edp.Server.ApplicationUri] = ServerDesc(edp.Server)
         self.loop.start()
         Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_State)).set_value(0)
-        Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_StartTime)).set_value(datetime.now())
+        Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_StartTime)).set_value(datetime.utcnow())
         if not self.disabled_clock:
             self._set_current_time()
 
@@ -94,7 +94,7 @@ class InternalServer(object):
         self.loop.stop()
 
     def _set_current_time(self):
-        self.current_time_node.set_value(datetime.now())
+        self.current_time_node.set_value(datetime.utcnow())
         self.loop.call_later(1, self._set_current_time)
 
     def get_new_channel_id(self):

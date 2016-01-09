@@ -263,8 +263,8 @@ class NodeManagementService(object):
     def _add_node_attr(self, item, nodedata, name, vtype=None):
         if item.SpecifiedAttributes & getattr(ua.NodeAttributesMask, name):
             dv = ua.DataValue(ua.Variant(getattr(item, name), vtype))
-            dv.ServerTimestamp = datetime.now()
-            dv.SourceTimestamp = datetime.now()
+            dv.ServerTimestamp = datetime.utcnow()
+            dv.SourceTimestamp = datetime.utcnow()
             nodedata.attributes[getattr(ua.AttributeIds, name)] = AttributeValue(dv)
 
     def _add_nodeattributes(self, item, nodedata):
@@ -391,9 +391,9 @@ class AddressSpace(object):
             if attr not in node.attributes:
                 return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
             if not value.SourceTimestamp:
-                value.SourceTimestamp = datetime.now()
+                value.SourceTimestamp = datetime.utcnow()
             if not value.ServerTimestamp:
-                value.ServerTimestamp = datetime.now()
+                value.ServerTimestamp = datetime.utcnow()
 
             attval = node.attributes[attr]
             old = attval.value
