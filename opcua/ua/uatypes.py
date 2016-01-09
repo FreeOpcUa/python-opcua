@@ -453,7 +453,7 @@ class NodeId(FrozenClass):
         return string
 
     def __str__(self):
-        return "NodeId({})".format(self.to_string())
+        return "{}NodeId({})".format(self.NodeIdType.name, self.to_string())
     __repr__ = __str__
 
     def to_binary(self):
