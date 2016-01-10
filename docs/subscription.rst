@@ -2,7 +2,7 @@
 Subscription Class 
 =========================================
 
-.. autoclass:: opcua.Subscription
+.. autoclass:: opcua.common.subscription.Subscription
    :members:
    :undoc-members:
 

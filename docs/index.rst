@@ -6,6 +6,8 @@
 Python OPC-UA Documentation
 =========================================
 
+Directory structure:
+
 Contents:
 
 .. toctree::

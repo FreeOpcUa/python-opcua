@@ -4,14 +4,13 @@ UA Structures and Enums
 
 All the structures and enums are to be found under opcua.ua
 
-.. automodule:: opcua.uatypes
+.. automodule:: opcua.ua.uatypes
    :members:
 
-
-.. automodule:: opcua.uaprotocol_hand
+.. automodule:: opcua.ua.uaprotocol_hand
    :members:
 
-.. automodule:: opcua.uaprotocol_auto
+.. automodule:: opcua.ua.uaprotocol_auto
    :members:
 
 

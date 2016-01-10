@@ -2,7 +2,7 @@
 High level Functions and Node Class 
 =========================================
 
-.. automodule:: opcua.node
+.. automodule:: opcua.common.node
    :member-order: bysource
    :members:
    :undoc-members:
