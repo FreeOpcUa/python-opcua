@@ -57,7 +57,7 @@ class Server(object):
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.endpoint = urlparse("opc.tcp://0.0.0.0:4841/freeopcua/server/")
+        self.endpoint = urlparse("opc.tcp://0.0.0.0:4840/freeopcua/server/")
         self.application_uri = "urn:freeopcua:python:server"
         self.product_uri = "urn:freeopcua.github.no:python:server"
         self.name = "FreeOpcUa Python Server"
