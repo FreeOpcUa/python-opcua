@@ -14,7 +14,7 @@ except ImportError:
         shell.interact()
 
 
-from opcua import ua, uamethod, Server, Event, ObjectIds
+from opcua import ua, uamethod, Server, Event 
 
 
 class SubHandler(object):
@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     # creating an event object
     # The event object automatically will have members for all events properties
-    myevent = server.get_event_object(ObjectIds.BaseEventType)
+    myevent = server.get_event_object(ua.ObjectIds.BaseEventType)
     myevent.Message.Text = "This is my event"
     myevent.Severity = 300
 
