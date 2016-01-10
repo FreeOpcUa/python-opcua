@@ -18,8 +18,8 @@ from opcua import Client
 from opcua import Server
 from opcua import uamethod
 from opcua import Event
-from opcua import ObjectIds
-from opcua import AttributeIds
+from opcua.ua import ObjectIds
+from opcua.ua import AttributeIds
 from opcua.ua import extensionobject_from_binary
 from opcua.ua import extensionobject_to_binary
 

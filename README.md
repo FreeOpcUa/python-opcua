@@ -46,6 +46,7 @@ Tested servers: freeopcua C++, freeopcua Python, prosys, kepware, beckoff
 
 
 Client: what is not implemented yet 
+* localized text feature
 * removing nodes 
 * adding some missing modify methods
 
@@ -66,7 +67,8 @@ Server: what works:
 Tested clients: freeopcua C++, freeopcua Python, uaexpert, prosys, quickopc
 
 Server: what is not implemented
-* complete securty model with users
+* localized text feature
+* complete securty model with users and password
 * removing nodes 
 * adding some missing modify methods
 
