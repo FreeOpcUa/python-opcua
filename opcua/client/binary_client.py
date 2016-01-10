@@ -137,6 +137,7 @@ class UASocketClient(object):
         self.logger.info("stop request")
         self._do_stop = True
         self._socket.socket.shutdown(socket.SHUT_WR)
+        self._socket.socket.close()
 
     def send_hello(self, url):
         hello = ua.Hello()
