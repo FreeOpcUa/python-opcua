@@ -73,6 +73,18 @@ class Buffer(object):
         self._size -= size
         self._cur_pos += size
 
+    def write(self, bstr):
+        """
+        append bstr to current buffer
+        """
+        if self._cur_pos > 0:
+            # dicard old buffer to free memory
+            self._data = self._data[self._cur_pos:] + bstr
+            self._cur_pos = 0
+        else:
+            self._data += bstr
+        self._size = len(self._data)
+
 
 
 class SocketClosedException(Exception):

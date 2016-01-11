@@ -3,179 +3,144 @@ Low level binary client
 """
 
 import logging
-import socket
-from threading import Thread, Lock
+import threading
 from concurrent.futures import Future
 from functools import partial
+try:
+    # we prefer to use bundles asyncio version, otherwise fallback to trollius
+    import asyncio
+except ImportError:
+    import trollius as asyncio
 
 from opcua import ua
 from opcua.common import utils
 
-class UASocketClient(object):
-    """
-    handle socket connection and send ua messages
-    timeout is the timeout used while waiting for an ua answer from server
-    """
-    def __init__(self, timeout=1, security_policy=ua.SecurityPolicy()):
-        self.logger = logging.getLogger(__name__ + "Socket")
-        self._thread = None
-        self._lock = Lock()
-        self.timeout = timeout
-        self._socket = None
-        self._do_stop = False
+
+class UAClientProtocol(asyncio.Protocol):
+    def __init__(self, security_connection, disconnected_cb):
+        asyncio.Protocol.__init__(self)
+        self.logger = logging.getLogger(__name__ + "Protocol")
         self.authentication_token = ua.NodeId()
+        self._connection = security_connection
+        self.disconnected_cb = disconnected_cb
+        self.transport = None
+        self.futuremap = {}
+        self._buffer = utils.Buffer(b"")
         self._request_id = 0
         self._request_handle = 0
-        self._callbackmap = {}
-        self._connection = ua.SecureConnection(security_policy)
+        self._cur_header = None
 
-    def start(self):
-        """
-        Start receiving thread.
-        this is called automatically in connect and
-        should not be necessary to call directly
-        """
-        self._thread = Thread(target=self._run)
-        self._thread.start()
+    def connection_made(self, transport):
+        self.logger.info("connect to server")
+        self.transport = transport
 
-    def _send_request(self, request, callback=None, timeout=1000, message_type=ua.MessageType.SecureMessage):
-        """
-        send request to server, lower-level method
-        timeout is the timeout written in ua header
-        returns future
-        """
-        with self._lock:
-            request.RequestHeader = self._create_request_header(timeout)
-            try:
-                binreq = request.to_binary()
-            except:
-                # reset reqeust handle if any error
-                # see self._create_request_header
-                self._request_handle -= 1
-                raise
-            self._request_id += 1
-            future = Future()
-            if callback:
-                future.add_done_callback(callback)
-            self._callbackmap[self._request_id] = future
-            msg = self._connection.message_to_binary(binreq,
-                    message_type, self._request_id)
-            self._socket.write(msg)
-        return future
+    def connection_lost(self, ex):
+        self.logger.info("connection lost")
+        self.close(ex)
 
-    def send_request(self, request, callback=None, timeout=1000, message_type=ua.MessageType.SecureMessage):
-        """
-        send request to server.
-        timeout is the timeout written in ua header
-        returns response object if no callback is provided
-        """
-        future = self._send_request(request, callback, timeout, message_type)
-        if not callback:
-            data = future.result(self.timeout)
-            self.check_answer(data, " in response to " + request.__class__.__name__)
-            return data
+    def close(self, ex=None):
+        for k in self.futuremap:
+            # cancel all waiting response callback
+            fut = self.futuremap[k]
+            if not fut.done():
+                fut.cancel()
+        self.futuremap.clear()
+        if self.transport is not None:
+            self.disconnected_cb(ex)
+            self.transport.close()
+            self.transport = None
 
-    def check_answer(self, data, context):
-        data = data.copy()
-        typeid = ua.NodeId.from_binary(data)
-        if typeid == ua.FourByteNodeId(ua.ObjectIds.ServiceFault_Encoding_DefaultBinary):
-            self.logger.warning("ServiceFault from server received %s", context)
-            hdr = ua.ResponseHeader.from_binary(data)
-            hdr.ServiceResult.check()
-            return False
-        return True
+    def data_received(self, data):
+        # TODO: call pause/resume enable flow control
+        self._buffer.write(data)
+        self._process_msg()
 
-    def _run(self):
-        self.logger.info("Thread started")
-        while not self._do_stop:
-            try:
-                self._receive()
-            except ua.utils.SocketClosedException:
-                self.logger.info("Socket has closed connection")
-                break
-        self.logger.info("Thread ended")
+    def _process_msg(self):
+        try:
+            while True:
+                hdr = self._get_header()
+                if hdr is None or len(self._buffer) < hdr.body_size:
+                    return
+                # entire packet recieved, clear curent header and process it
+                self._cur_header = None
+                self._process_one_packet(hdr)
+        except Exception as e:
+            self.logging.exception("data_received got exception, close connection: %s")
+            self.close(e)
 
-    def _receive(self):
-        msg = self._connection.receive_from_socket(self._socket)
-        if msg is None:
-            return
-        elif isinstance(msg, ua.Message):
-            self._call_callback(msg.request_id(), msg.body())
-        elif isinstance(msg, ua.Acknowledge):
-            self._call_callback(0, msg)
-        elif isinstance(msg, ua.ErrorMessage):
-            self.logger.warning("Received an error: {}".format(msg))
+    def _process_one_packet(self, hdr):
+            msg = self._connection.receive_from_header_and_body(hdr, self._buffer)
+            if msg is None:
+                # wait for more chunk
+                return
+            elif isinstance(msg, ua.Message):
+                self._set_result(msg.request_id(), msg.body())
+            elif isinstance(msg, ua.Acknowledge):
+                self._set_result(0, msg)
+            elif isinstance(msg, ua.ErrorMessage):
+                self.logger.warning("Received an error: {}".format(msg))
+            else:
+                raise Exception("Unsupported message type: {}".format(msg))
+
+    def _get_header(self):
+        if self._cur_header is not None:
+            return self._cur_header
+        buf = self._buffer
+        if len(buf) < 8:
+            # a UA Header is at least 8 bytes, wait for more
+            return None
+        try:
+            header = ua.Header.from_string(buf)
+        except ua.NotEnoughData:
+            # not enougth data for header, wait for more
+            return None
+        self._cur_header = header
+        return header
+
+    def _set_result(self, reqid, body):
+        if reqid not in self.futuremap:
+            raise Exception(
+                "No future found for request: {}, futures in list are {}".format(
+                    reqid, self.futuremap.keys()))
+        fut = self.futuremap.pop(reqid)
+        if fut is not None and not fut.done():
+            fut.set_result(body)
+
+    def set_authentication_token(self, token):
+        self.authentication_token = token
+
+    def send_request(self, request, timeout_hint, fut):
+        if isinstance(request, ua.Hello):
+            msg = self._connection.tcp_to_binary(ua.MessageType.Hello, request)
+            reqid = 0
         else:
-            raise Exception("Unsupported message type: {}".format(msg))
+            if isinstance(request, ua.OpenSecureChannelRequest):
+                msgtype = ua.MessageType.SecureOpen
+            elif isinstance(request, ua.CloseSecureChannelRequest):
+                msgtype = ua.MessageType.SecureClose
+            else:
+                msgtype = ua.MessageType.SecureMessage
+            binreq = self._to_binreq(request, timeout_hint)
+            self._request_id += 1
+            reqid = self._request_id
+            msg = self._connection.message_to_binary(binreq, msgtype, reqid)
+        self.transport.write(msg)
+        self.futuremap[reqid] = fut
 
-    def _call_callback(self, request_id, body):
-        with self._lock:
-            future = self._callbackmap.pop(request_id, None)
-            if future is None:
-                raise Exception("No future object found for request: {}, callbacks in list are {}".format(request_id, self._callbackmap.keys()))
-        future.set_result(body)
-
-    def _create_request_header(self, timeout=1000):
+    def _to_binreq(self, request, timeout_hint):
         hdr = ua.RequestHeader()
         hdr.AuthenticationToken = self.authentication_token
         self._request_handle += 1
         hdr.RequestHandle = self._request_handle
-        hdr.TimeoutHint = timeout
-        return hdr
-
-    def connect_socket(self, host, port):
-        """
-        connect to server socket and start receiving thread
-        """
-        self.logger.info("opening connection")
-        sock = socket.create_connection((host, port))
-        sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)  # nodelay ncessary to avoid packing in one frame, some servers do not like it
-        self._socket = utils.SocketWrapper(sock)
-        self.start()
-
-    def disconnect_socket(self):
-        self.logger.info("stop request")
-        self._do_stop = True
-        self._socket.socket.shutdown(socket.SHUT_WR)
-
-    def send_hello(self, url):
-        hello = ua.Hello()
-        hello.EndpointUrl = url
-        future = Future()
-        with self._lock:
-            self._callbackmap[0] = future
-        binmsg = self._connection.tcp_to_binary(ua.MessageType.Hello, hello)
-        self._socket.write(binmsg)
-        ack = future.result(self.timeout)
-        return ack
-
-    def open_secure_channel(self, params):
-        self.logger.info("open_secure_channel")
-        request = ua.OpenSecureChannelRequest()
-        request.Parameters = params
-        future = self._send_request(request, message_type=ua.MessageType.SecureOpen)
-
-        response = ua.OpenSecureChannelResponse.from_binary(future.result(self.timeout))
-        response.ResponseHeader.ServiceResult.check()
-        self._connection.set_security_token(response.Parameters.SecurityToken)
-        return response.Parameters
-
-    def close_secure_channel(self):
-        """
-        close secure channel. It seems to trigger a shutdown of socket
-        in most servers, so be prepare to reconnect.
-        OPC UA specs Part 6, 7.1.4 say that Server does not send a CloseSecureChannel response and should just close socket
-        """
-        self.logger.info("close_secure_channel")
-        request = ua.CloseSecureChannelRequest()
-        future = self._send_request(request, message_type=ua.MessageType.SecureClose)
-        with self._lock:
-            # don't expect any more answers
-            future.cancel()
-            self._callbackmap.clear()
-
-        # some servers send a response here, most do not ... so we ignore
-
+        hdr.TimeoutHint = timeout_hint
+        request.RequestHeader = hdr
+        try:
+            binreq = request.to_binary()
+        except:
+            # reset reqeust handle if any error
+            self._request_handle -= 1
+            raise
+        return binreq
 
 
 class BinaryClient(object):
@@ -190,11 +155,53 @@ class BinaryClient(object):
 
     def __init__(self, timeout=1):
         self.logger = logging.getLogger(__name__)
-        # _publishcallbacks should be accessed in recv thread only
         self._publishcallbacks = {}
         self._timeout = timeout
-        self._uasocket = None
         self._security_policy = ua.SecurityPolicy()
+        self._loop_ready = False
+        self._proto_connected = False
+
+    def _start_loop(self, host, port):
+        fut = Future()
+        try:
+            self._loop = asyncio.new_event_loop()
+            self._thread = threading.Thread(target=self._loop_run, args=(host, port, fut))
+            self._thread.daemon = True
+            self._thread.start()
+        except:
+            self._loop = None
+            self._thread = None
+            raise
+        fut.result()
+        self._loop_ready = True
+        self._proto_connected = True
+
+    def _loop_run(self, host, port, fut):
+        self.logger.info("start client thread")
+        try:
+            coro = self._loop.create_connection(lambda: self._proto, host, port)
+            self._loop.run_until_complete(coro)
+        except Exception as e:
+            self._loop.close()
+            fut.set_exception(e)
+            self.logger.info("stop client thread")
+            return
+        fut.set_result(None)
+        self._loop.run_forever()
+        self._proto.close()
+        self._loop.close()
+        self.logger.info("stop client thread")
+
+    def _stop_loop(self):
+        if self._loop_ready:
+            self._loop.call_soon_threadsafe(self._loop.stop)
+            self._thread.join()
+            self._loop_ready = False
+            self._loop = None
+            self._thread = None
+
+    def _in_loop_thread(self):
+        return self._thread.ident == threading.current_thread().ident
 
     def set_security(self, policy):
         self._security_policy = policy
@@ -203,190 +210,335 @@ class BinaryClient(object):
         """
         connect to server socket and start receiving thread
         """
-        self._uasocket = UASocketClient(self._timeout, security_policy=self._security_policy)
-        return self._uasocket.connect_socket(host, port)
+        self._connection = ua.SecureConnection(self._security_policy)
+        self._proto = UAClientProtocol(self._connection, self._disconn_cb)
+        self._start_loop(host, port)
+
+    def _disconn_cb(self, ex):
+        self._proto_connected = False
 
     def disconnect_socket(self):
-        return self._uasocket.disconnect_socket()
+        self._stop_loop()
+        self._proto = None
+        self._connection = None
+        self._publishcallbacks.clear()
+
+    def _check_answer(self, data):
+        if not isinstance(data, utils.Buffer):
+            # may be an ack etc...
+            return
+        data = data.copy()
+        typeid = ua.NodeId.from_binary(data)
+        if typeid == ua.FourByteNodeId(ua.ObjectIds.ServiceFault_Encoding_DefaultBinary):
+            self.logger.warning("ServiceFault from server received")
+            hdr = ua.ResponseHeader.from_binary(data)
+            hdr.ServiceResult.check()
+
+    def _on_response_data(self, fut, on_response, data_fut):
+        if data_fut.cancelled():
+            fut.cancel()
+            return
+        ex = data_fut.exception()
+        if ex is not None:
+            fut.set_exception(ex)
+            return
+        try:
+            data = data_fut.result()
+            self._check_answer(data)
+            rs = on_response(data)
+        except Exception as e:
+            fut.set_exception(e)
+        fut.set_result(rs)
+
+    def _loop_send(self, new_request, on_response, fut):
+        try:
+            req = new_request()
+            data_fut = asyncio.Future(loop=self._loop)
+            data_fut.add_done_callback(partial(self._on_response_data, fut, on_response))
+            self.logger.info("sending %s", req.__class__.__name__)
+            self._proto.send_request(req, int(self._timeout * 1000), data_fut)
+        except Exception as e:
+            fut.set_exception(e)
+
+    def _send_request(self, new_request, on_response):
+        if not self._proto_connected:
+            raise Exception("client is disconnected")
+        if self._in_loop_thread():
+            raise Exception("can not send reqeust in client loop thread")
+        fut = Future()
+        self._loop.call_soon_threadsafe(self._loop_send, new_request, on_response, fut)
+        return fut.result(self._timeout)
+
+    def _loop_call(self, fut, func, *args, **kwargs):
+        try:
+            ret = func(*args, **kwargs)
+        except Exception as e:
+            fut.set_exception(e)
+        fut.set_result(ret)
+
+    def _async_call(self, func, *args, **kwargs):
+        if self._in_loop_thread():
+            return func(*args, **kwargs)
+        fut = Future()
+        self._loop.call_soon_threadsafe(partial(self._loop_call, fut, func, *args, **kwargs))
+        return fut.result(self._timeout)
 
     def send_hello(self, url):
-        return self._uasocket.send_hello(url)
+        def new_req():
+            hello = ua.Hello()
+            hello.EndpointUrl = url
+            return hello
+
+        return self._send_request(new_req, lambda x: x)
 
     def open_secure_channel(self, params):
-        return self._uasocket.open_secure_channel(params)
+        def new_req():
+            request = ua.OpenSecureChannelRequest()
+            request.Parameters = params
+            return request
+
+        def on_resp(data):
+            response = ua.OpenSecureChannelResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            self._connection.set_security_token(response.Parameters.SecurityToken)
+            return response.Parameters
+
+        return self._send_request(new_req, on_resp)
 
     def close_secure_channel(self):
         """
         close secure channel. It seems to trigger a shutdown of socket
-        in most servers, so be prepare to reconnect
+        in most servers, so be prepare to reconnect.
+        OPC UA specs Part 6, 7.1.4 say that Server does not send a CloseSecureChannel response
+        and should just close socket
         """
-        return self._uasocket.close_secure_channel()
+        try:
+            self._send_request(ua.CloseSecureChannelRequest, lambda x: x)
+        except asyncio.CancelledError:
+            # some servers send a response here, most do not ... so we ignore
+            pass
 
     def create_session(self, parameters):
-        self.logger.info("create_session")
-        request = ua.CreateSessionRequest()
-        request.Parameters = parameters
-        data = self._uasocket.send_request(request)
-        response = ua.CreateSessionResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        self._uasocket.authentication_token = response.Parameters.AuthenticationToken
-        return response.Parameters
+        def new_req():
+            request = ua.CreateSessionRequest()
+            request.Parameters = parameters
+            return request
+
+        def on_resp(data):
+            response = ua.CreateSessionResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            self._proto.set_authentication_token(response.Parameters.AuthenticationToken)
+            return response.Parameters
+
+        return self._send_request(new_req, on_resp)
 
     def activate_session(self, parameters):
-        self.logger.info("activate_session")
-        request = ua.ActivateSessionRequest()
-        request.Parameters = parameters
-        data = self._uasocket.send_request(request)
-        response = ua.ActivateSessionResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Parameters
+        def new_req():
+            request = ua.ActivateSessionRequest()
+            request.Parameters = parameters
+            return request
+
+        def on_resp(data):
+            response = ua.ActivateSessionResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            return response.Parameters
+
+        return self._send_request(new_req, on_resp)
 
     def close_session(self, deletesubscriptions):
-        self.logger.info("close_session")
-        request = ua.CloseSessionRequest()
-        request.DeleteSubscriptions = deletesubscriptions
-        data = self._uasocket.send_request(request)
-        ua.CloseSessionResponse.from_binary(data)
-        # response.ResponseHeader.ServiceResult.check() #disabled, it seems we sent wrong session Id, but where is the sessionId supposed to be sent???
+        def new_req():
+            request = ua.CloseSessionRequest()
+            request.DeleteSubscriptions = deletesubscriptions
+            return request
+
+        def on_resp(data):
+            ua.CloseSessionResponse.from_binary(data)
+            # disabled, it seems we sent wrong session Id,
+            # but where is the sessionId supposed to be sent???
+            # response.ResponseHeader.ServiceResult.check()
+
+        self._send_request(new_req, on_resp)
 
     def browse(self, parameters):
-        self.logger.info("browse")
-        request = ua.BrowseRequest()
-        request.Parameters = parameters
-        data = self._uasocket.send_request(request)
-        response = ua.BrowseResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Results
+        def new_req():
+            request = ua.BrowseRequest()
+            request.Parameters = parameters
+            return request
+
+        def on_resp(data):
+            response = ua.BrowseResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            return response.Results
+
+        return self._send_request(new_req, on_resp)
 
     def read(self, parameters):
-        self.logger.info("read")
-        request = ua.ReadRequest()
-        request.Parameters = parameters
-        data = self._uasocket.send_request(request)
-        response = ua.ReadResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        # cast to Enum attributes that need to
-        for idx, rv in enumerate(parameters.NodesToRead):
-            if rv.AttributeId == ua.AttributeIds.NodeClass:
-                dv = response.Results[idx]
-                if dv.StatusCode.is_good():
-                    dv.Value.Value = ua.NodeClass(dv.Value.Value)
-            elif rv.AttributeId == ua.AttributeIds.ValueRank:
-                dv = response.Results[idx]
-                if dv.StatusCode.is_good() and dv.Value.Value in (-3, -2, -1, 0, 1, 2, 3, 4):
-                    dv.Value.Value = ua.ValueRank(dv.Value.Value)
-        return response.Results
+        def new_req():
+            request = ua.ReadRequest()
+            request.Parameters = parameters
+            return request
+
+        def on_resp(data):
+            response = ua.ReadResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            # cast to Enum attributes that need to
+            for idx, rv in enumerate(parameters.NodesToRead):
+                if rv.AttributeId == ua.AttributeIds.NodeClass:
+                    dv = response.Results[idx]
+                    if dv.StatusCode.is_good():
+                        dv.Value.Value = ua.NodeClass(dv.Value.Value)
+                elif rv.AttributeId == ua.AttributeIds.ValueRank:
+                    dv = response.Results[idx]
+                    if dv.StatusCode.is_good() and dv.Value.Value in (-3, -2, -1, 0, 1, 2, 3, 4):
+                        dv.Value.Value = ua.ValueRank(dv.Value.Value)
+            return response.Results
+
+        return self._send_request(new_req, on_resp)
 
     def write(self, params):
-        self.logger.info("read")
-        request = ua.WriteRequest()
-        request.Parameters = params
-        data = self._uasocket.send_request(request)
-        response = ua.WriteResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Results
+        def new_req():
+            request = ua.WriteRequest()
+            request.Parameters = params
+            return request
+
+        def on_resp(data):
+            response = ua.WriteResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            return response.Results
+
+        return self._send_request(new_req, on_resp)
 
     def get_endpoints(self, params):
-        self.logger.info("get_endpoint")
-        request = ua.GetEndpointsRequest()
-        request.Parameters = params
-        data = self._uasocket.send_request(request)
-        response = ua.GetEndpointsResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Endpoints
+        def new_req():
+            request = ua.GetEndpointsRequest()
+            request.Parameters = params
+            return request
+
+        def on_resp(data):
+            response = ua.GetEndpointsResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            return response.Endpoints
+
+        return self._send_request(new_req, on_resp)
 
     def find_servers(self, params):
-        self.logger.info("find_servers")
-        request = ua.FindServersRequest()
-        request.Parameters = params
-        data = self._uasocket.send_request(request)
-        response = ua.FindServersResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Servers
+        def new_req():
+            request = ua.FindServersRequest()
+            request.Parameters = params
+            return request
+
+        def on_resp(data):
+            response = ua.FindServersResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            return response.Servers
+
+        return self._send_request(new_req, on_resp)
 
     def find_servers_on_network(self, params):
-        self.logger.info("find_servers_on_network")
-        request = ua.FindServersOnNetworkRequest()
-        request.Parameters = params
-        data = self._uasocket.send_request(request)
-        response = ua.FindServersOnNetworkResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Parameters
+        def new_req():
+            request = ua.FindServersOnNetworkRequest()
+            request.Parameters = params
+            return request
+
+        def on_resp(data):
+            response = ua.FindServersOnNetworkResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            return response.Parameters
+
+        return self._send_request(new_req, on_resp)
 
     def register_server(self, registered_server):
-        self.logger.info("register_server")
-        request = ua.RegisterServerRequest()
-        request.Server = registered_server
-        data = self._uasocket.send_request(request)
-        response = ua.RegisterServerResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        # nothing to return for this service
+        def new_req():
+            request = ua.RegisterServerRequest()
+            request.Server = registered_server
+            return request
+
+        def on_resp(data):
+            response = ua.RegisterServerResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+
+        self._send_request(new_req, on_resp)
 
     def register_server2(self, params):
-        self.logger.info("register_server2")
-        request = ua.RegisterServer2Request()
-        request.Parameters = params
-        data = self._uasocket.send_request(request)
-        response = ua.RegisterServer2Response.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.ConfigurationResults
+        def new_req():
+            request = ua.RegisterServer2Request()
+            request.Parameters = params
+            return request
+
+        def on_resp(data):
+            response = ua.RegisterServer2Response.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            return response.ConfigurationResults
+
+        return self._send_request(new_req, on_resp)
 
     def translate_browsepaths_to_nodeids(self, browsepaths):
-        self.logger.info("translate_browsepath_to_nodeid")
-        request = ua.TranslateBrowsePathsToNodeIdsRequest()
-        request.Parameters.BrowsePaths = browsepaths
-        data = self._uasocket.send_request(request)
-        response = ua.TranslateBrowsePathsToNodeIdsResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Results
+        def new_req():
+            request = ua.TranslateBrowsePathsToNodeIdsRequest()
+            request.Parameters.BrowsePaths = browsepaths
+            return request
+
+        def on_resp(data):
+            response = ua.TranslateBrowsePathsToNodeIdsResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            return response.Results
+
+        return self._send_request(new_req, on_resp)
 
     def create_subscription(self, params, callback):
-        self.logger.info("create_subscription")
-        request = ua.CreateSubscriptionRequest()
-        request.Parameters = params
-        resp_fut = Future()
-        mycallbak = partial(self._create_subscription_callback, callback, resp_fut)
-        self._uasocket.send_request(request, mycallbak)
-        return resp_fut.result(self._timeout)
+        def new_req():
+            request = ua.CreateSubscriptionRequest()
+            request.Parameters = params
+            return request
 
-    def _create_subscription_callback(self, pub_callback, resp_fut, data_fut):
-        self.logger.info("_create_subscription_callback")
-        data = data_fut.result()
-        response = ua.CreateSubscriptionResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        self._publishcallbacks[response.Parameters.SubscriptionId] = pub_callback
-        resp_fut.set_result(response.Parameters)
+        def on_resp(data):
+            response = ua.CreateSubscriptionResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            self._publishcallbacks[response.Parameters.SubscriptionId] = callback
+            return response.Parameters
+
+        return self._send_request(new_req, on_resp)
 
     def delete_subscriptions(self, subscriptionids):
-        self.logger.info("delete_subscription")
-        request = ua.DeleteSubscriptionsRequest()
-        request.Parameters.SubscriptionIds = subscriptionids
-        resp_fut = Future()
-        mycallbak = partial(self._delete_subscriptions_callback, subscriptionids, resp_fut)
-        self._uasocket.send_request(request, mycallbak)
-        return resp_fut.result(self._timeout)
+        def new_req():
+            request = ua.DeleteSubscriptionsRequest()
+            request.Parameters.SubscriptionIds = subscriptionids
+            return request
 
-    def _delete_subscriptions_callback(self, subscriptionids, resp_fut, data_fut):
-        self.logger.info("_delete_subscriptions_callback")
-        data = data_fut.result()
-        response = ua.DeleteSubscriptionsResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        for sid in subscriptionids:
-            self._publishcallbacks.pop(sid)
-        resp_fut.set_result(response.Results)
+        def on_resp(data):
+            response = ua.DeleteSubscriptionsResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            for sid in subscriptionids:
+                self._publishcallbacks.pop(sid)
+            return response.Results
 
-    def publish(self, acks=None):
-        self.logger.info("publish")
-        if acks is None:
-            acks = []
+        return self._send_request(new_req, on_resp)
+
+    def _loop_publish(self, acks):
+        self.logger.info("sending PublishRequest")
         request = ua.PublishRequest()
         request.Parameters.SubscriptionAcknowledgements = acks
-        self._uasocket.send_request(request, self._call_publish_callback, timeout=int(9e8))  # timeout could be set to 0 but some servers to not support it
+        data_fut = asyncio.Future(loop=self._loop)
+        data_fut.add_done_callback(self._call_publish_callback)
+        self._proto.send_request(request, int(9e8), data_fut)
 
-    def _call_publish_callback(self, future):
+    def publish(self, acks=None):
+        if not self._proto_connected:
+            raise Exception("client is disconnected")
+        if acks is None:
+            acks = []
+        return self._async_call(self._loop_publish, acks)
+
+    def _call_publish_callback(self, data_fut):
         self.logger.info("call_publish_callback")
-        data = future.result()
-        self._uasocket.check_answer(data, "ServiceFault received from server while waiting for publish response")
+        if data_fut.cancelled():
+            return
+        ex = data_fut.exception()
+        if ex is not None:
+            self.logger.warning("call_publish_callback got exception %s", repr(ex))
+            return
+        data = data_fut.result()
+        self._check_answer(data)
         response = ua.PublishResponse.from_binary(data)
         if response.Parameters.SubscriptionId not in self._publishcallbacks:
             self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
@@ -395,48 +547,69 @@ class BinaryClient(object):
         try:
             callback(response.Parameters)
         except Exception:  # we call client code, catch everything!
-            self.logger.exception("Exception while calling user callback: %s")
+            self.logger.exception("Exception while calling user callback")
 
     def create_monitored_items(self, params):
-        self.logger.info("create_monitored_items")
-        request = ua.CreateMonitoredItemsRequest()
-        request.Parameters = params
-        data = self._uasocket.send_request(request)
-        response = ua.CreateMonitoredItemsResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Results
+        def new_req():
+            request = ua.CreateMonitoredItemsRequest()
+            request.Parameters = params
+            return request
+
+        def on_resp(data):
+            response = ua.CreateMonitoredItemsResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            return response.Results
+
+        return self._send_request(new_req, on_resp)
 
     def delete_monitored_items(self, params):
-        self.logger.info("delete_monitored_items")
-        request = ua.DeleteMonitoredItemsRequest()
-        request.Parameters = params
-        data = self._uasocket.send_request(request)
-        response = ua.DeleteMonitoredItemsResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Results
+        def new_req():
+            request = ua.DeleteMonitoredItemsRequest()
+            request.Parameters = params
+            return request
+
+        def on_resp(data):
+            response = ua.DeleteMonitoredItemsResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            return response.Results
+
+        return self._send_request(new_req, on_resp)
 
     def add_nodes(self, nodestoadd):
-        self.logger.info("add_nodes")
-        request = ua.AddNodesRequest()
-        request.Parameters.NodesToAdd = nodestoadd
-        data = self._uasocket.send_request(request)
-        response = ua.AddNodesResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Results
+        def new_req():
+            request = ua.AddNodesRequest()
+            request.Parameters.NodesToAdd = nodestoadd
+            return request
+
+        def on_resp(data):
+            response = ua.AddNodesResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            return response.Results
+
+        return self._send_request(new_req, on_resp)
 
     def call(self, methodstocall):
-        request = ua.CallRequest()
-        request.Parameters.MethodsToCall = methodstocall
-        data = self._uasocket.send_request(request)
-        response = ua.CallResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Results
+        def new_req():
+            request = ua.CallRequest()
+            request.Parameters.MethodsToCall = methodstocall
+            return request
+
+        def on_resp(data):
+            response = ua.CallResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            return response.Results
+
+        return self._send_request(new_req, on_resp)
 
     def history_read(self, params):
-        self.logger.info("history_read")
-        request = ua.HistoryReadRequest()
-        request.Parameters = params
-        data = self._uasocket.send_request(request)
-        response = ua.HistoryReadResponse.from_binary(data)
-        response.ResponseHeader.ServiceResult.check()
-        return response.Results
+        def new_req():
+            request = ua.HistoryReadRequest()
+            request.Parameters = params
+            return request
+
+        def on_resp(data):
+            response = ua.HistoryReadResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            return response.Results
+
+        return self._send_request(new_req, on_resp)

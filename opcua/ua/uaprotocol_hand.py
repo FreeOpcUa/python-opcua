@@ -627,20 +627,6 @@ class SecureConnection(object):
         else:
             raise Exception("Unsupported message type {}".format(header.MessageType))
 
-    def receive_from_socket(self, socket):
-        """
-        Convert binary stream to OPC UA TCP message (see OPC UA
-        specs Part 6, 7.1: Hello, Acknowledge or ErrorMessage), or a Message
-        object, or None (if intermediate chunk is received)
-        """
-        logger.debug("Waiting for header")
-        header = Header.from_string(socket)
-        logger.info("received header: %s", header)
-        body = socket.read(header.body_size)
-        if len(body) != header.body_size:
-            raise Exception("{} bytes expected, {} available".format(header.body_size, len(body)))
-        return self.receive_from_header_and_body(header, utils.Buffer(body))
-
     def _receive(self, msg):
         self._check_incoming_chunk(msg)
         self._incoming_parts.append(msg)
