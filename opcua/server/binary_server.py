@@ -47,6 +47,7 @@ class BinaryServer(Thread):
     def stop(self):
         logger.warning("server shutdown request")
         self.socket_server.shutdown()
+        self.socket_server.server_close()
 
 
 class UAHandler(socketserver.BaseRequestHandler):
