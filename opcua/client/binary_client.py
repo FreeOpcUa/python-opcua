@@ -423,6 +423,15 @@ class BinaryClient(object):
         response = ua.AddNodesResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
+        
+    def delete_nodes(self, nodestodelete):
+        self.logger.info("delete_nodes")
+        request = ua.DeleteNodesRequest()
+        request.Parameters.NodesToDelete = nodestodelete
+        data = self._uasocket.send_request(request)
+        response = ua.AddNodesResponse.from_binary(data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
 
     def call(self, methodstocall):
         request = ua.CallRequest()
