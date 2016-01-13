@@ -18,10 +18,10 @@ from opcua import Client
 from opcua import Server
 from opcua import uamethod
 from opcua import Event
-from opcua import ObjectIds
-from opcua import AttributeIds
-from opcua.uaprotocol import extensionobject_from_binary
-from opcua.uaprotocol import extensionobject_to_binary
+from opcua.ua import ObjectIds
+from opcua.ua import AttributeIds
+from opcua.ua import extensionobject_from_binary
+from opcua.ua import extensionobject_to_binary
 
 port_num1 = 48510
 port_num2 = 48530
@@ -167,7 +167,7 @@ class Unit(unittest.TestCase):
         self.assertEqual(v1.VariantType, v2.VariantType)
 
     def test_datetime(self):
-        now = datetime.now()
+        now = datetime.utcnow()
         epch = ua.datetime_to_win_epoch(now)
         dt = ua.win_epoch_to_datetime(epch)
         self.assertEqual(now, dt)
@@ -243,14 +243,14 @@ class Unit(unittest.TestCase):
         self.assertEqual(type(dv.Value), ua.Variant)
         dv = ua.DataValue('abc')
         self.assertEqual(dv.Value, ua.Variant('abc'))
-        now = datetime.now()
+        now = datetime.utcnow()
         dv.SourceTimestamp = now
 
     def test_variant(self):
         dv = ua.Variant(True, ua.VariantType.Boolean)
         self.assertEqual(dv.Value, True)
         self.assertEqual(type(dv.Value), bool)
-        now = datetime.now()
+        now = datetime.utcnow()
         v = ua.Variant(now)
         self.assertEqual(v.Value, now)
         self.assertEqual(v.VariantType, ua.VariantType.DateTime)
@@ -268,7 +268,7 @@ class Unit(unittest.TestCase):
         self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
 
-        now = datetime.now()
+        now = datetime.utcnow()
         v = ua.Variant([now])
         self.assertEqual(v.Value[0], now)
         self.assertEqual(v.VariantType, ua.VariantType.DateTime)
@@ -316,11 +316,16 @@ class CommonTests(object):
     client side since we have been carefull to have the exact
     same api on server and client side
     '''
+    # jyst to avoid editor warnings
     opc = None
 
     def test_find_servers(self):
         servers = self.opc.find_servers()
         # FIXME : finish
+
+    def test_server_node(self):
+        node = self.opc.get_server_node()
+        self.assertEqual(ua.QualifiedName('Server', 0), node.get_browse_name())
 
     def test_root(self):
         root = self.opc.get_root_node()
@@ -386,11 +391,11 @@ class CommonTests(object):
 
     def test_subscribe_events_to_wrong_node(self):
         sub = self.opc.create_subscription(100, sclt)
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             handle = sub.subscribe_events(self.opc.get_node("i=85"))
         o = self.opc.get_objects_node()
         v = o.add_variable(3, 'VariableNoEventNofierAttribute', 4)
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             handle = sub.subscribe_events(v)
         sub.delete()
 
@@ -402,7 +407,7 @@ class CommonTests(object):
         ev = Event(self.srv.iserver.isession)
         msg = b"this is my msg "
         ev.Message.Text = msg
-        tid = datetime.now()
+        tid = datetime.utcnow()
         ev.Time = tid
         ev.Severity = 500
         ev.trigger()
@@ -426,7 +431,7 @@ class CommonTests(object):
         ev = Event(self.srv.iserver.isession)
         msg = b"this is my msg "
         ev.Message.Text = msg
-        tid = datetime.now()
+        tid = datetime.utcnow()
         ev.Time = tid
         ev.Severity = 500
         ev.trigger()
@@ -444,12 +449,12 @@ class CommonTests(object):
 
     def test_non_existing_path(self):
         root = self.opc.get_root_node()
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             server_time_node = root.get_child(['0:Objects', '0:Server', '0:nonexistingnode'])
 
     def test_bad_attribute(self):
         root = self.opc.get_root_node()
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             root.set_value(99)
 
     def test_get_node_by_nodeid(self):
@@ -467,7 +472,7 @@ class CommonTests(object):
 
     def test_datetime_write(self):
         time_node = self.opc.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
-        now = datetime.now()
+        now = datetime.utcnow()
         objects = self.opc.get_objects_node()
         v1 = objects.add_variable(4, "test_datetime", now)
         tid = v1.get_value()
@@ -578,7 +583,7 @@ class CommonTests(object):
     def test_add_exception(self):
         objects = self.opc.get_objects_node()
         o = objects.add_object('ns=2;i=103;', '2:AddReadObject')
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             o2 = objects.add_object('ns=2;i=103;', '2:AddReadObject')
 
     def test_negative_value(self):
@@ -595,14 +600,14 @@ class CommonTests(object):
 
     def test_bad_node(self):
         bad = self.opc.get_node(ua.NodeId(999, 999))
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             bad.get_browse_name()
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             bad.set_value(89)
-        with self.assertRaises(Exception):
-            bad.add_object(0, "myobj")
-        with self.assertRaises(Exception):
-            bad.get_child(0, "myobj")
+        with self.assertRaises(ua.UAStatusCodeError):
+            bad.add_object(0, "0:myobj")
+        with self.assertRaises(ua.UAStatusCodeError):
+            bad.get_child("0:myobj")
 
     def test_value(self):
         o = self.opc.get_objects_node()
@@ -660,7 +665,7 @@ class CommonTests(object):
         msclt = MySubHandler()
         o = self.opc.get_objects_node()
         sub = self.opc.create_subscription(100, msclt)
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             handle1 = sub.subscribe_data_change(o) # we can only subscribe to variables so this should fail
         sub.delete()
 
@@ -722,13 +727,13 @@ class CommonTests(object):
         self.assertEqual(node, v1)
         self.assertEqual(val, [5])
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             sub.unsubscribe(999)  # non existing handle
         sub.unsubscribe(handle1)
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             sub.unsubscribe(handle1)  # second try should fail
         sub.delete()
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             sub.unsubscribe(handle1)  # sub does not exist anymore
 
     def test_subscription_data_change(self):
@@ -762,13 +767,13 @@ class CommonTests(object):
         self.assertEqual(node, v1)
         self.assertEqual(val, [5])
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             sub.unsubscribe(999)  # non existing handle
         sub.unsubscribe(handle1)
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             sub.unsubscribe(handle1)  # second try should fail
         sub.delete()
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             sub.unsubscribe(handle1)  # sub does not exist anymore
 
 
@@ -853,7 +858,7 @@ class CommonTests(object):
 
         node, val, data = msclt.future.result()
         self.assertEqual(node, server_time_node)
-        delta = datetime.now() - val
+        delta = datetime.utcnow() - val
         self.assertTrue(delta < timedelta(seconds=2))
 
         sub.unsubscribe(handle)
@@ -872,10 +877,10 @@ class CommonTests(object):
         m = o.get_child("2:ServerMethod")
         result = o.call_method("2:ServerMethod", 2.1)
         self.assertEqual(result, 4.2)
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             # FIXME: we should raise a more precise exception
             result = o.call_method("2:ServerMethod", 2.1, 89, 9)
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             result = o.call_method(ua.NodeId(999), 2.1)  # non existing method
 
     def test_method_array(self):
@@ -965,14 +970,14 @@ class AdminTestClient(unittest.TestCase, CommonTests):
     def test_service_fault(self):
         request = ua.ReadRequest()
         request.TypeId = ua.FourByteNodeId(999)  # bad type!
-        with self.assertRaises(Exception):
-            self.clt.bclient._send_request(request)
+        with self.assertRaises(ua.UAStatusCodeError):
+            self.clt.bclient._uasocket.send_request(request)
 
     def test_objects_anonymous(self):
         objects = self.ro_clt.get_objects_node()
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             objects.set_attribute(ua.AttributeIds.WriteMask, ua.DataValue(999))
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             f = objects.add_folder(3, 'MyFolder')
 
     def test_folder_anonymous(self):
@@ -980,7 +985,7 @@ class AdminTestClient(unittest.TestCase, CommonTests):
         f = objects.add_folder(3, 'MyFolderRO')
         f_ro = self.ro_clt.get_node(f.nodeid)
         self.assertEqual(f, f_ro)
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             f2 = f_ro.add_folder(3, 'MyFolder2')
 
     def test_variable_anonymous(self):
@@ -988,14 +993,14 @@ class AdminTestClient(unittest.TestCase, CommonTests):
         v = objects.add_variable(3, 'MyROVariable', 6)
         v.set_value(4) #this should work
         v_ro = self.ro_clt.get_node(v.nodeid)
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             v_ro.set_value(2)
         self.assertEqual(v_ro.get_value(), 4)
         v.set_writable(True)
         v_ro.set_value(2) #now it should work
         self.assertEqual(v_ro.get_value(), 2)
         v.set_writable(False)
-        with self.assertRaises(Exception):
+        with self.assertRaises(ua.UAStatusCodeError):
             v_ro.set_value(9)
         self.assertEqual(v_ro.get_value(), 2)
 
@@ -1076,7 +1081,7 @@ class TestServer(unittest.TestCase, CommonTests):
             servers = client.find_servers()
             new_app_uri = "urn:freeopcua:python:server:test_discovery"
             self.srv.application_uri = new_app_uri
-            self.srv.register_to_discovery(self.discovery.endpoint.geturl(), 1)
+            self.srv.register_to_discovery(self.discovery.endpoint.geturl(), 0)
             time.sleep(0.1) # let server register registration
             new_servers = client.find_servers()
             self.assertEqual(len(new_servers) - len(servers) , 1)
@@ -1092,10 +1097,10 @@ class TestServer(unittest.TestCase, CommonTests):
             servers = client.find_servers()
             new_app_uri1 = "urn:freeopcua:python:server:test_discovery1"
             self.srv.application_uri = new_app_uri1
-            self.srv.register_to_discovery(self.discovery.endpoint.geturl())
+            self.srv.register_to_discovery(self.discovery.endpoint.geturl(), period=0)
             new_app_uri2 = "urn:freeopcua:python:test_discovery2"
             self.srv.application_uri = new_app_uri2
-            self.srv.register_to_discovery(self.discovery.endpoint.geturl())
+            self.srv.register_to_discovery(self.discovery.endpoint.geturl(), period=0)
             time.sleep(0.1) # let server register registration
             new_servers = client.find_servers()
             self.assertEqual(len(new_servers) - len(servers) , 2)

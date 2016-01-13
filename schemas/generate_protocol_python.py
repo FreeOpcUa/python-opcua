@@ -3,6 +3,7 @@ import generate_model as gm
 
 IgnoredEnums = ["NodeIdType"]
 IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "LocalizedText", "ExtensionObject"]
+numerics = ("Int8", "UInt8", "Sbyte", "Byte", "Char", "Boolean", "Int16", "UInt16", "Int32", "UInt32", "Float", "Int64", "UInt64", "Double")
 
 
 class CodeGenerator(object):
@@ -55,15 +56,17 @@ class CodeGenerator(object):
         self.write("'''")
         self.write("")
         self.write("from datetime import datetime")
+        self.write("from enum import Enum, IntEnum")
         self.write("")
-        self.write("from opcua.utils import Buffer")
-        self.write("from opcua.uatypes import *")
-        self.write("from opcua.object_ids import ObjectIds")
+        self.write("from opcua.common.utils import Buffer")
+        self.write("from opcua.common.uaerrors import UAError")
+        self.write("from opcua.ua.uatypes import *")
+        self.write("from opcua.ua.object_ids import ObjectIds")
 
     def generate_enum_code(self, enum):
         self.write("")
         self.write("")
-        self.write("class {}(object):".format(enum.name))
+        self.write("class {}(IntEnum):".format(enum.name))
         self.iidx = 1
         self.write("'''")
         if enum.doc:
@@ -165,8 +168,8 @@ class CodeGenerator(object):
             if field.is_native_type():
                 self.write_pack_uatype(listname, fname, field.uatype)
             elif field.uatype in self.model.enum_list:
-                uatype = self.model.get_enum(field.uatype).uatype
-                self.write_pack_uatype(listname, fname, uatype)
+                enum = self.model.get_enum(field.uatype)
+                self.write_pack_enum(listname, fname, enum)
             elif field.uatype in ("ExtensionObject"):
                 self.write("{}.append(extensionobject_to_binary({}))".format(listname, fname))
             else:
@@ -214,8 +217,10 @@ class CodeGenerator(object):
                 else:
                     self.write_unpack_uatype(field.name, field.uatype)
             elif field.uatype in self.model.enum_list:
-                uatype = self.model.get_enum(field.uatype).uatype
-                self.write_unpack_uatype(field.name, uatype)
+                #uatype = self.model.get_enum(field.uatype).uatype
+                #self.write_unpack_uatype(field.name, uatype)
+                enum = self.model.get_enum(field.uatype)
+                self.write_unpack_enum(field.name, enum)
             else:
                 if field.uatype in ("ExtensionObject"):
                     frombinary = "extensionobject_from_binary(data)"
@@ -264,15 +269,25 @@ class CodeGenerator(object):
 
         self.iix = 0
 
-    def write_unpack_uatype(self, name, uatype):
+    def write_unpack_enum(self, name, enum):
+        self.write("self.{} = {}(uatype_{}.unpack(data.read({}))[0])".format(name, enum.name, enum.uatype, self.get_size_from_uatype(enum.uatype)))
+
+    def get_size_from_uatype(self, uatype):
         if uatype in ("Int8", "UInt8", "Sbyte", "Byte", "Char", "Boolean"):
-            size = 1
+            return 1
         elif uatype in ("Int16", "UInt16"):
-            size = 2
+            return 2
         elif uatype in ("Int32", "UInt32", "Float"):
-            size = 4
+            return 4
         elif uatype in ("Int64", "UInt64", "Double"):
-            size = 8
+            return 8
+        else:
+            raise Exception("Cannot get size from type {}".format(uatype))
+
+    def write_unpack_uatype(self, name, uatype):
+        if uatype in numerics:
+            size = self.get_size_from_uatype(uatype)
+            self.write("self.{} = uatype_{}.unpack(data.read({}))[0]".format(name, uatype, size))
         elif uatype == "String":
             self.write("self.{} = unpack_string(data)".format(name))
             return
@@ -285,15 +300,12 @@ class CodeGenerator(object):
         else:
             self.write("self.{} = unpack_uatype('{}', data)".format(name, uatype))
             return
-        self.write("self.{} = uatype_{}.unpack(data.read({}))[0]".format(name, uatype, size))
+
+    def write_pack_enum(self, listname, name, enum):
+        self.write("{}.append(uatype_{}.pack({}.value))".format(listname, enum.uatype, name))
 
     def write_pack_uatype(self, listname, name, uatype):
-        if uatype in (
-            "Int8", "UInt8", "Sbyte", "Byte", "Char", "Boolean",
-            "Int16", "UInt16",
-            "Int32", "UInt32", "Float",
-            "Int64", "UInt64", "Double"
-        ):
+        if uatype in numerics:
             self.write("{}.append(uatype_{}.pack({}))".format(listname, uatype, name))
             return
         elif uatype == "String":
@@ -311,7 +323,8 @@ class CodeGenerator(object):
 
     def get_default_value(self, field):
         if field.uatype in self.model.enum_list:
-            return 0
+            enum = self.model.get_enum(field.uatype)
+            return enum.name + "(0)"
         if field.uatype in ("String"):
             return "''"
         elif field.uatype in ("ByteString", "CharArray", "Char"):
@@ -337,7 +350,7 @@ def fix_names(model):
 
 if __name__ == "__main__":
     xmlpath = "Opc.Ua.Types.bsd"
-    protocolpath = "../opcua/uaprotocol_auto.py"
+    protocolpath = "../opcua/ua/uaprotocol_auto.py"
     p = gm.Parser(xmlpath)
     model = p.parse()
     gm.add_basetype_members(model)

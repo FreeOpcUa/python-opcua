@@ -19,7 +19,6 @@ from opcua import Client
 from opcua import Server
 from opcua import Node
 from opcua import uamethod
-from opcua import security_policies
 
 
 def add_minimum_args(parser):
@@ -64,26 +63,6 @@ def add_common_args(parser, default_node='i=84'):
                         default='')
 
 
-def client_security(security, url, timeout):
-    parts = security.split(',')
-    if len(parts) < 4:
-        raise Exception('Wrong format: `{}`, expected at least 4 comma-separated values'.format(security))
-    policy_class = getattr(security_policies, 'SecurityPolicy' + parts[0])
-    mode = getattr(ua.MessageSecurityMode, parts[1])
-    cert = open(parts[2], 'rb').read()
-    pk = open(parts[3], 'rb').read()
-    server_cert = None
-    if len(parts) == 5:
-        server_cert = open(parts[4], 'rb').read()
-    else:
-        # we need server's certificate too. Let's get it from the list of endpoints
-        client = Client(url, timeout=timeout)
-        for ep in client.connect_and_get_server_endpoints():
-            if ep.EndpointUrl.startswith(ua.OPC_TCP_SCHEME) and ep.SecurityMode == mode and ep.SecurityPolicyUri == policy_class.URI:
-                server_cert = ep.ServerCertificate
-    return policy_class(server_cert, cert, pk, mode)
-
-
 def _require_nodeid(parser, args):
     # check that a nodeid has been given explicitly, a bit hackish...
     if args.nodeid == "i=84" and args.path == "":
@@ -98,11 +77,6 @@ def parse_args(parser, requirenodeid=False):
     if args.url and '://' not in args.url:
         logging.info("Adding default scheme %s to URL %s", ua.OPC_TCP_SCHEME, args.url)
         args.url = ua.OPC_TCP_SCHEME + '://' + args.url
-    if hasattr(args, 'security'):
-        if args.security:
-            args.security = client_security(args.security, args.url, args.timeout)
-        else:
-            args.security = ua.SecurityPolicy()
     if requirenodeid:
         _require_nodeid(parser, args)
     return args
@@ -133,7 +107,8 @@ def uaread():
 
     args = parse_args(parser, requirenodeid=True)
 
-    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
+    client = Client(args.url, timeout=args.timeout)
+    client.set_security_string(args.security)
     client.connect()
     try:
         node = get_node(client, args)
@@ -183,7 +158,6 @@ def _val_to_variant(val, args):
     if args.datatype == "guess":
         if val in ("true", "True", "false", "False"):
             return _arg_to_variant(val, array, _arg_to_bool)
-        # FIXME: guess bool value
         try:
             return _arg_to_variant(val, array, int)
         except ValueError:
@@ -269,7 +243,8 @@ def uawrite():
                         metavar="VALUE")
     args = parse_args(parser, requirenodeid=True)
 
-    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
+    client = Client(args.url, timeout=args.timeout)
+    client.set_security_string(args.security)
     client.connect()
     try:
         node = get_node(client, args)
@@ -300,7 +275,8 @@ def uals():
     if args.long_format is None:
         args.long_format = 1
 
-    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
+    client = Client(args.url, timeout=args.timeout)
+    client.set_security_string(args.security)
     client.connect()
     try:
         node = get_node(client, args)
@@ -391,7 +367,8 @@ def uasubscribe():
         if args.nodeid == "i=84" and args.path == "":
             args.nodeid = "i=2253"
 
-    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
+    client = Client(args.url, timeout=args.timeout)
+    client.set_security_string(args.security)
     client.connect()
     try:
         node = get_node(client, args)
@@ -408,25 +385,13 @@ def uasubscribe():
     print(args)
 
 
-# converts numeric value to its enum name.
-def enum_to_string(klass, value):
-    if isinstance(value, Enum):
-        return value.name
-    # if value is not a subtype of Enum, try to find a constant
-    # with this value in this class
-    for k, v in vars(klass).items():
-        if not k.startswith('__') and v == value:
-            return k
-    return 'Unknown {} ({})'.format(klass.__name__, value)
-
-
 def application_to_strings(app):
     result = []
     result.append(('Application URI', app.ApplicationUri))
     optionals = [
         ('Product URI', app.ProductUri),
         ('Application Name', app.ApplicationName.to_string()),
-        ('Application Type', enum_to_string(ua.ApplicationType, app.ApplicationType)),
+        ('Application Type', str(app.ApplicationType)),
         ('Gateway Server URI', app.GatewayServerUri),
         ('Discovery Profile URI', app.DiscoveryProfileUri),
     ]
@@ -438,17 +403,28 @@ def application_to_strings(app):
     return result  # ['{}: {}'.format(n, v) for (n, v) in result]
 
 
+def cert_to_string(der):
+    if not der:
+        return '[no certificate]'
+    try:
+        from opcua.crypto import uacrypto
+    except ImportError:
+        return "{} bytes".format(len(der))
+    cert = uacrypto.x509_from_der(der)
+    return uacrypto.x509_to_string(cert)
+
+
 def endpoint_to_strings(ep):
     result = [('Endpoint URL', ep.EndpointUrl)]
     result += application_to_strings(ep.Server)
     result += [
-        ('Server Certificate', len(ep.ServerCertificate)),
-        ('Security Mode', enum_to_string(ua.MessageSecurityMode, ep.SecurityMode)),
+        ('Server Certificate', cert_to_string(ep.ServerCertificate)),
+        ('Security Mode', str(ep.SecurityMode)),
         ('Security Policy URI', ep.SecurityPolicyUri)]
     for tok in ep.UserIdentityTokens:
         result += [
             ('User policy', tok.PolicyId),
-            ('  Token type', enum_to_string(ua.UserTokenType, tok.TokenType))]
+            ('  Token type', str(tok.TokenType))]
         if tok.IssuedTokenType or tok.IssuerEndpointUrl:
             result += [
                 ('  Issued Token type', tok.IssuedTokenType),
@@ -472,12 +448,13 @@ def uaclient():
                         help="set client private key")
     args = parse_args(parser)
 
-    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
-    client.connect()
+    client = Client(args.url, timeout=args.timeout)
+    client.set_security_string(args.security)
     if args.certificate:
         client.load_client_certificate(args.certificate)
     if args.private_key:
         client.load_private_key(args.private_key)
+    client.connect()
     try:
         root = client.get_root_node()
         objects = client.get_objects_node()
@@ -508,7 +485,7 @@ def uaserver():
                         help="Populate address space with nodes defined in XML")
     parser.add_argument("-p",
                         "--populate",
-                        action="store_false",
+                        action="store_true",
                         help="Populate address space with some sample nodes")
     parser.add_argument("-c",
                         "--disable-clock",
@@ -518,11 +495,19 @@ def uaserver():
                         "--shell",
                         action="store_true",
                         help="Start python shell instead of randomly changing node values")
+    parser.add_argument("--certificate",
+                        help="set server certificate")
+    parser.add_argument("--private_key",
+                        help="set server private key")
     args = parser.parse_args()
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
     server = Server()
     server.set_endpoint(args.url)
+    if args.certificate:
+        server.load_certificate(args.certificate)
+    if args.private_key:
+        server.load_private_key(args.private_key)
     server.disable_clock(args.disable_clock)
     server.set_server_name("FreeOpcUa Example Server")
     if args.xml:
@@ -548,13 +533,16 @@ def uaserver():
     try:
         if args.shell:
             embed()
-        else:
+        elif args.populate:
             count = 0
             while True:
                 time.sleep(1)
                 myvar.set_value(math.sin(count / 10))
                 myarrayvar.set_value([math.sin(count / 10), math.sin(count / 100)])
                 count += 1
+        else:
+            while True:
+                time.sleep(1)
     finally:
         server.stop()
     sys.exit(0)
@@ -613,7 +601,7 @@ def print_history(o):
 def str_to_datetime(s):
     if not s:
         return datetime.utcnow()
-    # try different datetime formats
+    # FIXME: try different datetime formats
     for fmt in ["%Y-%m-%d", "%Y-%m-%d %H:%M", "%Y-%m-%d %H:%M:%S"]:
         try:
             return datetime.strptime(s, fmt)
@@ -633,7 +621,8 @@ def uahistoryread():
 
     args = parse_args(parser, requirenodeid=True)
 
-    client = Client(args.url, timeout=args.timeout, security_policy=args.security)
+    client = Client(args.url, timeout=args.timeout)
+    client.set_security_string(args.security)
     client.connect()
     try:
         node = get_node(client, args)

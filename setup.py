@@ -1,23 +1,25 @@
-from distutils.core import setup
-from distutils.command.install_data import install_data
+from setuptools import setup, find_packages
 
 import sys
 
 if sys.version_info[0] < 3:
-    install_requires = ["enum34", "trollius", "futures", "pycrypto"]
+    install_requires = ["enum34", "trollius", "futures"]
 else:
-    install_requires = ["pycrypto"]
+    install_requires = []
 
 setup(name="freeopcua", 
-      version="0.9.20",
+      version="0.10.4",
       description="Pure Python OPC-UA client and server library",
       author="Olivier Roulet-Dubonnet",
       author_email="olivier.roulet@gmail.com",
       url='http://freeopcua.github.io/',
-      packages=["opcua"],
+      packages=find_packages(),
       provides=["opcua"],
       license="GNU Lesser General Public License v3 or later",
       install_requires=install_requires,
+      extras_require={
+          'encryption': ['cryptography']
+      },
       classifiers=["Programming Language :: Python",
                    "Programming Language :: Python :: 3",
                    "Programming Language :: Python :: 2",

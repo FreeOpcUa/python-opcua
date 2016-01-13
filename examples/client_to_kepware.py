@@ -12,18 +12,18 @@ class SubHandler(object):
     Client to subscription. It will receive events from server
     """
 
-    def data_change(self, handle, node, val, attr):
-        print("Python: New data change event", handle, node, val, attr)
+    def datachange_notification(self, node, val, data):
+        print("Python: New data change event", node, val)
 
-    def event(self, handle, event):
-        print("Python: New event", handle, event)
+    def event_notification(self, event):
+        print("Python: New event", event)
 
 
 if __name__ == "__main__":
     #from IPython import embed
     logging.basicConfig(level=logging.WARN)
     client = Client("opc.tcp://192.168.56.100:49320/OPCUA/SimulationServer/")
-    #client = Client("opc.tcp://192.168.56.100:4841/OPCUA/SimulationServer/")
+    #client = Client("opc.tcp://192.168.56.100:4840/OPCUA/SimulationServer/")
     #client = Client("opc.tcp://olivier:olivierpass@localhost:53530/OPCUA/SimulationServer/")
     try:
         client.connect()
