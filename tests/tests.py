@@ -703,7 +703,6 @@ class CommonTests(object):
         variables = [o.add_variable(3, 'SubVarOverload' + str(i), i) for i in range(nb)]
         for i in range(nb):
             sub.subscribe_data_change(variables)
-        time.sleep(10)
         sub.delete()
 
     def test_subscription_data_change_depcrecated(self):
