@@ -472,6 +472,7 @@ class NodeId(FrozenClass):
         else:
             return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
                 self.Identifier.to_binary()
+        #FIXME: Missing NNamespaceURI and ServerIndex
 
     @staticmethod
     def from_binary(data):
@@ -497,9 +498,9 @@ class NodeId(FrozenClass):
         else:
             raise UAError("Unknown NodeId encoding: " + str(nid.NodeIdType))
 
-        if test_bit(encoding, 6):
-            nid.NamespaceUri = unpack_string(data)
         if test_bit(encoding, 7):
+            nid.NamespaceUri = unpack_string(data)
+        if test_bit(encoding, 6):
             nid.ServerIndex = uatype_UInt32.unpack(data.read(4))[0]
 
         return nid
