@@ -968,16 +968,10 @@ class AdminTestClient(unittest.TestCase, CommonTests):
         self.srv.stop()
 
     def test_service_fault(self):
-        def new_req():
-            request = ua.ReadRequest()
-            request.TypeId = ua.FourByteNodeId(999)  # bad type!
-            return request
-
-        def on_resp(data):
-            pass
-
+        request = ua.ReadRequest()
+        request.TypeId = ua.FourByteNodeId(999)  # bad type!
         with self.assertRaises(ua.UAStatusCodeError):
-            self.clt.bclient._send_request(new_req, on_resp)
+            self.clt.bclient.send_request(request)
 
     def test_objects_anonymous(self):
         objects = self.ro_clt.get_objects_node()
