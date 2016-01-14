@@ -43,7 +43,10 @@ class UAClientProtocol(asyncio.Protocol):
             # cancel all waiting response callback
             fut = self.futuremap[k]
             if not fut.done():
-                fut.cancel()
+                if ex is None:
+                    fut.cancel()
+                else:
+                    fut.set_exception(ex)
         self.futuremap.clear()
         if self.transport is not None:
             self.disconnected_cb(ex)
@@ -65,7 +68,6 @@ class UAClientProtocol(asyncio.Protocol):
                 self._cur_header = None
                 self._process_one_packet(hdr)
         except Exception as e:
-            self.logging.exception("data_received got exception, close connection: %s")
             self.close(e)
 
     def _process_one_packet(self, hdr):
@@ -78,9 +80,9 @@ class UAClientProtocol(asyncio.Protocol):
             elif isinstance(msg, ua.Acknowledge):
                 self._set_result(0, msg)
             elif isinstance(msg, ua.ErrorMessage):
-                self.logger.warning("Received an error: {}".format(msg))
+                raise ua.UAError("Received an error: {}".format(msg))
             else:
-                raise Exception("Unsupported message type: {}".format(msg))
+                raise ua.UAError("Unsupported message type: {}".format(msg))
 
     def _get_header(self):
         if self._cur_header is not None:
@@ -99,7 +101,7 @@ class UAClientProtocol(asyncio.Protocol):
 
     def _set_result(self, reqid, body):
         if reqid not in self.futuremap:
-            raise Exception(
+            raise ua.UAError(
                 "No future found for request: {}, futures in list are {}".format(
                     reqid, self.futuremap.keys()))
         fut = self.futuremap.pop(reqid)
@@ -248,6 +250,7 @@ class BinaryClient(object):
             rs = on_response(data)
         except Exception as e:
             fut.set_exception(e)
+            return
         fut.set_result(rs)
 
     def _loop_send(self, new_request, on_response, fut):
@@ -262,9 +265,9 @@ class BinaryClient(object):
 
     def _send_request(self, new_request, on_response):
         if not self._proto_connected:
-            raise Exception("client is disconnected")
+            raise ua.UAError("client is disconnected")
         if self._in_loop_thread():
-            raise Exception("can not send reqeust in client loop thread")
+            raise ua.UAError("can not send reqeust in client loop thread")
         fut = Future()
         self._loop.call_soon_threadsafe(self._loop_send, new_request, on_response, fut)
         return fut.result(self._timeout)
@@ -524,7 +527,7 @@ class BinaryClient(object):
 
     def publish(self, acks=None):
         if not self._proto_connected:
-            raise Exception("client is disconnected")
+            raise ua.UAError("client is disconnected")
         if acks is None:
             acks = []
         return self._async_call(self._loop_publish, acks)

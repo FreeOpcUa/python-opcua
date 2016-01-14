@@ -375,7 +375,7 @@ class UAProcessor(object):
             self.channel.SecurityToken.ChannelId = self.iserver.get_new_channel_id()
             self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
         self.channel.SecurityToken.TokenId += 1
-        self.channel.SecurityToken.CreatedAt = datetime.now()
+        self.channel.SecurityToken.CreatedAt = datetime.utcnow()
         self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
         self.channel.ServerNonce = utils.create_nonce(self._connection._security_policy.symmetric_key_size)
         self._connection.set_security_token(self.channel.SecurityToken)

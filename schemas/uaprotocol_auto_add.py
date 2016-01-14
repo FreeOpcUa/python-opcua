@@ -17,10 +17,10 @@ def extensionobject_from_binary(data):
     if TypeId.Identifier == 0:
         return None
     elif TypeId.Identifier not in ExtensionClasses:
-        raise Exception("unknown ExtensionObject Type: {}".format(TypeId))
+        raise UAError("unknown ExtensionObject Type: {}".format(TypeId))
     klass = ExtensionClasses[TypeId.Identifier]
     if body is None:
-        raise Exception("parsing ExtensionObject {} without data".format(klass.__name__))
+        raise UAError("parsing ExtensionObject {} without data".format(klass.__name__))
     return klass.from_binary(body)
 
 

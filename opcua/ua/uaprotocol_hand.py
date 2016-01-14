@@ -4,9 +4,9 @@ import hashlib
 from enum import IntEnum
 
 from opcua.ua import uaprotocol_auto as auto
-from opcua.ua import uatypes 
+from opcua.ua import uatypes
 from opcua.ua.uatypes import uatype_UInt32
-from opcua.common import utils 
+from opcua.common import utils
 
 logger = logging.getLogger('opcua.uaprotocol')
 
@@ -15,7 +15,7 @@ OPC_TCP_SCHEME = 'opc.tcp'
 
 class ValueRank(IntEnum):
     """
-    Defines dimensions of a variable. 
+    Defines dimensions of a variable.
     This enum does not support all cases since ValueRank support any n>0
     but since it is an IntEnum it can be replace by a normal int
     """
@@ -271,6 +271,7 @@ class CryptographyNone:
     """
     Base class for symmetric/asymmetric cryprography
     """
+
     def __init__(self):
         pass
 
@@ -347,8 +348,9 @@ class SecurityPolicyFactory(object):
     Server has one certificate and private key, but needs a separate
     SecurityPolicy for every client and client's certificate
     """
+
     def __init__(self, cls=SecurityPolicy, mode=auto.MessageSecurityMode.None_,
-            certificate=None, private_key=None):
+                 certificate=None, private_key=None):
         self.cls = cls
         self.mode = mode
         self.certificate = certificate
@@ -370,6 +372,7 @@ class MessageChunk(uatypes.FrozenClass):
     """
     Message Chunk, as described in OPC UA specs Part 6, 6.7.2.
     """
+
     def __init__(self, security_policy, body=b'', msg_type=MessageType.SecureMessage, chunk_type=ChunkType.Single):
         self.MessageHeader = Header(msg_type, chunk_type)
         if msg_type in (MessageType.SecureMessage, MessageType.SecureClose):
@@ -377,7 +380,7 @@ class MessageChunk(uatypes.FrozenClass):
         elif msg_type == MessageType.SecureOpen:
             self.SecurityHeader = AsymmetricAlgorithmHeader()
         else:
-            raise Exception("Unsupported message type: {}".format(msg_type))
+            raise UAError("Unsupported message type: {}".format(msg_type))
         self.SequenceHeader = SequenceHeader()
         self.Body = body
         self._security_policy = security_policy
@@ -399,7 +402,7 @@ class MessageChunk(uatypes.FrozenClass):
             security_header = AsymmetricAlgorithmHeader.from_binary(data)
             crypto = security_policy.asymmetric_cryptography
         else:
-            raise Exception("Unsupported message type: {}".format(header.MessageType))
+            raise UAError("Unsupported message type: {}".format(header.MessageType))
         obj = MessageChunk(crypto)
         obj.MessageHeader = header
         obj.SecurityHeader = security_header
@@ -460,8 +463,8 @@ class MessageChunk(uatypes.FrozenClass):
 
         chunks = []
         for i in range(0, len(body), max_size):
-            part = body[i:i+max_size]
-            if i+max_size >= len(body):
+            part = body[i:i + max_size]
+            if i + max_size >= len(body):
                 chunk_type = ChunkType.Single
             else:
                 chunk_type = ChunkType.Intermediate
@@ -474,11 +477,12 @@ class MessageChunk(uatypes.FrozenClass):
 
     def __str__(self):
         return "{}({}, {}, {}, {} bytes)".format(self.__class__.__name__,
-                self.MessageHeader, self.SequenceHeader, self.SecurityHeader, len(self.Body))
+                                                 self.MessageHeader, self.SequenceHeader, self.SecurityHeader, len(self.Body))
     __repr__ = __str__
 
 
 class Message(object):
+
     def __init__(self, chunks):
         self._chunks = chunks
 
@@ -500,6 +504,7 @@ class SecureConnection(object):
     """
     Common logic for client and server
     """
+
     def __init__(self, security_policy):
         self._sequence_number = 0
         self._peer_sequence_number = None
@@ -526,8 +531,8 @@ class SecureConnection(object):
                 self._security_policy = policy.create(peer_certificate)
                 return
         if self._security_policy.URI != uri or (mode is not None and
-                self._security_policy.Mode != mode):
-            raise Exception("No matching policy: {}, {}".format(uri, mode))
+                                                self._security_policy.Mode != mode):
+            raise UAError("No matching policy: {}, {}".format(uri, mode))
 
     def set_security_token(self, tok):
         self._security_token = tok
@@ -543,22 +548,22 @@ class SecureConnection(object):
         return header.to_binary() + binmsg
 
     def message_to_binary(self, message,
-                message_type=MessageType.SecureMessage, request_id=0):
+                          message_type=MessageType.SecureMessage, request_id=0):
         """
         Convert OPC UA secure message to binary.
         The only supported types are SecureOpen, SecureMessage, SecureClose
         """
         chunks = MessageChunk.message_to_chunks(
-                self._security_policy, message, self._max_chunk_size,
-                message_type=message_type,
-                channel_id=self._security_token.ChannelId,
-                request_id=request_id,
-                token_id=self._security_token.TokenId)
+            self._security_policy, message, self._max_chunk_size,
+            message_type=message_type,
+            channel_id=self._security_token.ChannelId,
+            request_id=request_id,
+            token_id=self._security_token.TokenId)
         for chunk in chunks:
             self._sequence_number += 1
             if self._sequence_number >= (1 << 32):
                 logger.debug("Wrapping sequence number: %d -> 1",
-                                      self._sequence_number)
+                             self._sequence_number)
                 self._sequence_number = 1
             chunk.SequenceHeader.SequenceNumber = self._sequence_number
         return b"".join([chunk.to_binary() for chunk in chunks])
@@ -567,16 +572,16 @@ class SecureConnection(object):
         assert isinstance(chunk, MessageChunk), "Expected chunk, got: {}".format(chunk)
         if chunk.MessageHeader.MessageType != MessageType.SecureOpen:
             if chunk.MessageHeader.ChannelId != self._security_token.ChannelId:
-                raise Exception("Wrong channel id {}, expected {}".format(
+                raise UAError("Wrong channel id {}, expected {}".format(
                     chunk.MessageHeader.ChannelId,
                     self._security_token.ChannelId))
             if chunk.SecurityHeader.TokenId != self._security_token.TokenId:
-                raise Exception("Wrong token id {}, expected {}".format(
+                raise UAError("Wrong token id {}, expected {}".format(
                     chunk.SecurityHeader.TokenId,
                     self._security_token.TokenId))
         if self._incoming_parts:
             if self._incoming_parts[0].SequenceHeader.RequestId != chunk.SequenceHeader.RequestId:
-                raise Exception("Wrong request id {}, expected {}".format(
+                raise UAError("Wrong request id {}, expected {}".format(
                     chunk.SequenceHeader.RequestId,
                     self._incoming_parts[0].SequenceHeader.RequestId))
 
@@ -588,9 +593,9 @@ class SecureConnection(object):
                 if num < 1024 and self._peer_sequence_number >= wrap:
                     # specs Part 6, 6.7.2
                     logger.debug("Sequence number wrapped: %d -> %d",
-                                      self._peer_sequence_number, num)
+                                 self._peer_sequence_number, num)
                 else:
-                    raise Exception(
+                    raise UAError(
                         "Wrong sequence {} -> {} (server bug or replay attack)"
                         .format(self._peer_sequence_number, num))
         self._peer_sequence_number = num
@@ -610,7 +615,7 @@ class SecureConnection(object):
                                   MessageType.SecureOpen,
                                   MessageType.SecureClose):
             chunk = MessageChunk.from_header_and_body(self._security_policy,
-                    header, body)
+                                                      header, body)
             return self._receive(chunk)
         elif header.MessageType == MessageType.Hello:
             msg = Hello.from_binary(body)
@@ -625,7 +630,7 @@ class SecureConnection(object):
             logger.warning("Received an error: {}".format(msg))
             return msg
         else:
-            raise Exception("Unsupported message type {}".format(header.MessageType))
+            raise UAError("Unsupported message type {}".format(header.MessageType))
 
     def _receive(self, msg):
         self._check_incoming_chunk(msg)
@@ -644,7 +649,7 @@ class SecureConnection(object):
             self._incoming_parts = []
             return message
         else:
-            raise Exception("Unsupported chunk type: {}".format(msg))
+            raise UAError("Unsupported chunk type: {}".format(msg))
 
 
 # FIXES for missing switchfield in NodeAttributes classes

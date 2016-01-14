@@ -2,11 +2,11 @@
 OPC-UA Client Class 
 =========================================
 
-.. autoclass:: opcua.Client
+.. autoclass:: opcua.client.client.Client
    :members:
    :undoc-members:
 
-.. autoclass:: opcua.BinaryClient
+.. autoclass:: opcua.client.binary_client.BinaryClient
    :members:
    :undoc-members:
 

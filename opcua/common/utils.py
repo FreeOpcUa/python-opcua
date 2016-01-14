@@ -3,20 +3,30 @@ import os
 from concurrent.futures import Future
 import functools
 import threading
+
 try:
     # we prefer to use bundles asyncio version, otherwise fallback to trollius
     import asyncio
 except ImportError:
     import trollius as asyncio
-    from trollius import From
 
-class ServiceError(Exception):
+
+from opcua.common.uaerrors import UAError
+
+
+class ServiceError(UAError):
     def __init__(self, code):
-        super(ServiceError, self).__init__('UA service error')
+        super(ServiceError, self).__init__('UA Service Error')
         self.code = code
 
-class NotEnoughData(Exception):
+
+class NotEnoughData(UAError):
     pass
+
+
+class SocketClosedException(UAError):
+    pass
+
 
 class Buffer(object):
 
@@ -86,10 +96,6 @@ class Buffer(object):
         self._size = len(self._data)
 
 
-
-class SocketClosedException(Exception):
-    pass
-
 class SocketWrapper(object):
     """
     wrapper to make it possible to have same api for 
@@ -115,11 +121,8 @@ class SocketWrapper(object):
         self.socket.sendall(data)
 
 
-
 def create_nonce(size=32):
     return os.urandom(size)
-
-
 
 
 class ThreadLoop(threading.Thread):

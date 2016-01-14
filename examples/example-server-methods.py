@@ -14,7 +14,7 @@ except ImportError:
         shell.interact()
 
 
-from opcua import ua, uamethod, Server, Event, ObjectIds
+from opcua import ua, uamethod, Server, Event
 
 # method to be exposed through server
 
@@ -50,8 +50,8 @@ if __name__ == "__main__":
 
     # now setup our server
     server = Server()
-    #server.set_endpoint("opc.tcp://localhost:4841/freeopcua/server/")
-    server.set_endpoint("opc.tcp://0.0.0.0:4841/freeopcua/server/")
+    #server.set_endpoint("opc.tcp://localhost:4840/freeopcua/server/")
+    server.set_endpoint("opc.tcp://0.0.0.0:4840/freeopcua/server/")
     server.set_server_name("FreeOpcUa Example Server")
 
     # setup our own namespace
@@ -73,33 +73,24 @@ if __name__ == "__main__":
 
     inargx = ua.Argument()
     inargx.Name = "x"
-    inargx.DataType = ua.NodeId(ObjectIds.Int64)
+    inargx.DataType = ua.NodeId(ua.ObjectIds.Int64)
     inargx.ValueRank = -1
     inargx.ArrayDimensions = []
     inargx.Description = ua.LocalizedText("First number x")
     inargy = ua.Argument()
     inargy.Name = "y"
-    inargy.DataType = ua.NodeId(ObjectIds.Int64)
+    inargy.DataType = ua.NodeId(ua.ObjectIds.Int64)
     inargy.ValueRank = -1
     inargy.ArrayDimensions = []
     inargy.Description = ua.LocalizedText("Second number y")
     outarg = ua.Argument()
     outarg.Name = "Result"
-    outarg.DataType = ua.NodeId(ObjectIds.Int64)
+    outarg.DataType = ua.NodeId(ua.ObjectIds.Int64)
     outarg.ValueRank = -1
     outarg.ArrayDimensions = []
     outarg.Description = ua.LocalizedText("Multiplication result")
 
     multiply_node = myobj.add_method(idx, "multiply", multiply, [inargx, inargy], [outarg])
-
-    # import some nodes from xml
-    server.import_xml("custom_nodes.xml")
-
-    # creating an event object
-    # The event object automatically will have members for all events properties
-    myevent = server.get_event_object(ObjectIds.BaseEventType)
-    myevent.Message.Text = "This is my event"
-    myevent.Severity = 300
 
     # starting!
     server.start()

@@ -7,15 +7,18 @@ from datetime import datetime, timedelta, tzinfo
 from calendar import timegm
 import sys
 import os
+import uuid
+import struct
 if sys.version_info.major > 2:
     unicode = str
 
-import uuid
-import struct
-
 from opcua.ua import status_codes
+from opcua.common.uaerrors import UAError
+from opcua.common.uaerrors import UAStatusCodeError
+
 
 logger = logging.getLogger('opcua.uaprotocol')
+
 
 # types that will packed and unpacked directly using struct (string, bytes and datetime are handles as special cases
 UaTypes = ("Boolean", "SByte", "Byte", "Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double")
@@ -163,7 +166,7 @@ def unpack_uatype(uatype, data):
             klass = glbs[uatype]
             if hasattr(klass, 'from_binary'):
                 return klass.from_binary(data)
-        raise Exception("can not unpack unknown uatype %s" % uatype)
+        raise UAError("can not unpack unknown uatype %s" % uatype)
 
 
 def unpack_uatype_array(uatype, data):
@@ -197,7 +200,7 @@ def unpack_datetime(data):
 
 
 def pack_string(string):
-    if type(string) is unicode:
+    if isinstance(string, unicode):
         string = string.encode('utf-8')
     length = len(string)
     if length == 0:
@@ -308,7 +311,7 @@ class StatusCode(FrozenClass):
         use is is_good() method if not exception is desired
         """
         if self.value != 0:
-            raise Exception("{}({})".format(self.doc, self.name))
+            raise UAStatusCodeError("{}({})".format(self.doc, self.name))
 
     def is_good(self):
         """
@@ -323,7 +326,7 @@ class StatusCode(FrozenClass):
     __repr__ = __str__
 
 
-class NodeIdType(object):
+class NodeIdType(Enum):
     TwoByte = 0
     FourByte = 1
     Numeric = 2
@@ -372,7 +375,7 @@ class NodeId(FrozenClass):
             elif isinstance(self.Identifier, bytes):
                 self.NodeIdType = NodeIdType.ByteString
             else:
-                raise Exception("NodeId: Could not guess type of NodeId, set NodeIdType")
+                raise UAError("NodeId: Could not guess type of NodeId, set NodeIdType")
 
     def __key(self):
         if self.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric):  # twobyte, fourbyte and numeric may represent the same node
@@ -419,7 +422,7 @@ class NodeId(FrozenClass):
             elif k == "nsu":
                 nsu = v
         if identifier is None:
-            raise Exception("Could not parse nodeid string: " + string)
+            raise UAError("Could not parse nodeid string: " + string)
         nodeid = NodeId(identifier, namespace, ntype)
         nodeid.NamespaceUri = nsu
         nodeid.ServerIndex = srv
@@ -450,31 +453,31 @@ class NodeId(FrozenClass):
         return string
 
     def __str__(self):
-        return "NodeId({})".format(self.to_string())
+        return "{}NodeId({})".format(self.NodeIdType.name, self.to_string())
     __repr__ = __str__
 
     def to_binary(self):
         if self.NodeIdType == NodeIdType.TwoByte:
-            return struct.pack("<BB", self.NodeIdType, self.Identifier)
+            return struct.pack("<BB", self.NodeIdType.value, self.Identifier)
         elif self.NodeIdType == NodeIdType.FourByte:
-            return struct.pack("<BBH", self.NodeIdType, self.NamespaceIndex, self.Identifier)
+            return struct.pack("<BBH", self.NodeIdType.value, self.NamespaceIndex, self.Identifier)
         elif self.NodeIdType == NodeIdType.Numeric:
-            return struct.pack("<BHI", self.NodeIdType, self.NamespaceIndex, self.Identifier)
+            return struct.pack("<BHI", self.NodeIdType.value, self.NamespaceIndex, self.Identifier)
         elif self.NodeIdType == NodeIdType.String:
-            return struct.pack("<BH", self.NodeIdType, self.NamespaceIndex) + \
+            return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
                 pack_string(self.Identifier)
         elif self.NodeIdType == NodeIdType.ByteString:
-            return struct.pack("<BH", self.NodeIdType, self.NamespaceIndex) + \
+            return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
                 pack_bytes(self.Identifier)
         else:
-            return struct.pack("<BH", self.NodeIdType, self.NamespaceIndex) + \
+            return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
                 self.Identifier.to_binary()
 
     @staticmethod
     def from_binary(data):
         nid = NodeId()
         encoding = ord(data.read(1))
-        nid.NodeIdType = encoding & 0b00111111
+        nid.NodeIdType = NodeIdType(encoding & 0b00111111)
 
         if nid.NodeIdType == NodeIdType.TwoByte:
             nid.Identifier = ord(data.read(1))
@@ -492,7 +495,7 @@ class NodeId(FrozenClass):
             nid.NamespaceIndex = uatype_UInt16.unpack(data.read(2))[0]
             nid.Identifier = Guid.from_binary(data)
         else:
-            raise Exception("Unknown NodeId encoding: " + str(nid.NodeIdType))
+            raise UAError("Unknown NodeId encoding: " + str(nid.NodeIdType))
 
         if test_bit(encoding, 6):
             nid.NamespaceUri = unpack_string(data)
@@ -548,6 +551,8 @@ class QualifiedName(FrozenClass):
     '''
 
     def __init__(self, name="", namespaceidx=0):
+        if not isinstance(namespaceidx, int):
+            raise UAError("namespaceidx must be an int")
         self.NamespaceIndex = namespaceidx
         self.Name = name
         self._freeze = True
@@ -595,7 +600,7 @@ class LocalizedText(FrozenClass):
     def __init__(self, text=""):
         self.Encoding = 0
         self.Text = text
-        if type(self.Text) is unicode:
+        if isinstance(self.Text, unicode):
             self.Text = self.Text.encode('utf-8')
         if self.Text:
             self.Encoding |= (1 << 1)
@@ -728,7 +733,7 @@ class Variant(FrozenClass):
         if self.VariantType is None:
             if type(self.Value) in (list, tuple):
                 if len(self.Value) == 0:
-                    raise Exception("could not guess UA variable type")
+                    raise UAError("could not guess UA variable type")
                 self.VariantType = self._guess_type(self.Value[0])
             else:
                 self.VariantType = self._guess_type(self.Value)
@@ -761,7 +766,7 @@ class Variant(FrozenClass):
                 except AttributeError:
                     return VariantType.ExtensionObject
             else:
-                raise Exception("Could not guess UA type of {} with type {}, specify UA type".format(val, type(val)))
+                raise UAError("Could not guess UA type of {} with type {}, specify UA type".format(val, type(val)))
 
     def __str__(self):
         return "Variant(val:{!s},type:{})".format(self.Value, self.VariantType)

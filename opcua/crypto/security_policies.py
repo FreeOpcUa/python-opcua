@@ -1,6 +1,7 @@
+from abc import ABCMeta, abstractmethod
 from opcua.ua import CryptographyNone, SecurityPolicy
 from opcua.ua import MessageSecurityMode
-from abc import ABCMeta, abstractmethod
+from opcua.ua import UAError
 try:
     from opcua.crypto import uacrypto
     CRYPTOGRAPHY_AVAILABLE = True
@@ -14,8 +15,7 @@ def require_cryptography(obj):
     Call this function in constructors.
     """
     if not CRYPTOGRAPHY_AVAILABLE:
-        raise Exception("Can't use {}, cryptography module is not installed"
-                        .format(obj.__class__.__name__))
+        raise UAError("Can't use {}, cryptography module is not installed".format(obj.__class__.__name__))
 
 
 class Signer(object):
@@ -94,6 +94,7 @@ class Cryptography(CryptographyNone):
     """
     Security policy: Sign or SignAndEncrypt
     """
+
     def __init__(self, mode=MessageSecurityMode.Sign):
         self.Signer = None
         self.Verifier = None
@@ -169,6 +170,7 @@ class Cryptography(CryptographyNone):
 
 
 class SignerRsa(Signer):
+
     def __init__(self, client_pk):
         require_cryptography(self)
         self.client_pk = client_pk
@@ -182,6 +184,7 @@ class SignerRsa(Signer):
 
 
 class VerifierRsa(Verifier):
+
     def __init__(self, server_cert):
         require_cryptography(self)
         self.server_cert = server_cert
@@ -195,6 +198,7 @@ class VerifierRsa(Verifier):
 
 
 class EncryptorRsa(Encryptor):
+
     def __init__(self, server_cert, enc_fn, padding_size):
         require_cryptography(self)
         self.server_cert = server_cert
@@ -213,11 +217,12 @@ class EncryptorRsa(Encryptor):
         block_size = self.plain_block_size()
         for i in range(0, len(data), block_size):
             encrypted += self.encryptor(self.server_cert.public_key(),
-                    data[i : i+block_size])
+                                        data[i: i + block_size])
         return encrypted
 
 
 class DecryptorRsa(Decryptor):
+
     def __init__(self, client_pk, dec_fn, padding_size):
         require_cryptography(self)
         self.client_pk = client_pk
@@ -236,11 +241,12 @@ class DecryptorRsa(Decryptor):
         block_size = self.encrypted_block_size()
         for i in range(0, len(data), block_size):
             decrypted += self.decryptor(self.client_pk,
-                    data[i : i+block_size])
+                                        data[i: i + block_size])
         return decrypted
 
 
 class SignerAesCbc(Signer):
+
     def __init__(self, key):
         require_cryptography(self)
         self.key = key
@@ -253,6 +259,7 @@ class SignerAesCbc(Signer):
 
 
 class VerifierAesCbc(Verifier):
+
     def __init__(self, key):
         require_cryptography(self)
         self.key = key
@@ -267,6 +274,7 @@ class VerifierAesCbc(Verifier):
 
 
 class EncryptorAesCbc(Encryptor):
+
     def __init__(self, key, init_vec):
         require_cryptography(self)
         self.cipher = uacrypto.cipher_aes_cbc(key, init_vec)
@@ -282,6 +290,7 @@ class EncryptorAesCbc(Encryptor):
 
 
 class DecryptorAesCbc(Decryptor):
+
     def __init__(self, key, init_vec):
         require_cryptography(self)
         self.cipher = uacrypto.cipher_aes_cbc(key, init_vec)
@@ -333,13 +342,13 @@ class SecurityPolicyBasic128Rsa15(SecurityPolicy):
         # even in Sign mode we need to asymmetrically encrypt secrets
         # transmitted in OpenSecureChannel. So SignAndEncrypt here
         self.asymmetric_cryptography = Cryptography(
-                MessageSecurityMode.SignAndEncrypt)
+            MessageSecurityMode.SignAndEncrypt)
         self.asymmetric_cryptography.Signer = SignerRsa(client_pk)
         self.asymmetric_cryptography.Verifier = VerifierRsa(server_cert)
         self.asymmetric_cryptography.Encryptor = EncryptorRsa(
-                server_cert, uacrypto.encrypt_rsa15, 11)
+            server_cert, uacrypto.encrypt_rsa15, 11)
         self.asymmetric_cryptography.Decryptor = DecryptorRsa(
-                client_pk, uacrypto.decrypt_rsa15, 11)
+            client_pk, uacrypto.decrypt_rsa15, 11)
         self.symmetric_cryptography = Cryptography(mode)
         self.Mode = mode
         self.server_certificate = uacrypto.der_from_x509(server_cert)
@@ -394,13 +403,13 @@ class SecurityPolicyBasic256(SecurityPolicy):
         # even in Sign mode we need to asymmetrically encrypt secrets
         # transmitted in OpenSecureChannel. So SignAndEncrypt here
         self.asymmetric_cryptography = Cryptography(
-                MessageSecurityMode.SignAndEncrypt)
+            MessageSecurityMode.SignAndEncrypt)
         self.asymmetric_cryptography.Signer = SignerRsa(client_pk)
         self.asymmetric_cryptography.Verifier = VerifierRsa(server_cert)
         self.asymmetric_cryptography.Encryptor = EncryptorRsa(
-                server_cert, uacrypto.encrypt_rsa_oaep, 42)
+            server_cert, uacrypto.encrypt_rsa_oaep, 42)
         self.asymmetric_cryptography.Decryptor = DecryptorRsa(
-                client_pk, uacrypto.decrypt_rsa_oaep, 42)
+            client_pk, uacrypto.decrypt_rsa_oaep, 42)
         self.symmetric_cryptography = Cryptography(mode)
         self.Mode = mode
         self.server_certificate = uacrypto.der_from_x509(server_cert)

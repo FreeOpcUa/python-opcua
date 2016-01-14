@@ -14,7 +14,7 @@ except ImportError:
         shell.interact()
 
 
-from opcua import ua, uamethod, Server, Event, ObjectIds
+from opcua import ua, uamethod, Server, Event 
 
 
 class SubHandler(object):
@@ -65,8 +65,8 @@ if __name__ == "__main__":
     # now setup our server
     server = Server()
     #server.disable_clock()
-    #server.set_endpoint("opc.tcp://localhost:4841/freeopcua/server/")
-    server.set_endpoint("opc.tcp://0.0.0.0:4841/freeopcua/server/")
+    #server.set_endpoint("opc.tcp://localhost:4840/freeopcua/server/")
+    server.set_endpoint("opc.tcp://0.0.0.0:4840/freeopcua/server/")
     server.set_server_name("FreeOpcUa Example Server")
 
     # setup our own namespace
@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     # creating an event object
     # The event object automatically will have members for all events properties
-    myevent = server.get_event_object(ObjectIds.BaseEventType)
+    myevent = server.get_event_object(ua.ObjectIds.BaseEventType)
     myevent.Message.Text = "This is my event"
     myevent.Severity = 300
 

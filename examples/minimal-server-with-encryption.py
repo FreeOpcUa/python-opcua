@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     # setup our server
     server = Server()
-    server.set_endpoint("opc.tcp://0.0.0.0:4841/freeopcua/server/")
+    server.set_endpoint("opc.tcp://0.0.0.0:4840/freeopcua/server/")
 
     # load server certificate and private key. This enables endpoints
     # with signing and encryption.

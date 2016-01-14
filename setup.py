@@ -8,12 +8,12 @@ else:
     install_requires = []
 
 setup(name="freeopcua", 
-      version="0.10.3",
+      version="0.10.4",
       description="Pure Python OPC-UA client and server library",
       author="Olivier Roulet-Dubonnet",
       author_email="olivier.roulet@gmail.com",
       url='http://freeopcua.github.io/',
-      packages=find_packages(exclude="schemas"),
+      packages=find_packages(),
       provides=["opcua"],
       license="GNU Lesser General Public License v3 or later",
       install_requires=install_requires,
