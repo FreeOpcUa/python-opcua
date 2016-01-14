@@ -591,6 +591,19 @@ class BinaryClient(object):
 
         return self._send_request(new_req, on_resp)
 
+    def delete_nodes(self, nodestodelete):
+        def new_req():
+            request = ua.DeleteNodesRequest()
+            request.Parameters.NodesToDelete = nodestodelete
+            return request
+
+        def on_resp(data):
+            response = ua.AddNodesResponse.from_binary(data)
+            response.ResponseHeader.ServiceResult.check()
+            return response.Results
+
+        return self._send_request(new_req, on_resp)
+
     def call(self, methodstocall):
         def new_req():
             request = ua.CallRequest()
