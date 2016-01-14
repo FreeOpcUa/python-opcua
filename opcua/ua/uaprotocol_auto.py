@@ -1233,7 +1233,7 @@ class RequestHeader(FrozenClass):
             self._freeze = True
             return
         self.AuthenticationToken = NodeId()
-        self.Timestamp = datetime.utcnow()
+        self.Timestamp = datetime.now()
         self.RequestHandle = 0
         self.ReturnDiagnostics = 0
         self.AuditEntryId = ''
@@ -1299,7 +1299,7 @@ class ResponseHeader(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.Timestamp = datetime.utcnow()
+        self.Timestamp = datetime.now()
         self.RequestHandle = 0
         self.ServiceResult = StatusCode()
         self.ServiceDiagnostics = DiagnosticInfo()
@@ -1676,7 +1676,7 @@ class FindServersOnNetworkResult(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.LastCounterResetTime = datetime.utcnow()
+        self.LastCounterResetTime = datetime.now()
         self.Servers = []
         self._freeze = True
 
@@ -2442,7 +2442,7 @@ class ChannelSecurityToken(FrozenClass):
             return
         self.ChannelId = 0
         self.TokenId = 0
-        self.CreatedAt = datetime.utcnow()
+        self.CreatedAt = datetime.now()
         self.RevisedLifetime = 0
         self._freeze = True
 
@@ -5320,7 +5320,7 @@ class ViewDescription(FrozenClass):
             self._freeze = True
             return
         self.ViewId = NodeId()
-        self.Timestamp = datetime.utcnow()
+        self.Timestamp = datetime.now()
         self.ViewVersion = 0
         self._freeze = True
 
@@ -6625,7 +6625,7 @@ class SupportedProfile(FrozenClass):
         self.OrganizationUri = ''
         self.ProfileId = ''
         self.ComplianceTool = ''
-        self.ComplianceDate = datetime.utcnow()
+        self.ComplianceDate = datetime.now()
         self.ComplianceLevel = ComplianceLevel(0)
         self.UnsupportedUnitIds = []
         self._freeze = True
@@ -6699,9 +6699,9 @@ class SoftwareCertificate(FrozenClass):
         self.VendorProductCertificate = b''
         self.SoftwareVersion = ''
         self.BuildNumber = ''
-        self.BuildDate = datetime.utcnow()
+        self.BuildDate = datetime.now()
         self.IssuedBy = ''
-        self.IssueDate = datetime.utcnow()
+        self.IssueDate = datetime.now()
         self.SupportedProfiles = []
         self._freeze = True
 
@@ -8108,8 +8108,8 @@ class ReadEventDetails(FrozenClass):
             self._freeze = True
             return
         self.NumValuesPerNode = 0
-        self.StartTime = datetime.utcnow()
-        self.EndTime = datetime.utcnow()
+        self.StartTime = datetime.now()
+        self.EndTime = datetime.now()
         self.Filter = EventFilter()
         self._freeze = True
 
@@ -8159,8 +8159,8 @@ class ReadRawModifiedDetails(FrozenClass):
             self._freeze = True
             return
         self.IsReadModified = True
-        self.StartTime = datetime.utcnow()
-        self.EndTime = datetime.utcnow()
+        self.StartTime = datetime.now()
+        self.EndTime = datetime.now()
         self.NumValuesPerNode = 0
         self.ReturnBounds = True
         self._freeze = True
@@ -8213,8 +8213,8 @@ class ReadProcessedDetails(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.StartTime = datetime.utcnow()
-        self.EndTime = datetime.utcnow()
+        self.StartTime = datetime.now()
+        self.EndTime = datetime.now()
         self.ProcessingInterval = 0
         self.AggregateType = []
         self.AggregateConfiguration = AggregateConfiguration()
@@ -8348,7 +8348,7 @@ class ModificationInfo(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.ModificationTime = datetime.utcnow()
+        self.ModificationTime = datetime.now()
         self.UpdateType = HistoryUpdateType(0)
         self.UserName = ''
         self._freeze = True
@@ -9026,8 +9026,8 @@ class DeleteRawModifiedDetails(FrozenClass):
             return
         self.NodeId = NodeId()
         self.IsDeleteModified = True
-        self.StartTime = datetime.utcnow()
-        self.EndTime = datetime.utcnow()
+        self.StartTime = datetime.now()
+        self.EndTime = datetime.now()
         self._freeze = True
 
     def to_binary(self):
@@ -9785,7 +9785,7 @@ class AggregateFilter(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.StartTime = datetime.utcnow()
+        self.StartTime = datetime.now()
         self.AggregateType = NodeId()
         self.ProcessingInterval = 0
         self.AggregateConfiguration = AggregateConfiguration()
@@ -9916,7 +9916,7 @@ class AggregateFilterResult(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.RevisedStartTime = datetime.utcnow()
+        self.RevisedStartTime = datetime.now()
         self.RevisedProcessingInterval = 0
         self.RevisedAggregateConfiguration = AggregateConfiguration()
         self._freeze = True
@@ -11616,7 +11616,7 @@ class NotificationMessage(FrozenClass):
             self._freeze = True
             return
         self.SequenceNumber = 0
-        self.PublishTime = datetime.utcnow()
+        self.PublishTime = datetime.now()
         self.NotificationData = []
         self._freeze = True
 
@@ -12663,7 +12663,7 @@ class BuildInfo(FrozenClass):
         self.ProductName = ''
         self.SoftwareVersion = ''
         self.BuildNumber = ''
-        self.BuildDate = datetime.utcnow()
+        self.BuildDate = datetime.now()
         self._freeze = True
 
     def to_binary(self):
@@ -12985,8 +12985,8 @@ class ServerStatusDataType(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.StartTime = datetime.utcnow()
-        self.CurrentTime = datetime.utcnow()
+        self.StartTime = datetime.now()
+        self.CurrentTime = datetime.now()
         self.State = ServerState(0)
         self.BuildInfo = BuildInfo()
         self.SecondsTillShutdown = 0
@@ -13128,8 +13128,8 @@ class SessionDiagnosticsDataType(FrozenClass):
         self.LocaleIds = []
         self.ActualSessionTimeout = 0
         self.MaxResponseMessageSize = 0
-        self.ClientConnectionTime = datetime.utcnow()
-        self.ClientLastContactTime = datetime.utcnow()
+        self.ClientConnectionTime = datetime.now()
+        self.ClientLastContactTime = datetime.now()
         self.CurrentSubscriptionsCount = 0
         self.CurrentMonitoredItemsCount = 0
         self.CurrentPublishRequestsInQueue = 0
@@ -14041,13 +14041,13 @@ class ProgramDiagnosticDataType(FrozenClass):
             return
         self.CreateSessionId = NodeId()
         self.CreateClientName = ''
-        self.InvocationCreationTime = datetime.utcnow()
-        self.LastTransitionTime = datetime.utcnow()
+        self.InvocationCreationTime = datetime.now()
+        self.LastTransitionTime = datetime.now()
         self.LastMethodCall = ''
         self.LastMethodSessionId = NodeId()
         self.LastMethodInputArguments = []
         self.LastMethodOutputArguments = []
-        self.LastMethodCallTime = datetime.utcnow()
+        self.LastMethodCallTime = datetime.now()
         self.LastMethodReturnStatus = StatusResult()
         self._freeze = True
 
@@ -14126,7 +14126,7 @@ class Annotation(FrozenClass):
             return
         self.Message = ''
         self.UserName = ''
-        self.AnnotationTime = datetime.utcnow()
+        self.AnnotationTime = datetime.now()
         self._freeze = True
 
     def to_binary(self):
