@@ -82,7 +82,7 @@ class BinaryServer(object):
                             return
                         ret = self.processor.process(hdr, buf)
                         if not ret:
-                            logger.warning("processor returned False, we close connection from %s", self.peername)
+                            logger.info("processor returned False, we close connection from %s", self.peername)
                             self.transport.close()
                             return
                         if len(buf) == 0:
