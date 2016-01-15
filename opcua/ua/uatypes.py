@@ -724,10 +724,11 @@ class Variant(FrozenClass):
     :vartype VariantType: VariantType
     """
 
-    def __init__(self, value=None, varianttype=None, encoding=0):
+    def __init__(self, value=None, varianttype=None, encoding=0, dimensions=None):
         self.Encoding = encoding
         self.Value = value
         self.VariantType = varianttype
+        self.Dimensions = dimensions
         if isinstance(value, Variant):
             self.Value = value.Value
             self.VariantType = value.VariantType
@@ -775,28 +776,37 @@ class Variant(FrozenClass):
 
     def to_binary(self):
         b = []
-        mask = self.Encoding & 0b01111111
+        mask = self.Encoding & 0b00111111
         self.Encoding = (self.VariantType.value | mask)
         if type(self.Value) in (list, tuple):
-            self.Encoding |= (1 << 7)
+            if self.Dimensions is not None:
+                self.Encoding = set_bit(self.Encoding, 6)
+            self.Encoding = set_bit(self.Encoding, 7)
             b.append(uatype_UInt8.pack(self.Encoding))
             b.append(pack_uatype_array(self.VariantType.name, self.Value))
+            if self.Dimensions is not None:
+                b.append(pack_uatype_array("Int32", self.Dimensions))
         else:
             b.append(uatype_UInt8.pack(self.Encoding))
             b.append(pack_uatype(self.VariantType.name, self.Value))
+
         return b"".join(b)
 
     @staticmethod
     def from_binary(data):
+        dimensions = None
         encoding = ord(data.read(1))
-        vtype = VariantType(encoding & 0b01111111)
+        vtype = VariantType(encoding & 0b00111111)
         if vtype == VariantType.Null:
             return Variant(None, vtype, encoding)
-        if encoding & (1 << 7):
+        if test_bit(encoding, 7):
             value = unpack_uatype_array(vtype.name, data)
         else:
             value = unpack_uatype(vtype.name, data)
-        return Variant(value, vtype, encoding)
+        if test_bit(encoding, 6):
+            dimensions = unpack_uatype_array("Int32", data)
+
+        return Variant(value, vtype, encoding, dimensions)
 
 
 class DataValue(FrozenClass):

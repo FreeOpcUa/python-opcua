@@ -276,6 +276,17 @@ class Unit(unittest.TestCase):
         self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
 
+    def test_variant_array_dim(self):
+        v = ua.Variant([1, 2, 3, 4, 5, 6], dimensions = [2, 5])
+        self.assertEqual(v.Value[1], 2)
+        # self.assertEqual(v.VarianType, ua.VariantType.Int64) # we do not care, we should aonly test for sutff that matter
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        self.assertEqual(v.Value, v2.Value)
+        self.assertEqual(v.VariantType, v2.VariantType)
+        self.assertEqual(v.Dimensions, v2.Dimensions)
+        self.assertEqual(v2.Dimensions, [2, 5])
+
+
     def test_text(self):
         t1 = ua.LocalizedText('Root')
         t2 = ua.LocalizedText('Root')
@@ -1126,7 +1137,7 @@ class TestServer(unittest.TestCase, CommonTests):
             new_servers = client.find_servers(["urn:freeopcua:python"])
             self.assertEqual(len(new_servers) - len(servers) , 2)
             self.assertTrue(new_app_uri1 in [s.ApplicationUri for s in new_servers])
-            self.assertTrue(new_app_uri2 in [s.ApplicationUri for s in new_servers])
+            self.assertTr(new_app_uri2 in [s.ApplicationUri for s in new_servers])
         finally:
             client.disconnect()
 
