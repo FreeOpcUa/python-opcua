@@ -801,19 +801,19 @@ class DiagnosticInfo(FrozenClass):
         if self.InnerStatusCode: self.Encoding |= (1 << 5)
         if self.InnerDiagnosticInfo: self.Encoding |= (1 << 6)
         packet.append(uatype_UInt8.pack(self.Encoding))
-        if self.SymbolicId: 
+        if self.SymbolicId:
             packet.append(uatype_Int32.pack(self.SymbolicId))
-        if self.NamespaceURI: 
+        if self.NamespaceURI:
             packet.append(uatype_Int32.pack(self.NamespaceURI))
-        if self.Locale: 
+        if self.Locale:
             packet.append(uatype_Int32.pack(self.Locale))
-        if self.LocalizedText: 
+        if self.LocalizedText:
             packet.append(uatype_Int32.pack(self.LocalizedText))
-        if self.AdditionalInfo: 
+        if self.AdditionalInfo:
             packet.append(pack_bytes(self.AdditionalInfo))
-        if self.InnerStatusCode: 
+        if self.InnerStatusCode:
             packet.append(self.InnerStatusCode.to_binary())
-        if self.InnerDiagnosticInfo: 
+        if self.InnerDiagnosticInfo:
             packet.append(self.InnerDiagnosticInfo.to_binary())
         return b''.join(packet)
 
@@ -4971,8 +4971,14 @@ class DeleteNodesRequest(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteNodesResult(FrozenClass):
+class DeleteNodesResponse(FrozenClass):
     '''
+    Delete one or more nodes from the server address space.
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
     :ivar Results:
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
@@ -4983,12 +4989,16 @@ class DeleteNodesResult(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
+        self.TypeId = FourByteNodeId(ObjectIds.DeleteNodesResponse_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
 
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
         packet.append(uatype_Int32.pack(len(self.Results)))
         for fieldname in self.Results:
             packet.append(fieldname.to_binary())
@@ -4999,9 +5009,11 @@ class DeleteNodesResult(FrozenClass):
 
     @staticmethod
     def from_binary(data):
-        return DeleteNodesResult(data)
+        return DeleteNodesResponse(data)
 
     def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -5016,53 +5028,10 @@ class DeleteNodesResult(FrozenClass):
         self.DiagnosticInfos = array
 
     def __str__(self):
-        return 'DeleteNodesResult(' + 'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-
-    __repr__ = __str__
-
-
-class DeleteNodesResponse(FrozenClass):
-    '''
-    Delete one or more nodes from the server address space.
-
-    :ivar TypeId:
-    :vartype TypeId: NodeId
-    :ivar ResponseHeader:
-    :vartype ResponseHeader: ResponseHeader
-    :ivar Parameters:
-    :vartype Parameters: DeleteNodesResult
-    '''
-    def __init__(self, binary=None):
-        if binary is not None:
-            self._binary_init(binary)
-            self._freeze = True
-            return
-        self.TypeId = FourByteNodeId(ObjectIds.DeleteNodesResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = DeleteNodesResult()
-        self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        return DeleteNodesResponse(data)
-
-    def _binary_init(self, data):
-        self.TypeId = NodeId.from_binary(data)
-        self.ResponseHeader = ResponseHeader.from_binary(data)
-        self.Parameters = DeleteNodesResult.from_binary(data)
-
-    def __str__(self):
         return 'DeleteNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 

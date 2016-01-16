@@ -285,7 +285,7 @@ class Client(object):
             uris = []
         params = ua.FindServersParameters()
         params.EndpointUrl = self.server_url.geturl()
-        params.ServerUris = uris 
+        params.ServerUris = uris
         return self.bclient.find_servers(params)
 
     def find_servers_on_network(self):
@@ -357,7 +357,7 @@ class Client(object):
             params.UserTokenSignature.Signature = sig
         else:
             params.UserIdentityToken = ua.UserNameIdentityToken()
-            params.UserIdentityToken.UserName = username 
+            params.UserIdentityToken.UserName = username
             if self.server_url.password:
                 pubkey = uacrypto.x509_from_der(self.security_policy.server_certificate).public_key()
                 # see specs part 4, 7.36.3: if the token is encrypted, password
@@ -401,7 +401,7 @@ class Client(object):
         handler argument is a class with data_change and/or event methods.
         These methods will be called when notfication from server are received.
         See example-client.py.
-        Do not do expensive/slow or network operation from these methods 
+        Do not do expensive/slow or network operation from these methods
         since they are called directly from receiving thread. This is a design choice,
         start another thread if you need to do such a thing.
         """
