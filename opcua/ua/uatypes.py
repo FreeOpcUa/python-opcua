@@ -736,7 +736,7 @@ class Variant(FrozenClass):
         if self.VariantType is None:
             self.VariantType = self._guess_type(self.Value)
         if self.Dimensions is None and type(self.Value) in (list, tuple):
-            dims = get_dimensions(self.Value)
+            dims = get_shape(self.Value)
             if len(dims) > 1:
                 self.Dimensions = dims
 
@@ -832,7 +832,7 @@ def _split_list(l, n):
     return [l[i:i + n] for i in range(0, len(l), n)]
 
 
-def flatten_and_get_dimensions(mylist):
+def flatten_and_get_shape(mylist):
     dims = []
     dims.append(len(mylist))
     while isinstance(mylist[0], (list, tuple)):
@@ -853,7 +853,7 @@ def flatten(mylist):
     return mylist
 
 
-def get_dimensions(mylist):
+def get_shape(mylist):
     dims = []
     while isinstance(mylist, (list, tuple)):
         dims.append(len(mylist))

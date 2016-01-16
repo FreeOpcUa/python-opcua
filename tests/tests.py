@@ -22,7 +22,7 @@ from opcua.ua import ObjectIds
 from opcua.ua import AttributeIds
 from opcua.ua import extensionobject_from_binary
 from opcua.ua import extensionobject_to_binary
-from opcua.ua.uatypes import flatten, get_dimensions, reshape
+from opcua.ua.uatypes import flatten, get_shape, reshape
 
 port_num1 = 48510
 port_num2 = 48530
@@ -115,7 +115,7 @@ class Unit(unittest.TestCase):
     def test_flatten(self):
         l = [[[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]],[[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]]]
         l2 = flatten(l)
-        dims = get_dimensions(l)
+        dims = get_shape(l)
         self.assertEqual(dims, [2, 3, 4])
         self.assertNotEqual(l, l2)
 
@@ -125,12 +125,12 @@ class Unit(unittest.TestCase):
 
         l = [[[], [], []], [[], [], []]]
         l2 = flatten(l)
-        dims = get_dimensions(l)
+        dims = get_shape(l)
         self.assertEqual(dims, [2, 3, 0])
 
         l = [1, 2, 3, 4]
         l2 = flatten(l)
-        dims = get_dimensions(l)
+        dims = get_shape(l)
         self.assertEqual(dims, [4])
         self.assertEqual(l, l2)
 
