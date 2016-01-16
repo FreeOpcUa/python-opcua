@@ -729,17 +729,16 @@ class Variant(FrozenClass):
         self.Value = value
         self.VariantType = varianttype
         self.Dimensions = dimensions
+        self._freeze = True
         if isinstance(value, Variant):
             self.Value = value.Value
             self.VariantType = value.VariantType
         if self.VariantType is None:
-            if type(self.Value) in (list, tuple):
-                if len(self.Value) == 0:
-                    raise UAError("could not guess UA variable type")
-                self.VariantType = self._guess_type(self.Value[0])
-            else:
-                self.VariantType = self._guess_type(self.Value)
-        self._freeze = True
+            self.VariantType = self._guess_type(self.Value)
+        if self.Dimensions is None and type(self.Value) in (list, tuple):
+            dims = get_dimensions(self.Value)
+            if len(dims) > 1:
+                self.Dimensions = dims
 
     def __eq__(self, other):
         if isinstance(other, Variant) and self.VariantType == other.VariantType and self.Value == other.Value:
@@ -747,6 +746,10 @@ class Variant(FrozenClass):
         return False
 
     def _guess_type(self, val):
+        while isinstance(val, (list, tuple)):
+            if len(val) == 0:
+                raise UAError("could not guess UA variable type")
+            val = val[0]
         if val is None:
             return VariantType.Null
         elif isinstance(val, bool):
@@ -783,7 +786,7 @@ class Variant(FrozenClass):
                 self.Encoding = set_bit(self.Encoding, 6)
             self.Encoding = set_bit(self.Encoding, 7)
             b.append(uatype_UInt8.pack(self.Encoding))
-            b.append(pack_uatype_array(self.VariantType.name, self.Value))
+            b.append(pack_uatype_array(self.VariantType.name, flatten(self.Value)))
             if self.Dimensions is not None:
                 b.append(pack_uatype_array("Int32", self.Dimensions))
         else:
@@ -805,8 +808,59 @@ class Variant(FrozenClass):
             value = unpack_uatype(vtype.name, data)
         if test_bit(encoding, 6):
             dimensions = unpack_uatype_array("Int32", data)
+            value = reshape(value, dimensions)
 
         return Variant(value, vtype, encoding, dimensions)
+
+
+def reshape(flat, dims):
+    subdims = dims[1:]
+    subsize = 1
+    for i in subdims:
+        if i == 0:
+            i = 1
+        subsize *= i
+    while dims[0] * subsize > len(flat):
+        flat.append([])
+    if not subdims or subdims == [0]:
+        return flat
+    return [reshape(flat[i: i + subsize], subdims) for i in range(0, len(flat), subsize)]
+
+
+def _split_list(l, n):
+    n = max(1, n)
+    return [l[i:i + n] for i in range(0, len(l), n)]
+
+
+def flatten_and_get_dimensions(mylist):
+    dims = []
+    dims.append(len(mylist))
+    while isinstance(mylist[0], (list, tuple)):
+        dims.append(len(mylist[0]))
+        mylist = [item for sublist in mylist for item in sublist]
+        if len(mylist) == 0:
+            break
+    return mylist, dims
+
+
+def flatten(mylist):
+    if len(mylist) == 0:
+        return mylist
+    while isinstance(mylist[0], (list, tuple)):
+        mylist = [item for sublist in mylist for item in sublist]
+        if len(mylist) == 0:
+            break
+    return mylist
+
+
+def get_dimensions(mylist):
+    dims = []
+    while isinstance(mylist, (list, tuple)):
+        dims.append(len(mylist))
+        if len(mylist) == 0:
+            break
+        mylist = mylist[0]
+    return dims
 
 
 class DataValue(FrozenClass):
