@@ -863,6 +863,36 @@ def get_shape(mylist):
     return dims
 
 
+class XmlElement(FrozenClass):
+    '''
+    An XML element encoded as an UTF-8 string.
+    '''
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            self._freeze = True
+            return
+        self.Value = []
+        self._freeze = True
+
+    def to_binary(self):
+        return pack_string(self.Value)
+
+    @staticmethod
+    def from_binary(data):
+        return XmlElement(data)
+
+    def _binary_init(self, data):
+        self.Value = unpack_string(data)
+
+    def __str__(self):
+        return 'XmlElement(Value:' + str(self.Value) + ')'
+
+    __repr__ = __str__
+
+
+
+
 class DataValue(FrozenClass):
 
     '''

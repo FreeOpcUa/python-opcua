@@ -2,7 +2,7 @@
 import generate_model as gm
 
 IgnoredEnums = ["NodeIdType"]
-IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "LocalizedText", "ExtensionObject"]
+IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "LocalizedText", "ExtensionObject", "XmlElement"]
 numerics = ("Int8", "UInt8", "Sbyte", "Byte", "Char", "Boolean", "Int16", "UInt16", "Int32", "UInt32", "Float", "Int64", "UInt64", "Double")
 
 
