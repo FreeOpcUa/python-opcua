@@ -254,7 +254,6 @@ class NodeManagementService(object):
                     if rdesc.NodeId == item.NodeId:
                         self._aspace[elem].references.remove(rdesc)
 
-        print self._aspace[item.NodeId]
         del self._aspace[item.NodeId]
 
         return ua.StatusCode()
