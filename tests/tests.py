@@ -22,6 +22,7 @@ from opcua.ua import ObjectIds
 from opcua.ua import AttributeIds
 from opcua.ua import extensionobject_from_binary
 from opcua.ua import extensionobject_to_binary
+from opcua.ua.uatypes import flatten, get_shape, reshape
 
 port_num1 = 48510
 port_num2 = 48530
@@ -94,6 +95,44 @@ class Unit(unittest.TestCase):
     '''
     Simple unit test that do not need to setup a server or a client
     '''
+
+    def test_variant_dimensions(self):
+        l = [[[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0], [3.0, 3.0, 3.0, 3.0]],[[5.0, 5.0, 5.0, 5.0], [7.0, 8.0, 9.0, 01.0], [1.0, 1.0, 1.0, 1.0]]]
+        v = ua.Variant(l)
+        self.assertEqual(v.Dimensions, [2, 3, 4])
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        self.assertEqual(v, v2)
+        self.assertEqual(v.Dimensions, v2.Dimensions)
+        
+        # very special case
+        l = [[[], [], []], [[], [], []]]
+        v = ua.Variant(l, ua.VariantType.UInt32)
+        self.assertEqual(v.Dimensions, [2, 3, 0])
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        self.assertEqual(v.Dimensions, v2.Dimensions)
+        self.assertEqual(v, v2)
+
+    def test_flatten(self):
+        l = [[[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]],[[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]]]
+        l2 = flatten(l)
+        dims = get_shape(l)
+        self.assertEqual(dims, [2, 3, 4])
+        self.assertNotEqual(l, l2)
+
+        l3 = reshape(l2, (2,3,4))
+        self.assertEqual(l, l3)
+
+
+        l = [[[], [], []], [[], [], []]]
+        l2 = flatten(l)
+        dims = get_shape(l)
+        self.assertEqual(dims, [2, 3, 0])
+
+        l = [1, 2, 3, 4]
+        l2 = flatten(l)
+        dims = get_shape(l)
+        self.assertEqual(dims, [4])
+        self.assertEqual(l, l2)
 
     def test_guid(self):
         g = ua.Guid()
@@ -275,6 +314,15 @@ class Unit(unittest.TestCase):
         v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
         self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
+
+    def test_variant_array_dim(self):
+        v = ua.Variant([1, 2, 3, 4, 5, 6], dimensions = [2, 3])
+        self.assertEqual(v.Value[1], 2)
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        self.assertEqual(reshape(v.Value, (2,3)), v2.Value)
+        self.assertEqual(v.VariantType, v2.VariantType)
+        self.assertEqual(v.Dimensions, v2.Dimensions)
+        self.assertEqual(v2.Dimensions, [2, 3])
 
     def test_text(self):
         t1 = ua.LocalizedText('Root')
@@ -477,6 +525,27 @@ class CommonTests(object):
         v1 = objects.add_variable(4, "test_datetime", now)
         tid = v1.get_value()
         self.assertEqual(now, tid)
+
+
+    def test_variant_array_dim(self):
+        objects = self.opc.get_objects_node()
+        l = [[[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0], [3.0, 3.0, 3.0, 3.0]],[[5.0, 5.0, 5.0, 5.0], [7.0, 8.0, 9.0, 01.0], [1.0, 1.0, 1.0, 1.0]]]
+        v = objects.add_variable(3, 'variableWithDims', l)
+        v2 = v.get_value()
+        self.assertEqual(v2, l)
+        dv = v.get_data_value()
+        self.assertEqual(dv.Value.Dimensions, [2,3,4])
+
+        l = [[[], [], []], [[], [], []]]
+        variant = ua.Variant(l, ua.VariantType.UInt32)
+        v = objects.add_variable(3, 'variableWithDimsEmpty', variant)
+        v2 = v.get_value()
+        self.assertEqual(v2, l)
+        dv = v.get_data_value()
+        self.assertEqual(dv.Value.Dimensions, [2,3,0])
+
+
+
 
     def test_add_numeric_variable(self):
         objects = self.opc.get_objects_node()

@@ -714,47 +714,6 @@ class ExceptionDeviationFormat(IntEnum):
     Unknown = 4
 
 
-class XmlElement(FrozenClass):
-    '''
-    An XML element encoded as a UTF-8 string.
-
-    :ivar Length:
-    :vartype Length: Int32
-    :ivar Value:
-    :vartype Value: Char
-    '''
-    def __init__(self, binary=None):
-        if binary is not None:
-            self._binary_init(binary)
-            self._freeze = True
-            return
-        self.Length = 0
-        self.Value = []
-        self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uatype_Int32.pack(self.Length))
-        packet.append(uatype_Int32.pack(len(self.Value)))
-        for fieldname in self.Value:
-            packet.append(uatype_Char.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        return XmlElement(data)
-
-    def _binary_init(self, data):
-        self.Length = uatype_Int32.unpack(data.read(4))[0]
-        self.Value = unpack_uatype_array('Char', data)
-
-    def __str__(self):
-        return 'XmlElement(' + 'Length:' + str(self.Length) + ', ' + \
-               'Value:' + str(self.Value) + ')'
-
-    __repr__ = __str__
-
-
 class DiagnosticInfo(FrozenClass):
     '''
     A recursive structure containing diagnostic information associated with a status code.

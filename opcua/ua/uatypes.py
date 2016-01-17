@@ -724,21 +724,21 @@ class Variant(FrozenClass):
     :vartype VariantType: VariantType
     """
 
-    def __init__(self, value=None, varianttype=None, encoding=0):
+    def __init__(self, value=None, varianttype=None, encoding=0, dimensions=None):
         self.Encoding = encoding
         self.Value = value
         self.VariantType = varianttype
+        self.Dimensions = dimensions
+        self._freeze = True
         if isinstance(value, Variant):
             self.Value = value.Value
             self.VariantType = value.VariantType
         if self.VariantType is None:
-            if type(self.Value) in (list, tuple):
-                if len(self.Value) == 0:
-                    raise UAError("could not guess UA variable type")
-                self.VariantType = self._guess_type(self.Value[0])
-            else:
-                self.VariantType = self._guess_type(self.Value)
-        self._freeze = True
+            self.VariantType = self._guess_type(self.Value)
+        if self.Dimensions is None and type(self.Value) in (list, tuple):
+            dims = get_shape(self.Value)
+            if len(dims) > 1:
+                self.Dimensions = dims
 
     def __eq__(self, other):
         if isinstance(other, Variant) and self.VariantType == other.VariantType and self.Value == other.Value:
@@ -746,6 +746,10 @@ class Variant(FrozenClass):
         return False
 
     def _guess_type(self, val):
+        while isinstance(val, (list, tuple)):
+            if len(val) == 0:
+                raise UAError("could not guess UA variable type")
+            val = val[0]
         if val is None:
             return VariantType.Null
         elif isinstance(val, bool):
@@ -775,28 +779,118 @@ class Variant(FrozenClass):
 
     def to_binary(self):
         b = []
-        mask = self.Encoding & 0b01111111
+        mask = self.Encoding & 0b00111111
         self.Encoding = (self.VariantType.value | mask)
         if type(self.Value) in (list, tuple):
-            self.Encoding |= (1 << 7)
+            if self.Dimensions is not None:
+                self.Encoding = set_bit(self.Encoding, 6)
+            self.Encoding = set_bit(self.Encoding, 7)
             b.append(uatype_UInt8.pack(self.Encoding))
-            b.append(pack_uatype_array(self.VariantType.name, self.Value))
+            b.append(pack_uatype_array(self.VariantType.name, flatten(self.Value)))
+            if self.Dimensions is not None:
+                b.append(pack_uatype_array("Int32", self.Dimensions))
         else:
             b.append(uatype_UInt8.pack(self.Encoding))
             b.append(pack_uatype(self.VariantType.name, self.Value))
+
         return b"".join(b)
 
     @staticmethod
     def from_binary(data):
+        dimensions = None
         encoding = ord(data.read(1))
-        vtype = VariantType(encoding & 0b01111111)
+        vtype = VariantType(encoding & 0b00111111)
         if vtype == VariantType.Null:
             return Variant(None, vtype, encoding)
-        if encoding & (1 << 7):
+        if test_bit(encoding, 7):
             value = unpack_uatype_array(vtype.name, data)
         else:
             value = unpack_uatype(vtype.name, data)
-        return Variant(value, vtype, encoding)
+        if test_bit(encoding, 6):
+            dimensions = unpack_uatype_array("Int32", data)
+            value = reshape(value, dimensions)
+
+        return Variant(value, vtype, encoding, dimensions)
+
+
+def reshape(flat, dims):
+    subdims = dims[1:]
+    subsize = 1
+    for i in subdims:
+        if i == 0:
+            i = 1
+        subsize *= i
+    while dims[0] * subsize > len(flat):
+        flat.append([])
+    if not subdims or subdims == [0]:
+        return flat
+    return [reshape(flat[i: i + subsize], subdims) for i in range(0, len(flat), subsize)]
+
+
+def _split_list(l, n):
+    n = max(1, n)
+    return [l[i:i + n] for i in range(0, len(l), n)]
+
+
+def flatten_and_get_shape(mylist):
+    dims = []
+    dims.append(len(mylist))
+    while isinstance(mylist[0], (list, tuple)):
+        dims.append(len(mylist[0]))
+        mylist = [item for sublist in mylist for item in sublist]
+        if len(mylist) == 0:
+            break
+    return mylist, dims
+
+
+def flatten(mylist):
+    if len(mylist) == 0:
+        return mylist
+    while isinstance(mylist[0], (list, tuple)):
+        mylist = [item for sublist in mylist for item in sublist]
+        if len(mylist) == 0:
+            break
+    return mylist
+
+
+def get_shape(mylist):
+    dims = []
+    while isinstance(mylist, (list, tuple)):
+        dims.append(len(mylist))
+        if len(mylist) == 0:
+            break
+        mylist = mylist[0]
+    return dims
+
+
+class XmlElement(FrozenClass):
+    '''
+    An XML element encoded as an UTF-8 string.
+    '''
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            self._freeze = True
+            return
+        self.Value = []
+        self._freeze = True
+
+    def to_binary(self):
+        return pack_string(self.Value)
+
+    @staticmethod
+    def from_binary(data):
+        return XmlElement(data)
+
+    def _binary_init(self, data):
+        self.Value = unpack_string(data)
+
+    def __str__(self):
+        return 'XmlElement(Value:' + str(self.Value) + ')'
+
+    __repr__ = __str__
+
+
 
 
 class DataValue(FrozenClass):
