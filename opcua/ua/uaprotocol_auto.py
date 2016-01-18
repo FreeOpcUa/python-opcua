@@ -14347,7 +14347,8 @@ def extensionobject_from_binary(data):
         e = ExtensionObject()
         e.TypeId = TypeId
         e.Encoding = Encoding
-        e.Body = body.read(len(body))
+        if body is not None:
+            e.Body = body.read(len(body))
         return e
     klass = ExtensionClasses[TypeId.Identifier]
     if body is None:
