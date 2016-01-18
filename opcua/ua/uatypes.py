@@ -647,6 +647,60 @@ class LocalizedText(FrozenClass):
         return False
 
 
+class ExtensionObject(FrozenClass):
+
+    '''
+
+    Any UA object packed as an ExtensionObject
+
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar Body:
+    :vartype Body: bytes
+
+    '''
+
+    def __init__(self):
+        self.TypeId = NodeId()
+        self.Encoding = 0
+        self.Body = b''
+        self._freeze = True
+
+    def to_binary(self):
+        packet = []
+        if self.Body:
+            self.Encoding |= (1 << 0)
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        if self.Body:
+            packet.append(pack_uatype('ByteString', self.Body))
+        return b''.join(packet)
+
+    @staticmethod
+    def from_binary(data):
+        obj = ExtensionObject()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        if obj.Encoding & (1 << 0):
+            obj.Body = unpack_uatype('ByteString', data)
+        return obj
+
+    @staticmethod
+    def from_object(obj):
+        ext = ExtensionObject()
+        oid = getattr(ObjectIds, "{}_Encoding_DefaultBinary".format(obj.__class__.__name__))
+        ext.TypeId = FourByteNodeId(oid)
+        ext.Body = obj.to_binary()
+        return ext
+
+    def __str__(self):
+        return 'ExtensionObject(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+            'Encoding:' + str(self.Encoding) + ', ' + str(len(self.Body)) + ' bytes)'
+
+    __repr__ = __str__
+
+
 class VariantType(Enum):
 
     '''

@@ -205,6 +205,16 @@ class Unit(unittest.TestCase):
         self.assertEqual(type(v1), type(v2))
         self.assertEqual(v1.VariantType, v2.VariantType)
 
+    def test_unknown_extension_object(self):
+        obj = ua.ExtensionObject()
+        obj.Body = b'example of data in custom format'
+        obj.TypeId = ua.NodeId.from_string('ns=3;i=42')
+        data = ua.utils.Buffer(extensionobject_to_binary(obj))
+        obj2 = ua.extensionobject_from_binary(data)
+        self.assertEqual(type(obj2), ua.ExtensionObject)
+        self.assertEqual(obj2.TypeId, obj.TypeId)
+        self.assertEqual(obj2.Body, b'example of data in custom format')
+
     def test_datetime(self):
         now = datetime.utcnow()
         epch = ua.datetime_to_win_epoch(now)
