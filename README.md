@@ -74,9 +74,10 @@ Tested clients: freeopcua C++, freeopcua Python, uaexpert, prosys, quickopc
 
 Server: what is not implemented
 * localized text feature
-* complete securty model with users and password
+* better securty model with users and password
 * removing nodes 
 * adding some missing modify methods
+* views
 
 
 # Development
