@@ -288,7 +288,7 @@ class Node(object):
 
     # Hack for convenience methods
     # local import is ugly but necessary for python2 support
-    # feel fri to propose something better but I want to split all those 
+    # feel fri to propose something better but I want to split all those
     # create methods fro Node
 
     def add_folder(*args, **kwargs):
@@ -314,4 +314,3 @@ class Node(object):
     def call_method(*args, **kwargs):
         from opcua.common import methods
         return methods.call_method(*args, **kwargs)
-

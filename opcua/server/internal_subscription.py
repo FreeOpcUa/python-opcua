@@ -107,7 +107,7 @@ class MonitoredItemService(object):
                 if result.StatusCode.is_good():
                     # force data change event generation
                     self.trigger_datachange(handle, params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
-            
+
             if not result.StatusCode.is_good():
                 del(self._monitored_items[result.MonitoredItemId])
                 self._monitored_item_counter -= 1
@@ -137,15 +137,19 @@ class MonitoredItemService(object):
         self._monitored_items.pop(mid)
         return ua.StatusCode()
 
-    def datachange_callback(self, handle, value):
-        self.logger.info("subscription %s: datachange callback called with handle '%s' and value '%s'", self, handle, value.Value)
-        event = ua.MonitoredItemNotification()
-        with self._lock:
-            mid = self._monitored_datachange[handle]
-            mdata = self._monitored_items[mid]
-            event.ClientHandle = mdata.client_handle
-            event.Value = value
-            self.isub.enqueue_datachange_event(mid, event, mdata.parameters.RevisedQueueSize)
+    def datachange_callback(self, handle, value, error=None):
+        if error:
+            self.logger.info("subscription %s: datachange callback called with handle '%s' and erorr '%s'", self, handle, error)
+            self.trigger_statuschange(error)
+        else:
+            self.logger.info("subscription %s: datachange callback called with handle '%s' and value '%s'", self, handle, value.Value)
+            event = ua.MonitoredItemNotification()
+            with self._lock:
+                mid = self._monitored_datachange[handle]
+                mdata = self._monitored_items[mid]
+                event.ClientHandle = mdata.client_handle
+                event.Value = value
+                self.isub.enqueue_datachange_event(mid, event, mdata.parameters.RevisedQueueSize)
 
     def trigger_event(self, event):
         with self._lock:
@@ -289,7 +293,7 @@ class InternalSubscription(object):
             notif = ua.StatusChangeNotification()
             notif.Status = self._triggered_statuschanges.pop(0)
             result.NotificationMessage.NotificationData.append(notif)
-            self.logger.debug("sending event notification %s", len(notif.Status))
+            self.logger.debug("sending event notification %s", notif.Status)
 
     def publish(self, nb):
         with self._lock:

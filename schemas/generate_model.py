@@ -11,10 +11,10 @@ import xml.etree.ElementTree as ET
 NeedOverride = []
 NeedConstructor = []#["RelativePathElement", "ReadValueId", "OpenSecureChannelParameters", "UserIdentityToken", "RequestHeader", "ResponseHeader", "ReadParameters", "UserIdentityToken", "BrowseDescription", "ReferenceDescription", "CreateSubscriptionParameters", "PublishResult", "NotificationMessage", "SetPublishingModeParameters"]
 IgnoredEnums = []#["IdType", "NodeIdType"]
-#we want to implement som struct by hand, to make better interface or simply because they are too complicated 
+#we want to implement som struct by hand, to make better interface or simply because they are too complicated
 IgnoredStructs = []#["NodeId", "ExpandedNodeId", "Variant", "QualifiedName", "DataValue", "LocalizedText"]#, "ExtensionObject"]
 #by default we split requests and respons in header and parameters, but some are so simple we do not split them
-NoSplitStruct = ["GetEndpointsResponse", "CloseSessionRequest", "AddNodesResponse", "BrowseResponse", "HistoryReadResponse", "HistoryUpdateResponse", "RegisterServerResponse", "CloseSecureChannelRequest", "CloseSecureChannelResponse", "CloseSessionRequest", "CloseSessionResponse", "UnregisterNodesResponse", "MonitoredItemModifyRequest", "MonitoredItemsCreateRequest", "ReadResponse", "WriteResponse", "TranslateBrowsePathsToNodeIdsResponse", "DeleteSubscriptionsResponse", "DeleteMonitoredItemsResponse", "CreateMonitoredItemsResponse", "ServiceFault", "AddReferencesRequest", "AddReferencesResponse", "ModifyMonitoredItemsResponse", "RepublishResponse", "CallResponse", "FindServersResponse", "RegisterServerRequest", "RegisterServer2Response"]
+NoSplitStruct = ["GetEndpointsResponse", "CloseSessionRequest", "AddNodesResponse", "DeleteNodesResponse", "BrowseResponse", "HistoryReadResponse", "HistoryUpdateResponse", "RegisterServerResponse", "CloseSecureChannelRequest", "CloseSecureChannelResponse", "CloseSessionRequest", "CloseSessionResponse", "UnregisterNodesResponse", "MonitoredItemModifyRequest", "MonitoredItemsCreateRequest", "ReadResponse", "WriteResponse", "TranslateBrowsePathsToNodeIdsResponse", "DeleteSubscriptionsResponse", "DeleteMonitoredItemsResponse", "CreateMonitoredItemsResponse", "ServiceFault", "AddReferencesRequest", "AddReferencesResponse", "ModifyMonitoredItemsResponse", "RepublishResponse", "CallResponse", "FindServersResponse", "RegisterServerRequest", "RegisterServer2Response"]
 #structs that end with Request or Response but are not
 NotRequest = ["MonitoredItemCreateRequest", "MonitoredItemModifyRequest", "CallMethodRequest"]
 OverrideTypes = {}#AttributeId": "AttributeID",  "ResultMask": "BrowseResultMask", "NodeClassMask": "NodeClass", "AccessLevel": "VariableAccessLevel", "UserAccessLevel": "VariableAccessLevel", "NotificationData": "NotificationData"}
@@ -54,7 +54,7 @@ class Struct(object):
             if f.name == name:
                 return f
         raise Exception("field not found: " + name)
-    
+
     def __str__(self):
         return "Struct {}:{}".format(self.name, self.basetype)
 
@@ -69,7 +69,7 @@ class Field(object):
         self.sourcetype = None
         self.switchfield = None
         self.switchvalue = None
-        self.bitlength = 1 
+        self.bitlength = 1
 
     def __str__(self):
         return "Field {}({})".format(self.name, self.uatype)
@@ -213,7 +213,7 @@ def remove_duplicates(model):
                 names.append(field.name)
                 fields.append(field)
         struct.fields = fields
-    
+
 def add_encoding_field(model):
     for struct in model.structs:
         newfields = []
@@ -226,7 +226,7 @@ def add_encoding_field(model):
                 b.name = field.name
                 b.idx = 0
                 b.container = container
-                b.length = 6 
+                b.length = 6
                 idx = b.length
                 struct.bits[b.name] = b
 
@@ -299,10 +299,10 @@ def split_requests(model):
             paramstruct = Struct()
             if structtype == "Request":
                 basename = struct.name.replace("Request", "") + "Parameters"
-                paramstruct.name = basename 
+                paramstruct.name = basename
             else:
                 basename = struct.name.replace("Response", "") + "Result"
-                paramstruct.name = basename 
+                paramstruct.name = basename
             paramstruct.fields = struct.fields[2:]
             paramstruct.bits = struct.bits
 
@@ -311,8 +311,8 @@ def split_requests(model):
             structs.append(paramstruct)
 
             typeid = Field()
-            typeid.name = "Parameters" 
-            typeid.uatype = paramstruct.name 
+            typeid.name = "Parameters"
+            typeid.uatype = paramstruct.name
             struct.fields.append(typeid)
         structs.append(struct)
     model.structs = structs

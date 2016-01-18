@@ -55,9 +55,9 @@ class InternalServer(object):
         self.method_service = MethodService(self.aspace)
         self.node_mgt_service = NodeManagementService(self.aspace)
         # import address space from code generated from xml
-        standard_address_space.fill_address_space(self.node_mgt_service)  
+        standard_address_space.fill_address_space(self.node_mgt_service)
         # import address space from save db to disc
-        #standard_address_space.fill_address_space_from_disk(self.aspace)  
+        #standard_address_space.fill_address_space_from_disk(self.aspace)
 
         # import address space directly from xml, this has preformance impact so disabled
         #importer = xmlimporter.XmlImporter(self.node_mgt_service)
@@ -120,7 +120,7 @@ class InternalServer(object):
 
     def find_servers(self, params):
         if not params.ServerUris:
-            return [desc.Server for desc in self._known_servers.values()] 
+            return [desc.Server for desc in self._known_servers.values()]
         servers = []
         for serv in self._known_servers.values():
             serv_uri = serv.Server.ApplicationUri.split(":")
@@ -215,8 +215,8 @@ class InternalSession(object):
         return self.iserver.attribute_service.read(params)
 
     def write(self, params):
-        if not self.external:  
-            # If session is internal we need to store a copy og object, not a reference, 
+        if not self.external:
+            # If session is internal we need to store a copy og object, not a reference,
             #otherwise users may change it and we will not generate expected events
             for ntw in params.NodesToWrite:
                 ntw.Value.Value.Value = copy(ntw.Value.Value.Value)
@@ -231,8 +231,14 @@ class InternalSession(object):
     def add_nodes(self, params):
         return self.iserver.node_mgt_service.add_nodes(params, self.user)
 
+    def delete_nodes(self, params):
+        return self.iserver.node_mgt_service.delete_nodes(params, self.user)
+
     def add_references(self, params):
         return self.iserver.node_mgt_service.add_references(params, self.user)
+
+    def delete_references(self, params):
+        return self.iserver.node_mgt_service.delete_references(params, self.user)
 
     def add_method_callback(self, methodid, callback):
         return self.aspace.add_method_callback(methodid, callback)
