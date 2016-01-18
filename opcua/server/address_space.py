@@ -240,7 +240,6 @@ class NodeManagementService(object):
         return results
 
     def _delete_node(self, item, user):
-        #TODO: Check if node is monitored if it is: "When any of the Nodes deleted by an invocation of this Service is being monitored, then a Notification containing the status code Bad_NodeIdUnknown is sent to the monitoring Client indicating that the Node has been deleted."
         if not user == User.Admin:
             return ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
 
@@ -253,6 +252,13 @@ class NodeManagementService(object):
                 for rdesc in self._aspace[elem].references:
                     if rdesc.NodeId == item.NodeId:
                         self._aspace[elem].references.remove(rdesc)
+
+        for handle, callback in list(self._aspace[item.NodeId].attributes[ua.AttributeIds.Value].datachange_callbacks.items()):
+            try:
+                callback(handle, None, ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown))
+                self._aspace.delete_datachange_callback(handle)
+            except Exception as ex:
+                self.logger.exception("Error calling datachange callback %s, %s, %s", k, v, ex)
 
         del self._aspace[item.NodeId]
 

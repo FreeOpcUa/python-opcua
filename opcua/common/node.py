@@ -254,9 +254,6 @@ class Node(object):
         # FIXME: seems this method may return several nodes
         return Node(self.server, result.Targets[0].TargetId)
 
-    def delete_child(self, path):
-        self.delete_node(self.get_child(path).nodeid)
-
     def read_raw_history(self, starttime=None, endtime=None, numvalues=0, returnbounds=True):
         """
         Read raw history of a node
@@ -317,10 +314,3 @@ class Node(object):
     def call_method(*args, **kwargs):
         from opcua.common import methods
         return methods.call_method(*args, **kwargs)
-
-    def delete_node(self, nodeid, deleterefs=True):
-        deletenode = ua.DeleteNodesItem()
-        deletenode.NodeId = nodeid
-        deletenode.DeleteTargetReferences = deleterefs
-        results = self.server.delete_nodes([deletenode])
-        results[0].check()

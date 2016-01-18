@@ -34,6 +34,9 @@ class SubHandler(object):
     def event_notification(self, event):
         print("Python: New event", event)
 
+    def status_change_notification(self, status):
+        print ("Python: New status change", status)
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARN)
@@ -85,7 +88,11 @@ if __name__ == "__main__":
 
         print("Children of MyObject are: ", obj.get_children())
         print("myvar should be still there")
-        obj.delete_child(["2:MyVariable"])
+        deletenode = ua.DeleteNodesItem()
+        deletenode.NodeId = obj.get_child(["2:MyVariable"]).nodeid
+        deletenode.DeleteTargetReferences = True
+        results = client.bclient.delete_nodes([deletenode])
+        results[0].check()
         print("Children of MyObject are: ", obj.get_children())
         print("myvar should disapear")
 
