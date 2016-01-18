@@ -14344,7 +14344,11 @@ def extensionobject_from_binary(data):
     if TypeId.Identifier == 0:
         return None
     elif TypeId.Identifier not in ExtensionClasses:
-        raise UAError("unknown ExtensionObject Type: {}".format(TypeId))
+        e = ExtensionObject()
+        e.TypeId = TypeId
+        e.Encoding = Encoding
+        e.Body = body.read(len(body))
+        return e
     klass = ExtensionClasses[TypeId.Identifier]
     if body is None:
         raise UAError("parsing ExtensionObject {} without data".format(klass.__name__))
@@ -14357,6 +14361,8 @@ def extensionobject_to_binary(obj):
     If obj is None, convert to empty ExtensionObject (TypeId = 0, no Body).
     Returns a binary string
     """
+    if isinstance(obj, ExtensionObject):
+        return obj.to_binary()
     TypeId = NodeId()
     Encoding = 0
     Body = None
