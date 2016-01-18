@@ -275,6 +275,9 @@ class Guid(FrozenClass):
     def to_binary(self):
         return self.uuid.bytes
 
+    def __hash__(self):
+        return hash(self.uuid.bytes)
+
     @staticmethod
     def from_binary(data):
         g = Guid()
