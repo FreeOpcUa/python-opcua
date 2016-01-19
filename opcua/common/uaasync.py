@@ -2,11 +2,11 @@ import sys
 
 if sys.version_info[0] < 3 or sys.version_info[1] <= 2:
     # python 2.7 - python 3.2
-    from trollius import coroutine, From, Return, Protocol
+    from trollius import coroutine, From, Return
     import trollius as asyncio
 else:
     # python 3.3 or above
-    from asyncio import coroutine, Protocol
+    from asyncio import coroutine
     import asyncio
 
     def From(*args, **kwargs):
@@ -213,7 +213,7 @@ def await_super_call(func):
     return wrapper
 
 __all__ = [
-    "asyncio", "coroutine", "From", "Return", "Protocol",
+    "asyncio", "coroutine", "From", "Return",
     "install_loop", "get_loop", "start_loop", "stop_loop",
     "new_future", "call_soon", "call_soon_threadsafe",
     "call_later", "call_at", "wait_for",

@@ -14,9 +14,9 @@ def _cancel_handle_cb(hdl, _):
     hdl.cancel()
 
 
-class UAClientProtocol(uaasync.Protocol):
+class UAClientProtocol(uaasync.asyncio.Protocol):
     def __init__(self, security_connection, disconnected_cb):
-        uaasync.Protocol.__init__(self)
+        uaasync.asyncio.Protocol.__init__(self)
         self.logger = logging.getLogger(__name__ + "Protocol")
         self.authentication_token = ua.NodeId()
         self._connection = security_connection
@@ -67,7 +67,7 @@ class UAClientProtocol(uaasync.Protocol):
                 # entire packet recieved, clear curent header and process it
                 self._cur_header = None
                 msgnum += self._process_one_packet(hdr)
-                if msgnum >= 5:
+                if msgnum >= 1:
                     # yield cpu for packet processing
                     uaasync.call_soon(self._process_msg)
                     return
@@ -80,11 +80,10 @@ class UAClientProtocol(uaasync.Protocol):
                 # wait for more chunk
                 return 0
             elif isinstance(msg, ua.Message):
-                # self._set_result(msg.request_id(), msg.body())
-                uaasync.call_soon(self._set_result, msg.request_id(), msg.body())
+                self._set_result(msg.request_id(), msg.body())
                 return 1
             elif isinstance(msg, ua.Acknowledge):
-                uaasync.call_soon(self._set_result, 0, msg)
+                self._set_result(0, msg)
                 return 1
             elif isinstance(msg, ua.ErrorMessage):
                 raise ua.UAError("Received an error: {}".format(msg))
