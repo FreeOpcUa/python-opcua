@@ -98,7 +98,7 @@ def pack_uatype(uatype, value):
         return b''
     elif uatype == "String":
         return pack_string(value)
-    elif uatype in ("CharArray", "ByteString"):
+    elif uatype in ("CharArray", "ByteString", "Custom"):
         return pack_bytes(value)
     elif uatype == "DateTime":
         return pack_datetime(value)
@@ -150,7 +150,7 @@ def unpack_uatype(uatype, data):
         return st.unpack(data.read(st.size))[0]
     elif uatype == "String":
         return unpack_string(data)
-    elif uatype in ("CharArray", "ByteString"):
+    elif uatype in ("CharArray", "ByteString", "Custom"):
         return unpack_bytes(data)
     elif uatype == "DateTime":
         return unpack_datetime(data)
@@ -767,6 +767,16 @@ class VariantType(Enum):
     DiagnosticInfo = 25
 
 
+class VariantTypeCustom(object):
+    def __init__(self, val):
+        self.name = "Custom"
+        self.value = val
+
+    def __str__(self):
+        return "VariantType.Custom:{}".format(self.value)
+    __repr__ = __str__
+
+
 class Variant(FrozenClass):
 
     """
@@ -856,7 +866,11 @@ class Variant(FrozenClass):
     def from_binary(data):
         dimensions = None
         encoding = ord(data.read(1))
-        vtype = VariantType(encoding & 0b00111111)
+        int_type = encoding & 0b00111111
+        if int_type > 25:
+            vtype = VariantTypeCustom(int_type)
+        else:
+            vtype = VariantType(int_type)
         if vtype == VariantType.Null:
             return Variant(None, vtype, encoding)
         if test_bit(encoding, 7):
