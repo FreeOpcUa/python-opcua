@@ -3,7 +3,7 @@ implement ua datatypes
 """
 import logging
 from enum import Enum
-from datetime import datetime, timedelta, tzinfo
+from datetime import datetime, timedelta, tzinfo, MAXYEAR
 from calendar import timegm
 import sys
 import os
@@ -52,7 +52,12 @@ def datetime_to_win_epoch(dt):
 
 
 def win_epoch_to_datetime(epch):
-    return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch // 10)
+    try:
+        return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch // 10)
+    except OverflowError:
+        # FILETIMEs after 31 Dec 9999 can't be converted to datetime
+        logger.warning("datetime overflow: {}".format(epch))
+        return datetime(MAXYEAR, 12, 31, 23, 59, 59, 999999)
 
 
 def build_array_format_py2(prefix, length, fmtchar):
