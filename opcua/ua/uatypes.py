@@ -776,10 +776,15 @@ class VariantTypeCustom(object):
     def __init__(self, val):
         self.name = "Custom"
         self.value = val
+        if self.value > 0b00111111:
+            raise UAError("Cannot create VariantType. VariantType must be %s > x > %s", 0b111111, 25)
 
     def __str__(self):
         return "VariantType.Custom:{}".format(self.value)
     __repr__ = __str__
+
+    def __eq__(self, other):
+        return self.value == other.value
 
 
 class Variant(FrozenClass):
@@ -796,8 +801,7 @@ class Variant(FrozenClass):
     :vartype VariantType: VariantType
     """
 
-    def __init__(self, value=None, varianttype=None, encoding=0, dimensions=None):
-        self.Encoding = encoding
+    def __init__(self, value=None, varianttype=None, dimensions=None):
         self.Value = value
         self.VariantType = varianttype
         self.Dimensions = dimensions
@@ -851,18 +855,17 @@ class Variant(FrozenClass):
 
     def to_binary(self):
         b = []
-        mask = self.Encoding & 0b00111111
-        self.Encoding = (self.VariantType.value | mask)
+        encoding = self.VariantType.value & 0b111111
         if type(self.Value) in (list, tuple):
             if self.Dimensions is not None:
-                self.Encoding = set_bit(self.Encoding, 6)
-            self.Encoding = set_bit(self.Encoding, 7)
-            b.append(uatype_UInt8.pack(self.Encoding))
+                encoding = set_bit(encoding, 6)
+            encoding = set_bit(encoding, 7)
+            b.append(uatype_UInt8.pack(encoding))
             b.append(pack_uatype_array(self.VariantType.name, flatten(self.Value)))
             if self.Dimensions is not None:
                 b.append(pack_uatype_array("Int32", self.Dimensions))
         else:
-            b.append(uatype_UInt8.pack(self.Encoding))
+            b.append(uatype_UInt8.pack(encoding))
             b.append(pack_uatype(self.VariantType.name, self.Value))
 
         return b"".join(b)
@@ -886,7 +889,7 @@ class Variant(FrozenClass):
             dimensions = unpack_uatype_array("Int32", data)
             value = reshape(value, dimensions)
 
-        return Variant(value, vtype, encoding, dimensions)
+        return Variant(value, vtype, dimensions)
 
 
 def reshape(flat, dims):

@@ -134,6 +134,21 @@ class Unit(unittest.TestCase):
         self.assertEqual(dims, [4])
         self.assertEqual(l, l2)
 
+    def test_custom_variant(self):
+        with self.assertRaises(ua.UAError):
+            v = ua.Variant(b"ljsdfljds", ua.VariantTypeCustom(89))
+        v = ua.Variant(b"ljsdfljds", ua.VariantTypeCustom(61))
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        self.assertEqual(v.VariantType, v2.VariantType)
+        self.assertEqual(v, v2)
+
+
+    def test_custom_variant_array(self):
+        v = ua.Variant([b"ljsdfljds", b"lkjsdljksdf"], ua.VariantTypeCustom(40))
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        self.assertEqual(v.VariantType, v2.VariantType)
+        self.assertEqual(v, v2)
+
     def test_guid(self):
         g = ua.Guid()
         sc = ua.StatusCode()
