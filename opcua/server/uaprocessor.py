@@ -15,7 +15,7 @@ class PublishRequestData(object):
         self.seqhdr = None
 
 
-class UAProcessor(object):
+class UaProcessor(object):
 
     def __init__(self, internal_server, socket):
         self.logger = logging.getLogger(__name__)

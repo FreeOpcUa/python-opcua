@@ -6,7 +6,7 @@ from datetime import datetime
 from enum import Enum, IntEnum
 
 from opcua.common.utils import Buffer
-from opcua.common.uaerrors import UAError
+from opcua.common.uaerrors import UaError
 from opcua.ua.uatypes import *
 from opcua.ua.object_ids import ObjectIds
 
@@ -14321,7 +14321,7 @@ def extensionobject_from_binary(data):
         return e
     klass = ExtensionClasses[TypeId.Identifier]
     if body is None:
-        raise UAError("parsing ExtensionObject {} without data".format(klass.__name__))
+        raise UaError("parsing ExtensionObject {} without data".format(klass.__name__))
     return klass.from_binary(body)
 
 

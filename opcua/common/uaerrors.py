@@ -3,13 +3,13 @@ Define exceptions to be raised at various places in the stack
 """
 
 
-class UAError(RuntimeError):
+class UaError(RuntimeError):
     pass
 
 
-class UAStatusCodeError(UAError):
+class UaStatusCodeError(UaError):
     pass
 
 
-class UAStringParsingError(UAError):
+class UaStringParsingError(UaError):
     pass

@@ -13,8 +13,8 @@ if sys.version_info.major > 2:
     unicode = str
 
 from opcua.ua import status_codes
-from opcua.common.uaerrors import UAError
-from opcua.common.uaerrors import UAStatusCodeError
+from opcua.common.uaerrors import UaError
+from opcua.common.uaerrors import UaStatusCodeError
 
 
 logger = logging.getLogger('opcua.uaprotocol')
@@ -171,7 +171,7 @@ def unpack_uatype(uatype, data):
             klass = glbs[uatype]
             if hasattr(klass, 'from_binary'):
                 return klass.from_binary(data)
-        raise UAError("can not unpack unknown uatype %s" % uatype)
+        raise UaError("can not unpack unknown uatype %s" % uatype)
 
 
 def unpack_uatype_array(uatype, data):
@@ -319,7 +319,7 @@ class StatusCode(FrozenClass):
         use is is_good() method if not exception is desired
         """
         if self.value != 0:
-            raise UAStatusCodeError("{}({})".format(self.doc, self.name))
+            raise UaStatusCodeError("{}({})".format(self.doc, self.name))
 
     def is_good(self):
         """
@@ -383,7 +383,7 @@ class NodeId(FrozenClass):
             elif isinstance(self.Identifier, bytes):
                 self.NodeIdType = NodeIdType.ByteString
             else:
-                raise UAError("NodeId: Could not guess type of NodeId, set NodeIdType")
+                raise UaError("NodeId: Could not guess type of NodeId, set NodeIdType")
 
     def __key(self):
         if self.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric):  # twobyte, fourbyte and numeric may represent the same node
@@ -430,7 +430,7 @@ class NodeId(FrozenClass):
             elif k == "nsu":
                 nsu = v
         if identifier is None:
-            raise UAError("Could not parse nodeid string: " + string)
+            raise UaError("Could not parse nodeid string: " + string)
         nodeid = NodeId(identifier, namespace, ntype)
         nodeid.NamespaceUri = nsu
         nodeid.ServerIndex = srv
@@ -504,7 +504,7 @@ class NodeId(FrozenClass):
             nid.NamespaceIndex = uatype_UInt16.unpack(data.read(2))[0]
             nid.Identifier = Guid.from_binary(data)
         else:
-            raise UAError("Unknown NodeId encoding: " + str(nid.NodeIdType))
+            raise UaError("Unknown NodeId encoding: " + str(nid.NodeIdType))
 
         if test_bit(encoding, 7):
             nid.NamespaceUri = unpack_string(data)
@@ -561,7 +561,7 @@ class QualifiedName(FrozenClass):
 
     def __init__(self, name="", namespaceidx=0):
         if not isinstance(namespaceidx, int):
-            raise UAError("namespaceidx must be an int")
+            raise UaError("namespaceidx must be an int")
         self.NamespaceIndex = namespaceidx
         self.Name = name
         self._freeze = True
@@ -777,7 +777,7 @@ class VariantTypeCustom(object):
         self.name = "Custom"
         self.value = val
         if self.value > 0b00111111:
-            raise UAError("Cannot create VariantType. VariantType must be %s > x > %s", 0b111111, 25)
+            raise UaError("Cannot create VariantType. VariantType must be %s > x > %s", 0b111111, 25)
 
     def __str__(self):
         return "VariantType.Custom:{}".format(self.value)
@@ -824,7 +824,7 @@ class Variant(FrozenClass):
     def _guess_type(self, val):
         while isinstance(val, (list, tuple)):
             if len(val) == 0:
-                raise UAError("could not guess UA variable type")
+                raise UaError("could not guess UA variable type")
             val = val[0]
         if val is None:
             return VariantType.Null
@@ -847,7 +847,7 @@ class Variant(FrozenClass):
                 except AttributeError:
                     return VariantType.ExtensionObject
             else:
-                raise UAError("Could not guess UA type of {} with type {}, specify UA type".format(val, type(val)))
+                raise UaError("Could not guess UA type of {} with type {}, specify UA type".format(val, type(val)))
 
     def __str__(self):
         return "Variant(val:{!s},type:{})".format(self.Value, self.VariantType)

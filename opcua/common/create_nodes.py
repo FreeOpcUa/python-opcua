@@ -194,10 +194,10 @@ def _vtype_to_argument(vtype):
 def _guess_uatype(variant):
     if variant.VariantType == ua.VariantType.ExtensionObject:
         if variant.Value is None:
-            raise ua.UAError("Cannot guess DataType from Null ExtensionObject")
+            raise ua.UaError("Cannot guess DataType from Null ExtensionObject")
         if type(variant.Value) in (list, tuple):
             if len(variant.Value) == 0:
-                raise ua.UAError("Cannot guess DataType from Null ExtensionObject")
+                raise ua.UaError("Cannot guess DataType from Null ExtensionObject")
             extobj = variant.Value[0]
         else:
             extobj = variant.Value
