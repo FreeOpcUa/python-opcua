@@ -253,16 +253,20 @@ class NodeManagementService(object):
                     if rdesc.NodeId == item.NodeId:
                         self._aspace[elem].references.remove(rdesc)
 
-        for handle, callback in list(self._aspace[item.NodeId].attributes[ua.AttributeIds.Value].datachange_callbacks.items()):
-            try:
-                callback(handle, None, ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown))
-                self._aspace.delete_datachange_callback(handle)
-            except Exception as ex:
-                self.logger.exception("Error calling datachange callback %s, %s, %s", k, v, ex)
+        self._delete_node_callbacks(self._aspace[item.NodeId])
 
-        del self._aspace[item.NodeId]
+        del(self._aspace[item.NodeId])
 
         return ua.StatusCode()
+
+    def _delete_node_callbacks(self, nodedata):
+        if ua.AttributeIds.Value in nodedata.attributes:
+            for handle, callback in nodedata.attributes[ua.AttributeIds.Value].datachange_callbacks.items():
+                try:
+                    callback(handle, None, ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown))
+                    self._aspace.delete_datachange_callback(handle)
+                except Exception as ex:
+                    self.logger.exception("Error calling datachange callback %s, %s, %s", k, v, ex)
 
     def add_references(self, refs, user=User.Admin):
         result = []

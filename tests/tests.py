@@ -406,6 +406,16 @@ class CommonTests(object):
         with self.assertRaises(ua.UaStatusCodeError):
             obj.get_child(["2:FolderToDelete", "2:VarToDelete"])
 
+    def test_delete_nodes_recursive(self):
+        obj = self.opc.get_objects_node()
+        fold = obj.add_folder(2, "FolderToDeleteR")
+        var = fold.add_variable(2, "VarToDeleteR", 9.1)
+        self.opc.delete_nodes([fold, var])
+        with self.assertRaises(ua.UaStatusCodeError):
+            var.set_value(7.8)
+        with self.assertRaises(ua.UaStatusCodeError):
+            obj.get_child(["2:FolderToDelete", "2:VarToDelete"])
+
     def test_server_node(self):
         node = self.opc.get_server_node()
         self.assertEqual(ua.QualifiedName('Server', 0), node.get_browse_name())
