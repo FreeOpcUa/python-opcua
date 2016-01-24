@@ -387,7 +387,12 @@ class BinaryClient(object):
         self.logger.info("call_publish_callback")
         data = future.result()
         self._uasocket.check_answer(data, "ServiceFault received from server while waiting for publish response")
-        response = ua.PublishResponse.from_binary(data)
+        try:
+            response = ua.PublishResponse.from_binary(data)
+        except Exception:
+            self.logger.exception("Error parsing notificatipn from server")
+            self.publish([]) #send publish request ot server so he does stop sending notifications
+            return
         if response.Parameters.SubscriptionId not in self._publishcallbacks:
             self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
             return
