@@ -9,6 +9,7 @@ except ImportError:  # support for python2
 from opcua import ua
 from opcua.client.ua_client import UaClient
 from opcua.common.node import Node
+from opcua.common.manage_nodes import delete_nodes
 from opcua.common.subscription import Subscription
 from opcua.common import utils
 from opcua.crypto import security_policies
@@ -422,12 +423,6 @@ class Client(object):
         uries = self.get_namespace_array()
         return uries.index(uri)
 
-    def delete_nodes(self, nodes):
-        nodestodelete = []
-        for node in nodes:
-            it = ua.DeleteNodesItem()
-            it.NodeId = node.nodeid
-            it.DeleteTargetReferences = True
-            nodestodelete.append(it)
-        return self.uaclient.delete_nodes(nodestodelete)
+    def delete_nodes(self, nodes, recursive=False):
+        return delete_nodes(self.uaclient, nodes, recursive)
             

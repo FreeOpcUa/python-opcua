@@ -292,24 +292,24 @@ class Node(object):
     # create methods fro Node
 
     def add_folder(*args, **kwargs):
-        from opcua.common import create_nodes
-        return create_nodes.create_folder(*args, **kwargs)
+        from opcua.common import manage_nodes
+        return manage_nodes.create_folder(*args, **kwargs)
 
     def add_object(*args, **kwargs):
-        from opcua.common import create_nodes
-        return create_nodes.create_object(*args, **kwargs)
+        from opcua.common import manage_nodes
+        return manage_nodes.create_object(*args, **kwargs)
 
     def add_variable(*args, **kwargs):
-        from opcua.common import create_nodes
-        return create_nodes.create_variable(*args, **kwargs)
+        from opcua.common import manage_nodes
+        return manage_nodes.create_variable(*args, **kwargs)
 
     def add_property(*args, **kwargs):
-        from opcua.common import create_nodes
-        return create_nodes.create_property(*args, **kwargs)
+        from opcua.common import manage_nodes
+        return manage_nodes.create_property(*args, **kwargs)
 
     def add_method(*args, **kwargs):
-        from opcua.common import create_nodes
-        return create_nodes.create_method(*args, **kwargs)
+        from opcua.common import manage_nodes
+        return manage_nodes.create_method(*args, **kwargs)
 
     def call_method(*args, **kwargs):
         from opcua.common import methods

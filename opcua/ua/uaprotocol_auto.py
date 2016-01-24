@@ -760,19 +760,19 @@ class DiagnosticInfo(FrozenClass):
         if self.InnerStatusCode: self.Encoding |= (1 << 5)
         if self.InnerDiagnosticInfo: self.Encoding |= (1 << 6)
         packet.append(uatype_UInt8.pack(self.Encoding))
-        if self.SymbolicId:
+        if self.SymbolicId: 
             packet.append(uatype_Int32.pack(self.SymbolicId))
-        if self.NamespaceURI:
+        if self.NamespaceURI: 
             packet.append(uatype_Int32.pack(self.NamespaceURI))
-        if self.Locale:
+        if self.Locale: 
             packet.append(uatype_Int32.pack(self.Locale))
-        if self.LocalizedText:
+        if self.LocalizedText: 
             packet.append(uatype_Int32.pack(self.LocalizedText))
-        if self.AdditionalInfo:
+        if self.AdditionalInfo: 
             packet.append(pack_bytes(self.AdditionalInfo))
-        if self.InnerStatusCode:
+        if self.InnerStatusCode: 
             packet.append(self.InnerStatusCode.to_binary())
-        if self.InnerDiagnosticInfo:
+        if self.InnerDiagnosticInfo: 
             packet.append(self.InnerDiagnosticInfo.to_binary())
         return b''.join(packet)
 

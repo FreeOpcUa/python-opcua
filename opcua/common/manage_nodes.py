@@ -207,3 +207,26 @@ def _guess_uatype(variant):
         return ua.NodeId(getattr(ua.ObjectIds, variant.VariantType.name))
 
 
+def delete_nodes(server, nodes, recursive=False):
+    """
+    Delete specified nodes. Optionally delete recursively all nodes with a 
+    downward hierachic references to the node
+    """
+    nodestodelete = []
+    if recursive:
+        nodes += _add_childs(nodes)
+    for mynode in nodes:
+        it = ua.DeleteNodesItem()
+        it.NodeId = mynode.nodeid
+        it.DeleteTargetReferences = True
+        nodestodelete.append(it)
+    return server.delete_nodes(nodestodelete)
+
+
+def _add_childs(nodes):
+    results = []
+    for mynode in nodes[:]:
+        results += mynode.get_children()
+    return results
+
+

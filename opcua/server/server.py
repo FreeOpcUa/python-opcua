@@ -17,6 +17,7 @@ from opcua.common.node import Node
 from opcua.common.event import Event
 from opcua.common.subscription import Subscription
 from opcua.common import xmlimporter
+from opcua.common.manage_nodes import delete_nodes
 from opcua.client.client import Client
 from opcua.crypto import security_policies
 use_crypto = True
@@ -327,12 +328,6 @@ class Server(object):
         importer = xmlimporter.XmlImporter(self.iserver.node_mgt_service)
         importer.import_xml(path)
 
-    def delete_nodes(self, nodes):
-        nodestodelete = []
-        for node in nodes:
-            it = ua.DeleteNodesItem()
-            it.NodeId = node.nodeid
-            it.DeleteTargetReferences = True
-            nodestodelete.append(it)
-        return self.iserver.isession.delete_nodes(nodestodelete)
+    def delete_nodes(self, nodes, recursive=False):
+        return delete_nodes(self.iserver.isession, nodes, recursive)
  

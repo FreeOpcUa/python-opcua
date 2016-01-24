@@ -2,10 +2,10 @@
 Pure Python OPC-UA library
 """
 
-#from opcua.common.create_nodes import create_folder
-#from opcua.common.create_nodes import create_object
-#from opcua.common.create_nodes import create_variable
-#from opcua.common.create_nodes import create_property
+#from opcua.common.manage_nodes import create_folder
+#from opcua.common.manage_nodes import create_object
+#from opcua.common.manage_nodes import create_variable
+#from opcua.common.manage_nodes import create_property
 #from opcua.common.methods import call_method
 from opcua.common.node import Node
 

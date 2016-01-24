@@ -400,11 +400,15 @@ class CommonTests(object):
         obj = self.opc.get_objects_node()
         fold = obj.add_folder(2, "FolderToDelete")
         var = fold.add_variable(2, "VarToDelete", 9.1)
+        childs = fold.get_children()
+        self.assertIn(var, childs)
         self.opc.delete_nodes([var])
         with self.assertRaises(ua.UaStatusCodeError):
             var.set_value(7.8)
         with self.assertRaises(ua.UaStatusCodeError):
             obj.get_child(["2:FolderToDelete", "2:VarToDelete"])
+        childs = fold.get_children()
+        self.assertNotIn(var, childs)
 
     def test_delete_nodes_recursive(self):
         obj = self.opc.get_objects_node()
@@ -415,6 +419,22 @@ class CommonTests(object):
             var.set_value(7.8)
         with self.assertRaises(ua.UaStatusCodeError):
             obj.get_child(["2:FolderToDelete", "2:VarToDelete"])
+
+    def test_delete_nodes_recursive2(self):
+        obj = self.opc.get_objects_node()
+        fold = obj.add_folder(2, "FolderToDeleteRoot")
+        nfold = fold
+        mynodes = []
+        for i in range(10):
+            nfold = fold.add_folder(2, "FolderToDeleteRoot")
+            var = fold.add_variable(2, "VarToDeleteR", 9.1)
+            mynodes.append(nfold)
+            mynodes.append(var)
+        self.opc.delete_nodes([fold], recursive=True)
+        for node in mynodes:
+            with self.assertRaises(ua.UaStatusCodeError):
+                node.get_browse_name()
+
 
     def test_server_node(self):
         node = self.opc.get_server_node()
