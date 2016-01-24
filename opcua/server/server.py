@@ -326,3 +326,13 @@ class Server(object):
         """
         importer = xmlimporter.XmlImporter(self.iserver.node_mgt_service)
         importer.import_xml(path)
+
+    def delete_nodes(self, nodes):
+        nodestodelete = []
+        for node in nodes:
+            it = ua.DeleteNodesItem()
+            it.NodeId = node.nodeid
+            it.DeleteTargetReferences = True
+            nodestodelete.append(it)
+        return self.iserver.isession.delete_nodes(nodestodelete)
+ 

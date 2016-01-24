@@ -421,3 +421,13 @@ class Client(object):
     def get_namespace_index(self, uri):
         uries = self.get_namespace_array()
         return uries.index(uri)
+
+    def delete_nodes(self, nodes):
+        nodestodelete = []
+        for node in nodes:
+            it = ua.DeleteNodesItem()
+            it.NodeId = node.nodeid
+            it.DeleteTargetReferences = True
+            nodestodelete.append(it)
+        return self.uaclient.delete_nodes(nodestodelete)
+            

@@ -396,6 +396,16 @@ class CommonTests(object):
         servers = self.opc.find_servers()
         # FIXME : finish
 
+    def test_delete_nodes(self):
+        obj = self.opc.get_objects_node()
+        fold = obj.add_folder(2, "FolderToDelete")
+        var = fold.add_variable(2, "VarToDelete", 9.1)
+        self.opc.delete_nodes([var])
+        with self.assertRaises(ua.UaStatusCodeError):
+            var.set_value(7.8)
+        with self.assertRaises(ua.UaStatusCodeError):
+            obj.get_child(["2:FolderToDelete", "2:VarToDelete"])
+
     def test_server_node(self):
         node = self.opc.get_server_node()
         self.assertEqual(ua.QualifiedName('Server', 0), node.get_browse_name())
