@@ -1074,7 +1074,7 @@ class AdminTestClient(unittest.TestCase, CommonTests):
         request = ua.ReadRequest()
         request.TypeId = ua.FourByteNodeId(999)  # bad type!
         with self.assertRaises(ua.UaStatusCodeError):
-            self.clt.bclient._uasocket.send_request(request)
+            self.clt.uaclient._uasocket.send_request(request)
 
     def test_objects_anonymous(self):
         objects = self.ro_clt.get_objects_node()

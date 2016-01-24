@@ -7,7 +7,7 @@ except ImportError:  # support for python2
     from urlparse import urlparse
 
 from opcua import ua
-from opcua.client.binary_client import BinaryClient
+from opcua.client.ua_client import UaClient
 from opcua.common.node import Node
 from opcua.common.subscription import Subscription
 from opcua.common import utils
@@ -65,7 +65,7 @@ class Client(object):
     This class makes it easy to connect and browse address space.
     It attemps to expose as much functionality as possible
     but if you want to do to special things you will probably need
-    to work with the BinaryClient object, available as self.bclient
+    to work with the UaClient object, available as self.uaclient
     which offers a raw OPC-UA interface.
     """
 
@@ -90,7 +90,7 @@ class Client(object):
         self.secure_channel_timeout = self.default_timeout
         self.session_timeout = self.default_timeout
         self._policy_ids = []
-        self.bclient = BinaryClient(timeout)
+        self.uaclient = UaClient(timeout)
         self.user_certificate = None
         self.user_private_key = None
         self._session_counter = 1
@@ -147,7 +147,7 @@ class Client(object):
         cert = uacrypto.load_certificate(certificate_path)
         pk = uacrypto.load_private_key(private_key_path)
         self.security_policy = policy(server_cert, cert, pk, mode)
-        self.bclient.set_security(self.security_policy)
+        self.uaclient.set_security(self.security_policy)
 
     def load_client_certificate(self, path):
         """
@@ -218,16 +218,16 @@ class Client(object):
         """
         connect to socket defined in url
         """
-        self.bclient.connect_socket(self.server_url.hostname, self.server_url.port)
+        self.uaclient.connect_socket(self.server_url.hostname, self.server_url.port)
 
     def disconnect_socket(self):
-        self.bclient.disconnect_socket()
+        self.uaclient.disconnect_socket()
 
     def send_hello(self):
         """
         Send OPC-UA hello to server
         """
-        ack = self.bclient.send_hello(self.server_url.geturl())
+        ack = self.uaclient.send_hello(self.server_url.geturl())
         # FIXME check ack
 
     def open_secure_channel(self, renew=False):
@@ -243,17 +243,17 @@ class Client(object):
         params.RequestedLifetime = self.secure_channel_timeout
         nonce = utils.create_nonce(self.security_policy.symmetric_key_size)   # length should be equal to the length of key of symmetric encryption
         params.ClientNonce = nonce	# this nonce is used to create a symmetric key
-        result = self.bclient.open_secure_channel(params)
+        result = self.uaclient.open_secure_channel(params)
         self.security_policy.make_symmetric_key(nonce, result.ServerNonce)
         self.secure_channel_timeout = result.SecurityToken.RevisedLifetime
 
     def close_secure_channel(self):
-        return self.bclient.close_secure_channel()
+        return self.uaclient.close_secure_channel()
 
     def get_endpoints(self):
         params = ua.GetEndpointsParameters()
         params.EndpointUrl = self.server_url.geturl()
-        return self.bclient.get_endpoints(params)
+        return self.uaclient.get_endpoints(params)
 
     def register_server(self, server, discovery_configuration=None):
         """
@@ -271,9 +271,9 @@ class Client(object):
             params = ua.RegisterServer2Parameters()
             params.Server = serv
             params.DiscoveryConfiguration = discovery_configuration
-            return self.bclient.register_server2(params)
+            return self.uaclient.register_server2(params)
         else:
-            return self.bclient.register_server(serv)
+            return self.uaclient.register_server(serv)
 
     def find_servers(self, uris=None):
         """
@@ -286,11 +286,11 @@ class Client(object):
         params = ua.FindServersParameters()
         params.EndpointUrl = self.server_url.geturl()
         params.ServerUris = uris
-        return self.bclient.find_servers(params)
+        return self.uaclient.find_servers(params)
 
     def find_servers_on_network(self):
         params = ua.FindServersOnNetworkParameters()
-        return self.bclient.find_servers_on_network(params)
+        return self.uaclient.find_servers_on_network(params)
 
     def create_session(self):
         desc = ua.ApplicationDescription()
@@ -308,7 +308,7 @@ class Client(object):
         params.SessionName = self.description + " Session" + str(self._session_counter)
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0  # means no max size
-        response = self.bclient.create_session(params)
+        response = self.uaclient.create_session(params)
         self.security_policy.asymmetric_cryptography.verify(self.security_policy.client_certificate + nonce, response.ServerSignature.Signature)
         self._server_nonce = response.ServerNonce
         if not self.security_policy.server_certificate:
@@ -368,7 +368,7 @@ class Client(object):
                 params.UserIdentityToken.Password = data
             params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")
             params.UserIdentityToken.EncryptionAlgorithm = 'http://www.w3.org/2001/04/xmlenc#rsa-oaep'
-        return self.bclient.activate_session(params)
+        return self.uaclient.activate_session(params)
 
     def close_session(self):
         """
@@ -376,7 +376,7 @@ class Client(object):
         """
         if self.keepalive:
             self.keepalive.stop()
-        return self.bclient.close_session(True)
+        return self.uaclient.close_session(True)
 
     def get_root_node(self):
         return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.RootFolder))
@@ -391,7 +391,7 @@ class Client(object):
         """
         Get node using NodeId object or a string representing a NodeId
         """
-        return Node(self.bclient, nodeid)
+        return Node(self.uaclient, nodeid)
 
     def create_subscription(self, period, handler):
         """
@@ -412,7 +412,7 @@ class Client(object):
         params.MaxNotificationsPerPublish = 10000
         params.PublishingEnabled = True
         params.Priority = 0
-        return Subscription(self.bclient, params, handler)
+        return Subscription(self.uaclient, params, handler)
 
     def get_namespace_array(self):
         ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))

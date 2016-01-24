@@ -178,7 +178,7 @@ class UASocketClient(object):
         # some servers send a response here, most do not ... so we ignore
 
 
-class BinaryClient(object):
+class UaClient(object):
 
     """
     low level OPC-UA client.

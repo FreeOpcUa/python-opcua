@@ -91,7 +91,7 @@ if __name__ == "__main__":
         deletenode = ua.DeleteNodesItem()
         deletenode.NodeId = obj.get_child(["2:MyVariable"]).nodeid
         deletenode.DeleteTargetReferences = True
-        results = client.bclient.delete_nodes([deletenode])
+        results = client.uaclient.delete_nodes([deletenode])
         results[0].check()
         print("Children of MyObject are: ", obj.get_children())
         print("myvar should disapear")
