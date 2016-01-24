@@ -70,7 +70,7 @@ class Client(object):
     which offers a raw OPC-UA interface.
     """
 
-    def __init__(self, url, timeout=1):
+    def __init__(self, url, timeout=4):
         """
         used url argument to connect to server.
         if you are unsure of url, write at least hostname and port
