@@ -10,7 +10,7 @@ from threading import Thread
 from threading import Condition
 
 from opcua import ua
-from opcua.uaprocessor import UAProcessor
+from opcua.uaprocessor import UaProcessor
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ class UAHandler(socketserver.BaseRequestHandler):
 
     def handle(self):
         sock = ua.utils.SocketWrapper(self.request)
-        processor = UAProcessor(self.server.internal_server, sock, self.client_address)
+        processor = UaProcessor(self.server.internal_server, sock, self.client_address)
         try:
             while True:
                 hdr = ua.Header.from_string(sock)

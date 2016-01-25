@@ -380,7 +380,7 @@ class MessageChunk(uatypes.FrozenClass):
         elif msg_type == MessageType.SecureOpen:
             self.SecurityHeader = AsymmetricAlgorithmHeader()
         else:
-            raise UAError("Unsupported message type: {}".format(msg_type))
+            raise UaError("Unsupported message type: {}".format(msg_type))
         self.SequenceHeader = SequenceHeader()
         self.Body = body
         self._security_policy = security_policy
@@ -402,7 +402,7 @@ class MessageChunk(uatypes.FrozenClass):
             security_header = AsymmetricAlgorithmHeader.from_binary(data)
             crypto = security_policy.asymmetric_cryptography
         else:
-            raise UAError("Unsupported message type: {}".format(header.MessageType))
+            raise UaError("Unsupported message type: {}".format(header.MessageType))
         obj = MessageChunk(crypto)
         obj.MessageHeader = header
         obj.SecurityHeader = security_header
@@ -532,7 +532,7 @@ class SecureConnection(object):
                 return
         if self._security_policy.URI != uri or (mode is not None and
                                                 self._security_policy.Mode != mode):
-            raise UAError("No matching policy: {}, {}".format(uri, mode))
+            raise UaError("No matching policy: {}, {}".format(uri, mode))
 
     def set_security_token(self, tok):
         self._security_token = tok
@@ -572,16 +572,16 @@ class SecureConnection(object):
         assert isinstance(chunk, MessageChunk), "Expected chunk, got: {}".format(chunk)
         if chunk.MessageHeader.MessageType != MessageType.SecureOpen:
             if chunk.MessageHeader.ChannelId != self._security_token.ChannelId:
-                raise UAError("Wrong channel id {}, expected {}".format(
+                raise UaError("Wrong channel id {}, expected {}".format(
                     chunk.MessageHeader.ChannelId,
                     self._security_token.ChannelId))
             if chunk.SecurityHeader.TokenId != self._security_token.TokenId:
-                raise UAError("Wrong token id {}, expected {}".format(
+                raise UaError("Wrong token id {}, expected {}".format(
                     chunk.SecurityHeader.TokenId,
                     self._security_token.TokenId))
         if self._incoming_parts:
             if self._incoming_parts[0].SequenceHeader.RequestId != chunk.SequenceHeader.RequestId:
-                raise UAError("Wrong request id {}, expected {}".format(
+                raise UaError("Wrong request id {}, expected {}".format(
                     chunk.SequenceHeader.RequestId,
                     self._incoming_parts[0].SequenceHeader.RequestId))
 
@@ -595,7 +595,7 @@ class SecureConnection(object):
                     logger.debug("Sequence number wrapped: %d -> %d",
                                  self._peer_sequence_number, num)
                 else:
-                    raise UAError(
+                    raise UaError(
                         "Wrong sequence {} -> {} (server bug or replay attack)"
                         .format(self._peer_sequence_number, num))
         self._peer_sequence_number = num
@@ -630,7 +630,7 @@ class SecureConnection(object):
             logger.warning("Received an error: {}".format(msg))
             return msg
         else:
-            raise UAError("Unsupported message type {}".format(header.MessageType))
+            raise UaError("Unsupported message type {}".format(header.MessageType))
 
     def receive_from_socket(self, socket):
         """
@@ -643,7 +643,7 @@ class SecureConnection(object):
         logger.info("received header: %s", header)
         body = socket.read(header.body_size)
         if len(body) != header.body_size:
-            raise UAError("{} bytes expected, {} available".format(header.body_size, len(body)))
+            raise UaError("{} bytes expected, {} available".format(header.body_size, len(body)))
         return self.receive_from_header_and_body(header, utils.Buffer(body))
 
     def _receive(self, msg):
@@ -663,7 +663,7 @@ class SecureConnection(object):
             self._incoming_parts = []
             return message
         else:
-            raise UAError("Unsupported chunk type: {}".format(msg))
+            raise UaError("Unsupported chunk type: {}".format(msg))
 
 
 # FIXES for missing switchfield in NodeAttributes classes

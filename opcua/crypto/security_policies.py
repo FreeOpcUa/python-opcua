@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from opcua.ua import CryptographyNone, SecurityPolicy
 from opcua.ua import MessageSecurityMode
-from opcua.ua import UAError
+from opcua.ua import UaError
 try:
     from opcua.crypto import uacrypto
     CRYPTOGRAPHY_AVAILABLE = True
@@ -15,7 +15,7 @@ def require_cryptography(obj):
     Call this function in constructors.
     """
     if not CRYPTOGRAPHY_AVAILABLE:
-        raise UAError("Can't use {}, cryptography module is not installed".format(obj.__class__.__name__))
+        raise UaError("Can't use {}, cryptography module is not installed".format(obj.__class__.__name__))
 
 
 class Signer(object):

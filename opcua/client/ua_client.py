@@ -106,13 +106,13 @@ class UASocketClient(object):
         elif isinstance(msg, ua.ErrorMessage):
             self.logger.warning("Received an error: {}".format(msg))
         else:
-            raise ua.UAError("Unsupported message type: {}".format(msg))
+            raise ua.UaError("Unsupported message type: {}".format(msg))
 
     def _call_callback(self, request_id, body):
         with self._lock:
             future = self._callbackmap.pop(request_id, None)
             if future is None:
-                raise ua.UAError("No future object found for request: {}, callbacks in list are {}".format(request_id, self._callbackmap.keys()))
+                raise ua.UaError("No future object found for request: {}, callbacks in list are {}".format(request_id, self._callbackmap.keys()))
         future.set_result(body)
 
     def _create_request_header(self, timeout=1000):
@@ -178,14 +178,16 @@ class UASocketClient(object):
         # some servers send a response here, most do not ... so we ignore
 
 
-class BinaryClient(object):
+class UaClient(object):
 
     """
     low level OPC-UA client.
-    implement all(well..one day) methods defined in opcua spec
-    taking in argument the structures defined in opcua spec
-    in python most of the structures are defined in
-    uaprotocol_auto.py and uaprotocol_hand.py
+
+    It implements (almost) all methods defined in opcua spec
+    taking in argument the structures defined in opcua spec.
+
+    In this Python implementation  most of the structures are defined in
+    uaprotocol_auto.py and uaprotocol_hand.py available under opcua.ua
     """
 
     def __init__(self, timeout=1):

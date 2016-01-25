@@ -10,7 +10,7 @@ except ImportError:
 
 
 from opcua import ua
-from opcua.server.uaprocessor import UAProcessor
+from opcua.server.uaprocessor import UaProcessor
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class BinaryServer(object):
                 self.peername = transport.get_extra_info('peername')
                 self.logger.info('New connection from %s', self.peername)
                 self.transport = transport
-                self.processor = UAProcessor(self.iserver, self.transport)
+                self.processor = UaProcessor(self.iserver, self.transport)
                 self.processor.set_policies(self.policies)
                 self.data = b""
 

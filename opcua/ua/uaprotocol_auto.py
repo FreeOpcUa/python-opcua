@@ -6,7 +6,7 @@ from datetime import datetime
 from enum import Enum, IntEnum
 
 from opcua.common.utils import Buffer
-from opcua.common.uaerrors import UAError
+from opcua.common.uaerrors import UaError
 from opcua.ua.uatypes import *
 from opcua.ua.object_ids import ObjectIds
 
@@ -760,19 +760,19 @@ class DiagnosticInfo(FrozenClass):
         if self.InnerStatusCode: self.Encoding |= (1 << 5)
         if self.InnerDiagnosticInfo: self.Encoding |= (1 << 6)
         packet.append(uatype_UInt8.pack(self.Encoding))
-        if self.SymbolicId:
+        if self.SymbolicId: 
             packet.append(uatype_Int32.pack(self.SymbolicId))
-        if self.NamespaceURI:
+        if self.NamespaceURI: 
             packet.append(uatype_Int32.pack(self.NamespaceURI))
-        if self.Locale:
+        if self.Locale: 
             packet.append(uatype_Int32.pack(self.Locale))
-        if self.LocalizedText:
+        if self.LocalizedText: 
             packet.append(uatype_Int32.pack(self.LocalizedText))
-        if self.AdditionalInfo:
+        if self.AdditionalInfo: 
             packet.append(pack_bytes(self.AdditionalInfo))
-        if self.InnerStatusCode:
+        if self.InnerStatusCode: 
             packet.append(self.InnerStatusCode.to_binary())
-        if self.InnerDiagnosticInfo:
+        if self.InnerDiagnosticInfo: 
             packet.append(self.InnerDiagnosticInfo.to_binary())
         return b''.join(packet)
 
@@ -14321,7 +14321,7 @@ def extensionobject_from_binary(data):
         return e
     klass = ExtensionClasses[TypeId.Identifier]
     if body is None:
-        raise UAError("parsing ExtensionObject {} without data".format(klass.__name__))
+        raise UaError("parsing ExtensionObject {} without data".format(klass.__name__))
     return klass.from_binary(body)
 
 
