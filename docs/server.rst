@@ -20,7 +20,4 @@ OPC-UA Server Class
    :members:
    :undoc-members:
 
-.. autoclass:: opcua.server.binary_server.BinaryServer
-   :members:
-   :undoc-members:
 

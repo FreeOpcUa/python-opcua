@@ -11,7 +11,9 @@ class Node(object):
     """
     High level node object, to access node attribute,
     browse and populate address space.
-    Node objects are usefull as-is but they do not expose the entire possibilities of the OPC-UA protocol. Feel free to look at Node code and
+    Node objects are usefull as-is but they do not expose the entire
+    OPC-UA protocol. Feel free to look at Node code and call
+    directly UA services methods to optimize your code
     """
 
     def __init__(self, server, nodeid):

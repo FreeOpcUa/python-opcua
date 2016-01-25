@@ -425,16 +425,20 @@ class CommonTests(object):
         fold = obj.add_folder(2, "FolderToDeleteRoot")
         nfold = fold
         mynodes = []
-        for i in range(10):
+        for i in range(7):
             nfold = fold.add_folder(2, "FolderToDeleteRoot")
             var = fold.add_variable(2, "VarToDeleteR", 9.1)
+            var = fold.add_property(2, "ProToDeleteR", 9.1)
+            prop = fold.add_property(2, "ProToDeleteR", 9.1)
+            o = fold.add_object(3, "ObjToDeleteR")
             mynodes.append(nfold)
             mynodes.append(var)
+            mynodes.append(prop)
+            mynodes.append(o)
         self.opc.delete_nodes([fold], recursive=True)
         for node in mynodes:
             with self.assertRaises(ua.UaStatusCodeError):
                 node.get_browse_name()
-
 
     def test_server_node(self):
         node = self.opc.get_server_node()

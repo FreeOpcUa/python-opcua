@@ -63,11 +63,12 @@ class Client(object):
 
     """
     High level client to connect to an OPC-UA server.
+
     This class makes it easy to connect and browse address space.
     It attemps to expose as much functionality as possible
-    but if you want to do to special things you will probably need
-    to work with the UaClient object, available as self.uaclient
-    which offers a raw OPC-UA interface.
+    but if you want more flexibility it is possible and adviced to
+    use UaClient object, available as self.uaclient
+    which offers the raw OPC-UA services interface.
     """
 
     def __init__(self, url, timeout=4):

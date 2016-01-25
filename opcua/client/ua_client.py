@@ -182,10 +182,12 @@ class UaClient(object):
 
     """
     low level OPC-UA client.
-    implement all(well..one day) methods defined in opcua spec
-    taking in argument the structures defined in opcua spec
-    in python most of the structures are defined in
-    uaprotocol_auto.py and uaprotocol_hand.py
+
+    It implements (almost) all methods defined in opcua spec
+    taking in argument the structures defined in opcua spec.
+
+    In this Python implementation  most of the structures are defined in
+    uaprotocol_auto.py and uaprotocol_hand.py available under opcua.ua
     """
 
     def __init__(self, timeout=1):
