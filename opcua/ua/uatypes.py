@@ -371,6 +371,8 @@ class NodeId(FrozenClass):
         self.NamespaceUri = ""
         self.ServerIndex = 0
         self._freeze = True
+        if not isinstance(self.NamespaceIndex, int):
+            raise UaError("NamespaceIndex must be an int")
         if self.Identifier is None:
             self.Identifier = 0
             self.NodeIdType = NodeIdType.TwoByte

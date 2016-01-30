@@ -122,6 +122,10 @@ class Unit(unittest.TestCase):
         self.assertNotEqual(nid, ua.NodeId.from_string("i=5; ns=10"))
         # not sure the next one is correct...
         self.assertEqual(nid, ua.NodeId.from_string("i=45; ns=10; srv=serverid"))
+        
+        nid1 = ua.NodeId("myid.mynodeid", 7)
+        self.assertEqual(nid1, ua.NodeId.from_string("ns=7; s=myid.mynodeid"))
+
 
     def test_expandednodeid(self):
         nid = ua.ExpandedNodeId()
