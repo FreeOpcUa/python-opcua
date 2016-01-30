@@ -33,8 +33,11 @@ Contents:
    client
    node
    subscription
-   errors
-   ua
+   opcua
+
+All:
+
+   modules
 
 Indices and tables
 ==================
