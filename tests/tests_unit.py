@@ -125,6 +125,20 @@ class Unit(unittest.TestCase):
         
         nid1 = ua.NodeId("myid.mynodeid", 7)
         self.assertEqual(nid1, ua.NodeId.from_string("ns=7; s=myid.mynodeid"))
+        with self.assertRaises(ua.UaError):
+            nid1 = ua.NodeId(7, "myid.mynodeid")
+
+    def test_bad_string(self):
+        with self.assertRaises(ua.UaStringParsingError):
+            ua.NodeId.from_string("ns=r;s=yu")
+        with self.assertRaises(ua.UaStringParsingError):
+            ua.NodeId.from_string("i=r;ns=1")
+        with self.assertRaises(ua.UaStringParsingError):
+            ua.NodeId.from_string("ns=1")
+        with self.assertRaises(ua.UaError):
+            ua.QualifiedName.from_string("i:yu")
+        with self.assertRaises(ua.UaError):
+            ua.QualifiedName.from_string("i:::yu")
 
 
     def test_expandednodeid(self):

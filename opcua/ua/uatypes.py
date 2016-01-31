@@ -15,6 +15,7 @@ if sys.version_info.major > 2:
 from opcua.ua import status_codes
 from opcua.common.uaerrors import UaError
 from opcua.common.uaerrors import UaStatusCodeError
+from opcua.common.uaerrors import UaStringParsingError
 
 
 logger = logging.getLogger('opcua.uaprotocol')
@@ -401,6 +402,13 @@ class NodeId(FrozenClass):
 
     @staticmethod
     def from_string(string):
+        try:
+            return NodeId._from_string(string)
+        except ValueError as ex:
+            raise UaStringParsingError("Error parsing string {}".format(string), ex)
+
+    @staticmethod
+    def _from_string(string):
         l = string.split(";")
         identifier = None
         namespace = 0
@@ -410,7 +418,7 @@ class NodeId(FrozenClass):
         for el in l:
             if not el:
                 continue
-            k, v = el.split("=")
+            k, v = el.split("=", 1)
             k = k.strip()
             v = v.strip()
             if k == "ns":
@@ -432,7 +440,7 @@ class NodeId(FrozenClass):
             elif k == "nsu":
                 nsu = v
         if identifier is None:
-            raise UaError("Could not parse nodeid string: " + string)
+            raise UaStringParsingError("Could not find identifier in string: " + string)
         nodeid = NodeId(identifier, namespace, ntype)
         nodeid.NamespaceUri = nsu
         nodeid.ServerIndex = srv
@@ -574,11 +582,15 @@ class QualifiedName(FrozenClass):
     @staticmethod
     def from_string(string):
         if ":" in string:
-            idx, name = string.split(":", 1)
+            try:
+                idx, name = string.split(":", 1)
+                idx = int(idx)
+            except (TypeError, ValueError) as ex:
+                raise UaStringParsingError("Error parsing string {}".format(string), ex)
         else:
             idx = 0
             name = string
-        return QualifiedName(name, int(idx))
+        return QualifiedName(name, idx)
 
     def to_binary(self):
         packet = []

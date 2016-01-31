@@ -13,6 +13,6 @@ from tests_unit import Unit
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.WARN)
+    logging.basicConfig(level=logging.WARNING)
 
     unittest.main(verbosity=3)
