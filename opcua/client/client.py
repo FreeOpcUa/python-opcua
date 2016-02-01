@@ -335,6 +335,20 @@ class Client(object):
                 return policy.PolicyId
         return default
 
+    def server_policy_uri(self, token_type):
+        """
+        Find SecurityPolicyUri of server's UserTokenPolicy by token_type.
+        If SecurityPolicyUri is empty, use default SecurityPolicyUri
+        of the endpoint
+        """
+        for policy in self._policy_ids:
+            if policy.TokenType == token_type:
+                if policy.SecurityPolicyUri:
+                    return policy.SecurityPolicyUri
+                else:   # empty URI means "use this endpoint's policy URI"
+                    return self.security_policy.URI
+        return self.security_policy.URI
+
     def activate_session(self, username=None, password=None, certificate=None):
         """
         Activate session using either username and password or private_key
@@ -365,11 +379,12 @@ class Client(object):
                 # see specs part 4, 7.36.3: if the token is encrypted, password
                 # shall be converted to UTF-8 and serialized with server nonce
                 etoken = ua.pack_bytes(bytes(password, "utf8") + self._server_nonce)
-                #data = uacrypto.encrypt_basic256(pubkey, etoken)
-                data = uacrypto.encrypt_rsa_oaep(pubkey, etoken)
+                (data, uri) = security_policies.encrypt_asymmetric(pubkey,
+                        etoken,
+                        self.server_policy_uri(ua.UserTokenType.UserName))
                 params.UserIdentityToken.Password = data
+                params.UserIdentityToken.EncryptionAlgorithm = uri
             params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")
-            params.UserIdentityToken.EncryptionAlgorithm = 'http://www.w3.org/2001/04/xmlenc#rsa-oaep'
         return self.uaclient.activate_session(params)
 
     def close_session(self):
