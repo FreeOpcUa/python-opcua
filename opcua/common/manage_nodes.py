@@ -71,8 +71,12 @@ def create_method(parent, *args):
     callback = args[2]
     if len(args) > 3:
         inputs = args[3]
+    else:
+        inputs = []
     if len(args) > 4:
         outputs = args[4]
+    else:
+        outputs = []
     return _create_method(parent, nodeid, qname, callback, inputs, outputs)
 
 
@@ -209,7 +213,7 @@ def _guess_uatype(variant):
 
 def delete_nodes(server, nodes, recursive=False):
     """
-    Delete specified nodes. Optionally delete recursively all nodes with a 
+    Delete specified nodes. Optionally delete recursively all nodes with a
     downward hierachic references to the node
     """
     nodestodelete = []
