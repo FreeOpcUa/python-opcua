@@ -25,6 +25,7 @@ class BinaryServer(object):
         self.loop = internal_server.loop
         self._server = None
         self._policies = []
+        self.shutdown = [False]  # needs to be immutable list for referencing reasons
 
     def set_policies(self, policies):
         self._policies = policies
@@ -44,6 +45,7 @@ class BinaryServer(object):
             loop = self.loop
             logger = self.logger
             policies = self._policies
+            shutdown = self.shutdown
 
             def connection_made(self, transport):
                 self.peername = transport.get_extra_info('peername')
@@ -68,6 +70,10 @@ class BinaryServer(object):
             def _process_data(self, data):
                 buf = ua.utils.Buffer(data)
                 while True:
+                    if self.shutdown[0] is True:
+                        logger.info("Close OPCUA Protocol asyncio transport object explicitly")
+                        self.transport.close()
+                        self.shutdown[0] = False
                     try:
                         backup_buf = buf.copy()
                         try:
@@ -98,5 +104,8 @@ class BinaryServer(object):
 
     def stop(self):
         self.logger.info("Closing asyncio socket server")
+        self.shutdown[0] = True
+        while self.shutdown[0] is True:
+            pass  # waits for transport close call
         self.loop.call_soon(self._server.close)
         self.loop.run_coro_and_wait(self._server.wait_closed())
