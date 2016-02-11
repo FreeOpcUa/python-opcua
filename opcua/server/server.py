@@ -335,3 +335,14 @@ class Server(object):
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.iserver.isession, nodes, recursive)
  
+     def dump_aspace(self, path):
+        """
+        dump address space to file
+        """
+        self.iserver.dump_address_space(path)
+
+    def load_aspace(self, path):
+        """
+        load address space from file
+        """
+        self.iserver.load_address_space(path)
