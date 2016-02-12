@@ -34,21 +34,23 @@ class Event(object):
 
         self._set_members_from_node(self.node)
         if isinstance(source, Node):
-            self.SourceNode = source.NodeId
+            self.SourceNode = source.nodeid
         elif isinstance(etype, ua.NodeId):
-            self.SourceNode = source.NodeId
+            self.SourceNode = source
         else:
             self.SourceNode = ua.NodeId(source)
 
         # set some default values for attributes from BaseEventType, thus that all event must have
-        self.EventId = uuid.uuid4().bytes
+        self.EventId = None
         self.EventType = self.node.nodeid
         self.LocaleTime = datetime.utcnow()
         self.ReceiveTime = datetime.utcnow()
         self.Time = datetime.utcnow()
         self.Message = ua.LocalizedText()
         self.Severity = ua.Variant(1, ua.VariantType.UInt16)
-        self.SourceName = "Server"
+        self.SourceName = source.get_display_name().Text # self.SourceNode.get_browse_name().Text
+
+        source.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(1, ua.VariantType.Byte)))
 
         # og set some node attributed we also are expected to have
         self.BrowseName = self.node.get_browse_name()
@@ -65,6 +67,8 @@ class Event(object):
         """
         Trigger the event. This will send a notification to all subscribed clients
         """
+        self.EventId = uuid.uuid4().hex
+        self.Time = datetime.utcnow()
         self.isession.subscription_service.trigger_event(self)
 
     def _set_members_from_node(self, node):

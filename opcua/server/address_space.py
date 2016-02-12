@@ -440,7 +440,7 @@ class AddressSpace(object):
 
     def get_attribute_value(self, nodeid, attr):
         with self._lock:
-            #self.logger.debug("get attr val: %s %s", nodeid, attr)
+            self.logger.debug("get attr val: %s %s", nodeid, attr)
             if nodeid not in self._nodes:
                 dv = ua.DataValue()
                 dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
