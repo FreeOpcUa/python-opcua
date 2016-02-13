@@ -272,27 +272,28 @@ class Subscription(object):
         params.ItemsToCreate = monitored_items
         params.TimestampsToReturn = ua.TimestampsToReturn.Neither
 
-        mids = []
-        results = self.server.create_monitored_items(params)
-        # FIXME: Race condition here
-        # We lock as early as possible. But in some situation, a notification may arrives before
-        # locking and we will not be able to prosess it. To avoid issues, users should subscribe
-        # to all nodes at once
+        # insert monitoried item into map to avoid notification arrive before result return
+        # server_handle is left as None in purpose as we don't get it yet.
         with self._lock:
-            for idx, result in enumerate(results):
-                mi = params.ItemsToCreate[idx]
-                if not result.StatusCode.is_good():
-                    mids.append(result.StatusCode)
-                    continue
+            for mi in monitored_items:
                 data = SubscriptionItemData()
                 data.client_handle = mi.RequestedParameters.ClientHandle
                 data.node = Node(self.server, mi.ItemToMonitor.NodeId)
                 data.attribute = mi.ItemToMonitor.AttributeId
-                data.server_handle = result.MonitoredItemId
-                #data.mfilter = result.FilterResult
                 data.mfilter = mi.RequestedParameters.Filter
                 self._monitoreditems_map[mi.RequestedParameters.ClientHandle] = data
-
+        results = self.server.create_monitored_items(params)
+        mids = []
+        # process result, add server_handle, or remove it if failed
+        with self._lock:
+            for idx, result in enumerate(results):
+                mi = params.ItemsToCreate[idx]
+                if not result.StatusCode.is_good():
+                    del self._monitoreditems_map[mi.RequestedParameters.ClientHandle]
+                    mids.append(result.StatusCode)
+                    continue
+                data = self._monitoreditems_map[mi.RequestedParameters.ClientHandle]
+                data.server_handle = result.MonitoredItemId
                 mids.append(result.MonitoredItemId)
         return mids
 
