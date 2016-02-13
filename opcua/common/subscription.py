@@ -292,7 +292,6 @@ class Subscription(object):
                     del self._monitoreditems_map[mi.RequestedParameters.ClientHandle]
                     mids.append(result.StatusCode)
                     continue
-                data = SubscriptionItemData()
                 data = self._monitoreditems_map[mi.RequestedParameters.ClientHandle]
                 data.server_handle = result.MonitoredItemId
                 mids.append(result.MonitoredItemId)
