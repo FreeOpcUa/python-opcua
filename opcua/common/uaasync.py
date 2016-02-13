@@ -148,6 +148,13 @@ def call_soon_threadsafe(*args):
 def wait_for(*args):
     return asyncio.wait_for(*args, loop=_ctrl.loop)
 
+if hasattr(asyncio, "ensure_future"):
+    def ensure_future(*args):
+        return asyncio.ensure_future(*args, loop=_ctrl.loop)
+else:
+    def ensure_future(*args):
+        return asyncio.async(*args, loop=_ctrl.loop)
+
 
 def _transfer_future(dstfut, srcfut):
     if srcfut.cancelled():
@@ -161,7 +168,7 @@ def _transfer_future(dstfut, srcfut):
 
 
 def _wait_coro_in_loop(fut, coro, args, kwargs):
-    task = asyncio.async(coro(*args, **kwargs), loop=_ctrl.loop)
+    task = ensure_future(coro(*args, **kwargs))
     task.add_done_callback(partial(_transfer_future, fut))
 
 
