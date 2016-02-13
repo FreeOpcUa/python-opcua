@@ -223,12 +223,14 @@ class AsyncUaClient(object):
             hdr.ServiceResult.check()
 
     @coroutine
-    def _send_request(self, request):
+    def _send_request(self, request, timeout=None):
         if not self._proto_connected:
             raise ua.UaError("client is disconnected")
         reqname = request.__class__.__name__
         self.logger.info("sending %s", reqname)
-        fut = self._proto.send_request(request, self._timeout)
+        if timeout is None:
+            timeout = self._timeout
+        fut = self._proto.send_request(request, timeout)
         data = yield From(fut)
         # data = yield From(uaasync.wait_for(fut, self._timeout * 1.1))
         self._check_answer(data, reqname)
@@ -410,35 +412,34 @@ class AsyncUaClient(object):
         raise Return(response.Results)
 
     def publish(self, acks=None):
-        if not self._proto_connected:
-            raise ua.UaError("client is disconnected")
+        uaasync.ensure_future(self._do_publish(acks))
+
+    @coroutine
+    def _do_publish(self, acks):
         if acks is None:
             acks = []
-        self.logger.info("sending PublishRequest")
         request = ua.PublishRequest()
         request.Parameters.SubscriptionAcknowledgements = acks
-        fut = self._proto.send_request(request, int(9e5))
-        fut.add_done_callback(self._call_publish_callback)
+        try:
+            data = yield From(self._send_request(request, int(9e5)))
+        except uaasync.asyncio.CancelledError:
+            raise Return()
+        except Exception:
+            self.logger.exception("Error receving publish response")
+            # send publish request to server so the server does not stop sending notifications
+            self.publish([])
+            raise Return()
 
-    def _call_publish_callback(self, data_fut):
-        self.logger.info("call_publish_callback")
-        if data_fut.cancelled():
-            return
-        ex = data_fut.exception()
-        if ex is not None:
-            self.logger.warning("call_publish_callback got exception %s", repr(ex))
-            return
-        data = data_fut.result()
-        self._check_answer(data)
         try:
             response = ua.PublishResponse.from_binary(data)
         except Exception:
             self.logger.exception("Error parsing notificatipn from server")
-            self.publish([]) #send publish request ot server so he does stop sending notifications
-            return
+            # send publish request to server so the server does not stop sending notifications
+            self.publish([])
+            raise Return()
         if response.Parameters.SubscriptionId not in self._publishcallbacks:
             self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
-            return
+            raise Return()
         callback = self._publishcallbacks[response.Parameters.SubscriptionId]
         try:
             callback(response.Parameters)
