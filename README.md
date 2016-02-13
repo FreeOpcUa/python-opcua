@@ -48,12 +48,12 @@ Client: what works:
 * history read
 * login with certificate
 * communication encryption
+* removing nodes 
 
 Tested servers: freeopcua C++, freeopcua Python, prosys, kepware, beckoff
 
 Client: what is not implemented yet 
 * localized text feature
-* removing nodes 
 * adding some missing modify methods
 
 
@@ -69,14 +69,15 @@ Server: what works:
 * basic user implementation (one existing user called admin, which can be disabled, all others are read only)
 * encryption
 * certificate handling
+* removing nodes 
 
 Tested clients: freeopcua C++, freeopcua Python, uaexpert, prosys, quickopc
 
 Server: what is not implemented
 * localized text feature
-* complete securty model with users and password
-* removing nodes 
+* better securty model with users and password
 * adding some missing modify methods
+* views
 
 
 # Development

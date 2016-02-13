@@ -3,7 +3,7 @@ implement ua datatypes
 """
 import logging
 from enum import Enum
-from datetime import datetime, timedelta, tzinfo
+from datetime import datetime, timedelta, tzinfo, MAXYEAR
 from calendar import timegm
 import sys
 import os
@@ -13,8 +13,9 @@ if sys.version_info.major > 2:
     unicode = str
 
 from opcua.ua import status_codes
-from opcua.common.uaerrors import UAError
-from opcua.common.uaerrors import UAStatusCodeError
+from opcua.common.uaerrors import UaError
+from opcua.common.uaerrors import UaStatusCodeError
+from opcua.common.uaerrors import UaStringParsingError
 
 
 logger = logging.getLogger('opcua.uaprotocol')
@@ -52,7 +53,12 @@ def datetime_to_win_epoch(dt):
 
 
 def win_epoch_to_datetime(epch):
-    return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch // 10)
+    try:
+        return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch // 10)
+    except OverflowError:
+        # FILETIMEs after 31 Dec 9999 can't be converted to datetime
+        logger.warning("datetime overflow: {}".format(epch))
+        return datetime(MAXYEAR, 12, 31, 23, 59, 59, 999999)
 
 
 def build_array_format_py2(prefix, length, fmtchar):
@@ -98,7 +104,7 @@ def pack_uatype(uatype, value):
         return b''
     elif uatype == "String":
         return pack_string(value)
-    elif uatype in ("CharArray", "ByteString"):
+    elif uatype in ("CharArray", "ByteString", "Custom"):
         return pack_bytes(value)
     elif uatype == "DateTime":
         return pack_datetime(value)
@@ -150,7 +156,7 @@ def unpack_uatype(uatype, data):
         return st.unpack(data.read(st.size))[0]
     elif uatype == "String":
         return unpack_string(data)
-    elif uatype in ("CharArray", "ByteString"):
+    elif uatype in ("CharArray", "ByteString", "Custom"):
         return unpack_bytes(data)
     elif uatype == "DateTime":
         return unpack_datetime(data)
@@ -166,7 +172,7 @@ def unpack_uatype(uatype, data):
             klass = glbs[uatype]
             if hasattr(klass, 'from_binary'):
                 return klass.from_binary(data)
-        raise UAError("can not unpack unknown uatype %s" % uatype)
+        raise UaError("can not unpack unknown uatype %s" % uatype)
 
 
 def unpack_uatype_array(uatype, data):
@@ -270,6 +276,9 @@ class Guid(FrozenClass):
     def to_binary(self):
         return self.uuid.bytes
 
+    def __hash__(self):
+        return hash(self.uuid.bytes)
+
     @staticmethod
     def from_binary(data):
         g = Guid()
@@ -311,7 +320,7 @@ class StatusCode(FrozenClass):
         use is is_good() method if not exception is desired
         """
         if self.value != 0:
-            raise UAStatusCodeError("{}({})".format(self.doc, self.name))
+            raise UaStatusCodeError("{}({})".format(self.doc, self.name))
 
     def is_good(self):
         """
@@ -363,6 +372,8 @@ class NodeId(FrozenClass):
         self.NamespaceUri = ""
         self.ServerIndex = 0
         self._freeze = True
+        if not isinstance(self.NamespaceIndex, int):
+            raise UaError("NamespaceIndex must be an int")
         if self.Identifier is None:
             self.Identifier = 0
             self.NodeIdType = NodeIdType.TwoByte
@@ -375,7 +386,7 @@ class NodeId(FrozenClass):
             elif isinstance(self.Identifier, bytes):
                 self.NodeIdType = NodeIdType.ByteString
             else:
-                raise UAError("NodeId: Could not guess type of NodeId, set NodeIdType")
+                raise UaError("NodeId: Could not guess type of NodeId, set NodeIdType")
 
     def __key(self):
         if self.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric):  # twobyte, fourbyte and numeric may represent the same node
@@ -391,6 +402,13 @@ class NodeId(FrozenClass):
 
     @staticmethod
     def from_string(string):
+        try:
+            return NodeId._from_string(string)
+        except ValueError as ex:
+            raise UaStringParsingError("Error parsing string {}".format(string), ex)
+
+    @staticmethod
+    def _from_string(string):
         l = string.split(";")
         identifier = None
         namespace = 0
@@ -400,7 +418,7 @@ class NodeId(FrozenClass):
         for el in l:
             if not el:
                 continue
-            k, v = el.split("=")
+            k, v = el.split("=", 1)
             k = k.strip()
             v = v.strip()
             if k == "ns":
@@ -422,7 +440,7 @@ class NodeId(FrozenClass):
             elif k == "nsu":
                 nsu = v
         if identifier is None:
-            raise UAError("Could not parse nodeid string: " + string)
+            raise UaStringParsingError("Could not find identifier in string: " + string)
         nodeid = NodeId(identifier, namespace, ntype)
         nodeid.NamespaceUri = nsu
         nodeid.ServerIndex = srv
@@ -472,6 +490,7 @@ class NodeId(FrozenClass):
         else:
             return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
                 self.Identifier.to_binary()
+        #FIXME: Missing NNamespaceURI and ServerIndex
 
     @staticmethod
     def from_binary(data):
@@ -495,11 +514,11 @@ class NodeId(FrozenClass):
             nid.NamespaceIndex = uatype_UInt16.unpack(data.read(2))[0]
             nid.Identifier = Guid.from_binary(data)
         else:
-            raise UAError("Unknown NodeId encoding: " + str(nid.NodeIdType))
+            raise UaError("Unknown NodeId encoding: " + str(nid.NodeIdType))
 
-        if test_bit(encoding, 6):
-            nid.NamespaceUri = unpack_string(data)
         if test_bit(encoding, 7):
+            nid.NamespaceUri = unpack_string(data)
+        if test_bit(encoding, 6):
             nid.ServerIndex = uatype_UInt32.unpack(data.read(4))[0]
 
         return nid
@@ -552,7 +571,7 @@ class QualifiedName(FrozenClass):
 
     def __init__(self, name="", namespaceidx=0):
         if not isinstance(namespaceidx, int):
-            raise UAError("namespaceidx must be an int")
+            raise UaError("namespaceidx must be an int")
         self.NamespaceIndex = namespaceidx
         self.Name = name
         self._freeze = True
@@ -563,11 +582,15 @@ class QualifiedName(FrozenClass):
     @staticmethod
     def from_string(string):
         if ":" in string:
-            idx, name = string.split(":", 1)
+            try:
+                idx, name = string.split(":", 1)
+                idx = int(idx)
+            except (TypeError, ValueError) as ex:
+                raise UaStringParsingError("Error parsing string {}".format(string), ex)
         else:
             idx = 0
             name = string
-        return QualifiedName(name, int(idx))
+        return QualifiedName(name, idx)
 
     def to_binary(self):
         packet = []
@@ -646,6 +669,60 @@ class LocalizedText(FrozenClass):
         return False
 
 
+class ExtensionObject(FrozenClass):
+
+    '''
+
+    Any UA object packed as an ExtensionObject
+
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar Body:
+    :vartype Body: bytes
+
+    '''
+
+    def __init__(self):
+        self.TypeId = NodeId()
+        self.Encoding = 0
+        self.Body = b''
+        self._freeze = True
+
+    def to_binary(self):
+        packet = []
+        if self.Body:
+            self.Encoding |= (1 << 0)
+        packet.append(self.TypeId.to_binary())
+        packet.append(pack_uatype('UInt8', self.Encoding))
+        if self.Body:
+            packet.append(pack_uatype('ByteString', self.Body))
+        return b''.join(packet)
+
+    @staticmethod
+    def from_binary(data):
+        obj = ExtensionObject()
+        obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = unpack_uatype('UInt8', data)
+        if obj.Encoding & (1 << 0):
+            obj.Body = unpack_uatype('ByteString', data)
+        return obj
+
+    @staticmethod
+    def from_object(obj):
+        ext = ExtensionObject()
+        oid = getattr(ObjectIds, "{}_Encoding_DefaultBinary".format(obj.__class__.__name__))
+        ext.TypeId = FourByteNodeId(oid)
+        ext.Body = obj.to_binary()
+        return ext
+
+    def __str__(self):
+        return 'ExtensionObject(' + 'TypeId:' + str(self.TypeId) + ', ' + \
+            'Encoding:' + str(self.Encoding) + ', ' + str(len(self.Body)) + ' bytes)'
+
+    __repr__ = __str__
+
+
 class VariantType(Enum):
 
     '''
@@ -709,6 +786,21 @@ class VariantType(Enum):
     DiagnosticInfo = 25
 
 
+class VariantTypeCustom(object):
+    def __init__(self, val):
+        self.name = "Custom"
+        self.value = val
+        if self.value > 0b00111111:
+            raise UaError("Cannot create VariantType. VariantType must be %s > x > %s", 0b111111, 25)
+
+    def __str__(self):
+        return "VariantType.Custom:{}".format(self.value)
+    __repr__ = __str__
+
+    def __eq__(self, other):
+        return self.value == other.value
+
+
 class Variant(FrozenClass):
 
     """
@@ -723,21 +815,20 @@ class Variant(FrozenClass):
     :vartype VariantType: VariantType
     """
 
-    def __init__(self, value=None, varianttype=None, encoding=0):
-        self.Encoding = encoding
+    def __init__(self, value=None, varianttype=None, dimensions=None):
         self.Value = value
         self.VariantType = varianttype
+        self.Dimensions = dimensions
+        self._freeze = True
         if isinstance(value, Variant):
             self.Value = value.Value
             self.VariantType = value.VariantType
         if self.VariantType is None:
-            if type(self.Value) in (list, tuple):
-                if len(self.Value) == 0:
-                    raise UAError("could not guess UA variable type")
-                self.VariantType = self._guess_type(self.Value[0])
-            else:
-                self.VariantType = self._guess_type(self.Value)
-        self._freeze = True
+            self.VariantType = self._guess_type(self.Value)
+        if self.Dimensions is None and type(self.Value) in (list, tuple):
+            dims = get_shape(self.Value)
+            if len(dims) > 1:
+                self.Dimensions = dims
 
     def __eq__(self, other):
         if isinstance(other, Variant) and self.VariantType == other.VariantType and self.Value == other.Value:
@@ -745,6 +836,10 @@ class Variant(FrozenClass):
         return False
 
     def _guess_type(self, val):
+        while isinstance(val, (list, tuple)):
+            if len(val) == 0:
+                raise UaError("could not guess UA variable type")
+            val = val[0]
         if val is None:
             return VariantType.Null
         elif isinstance(val, bool):
@@ -766,7 +861,7 @@ class Variant(FrozenClass):
                 except AttributeError:
                     return VariantType.ExtensionObject
             else:
-                raise UAError("Could not guess UA type of {} with type {}, specify UA type".format(val, type(val)))
+                raise UaError("Could not guess UA type of {} with type {}, specify UA type".format(val, type(val)))
 
     def __str__(self):
         return "Variant(val:{!s},type:{})".format(self.Value, self.VariantType)
@@ -774,28 +869,121 @@ class Variant(FrozenClass):
 
     def to_binary(self):
         b = []
-        mask = self.Encoding & 0b01111111
-        self.Encoding = (self.VariantType.value | mask)
+        encoding = self.VariantType.value & 0b111111
         if type(self.Value) in (list, tuple):
-            self.Encoding |= (1 << 7)
-            b.append(uatype_UInt8.pack(self.Encoding))
-            b.append(pack_uatype_array(self.VariantType.name, self.Value))
+            if self.Dimensions is not None:
+                encoding = set_bit(encoding, 6)
+            encoding = set_bit(encoding, 7)
+            b.append(uatype_UInt8.pack(encoding))
+            b.append(pack_uatype_array(self.VariantType.name, flatten(self.Value)))
+            if self.Dimensions is not None:
+                b.append(pack_uatype_array("Int32", self.Dimensions))
         else:
-            b.append(uatype_UInt8.pack(self.Encoding))
+            b.append(uatype_UInt8.pack(encoding))
             b.append(pack_uatype(self.VariantType.name, self.Value))
+
         return b"".join(b)
 
     @staticmethod
     def from_binary(data):
+        dimensions = None
         encoding = ord(data.read(1))
-        vtype = VariantType(encoding & 0b01111111)
+        int_type = encoding & 0b00111111
+        if int_type > 25:
+            vtype = VariantTypeCustom(int_type)
+        else:
+            vtype = VariantType(int_type)
         if vtype == VariantType.Null:
             return Variant(None, vtype, encoding)
-        if encoding & (1 << 7):
+        if test_bit(encoding, 7):
             value = unpack_uatype_array(vtype.name, data)
         else:
             value = unpack_uatype(vtype.name, data)
-        return Variant(value, vtype, encoding)
+        if test_bit(encoding, 6):
+            dimensions = unpack_uatype_array("Int32", data)
+            value = reshape(value, dimensions)
+
+        return Variant(value, vtype, dimensions)
+
+
+def reshape(flat, dims):
+    subdims = dims[1:]
+    subsize = 1
+    for i in subdims:
+        if i == 0:
+            i = 1
+        subsize *= i
+    while dims[0] * subsize > len(flat):
+        flat.append([])
+    if not subdims or subdims == [0]:
+        return flat
+    return [reshape(flat[i: i + subsize], subdims) for i in range(0, len(flat), subsize)]
+
+
+def _split_list(l, n):
+    n = max(1, n)
+    return [l[i:i + n] for i in range(0, len(l), n)]
+
+
+def flatten_and_get_shape(mylist):
+    dims = []
+    dims.append(len(mylist))
+    while isinstance(mylist[0], (list, tuple)):
+        dims.append(len(mylist[0]))
+        mylist = [item for sublist in mylist for item in sublist]
+        if len(mylist) == 0:
+            break
+    return mylist, dims
+
+
+def flatten(mylist):
+    if len(mylist) == 0:
+        return mylist
+    while isinstance(mylist[0], (list, tuple)):
+        mylist = [item for sublist in mylist for item in sublist]
+        if len(mylist) == 0:
+            break
+    return mylist
+
+
+def get_shape(mylist):
+    dims = []
+    while isinstance(mylist, (list, tuple)):
+        dims.append(len(mylist))
+        if len(mylist) == 0:
+            break
+        mylist = mylist[0]
+    return dims
+
+
+class XmlElement(FrozenClass):
+    '''
+    An XML element encoded as an UTF-8 string.
+    '''
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            self._freeze = True
+            return
+        self.Value = []
+        self._freeze = True
+
+    def to_binary(self):
+        return pack_string(self.Value)
+
+    @staticmethod
+    def from_binary(data):
+        return XmlElement(data)
+
+    def _binary_init(self, data):
+        self.Value = unpack_string(data)
+
+    def __str__(self):
+        return 'XmlElement(Value:' + str(self.Value) + ')'
+
+    __repr__ = __str__
+
+
 
 
 class DataValue(FrozenClass):

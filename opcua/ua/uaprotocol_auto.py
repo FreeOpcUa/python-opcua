@@ -6,7 +6,7 @@ from datetime import datetime
 from enum import Enum, IntEnum
 
 from opcua.common.utils import Buffer
-from opcua.common.uaerrors import UAError
+from opcua.common.uaerrors import UaError
 from opcua.ua.uatypes import *
 from opcua.ua.object_ids import ObjectIds
 
@@ -714,47 +714,6 @@ class ExceptionDeviationFormat(IntEnum):
     Unknown = 4
 
 
-class XmlElement(FrozenClass):
-    '''
-    An XML element encoded as a UTF-8 string.
-
-    :ivar Length:
-    :vartype Length: Int32
-    :ivar Value:
-    :vartype Value: Char
-    '''
-    def __init__(self, binary=None):
-        if binary is not None:
-            self._binary_init(binary)
-            self._freeze = True
-            return
-        self.Length = 0
-        self.Value = []
-        self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uatype_Int32.pack(self.Length))
-        packet.append(uatype_Int32.pack(len(self.Value)))
-        for fieldname in self.Value:
-            packet.append(uatype_Char.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        return XmlElement(data)
-
-    def _binary_init(self, data):
-        self.Length = uatype_Int32.unpack(data.read(4))[0]
-        self.Value = unpack_uatype_array('Char', data)
-
-    def __str__(self):
-        return 'XmlElement(' + 'Length:' + str(self.Length) + ', ' + \
-               'Value:' + str(self.Value) + ')'
-
-    __repr__ = __str__
-
-
 class DiagnosticInfo(FrozenClass):
     '''
     A recursive structure containing diagnostic information associated with a status code.
@@ -1233,7 +1192,7 @@ class RequestHeader(FrozenClass):
             self._freeze = True
             return
         self.AuthenticationToken = NodeId()
-        self.Timestamp = datetime.utcnow()
+        self.Timestamp = datetime.now()
         self.RequestHandle = 0
         self.ReturnDiagnostics = 0
         self.AuditEntryId = ''
@@ -1299,7 +1258,7 @@ class ResponseHeader(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.Timestamp = datetime.utcnow()
+        self.Timestamp = datetime.now()
         self.RequestHandle = 0
         self.ServiceResult = StatusCode()
         self.ServiceDiagnostics = DiagnosticInfo()
@@ -1676,7 +1635,7 @@ class FindServersOnNetworkResult(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.LastCounterResetTime = datetime.utcnow()
+        self.LastCounterResetTime = datetime.now()
         self.Servers = []
         self._freeze = True
 
@@ -2442,7 +2401,7 @@ class ChannelSecurityToken(FrozenClass):
             return
         self.ChannelId = 0
         self.TokenId = 0
-        self.CreatedAt = datetime.utcnow()
+        self.CreatedAt = datetime.now()
         self.RevisedLifetime = 0
         self._freeze = True
 
@@ -4971,8 +4930,14 @@ class DeleteNodesRequest(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteNodesResult(FrozenClass):
+class DeleteNodesResponse(FrozenClass):
     '''
+    Delete one or more nodes from the server address space.
+
+    :ivar TypeId:
+    :vartype TypeId: NodeId
+    :ivar ResponseHeader:
+    :vartype ResponseHeader: ResponseHeader
     :ivar Results:
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
@@ -4983,12 +4948,16 @@ class DeleteNodesResult(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
+        self.TypeId = FourByteNodeId(ObjectIds.DeleteNodesResponse_Encoding_DefaultBinary)
+        self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
 
     def to_binary(self):
         packet = []
+        packet.append(self.TypeId.to_binary())
+        packet.append(self.ResponseHeader.to_binary())
         packet.append(uatype_Int32.pack(len(self.Results)))
         for fieldname in self.Results:
             packet.append(fieldname.to_binary())
@@ -4999,9 +4968,11 @@ class DeleteNodesResult(FrozenClass):
 
     @staticmethod
     def from_binary(data):
-        return DeleteNodesResult(data)
+        return DeleteNodesResponse(data)
 
     def _binary_init(self, data):
+        self.TypeId = NodeId.from_binary(data)
+        self.ResponseHeader = ResponseHeader.from_binary(data)
         length = uatype_Int32.unpack(data.read(4))[0]
         array = []
         if length != -1:
@@ -5016,53 +4987,10 @@ class DeleteNodesResult(FrozenClass):
         self.DiagnosticInfos = array
 
     def __str__(self):
-        return 'DeleteNodesResult(' + 'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
-
-    __repr__ = __str__
-
-
-class DeleteNodesResponse(FrozenClass):
-    '''
-    Delete one or more nodes from the server address space.
-
-    :ivar TypeId:
-    :vartype TypeId: NodeId
-    :ivar ResponseHeader:
-    :vartype ResponseHeader: ResponseHeader
-    :ivar Parameters:
-    :vartype Parameters: DeleteNodesResult
-    '''
-    def __init__(self, binary=None):
-        if binary is not None:
-            self._binary_init(binary)
-            self._freeze = True
-            return
-        self.TypeId = FourByteNodeId(ObjectIds.DeleteNodesResponse_Encoding_DefaultBinary)
-        self.ResponseHeader = ResponseHeader()
-        self.Parameters = DeleteNodesResult()
-        self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        return DeleteNodesResponse(data)
-
-    def _binary_init(self, data):
-        self.TypeId = NodeId.from_binary(data)
-        self.ResponseHeader = ResponseHeader.from_binary(data)
-        self.Parameters = DeleteNodesResult.from_binary(data)
-
-    def __str__(self):
         return 'DeleteNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+               'Results:' + str(self.Results) + ', ' + \
+               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 
     __repr__ = __str__
 
@@ -5320,7 +5248,7 @@ class ViewDescription(FrozenClass):
             self._freeze = True
             return
         self.ViewId = NodeId()
-        self.Timestamp = datetime.utcnow()
+        self.Timestamp = datetime.now()
         self.ViewVersion = 0
         self._freeze = True
 
@@ -6625,7 +6553,7 @@ class SupportedProfile(FrozenClass):
         self.OrganizationUri = ''
         self.ProfileId = ''
         self.ComplianceTool = ''
-        self.ComplianceDate = datetime.utcnow()
+        self.ComplianceDate = datetime.now()
         self.ComplianceLevel = ComplianceLevel(0)
         self.UnsupportedUnitIds = []
         self._freeze = True
@@ -6699,9 +6627,9 @@ class SoftwareCertificate(FrozenClass):
         self.VendorProductCertificate = b''
         self.SoftwareVersion = ''
         self.BuildNumber = ''
-        self.BuildDate = datetime.utcnow()
+        self.BuildDate = datetime.now()
         self.IssuedBy = ''
-        self.IssueDate = datetime.utcnow()
+        self.IssueDate = datetime.now()
         self.SupportedProfiles = []
         self._freeze = True
 
@@ -8108,8 +8036,8 @@ class ReadEventDetails(FrozenClass):
             self._freeze = True
             return
         self.NumValuesPerNode = 0
-        self.StartTime = datetime.utcnow()
-        self.EndTime = datetime.utcnow()
+        self.StartTime = datetime.now()
+        self.EndTime = datetime.now()
         self.Filter = EventFilter()
         self._freeze = True
 
@@ -8159,8 +8087,8 @@ class ReadRawModifiedDetails(FrozenClass):
             self._freeze = True
             return
         self.IsReadModified = True
-        self.StartTime = datetime.utcnow()
-        self.EndTime = datetime.utcnow()
+        self.StartTime = datetime.now()
+        self.EndTime = datetime.now()
         self.NumValuesPerNode = 0
         self.ReturnBounds = True
         self._freeze = True
@@ -8213,8 +8141,8 @@ class ReadProcessedDetails(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.StartTime = datetime.utcnow()
-        self.EndTime = datetime.utcnow()
+        self.StartTime = datetime.now()
+        self.EndTime = datetime.now()
         self.ProcessingInterval = 0
         self.AggregateType = []
         self.AggregateConfiguration = AggregateConfiguration()
@@ -8348,7 +8276,7 @@ class ModificationInfo(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.ModificationTime = datetime.utcnow()
+        self.ModificationTime = datetime.now()
         self.UpdateType = HistoryUpdateType(0)
         self.UserName = ''
         self._freeze = True
@@ -9026,8 +8954,8 @@ class DeleteRawModifiedDetails(FrozenClass):
             return
         self.NodeId = NodeId()
         self.IsDeleteModified = True
-        self.StartTime = datetime.utcnow()
-        self.EndTime = datetime.utcnow()
+        self.StartTime = datetime.now()
+        self.EndTime = datetime.now()
         self._freeze = True
 
     def to_binary(self):
@@ -9785,7 +9713,7 @@ class AggregateFilter(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.StartTime = datetime.utcnow()
+        self.StartTime = datetime.now()
         self.AggregateType = NodeId()
         self.ProcessingInterval = 0
         self.AggregateConfiguration = AggregateConfiguration()
@@ -9916,7 +9844,7 @@ class AggregateFilterResult(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.RevisedStartTime = datetime.utcnow()
+        self.RevisedStartTime = datetime.now()
         self.RevisedProcessingInterval = 0
         self.RevisedAggregateConfiguration = AggregateConfiguration()
         self._freeze = True
@@ -11616,7 +11544,7 @@ class NotificationMessage(FrozenClass):
             self._freeze = True
             return
         self.SequenceNumber = 0
-        self.PublishTime = datetime.utcnow()
+        self.PublishTime = datetime.now()
         self.NotificationData = []
         self._freeze = True
 
@@ -12663,7 +12591,7 @@ class BuildInfo(FrozenClass):
         self.ProductName = ''
         self.SoftwareVersion = ''
         self.BuildNumber = ''
-        self.BuildDate = datetime.utcnow()
+        self.BuildDate = datetime.now()
         self._freeze = True
 
     def to_binary(self):
@@ -12985,8 +12913,8 @@ class ServerStatusDataType(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.StartTime = datetime.utcnow()
-        self.CurrentTime = datetime.utcnow()
+        self.StartTime = datetime.now()
+        self.CurrentTime = datetime.now()
         self.State = ServerState(0)
         self.BuildInfo = BuildInfo()
         self.SecondsTillShutdown = 0
@@ -13128,8 +13056,8 @@ class SessionDiagnosticsDataType(FrozenClass):
         self.LocaleIds = []
         self.ActualSessionTimeout = 0
         self.MaxResponseMessageSize = 0
-        self.ClientConnectionTime = datetime.utcnow()
-        self.ClientLastContactTime = datetime.utcnow()
+        self.ClientConnectionTime = datetime.now()
+        self.ClientLastContactTime = datetime.now()
         self.CurrentSubscriptionsCount = 0
         self.CurrentMonitoredItemsCount = 0
         self.CurrentPublishRequestsInQueue = 0
@@ -14041,13 +13969,13 @@ class ProgramDiagnosticDataType(FrozenClass):
             return
         self.CreateSessionId = NodeId()
         self.CreateClientName = ''
-        self.InvocationCreationTime = datetime.utcnow()
-        self.LastTransitionTime = datetime.utcnow()
+        self.InvocationCreationTime = datetime.now()
+        self.LastTransitionTime = datetime.now()
         self.LastMethodCall = ''
         self.LastMethodSessionId = NodeId()
         self.LastMethodInputArguments = []
         self.LastMethodOutputArguments = []
-        self.LastMethodCallTime = datetime.utcnow()
+        self.LastMethodCallTime = datetime.now()
         self.LastMethodReturnStatus = StatusResult()
         self._freeze = True
 
@@ -14126,7 +14054,7 @@ class Annotation(FrozenClass):
             return
         self.Message = ''
         self.UserName = ''
-        self.AnnotationTime = datetime.utcnow()
+        self.AnnotationTime = datetime.now()
         self._freeze = True
 
     def to_binary(self):
@@ -14385,10 +14313,15 @@ def extensionobject_from_binary(data):
     if TypeId.Identifier == 0:
         return None
     elif TypeId.Identifier not in ExtensionClasses:
-        raise UAError("unknown ExtensionObject Type: {}".format(TypeId))
+        e = ExtensionObject()
+        e.TypeId = TypeId
+        e.Encoding = Encoding
+        if body is not None:
+            e.Body = body.read(len(body))
+        return e
     klass = ExtensionClasses[TypeId.Identifier]
     if body is None:
-        raise UAError("parsing ExtensionObject {} without data".format(klass.__name__))
+        raise UaError("parsing ExtensionObject {} without data".format(klass.__name__))
     return klass.from_binary(body)
 
 
@@ -14398,6 +14331,8 @@ def extensionobject_to_binary(obj):
     If obj is None, convert to empty ExtensionObject (TypeId = 0, no Body).
     Returns a binary string
     """
+    if isinstance(obj, ExtensionObject):
+        return obj.to_binary()
     TypeId = NodeId()
     Encoding = 0
     Body = None

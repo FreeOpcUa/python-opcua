@@ -11,20 +11,20 @@ except ImportError:
     import trollius as asyncio
 
 
-from opcua.common.uaerrors import UAError
+from opcua.common.uaerrors import UaError
 
 
-class ServiceError(UAError):
+class ServiceError(UaError):
     def __init__(self, code):
         super(ServiceError, self).__init__('UA Service Error')
         self.code = code
 
 
-class NotEnoughData(UAError):
+class NotEnoughData(UaError):
     pass
 
 
-class SocketClosedException(UAError):
+class SocketClosedException(UaError):
     pass
 
 

@@ -86,9 +86,9 @@ class UAClientProtocol(uaasync.asyncio.Protocol):
                 self._set_result(0, msg)
                 return 1
             elif isinstance(msg, ua.ErrorMessage):
-                raise ua.UAError("Received an error: {}".format(msg))
+                raise ua.UaError("Received an error: {}".format(msg))
             else:
-                raise ua.UAError("Unsupported message type: {}".format(msg))
+                raise ua.UaError("Unsupported message type: {}".format(msg))
 
     def _get_header(self):
         if self._cur_header is not None:
@@ -107,7 +107,7 @@ class UAClientProtocol(uaasync.asyncio.Protocol):
 
     def _set_result(self, reqid, body):
         if reqid not in self.futuremap:
-            raise ua.UAError(
+            raise ua.UaError(
                 "No future found for request: {}, futures in list are {}".format(
                     reqid, self.futuremap.keys()))
         fut = self.futuremap.pop(reqid)
@@ -164,14 +164,16 @@ class UAClientProtocol(uaasync.asyncio.Protocol):
         return binreq
 
 
-class AsyncBinaryClient(object):
+class AsyncUaClient(object):
 
     """
     low level OPC-UA client.
-    implement all(well..one day) methods defined in opcua spec
-    taking in argument the structures defined in opcua spec
-    in python most of the structures are defined in
-    uaprotocol_auto.py and uaprotocol_hand.py
+
+    It implements (almost) all methods defined in opcua spec
+    taking in argument the structures defined in opcua spec.
+
+    In this Python implementation  most of the structures are defined in
+    uaprotocol_auto.py and uaprotocol_hand.py available under opcua.ua
     """
 
     def __init__(self, timeout=1):
@@ -223,7 +225,7 @@ class AsyncBinaryClient(object):
     @coroutine
     def _send_request(self, request):
         if not self._proto_connected:
-            raise ua.UAError("client is disconnected")
+            raise ua.UaError("client is disconnected")
         reqname = request.__class__.__name__
         self.logger.info("sending %s", reqname)
         fut = self._proto.send_request(request, self._timeout)
@@ -409,7 +411,7 @@ class AsyncBinaryClient(object):
 
     def publish(self, acks=None):
         if not self._proto_connected:
-            raise ua.UAError("client is disconnected")
+            raise ua.UaError("client is disconnected")
         if acks is None:
             acks = []
         self.logger.info("sending PublishRequest")
@@ -428,7 +430,12 @@ class AsyncBinaryClient(object):
             return
         data = data_fut.result()
         self._check_answer(data)
-        response = ua.PublishResponse.from_binary(data)
+        try:
+            response = ua.PublishResponse.from_binary(data)
+        except Exception:
+            self.logger.exception("Error parsing notificatipn from server")
+            self.publish([]) #send publish request ot server so he does stop sending notifications
+            return
         if response.Parameters.SubscriptionId not in self._publishcallbacks:
             self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
             return
@@ -470,7 +477,7 @@ class AsyncBinaryClient(object):
         request = ua.DeleteNodesRequest()
         request.Parameters.NodesToDelete = nodestodelete
         data = yield From(self._send_request(request))
-        response = ua.AddNodesResponse.from_binary(data)
+        response = ua.DeleteNodesResponse.from_binary(data)
         response.ResponseHeader.ServiceResult.check()
         raise Return(response.Results)
 
@@ -493,13 +500,13 @@ class AsyncBinaryClient(object):
         raise Return(response.Results)
 
 
-class BinaryClient(AsyncBinaryClient):
+class UaClient(AsyncUaClient):
     def connect_socket(self, host, port):
         uaasync.start_loop()
-        uaasync.await_coro(AsyncBinaryClient.connect_socket, self, host, port)
+        uaasync.await_coro(AsyncUaClient.connect_socket, self, host, port)
 
     def disconnect_socket(self):
-        uaasync.await_call(AsyncBinaryClient.disconnect_socket, self)
+        uaasync.await_call(AsyncUaClient.disconnect_socket, self)
         uaasync.stop_loop()
 
     @await_super_coro

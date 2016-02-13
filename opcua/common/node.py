@@ -11,7 +11,9 @@ class Node(object):
     """
     High level node object, to access node attribute,
     browse and populate address space.
-    Node objects are usefull as-is but they do not expose the entire possibilities of the OPC-UA protocol. Feel free to look at Node code and
+    Node objects are usefull as-is but they do not expose the entire
+    OPC-UA protocol. Feel free to look at Node code and call
+    directly UA services methods to optimize your code
     """
 
     def __init__(self, server, nodeid):
@@ -24,7 +26,7 @@ class Node(object):
         elif isinstance(nodeid, int):
             self.nodeid = ua.NodeId(nodeid, 0)
         else:
-            raise ua.UAError("argument to node must be a NodeId object or a string defining a nodeid found {} of type {}".format(nodeid, type(nodeid)))
+            raise ua.UaError("argument to node must be a NodeId object or a string defining a nodeid found {} of type {}".format(nodeid, type(nodeid)))
 
     def __eq__(self, other):
         if isinstance(other, Node) and self.nodeid == other.nodeid:
@@ -288,30 +290,29 @@ class Node(object):
 
     # Hack for convenience methods
     # local import is ugly but necessary for python2 support
-    # feel fri to propose something better but I want to split all those 
+    # feel fri to propose something better but I want to split all those
     # create methods fro Node
 
     def add_folder(*args, **kwargs):
-        from opcua.common import create_nodes
-        return create_nodes.create_folder(*args, **kwargs)
+        from opcua.common import manage_nodes
+        return manage_nodes.create_folder(*args, **kwargs)
 
     def add_object(*args, **kwargs):
-        from opcua.common import create_nodes
-        return create_nodes.create_object(*args, **kwargs)
+        from opcua.common import manage_nodes
+        return manage_nodes.create_object(*args, **kwargs)
 
     def add_variable(*args, **kwargs):
-        from opcua.common import create_nodes
-        return create_nodes.create_variable(*args, **kwargs)
+        from opcua.common import manage_nodes
+        return manage_nodes.create_variable(*args, **kwargs)
 
     def add_property(*args, **kwargs):
-        from opcua.common import create_nodes
-        return create_nodes.create_property(*args, **kwargs)
+        from opcua.common import manage_nodes
+        return manage_nodes.create_property(*args, **kwargs)
 
     def add_method(*args, **kwargs):
-        from opcua.common import create_nodes
-        return create_nodes.create_method(*args, **kwargs)
+        from opcua.common import manage_nodes
+        return manage_nodes.create_method(*args, **kwargs)
 
     def call_method(*args, **kwargs):
         from opcua.common import methods
         return methods.call_method(*args, **kwargs)
-

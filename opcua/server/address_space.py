@@ -181,7 +181,7 @@ class NodeManagementService(object):
         result = ua.AddNodesResult()
 
         if item.RequestedNewNodeId in self._aspace:
-            self.logger.warning("AddNodeItem: node already exists")
+            self.logger.warning("AddNodesItem: node already exists")
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdExists)
             return result
         nodedata = NodeData(item.RequestedNewNodeId)
@@ -233,6 +233,41 @@ class NodeManagementService(object):
 
         return result
 
+    def delete_nodes(self, deletenodeitems, user=User.Admin):
+        results = []
+        for item in deletenodeitems:
+            results.append(self._delete_node(item, user))
+        return results
+
+    def _delete_node(self, item, user):
+        if not user == User.Admin:
+            return ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
+
+        if item.NodeId not in self._aspace:
+            self.logger.warning("DeleteNodesItem: node does not exists")
+            return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
+
+        if item.DeleteTargetReferences:
+            for elem in self._aspace.keys():
+                for rdesc in self._aspace[elem].references:
+                    if rdesc.NodeId == item.NodeId:
+                        self._aspace[elem].references.remove(rdesc)
+
+        self._delete_node_callbacks(self._aspace[item.NodeId])
+
+        del(self._aspace[item.NodeId])
+
+        return ua.StatusCode()
+
+    def _delete_node_callbacks(self, nodedata):
+        if ua.AttributeIds.Value in nodedata.attributes:
+            for handle, callback in nodedata.attributes[ua.AttributeIds.Value].datachange_callbacks.items():
+                try:
+                    callback(handle, None, ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown))
+                    self._aspace.delete_datachange_callback(handle)
+                except Exception as ex:
+                    self.logger.exception("Error calling datachange callback %s, %s, %s", k, v, ex)
+
     def add_references(self, refs, user=User.Admin):
         result = []
         for ref in refs:
@@ -258,6 +293,36 @@ class NodeManagementService(object):
         if dname:
             rdesc.DisplayName = dname
         self._aspace[addref.SourceNodeId].references.append(rdesc)
+        return ua.StatusCode()
+
+    def delete_references(self, refs, user=User.Admin):
+        result = []
+        for ref in refs:
+            result.append(self._delete_reference(ref, user))
+        return result
+
+    def _delete_reference(self, item, user):
+        if item.SourceNodeId not in self._aspace:
+            return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
+        if item.TargetNodeId not in self._aspace:
+            return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
+        if not user == User.Admin:
+            return ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
+
+        for rdesc in self._aspace[item.SourceNodeId].references:
+            if rdesc.NodeId is item.TargetNodeId:
+                if rdesc.RefrenceTypeId != item.RefrenceTypeId:
+                    return ua.StatusCode(ua.StatusCode.BadReferenceTypeInvalid)
+                if rdesc.IsForward == item.IsForward or item.DeleteBidirectional:
+                    self._aspace[item.SourceNodeId].references.remove(rdesc)
+
+        for rdesc in self._aspace[item.TargetNodeId].references:
+            if rdesc.NodeId is item.SourceNodeId:
+                if rdesc.RefrenceTypeId != item.RefrenceTypeId:
+                    return ua.StatusCode(ua.StatusCode.BadReferenceTypeInvalid)
+                if rdesc.IsForward == item.IsForward or item.DeleteBidirectional:
+                    self._aspace[item.SourceNodeId].references.remove(rdesc)
+
         return ua.StatusCode()
 
     def _add_node_attr(self, item, nodedata, name, vtype=None):
@@ -350,6 +415,14 @@ class AddressSpace(object):
     def __contains__(self, nodeid):
         with self._lock:
             return self._nodes.__contains__(nodeid)
+
+    def __delitem__(self, nodeid):
+        with self._lock:
+            self._nodes.__delitem__(nodeid)
+
+    def keys(self):
+        with self._lock:
+            return self._nodes.keys()
 
     def dump(self, path):
         """

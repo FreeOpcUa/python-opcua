@@ -17,6 +17,7 @@ from opcua.common.node import Node
 from opcua.common.event import Event
 from opcua.common.subscription import Subscription
 from opcua.common import xmlimporter
+from opcua.common.manage_nodes import delete_nodes
 from opcua.client.client import Client
 from opcua.crypto import security_policies
 use_crypto = True
@@ -31,13 +32,17 @@ class Server(object):
 
     """
     High level Server class
-    Create an opcua server with default values
-    The class is very short. Users are adviced to read the code.
+
+    This class creates an opcua server with default values
+
     Create your own namespace and then populate your server address space
     using use the get_root() or get_objects() to get Node objects.
     and get_event_object() to fire events.
     Then start server. See example_server.py
     All methods are threadsafe
+
+    If you need more flexibility you call directly the Ua Service methods
+    on the iserver  or iserver.isesssion object members.
 
 
     :ivar application_uri:
@@ -326,3 +331,7 @@ class Server(object):
         """
         importer = xmlimporter.XmlImporter(self.iserver.node_mgt_service)
         importer.import_xml(path)
+
+    def delete_nodes(self, nodes, recursive=False):
+        return delete_nodes(self.iserver.isession, nodes, recursive)
+ 

@@ -25,7 +25,7 @@ except ImportError:
 import logging
 from concurrent.futures import Future
 from functools import wraps, partial
-from .uaerrors import UAError
+from .uaerrors import UaError
 
 logger = logging.getLogger(__name__)
 
@@ -42,13 +42,13 @@ class LoopController(object):
     def install_loop(self, loop):
         with self.lock:
             if self.count > 0 or self.thread is not None or self.external is True:
-                raise UAError("install_loop must be called before using the opcua library")
+                raise UaError("install_loop must be called before using the opcua library")
             self.loop = loop
             self.external = True
 
     def start_loop(self):
         if self.external:
-            raise UAError("synchonized interface unavilable after install_loop()")
+            raise UaError("synchonized interface unavilable after install_loop()")
         with self.lock:
             if self.count > 0:
                 self.count += 1
@@ -83,7 +83,7 @@ class LoopController(object):
         self.loop.call_soon_threadsafe(self.loop.stop)
         self.thread.join(10)
         if self.thread.is_alive():
-            raise UAError("can not stop loop thread")
+            raise UaError("can not stop loop thread")
         self.thread = None
         self.loop.close()
         self.loop = None
@@ -102,7 +102,7 @@ class LoopController(object):
 
     def in_loop_thread(self):
         if self.thread_id is None:
-            raise UAError("loop thread is not running")
+            raise UaError("loop thread is not running")
         return self.thread_id == _get_thread_ident()
 
 
@@ -167,7 +167,7 @@ def _wait_coro_in_loop(fut, coro, args, kwargs):
 
 def await_coro(coro, *args, **kwargs):
     if _ctrl.in_loop_thread():
-        raise UAError("coro should not be called in loop thread")
+        raise UaError("coro should not be called in loop thread")
     fut = Future()
     call_soon_threadsafe(_wait_coro_in_loop, fut, coro, args, kwargs)
     return fut.result()
@@ -177,7 +177,7 @@ def await_super_coro(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         if _ctrl.in_loop_thread():
-            raise UAError("coro %s should not be called in loop thread" % func.__name__)
+            raise UaError("coro %s should not be called in loop thread" % func.__name__)
         coro = getattr(super(self.__class__, self), func.__name__)
         fut = Future()
         call_soon_threadsafe(_wait_coro_in_loop, fut, coro, args, kwargs)

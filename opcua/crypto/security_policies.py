@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from opcua.ua import CryptographyNone, SecurityPolicy
 from opcua.ua import MessageSecurityMode
-from opcua.ua import UAError
+from opcua.ua import UaError
 try:
     from opcua.crypto import uacrypto
     CRYPTOGRAPHY_AVAILABLE = True
@@ -15,7 +15,7 @@ def require_cryptography(obj):
     Call this function in constructors.
     """
     if not CRYPTOGRAPHY_AVAILABLE:
-        raise UAError("Can't use {}, cryptography module is not installed".format(obj.__class__.__name__))
+        raise UaError("Can't use {}, cryptography module is not installed".format(obj.__class__.__name__))
 
 
 class Signer(object):
@@ -334,6 +334,11 @@ class SecurityPolicyBasic128Rsa15(SecurityPolicy):
     URI = "http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15"
     signature_key_size = 16
     symmetric_key_size = 16
+    AsymmetricEncryptionURI = "http://www.w3.org/2001/04/xmlenc#rsa-1_5"
+
+    @staticmethod
+    def encrypt_asymmetric(pubkey, data):
+        return uacrypto.encrypt_rsa15(pubkey, data)
 
     def __init__(self, server_cert, client_cert, client_pk, mode):
         require_cryptography(self)
@@ -395,6 +400,11 @@ class SecurityPolicyBasic256(SecurityPolicy):
     URI = "http://opcfoundation.org/UA/SecurityPolicy#Basic256"
     signature_key_size = 24
     symmetric_key_size = 32
+    AsymmetricEncryptionURI = "http://www.w3.org/2001/04/xmlenc#rsa-oaep"
+
+    @staticmethod
+    def encrypt_asymmetric(pubkey, data):
+        return uacrypto.encrypt_rsa_oaep(pubkey, data)
 
     def __init__(self, server_cert, client_cert, client_pk, mode):
         require_cryptography(self)
@@ -426,3 +436,16 @@ class SecurityPolicyBasic256(SecurityPolicy):
         (sigkey, key, init_vec) = uacrypto.p_sha1(nonce1, nonce2, key_sizes)
         self.symmetric_cryptography.Verifier = VerifierAesCbc(sigkey)
         self.symmetric_cryptography.Decryptor = DecryptorAesCbc(key, init_vec)
+
+
+def encrypt_asymmetric(pubkey, data, policy_uri):
+    """
+    Encrypt data with pubkey using an asymmetric algorithm.
+    The algorithm is selected by policy_uri.
+    Returns a tuple (encrypted_data, algorithm_uri)
+    """
+    for cls in [SecurityPolicyBasic256, SecurityPolicyBasic128Rsa15]:
+        if policy_uri == cls.URI:
+            return (cls.encrypt_asymmetric(pubkey, data),
+                    cls.AsymmetricEncryptionURI)
+    raise UaError("Unsupported security policy `{}`".format(uri))

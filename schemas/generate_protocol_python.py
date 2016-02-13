@@ -2,7 +2,7 @@
 import generate_model as gm
 
 IgnoredEnums = ["NodeIdType"]
-IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "LocalizedText", "ExtensionObject"]
+IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "LocalizedText", "ExtensionObject", "XmlElement"]
 numerics = ("Int8", "UInt8", "Sbyte", "Byte", "Char", "Boolean", "Int16", "UInt16", "Int32", "UInt32", "Float", "Int64", "UInt64", "Double")
 
 
@@ -59,7 +59,7 @@ class CodeGenerator(object):
         self.write("from enum import Enum, IntEnum")
         self.write("")
         self.write("from opcua.common.utils import Buffer")
-        self.write("from opcua.common.uaerrors import UAError")
+        self.write("from opcua.common.uaerrors import UaError")
         self.write("from opcua.ua.uatypes import *")
         self.write("from opcua.ua.object_ids import ObjectIds")
 

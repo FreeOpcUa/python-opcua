@@ -6,7 +6,7 @@ OPC-UA Client Class
    :members:
    :undoc-members:
 
-.. autoclass:: opcua.client.binary_client.BinaryClient
+.. autoclass:: opcua.client.ua_client.UaClient
    :members:
    :undoc-members:
 

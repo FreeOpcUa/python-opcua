@@ -7,8 +7,9 @@ except ImportError:  # support for python2
     from urlparse import urlparse
 
 from opcua import ua
-from opcua.client.binary_client import BinaryClient
+from opcua.client.ua_client import UaClient
 from opcua.common.node import Node
+from opcua.common.manage_nodes import delete_nodes
 from opcua.common.subscription import Subscription
 from opcua.common import utils
 from opcua.crypto import security_policies
@@ -62,14 +63,15 @@ class Client(object):
 
     """
     High level client to connect to an OPC-UA server.
+
     This class makes it easy to connect and browse address space.
     It attemps to expose as much functionality as possible
-    but if you want to do to special things you will probably need
-    to work with the BinaryClient object, available as self.bclient
-    which offers a raw OPC-UA interface.
+    but if you want more flexibility it is possible and adviced to
+    use UaClient object, available as self.uaclient
+    which offers the raw OPC-UA services interface.
     """
 
-    def __init__(self, url, timeout=1):
+    def __init__(self, url, timeout=4):
         """
         used url argument to connect to server.
         if you are unsure of url, write at least hostname and port
@@ -90,7 +92,7 @@ class Client(object):
         self.secure_channel_timeout = self.default_timeout
         self.session_timeout = self.default_timeout
         self._policy_ids = []
-        self.bclient = BinaryClient(timeout)
+        self.uaclient = UaClient(timeout)
         self.user_certificate = None
         self.user_private_key = None
         self._session_counter = 1
@@ -123,7 +125,7 @@ class Client(object):
             return
         parts = string.split(',')
         if len(parts) < 4:
-            raise UAError('Wrong format: `{}`, expected at least 4 '
+            raise UaError('Wrong format: `{}`, expected at least 4 '
                     'comma-separated values'.format(string))
         policy_class = getattr(security_policies, 'SecurityPolicy' + parts[0])
         mode = getattr(ua.MessageSecurityMode, parts[1])
@@ -147,7 +149,7 @@ class Client(object):
         cert = uacrypto.load_certificate(certificate_path)
         pk = uacrypto.load_private_key(private_key_path)
         self.security_policy = policy(server_cert, cert, pk, mode)
-        self.bclient.set_security(self.security_policy)
+        self.uaclient.set_security(self.security_policy)
 
     def load_client_certificate(self, path):
         """
@@ -218,16 +220,16 @@ class Client(object):
         """
         connect to socket defined in url
         """
-        self.bclient.connect_socket(self.server_url.hostname, self.server_url.port)
+        self.uaclient.connect_socket(self.server_url.hostname, self.server_url.port)
 
     def disconnect_socket(self):
-        self.bclient.disconnect_socket()
+        self.uaclient.disconnect_socket()
 
     def send_hello(self):
         """
         Send OPC-UA hello to server
         """
-        ack = self.bclient.send_hello(self.server_url.geturl())
+        ack = self.uaclient.send_hello(self.server_url.geturl())
         # FIXME check ack
 
     def open_secure_channel(self, renew=False):
@@ -243,17 +245,17 @@ class Client(object):
         params.RequestedLifetime = self.secure_channel_timeout
         nonce = utils.create_nonce(self.security_policy.symmetric_key_size)   # length should be equal to the length of key of symmetric encryption
         params.ClientNonce = nonce	# this nonce is used to create a symmetric key
-        result = self.bclient.open_secure_channel(params)
+        result = self.uaclient.open_secure_channel(params)
         self.security_policy.make_symmetric_key(nonce, result.ServerNonce)
         self.secure_channel_timeout = result.SecurityToken.RevisedLifetime
 
     def close_secure_channel(self):
-        return self.bclient.close_secure_channel()
+        return self.uaclient.close_secure_channel()
 
     def get_endpoints(self):
         params = ua.GetEndpointsParameters()
         params.EndpointUrl = self.server_url.geturl()
-        return self.bclient.get_endpoints(params)
+        return self.uaclient.get_endpoints(params)
 
     def register_server(self, server, discovery_configuration=None):
         """
@@ -271,9 +273,9 @@ class Client(object):
             params = ua.RegisterServer2Parameters()
             params.Server = serv
             params.DiscoveryConfiguration = discovery_configuration
-            return self.bclient.register_server2(params)
+            return self.uaclient.register_server2(params)
         else:
-            return self.bclient.register_server(serv)
+            return self.uaclient.register_server(serv)
 
     def find_servers(self, uris=None):
         """
@@ -285,12 +287,12 @@ class Client(object):
             uris = []
         params = ua.FindServersParameters()
         params.EndpointUrl = self.server_url.geturl()
-        params.ServerUris = uris 
-        return self.bclient.find_servers(params)
+        params.ServerUris = uris
+        return self.uaclient.find_servers(params)
 
     def find_servers_on_network(self):
         params = ua.FindServersOnNetworkParameters()
-        return self.bclient.find_servers_on_network(params)
+        return self.uaclient.find_servers_on_network(params)
 
     def create_session(self):
         desc = ua.ApplicationDescription()
@@ -308,13 +310,13 @@ class Client(object):
         params.SessionName = self.description + " Session" + str(self._session_counter)
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0  # means no max size
-        response = self.bclient.create_session(params)
+        response = self.uaclient.create_session(params)
         self.security_policy.asymmetric_cryptography.verify(self.security_policy.client_certificate + nonce, response.ServerSignature.Signature)
         self._server_nonce = response.ServerNonce
         if not self.security_policy.server_certificate:
             self.security_policy.server_certificate = response.ServerCertificate
         elif self.security_policy.server_certificate != response.ServerCertificate:
-            raise UAError("Server certificate mismatch")
+            raise UaError("Server certificate mismatch")
         # remember PolicyId's: we will use them in activate_session()
         ep = Client.find_endpoint(response.ServerEndpoints, self.security_policy.Mode, self.security_policy.URI)
         self._policy_ids = ep.UserIdentityTokens
@@ -332,6 +334,20 @@ class Client(object):
             if policy.TokenType == token_type:
                 return policy.PolicyId
         return default
+
+    def server_policy_uri(self, token_type):
+        """
+        Find SecurityPolicyUri of server's UserTokenPolicy by token_type.
+        If SecurityPolicyUri is empty, use default SecurityPolicyUri
+        of the endpoint
+        """
+        for policy in self._policy_ids:
+            if policy.TokenType == token_type:
+                if policy.SecurityPolicyUri:
+                    return policy.SecurityPolicyUri
+                else:   # empty URI means "use this endpoint's policy URI"
+                    return self.security_policy.URI
+        return self.security_policy.URI
 
     def activate_session(self, username=None, password=None, certificate=None):
         """
@@ -357,18 +373,19 @@ class Client(object):
             params.UserTokenSignature.Signature = sig
         else:
             params.UserIdentityToken = ua.UserNameIdentityToken()
-            params.UserIdentityToken.UserName = username 
+            params.UserIdentityToken.UserName = username
             if self.server_url.password:
                 pubkey = uacrypto.x509_from_der(self.security_policy.server_certificate).public_key()
                 # see specs part 4, 7.36.3: if the token is encrypted, password
                 # shall be converted to UTF-8 and serialized with server nonce
                 etoken = ua.pack_bytes(bytes(password, "utf8") + self._server_nonce)
-                #data = uacrypto.encrypt_basic256(pubkey, etoken)
-                data = uacrypto.encrypt_rsa_oaep(pubkey, etoken)
+                (data, uri) = security_policies.encrypt_asymmetric(pubkey,
+                        etoken,
+                        self.server_policy_uri(ua.UserTokenType.UserName))
                 params.UserIdentityToken.Password = data
+                params.UserIdentityToken.EncryptionAlgorithm = uri
             params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")
-            params.UserIdentityToken.EncryptionAlgorithm = 'http://www.w3.org/2001/04/xmlenc#rsa-oaep'
-        return self.bclient.activate_session(params)
+        return self.uaclient.activate_session(params)
 
     def close_session(self):
         """
@@ -376,7 +393,7 @@ class Client(object):
         """
         if self.keepalive:
             self.keepalive.stop()
-        return self.bclient.close_session(True)
+        return self.uaclient.close_session(True)
 
     def get_root_node(self):
         return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.RootFolder))
@@ -391,7 +408,7 @@ class Client(object):
         """
         Get node using NodeId object or a string representing a NodeId
         """
-        return Node(self.bclient, nodeid)
+        return Node(self.uaclient, nodeid)
 
     def create_subscription(self, period, handler):
         """
@@ -401,7 +418,7 @@ class Client(object):
         handler argument is a class with data_change and/or event methods.
         These methods will be called when notfication from server are received.
         See example-client.py.
-        Do not do expensive/slow or network operation from these methods 
+        Do not do expensive/slow or network operation from these methods
         since they are called directly from receiving thread. This is a design choice,
         start another thread if you need to do such a thing.
         """
@@ -412,7 +429,7 @@ class Client(object):
         params.MaxNotificationsPerPublish = 10000
         params.PublishingEnabled = True
         params.Priority = 0
-        return Subscription(self.bclient, params, handler)
+        return Subscription(self.uaclient, params, handler)
 
     def get_namespace_array(self):
         ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
@@ -421,3 +438,7 @@ class Client(object):
     def get_namespace_index(self, uri):
         uries = self.get_namespace_array()
         return uries.index(uri)
+
+    def delete_nodes(self, nodes, recursive=False):
+        return delete_nodes(self.uaclient, nodes, recursive)
+            

@@ -33,6 +33,12 @@ class SubHandler(object):
         """
         pass
 
+    def status_change_notification(self, status):
+        """
+        called for every status change notfication from server
+        """
+        pass
+
     def event(self, handle, event):
         """
         Deprecated use event_notification
@@ -82,7 +88,7 @@ class Subscription(object):
     """
     Subscription object returned by Server or Client objects.
     The object represent a subscription to an opc-ua server.
-    This is a high level class, especially subscribe_data_change 
+    This is a high level class, especially subscribe_data_change
     and subscribe_events methods. If more control is necessary look at
     code and/or use create_monitored_items method.
     """
@@ -176,7 +182,7 @@ class Subscription(object):
 
     def _call_status(self, status):
         try:
-            self._handler.status_change(status.Status)
+            self._handler.status_change_notification(status.Status)
         except Exception:
             self.logger.exception("Exception calling status change handler")
 
@@ -211,7 +217,7 @@ class Subscription(object):
 
     def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtype=ua.ObjectIds.BaseEventType):
         """
-        Subscribe to events from a node. Default node is Server node. 
+        Subscribe to events from a node. Default node is Server node.
         In most servers the server node is the only one you can subscribe to.
         Return a handle which can be used to unsubscribe
         """
@@ -265,14 +271,14 @@ class Subscription(object):
         params.SubscriptionId = self.subscription_id
         params.ItemsToCreate = monitored_items
         params.TimestampsToReturn = ua.TimestampsToReturn.Neither
-        
+
         mids = []
         results = self.server.create_monitored_items(params)
         # FIXME: Race condition here
         # We lock as early as possible. But in some situation, a notification may arrives before
-        # locking and we will not be able to prosess it. To avoid issues, users should subscribe 
+        # locking and we will not be able to prosess it. To avoid issues, users should subscribe
         # to all nodes at once
-        with self._lock:  
+        with self._lock:
             for idx, result in enumerate(results):
                 mi = params.ItemsToCreate[idx]
                 if not result.StatusCode.is_good():

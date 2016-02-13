@@ -71,8 +71,12 @@ def create_method(parent, *args):
     callback = args[2]
     if len(args) > 3:
         inputs = args[3]
+    else:
+        inputs = []
     if len(args) > 4:
         outputs = args[4]
+    else:
+        outputs = []
     return _create_method(parent, nodeid, qname, callback, inputs, outputs)
 
 
@@ -194,10 +198,10 @@ def _vtype_to_argument(vtype):
 def _guess_uatype(variant):
     if variant.VariantType == ua.VariantType.ExtensionObject:
         if variant.Value is None:
-            raise ua.UAError("Cannot guess DataType from Null ExtensionObject")
+            raise ua.UaError("Cannot guess DataType from Null ExtensionObject")
         if type(variant.Value) in (list, tuple):
             if len(variant.Value) == 0:
-                raise ua.UAError("Cannot guess DataType from Null ExtensionObject")
+                raise ua.UaError("Cannot guess DataType from Null ExtensionObject")
             extobj = variant.Value[0]
         else:
             extobj = variant.Value
@@ -205,5 +209,28 @@ def _guess_uatype(variant):
         return ua.NodeId(getattr(ua.ObjectIds, classname))
     else:
         return ua.NodeId(getattr(ua.ObjectIds, variant.VariantType.name))
+
+
+def delete_nodes(server, nodes, recursive=False):
+    """
+    Delete specified nodes. Optionally delete recursively all nodes with a
+    downward hierachic references to the node
+    """
+    nodestodelete = []
+    if recursive:
+        nodes += _add_childs(nodes)
+    for mynode in nodes:
+        it = ua.DeleteNodesItem()
+        it.NodeId = mynode.nodeid
+        it.DeleteTargetReferences = True
+        nodestodelete.append(it)
+    return server.delete_nodes(nodestodelete)
+
+
+def _add_childs(nodes):
+    results = []
+    for mynode in nodes[:]:
+        results += mynode.get_children()
+    return results
 
 

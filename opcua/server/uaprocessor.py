@@ -15,7 +15,7 @@ class PublishRequestData(object):
         self.seqhdr = None
 
 
-class UAProcessor(object):
+class UaProcessor(object):
 
     def __init__(self, internal_server, socket):
         self.logger = logging.getLogger(__name__)
@@ -254,6 +254,18 @@ class UAProcessor(object):
             response.Results = results
 
             self.logger.info("sending add node response")
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.DeleteNodesRequest_Encoding_DefaultBinary):
+            self.logger.info("delete nodes request")
+            params = ua.DeleteNodesParameters.from_binary(body)
+
+            results = self.session.delete_nodes(params.NodesToDelete)
+
+            response = ua.DeleteNodesResponse()
+            response.Results = results
+
+            self.logger.info("sending delete node response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.CreateSubscriptionRequest_Encoding_DefaultBinary):
