@@ -428,8 +428,11 @@ class AddressSpace(object):
         """
         dump address space as binary to file
         """
-        with open(path, 'wb') as f:
-            pickle.dump(self._nodes, f, pickle.HIGHEST_PROTOCOL)
+        try:
+            with open(path, 'wb') as f:
+                pickle.dump(self._nodes, f, pickle.HIGHEST_PROTOCOL)
+        except TypeError:
+            self.logger.info("Failed to dump address space")
 
     def load(self, path):
         """
