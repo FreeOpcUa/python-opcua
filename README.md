@@ -74,10 +74,12 @@ Server: what works:
 Tested clients: freeopcua C++, freeopcua Python, uaexpert, prosys, quickopc
 
 Server: what is not implemented
+* history support
+* views
 * localized text feature
 * better securty model with users and password
 * adding some missing modify methods
-* views
+
 
 
 # Development
