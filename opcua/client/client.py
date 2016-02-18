@@ -108,7 +108,7 @@ class Client(object):
                     ep.SecurityMode == security_mode and
                     ep.SecurityPolicyUri == policy_uri):
                 return ep
-        raise ValueError("No matching endpoints: {}, {}".format(
+        raise ua.UaError("No matching endpoints: {}, {}".format(
                          security_mode, policy_uri))
 
     def set_security_string(self, string):
@@ -125,7 +125,7 @@ class Client(object):
             return
         parts = string.split(',')
         if len(parts) < 4:
-            raise UaError('Wrong format: `{}`, expected at least 4 '
+            raise ua.UaError('Wrong format: `{}`, expected at least 4 '
                     'comma-separated values'.format(string))
         policy_class = getattr(security_policies, 'SecurityPolicy' + parts[0])
         mode = getattr(ua.MessageSecurityMode, parts[1])
@@ -316,7 +316,7 @@ class Client(object):
         if not self.security_policy.server_certificate:
             self.security_policy.server_certificate = response.ServerCertificate
         elif self.security_policy.server_certificate != response.ServerCertificate:
-            raise UaError("Server certificate mismatch")
+            raise ua.UaError("Server certificate mismatch")
         # remember PolicyId's: we will use them in activate_session()
         ep = Client.find_endpoint(response.ServerEndpoints, self.security_policy.Mode, self.security_policy.URI)
         self._policy_ids = ep.UserIdentityTokens
