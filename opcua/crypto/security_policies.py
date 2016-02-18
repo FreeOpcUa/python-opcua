@@ -448,4 +448,4 @@ def encrypt_asymmetric(pubkey, data, policy_uri):
         if policy_uri == cls.URI:
             return (cls.encrypt_asymmetric(pubkey, data),
                     cls.AsymmetricEncryptionURI)
-    raise UaError("Unsupported security policy `{}`".format(uri))
+    raise UaError("Unsupported security policy `{}`".format(policy_uri))
