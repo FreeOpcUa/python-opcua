@@ -13,9 +13,8 @@ class TestClient(unittest.TestCase, CommonTests):
 
     '''
     Run common tests on client side
-    Of course we need a server so we start a server in another
-    process using python Process module
-    Tests that can only be run on client side must be defined here
+    Of course we need a server so we start also start a server
+    Tests that can only be run on client side must be defined  in this class
     '''
     @classmethod
     def setUpClass(self):

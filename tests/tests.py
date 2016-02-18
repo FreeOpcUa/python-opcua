@@ -10,6 +10,7 @@ from tests_cmd_lines import TestCmdLines
 from tests_server import TestServer
 from tests_client import TestClient
 from tests_unit import Unit
+from tests_crypto_connect import TestCryptoConnect
 
 
 if __name__ == '__main__':
