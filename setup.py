@@ -40,8 +40,9 @@ if sys.version_info[0] < 3 or sys.version_info[1] < 4:
     # python 2.7 - python 3.3
     install_requires.append("enum34")
 
-setup(name="freeopcua",
-      version="0.10.6",
+
+setup(name="freeopcua", 
+      version="0.10.7",
       description="Pure Python OPC-UA client and server library",
       author="Olivier Roulet-Dubonnet",
       author_email="olivier.roulet@gmail.com",
