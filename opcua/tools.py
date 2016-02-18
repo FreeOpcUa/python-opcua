@@ -25,7 +25,7 @@ def add_minimum_args(parser):
     parser.add_argument("-u",
                         "--url",
                         help="URL of OPC UA server (for example: opc.tcp://example.org:4840)",
-                        default='opc.tcp://localhost:4841',
+                        default='opc.tcp://localhost:4840',
                         metavar="URL")
     parser.add_argument("-v",
                         "--verbose",
@@ -470,8 +470,8 @@ def uaserver():
     # we setup a server, this is a bit different from other tool so we do not reuse common arguments
     parser.add_argument("-u",
                         "--url",
-                        help="URL of OPC UA server, default is opc.tcp://0.0.0.0:4841",
-                        default='opc.tcp://0.0.0.0:4841',
+                        help="URL of OPC UA server, default is opc.tcp://0.0.0.0:4840",
+                        default='opc.tcp://0.0.0.0:4840',
                         metavar="URL")
     parser.add_argument("-v",
                         "--verbose",
