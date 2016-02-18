@@ -97,10 +97,12 @@ class UAClientProtocol(uaasync.asyncio.Protocol):
         if len(buf) < 8:
             # a UA Header is at least 8 bytes, wait for more
             return None
+        buf_copy = buf.copy()
         try:
             header = ua.Header.from_string(buf)
         except ua.NotEnoughData:
             # not enougth data for header, wait for more
+            self._buffer = buf_copy
             return None
         self._cur_header = header
         return header
