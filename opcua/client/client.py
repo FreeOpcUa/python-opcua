@@ -125,8 +125,7 @@ class Client(object):
             return
         parts = string.split(',')
         if len(parts) < 4:
-            raise ua.UaError('Wrong format: `{}`, expected at least 4 '
-                    'comma-separated values'.format(string))
+            raise ua.UaError('Wrong format: `{}`, expected at least 4 comma-separated values'.format(string))
         policy_class = getattr(security_policies, 'SecurityPolicy' + parts[0])
         mode = getattr(ua.MessageSecurityMode, parts[1])
         return self.set_security(policy_class, parts[2], parts[3],
@@ -158,6 +157,9 @@ class Client(object):
         self.user_certificate = uacrypto.load_certificate(path)
 
     def load_private_key(self, path):
+        """
+        Load user private key. This is used for authenticating using certificate
+        """
         self.user_private_key = uacrypto.load_private_key(path)
 
     def connect_and_get_server_endpoints(self):
@@ -295,6 +297,11 @@ class Client(object):
         return self.uaclient.find_servers_on_network(params)
 
     def create_session(self):
+        """
+        send a CreateSessionRequest to server with reasonable parameters.
+        If you want o modify settings look at code of this methods
+        and make your own
+        """
         desc = ua.ApplicationDescription()
         desc.ApplicationUri = self.application_uri
         desc.ProductUri = self.product_uri

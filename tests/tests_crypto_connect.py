@@ -3,6 +3,7 @@ import unittest
 from opcua import Client
 from opcua import Server
 from opcua import ua
+from opcua.crypto import security_policies
 
 port_num1 = 48515
 port_num2 = 48512
@@ -59,6 +60,60 @@ class TestCryptoConnect(unittest.TestCase):
             self.assertTrue(clt.get_objects_node().get_children())
         finally:
             clt.disconnect()
+
+    def test_basic256_encrypt(self):
+        clt = Client(self.uri_crypto)
+        try:
+            clt.set_security_string("Basic256,SignAndEncrypt,examples/example-certificate.der,examples/example-private-key.pem")
+            clt.connect()
+            self.assertTrue(clt.get_objects_node().get_children())
+        finally:
+            clt.disconnect()
+
+    def test_basic128Rsa15(self):
+        clt = Client(self.uri_crypto)
+        try:
+            clt.set_security_string("Basic128Rsa15,Sign,examples/example-certificate.der,examples/example-private-key.pem")
+            clt.connect()
+            self.assertTrue(clt.get_objects_node().get_children())
+        finally:
+            clt.disconnect()
+
+    def test_basic128Rsa15_encrypt(self):
+        clt = Client(self.uri_crypto)
+        try:
+            clt.set_security_string("Basic128Rsa15,SignAndEncrypt,examples/example-certificate.der,examples/example-private-key.pem")
+            clt.connect()
+            self.assertTrue(clt.get_objects_node().get_children())
+        finally:
+            clt.disconnect()
+
+    def test_basic256_encrypt_success(self):
+        clt = Client(self.uri_crypto)
+        try:
+            clt.set_security(security_policies.SecurityPolicyBasic256,
+                             'examples/example-certificate.der',
+                             'examples/example-private-key.pem',
+                             None,
+                             ua.MessageSecurityMode.SignAndEncrypt
+                             )
+            clt.connect()
+            self.assertTrue(clt.get_objects_node().get_children())
+        finally:
+            clt.disconnect()
+
+    def test_basic256_encrypt_feil(self):
+        # FIXME: how to make it feil???
+        clt = Client(self.uri_crypto)
+        with self.assertRaises(ua.UaError):
+            clt.set_security(security_policies.SecurityPolicyBasic256,
+                             'examples/example-certificate.der',
+                             'examples/example-private-key.pem',
+                             None,
+                             ua.MessageSecurityMode.None_
+                             )
+
+
 
 
 
