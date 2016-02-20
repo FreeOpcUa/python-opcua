@@ -9,6 +9,9 @@ except ImportError:
     CRYPTOGRAPHY_AVAILABLE = False
 
 
+POLICY_NONE_URI = 'http://opcfoundation.org/UA/SecurityPolicy#None'
+
+
 def require_cryptography(obj):
     """
     Raise exception if cryptography module is not available.
@@ -448,4 +451,6 @@ def encrypt_asymmetric(pubkey, data, policy_uri):
         if policy_uri == cls.URI:
             return (cls.encrypt_asymmetric(pubkey, data),
                     cls.AsymmetricEncryptionURI)
+    if not policy_uri or policy_uri == POLICY_NONE_URI:
+        return (data, '')
     raise UaError("Unsupported security policy `{}`".format(policy_uri))

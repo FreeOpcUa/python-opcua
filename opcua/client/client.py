@@ -381,14 +381,23 @@ class Client(object):
         else:
             params.UserIdentityToken = ua.UserNameIdentityToken()
             params.UserIdentityToken.UserName = username
-            if self.server_url.password:
+            policy_uri = self.server_policy_uri(ua.UserTokenType.UserName)
+            if not policy_uri or policy_uri == security_policies.POLICY_NONE_URI:
+                # see specs part 4, 7.36.3: if the token is NOT encrypted,
+                # then the password only contains UTF-8 encoded password
+                # and EncryptionAlgorithm is null
+                if self.server_url.password:
+                    self.logger.warning("Sending plain-text password")
+                    params.UserIdentityToken.Password = password
+                params.UserIdentityToken.EncryptionAlgorithm = ''
+            elif self.server_url.password:
                 pubkey = uacrypto.x509_from_der(self.security_policy.server_certificate).public_key()
                 # see specs part 4, 7.36.3: if the token is encrypted, password
                 # shall be converted to UTF-8 and serialized with server nonce
                 etoken = ua.pack_bytes(bytes(password, "utf8") + self._server_nonce)
                 (data, uri) = security_policies.encrypt_asymmetric(pubkey,
                         etoken,
-                        self.server_policy_uri(ua.UserTokenType.UserName))
+                        policy_uri)
                 params.UserIdentityToken.Password = data
                 params.UserIdentityToken.EncryptionAlgorithm = uri
             params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")
