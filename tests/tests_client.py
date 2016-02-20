@@ -25,7 +25,8 @@ class TestClient(unittest.TestCase, CommonTests):
         self.srv.start()
 
         # start admin client
-        self.clt = Client('opc.tcp://admin@localhost:%d' % port_num1)
+        # long timeout since travis (automated testing) can be really slow
+        self.clt = Client('opc.tcp://admin@localhost:%d' % port_num1, timeout=10)
         self.clt.connect()
         self.opc = self.clt
 
