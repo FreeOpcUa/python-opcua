@@ -4,6 +4,7 @@ Internal server implementing opcu-ua interface. can be used on server side or to
 
 from datetime import datetime
 from copy import copy, deepcopy
+from datetime import timedelta
 import logging
 from threading import Lock
 from enum import Enum
@@ -16,6 +17,7 @@ except ImportError:
 from opcua import ua
 from opcua.common import utils
 from opcua.common.node import Node
+from opcua.server.history import HistoryManager
 from opcua.server.address_space import AddressSpace
 from opcua.server.address_space import AttributeService
 from opcua.server.address_space import ViewService
@@ -66,6 +68,8 @@ class InternalServer(object):
         self.loop = utils.ThreadLoop()
         self.asyncio_transports = []
         self.subscription_service = SubscriptionService(self.loop, self.aspace)
+
+        self.history_manager = HistoryManager(self)
 
         # create a session to use on server side
         self.isession = InternalSession(self, self.aspace, self.subscription_service, "Internal", user=User.Admin)
@@ -147,6 +151,21 @@ class InternalServer(object):
 
     def create_session(self, name, user=User.Anonymous, external=False):
         return InternalSession(self, self.aspace, self.subscription_service, name, user=user, external=external)
+
+    def enable_history(self, node, period=timedelta(days=7)):
+        """
+        Set attribute Historizing of node to True and start storing data for history
+        """
+        node.set_attribute(ua.AttributeIds.Historizing, ua.DataValue(True))
+        self.history_manager.historize(node, period)
+
+    def disable_history(self, node):
+        """
+        Set attribute Historizing of node to False and stop storing data for history
+        """
+        node.set_attribute(ua.AttributeIds.Historizing, ua.DataValue(False))
+        self.history_manager.dehistorize(node)
+
 
 
 class InternalSession(object):

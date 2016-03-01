@@ -3,6 +3,8 @@ High level node object, to access node attribute
 and browse address space
 """
 
+from datetime import timedelta
+
 from opcua import ua
 
 
@@ -39,6 +41,9 @@ class Node(object):
     def __str__(self):
         return "Node({})".format(self.nodeid)
     __repr__ = __str__
+
+    def __hash__(self):
+        return self.nodeid.__hash__()
 
     def get_browse_name(self):
         """
