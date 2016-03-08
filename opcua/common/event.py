@@ -18,8 +18,6 @@ class EventGenerator(object):
         server: The InternalSession object to use for query and event triggering
 
         event: The event object
-
-        source: The emiting source for the node, either an objectId, NodeId or a Node
     """
 
     def __init__(self, isession, event=ua.BaseEvent()):
