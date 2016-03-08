@@ -10,7 +10,7 @@ Pure Python OPC-UA library
 from opcua.common.node import Node
 
 from opcua.common.methods import uamethod
-from opcua.common.event import Event
+from opcua.common.event import EventGenerator
 from opcua.common.subscription import Subscription
 from opcua.client.client import Client
 from opcua.server.server import Server

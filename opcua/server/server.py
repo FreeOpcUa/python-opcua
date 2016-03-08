@@ -14,7 +14,7 @@ from opcua import ua
 from opcua.server.binary_server_asyncio import BinaryServer
 from opcua.server.internal_server import InternalServer
 from opcua.common.node import Node
-from opcua.common.event import Event
+from opcua.common.event import EventGenerator
 from opcua.common.subscription import Subscription
 from opcua.common import xmlimporter
 from opcua.common.manage_nodes import delete_nodes
@@ -125,7 +125,7 @@ class Server(object):
         re-register every period seconds
         if period is 0 registration is not automatically renewed
         """
-        # FIXME: habe a period per discovery 
+        # FIXME: habe a period per discovery
         if url in self._discovery_clients:
             self._discovery_clients[url].disconnect()
         self._discovery_clients[url] = Client(url)
@@ -318,12 +318,12 @@ class Server(object):
         uries = self.get_namespace_array()
         return uries.index(uri)
 
-    def get_event_object(self, etype=ua.ObjectIds.BaseEventType, source=ua.ObjectIds.Server):
+    def get_event_object(self, event=ua.BaseEvent(), source=ua.ObjectIds.Server):
         """
         Returns an event object using an event type from address space.
         Use this object to fire events
         """
-        return Event(self.iserver.isession, etype, source)
+        return EventGenerator(self.iserver.isession, event, source)
 
     def import_xml(self, path):
         """
@@ -334,4 +334,4 @@ class Server(object):
 
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.iserver.isession, nodes, recursive)
- 
+

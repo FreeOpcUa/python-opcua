@@ -6,9 +6,8 @@ from datetime import timedelta
 import math
 
 from opcua import ua
-from opcua import Event
+from opcua import EventGenerator
 from opcua import uamethod
-from opcua import Event
 
 
 def add_server_methods(srv):
@@ -86,7 +85,7 @@ class MySubHandler():
 
 class MySubHandler2():
     def __init__(self):
-        self.results = [] 
+        self.results = []
 
     def datachange_notification(self, node, val, data):
         self.results.append((node, val))
@@ -236,20 +235,20 @@ class CommonTests(object):
         sub = self.opc.create_subscription(100, msclt)
         handle = sub.subscribe_events()
 
-        ev = Event(self.srv.iserver.isession)
+        eg = EventGenerator(self.srv.iserver.isession)
         msg = b"this is my msg "
-        ev.Message.Text = msg
+        eg.event.Message.Text = msg
         tid = datetime.utcnow()
-        ev.Time = tid
-        ev.Severity = 500
-        ev.trigger()
+        eg.event.Time = tid
+        eg.event.Severity = 500
+        eg.trigger()
 
-        clthandle, ev = msclt.future.result()
-        self.assertIsNot(ev, None)  # we did not receive event
-        self.assertEqual(ev.Message.Text, msg)
-        #self.assertEqual(msclt.ev.Time, tid)
-        self.assertEqual(ev.Severity, 500)
-        self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
+        clthandle, eg = msclt.future.result()
+        self.assertIsNot(eg, None)  # we did not receive event
+        self.assertEqual(eg.event.Message.Text, msg)
+        #self.assertEqual(msclt.eg.Time, tid)
+        self.assertEqual(eg.event.Severity, 500)
+        self.assertEqual(eg.event.SourceNode, self.opc.get_server_node().nodeid)
 
         # time.sleep(0.1)
         sub.unsubscribe(handle)
@@ -260,20 +259,20 @@ class CommonTests(object):
         sub = self.opc.create_subscription(100, msclt)
         handle = sub.subscribe_events()
 
-        ev = Event(self.srv.iserver.isession)
+        eg = EventGenerator(self.srv.iserver.isession)
         msg = b"this is my msg "
-        ev.Message.Text = msg
+        eg.event.Message.Text = msg
         tid = datetime.utcnow()
-        ev.Time = tid
-        ev.Severity = 500
-        ev.trigger()
+        eg.event.Time = tid
+        eg.event.Severity = 500
+        eg.trigger()
 
-        ev = msclt.future.result()
-        self.assertIsNot(ev, None)  # we did not receive event
-        self.assertEqual(ev.Message.Text, msg)
-        #self.assertEqual(msclt.ev.Time, tid)
-        self.assertEqual(ev.Severity, 500)
-        self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
+        eg = msclt.future.result()
+        self.assertIsNot(eg, None)  # we did not receive event
+        self.assertEqual(eg.event.Message.Text, msg)
+        #self.assertEqual(msclt.eg.Time, tid)
+        self.assertEqual(eg.event.Severity, 500)
+        self.assertEqual(eg.event.SourceNode, self.opc.get_server_node().nodeid)
 
         # time.sleep(0.1)
         sub.unsubscribe(handle)
@@ -350,7 +349,7 @@ class CommonTests(object):
     def test_utf8(self):
         objects = self.opc.get_objects_node()
         utf_string = "æøå@%&"
-        bn = ua.QualifiedName(utf_string, 3) 
+        bn = ua.QualifiedName(utf_string, 3)
         nid = ua.NodeId("æølå", 3)
         val = "æøå"
         v = objects.add_variable(nid, bn, val)
@@ -651,7 +650,7 @@ class CommonTests(object):
         o = self.opc.get_objects_node()
 
         # subscribe to a variable
-        startv1 = True 
+        startv1 = True
         v1 = o.add_variable(3, 'SubscriptionVariableBool', startv1)
         sub = self.opc.create_subscription(100, msclt)
         handle1 = sub.subscribe_data_change(v1)
@@ -681,9 +680,9 @@ class CommonTests(object):
         msclt = MySubHandler2()
         o = self.opc.get_objects_node()
 
-        startv1 = True 
+        startv1 = True
         v1 = o.add_variable(3, 'SubscriptionVariableMany1', startv1)
-        startv2 = [1.22, 1.65] 
+        startv2 = [1.22, 1.65]
         v2 = o.add_variable(3, 'SubscriptionVariableMany2', startv2)
 
         sub = self.opc.create_subscription(100, msclt)
@@ -691,7 +690,7 @@ class CommonTests(object):
 
         # Now check we get the start values
         nodes = [v1, v2]
-       
+
         count = 0
         while not len(msclt.results) > 1:
             count += 1
@@ -708,7 +707,7 @@ class CommonTests(object):
             else:
                 self.fail("Error node {} is neither {} nor {}".format(node, v1, v2))
 
-        sub.delete() 
+        sub.delete()
 
     def test_subscribe_server_time(self):
         msclt = MySubHandler()
