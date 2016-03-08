@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     # creating an event object
     # The event object automatically will have members for all events properties
-    myeventgen = server.get_event_object(ua.BaseEvent(objects.nodeid, "This is my event", 300), objects)
+    myeventgen = server.get_event_object(ua.BaseEvent(objects.nodeid, "This is my event", 300))
 
     # starting!
     server.start()

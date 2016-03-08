@@ -1110,6 +1110,8 @@ class BaseEvent(FrozenClass):
         self.LocalTime = None
         self.Message = LocalizedText(message)
         self.Severity = Variant(severity, VariantType.UInt16)
+        # FIXME: Should be frozen but for now is not because of asigning parameters
+        #self._freeze = True
 
     def __str__(self):
         s = 'BaseEventType(EventId:{}'.format(self.EventId)

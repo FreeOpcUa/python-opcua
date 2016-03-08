@@ -22,22 +22,14 @@ class EventGenerator(object):
         source: The emiting source for the node, either an objectId, NodeId or a Node
     """
 
-    def __init__(self, isession, event=ua.BaseEvent(), source=ua.ObjectIds.Server):
+    def __init__(self, isession, event=ua.BaseEvent()):
         self.isession = isession
         self.event = event
 
-        if isinstance(source, Node):
-            self.source = source
-        elif isinstance(source, ua.NodeId):
-            self.source = Node(isession, source)
-        else:
-            self.source = Node(isession, ua.NodeId(source))
-
-        if self.event.SourceNode:
-            self.source = Node(isession, self.event.SourceNode)
-
-        self.event.SourceName = self.source.get_display_name().Text
-        self.source.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(1, ua.VariantType.Byte)))
+        self.source = Node(isession, self.event.SourceNode)
+        if self.event.SourceNode.Identifier:
+            self.event.SourceName = self.source.get_display_name().Text
+            self.source.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(1, ua.VariantType.Byte)))
 
     def __str__(self):
         return "EventGenerator(Event:{})".format(self.event)
@@ -57,6 +49,6 @@ class EventGenerator(object):
         self.event.LocaleTime = datetime.utcnow()
         if message:
             self.Message = ua.LocalizedText(message)
-        elif not self.event.Message:
+        elif not self.event.Message and self.event.SourceNode.Identifier:
             self.event.Message = ua.LocalizedText(self.source.get_browse_name().Text)
         self.isession.subscription_service.trigger_event(self.event)
