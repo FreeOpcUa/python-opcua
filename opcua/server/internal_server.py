@@ -64,6 +64,7 @@ class InternalServer(object):
         #importer.import_xml("/home/olivier/python-opcua/schemas/Opc.Ua.NodeSet2.xml")
 
         self.loop = utils.ThreadLoop()
+        self.asyncio_transports = []
         self.subscription_service = SubscriptionService(self.loop, self.aspace)
 
         # create a session to use on server side
