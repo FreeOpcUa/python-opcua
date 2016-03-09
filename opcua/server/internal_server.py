@@ -3,7 +3,7 @@ Internal server implementing opcu-ua interface. can be used on server side or to
 """
 
 from datetime import datetime
-from copy import copy
+from copy import copy, deepcopy
 import logging
 from threading import Lock
 from enum import Enum
@@ -166,8 +166,7 @@ class InternalSession(object):
         self.authentication_token = ua.NodeId(self._auth_counter)
         InternalSession._auth_counter += 1
         self.subscriptions = []
-        #self.logger.debug("Created internal session %s for user %s", self.name, self.user)
-        print("Created internal session {} for user {}".format(self.name, self.user))
+        self.logger.info("Created internal session %s for user %s", self.name, self.user)
         self._lock = Lock()
 
     def __str__(self):
@@ -212,14 +211,16 @@ class InternalSession(object):
         return result
 
     def read(self, params):
-        return self.iserver.attribute_service.read(params)
+        results = self.iserver.attribute_service.read(params)
+        if self.external:
+            return results
+        return [deepcopy(dv) for dv in results]
 
     def write(self, params):
         if not self.external:
             # If session is internal we need to store a copy og object, not a reference,
             #otherwise users may change it and we will not generate expected events
-            for ntw in params.NodesToWrite:
-                ntw.Value.Value.Value = copy(ntw.Value.Value.Value)
+            params.NodesToWrite = [deepcopy(ntw) for ntw in params.NodesToWrite]
         return self.iserver.attribute_service.write(params, self.user)
 
     def browse(self, params):
