@@ -26,7 +26,7 @@ class MonitoredItemService(object):
     """
 
     def __init__(self, isub, aspace):
-        self.logger = logging.getLogger(__name__ + str(isub.data.SubscriptionId))
+        self.logger = logging.getLogger(__name__ + "." + str(isub.data.SubscriptionId))
         self.isub = isub
         self.aspace = aspace
         self._lock = RLock()
@@ -193,7 +193,7 @@ class MonitoredItemService(object):
 class InternalSubscription(object):
 
     def __init__(self, subservice, data, addressspace, callback):
-        self.logger = logging.getLogger(__name__ + str(data.SubscriptionId))
+        self.logger = logging.getLogger(__name__ + "." + str(data.SubscriptionId))
         self.aspace = addressspace
         self.subservice = subservice
         self.data = data

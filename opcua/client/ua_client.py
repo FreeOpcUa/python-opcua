@@ -18,7 +18,7 @@ class UASocketClient(object):
     timeout is the timeout used while waiting for an ua answer from server
     """
     def __init__(self, timeout=1, security_policy=ua.SecurityPolicy()):
-        self.logger = logging.getLogger(__name__ + "Socket")
+        self.logger = logging.getLogger(__name__ + ".Socket")
         self._thread = None
         self._lock = Lock()
         self.timeout = timeout
