@@ -52,10 +52,12 @@ class BinaryServer(object):
                 self.processor = UaProcessor(self.iserver, self.transport)
                 self.processor.set_policies(self.policies)
                 self.data = b""
+                self.iserver.asyncio_transports.append(transport)
 
             def connection_lost(self, ex):
                 self.logger.info('Lost connection from %s, %s', self.peername, ex)
                 self.transport.close()
+                self.iserver.asyncio_transports.remove(self.transport)
                 self.processor.close()
 
             def data_received(self, data):
@@ -98,5 +100,7 @@ class BinaryServer(object):
 
     def stop(self):
         self.logger.info("Closing asyncio socket server")
+        for transport in self.iserver.asyncio_transports:
+            transport.close()
         self.loop.call_soon(self._server.close)
         self.loop.run_coro_and_wait(self._server.wait_closed())
