@@ -148,7 +148,7 @@ class Subscription(object):
                 except Exception:
                     self.logger.exception("Exception calling data change handler")
             elif hasattr(self._handler, "data_change"):  # deprecated API
-                self.logger.warning("data_change method is deprecated, use datavalue_changed")
+                self.logger.warning("data_change method is deprecated, use datachange_notification")
                 try:
                     self._handler.data_change(data.server_handle, data.node, item.Value.Value.Value, data.attribute)
                 except Exception:
@@ -193,7 +193,7 @@ class Subscription(object):
         Return a handle which can be used to unsubscribe
         If more control is necessary use create_monitored_items method
         """
-        return self._subscribe(nodes, attr, queuesize=1)
+        return self._subscribe(nodes, attr, queuesize=0)
 
     def _get_node(self, nodeid):
         if isinstance(nodeid, ua.NodeId):
