@@ -378,7 +378,9 @@ def uasubscribe():
             sub.subscribe_data_change(node)
         else:
             sub.subscribe_events(node)
-        embed()
+        print("Type Ctr-C to exit")
+        while True:
+            time.sleep(1)
     finally:
         client.disconnect()
     sys.exit(0)
