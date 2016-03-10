@@ -23,5 +23,9 @@ if CRYPTOGRAPHY_AVAILABLE:
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARNING)
+    #l = logging.getLogger("opcua.server.internal_subscription")
+    #l.setLevel(logging.DEBUG)
+    #l = logging.getLogger("opcua.server.internal_server")
+    #l.setLevel(logging.DEBUG)
 
     unittest.main(verbosity=3)

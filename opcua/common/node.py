@@ -33,6 +33,9 @@ class Node(object):
             return True
         return False
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __str__(self):
         return "Node({})".format(self.nodeid)
     __repr__ = __str__

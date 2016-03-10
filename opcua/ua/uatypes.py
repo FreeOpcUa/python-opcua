@@ -334,6 +334,12 @@ class StatusCode(FrozenClass):
         return 'StatusCode({})'.format(self.name)
     __repr__ = __str__
 
+    def __eq__(self, other):
+        return self.value == other.value
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 class NodeIdType(Enum):
     TwoByte = 0
@@ -396,6 +402,9 @@ class NodeId(FrozenClass):
 
     def __eq__(self, node):
         return isinstance(node, NodeId) and self.__key() == node.__key()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def __hash__(self):
         return hash(self.__key())
@@ -608,6 +617,9 @@ class QualifiedName(FrozenClass):
     def __eq__(self, bname):
         return isinstance(bname, QualifiedName) and self.Name == bname.Name and self.NamespaceIndex == bname.NamespaceIndex
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __str__(self):
         return 'QualifiedName({}:{})'.format(self.NamespaceIndex, self.Name)
 
@@ -667,6 +679,9 @@ class LocalizedText(FrozenClass):
         if isinstance(other, LocalizedText) and self.Locale == other.Locale and self.Text == other.Text:
             return True
         return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 class ExtensionObject(FrozenClass):
@@ -834,6 +849,9 @@ class Variant(FrozenClass):
         if isinstance(other, Variant) and self.VariantType == other.VariantType and self.Value == other.Value:
             return True
         return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def _guess_type(self, val):
         while isinstance(val, (list, tuple)):
