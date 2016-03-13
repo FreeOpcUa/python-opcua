@@ -333,6 +333,18 @@ class UaProcessor(object):
             self.logger.info("sending delete monitored items response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
+        elif typeid == ua.NodeId(ua.ObjectIds.HistoryReadRequest_Encoding_DefaultBinary):
+            self.logger.info("history read request")
+            params = ua.HistoryReadRequest.from_binary(body)
+
+            results = self.session.history_read(params)
+
+            response = ua.HistoryReadResponse()
+            response.Results = results
+
+            self.logger.info("sending history read response")
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
         elif typeid == ua.NodeId(ua.ObjectIds.PublishRequest_Encoding_DefaultBinary):
             self.logger.info("publish request")
 

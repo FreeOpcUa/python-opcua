@@ -867,4 +867,14 @@ class CommonTests(object):
         self.assertTrue(len(endpoints) > 0)
         self.assertTrue(endpoints[0].EndpointUrl.startswith("opc.tcp://"))
 
+    def test_history_read(self):
+        o = self.srv.get_objects_node()
+        start_val = 0.1
+        var = o.add_variable(3, "history_var", start_val)
+        self.srv.iserver.enable_history(var, period=None, count=10)
+        for _ in range(20):
+            start_val += 0.1
+            var.set_value(start_val)
+        time.sleep(1)
+
 

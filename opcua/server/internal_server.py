@@ -152,12 +152,12 @@ class InternalServer(object):
     def create_session(self, name, user=User.Anonymous, external=False):
         return InternalSession(self, self.aspace, self.subscription_service, name, user=user, external=external)
 
-    def enable_history(self, node, period=timedelta(days=7)):
+    def enable_history(self, node, period=timedelta(days=7), count=0):
         """
         Set attribute Historizing of node to True and start storing data for history
         """
         node.set_attribute(ua.AttributeIds.Historizing, ua.DataValue(True))
-        self.history_manager.historize(node, period)
+        self.history_manager.historize(node, period, count)
 
     def disable_history(self, node):
         """
@@ -237,6 +237,9 @@ class InternalSession(object):
         if self.external:
             return results
         return [deepcopy(dv) for dv in results]
+
+    def history_read(self, params):
+        return self.iserver.history_manager.read_history(params)
 
     def write(self, params):
         if not self.external:
