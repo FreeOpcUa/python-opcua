@@ -92,6 +92,35 @@ class Node(object):
         """
         return self.get_attribute(ua.AttributeIds.Value)
 
+    def set_array_dimensions(self, value):
+        """
+        Set attribute ArrayDimensions of node
+        make sure it has the correct data type
+        """
+        v = ua.Variant(value, ua.VariantType.UInt32)
+        self.set_attribute(ua.AttributeIds.ArrayDimensions, ua.DataValue(v))
+
+    def get_array_dimensions(self):
+        """
+        Read and return ArrayDimensions attribute of node
+        """
+        res = self.get_attribute(ua.AttributeIds.ArrayDimensions)
+        return res.Value.Value
+
+    def set_value_rank(self, value):
+        """
+        Set attribute ArrayDimensions of node
+        """
+        v = ua.Variant(value, ua.VariantType.Int32)
+        self.set_attribute(ua.AttributeIds.ValueRank, ua.DataValue(v))
+
+    def get_value_rank(self):
+        """
+        Read and return ArrayDimensions attribute of node
+        """
+        res = self.get_attribute(ua.AttributeIds.ValueRank)
+        return res.Value.Value
+
     def set_value(self, value, varianttype=None):
         """
         Set value of a node. Only variables(properties) have values.
@@ -135,6 +164,8 @@ class Node(object):
     def set_attribute(self, attributeid, datavalue):
         """
         Set an attribute of a node
+        attributeid is a member of ua.AttributeIds
+        datavalue is a ua.DataValue object
         """
         attr = ua.WriteValue()
         attr.NodeId = self.nodeid

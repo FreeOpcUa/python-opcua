@@ -118,6 +118,8 @@ class CommonTests(object):
     '''
     # jyst to avoid editor warnings
     opc = None
+    assertEqual = lambda x, y: True
+    assertIn = lambda x, y: True
 
     def test_find_servers(self):
         servers = self.opc.find_servers()
@@ -322,11 +324,19 @@ class CommonTests(object):
         tid = v1.get_value()
         self.assertEqual(now, tid)
 
-
     def test_variant_array_dim(self):
         objects = self.opc.get_objects_node()
         l = [[[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0], [3.0, 3.0, 3.0, 3.0]],[[5.0, 5.0, 5.0, 5.0], [7.0, 8.0, 9.0, 01.0], [1.0, 1.0, 1.0, 1.0]]]
         v = objects.add_variable(3, 'variableWithDims', l)
+
+        v.set_array_dimensions([0, 0, 0])
+        dim = v.get_array_dimensions()
+        self.assertEqual(dim, [0, 0, 0])
+
+        v.set_value_rank(0)
+        rank = v.get_value_rank()
+        self.assertEqual(rank, 0)
+
         v2 = v.get_value()
         self.assertEqual(v2, l)
         dv = v.get_data_value()
@@ -339,9 +349,6 @@ class CommonTests(object):
         self.assertEqual(v2, l)
         dv = v.get_data_value()
         self.assertEqual(dv.Value.Dimensions, [2,3,0])
-
-
-
 
     def test_add_numeric_variable(self):
         objects = self.opc.get_objects_node()
