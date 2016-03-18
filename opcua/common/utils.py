@@ -98,7 +98,10 @@ class SocketWrapper(object):
         """
         data = b''
         while size > 0:
-            chunk = self.socket.recv(size)
+            try:
+                chunk = self.socket.recv(size)
+            except (OSError, ConnectionResetError):
+                raise SocketClosedException("Server socket has closed")
             if not chunk:
                 raise SocketClosedException("Server socket has closed")
             data += chunk
