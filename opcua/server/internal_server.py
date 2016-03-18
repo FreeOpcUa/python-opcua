@@ -161,6 +161,7 @@ class InternalSession(object):
         self.subscription_service = submgr
         self.name = name
         self.user = user
+        self.nonce = None
         self.state = SessionState.Created
         self.session_id = ua.NodeId(self._counter)
         InternalSession._counter += 1

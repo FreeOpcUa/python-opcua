@@ -2,7 +2,6 @@ import logging
 import sys
 import argparse
 from datetime import datetime
-from enum import Enum
 import math
 import time
 
@@ -135,10 +134,7 @@ def _args_to_array(val, array):
 
 
 def _arg_to_bool(val):
-    if val in ("true", "True"):
-        return True
-    else:
-        return False
+    return val in ("true", "True")
 
 
 def _arg_to_variant(val, array, ptype, varianttype=None):

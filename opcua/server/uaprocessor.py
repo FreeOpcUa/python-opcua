@@ -36,8 +36,7 @@ class UaProcessor(object):
     def send_response(self, requesthandle, algohdr, seqhdr, response, msgtype=ua.MessageType.SecureMessage):
         with self._socketlock:
             response.ResponseHeader.RequestHandle = requesthandle
-            data = self._connection.message_to_binary(response.to_binary(),
-                    msgtype, seqhdr.RequestId)
+            data = self._connection.message_to_binary(response.to_binary(), msgtype, seqhdr.RequestId)
             self.socket.write(data)
 
     def open_secure_channel(self, algohdr, seqhdr, body):

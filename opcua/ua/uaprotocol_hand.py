@@ -5,6 +5,7 @@ from enum import IntEnum
 
 from opcua.ua import uaprotocol_auto as auto
 from opcua.ua import uatypes
+from opcua.ua import UaError
 from opcua.ua.uatypes import uatype_UInt32
 from opcua.common import utils
 
@@ -627,7 +628,7 @@ class SecureConnection(object):
             return msg
         elif header.MessageType == MessageType.Error:
             msg = ErrorMessage.from_binary(body)
-            logger.warning("Received an error: {}".format(msg))
+            logger.warning("Received an error: %s", msg)
             return msg
         else:
             raise UaError("Unsupported message type {}".format(header.MessageType))
@@ -653,7 +654,7 @@ class SecureConnection(object):
             return None
         if msg.MessageHeader.ChunkType == ChunkType.Abort:
             err = ErrorMessage.from_binary(utils.Buffer(msg.Body))
-            logger.warning("Message {} aborted: {}".format(msg, err))
+            logger.warning("Message %s aborted: %s", msg, err)
             # specs Part 6, 6.7.3 say that aborted message shall be ignored
             # and SecureChannel should not be closed
             self._incoming_parts = []

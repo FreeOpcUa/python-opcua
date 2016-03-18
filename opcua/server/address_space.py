@@ -201,7 +201,7 @@ class NodeManagementService(object):
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
             return result
         else:
-            if not user == User.Admin:
+            if user != User.Admin:
                 result.StatusCode = ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
                 return result
 
@@ -240,7 +240,7 @@ class NodeManagementService(object):
         return results
 
     def _delete_node(self, item, user):
-        if not user == User.Admin:
+        if user != User.Admin:
             return ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
 
         if item.NodeId not in self._aspace:
@@ -266,7 +266,7 @@ class NodeManagementService(object):
                     callback(handle, None, ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown))
                     self._aspace.delete_datachange_callback(handle)
                 except Exception as ex:
-                    self.logger.exception("Error calling datachange callback %s, %s, %s", k, v, ex)
+                    self.logger.exception("Error calling delete node callback callback %s, %s, %s", nodedata, ua.AttributeIds.Value, ex)
 
     def add_references(self, refs, user=User.Admin):
         result = []
@@ -279,7 +279,7 @@ class NodeManagementService(object):
             return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
         if addref.TargetNodeId not in self._aspace:
             return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
-        if not user == User.Admin:
+        if user != User.Admin:
             return ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
         rdesc = ua.ReferenceDescription()
         rdesc.ReferenceTypeId = addref.ReferenceTypeId
@@ -306,20 +306,20 @@ class NodeManagementService(object):
             return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
         if item.TargetNodeId not in self._aspace:
             return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
-        if not user == User.Admin:
+        if user != User.Admin:
             return ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
 
         for rdesc in self._aspace[item.SourceNodeId].references:
             if rdesc.NodeId is item.TargetNodeId:
                 if rdesc.RefrenceTypeId != item.RefrenceTypeId:
-                    return ua.StatusCode(ua.StatusCode.BadReferenceTypeInvalid)
+                    return ua.StatusCode(ua.StatusCodes.BadReferenceTypeIdInvalid)
                 if rdesc.IsForward == item.IsForward or item.DeleteBidirectional:
                     self._aspace[item.SourceNodeId].references.remove(rdesc)
 
         for rdesc in self._aspace[item.TargetNodeId].references:
             if rdesc.NodeId is item.SourceNodeId:
                 if rdesc.RefrenceTypeId != item.RefrenceTypeId:
-                    return ua.StatusCode(ua.StatusCode.BadReferenceTypeInvalid)
+                    return ua.StatusCode(ua.StatusCodes.BadReferenceTypeIdInvalid)
                 if rdesc.IsForward == item.IsForward or item.DeleteBidirectional:
                     self._aspace[item.SourceNodeId].references.remove(rdesc)
 
