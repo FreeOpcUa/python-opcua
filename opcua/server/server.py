@@ -232,7 +232,7 @@ class Server(object):
             edp.ServerCertificate = uacrypto.der_from_x509(self.certificate)
         edp.SecurityMode = mode
         edp.SecurityPolicyUri = policy.URI
-        edp.UserIdentityTokens = [idtoken, idtoken2, idtoken3]
+        edp.UserIdentityTokens = [idtoken, idtoken2, idtoken3, idtoken4]
         edp.TransportProfileUri = 'http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary'
         edp.SecurityLevel = 0
         self.iserver.add_endpoint(edp)

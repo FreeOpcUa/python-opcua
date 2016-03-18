@@ -6,14 +6,24 @@ from opcua.common import node
 
 
 def _parse_add_args(*args):
+    nodeid = ua.NodeId()
+    qname = ua.QualifiedName()
     if isinstance(args[0], ua.NodeId):
-        return args[0], args[1]
+        nodeid = args[0]
     elif isinstance(args[0], str):
-        return ua.NodeId.from_string(args[0]), ua.QualifiedName.from_string(args[1])
-    elif isinstance(args[0], int):
-        return ua.generate_nodeid(args[0]), ua.QualifiedName(args[1], args[0])
+        nodeid = ua.NodeId.from_string(args[0])
+
+    if isinstance(args[1], ua.QualifiedName):
+        qname = args[1]
+    elif isinstance(args[1], str):
+        if isinstance(args[0], int):
+            qname = ua.QualifiedName(args[1], args[0])
+        else:
+            qname = ua.QualifiedName.from_string(args[1])
     else:
-        raise TypeError("Add methods takes a nodeid and a qualifiedname as argument, received %s" % args)
+        raise TypeError("Add methods takes a nodeid and a qualifiedname as argument, for qualified name received %s" % args[1])
+
+    return nodeid, qname
 
 
 def create_folder(parent, *args):
@@ -97,7 +107,7 @@ def _create_folder(server, parentnodeid, nodeid, qname):
     addnode.NodeAttributes = attrs
     results = server.add_nodes([addnode])
     results[0].StatusCode.check()
-    return nodeid
+    return results[0].AddedNodeId
 
 
 def _create_object(server, parentnodeid, nodeid, qname):
@@ -117,7 +127,7 @@ def _create_object(server, parentnodeid, nodeid, qname):
     addnode.NodeAttributes = attrs
     results = server.add_nodes([addnode])
     results[0].StatusCode.check()
-    return nodeid
+    return results[0].AddedNodeId
 
 
 def _to_variant(val, vtype=None):
@@ -155,7 +165,7 @@ def _create_variable(server, parentnodeid, nodeid, qname, val, isproperty=False)
     addnode.NodeAttributes = attrs
     results = server.add_nodes([addnode])
     results[0].StatusCode.check()
-    return nodeid
+    return results[0].AddedNodeId
 
 
 def _create_method(parent, nodeid, qname, callback, inputs, outputs):
@@ -176,13 +186,13 @@ def _create_method(parent, nodeid, qname, callback, inputs, outputs):
     addnode.NodeAttributes = attrs
     results = parent.server.add_nodes([addnode])
     results[0].StatusCode.check()
-    method = node.Node(parent.server, nodeid)
+    method = node.Node(parent.server, results[0].AddedNodeId)
     if inputs:
-        create_property(method, ua.generate_nodeid(qname.NamespaceIndex), ua.QualifiedName("InputArguments", 0), [_vtype_to_argument(vtype) for vtype in inputs])
+        create_property(method, ua.NodeId(), ua.QualifiedName("InputArguments", 0), [_vtype_to_argument(vtype) for vtype in inputs])
     if outputs:
-        create_property(method, ua.generate_nodeid(qname.NamespaceIndex), ua.QualifiedName("OutputArguments", 0), [_vtype_to_argument(vtype) for vtype in outputs])
+        create_property(method, ua.NodeId(), ua.QualifiedName("OutputArguments", 0), [_vtype_to_argument(vtype) for vtype in outputs])
     parent.server.add_method_callback(method.nodeid, callback)
-    return nodeid
+    return results[0].AddedNodeId
 
 
 def _vtype_to_argument(vtype):

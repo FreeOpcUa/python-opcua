@@ -77,7 +77,7 @@ def _instanciate_node(server, parentid, rdesc, idx):
 
     print("Instanciating: node %s in %s" % (rdesc, parentid))
     addnode = ua.AddNodesItem()
-    addnode.RequestedNewNodeId = ua.generate_nodeid(idx)
+    addnode.RequestedNewNodeId = ua.NodeId()
     addnode.BrowseName = rdesc.BrowseName
     addnode.NodeClass = rdesc.NodeClass
     addnode.ParentNodeId = parentid
