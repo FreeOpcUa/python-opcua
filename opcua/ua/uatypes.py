@@ -854,9 +854,11 @@ class Variant(FrozenClass):
         return not self.__eq__(other)
 
     def _guess_type(self, val):
+        if isinstance(val, (list, tuple)):
+            error_val = val
         while isinstance(val, (list, tuple)):
             if len(val) == 0:
-                raise UaError("could not guess UA variable type")
+                raise UaError("could not guess UA type of variable {}".format(error_val))
             val = val[0]
         if val is None:
             return VariantType.Null
