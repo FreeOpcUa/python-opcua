@@ -2,6 +2,7 @@
 import logging
 from threading import Lock
 from datetime import datetime
+import time
 
 from opcua import ua
 from opcua.common import utils
@@ -13,6 +14,7 @@ class PublishRequestData(object):
         self.requesthdr = None
         self.algohdr = None
         self.seqhdr = None
+        self.timestamp = time.time()
 
 
 class UaProcessor(object):
@@ -52,10 +54,14 @@ class UaProcessor(object):
     def forward_publish_response(self, result):
         self.logger.info("forward publish response %s", result)
         with self._datalock:
-            if len(self._publishdata_queue) == 0:
-                self.logger.warning("Error server wants to send publish answer but no publish request is available")
-                return
-            requestdata = self._publishdata_queue.pop(0)
+            while True:
+                if len(self._publishdata_queue) == 0:
+                    self.logger.warning("Error server wants to send publish answer but no publish request is available")
+                    return
+                requestdata = self._publishdata_queue.pop(0)
+                if time.time() - requestdata.timestamp < requestdata.requesthdr.TimeoutHint / 1000:
+                    break
+
         response = ua.PublishResponse()
         response.Parameters = result
 
