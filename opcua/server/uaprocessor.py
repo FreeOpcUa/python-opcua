@@ -1,6 +1,6 @@
 
 import logging
-from threading import Lock
+from threading import RLock, Lock
 from datetime import datetime
 import time
 
@@ -28,8 +28,9 @@ class UaProcessor(object):
         self.channel = None
         self.socket = socket
         self._socketlock = Lock()
-        self._datalock = Lock()
+        self._datalock = RLock()
         self._publishdata_queue = []
+        self._publish_result_queue = []  # used when we need to wait for PublishRequest
         self._connection = ua.SecureConnection(ua.SecurityPolicy())
 
     def set_policies(self, policies):
@@ -56,7 +57,8 @@ class UaProcessor(object):
         with self._datalock:
             while True:
                 if len(self._publishdata_queue) == 0:
-                    self.logger.warning("Error server wants to send publish answer but no publish request is available")
+                    self._publish_result_queue.append(result)
+                    self.logger.info("Server wants to send publish answer but no publish request is available, enqueing notification, length of result queue is %s", len(self._publish_result_queue))
                     return
                 requestdata = self._publishdata_queue.pop(0)
                 if time.time() - requestdata.timestamp < requestdata.requesthdr.TimeoutHint / 1000:
@@ -345,6 +347,9 @@ class UaProcessor(object):
             data.algohdr = algohdr
             with self._datalock:
                 self._publishdata_queue.append(data)  # will be used to send publish answers from server
+                if self._publish_result_queue:
+                    result = self._publish_result_queue.pop(0)
+                    self.forward_publish_response(result)
             self.session.publish(params.SubscriptionAcknowledgements)
             self.logger.info("publish forward to server")
 
