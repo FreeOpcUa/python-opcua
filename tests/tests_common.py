@@ -230,30 +230,6 @@ class CommonTests(object):
             handle = sub.subscribe_events(v)
         sub.delete()
 
-    def test_events_deprecated(self):
-        msclt = MySubHandlerDeprecated()
-        sub = self.opc.create_subscription(100, msclt)
-        handle = sub.subscribe_events()
-
-        eg = EventGenerator(self.srv.iserver.isession)
-        msg = b"this is my msg "
-        eg.event.Message.Text = msg
-        tid = datetime.utcnow()
-        eg.event.Time = tid
-        eg.event.Severity = 500
-        eg.trigger()
-
-        clthandle, eg = msclt.future.result()
-        self.assertIsNot(eg, None)  # we did not receive event
-        self.assertEqual(eg.event.Message.Text, msg)
-        #self.assertEqual(msclt.eg.Time, tid)
-        self.assertEqual(eg.event.Severity, 500)
-        self.assertEqual(eg.event.SourceNode, self.opc.get_server_node().nodeid)
-
-        # time.sleep(0.1)
-        sub.unsubscribe(handle)
-        sub.delete()
-
     def test_events(self):
         msclt = MySubHandler()
         sub = self.opc.create_subscription(100, msclt)
@@ -267,12 +243,11 @@ class CommonTests(object):
         eg.event.Severity = 500
         eg.trigger()
 
-        eg = msclt.future.result()
-        self.assertIsNot(eg, None)  # we did not receive event
-        self.assertEqual(eg.event.Message.Text, msg)
-        #self.assertEqual(msclt.eg.Time, tid)
-        self.assertEqual(eg.event.Severity, 500)
-        self.assertEqual(eg.event.SourceNode, self.opc.get_server_node().nodeid)
+        event = msclt.future.result()
+        self.assertIsNot(event, None)  # we did not receive event
+        self.assertEqual(event.Message.Text, msg)
+        self.assertEqual(event.Severity, 500)
+        self.assertEqual(event.SourceNode, self.opc.get_server_node().nodeid)
 
         # time.sleep(0.1)
         sub.unsubscribe(handle)

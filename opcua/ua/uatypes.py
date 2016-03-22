@@ -1100,7 +1100,7 @@ class BaseEvent(FrozenClass):
 
     '''
 
-    def __init__(self, sourcenode=NodeId(), message=None, severity=1):
+    def __init__(self, sourcenode=NodeId(ObjectIds.Server), message=None, severity=1):
         self.EventId = bytes()
         self.EventType = NodeId(ObjectIds.BaseEventType)
         self.SourceNode = sourcenode
