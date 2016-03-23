@@ -343,7 +343,6 @@ class StatusCode(FrozenClass):
         return not self.__eq__(other)
 
 
-# FIXME: This is not according to standard, check Part 3, Page 59
 class NodeIdType(Enum):
     TwoByte = 0
     FourByte = 1
