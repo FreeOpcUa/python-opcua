@@ -168,7 +168,7 @@ class InternalSession(object):
         self.authentication_token = ua.NodeId(self._auth_counter)
         InternalSession._auth_counter += 1
         self.subscriptions = []
-        self.logger.info("Created internal session %s for user %s", self.name, self.user)
+        self.logger.info("Created internal session %s", self.name)
         self._lock = Lock()
 
     def __str__(self):
@@ -210,6 +210,7 @@ class InternalSession(object):
         if isinstance(id_token, ua.UserNameIdentityToken):
             if self.iserver.allow_remote_admin and id_token.UserName in ("admin", "Admin"):
                 self.user = User.Admin
+        self.logger.info("Activated internal session %s for user %s", self.name, self.user)
         return result
 
     def read(self, params):
