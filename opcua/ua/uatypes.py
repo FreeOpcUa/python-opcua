@@ -418,7 +418,7 @@ class NodeId(FrozenClass):
         return self.has_null_identifier()
 
     def has_null_identifier(self):
-        if self.Identifier in (0, '', b'', None):
+        if not self.Identifier:
             return True
         if self.NodeIdType == NodeIdType.Guid and re.match(b'0.', self.Identifier):
             return True
