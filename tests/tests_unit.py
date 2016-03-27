@@ -321,6 +321,35 @@ class Unit(unittest.TestCase):
             chunk.SequenceHeader.SequenceNumber = seq
             self.assertTrue(len(chunk.to_binary()) <= 28)
 
+    def test_null(self):
+        n = ua.NodeId(b'000000', 0, nodeidtype=ua.NodeIdType.Guid)
+        self.assertTrue(n.is_null())
+        self.assertTrue(n.has_null_identifier())
+
+        n = ua.NodeId(b'000000', 1, nodeidtype=ua.NodeIdType.Guid)
+        self.assertFalse(n.is_null())
+        self.assertTrue(n.has_null_identifier())
+
+        n = ua.NodeId()
+        self.assertTrue(n.is_null())
+        self.assertTrue(n.has_null_identifier())
+
+        n = ua.NodeId(0, 0)
+        self.assertTrue(n.is_null())
+        self.assertTrue(n.has_null_identifier())
+
+        n = ua.NodeId("", 0)
+        self.assertTrue(n.is_null())
+        self.assertTrue(n.has_null_identifier())
+
+        n = ua.TwoByteNodeId(0)
+        self.assertTrue(n.is_null())
+        self.assertTrue(n.has_null_identifier())
+
+        n = ua.NodeId(0, 3)
+        self.assertFalse(n.is_null())
+        self.assertTrue(n.has_null_identifier())
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARN)

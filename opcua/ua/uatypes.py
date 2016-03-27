@@ -9,6 +9,7 @@ import sys
 import os
 import uuid
 import struct
+import re
 if sys.version_info.major > 2:
     unicode = str
 
@@ -412,19 +413,16 @@ class NodeId(FrozenClass):
         return hash(self.__key())
 
     def is_null(self):
-        ret = True
         if self.NamespaceIndex != 0:
-            ret = False
-        if self.NodeIdType  in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric):
-            if self.Identifier != 0:
-                ret = False
-        elif self.NodeIdType is NodeIdType.String:
-            if self.Identifier or self.Identifier != '':
-                ret = False
-        elif self.NodeIdType is NodeIdType.ByteString:
-            if not len(self.Identifier):
-                ret = False
-        return ret
+            return False
+        return self.has_null_identifier()
+
+    def has_null_identifier(self):
+        if self.Identifier in (0, '', b'', None):
+            return True
+        if self.NodeIdType == NodeIdType.Guid and re.match(b'0.', self.Identifier):
+            return True
+        return False
 
     @staticmethod
     def from_string(string):
