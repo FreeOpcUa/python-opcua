@@ -3,6 +3,7 @@ import os
 from concurrent.futures import Future
 import functools
 import threading
+from socket import error as SocketError
 
 try:
     # we prefer to use bundles asyncio version, otherwise fallback to trollius
@@ -100,8 +101,8 @@ class SocketWrapper(object):
         while size > 0:
             try:
                 chunk = self.socket.recv(size)
-            except (OSError, ConnectionResetError):
-                raise SocketClosedException("Server socket has closed")
+            except (OSError, SocketError) as ex:
+                raise SocketClosedException("Server socket has closed", ex)
             if not chunk:
                 raise SocketClosedException("Server socket has closed")
             data += chunk
