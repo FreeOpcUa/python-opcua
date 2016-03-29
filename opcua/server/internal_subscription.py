@@ -296,11 +296,13 @@ class InternalSubscription(object):
             result.NotificationMessage.NotificationData.append(notif)
             self.logger.debug("sending event notification %s", notif.Status)
 
-    def publish(self, nb):
+    def publish(self, acks):
+        self.logger.info("publish request with acks %s", acks)
         with self._lock:
             self._publish_cycles_count = 0
-            if nb in self._not_acknowledged_results:
-                self._not_acknowledged_results.pop(nb)
+            for nb in acks:
+                if nb in self._not_acknowledged_results:
+                    self._not_acknowledged_results.pop(nb)
 
     def republish(self, nb):
         self.logger.info("re-publish request for ack %s in subscription %s", nb, self)

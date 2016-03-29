@@ -49,11 +49,10 @@ class SubscriptionService(object):
         return res
 
     def publish(self, acks):
-        for ack in acks:
-            with self._lock:
-                if ack.SubscriptionId in self.subscriptions:
-                    self.subscriptions[ack.SubscriptionId].publish(ack.SequenceNumber)
         self.logger.info("publish request with acks %s", acks)
+        with self._lock:
+            for subid, sub in self.subscriptions.items():
+                sub.publish([ack.SequenceNumber for ack in acks if ack.SubscriptionId == subid])
 
     def create_monitored_items(self, params):
         self.logger.info("create monitored items")
