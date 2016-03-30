@@ -62,6 +62,10 @@ def win_epoch_to_datetime(epch):
         return datetime(MAXYEAR, 12, 31, 23, 59, 59, 999999)
 
 
+#  minimum datetime as in ua spec, used for history
+DateTimeMinValue = datetime(1606, 1, 1, 12, 0, 0)
+
+
 def build_array_format_py2(prefix, length, fmtchar):
     return prefix + str(length) + fmtchar
 

@@ -1,20 +1,8 @@
 from datetime import timedelta
 from datetime import datetime
-import time
-import struct
 
 from opcua import Subscription
 from opcua import ua
-
-
-def datetime_to_bytes(dt):
-    time_float = time.mktime(dt.timetuple()) + dt.microsecond / 1E6
-    return struct.pack("!L", time_float)
-
-
-def bytes_to_datetime(data):
-    time_float = struct.unpack('!L', data)[0]
-    return datetime.fromtimestamp(time_float)
 
 
 class HistoryStorageInterface(object):
@@ -37,6 +25,8 @@ class HistoryStorageInterface(object):
     def read_node_history(self, node, start, end, nb_values):
         """
         Called when a client make a history read request for a node
+        if start or end is missing then nb_values is used to limit query
+        nb_values is the max number of values to read. Ignored if 0
         """
         raise NotImplementedError
 
@@ -77,7 +67,6 @@ class HistoryDict(HistoryStorageInterface):
         self._events = []
 
     def save_node_value(self, node, datavalue):
-        print("saving", node, datavalue)
         data = self._datachanges[node]
         period, count = self._datachanges_period[node]
         data.append(datavalue)
@@ -89,13 +78,25 @@ class HistoryDict(HistoryStorageInterface):
             data = data[-count:]
 
     def read_node_history(self, node, start, end, nb_values):
+        cont = None
         if node not in self._datachanges:
-            return []
+            print("Error attempt to read history for a node which is not historized")
+            return [], cont
         else:
-            # FIME: improve algo
-            return [dv for dv in self._datachanges[node] if start <= dv.ServerTimestamp <= end]
+            if end is None:
+                end = datetime.now() + timedelta(days=1)
+            if start is None:
+                start = ua.DateTimeMinValue
+            results = [dv for dv in self._datachanges[node] if start <= dv.ServerTimestamp <= end]
+            if nb_values:
+                if start > ua.DateTimeMinValue and len(results) > nb_values:
+                    results = results[:nb_values]
+                    cont = results[-1].ServerTimestamp
+                else:
+                    results = results[-nb_values:]
+            return results, cont
 
-    def save_event(self, timestamp, event):
+    def save_event(self, event):
         raise NotImplementedError
 
     def read_event_history(self, start, end, evfilter):
@@ -107,7 +108,8 @@ class SubHandler(object):
         self.storage = storage
 
     def datachange_notification(self, node, val, data):
-        self.storage.save_node_value(node, data.monitored_item.Value)
+        self.storage.save_node_value(node.nodeid, data.monitored_item.Value)
+
 
     def event_notification(self, event):
         self.storage.save_event(event)
@@ -138,7 +140,7 @@ class HistoryManager(object):
             self._sub = self._create_subscription(SubHandler(self.storage))
         if node in self._handlers:
             raise ua.UaError("Node {} is allready historized".format(node))
-        self.storage.new_historized_node(node, period, count)
+        self.storage.new_historized_node(node.nodeid, period, count)
         handler = self._sub.subscribe_data_change(node)
         self._handlers[node] = handler
 
@@ -163,46 +165,45 @@ class HistoryManager(object):
         """ read history for a node 
         """
         result = ua.HistoryReadResult()
-        if type(details) is ua.ReadRawModifiedDetails:
+        if isinstance(details, ua.ReadRawModifiedDetails):
             if details.IsReadModified:
                 result.HistoryData = ua.HistoryModifiedData()
                 # we do not support modified history by design so we return what we have
-                dv, cont = self._read_datavalue_history(rv, details)
-                result.HistoryData.DataValues = dv
-                result.ContinuationPoint = cont
             else:
                 result.HistoryData = ua.HistoryData()
-                dv, cont = self._read_datavalue_history(rv, details)
-                result.HistoryData.DataValues = dv
-                result.ContinuationPoint = cont
+            dv, cont = self._read_datavalue_history(rv, details)
+            result.HistoryData.DataValues = dv
+            result.ContinuationPoint = cont
 
-        elif type(details) is ua.ReadEventDetails:
+        elif isinstance(details, ua.ReadEventDetails):
             result.HistoryData = ua.HistoryEvent()
             # FIXME: filter is a cumbersome type, maybe transform it something easier
             # to handle for storage
             result.HistoryData.Events = self.storage.read_event_history(details.StartTime,
-                                                                 details.EndTime,
-                                                                 details.Filter)
+                                                                        details.EndTime,
+                                                                        details.Filter)
         else:
             # we do not currently support the other types, clients can process data themselves
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadNotImplemented)
         return result
 
-    def read_datavalue_history(self, rv, details):
+    def _read_datavalue_history(self, rv, details):
         starttime = details.StartTime
         if rv.ContinuationPoint:
             # Spec says we should ignore details if cont point is present
             # but they also say we can use cont point as timestamp to enable stateless
             # implementation. This is contradictory, so we assume details is
             # send correctly with continuation point
-            starttime = bytes_to_datetime(rv.ContinuationPoint)
+            #starttime = bytes_to_datetime(rv.ContinuationPoint)
+            starttime = ua.unpack_datetime(rv.ContinuationPoint)
 
         dv, cont = self.storage.read_node_history(rv.NodeId,
-                                                starttime,
-                                                details.EndTime,
-                                                details.NumValuesPerNode)
+                                                  starttime,
+                                                  details.EndTime,
+                                                  details.NumValuesPerNode)
         if cont:
-            cont = datetime_to_bytes(dv[-1].SourceTimeStamp)
+            #cont = datetime_to_bytes(dv[-1].ServerTimestamp)
+            cont = ua.pack_datetime(dv[-1].ServerTimestamp)
         # FIXME, parse index range and filter out if necesary
         # rv.IndexRange
         # rv.DataEncoding # xml or binary, seems spec say we can ignore that one
@@ -215,7 +216,7 @@ class HistoryManager(object):
         since it requires more logic than other attribute service methods
         """
         results = []
-        for details in params.HistoryUpdateDetails:
+        for _ in params.HistoryUpdateDetails:
             result = ua.HistoryUpdateResult()
             # we do not accept to rewrite history
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadNotWritable)

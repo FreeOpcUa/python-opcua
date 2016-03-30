@@ -304,11 +304,17 @@ class Node(object):
         details.IsReadModified = False
         if starttime:
             details.StartTime = starttime
+        else:
+            details.StartTime = ua.DateTimeMinValue
         if endtime:
             details.EndTime = endtime
+        else:
+            details.EndTime = ua.DateTimeMinValue
         details.NumValuesPerNode = numvalues
         details.ReturnBounds = returnbounds
-        return self.history_read(details)
+        result = self.history_read(details)
+        # FIXME: read continuation point and call again
+        return result.HistoryData.DataValues
 
     def history_read(self, details):
         """
@@ -325,7 +331,7 @@ class Node(object):
         params.ReleaseContinuationPoints = False
         params.NodesToRead.append(valueid)
         result = self.server.history_read(params)[0]
-        return result.HistoryData
+        return result
 
     # Hack for convenience methods
     # local import is ugly but necessary for python2 support
