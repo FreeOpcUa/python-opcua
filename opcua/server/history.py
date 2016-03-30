@@ -19,24 +19,44 @@ def bytes_to_datetime(data):
 
 class HistoryStorageInterface(object):
     """
-    Interface of a history backend
+    Interface of a history backend.
+    Must be implemented by backends
     """
-    def new_node(self, node, period, count=0):
+    def new_historized_node(self, node, period, count=0):
+        """
+        Called when a new node is to be historized
+        """
         raise NotImplementedError
 
-    def save_datavalue(self, node, datavalue):
+    def save_node_value(self, node, datavalue):
+        """
+        Called when the value of a historized node has changed and should be saved in history
+        """
         raise NotImplementedError
 
-    def read_datavalues(self, node, start, end, nb_values):
+    def read_node_history(self, node, start, end, nb_values):
+        """
+        Called when a client make a history read request for a node
+        """
         raise NotImplementedError
 
-    def new_event(self, event, period):
+    def new_historized_event(self, event, period):
+        """
+        Called when historization of events is enabled on server side
+        FIXME: we may need to store events per nodes in future...
+        """
         raise NotImplementedError
 
     def save_event(self, event):
+        """
+        Called when a new event has been generated ans should be saved in history
+        """
         raise NotImplementedError
 
-    def read_events(self, start, end, evfilter):
+    def read_event_history(self, start, end, evfilter):
+        """
+        Called when a client make a history read request for events
+        """
         raise NotImplementedError
 
 
@@ -49,14 +69,14 @@ class HistoryDict(HistoryStorageInterface):
         self._datachanges_period = {}
         self._events = {}
 
-    def new_node(self, node, period, count=0):
+    def new_historized_node(self, node, period, count=0):
         self._datachanges[node] = []
         self._datachanges_period[node] = period, count
 
-    def new_event(self, event, period):
+    def new_historized_event(self, event, period):
         self._events = []
 
-    def save_datavalue(self, node, datavalue):
+    def save_node_value(self, node, datavalue):
         print("saving", node, datavalue)
         data = self._datachanges[node]
         period, count = self._datachanges_period[node]
@@ -68,7 +88,7 @@ class HistoryDict(HistoryStorageInterface):
         if count and len(data) > count:
             data = data[-count:]
 
-    def read_datavalues(self, node, start, end, nb_values):
+    def read_node_history(self, node, start, end, nb_values):
         if node not in self._datachanges:
             return []
         else:
@@ -78,7 +98,7 @@ class HistoryDict(HistoryStorageInterface):
     def save_event(self, timestamp, event):
         raise NotImplementedError
 
-    def read_events(self, start, end, evfilter):
+    def read_event_history(self, start, end, evfilter):
         raise NotImplementedError
 
 
@@ -87,7 +107,7 @@ class SubHandler(object):
         self.storage = storage
 
     def datachange_notification(self, node, val, data):
-        self.storage.save_datavalue(node, data.monitored_item.Value)
+        self.storage.save_node_value(node, data.monitored_item.Value)
 
     def event_notification(self, event):
         self.storage.save_event(event)
@@ -118,7 +138,7 @@ class HistoryManager(object):
             self._sub = self._create_subscription(SubHandler(self.storage))
         if node in self._handlers:
             raise ua.UaError("Node {} is allready historized".format(node))
-        self.storage.new_node(node, period, count)
+        self.storage.new_historized_node(node, period, count)
         handler = self._sub.subscribe_data_change(node)
         self._handlers[node] = handler
 
@@ -160,7 +180,7 @@ class HistoryManager(object):
             result.HistoryData = ua.HistoryEvent()
             # FIXME: filter is a cumbersome type, maybe transform it something easier
             # to handle for storage
-            result.HistoryData.Events = self.storage.read_events(details.StartTime,
+            result.HistoryData.Events = self.storage.read_event_history(details.StartTime,
                                                                  details.EndTime,
                                                                  details.Filter)
         else:
@@ -177,7 +197,7 @@ class HistoryManager(object):
             # send correctly with continuation point
             starttime = bytes_to_datetime(rv.ContinuationPoint)
 
-        dv, cont = self.storage.read_datavalues(rv.NodeId,
+        dv, cont = self.storage.read_node_history(rv.NodeId,
                                                 starttime,
                                                 details.EndTime,
                                                 details.NumValuesPerNode)
