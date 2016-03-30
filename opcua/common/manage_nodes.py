@@ -7,23 +7,27 @@ from opcua.common import node
 
 def _parse_add_args(*args):
     try:
+        if isinstance(args[0], int):
+            nodeid = ua.NodeId(0, int(args[0]))
+            qname = ua.QualifiedName(args[1], int(args[0]))
+            return nodeid, qname
         if isinstance(args[0], ua.NodeId):
             nodeid = args[0]
-            qname = args[1]
         elif isinstance(args[0], str):
             nodeid = ua.NodeId.from_string(args[0])
-            qname = ua.QualifiedName.from_string(args[1])
-        elif isinstance(args[0], int):
-            nodeid = ua.NodeId(0, int(args[0]))
-            qname = ua.QualifiedName(args[1], args[0])
         else:
             raise RuntimeError()
+        if isinstance(args[1], ua.QualifiedName):
+            qname = args[1]
+        elif isinstance(args[1], str):
+            qname = ua.QualifiedName.from_string(args[1])
+        else:
+            raise RuntimeError()
+        return nodeid, qname
     except ua.UaError:
         raise
     except Exception as ex:
         raise TypeError("This method takes either a namespace index and a string as argument or a nodeid and a qualifiedname. Received arguments {} and got exception {}".format(args, ex))
-
-    return nodeid, qname
 
 
 def create_folder(parent, *args):
