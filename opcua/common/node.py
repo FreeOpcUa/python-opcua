@@ -3,7 +3,7 @@ High level node object, to access node attribute
 and browse address space
 """
 
-from datetime import timedelta
+from datetime import datetime
 
 from opcua import ua
 
@@ -14,7 +14,7 @@ class Node(object):
     High level node object, to access node attribute,
     browse and populate address space.
     Node objects are usefull as-is but they do not expose the entire
-    OPC-UA protocol. Feel free to look at Node code and call
+    OPC-UA protocol. Feel free to look at the code of this class and call
     directly UA services methods to optimize your code
     """
 
@@ -295,10 +295,12 @@ class Node(object):
         # FIXME: seems this method may return several nodes
         return Node(self.server, result.Targets[0].TargetId)
 
-    def read_raw_history(self, starttime=None, endtime=None, numvalues=0, returnbounds=True):
+    def read_raw_history(self, starttime=None, endtime=None, numvalues=0):
         """
         Read raw history of a node
         result code from server is checked and an exception is raised in case of error
+        If numvalues is > 0 and number of events in period is > numvalues
+        then result will be truncated
         """
         details = ua.ReadRawModifiedDetails()
         details.IsReadModified = False
@@ -311,9 +313,8 @@ class Node(object):
         else:
             details.EndTime = ua.DateTimeMinValue
         details.NumValuesPerNode = numvalues
-        details.ReturnBounds = returnbounds
+        details.ReturnBounds = True
         result = self.history_read(details)
-        # FIXME: read continuation point and call again
         return result.HistoryData.DataValues
 
     def history_read(self, details):
@@ -336,7 +337,7 @@ class Node(object):
     # Hack for convenience methods
     # local import is ugly but necessary for python2 support
     # feel fri to propose something better but I want to split all those
-    # create methods fro Node
+    # create methods from Node
 
     def add_folder(*args, **kwargs):
         from opcua.common import manage_nodes
