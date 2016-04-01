@@ -108,7 +108,7 @@ class Client(object):
                     ep.SecurityMode == security_mode and
                     ep.SecurityPolicyUri == policy_uri):
                 return ep
-        raise ValueError("No matching endpoints: {}, {}".format(
+        raise ua.UaError("No matching endpoints: {}, {}".format(
                          security_mode, policy_uri))
 
     def set_security_string(self, string):
@@ -125,8 +125,7 @@ class Client(object):
             return
         parts = string.split(',')
         if len(parts) < 4:
-            raise UaError('Wrong format: `{}`, expected at least 4 '
-                    'comma-separated values'.format(string))
+            raise ua.UaError('Wrong format: `{}`, expected at least 4 comma-separated values'.format(string))
         policy_class = getattr(security_policies, 'SecurityPolicy' + parts[0])
         mode = getattr(ua.MessageSecurityMode, parts[1])
         return self.set_security(policy_class, parts[2], parts[3],
@@ -158,6 +157,9 @@ class Client(object):
         self.user_certificate = uacrypto.load_certificate(path)
 
     def load_private_key(self, path):
+        """
+        Load user private key. This is used for authenticating using certificate
+        """
         self.user_private_key = uacrypto.load_private_key(path)
 
     def connect_and_get_server_endpoints(self):
@@ -295,6 +297,11 @@ class Client(object):
         return self.uaclient.find_servers_on_network(params)
 
     def create_session(self):
+        """
+        send a CreateSessionRequest to server with reasonable parameters.
+        If you want o modify settings look at code of this methods
+        and make your own
+        """
         desc = ua.ApplicationDescription()
         desc.ApplicationUri = self.application_uri
         desc.ProductUri = self.product_uri
@@ -316,7 +323,7 @@ class Client(object):
         if not self.security_policy.server_certificate:
             self.security_policy.server_certificate = response.ServerCertificate
         elif self.security_policy.server_certificate != response.ServerCertificate:
-            raise UaError("Server certificate mismatch")
+            raise ua.UaError("Server certificate mismatch")
         # remember PolicyId's: we will use them in activate_session()
         ep = Client.find_endpoint(response.ServerEndpoints, self.security_policy.Mode, self.security_policy.URI)
         self._policy_ids = ep.UserIdentityTokens
@@ -374,14 +381,23 @@ class Client(object):
         else:
             params.UserIdentityToken = ua.UserNameIdentityToken()
             params.UserIdentityToken.UserName = username
-            if self.server_url.password:
+            policy_uri = self.server_policy_uri(ua.UserTokenType.UserName)
+            if not policy_uri or policy_uri == security_policies.POLICY_NONE_URI:
+                # see specs part 4, 7.36.3: if the token is NOT encrypted,
+                # then the password only contains UTF-8 encoded password
+                # and EncryptionAlgorithm is null
+                if self.server_url.password:
+                    self.logger.warning("Sending plain-text password")
+                    params.UserIdentityToken.Password = password
+                params.UserIdentityToken.EncryptionAlgorithm = ''
+            elif self.server_url.password:
                 pubkey = uacrypto.x509_from_der(self.security_policy.server_certificate).public_key()
                 # see specs part 4, 7.36.3: if the token is encrypted, password
                 # shall be converted to UTF-8 and serialized with server nonce
                 etoken = ua.pack_bytes(bytes(password, "utf8") + self._server_nonce)
                 (data, uri) = security_policies.encrypt_asymmetric(pubkey,
                         etoken,
-                        self.server_policy_uri(ua.UserTokenType.UserName))
+                        policy_uri)
                 params.UserIdentityToken.Password = data
                 params.UserIdentityToken.EncryptionAlgorithm = uri
             params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")

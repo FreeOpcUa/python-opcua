@@ -3,7 +3,7 @@ Internal server implementing opcu-ua interface. can be used on server side or to
 """
 
 from datetime import datetime
-from copy import copy
+from copy import copy, deepcopy
 import logging
 from threading import Lock
 from enum import Enum
@@ -64,6 +64,7 @@ class InternalServer(object):
         #importer.import_xml("/home/olivier/python-opcua/schemas/Opc.Ua.NodeSet2.xml")
 
         self.loop = utils.ThreadLoop()
+        self.asyncio_transports = []
         self.subscription_service = SubscriptionService(self.loop, self.aspace)
 
         # create a session to use on server side
@@ -160,14 +161,14 @@ class InternalSession(object):
         self.subscription_service = submgr
         self.name = name
         self.user = user
+        self.nonce = None
         self.state = SessionState.Created
         self.session_id = ua.NodeId(self._counter)
         InternalSession._counter += 1
         self.authentication_token = ua.NodeId(self._auth_counter)
         InternalSession._auth_counter += 1
         self.subscriptions = []
-        #self.logger.debug("Created internal session %s for user %s", self.name, self.user)
-        print("Created internal session {} for user {}".format(self.name, self.user))
+        self.logger.info("Created internal session %s", self.name)
         self._lock = Lock()
 
     def __str__(self):
@@ -209,17 +210,20 @@ class InternalSession(object):
         if isinstance(id_token, ua.UserNameIdentityToken):
             if self.iserver.allow_remote_admin and id_token.UserName in ("admin", "Admin"):
                 self.user = User.Admin
+        self.logger.info("Activated internal session %s for user %s", self.name, self.user)
         return result
 
     def read(self, params):
-        return self.iserver.attribute_service.read(params)
+        results = self.iserver.attribute_service.read(params)
+        if self.external:
+            return results
+        return [deepcopy(dv) for dv in results]
 
     def write(self, params):
         if not self.external:
             # If session is internal we need to store a copy og object, not a reference,
             #otherwise users may change it and we will not generate expected events
-            for ntw in params.NodesToWrite:
-                ntw.Value.Value.Value = copy(ntw.Value.Value.Value)
+            params.NodesToWrite = [deepcopy(ntw) for ntw in params.NodesToWrite]
         return self.iserver.attribute_service.write(params, self.user)
 
     def browse(self, params):

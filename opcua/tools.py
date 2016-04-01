@@ -2,7 +2,6 @@ import logging
 import sys
 import argparse
 from datetime import datetime
-from enum import Enum
 import math
 import time
 
@@ -25,7 +24,7 @@ def add_minimum_args(parser):
     parser.add_argument("-u",
                         "--url",
                         help="URL of OPC UA server (for example: opc.tcp://example.org:4840)",
-                        default='opc.tcp://localhost:4841',
+                        default='opc.tcp://localhost:4840',
                         metavar="URL")
     parser.add_argument("-v",
                         "--verbose",
@@ -135,10 +134,7 @@ def _args_to_array(val, array):
 
 
 def _arg_to_bool(val):
-    if val in ("true", "True"):
-        return True
-    else:
-        return False
+    return val in ("true", "True")
 
 
 def _arg_to_variant(val, array, ptype, varianttype=None):
@@ -378,7 +374,9 @@ def uasubscribe():
             sub.subscribe_data_change(node)
         else:
             sub.subscribe_events(node)
-        embed()
+        print("Type Ctr-C to exit")
+        while True:
+            time.sleep(1)
     finally:
         client.disconnect()
     sys.exit(0)
@@ -470,8 +468,8 @@ def uaserver():
     # we setup a server, this is a bit different from other tool so we do not reuse common arguments
     parser.add_argument("-u",
                         "--url",
-                        help="URL of OPC UA server, default is opc.tcp://0.0.0.0:4841",
-                        default='opc.tcp://0.0.0.0:4841',
+                        help="URL of OPC UA server, default is opc.tcp://0.0.0.0:4840",
+                        default='opc.tcp://0.0.0.0:4840',
                         metavar="URL")
     parser.add_argument("-v",
                         "--verbose",

@@ -174,28 +174,32 @@ class Server(object):
         if self.certificate and self.private_key:
             self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
                                 ua.MessageSecurityMode.SignAndEncrypt)
-            self._policies.append(ua.SecurityPolicyFactory(
-                                security_policies.SecurityPolicyBasic128Rsa15,
-                                ua.MessageSecurityMode.SignAndEncrypt,
-                                self.certificate, self.private_key))
+            self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
+                                                           ua.MessageSecurityMode.SignAndEncrypt,
+                                                           self.certificate,
+                                                           self.private_key)
+                                 )
             self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
                                 ua.MessageSecurityMode.Sign)
-            self._policies.append(ua.SecurityPolicyFactory(
-                                security_policies.SecurityPolicyBasic128Rsa15,
-                                ua.MessageSecurityMode.Sign,
-                                self.certificate, self.private_key))
+            self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
+                                                           ua.MessageSecurityMode.Sign,
+                                                           self.certificate,
+                                                           self.private_key)
+                                 )
             self._set_endpoints(security_policies.SecurityPolicyBasic256,
                                 ua.MessageSecurityMode.SignAndEncrypt)
-            self._policies.append(ua.SecurityPolicyFactory(
-                                security_policies.SecurityPolicyBasic256,
-                                ua.MessageSecurityMode.SignAndEncrypt,
-                                self.certificate, self.private_key))
+            self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
+                                                           ua.MessageSecurityMode.SignAndEncrypt,
+                                                           self.certificate,
+                                                           self.private_key)
+                                 )
             self._set_endpoints(security_policies.SecurityPolicyBasic256,
                                 ua.MessageSecurityMode.Sign)
-            self._policies.append(ua.SecurityPolicyFactory(
-                                security_policies.SecurityPolicyBasic256,
-                                ua.MessageSecurityMode.Sign,
-                                self.certificate, self.private_key))
+            self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
+                                                           ua.MessageSecurityMode.Sign,
+                                                           self.certificate,
+                                                           self.private_key)
+                                 )
 
     def _set_endpoints(self, policy=ua.SecurityPolicy, mode=ua.MessageSecurityMode.None_):
         idtoken = ua.UserTokenPolicy()
@@ -228,7 +232,7 @@ class Server(object):
             edp.ServerCertificate = uacrypto.der_from_x509(self.certificate)
         edp.SecurityMode = mode
         edp.SecurityPolicyUri = policy.URI
-        edp.UserIdentityTokens = [idtoken, idtoken2, idtoken3]
+        edp.UserIdentityTokens = [idtoken, idtoken2, idtoken3, idtoken4]
         edp.TransportProfileUri = 'http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary'
         edp.SecurityLevel = 0
         self.iserver.add_endpoint(edp)
@@ -309,7 +313,7 @@ class Server(object):
         uries = ns_node.get_value()
         uries.append(uri)
         ns_node.set_value(uries)
-        return (len(uries) - 1)
+        return len(uries) - 1
 
     def get_namespace_index(self, uri):
         """
@@ -334,4 +338,3 @@ class Server(object):
 
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.iserver.isession, nodes, recursive)
-

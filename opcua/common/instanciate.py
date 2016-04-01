@@ -12,6 +12,7 @@ class _ReadAdder(object):
     """
     Internal
     """
+
     def __init__(self, server, nodeid):
         self.server = server
         self.nodeid = nodeid
@@ -31,31 +32,31 @@ class _ReadAdder(object):
         for idx, val in enumerate(vals):
             if not val.StatusCode.is_good():
                 print(val)
-                print("Error attribute %s is not valid for node %s" % ( self._debug_attr[idx], self.nodeid))
-            #val.StatusCode.check()
+                print("Error attribute %s is not valid for node %s" % (self._debug_attr[idx], self.nodeid))
+            # val.StatusCode.check()
             new_vals.append(val.Value.Value)
         return new_vals
 
 
-#def _read_attributed(server, nodeid, attrs_obj, *attrs):
+# def _read_attributed(server, nodeid, attrs_obj, *attrs):
     #ra = _ReadAdder(server, rdesc.NodeId)
-    #for attr in attrs:
-        #ra.add(atttr)
+    # for attr in attrs:
+        # ra.add(atttr)
     #vals = ra.read()
 
 def instanciate_node(parent, node_type, idx):
     """
     Instanciate a new node under 'parent' using a type
     """
-    
+
     results = node_type.get_attributes([ua.AttributeIds.NodeClass, ua.AttributeIds.BrowseName, ua.AttributeIds.DisplayName])
     nclass, bname, dname = [res.Value.Value for res in results]
 
     #descs = node_type.get_children_descriptions(refs=ua.ObjectIds.HasTypeDefinition)
     typedef = ua.FourByteNodeId(ua.ObjectIds.BaseObjectType)
-    #if len(descs) > 1:
-        #print("DESCS", descs)
-        #typedef = descs[0].TypeDefinition
+    # if len(descs) > 1:
+    #print("DESCS", descs)
+    #typedef = descs[0].TypeDefinition
 
     rdesc = ua.ReferenceDescription()
     rdesc.NodeId = node_type.nodeid
@@ -76,7 +77,7 @@ def _instanciate_node(server, parentid, rdesc, idx):
 
     print("Instanciating: node %s in %s" % (rdesc, parentid))
     addnode = ua.AddNodesItem()
-    addnode.RequestedNewNodeId = ua.generate_nodeid(idx)
+    addnode.RequestedNewNodeId = ua.NodeId()
     addnode.BrowseName = rdesc.BrowseName
     addnode.NodeClass = rdesc.NodeClass
     addnode.ParentNodeId = parentid
@@ -113,7 +114,7 @@ def _instanciate_node(server, parentid, rdesc, idx):
     refs.append(ref)
     server.add_references(refs)
 
-    descs = node_type.get_children_descriptions(includesubtypes=False) #FIXME: should be false
+    descs = node_type.get_children_descriptions(includesubtypes=False)  # FIXME: should be false
     print("node is", rdesc.NodeId, node_type, node_type.get_children())
     print("Children are: ", descs)
     for rdesc in descs:
@@ -139,9 +140,9 @@ def _add_object_attrs(addnode, node_type):
     if results[1].StatusCode.is_good():
         attrs.WriteMask = results[1].Value.Value
     if results[2].StatusCode.is_good():
-        attrs.UserWriteMask = results[2].Value.Value        
+        attrs.UserWriteMask = results[2].Value.Value
     if results[3].StatusCode.is_good():
-        attrs.UserWriteMask = results[3].Value.Value        
+        attrs.UserWriteMask = results[3].Value.Value
 
     addnode.NodeAttributes = attrs
 
@@ -166,18 +167,18 @@ def _read_and_copy_attrs(node_type, struct, addnode):
 
 def _add_variable_attrs(addnode, rdesc, node_type):
     results = node_type.get_attributes([
-                ua.AttributeIds.EventNotifier,
-                ua.AttributeIds.Description,
-                ua.AttributeIds.WriteMask,
-                ua.AttributeIds.UserWriteMask,
-                ua.AttributeIds.Value,
-                ua.AttributeIds.DataType,
-                ua.AttributeIds.ValueRank,
-                ua.AttributeIds.ArrayDimentions,
-                ua.AttributeIds.AccessLevel,
-                ua.AttributeIds.UserAccessLevel,
-                ua.AttributeIds.MinimumSamplingInterval,
-                ua.AttributeIds.Historizing])
+        ua.AttributeIds.EventNotifier,
+        ua.AttributeIds.Description,
+        ua.AttributeIds.WriteMask,
+        ua.AttributeIds.UserWriteMask,
+        ua.AttributeIds.Value,
+        ua.AttributeIds.DataType,
+        ua.AttributeIds.ValueRank,
+        ua.AttributeIds.ArrayDimentions,
+        ua.AttributeIds.AccessLevel,
+        ua.AttributeIds.UserAccessLevel,
+        ua.AttributeIds.MinimumSamplingInterval,
+        ua.AttributeIds.Historizing])
 
     attrs = ua.ObjectAttributes()
     if results[0].is_good():
@@ -188,7 +189,7 @@ def _add_variable_attrs(addnode, rdesc, node_type):
         attrs.WriteMask = results[2].Value.Value
     if results[3].is_good():
         attrs.UserWriteMask = results[3].Value.Value
-    #if results[4].is_good():
+    # if results[4].is_good():
         #attrs.Value = results[4].Value.Value
     if results[5].is_good():
         attrs.DataType = results[5].Value.Value
@@ -207,8 +208,7 @@ def _add_variable_attrs(addnode, rdesc, node_type):
 
     addnode.NodeAttributes = attrs
 
+
 def _set_attr(container, result, idx):
     if result.is_good():
         container = result.Value.Value
-
-

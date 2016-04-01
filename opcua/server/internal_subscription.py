@@ -17,6 +17,7 @@ class MonitoredItemData(object):
         self.monitored_item_id = None
         self.parameters = None
         self.mode = None
+        self.mfilter = None
 
 
 class MonitoredItemService(object):
@@ -26,7 +27,7 @@ class MonitoredItemService(object):
     """
 
     def __init__(self, isub, aspace):
-        self.logger = logging.getLogger(__name__ + str(isub.data.SubscriptionId))
+        self.logger = logging.getLogger(__name__ + "." + str(isub.data.SubscriptionId))
         self.isub = isub
         self.aspace = aspace
         self._lock = RLock()
@@ -123,7 +124,7 @@ class MonitoredItemService(object):
             return results
 
     def _delete_monitored_items(self, mid):
-        if not mid in self._monitored_items:
+        if mid not in self._monitored_items:
             return ua.StatusCode(ua.StatusCodes.BadMonitoredItemIdInvalid)
         for k, v in self._monitored_events.items():
             if v == mid:
@@ -153,12 +154,12 @@ class MonitoredItemService(object):
 
     def trigger_event(self, event):
         with self._lock:
-            if not event.SourceNode in self._monitored_events:
+            if event.SourceNode not in self._monitored_events:
                 self.logger.debug("%s has no subscription for events %s from node: %s", self, event, event.SourceNode)
                 return False
             self.logger.debug("%s has subscription for events %s from node: %s", self, event, event.SourceNode)
             mid = self._monitored_events[event.SourceNode]
-            if not mid in self._monitored_items:
+            if mid not in self._monitored_items:
                 self.logger.debug("Could not find monitored items for id %s for event %s in subscription %s", mid, event, self)
                 return False
             mdata = self._monitored_items[mid]
@@ -193,7 +194,7 @@ class MonitoredItemService(object):
 class InternalSubscription(object):
 
     def __init__(self, subservice, data, addressspace, callback):
-        self.logger = logging.getLogger(__name__ + str(data.SubscriptionId))
+        self.logger = logging.getLogger(__name__ + "." + str(data.SubscriptionId))
         self.aspace = addressspace
         self.subservice = subservice
         self.data = data
@@ -295,11 +296,13 @@ class InternalSubscription(object):
             result.NotificationMessage.NotificationData.append(notif)
             self.logger.debug("sending event notification %s", notif.Status)
 
-    def publish(self, nb):
+    def publish(self, acks):
+        self.logger.info("publish request with acks %s", acks)
         with self._lock:
             self._publish_cycles_count = 0
-            if nb in self._not_acknowledged_results:
-                self._not_acknowledged_results.pop(nb)
+            for nb in acks:
+                if nb in self._not_acknowledged_results:
+                    self._not_acknowledged_results.pop(nb)
 
     def republish(self, nb):
         self.logger.info("re-publish request for ack %s in subscription %s", nb, self)

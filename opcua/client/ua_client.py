@@ -18,7 +18,7 @@ class UASocketClient(object):
     timeout is the timeout used while waiting for an ua answer from server
     """
     def __init__(self, timeout=1, security_policy=ua.SecurityPolicy()):
-        self.logger = logging.getLogger(__name__ + "Socket")
+        self.logger = logging.getLogger(__name__ + ".Socket")
         self._thread = None
         self._lock = Lock()
         self.timeout = timeout
@@ -47,6 +47,7 @@ class UASocketClient(object):
         """
         with self._lock:
             request.RequestHeader = self._create_request_header(timeout)
+            self.logger.debug("Sending: %s", request)
             try:
                 binreq = request.to_binary()
             except:
@@ -104,9 +105,9 @@ class UASocketClient(object):
         elif isinstance(msg, ua.Acknowledge):
             self._call_callback(0, msg)
         elif isinstance(msg, ua.ErrorMessage):
-            self.logger.warning("Received an error: {}".format(msg))
+            self.logger.warning("Received an error: %s", msg)
         else:
-            raise ua.UaError("Unsupported message type: {}".format(msg))
+            raise ua.UaError("Unsupported message type: %s", msg)
 
     def _call_callback(self, request_id, body):
         with self._lock:
@@ -230,6 +231,7 @@ class UaClient(object):
         request.Parameters = parameters
         data = self._uasocket.send_request(request)
         response = ua.CreateSessionResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         self._uasocket.authentication_token = response.Parameters.AuthenticationToken
         return response.Parameters
@@ -240,6 +242,7 @@ class UaClient(object):
         request.Parameters = parameters
         data = self._uasocket.send_request(request)
         response = ua.ActivateSessionResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Parameters
 
@@ -257,6 +260,7 @@ class UaClient(object):
         request.Parameters = parameters
         data = self._uasocket.send_request(request)
         response = ua.BrowseResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
@@ -266,6 +270,7 @@ class UaClient(object):
         request.Parameters = parameters
         data = self._uasocket.send_request(request)
         response = ua.ReadResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         # cast to Enum attributes that need to
         for idx, rv in enumerate(parameters.NodesToRead):
@@ -285,6 +290,7 @@ class UaClient(object):
         request.Parameters = params
         data = self._uasocket.send_request(request)
         response = ua.WriteResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
@@ -294,6 +300,7 @@ class UaClient(object):
         request.Parameters = params
         data = self._uasocket.send_request(request)
         response = ua.GetEndpointsResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Endpoints
 
@@ -303,6 +310,7 @@ class UaClient(object):
         request.Parameters = params
         data = self._uasocket.send_request(request)
         response = ua.FindServersResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Servers
 
@@ -312,6 +320,7 @@ class UaClient(object):
         request.Parameters = params
         data = self._uasocket.send_request(request)
         response = ua.FindServersOnNetworkResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Parameters
 
@@ -321,6 +330,7 @@ class UaClient(object):
         request.Server = registered_server
         data = self._uasocket.send_request(request)
         response = ua.RegisterServerResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         # nothing to return for this service
 
@@ -330,6 +340,7 @@ class UaClient(object):
         request.Parameters = params
         data = self._uasocket.send_request(request)
         response = ua.RegisterServer2Response.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.ConfigurationResults
 
@@ -339,6 +350,7 @@ class UaClient(object):
         request.Parameters.BrowsePaths = browsepaths
         data = self._uasocket.send_request(request)
         response = ua.TranslateBrowsePathsToNodeIdsResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
@@ -355,6 +367,7 @@ class UaClient(object):
         self.logger.info("_create_subscription_callback")
         data = data_fut.result()
         response = ua.CreateSubscriptionResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         self._publishcallbacks[response.Parameters.SubscriptionId] = pub_callback
         resp_fut.set_result(response.Parameters)
@@ -372,6 +385,7 @@ class UaClient(object):
         self.logger.info("_delete_subscriptions_callback")
         data = data_fut.result()
         response = ua.DeleteSubscriptionsResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         for sid in subscriptionids:
             self._publishcallbacks.pop(sid)
@@ -391,6 +405,7 @@ class UaClient(object):
         self._uasocket.check_answer(data, "ServiceFault received from server while waiting for publish response")
         try:
             response = ua.PublishResponse.from_binary(data)
+            self.logger.debug(response)
         except Exception:
             self.logger.exception("Error parsing notificatipn from server")
             self.publish([]) #send publish request ot server so he does stop sending notifications
@@ -410,6 +425,7 @@ class UaClient(object):
         request.Parameters = params
         data = self._uasocket.send_request(request)
         response = ua.CreateMonitoredItemsResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
@@ -419,6 +435,7 @@ class UaClient(object):
         request.Parameters = params
         data = self._uasocket.send_request(request)
         response = ua.DeleteMonitoredItemsResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
@@ -428,6 +445,7 @@ class UaClient(object):
         request.Parameters.NodesToAdd = nodestoadd
         data = self._uasocket.send_request(request)
         response = ua.AddNodesResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
@@ -437,6 +455,7 @@ class UaClient(object):
         request.Parameters.NodesToDelete = nodestodelete
         data = self._uasocket.send_request(request)
         response = ua.DeleteNodesResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
@@ -445,6 +464,7 @@ class UaClient(object):
         request.Parameters.MethodsToCall = methodstocall
         data = self._uasocket.send_request(request)
         response = ua.CallResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
@@ -454,5 +474,6 @@ class UaClient(object):
         request.Parameters = params
         data = self._uasocket.send_request(request)
         response = ua.HistoryReadResponse.from_binary(data)
+        self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results

@@ -1,7 +1,8 @@
 
 import logging
-from threading import Lock
+from threading import RLock, Lock
 from datetime import datetime
+import time
 
 from opcua import ua
 from opcua.common import utils
@@ -13,6 +14,7 @@ class PublishRequestData(object):
         self.requesthdr = None
         self.algohdr = None
         self.seqhdr = None
+        self.timestamp = time.time()
 
 
 class UaProcessor(object):
@@ -26,8 +28,9 @@ class UaProcessor(object):
         self.channel = None
         self.socket = socket
         self._socketlock = Lock()
-        self._datalock = Lock()
+        self._datalock = RLock()
         self._publishdata_queue = []
+        self._publish_result_queue = []  # used when we need to wait for PublishRequest
         self._connection = ua.SecureConnection(ua.SecurityPolicy())
 
     def set_policies(self, policies):
@@ -36,8 +39,7 @@ class UaProcessor(object):
     def send_response(self, requesthandle, algohdr, seqhdr, response, msgtype=ua.MessageType.SecureMessage):
         with self._socketlock:
             response.ResponseHeader.RequestHandle = requesthandle
-            data = self._connection.message_to_binary(response.to_binary(),
-                    msgtype, seqhdr.RequestId)
+            data = self._connection.message_to_binary(response.to_binary(), msgtype, seqhdr.RequestId)
             self.socket.write(data)
 
     def open_secure_channel(self, algohdr, seqhdr, body):
@@ -53,10 +55,15 @@ class UaProcessor(object):
     def forward_publish_response(self, result):
         self.logger.info("forward publish response %s", result)
         with self._datalock:
-            if len(self._publishdata_queue) == 0:
-                self.logger.warning("Error server wants to send publish answer but no publish request is available")
-                return
-            requestdata = self._publishdata_queue.pop(0)
+            while True:
+                if len(self._publishdata_queue) == 0:
+                    self._publish_result_queue.append(result)
+                    self.logger.info("Server wants to send publish answer but no publish request is available, enqueing notification, length of result queue is %s", len(self._publish_result_queue))
+                    return
+                requestdata = self._publishdata_queue.pop(0)
+                if time.time() - requestdata.timestamp < requestdata.requesthdr.TimeoutHint / 1000:
+                    break
+
         response = ua.PublishResponse()
         response.Parameters = result
 
@@ -340,6 +347,9 @@ class UaProcessor(object):
             data.algohdr = algohdr
             with self._datalock:
                 self._publishdata_queue.append(data)  # will be used to send publish answers from server
+                if self._publish_result_queue:
+                    result = self._publish_result_queue.pop(0)
+                    self.forward_publish_response(result)
             self.session.publish(params.SubscriptionAcknowledgements)
             self.logger.info("publish forward to server")
 

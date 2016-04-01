@@ -94,6 +94,18 @@ class MySubHandler2():
         self.results.append(event)
 
 
+class MySubHandlerCounter():
+    def __init__(self):
+        self.datachange_count = 0 
+        self.event_count = 0 
+
+    def datachange_notification(self, node, val, data):
+        self.datachange_count += 1
+
+    def event_notification(self, event):
+        self.event_count += 1
+
+
 
 
 class CommonTests(object):
@@ -105,6 +117,8 @@ class CommonTests(object):
     '''
     # jyst to avoid editor warnings
     opc = None
+    assertEqual = lambda x, y: True
+    assertIn = lambda x, y: True
 
     def test_find_servers(self):
         servers = self.opc.find_servers()
@@ -309,11 +323,19 @@ class CommonTests(object):
         tid = v1.get_value()
         self.assertEqual(now, tid)
 
-
     def test_variant_array_dim(self):
         objects = self.opc.get_objects_node()
         l = [[[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0], [3.0, 3.0, 3.0, 3.0]],[[5.0, 5.0, 5.0, 5.0], [7.0, 8.0, 9.0, 01.0], [1.0, 1.0, 1.0, 1.0]]]
         v = objects.add_variable(3, 'variableWithDims', l)
+
+        v.set_array_dimensions([0, 0, 0])
+        dim = v.get_array_dimensions()
+        self.assertEqual(dim, [0, 0, 0])
+
+        v.set_value_rank(0)
+        rank = v.get_value_rank()
+        self.assertEqual(rank, 0)
+
         v2 = v.get_value()
         self.assertEqual(v2, l)
         dv = v.get_data_value()
@@ -326,9 +348,6 @@ class CommonTests(object):
         self.assertEqual(v2, l)
         dv = v.get_data_value()
         self.assertEqual(dv.Value.Dimensions, [2,3,0])
-
-
-
 
     def test_add_numeric_variable(self):
         objects = self.opc.get_objects_node()
@@ -546,6 +565,65 @@ class CommonTests(object):
         sub.delete()
         for s in subs:
             s.delete()
+
+    def test_subscription_count(self):
+        msclt = MySubHandlerCounter()
+        sub = self.opc.create_subscription(1, msclt)
+        o = self.opc.get_objects_node()
+        var = o.add_variable(3, 'SubVarCounter', 0.1)
+        sub.subscribe_data_change(var)
+        nb = 12
+        for i in range(nb):
+            val = var.get_value()
+            var.set_value(val +1)
+        time.sleep(0.2)  # let last event arrive
+        self.assertEqual(msclt.datachange_count, nb + 1)
+        sub.delete()
+
+    def test_subscription_count_list(self):
+        msclt = MySubHandlerCounter()
+        sub = self.opc.create_subscription(1, msclt)
+        o = self.opc.get_objects_node()
+        var = o.add_variable(3, 'SubVarCounter', [0.1, 0.2])
+        sub.subscribe_data_change(var)
+        nb = 12
+        for i in range(nb):
+            val = var.get_value()
+            val.append(i)
+            var.set_value(val)
+        time.sleep(0.2)  # let last event arrive
+        self.assertEqual(msclt.datachange_count, nb + 1)
+        sub.delete()
+
+    def test_subscription_count_no_change(self):
+        msclt = MySubHandlerCounter()
+        sub = self.opc.create_subscription(1, msclt)
+        o = self.opc.get_objects_node()
+        var = o.add_variable(3, 'SubVarCounter', [0.1, 0.2])
+        sub.subscribe_data_change(var)
+        nb = 12
+        for i in range(nb):
+            val = var.get_value()
+            var.set_value(val)
+        time.sleep(0.2)  # let last event arrive
+        self.assertEqual(msclt.datachange_count, 1)
+        sub.delete()
+
+    def test_subscription_count_empty(self):
+        msclt = MySubHandlerCounter()
+        sub = self.opc.create_subscription(1, msclt)
+        o = self.opc.get_objects_node()
+        var = o.add_variable(3, 'SubVarCounter', [0.1, 0.2, 0.3])
+        sub.subscribe_data_change(var)
+        while True:
+            val = var.get_value()
+            val.pop()
+            var.set_value(val, ua.VariantType.Double)
+            if not val:
+                break
+        time.sleep(0.2)  # let last event arrive
+        self.assertEqual(msclt.datachange_count, 4)
+        sub.delete()
 
     def test_subscription_overload_simple(self):
         nb = 10

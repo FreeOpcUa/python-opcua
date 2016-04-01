@@ -99,6 +99,8 @@ def pack_uatype_array(uatype, value):
 
 def pack_uatype(uatype, value):
     if uatype in uatype2struct:
+        if value is None:
+            value = 0
         return uatype2struct[uatype].pack(value)
     elif uatype == "Null":
         return b''
@@ -334,6 +336,12 @@ class StatusCode(FrozenClass):
         return 'StatusCode({})'.format(self.name)
     __repr__ = __str__
 
+    def __eq__(self, other):
+        return self.value == other.value
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 class NodeIdType(Enum):
     TwoByte = 0
@@ -397,8 +405,26 @@ class NodeId(FrozenClass):
     def __eq__(self, node):
         return isinstance(node, NodeId) and self.__key() == node.__key()
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __hash__(self):
         return hash(self.__key())
+
+    def is_null(self):
+        ret = True
+        if self.NamespaceIndex != 0:
+            ret = False
+        if self.NodeIdType  in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric):
+            if self.Identifier != 0:
+                ret = False
+        elif self.NodeIdType is NodeIdType.String:
+            if self.Identifier or self.Identifier != '':
+                ret = False
+        elif self.NodeIdType is NodeIdType.ByteString:
+            if not len(self.Identifier):
+                ret = False
+        return ret
 
     @staticmethod
     def from_string(string):
@@ -608,6 +634,9 @@ class QualifiedName(FrozenClass):
     def __eq__(self, bname):
         return isinstance(bname, QualifiedName) and self.Name == bname.Name and self.NamespaceIndex == bname.NamespaceIndex
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __str__(self):
         return 'QualifiedName({}:{})'.format(self.NamespaceIndex, self.Name)
 
@@ -667,6 +696,9 @@ class LocalizedText(FrozenClass):
         if isinstance(other, LocalizedText) and self.Locale == other.Locale and self.Text == other.Text:
             return True
         return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 class ExtensionObject(FrozenClass):
@@ -835,10 +867,15 @@ class Variant(FrozenClass):
             return True
         return False
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def _guess_type(self, val):
+        if isinstance(val, (list, tuple)):
+            error_val = val
         while isinstance(val, (list, tuple)):
             if len(val) == 0:
-                raise UaError("could not guess UA variable type")
+                raise UaError("could not guess UA type of variable {}".format(error_val))
             val = val[0]
         if val is None:
             return VariantType.Null
@@ -1126,12 +1163,3 @@ class BaseEvent(FrozenClass):
         s += ')'
         return s
     __repr__ = __str__
-
-
-__nodeid_counter = 2000
-
-
-def generate_nodeid(idx):
-    global __nodeid_counter
-    __nodeid_counter += 1
-    return NodeId(__nodeid_counter, idx)

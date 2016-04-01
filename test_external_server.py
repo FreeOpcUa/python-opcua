@@ -124,26 +124,13 @@ class Tests(unittest.TestCase):
         sub.delete()
 
 
-
-
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.WARN)
-    # FIXME add better arguments parsing with possibility to specify username and password
+    # FIXME add better arguments parsing with possibility to specify
+    # username and password and encryption
     if len(sys.argv) < 2:
         print("This script is meant to test compatibilty to a server with freeopcua python client library")
-        print("Usage: test_server.py url")
-        sys.exit(1)
-    else:
-        URL = sys.argv[1]
-
-    unittest.main(verbosity=30, argv=sys.argv[:1])
-
-if __name__ == "__main__":
-
-    logging.basicConfig(level=logging.WARN)
-    # FIXME add better arguments parsing with possibility to specify username and password
-    if len(sys.argv) < 2:
         print("Usage: test_server.py url")
         sys.exit(1)
     else:
