@@ -125,6 +125,24 @@ class CommonTests(object):
         servers = self.opc.find_servers()
         # FIXME : finish
 
+    def test_add_node_bad_args(self):
+        obj = self.opc.get_objects_node()
+
+        with self.assertRaises(TypeError):
+            fold = obj.add_folder(1.2, "kk")
+
+        with self.assertRaises(TypeError):
+            fold = obj.add_folder(ua.UaError, "khjh")
+
+        with self.assertRaises(ua.UaError):
+            fold = obj.add_folder("kjk", 1.2)
+
+        with self.assertRaises(TypeError):
+            fold = obj.add_folder("i=0;s='oooo'", 1.2)
+
+        with self.assertRaises(ua.UaError):
+            fold = obj.add_folder("i=0;s='oooo'", "tt:oioi")
+
     def test_delete_nodes(self):
         obj = self.opc.get_objects_node()
         fold = obj.add_folder(2, "FolderToDelete")
