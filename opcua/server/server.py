@@ -322,7 +322,7 @@ class Server(object):
         uries = self.get_namespace_array()
         return uries.index(uri)
 
-    def get_event_object(self, event=ua.BaseEvent()):
+    def get_event_generator(self, event=ua.BaseEvent()):
         """
         Returns an event object using an event type from address space.
         Use this object to fire events
