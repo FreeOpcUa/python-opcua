@@ -3,6 +3,7 @@ from datetime import datetime
 
 from opcua import Subscription
 from opcua import ua
+from opcua.common import utils
 
 
 class HistoryStorageInterface(object):
@@ -207,7 +208,7 @@ class HistoryManager(object):
             # implementation. This is contradictory, so we assume details is
             # send correctly with continuation point
             #starttime = bytes_to_datetime(rv.ContinuationPoint)
-            starttime = ua.unpack_datetime(rv.ContinuationPoint)
+            starttime = ua.unpack_datetime(utils.Buffer(rv.ContinuationPoint))
 
         dv, cont = self.storage.read_node_history(rv.NodeId,
                                                   starttime,
