@@ -74,11 +74,12 @@ Server: what works:
 * encryption
 * certificate handling
 * removing nodes 
+* history support
 
 Tested clients: freeopcua C++, freeopcua Python, uaexpert, prosys, quickopc
 
 Server: what is not implemented
-* history support
+* history support for events
 * views
 * localized text feature
 * better securty model with users and password
