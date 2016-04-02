@@ -3,6 +3,8 @@ High level node object, to access node attribute
 and browse address space
 """
 
+from datetime import datetime
+
 from opcua import ua
 
 
@@ -12,7 +14,7 @@ class Node(object):
     High level node object, to access node attribute,
     browse and populate address space.
     Node objects are usefull as-is but they do not expose the entire
-    OPC-UA protocol. Feel free to look at Node code and call
+    OPC-UA protocol. Feel free to look at the code of this class and call
     directly UA services methods to optimize your code
     """
 
@@ -39,6 +41,9 @@ class Node(object):
     def __str__(self):
         return "Node({})".format(self.nodeid)
     __repr__ = __str__
+
+    def __hash__(self):
+        return self.nodeid.__hash__()
 
     def get_browse_name(self):
         """
@@ -148,11 +153,21 @@ class Node(object):
         A node is always writable on server side.
         """
         if writable:
-            self.set_attribute(ua.AttributeIds.AccessLevel, ua.DataValue(ua.Variant(ua.AccessLevelMask.CurrentWrite, ua.VariantType.Byte)))
-            self.set_attribute(ua.AttributeIds.UserAccessLevel, ua.DataValue(ua.Variant(ua.AccessLevelMask.CurrentWrite, ua.VariantType.Byte)))
+            self.set_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.CurrentWrite)
+            self.set_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.CurrentWrite)
         else:
-            self.set_attribute(ua.AttributeIds.AccessLevel, ua.DataValue(ua.Variant(ua.AccessLevelMask.CurrentRead, ua.VariantType.Byte)))
-            self.set_attribute(ua.AttributeIds.AccessLevel, ua.DataValue(ua.Variant(ua.AccessLevelMask.CurrentRead, ua.VariantType.Byte)))
+            self.unset_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.CurrentWrite)
+            self.unset_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.CurrentWrite)
+
+    def set_attr_bit(self, attr, bit):
+        val = self.get_attribute(attr)
+        val.Value.Value = ua.set_bit(val.Value.Value, bit)
+        self.set_attribute(attr, val)
+
+    def unset_attr_bit(self, attr, bit):
+        val = self.get_attribute(attr)
+        val.Value.Value = ua.unset_bit(val.Value.Value, bit)
+        self.set_attribute(attr, val)
 
     def set_read_only(self):
         """
@@ -290,20 +305,27 @@ class Node(object):
         # FIXME: seems this method may return several nodes
         return Node(self.server, result.Targets[0].TargetId)
 
-    def read_raw_history(self, starttime=None, endtime=None, numvalues=0, returnbounds=True):
+    def read_raw_history(self, starttime=None, endtime=None, numvalues=0):
         """
         Read raw history of a node
         result code from server is checked and an exception is raised in case of error
+        If numvalues is > 0 and number of events in period is > numvalues
+        then result will be truncated
         """
         details = ua.ReadRawModifiedDetails()
         details.IsReadModified = False
         if starttime:
             details.StartTime = starttime
+        else:
+            details.StartTime = ua.DateTimeMinValue
         if endtime:
             details.EndTime = endtime
+        else:
+            details.EndTime = ua.DateTimeMinValue
         details.NumValuesPerNode = numvalues
-        details.ReturnBounds = returnbounds
-        return self.history_read(details)
+        details.ReturnBounds = True
+        result = self.history_read(details)
+        return result.HistoryData.DataValues
 
     def history_read(self, details):
         """
@@ -320,12 +342,12 @@ class Node(object):
         params.ReleaseContinuationPoints = False
         params.NodesToRead.append(valueid)
         result = self.server.history_read(params)[0]
-        return result.HistoryData
+        return result
 
     # Hack for convenience methods
     # local import is ugly but necessary for python2 support
     # feel fri to propose something better but I want to split all those
-    # create methods fro Node
+    # create methods from Node
 
     def add_folder(*args, **kwargs):
         from opcua.common import manage_nodes

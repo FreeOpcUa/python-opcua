@@ -1,6 +1,7 @@
 import unittest
 from tests_common import CommonTests, add_server_methods
 import time
+from datetime import timedelta
 
 from opcua import Server
 from opcua import Client
@@ -125,6 +126,15 @@ class TestServer(unittest.TestCase, CommonTests):
         v = o.get_child(["MyXMLFolder", "MyXMLObject", "MyXMLVariable"])
         val = v.get_value()
         self.assertEqual(val, "StringValue")
+
+    def test_historize(self):
+        o = self.opc.get_objects_node()
+        var = o.add_variable(3, "test_hist", 1.0)
+        self.srv.iserver.enable_history(var, timedelta(days=1))
+        time.sleep(1)
+        var.set_value(2.0)
+        var.set_value(3.0)
+        self.srv.iserver.disable_history(var)
 
 
 
