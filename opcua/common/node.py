@@ -153,11 +153,21 @@ class Node(object):
         A node is always writable on server side.
         """
         if writable:
-            self.set_attribute(ua.AttributeIds.AccessLevel, ua.DataValue(ua.Variant(ua.AccessLevelMask.CurrentWrite, ua.VariantType.Byte)))
-            self.set_attribute(ua.AttributeIds.UserAccessLevel, ua.DataValue(ua.Variant(ua.AccessLevelMask.CurrentWrite, ua.VariantType.Byte)))
+            self.set_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.CurrentWrite)
+            self.set_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.CurrentWrite)
         else:
-            self.set_attribute(ua.AttributeIds.AccessLevel, ua.DataValue(ua.Variant(ua.AccessLevelMask.CurrentRead, ua.VariantType.Byte)))
-            self.set_attribute(ua.AttributeIds.AccessLevel, ua.DataValue(ua.Variant(ua.AccessLevelMask.CurrentRead, ua.VariantType.Byte)))
+            self.unset_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.CurrentWrite)
+            self.unset_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.CurrentWrite)
+
+    def set_attr_bit(self, attr, bit):
+        val = self.get_attribute(attr)
+        val.Value.Value = ua.set_bit(val.Value.Value, bit)
+        self.set_attribute(attr, val)
+
+    def unset_attr_bit(self, attr, bit):
+        val = self.get_attribute(attr)
+        val.Value.Value = ua.unset_bit(val.Value.Value, bit)
+        self.set_attribute(attr, val)
 
     def set_read_only(self):
         """

@@ -2,7 +2,7 @@
 implement ua datatypes
 """
 import logging
-from enum import Enum
+from enum import Enum, IntEnum
 from datetime import datetime, timedelta, tzinfo, MAXYEAR
 from calendar import timegm
 import sys
@@ -251,6 +251,11 @@ def set_bit(data, offset):
     return data | mask
 
 
+def unset_bit(data, offset):
+    mask = 1 << offset
+    return data & ~mask
+
+
 class _FrozenClass(object):
 
     """
@@ -272,6 +277,44 @@ if "PYOPCUA_NO_TYPO_CHECK" in os.environ:
     FrozenClass = object
 else:
     FrozenClass = _FrozenClass
+
+
+class ValueRank(IntEnum):
+    """
+    Defines dimensions of a variable.
+    This enum does not support all cases since ValueRank support any n>0
+    but since it is an IntEnum it can be replace by a normal int
+    """
+    ScalarOrOneDimension = -3
+    Any = -2
+    Scalar = -1
+    OneOrMoreDimensions = 0
+    OneDimension = 1
+    # the next names are not in spec but so common we express them here
+    TwoDimensions = 2
+    ThreeDimensions = 3
+    FourDimensions = 3
+
+
+class AccessLevel(IntEnum):
+    """
+    """
+    CurrentRead = 0
+    CurrentWrite = 1
+    HistoryRead = 2
+    HistoryWrite = 3
+    SemanticChange = 4
+
+
+class AccessLevelMask(IntEnum):
+    """
+    Mask for access level
+    """
+    CurrentRead = 1 << AccessLevel.CurrentRead
+    CurrentWrite = 1 << AccessLevel.CurrentWrite
+    HistoryRead = 1 << AccessLevel.HistoryRead
+    HistoryWrite = 1 << AccessLevel.HistoryWrite
+    SemanticChange = 1 << AccessLevel.SemanticChange
 
 
 class Guid(FrozenClass):

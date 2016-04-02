@@ -58,7 +58,7 @@ class AttributeService(object):
                     continue
                 al = self._aspace.get_attribute_value(writevalue.NodeId, ua.AttributeIds.AccessLevel)
                 ual = self._aspace.get_attribute_value(writevalue.NodeId, ua.AttributeIds.UserAccessLevel)
-                if not al.Value.Value & ua.AccessLevelMask.CurrentWrite or not ual.Value.Value & ua.AccessLevelMask.CurrentWrite:
+                if not ua.test_bit(al.Value.Value, ua.AccessLevel.CurrentWrite) or not ua.test_bit(ual.Value.Value, ua.AccessLevel.CurrentWrite):
                     res.append(ua.StatusCode(ua.StatusCodes.BadUserAccessDenied))
                     continue
             res.append(self._aspace.set_attribute_value(writevalue.NodeId, writevalue.AttributeId, writevalue.Value))

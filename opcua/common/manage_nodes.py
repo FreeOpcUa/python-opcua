@@ -105,8 +105,8 @@ def _create_folder(server, parentnodeid, nodeid, qname):
     attrs = ua.ObjectAttributes()
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
-    attrs.WriteMask = ua.OpenFileMode.Read
-    attrs.UserWriteMask = ua.OpenFileMode.Read
+    attrs.WriteMask = 0
+    attrs.UserWriteMask = 0
     attrs.EventNotifier = 0
     addnode.NodeAttributes = attrs
     results = server.add_nodes([addnode])
@@ -126,8 +126,8 @@ def _create_object(server, parentnodeid, nodeid, qname):
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
     attrs.EventNotifier = 0
-    attrs.WriteMask = ua.OpenFileMode.Read
-    attrs.UserWriteMask = ua.OpenFileMode.Read
+    attrs.WriteMask = 0
+    attrs.UserWriteMask = 0
     addnode.NodeAttributes = attrs
     results = server.add_nodes([addnode])
     results[0].StatusCode.check()
@@ -163,9 +163,11 @@ def _create_variable(server, parentnodeid, nodeid, qname, val, isproperty=False)
     else:
         attrs.ValueRank = ua.ValueRank.Scalar
     #attrs.ArrayDimensions = None
-    attrs.WriteMask = ua.OpenFileMode.Read
-    attrs.UserWriteMask = ua.OpenFileMode.Read
+    attrs.WriteMask = 0
+    attrs.UserWriteMask = 0
     attrs.Historizing = 0
+    attrs.AccessLevel = ua.AccessLevelMask.CurrentRead
+    attrs.UserAccessLevel = ua.AccessLevelMask.CurrentRead
     addnode.NodeAttributes = attrs
     results = server.add_nodes([addnode])
     results[0].StatusCode.check()
@@ -183,8 +185,8 @@ def _create_method(parent, nodeid, qname, callback, inputs, outputs):
     attrs = ua.MethodAttributes()
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
-    attrs.WriteMask = ua.OpenFileMode.Read
-    attrs.UserWriteMask = ua.OpenFileMode.Read
+    attrs.WriteMask = 0
+    attrs.UserWriteMask = 0
     attrs.Executable = True
     attrs.UserExecutable = True
     addnode.NodeAttributes = attrs

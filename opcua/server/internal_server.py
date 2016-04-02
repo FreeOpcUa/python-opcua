@@ -157,6 +157,8 @@ class InternalServer(object):
         Set attribute Historizing of node to True and start storing data for history
         """
         node.set_attribute(ua.AttributeIds.Historizing, ua.DataValue(True))
+        node.set_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.HistoryRead)
+        node.set_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.HistoryRead)
         self.history_manager.historize(node, period, count)
 
     def disable_history(self, node):
@@ -164,6 +166,8 @@ class InternalServer(object):
         Set attribute Historizing of node to False and stop storing data for history
         """
         node.set_attribute(ua.AttributeIds.Historizing, ua.DataValue(False))
+        node.unset_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.HistoryRead)
+        node.unset_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.HistoryRead)
         self.history_manager.dehistorize(node)
 
 
