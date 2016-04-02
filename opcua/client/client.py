@@ -361,7 +361,8 @@ class Client(object):
         Activate session using either username and password or private_key
         """
         params = ua.ActivateSessionParameters()
-        challenge = self.security_policy.server_certificate + self._server_nonce
+        cert = self.security_policy.server_certificate if self.security_policy.server_certificate is not None else b"" 
+        challenge =  cert + self._server_nonce
         params.ClientSignature.Algorithm = b"http://www.w3.org/2000/09/xmldsig#rsa-sha1"
         params.ClientSignature.Signature = self.security_policy.asymmetric_cryptography.signature(challenge)
         params.LocaleIds.append("en")
