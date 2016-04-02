@@ -163,8 +163,8 @@ class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
 
     def __init__(self):
         self.SecurityPolicyURI = "http://opcfoundation.org/UA/SecurityPolicy#None"
-        self.SenderCertificate = b""
-        self.ReceiverCertificateThumbPrint = b""
+        self.SenderCertificate = None
+        self.ReceiverCertificateThumbPrint = None
         self._freeze = True
 
     def to_binary(self):
@@ -308,8 +308,8 @@ class SecurityPolicy(object):
         self.asymmetric_cryptography = CryptographyNone()
         self.symmetric_cryptography = CryptographyNone()
         self.Mode = auto.MessageSecurityMode.None_
-        self.server_certificate = b""
-        self.client_certificate = b""
+        self.server_certificate = None
+        self.client_certificate = None
 
     def make_symmetric_key(self, a, b):
         pass

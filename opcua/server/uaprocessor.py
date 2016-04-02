@@ -122,7 +122,11 @@ class UaProcessor(object):
             response = ua.CreateSessionResponse()
             response.Parameters = sessiondata
             response.Parameters.ServerCertificate = self._connection._security_policy.client_certificate
-            response.Parameters.ServerSignature.Signature = self._connection._security_policy.asymmetric_cryptography.signature(self._connection._security_policy.server_certificate + params.ClientNonce)
+            if self._connection._security_policy.server_certificate is None:
+                data = params.ClientNonce
+            else:
+                data = self._connection._security_policy.server_certificate + params.ClientNonce
+            response.Parameters.ServerSignature.Signature = self._connection._security_policy.asymmetric_cryptography.signature(data)
             response.Parameters.ServerSignature.Algorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
 
             self.logger.info("sending create sesssion response")
@@ -146,7 +150,11 @@ class UaProcessor(object):
                 self.logger.info("request to activate non-existing session")
                 raise utils.ServiceError(ua.StatusCodes.BadSessionIdInvalid)
 
-            self._connection._security_policy.asymmetric_cryptography.verify(self._connection._security_policy.client_certificate + self.session.nonce, params.ClientSignature.Signature)
+            if self._connection._security_policy.client_certificate is None:
+                data = self.session.nonce
+            else:
+                data = self._connection._security_policy.client_certificate + self.session.nonce
+            self._connection._security_policy.asymmetric_cryptography.verify(data, params.ClientSignature.Signature)
 
             result = self.session.activate_session(params)
 
