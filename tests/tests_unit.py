@@ -12,7 +12,7 @@ from opcua.ua.uatypes import flatten, get_shape, reshape
 
 
 
-class TestUnit(unittest.TestCase):
+class Unit(unittest.TestCase):
 
     '''
     Simple unit test that do not need to setup a server or a client
@@ -140,21 +140,12 @@ class TestUnit(unittest.TestCase):
         with self.assertRaises(ua.UaError):
             ua.QualifiedName.from_string("i:::yu")
 
+
     def test_expandednodeid(self):
         nid = ua.ExpandedNodeId()
         self.assertEqual(nid.NodeIdType, ua.NodeIdType.TwoByte)
         nid2 = ua.ExpandedNodeId.from_binary(ua.utils.Buffer(nid.to_binary()))
         self.assertEqual(nid, nid2)
-
-    def test_null_string(self):
-        v = ua.Variant(None, ua.VariantType.String)
-        b = v.to_binary()
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(b))
-        self.assertEqual(v.Value, v2.Value)
-        v = ua.Variant("", ua.VariantType.String)
-        b = v.to_binary()
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(b))
-        self.assertEqual(v.Value, v2.Value)
 
     def test_extension_object(self):
         obj = ua.UserNameIdentityToken()

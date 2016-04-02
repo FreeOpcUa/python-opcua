@@ -218,6 +218,8 @@ def pack_string(string):
     if isinstance(string, unicode):
         string = string.encode('utf-8')
     length = len(string)
+    if length == 0:
+        return b'\xff\xff\xff\xff'
     return uatype_Int32.pack(length) + string
 
 pack_bytes = pack_string
@@ -226,14 +228,13 @@ pack_bytes = pack_string
 def unpack_bytes(data):
     length = uatype_Int32.unpack(data.read(4))[0]
     if length == -1:
-        return None
+        # FIXME: return None, check it does not break things
+        return b''
     return data.read(length)
 
 
 def py3_unpack_string(data):
     b = unpack_bytes(data)
-    if b is None:
-        return b
     return b.decode("utf-8")
 
 
