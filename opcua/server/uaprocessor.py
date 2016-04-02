@@ -335,7 +335,7 @@ class UaProcessor(object):
 
         elif typeid == ua.NodeId(ua.ObjectIds.HistoryReadRequest_Encoding_DefaultBinary):
             self.logger.info("history read request")
-            params = ua.HistoryReadRequest.from_binary(body)
+            params = ua.HistoryReadParameters.from_binary(body)
 
             results = self.session.history_read(params)
 

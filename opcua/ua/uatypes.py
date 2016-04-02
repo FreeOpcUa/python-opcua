@@ -213,6 +213,8 @@ def unpack_datetime(data):
 
 
 def pack_string(string):
+    if string is None:
+        return uatype_Int32.pack(-1)
     if isinstance(string, unicode):
         string = string.encode('utf-8')
     length = len(string)
@@ -226,6 +228,7 @@ pack_bytes = pack_string
 def unpack_bytes(data):
     length = uatype_Int32.unpack(data.read(4))[0]
     if length == -1:
+        # FIXME: return None, check it does not break things
         return b''
     return data.read(length)
 
