@@ -84,7 +84,11 @@ def parse_args(parser, requirenodeid=False):
 def get_node(client, args):
     node = client.get_node(args.nodeid)
     if args.path:
-        node = node.get_child(args.path.split(","))
+        path = args.path.split(",")
+        if node.nodeid == ua.NodeId(84, 0) and path[0] == "0:Root":
+            # let user specify root if not node given
+            path = path[1:]
+        node = node.get_child(path)
     return node
 
 
