@@ -16,3 +16,4 @@ dist
 *.egg-info
 *.swp
 newdocs
+examples/history.db
