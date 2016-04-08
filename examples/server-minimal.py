@@ -26,6 +26,10 @@ if __name__ == "__main__":
 
     # starting!
     server.start()
+    
+    # historize must be called after the server is started!
+    server.historize_node(myvar)
+    
     try:
         count = 0
         while True:
