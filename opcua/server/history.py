@@ -4,7 +4,70 @@ from datetime import datetime
 from opcua import Subscription
 from opcua import ua
 
-from opcua.server.history_interface import HistoryStorageInterface
+
+class HistoryStorageInterface(object):
+
+    """
+    Interface of a history backend.
+    Must be implemented by backends
+    """
+
+    def new_historized_node(self, node_id, period, count=0):
+        """
+        Called when a new node is to be historized
+        Returns None
+        """
+        raise NotImplementedError
+
+    def save_node_value(self, node_id, datavalue):
+        """
+        Called when the value of a historized node has changed and should be saved in history
+        Returns None
+        """
+        raise NotImplementedError
+
+    def read_node_history(self, node_id, start, end, nb_values):
+        """
+        Called when a client make a history read request for a node
+        if start or end is missing then nb_values is used to limit query
+        nb_values is the max number of values to read. Ignored if 0
+        Start time and end time are inclusive
+        Returns a list of DataValues and a continuation point which
+        is None if all nodes are read or the ServerTimeStamp of the last rejected DataValue
+        """
+        raise NotImplementedError
+
+    def new_historized_event(self, event, period):
+        """
+        Called when historization of events is enabled on server side
+        FIXME: we may need to store events per nodes in future...
+        Returns None
+        """
+        raise NotImplementedError
+
+    def save_event(self, event):
+        """
+        Called when a new event has been generated ans should be saved in history
+        Returns None
+        """
+        raise NotImplementedError
+
+    def read_event_history(self, start, end, evfilter):
+        """
+        Called when a client make a history read request for events
+        Start time and end time are inclusive
+        Returns a list of Events and a continuation point which
+        is None if all events are read or the ServerTimeStamp of the last rejected event
+        """
+        raise NotImplementedError
+
+    def stop(self):
+        """
+        Called when the server shuts down
+        Can be used to close database connections etc.
+        """
+        raise NotImplementedError
+
 
 # if you want to use an SQL based history uncomment this import and change the storage type of the history manager
 # from opcua.server.history_sql import HistorySQLite
@@ -19,13 +82,11 @@ class HistoryDict(HistoryStorageInterface):
         self._datachanges_period = {}
         self._events = {}
 
-    def new_historized_node(self, node, period, count=0):
-        node_id = node.nodeid
+    def new_historized_node(self, node_id, period, count=0):
         self._datachanges[node_id] = []
         self._datachanges_period[node_id] = period, count
 
-    def save_node_value(self, node, datavalue):
-        node_id = node.nodeid
+    def save_node_value(self, node_id, datavalue):
         data = self._datachanges[node_id]
         period, count = self._datachanges_period[node_id]
         data.append(datavalue)
@@ -36,8 +97,7 @@ class HistoryDict(HistoryStorageInterface):
         if count and len(data) > count:
             data = data[-count:]
 
-    def read_node_history(self, node, start, end, nb_values):
-        node_id = node.NodeId
+    def read_node_history(self, node_id, start, end, nb_values):
         cont = None
         if node_id not in self._datachanges:
             print("Error attempt to read history for a node which is not historized")
@@ -74,7 +134,7 @@ class SubHandler(object):
         self.storage = storage
 
     def datachange_notification(self, node, val, data):
-        self.storage.save_node_value(node, data.monitored_item.Value)
+        self.storage.save_node_value(node.nodeid, data.monitored_item.Value)
 
     def event_notification(self, event):
         self.storage.save_event(event)
@@ -104,8 +164,8 @@ class HistoryManager(object):
         if not self._sub:
             self._sub = self._create_subscription(SubHandler(self.storage))
         if node in self._handlers:
-            raise ua.UaError("Node {} is allready historized".format(node))
-        self.storage.new_historized_node(node, period, count)
+            raise ua.UaError("Node {} is already historized".format(node))
+        self.storage.new_historized_node(node.nodeid, period, count)
         handler = self._sub.subscribe_data_change(node)
         self._handlers[node] = handler
 
@@ -163,7 +223,7 @@ class HistoryManager(object):
             # starttime = bytes_to_datetime(rv.ContinuationPoint)
             starttime = ua.unpack_datetime(rv.ContinuationPoint)
 
-        dv, cont = self.storage.read_node_history(rv,
+        dv, cont = self.storage.read_node_history(rv.NodeId,
                                                   starttime,
                                                   details.EndTime,
                                                   details.NumValuesPerNode)
