@@ -338,3 +338,9 @@ class Server(object):
 
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.iserver.isession, nodes, recursive)
+        
+    def historize_node(self, node):
+        self.iserver.enable_history(node)
+    
+    def dehistorize_node(self, node):
+        self.iserver.disable_history(node)
