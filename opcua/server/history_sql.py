@@ -162,7 +162,4 @@ class HistorySQLite(HistoryStorageInterface):
 
     # close connections to the history database when the server stops
     def stop(self):
-        pass
         self._conn.close()
-        # FIXME: Should close the database connections when the server stops, but because server.stop() is called
-        # FIXME: on a different thread than the SQL conn object, no idea how to do this at the moment
