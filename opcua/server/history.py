@@ -13,21 +13,21 @@ class HistoryStorageInterface(object):
     Must be implemented by backends
     """
 
-    def new_historized_node(self, node, period, count=0):
+    def new_historized_node(self, node_id, period, count=0):
         """
         Called when a new node is to be historized
         Returns None
         """
         raise NotImplementedError
 
-    def save_node_value(self, node, datavalue):
+    def save_node_value(self, node_id, datavalue):
         """
         Called when the value of a historized node has changed and should be saved in history
         Returns None
         """
         raise NotImplementedError
 
-    def read_node_history(self, node, start, end, nb_values):
+    def read_node_history(self, node_id, start, end, nb_values):
         """
         Called when a client make a history read request for a node
         if start or end is missing then nb_values is used to limit query
@@ -62,26 +62,34 @@ class HistoryStorageInterface(object):
         """
         raise NotImplementedError
 
+    def stop(self):
+        """
+        Called when the server shuts down
+        Can be used to close database connections etc.
+        """
+        raise NotImplementedError
+
+
+# if you want to use an SQL based history uncomment this import and change the storage type of the history manager
+# from opcua.server.history_sql import HistorySQLite
+
 
 class HistoryDict(HistoryStorageInterface):
     """
-    very minimal history backend storing data in memory using a Python dictionnary
+    very minimal history backend storing data in memory using a Python dictionary
     """
     def __init__(self):
         self._datachanges = {}
         self._datachanges_period = {}
         self._events = {}
 
-    def new_historized_node(self, node, period, count=0):
-        self._datachanges[node] = []
-        self._datachanges_period[node] = period, count
+    def new_historized_node(self, node_id, period, count=0):
+        self._datachanges[node_id] = []
+        self._datachanges_period[node_id] = period, count
 
-    def new_historized_event(self, event, period):
-        self._events = []
-
-    def save_node_value(self, node, datavalue):
-        data = self._datachanges[node]
-        period, count = self._datachanges_period[node]
+    def save_node_value(self, node_id, datavalue):
+        data = self._datachanges[node_id]
+        period, count = self._datachanges_period[node_id]
         data.append(datavalue)
         now = datetime.now()
         if period:
@@ -90,9 +98,9 @@ class HistoryDict(HistoryStorageInterface):
         if count and len(data) > count:
             data = data[-count:]
 
-    def read_node_history(self, node, start, end, nb_values):
+    def read_node_history(self, node_id, start, end, nb_values):
         cont = None
-        if node not in self._datachanges:
+        if node_id not in self._datachanges:
             print("Error attempt to read history for a node which is not historized")
             return [], cont
         else:
@@ -100,7 +108,7 @@ class HistoryDict(HistoryStorageInterface):
                 end = datetime.now() + timedelta(days=1)
             if start is None:
                 start = ua.DateTimeMinValue
-            results = [dv for dv in self._datachanges[node] if start <= dv.ServerTimestamp <= end]
+            results = [dv for dv in self._datachanges[node_id] if start <= dv.ServerTimestamp <= end]
             if nb_values:
                 if start > ua.DateTimeMinValue and len(results) > nb_values:
                     cont = results[nb_values + 1].ServerTimestamp
@@ -109,11 +117,17 @@ class HistoryDict(HistoryStorageInterface):
                     results = results[-nb_values:]
             return results, cont
 
+    def new_historized_event(self, event, period):
+        self._events = []
+
     def save_event(self, event):
         raise NotImplementedError
 
     def read_event_history(self, start, end, evfilter):
         raise NotImplementedError
+
+    def stop(self):
+        pass
 
 
 class SubHandler(object):
@@ -123,7 +137,6 @@ class SubHandler(object):
     def datachange_notification(self, node, val, data):
         self.storage.save_node_value(node.nodeid, data.monitored_item.Value)
 
-
     def event_notification(self, event):
         self.storage.save_event(event)
 
@@ -131,7 +144,7 @@ class SubHandler(object):
 class HistoryManager(object):
     def __init__(self, iserver):
         self.iserver = iserver
-        self.storage = HistoryDict()
+        self.storage = HistoryDict()  # Change to HistorySQLite() for file based history
         self._sub = None
         self._handlers = {}
 
@@ -152,7 +165,7 @@ class HistoryManager(object):
         if not self._sub:
             self._sub = self._create_subscription(SubHandler(self.storage))
         if node in self._handlers:
-            raise ua.UaError("Node {} is allready historized".format(node))
+            raise ua.UaError("Node {} is already historized".format(node))
         self.storage.new_historized_node(node.nodeid, period, count)
         handler = self._sub.subscribe_data_change(node)
         self._handlers[node] = handler
@@ -175,7 +188,8 @@ class HistoryManager(object):
         return results
         
     def _read_history(self, details, rv):
-        """ read history for a node 
+        """
+        read history for a node
         """
         result = ua.HistoryReadResult()
         if isinstance(details, ua.ReadRawModifiedDetails):
@@ -215,9 +229,9 @@ class HistoryManager(object):
                                                   details.EndTime,
                                                   details.NumValuesPerNode)
         if cont:
-            #cont = datetime_to_bytes(dv[-1].ServerTimestamp)
+            # cont = datetime_to_bytes(dv[-1].ServerTimestamp)
             cont = ua.pack_datetime(dv[-1].ServerTimestamp)
-        # FIXME, parse index range and filter out if necesary
+        # FIXME, parse index range and filter out if necessary
         # rv.IndexRange
         # rv.DataEncoding # xml or binary, seems spec say we can ignore that one
         return dv, cont
@@ -236,6 +250,5 @@ class HistoryManager(object):
             results.append(results)
         return results
 
-
-
-
+    def stop(self):
+        self.storage.stop()

@@ -22,10 +22,15 @@ if __name__ == "__main__":
     # populating our address space
     myobj = objects.add_object(idx, "MyObject")
     myvar = myobj.add_variable(idx, "MyVariable", 6.7)
+    myvarA = myobj.add_variable(idx, "MyBool", True)
     myvar.set_writable()    # Set MyVariable to be writable by clients
 
     # starting!
     server.start()
+    
+    # historize must be called after the server is started!
+    server.historize_node(myvar)
+    server.historize_node(myvarA)
     
     try:
         count = 0
@@ -33,6 +38,12 @@ if __name__ == "__main__":
             time.sleep(1)
             count += 0.1
             myvar.set_value(count)
+            my_val = myvarA.get_value()
+            if my_val:
+                myvarA.set_value(False)
+            else:
+                myvarA.set_value(True)
+
     finally:
-        #close connection, remove subcsriptions, etc
+        # close connection, remove subscriptions, etc
         server.stop()

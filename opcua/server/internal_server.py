@@ -97,6 +97,7 @@ class InternalServer(object):
     def stop(self):
         self.logger.info("stopping internal server")
         self.loop.stop()
+        self.history_manager.stop()
 
     def _set_current_time(self):
         self.current_time_node.set_value(datetime.utcnow())
