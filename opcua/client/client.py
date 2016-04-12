@@ -318,7 +318,11 @@ class Client(object):
         params.RequestedSessionTimeout = 3600000
         params.MaxResponseMessageSize = 0  # means no max size
         response = self.uaclient.create_session(params)
-        self.security_policy.asymmetric_cryptography.verify(self.security_policy.client_certificate + nonce, response.ServerSignature.Signature)
+        if self.security_policy.client_certificate is None:
+            data = nonce
+        else:
+            data = self.security_policy.client_certificate + nonce
+        self.security_policy.asymmetric_cryptography.verify(data, response.ServerSignature.Signature)
         self._server_nonce = response.ServerNonce
         if not self.security_policy.server_certificate:
             self.security_policy.server_certificate = response.ServerCertificate
@@ -361,7 +365,8 @@ class Client(object):
         Activate session using either username and password or private_key
         """
         params = ua.ActivateSessionParameters()
-        challenge = self.security_policy.server_certificate + self._server_nonce
+        cert = self.security_policy.server_certificate if self.security_policy.server_certificate is not None else b"" 
+        challenge =  cert + self._server_nonce
         params.ClientSignature.Algorithm = b"http://www.w3.org/2000/09/xmldsig#rsa-sha1"
         params.ClientSignature.Signature = self.security_policy.asymmetric_cryptography.signature(challenge)
         params.LocaleIds.append("en")
