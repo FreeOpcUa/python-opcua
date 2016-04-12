@@ -144,7 +144,7 @@ class SubHandler(object):
 class HistoryManager(object):
     def __init__(self, iserver):
         self.iserver = iserver
-        self.storage = HistoryDict()  # Change to HistorySQLite() for file based history
+        self.storage = HistoryDict()
         self._sub = None
         self._handlers = {}
 
