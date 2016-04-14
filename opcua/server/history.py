@@ -91,7 +91,7 @@ class HistoryDict(HistoryStorageInterface):
         data = self._datachanges[node_id]
         period, count = self._datachanges_period[node_id]
         data.append(datavalue)
-        now = datetime.now()
+        now = datetime.utcnow()
         if period:
             while now - data[0].ServerTimestamp > period:
                 data.pop(0)
@@ -104,8 +104,8 @@ class HistoryDict(HistoryStorageInterface):
             print("Error attempt to read history for a node which is not historized")
             return [], cont
         else:
-            if end is None:
-                end = datetime.now() + timedelta(days=1)
+            if end is None or ua.DateTimeMinValue:
+                end = datetime.utcnow() + timedelta(days=1)
             if start is None:
                 start = ua.DateTimeMinValue
             results = [dv for dv in self._datachanges[node_id] if start <= dv.ServerTimestamp <= end]
