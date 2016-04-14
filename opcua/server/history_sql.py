@@ -2,11 +2,9 @@ import logging
 from datetime import timedelta
 from datetime import datetime
 from threading import Lock
-
 from opcua import ua
 from opcua.common.utils import Buffer
 from opcua.server.history import HistoryStorageInterface
-
 import sqlite3
 
 
@@ -33,14 +31,15 @@ class HistorySQLite(HistoryStorageInterface):
             self._datachanges_period[node_id] = period, count
 
             # create a table for the node which will store attributes of the DataValue object
-            # note: Value and VariantType TEXT is only for human reading, the actual data is stored in VariantBinary column
+            # note: Value/VariantType TEXT is only for human reading, the actual data is stored in VariantBinary column
             try:
-                _c_new.execute('CREATE TABLE "{tn}" (ServerTimestamp TIMESTAMP,'
-                            ' SourceTimestamp TIMESTAMP,'
-                            ' StatusCode INTEGER,'
-                            ' Value TEXT,'
-                            ' VariantType TEXT,'
-                            ' VariantBinary BLOB)'.format(tn=table))
+                _c_new.execute('CREATE TABLE "{tn}" (Id INTEGER PRIMARY KEY NOT NULL,'
+                               ' ServerTimestamp TIMESTAMP,'
+                               ' SourceTimestamp TIMESTAMP,'
+                               ' StatusCode INTEGER,'
+                               ' Value TEXT,'
+                               ' VariantType TEXT,'
+                               ' VariantBinary BLOB)'.format(tn=table))
 
             except sqlite3.Error as e:
                 self.logger.info('Historizing SQL Table Creation Error for %s: %s', node_id, e)
@@ -55,16 +54,16 @@ class HistorySQLite(HistoryStorageInterface):
 
             # insert the data change into the database
             try:
-                _c_sub.execute('INSERT INTO "{tn}" VALUES (?, ?, ?, ?, ?, ?)'.format(tn=table),
-                            (
-                                datavalue.ServerTimestamp,
-                                datavalue.SourceTimestamp,
-                                datavalue.StatusCode.value,
-                                str(datavalue.Value.Value),
-                                datavalue.Value.VariantType.name,
-                                datavalue.Value.to_binary()
-                            )
-                            )
+                _c_sub.execute('INSERT INTO "{tn}" VALUES (NULL, ?, ?, ?, ?, ?, ?)'.format(tn=table),
+                               (
+                                   datavalue.ServerTimestamp,
+                                   datavalue.SourceTimestamp,
+                                   datavalue.StatusCode.value,
+                                   str(datavalue.Value.Value),
+                                   datavalue.Value.VariantType.name,
+                                   datavalue.Value.to_binary()
+                               )
+                               )
             except sqlite3.Error as e:
                 self.logger.error('Historizing SQL Insert Error for %s: %s', node_id, e)
 
@@ -72,48 +71,69 @@ class HistorySQLite(HistoryStorageInterface):
 
             # get this node's period from the period dict and calculate the limit
             period, count = self._datachanges_period[node_id]
-            date_limit = datetime.now() - period
 
-            # after the insert, delete all values older than period
-            try:
-                _c_sub.execute('DELETE FROM "{tn}" WHERE ServerTimestamp < ?'.format(tn=table),
-                                                                                (date_limit.isoformat(' '),))
-            except sqlite3.Error as e:
-                self.logger.error('Historizing SQL Delete Old Data Error for %s: %s', node_id, e)
+            if period:
+                # after the insert, if a period was specified delete all records older than period
+                date_limit = datetime.now() - period
 
-            self._conn.commit()
+                try:
+                    _c_sub.execute('DELETE FROM "{tn}" WHERE ServerTimestamp < ?'.format(tn=table),
+                                   (date_limit.isoformat(' '),))
+                except sqlite3.Error as e:
+                    self.logger.error('Historizing SQL Delete Old Data Error for %s: %s', node_id, e)
+
+                self._conn.commit()
 
     def read_node_history(self, node_id, start, end, nb_values):
         with self._lock:
             _c_read = self._conn.cursor()
 
-            if end is None:
-                end = datetime.now() + timedelta(days=1)
-            if start is None:
+            order = "ASC"
+
+            if start is None or start == ua.DateTimeMinValue:
+                order = "DESC"
                 start = ua.DateTimeMinValue
 
+            if end is None or end == ua.DateTimeMinValue:
+                end = datetime.utcnow() + timedelta(days=1)
+
+            if start < end:
+                start_time = start.isoformat(' ')
+                end_time = end.isoformat(' ')
+            else:
+                order = "DESC"
+                start_time = end.isoformat(' ')
+                end_time = start.isoformat(' ')
+
+            if nb_values:
+                limit = nb_values + 1  # add 1 to the number of values for retrieving a continuation point
+            else:
+                limit = -1  # in SQLite a LIMIT of -1 returns all results
+
             table = self._get_table_name(node_id)
-    
+
             cont = None
             results = []
 
-            start_time = start.isoformat(' ')
-            end_time = end.isoformat(' ')
-
-            # select values from the database; recreate UA Variant from binary
+            # select values from the database; recreate UA Variant from binary ORDER BY "ServerTimestamp" DESC
             try:
                 for row in _c_read.execute('SELECT * FROM "{tn}" WHERE "ServerTimestamp" BETWEEN ? AND ? '
-                                       'LIMIT ?'.format(tn=table), (start_time, end_time, nb_values,)):
-
-                    dv = ua.DataValue(ua.Variant.from_binary(Buffer(row[5])))
-                    dv.ServerTimestamp = row[0]
-                    dv.SourceTimestamp = row[1]
-                    dv.StatusCode = ua.StatusCode(row[2])
+                                           'ORDER BY "Id" {dir} LIMIT ?'.format(tn=table, dir=order), (start_time, end_time, limit,)):
+                    dv = ua.DataValue(ua.Variant.from_binary(Buffer(row[6])))
+                    dv.ServerTimestamp = row[1]
+                    dv.SourceTimestamp = row[2]
+                    dv.StatusCode = ua.StatusCode(row[3])
 
                     results.append(dv)
 
             except sqlite3.Error as e:
                 self.logger.error('Historizing SQL Read Error for %s: %s', node_id, e)
+
+            if nb_values:
+                if start > ua.DateTimeMinValue and len(results) > nb_values:
+                    cont = results[nb_values].ServerTimestamp
+
+                results = results[:nb_values]
 
             return results, cont
 
@@ -132,3 +152,4 @@ class HistorySQLite(HistoryStorageInterface):
     def stop(self):
         with self._lock:
             self._conn.close()
+

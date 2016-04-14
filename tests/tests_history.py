@@ -93,6 +93,16 @@ class HistoryCommon(object):
         self.assertEqual(res[-1].Value.Value, self.values[4])
         self.assertEqual(res[0].Value.Value, self.values[0])
 
+    # start time greater than end time, should return reverse order
+    def test_history_read_5_in_timeframe_start_greater_than_end(self):
+        now = datetime.utcnow()
+        old = now - timedelta(days=6)
+
+        res = self.var.read_raw_history(now, old, 5)
+        self.assertEqual(len(res), 5)
+        self.assertEqual(res[-1].Value.Value, self.values[-5])
+        self.assertEqual(res[0].Value.Value, self.values[-1])
+
 
 
 class TestHistory(unittest.TestCase, HistoryCommon):
