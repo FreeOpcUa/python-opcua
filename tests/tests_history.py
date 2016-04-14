@@ -44,32 +44,36 @@ class HistoryCommon(object):
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0].Value.Value, self.values[-1])
 
+    # no start and no end is not defined by spec, return reverse order
     def test_history_read_none(self):
         # FIXME not sure this once is supported by spec
         res = self.var.read_raw_history(None, None, 0)
         self.assertEqual(len(res), 20)
-        self.assertEqual(res[0].Value.Value, self.values[0])
-        self.assertEqual(res[-1].Value.Value, self.values[-1])
+        self.assertEqual(res[0].Value.Value, self.values[-1])  # self.values was 0
+        self.assertEqual(res[-1].Value.Value, self.values[0])  # self.values was -1
 
+    # no start and no end is not defined by spec, return reverse order
     def test_history_read_last_3(self):
         res = self.var.read_raw_history(None, None, 3)
         self.assertEqual(len(res), 3)
-        self.assertEqual(res[-1].Value.Value, self.values[-1])
-        self.assertEqual(res[0].Value.Value, self.values[-3])
+        self.assertEqual(res[-1].Value.Value, self.values[-3])  # self.values was -1
+        self.assertEqual(res[0].Value.Value, self.values[-1])  # self.values was -3
 
+    # no start and no end is not defined by spec, return reverse order
     def test_history_read_all2(self):
         res = self.var.read_raw_history(None, None, 9999)
         self.assertEqual(len(res), 20)
-        self.assertEqual(res[-1].Value.Value, self.values[-1])
-        self.assertEqual(res[0].Value.Value, self.values[0])
- 
+        self.assertEqual(res[-1].Value.Value, self.values[0])  # self.values was -1
+        self.assertEqual(res[0].Value.Value, self.values[-1])  # self.values was 0
+
+    # only has end time, should return reverse order
     def test_history_read_2_with_end(self):
         now = datetime.utcnow()
         old = now - timedelta(days=6)
 
         res = self.var.read_raw_history(None, now, 2)
         self.assertEqual(len(res), 2)
-        self.assertEqual(res[-1].Value.Value, self.values[-1])
+        self.assertEqual(res[-1].Value.Value, self.values[-2])  # self.values was -1
     
     def test_history_read_all(self):
         now = datetime.utcnow()
