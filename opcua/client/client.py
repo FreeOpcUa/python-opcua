@@ -365,8 +365,11 @@ class Client(object):
         Activate session using either username and password or private_key
         """
         params = ua.ActivateSessionParameters()
-        cert = self.security_policy.server_certificate if self.security_policy.server_certificate is not None else b"" 
-        challenge =  cert + self._server_nonce
+        challenge = b""
+        if self.security_policy.server_certificate is not None:
+            challenge += self.security_policy.server_certificate
+        if self._server_nonce is not None:
+            challenge += self._server_nonce
         params.ClientSignature.Algorithm = b"http://www.w3.org/2000/09/xmldsig#rsa-sha1"
         params.ClientSignature.Signature = self.security_policy.asymmetric_cryptography.signature(challenge)
         params.LocaleIds.append("en")
@@ -399,10 +402,11 @@ class Client(object):
                 pubkey = uacrypto.x509_from_der(self.security_policy.server_certificate).public_key()
                 # see specs part 4, 7.36.3: if the token is encrypted, password
                 # shall be converted to UTF-8 and serialized with server nonce
-                etoken = ua.pack_bytes(bytes(password, "utf8") + self._server_nonce)
-                (data, uri) = security_policies.encrypt_asymmetric(pubkey,
-                        etoken,
-                        policy_uri)
+                passwd = bytes(password, "utf8")
+                if self._server_nonce is not None:
+                    passwd += self._server_nonce
+                etoken = ua.pack_bytes(passwd)
+                data, uri = security_policies.encrypt_asymmetric(pubkey, etoken, policy_uri)
                 params.UserIdentityToken.Password = data
                 params.UserIdentityToken.EncryptionAlgorithm = uri
             params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")
