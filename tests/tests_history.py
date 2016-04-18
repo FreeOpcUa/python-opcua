@@ -18,25 +18,28 @@ class HistoryCommon(object):
     srv = Server
     clt = Client
 
-    def start_server_and_client(self):
-        self.srv = Server()
-        self.srv.set_endpoint('opc.tcp://localhost:%d' % port_num1)
-        self.srv.start()
+    @classmethod
+    def start_server_and_client(cls):
+        cls.srv = Server()
+        cls.srv.set_endpoint('opc.tcp://localhost:%d' % port_num1)
+        cls.srv.start()
 
-        self.clt = Client('opc.tcp://localhost:%d' % port_num1)
-        self.clt.connect()
+        cls.clt = Client('opc.tcp://localhost:%d' % port_num1)
+        cls.clt.connect()
 
-    def stop_server_and_client(self):
-        self.clt.disconnect()
-        self.srv.stop()
+    @classmethod
+    def stop_server_and_client(cls):
+        cls.clt.disconnect()
+        cls.srv.stop()
 
-    def create_var(self):
-        o = self.srv.get_objects_node()
-        self.values = [i for i in range(20)]
-        self.var = o.add_variable(3, "history_var", 0)
-        self.srv.iserver.enable_history(self.var, period=None, count=10)
-        for i in self.values:
-            self.var.set_value(i)
+    @classmethod
+    def create_var(cls):
+        o = cls.srv.get_objects_node()
+        cls.values = [i for i in range(20)]
+        cls.var = o.add_variable(3, "history_var", 0)
+        cls.srv.iserver.enable_history(cls.var, period=None, count=10)
+        for i in cls.values:
+            cls.var.set_value(i)
         time.sleep(1)
 
     # no start and no end is not defined by spec, return reverse order
@@ -146,25 +149,25 @@ class HistoryCommon(object):
 class TestHistory(unittest.TestCase, HistoryCommon):
 
     @classmethod
-    def setUpClass(self):
-        self.start_server_and_client(self)
-        self.create_var(self)
+    def setUpClass(cls):
+        cls.start_server_and_client()
+        cls.create_var()
 
     @classmethod
-    def tearDownClass(self):
-        self.stop_server_and_client(self)
+    def tearDownClass(cls):
+        cls.stop_server_and_client()
 
 
 class TestHistorySQL(unittest.TestCase, HistoryCommon):
     @classmethod
-    def setUpClass(self):
-        self.start_server_and_client(self)
-        self.srv.iserver.history_manager.set_storage(HistorySQLite(":memory:"))
-        self.create_var(self)
+    def setUpClass(cls):
+        cls.start_server_and_client()
+        cls.srv.iserver.history_manager.set_storage(HistorySQLite(":memory:"))
+        cls.create_var()
 
     @classmethod
-    def tearDownClass(self):
-        self.stop_server_and_client(self)
+    def tearDownClass(cls):
+        cls.stop_server_and_client()
 
 
 
