@@ -39,32 +39,34 @@ class HistoryCommon(object):
             self.var.set_value(i)
         time.sleep(1)
 
+    # no start and no end is not defined by spec, return reverse order
     def test_history_read_one(self):
+        # Spec says that at least two parameters should be provided, so
+        # this one is out of spec
         res = self.var.read_raw_history(None, None, 1)
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0].Value.Value, self.values[-1])
 
     # no start and no end is not defined by spec, return reverse order
     def test_history_read_none(self):
-        # FIXME not sure this once is supported by spec
         res = self.var.read_raw_history(None, None, 0)
         self.assertEqual(len(res), 20)
-        self.assertEqual(res[0].Value.Value, self.values[-1])  # self.values was 0
-        self.assertEqual(res[-1].Value.Value, self.values[0])  # self.values was -1
+        self.assertEqual(res[0].Value.Value, self.values[-1])
+        self.assertEqual(res[-1].Value.Value, self.values[0])
 
     # no start and no end is not defined by spec, return reverse order
     def test_history_read_last_3(self):
         res = self.var.read_raw_history(None, None, 3)
         self.assertEqual(len(res), 3)
-        self.assertEqual(res[-1].Value.Value, self.values[-3])  # self.values was -1
-        self.assertEqual(res[0].Value.Value, self.values[-1])  # self.values was -3
+        self.assertEqual(res[-1].Value.Value, self.values[-3])
+        self.assertEqual(res[0].Value.Value, self.values[-1])
 
     # no start and no end is not defined by spec, return reverse order
     def test_history_read_all2(self):
         res = self.var.read_raw_history(None, None, 9999)
         self.assertEqual(len(res), 20)
-        self.assertEqual(res[-1].Value.Value, self.values[0])  # self.values was -1
-        self.assertEqual(res[0].Value.Value, self.values[-1])  # self.values was 0
+        self.assertEqual(res[-1].Value.Value, self.values[0])
+        self.assertEqual(res[0].Value.Value, self.values[-1])
 
     # only has end time, should return reverse order
     def test_history_read_2_with_end(self):
@@ -73,8 +75,9 @@ class HistoryCommon(object):
 
         res = self.var.read_raw_history(None, now, 2)
         self.assertEqual(len(res), 2)
-        self.assertEqual(res[-1].Value.Value, self.values[-2])  # self.values was -1
+        self.assertEqual(res[-1].Value.Value, self.values[-2])
     
+    # both start and endtime, return from start to end
     def test_history_read_all(self):
         now = datetime.utcnow()
         old = now - timedelta(days=6)
@@ -102,6 +105,41 @@ class HistoryCommon(object):
         self.assertEqual(len(res), 5)
         self.assertEqual(res[-1].Value.Value, self.values[-5])
         self.assertEqual(res[0].Value.Value, self.values[-1])
+    
+    # only start return original order
+    def test_history_read_6_with_start(self):
+        now = datetime.utcnow()
+        old = now - timedelta(days=6)
+        res = self.var.read_raw_history(old, None, 6)
+        self.assertEqual(len(res), 6)
+        self.assertEqual(res[-1].Value.Value, self.values[5])
+        self.assertEqual(res[0].Value.Value, self.values[0])
+
+    # only start return original order
+    def test_history_read_all_with_start(self):
+        now = datetime.utcnow()
+        old = now - timedelta(days=6)
+        res = self.var.read_raw_history(old, None, 0)
+        self.assertEqual(len(res), 20)
+        self.assertEqual(res[-1].Value.Value, self.values[-1])
+        self.assertEqual(res[0].Value.Value, self.values[0])
+
+    # only end return reversed order
+    def test_history_read_all_with_end(self):
+        end = datetime.utcnow() + timedelta(days=6)
+        res = self.var.read_raw_history(None, end, 0)
+        self.assertEqual(len(res), 20)
+        self.assertEqual(res[-1].Value.Value, self.values[0])
+        self.assertEqual(res[0].Value.Value, self.values[-1])
+
+    # only end return reversed order
+    def test_history_read_3_with_end(self):
+        end = datetime.utcnow() + timedelta(days=6)
+        res = self.var.read_raw_history(None, end, 3)
+        self.assertEqual(len(res), 3)
+        self.assertEqual(res[2].Value.Value, self.values[-3])
+        self.assertEqual(res[0].Value.Value, self.values[-1])
+
 
 
 

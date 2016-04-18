@@ -70,10 +70,6 @@ class HistoryStorageInterface(object):
         raise NotImplementedError
 
 
-# if you want to use an SQL based history uncomment this import and change the storage type of the history manager
-# from opcua.server.history_sql import HistorySQLite
-
-
 class HistoryDict(HistoryStorageInterface):
     """
     very minimal history backend storing data in memory using a Python dictionary
@@ -104,17 +100,22 @@ class HistoryDict(HistoryStorageInterface):
             print("Error attempt to read history for a node which is not historized")
             return [], cont
         else:
-            if end is None or ua.DateTimeMinValue:
-                end = datetime.utcnow() + timedelta(days=1)
             if start is None:
                 start = ua.DateTimeMinValue
-            results = [dv for dv in self._datachanges[node_id] if start <= dv.ServerTimestamp <= end]
-            if nb_values:
-                if start > ua.DateTimeMinValue and len(results) > nb_values:
-                    cont = results[nb_values + 1].ServerTimestamp
-                    results = results[:nb_values]
-                else:
-                    results = results[-nb_values:]
+            if end is None:
+                end = ua.DateTimeMinValue
+            if start == ua.DateTimeMinValue:
+                results = [dv for dv in reversed(self._datachanges[node_id]) if start <= dv.ServerTimestamp]
+            elif end == ua.DateTimeMinValue:
+                results = [dv for dv in self._datachanges[node_id] if start <= dv.ServerTimestamp]
+            elif start > end:
+                results = [dv for dv in reversed(self._datachanges[node_id]) if end <= dv.ServerTimestamp <= start]
+
+            else:
+                results = [dv for dv in self._datachanges[node_id] if start <= dv.ServerTimestamp <= end]
+            if nb_values and len(results) > nb_values:
+                cont = results[nb_values + 1].ServerTimestamp
+                results = results[:nb_values]
             return results, cont
 
     def new_historized_event(self, event, period):
