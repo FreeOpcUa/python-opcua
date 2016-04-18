@@ -1,9 +1,11 @@
 import sys
 sys.path.insert(0, "..")
 import time
+import math
 
 
 from opcua import ua, Server
+from opcua.server.history_sql import HistorySQLite
 
 
 if __name__ == "__main__":
@@ -21,29 +23,23 @@ if __name__ == "__main__":
 
     # populating our address space
     myobj = objects.add_object(idx, "MyObject")
-    myvar = myobj.add_variable(idx, "MyVariable", 6.7)
-    myvarA = myobj.add_variable(idx, "MyBool", True)
+    myvar = myobj.add_variable(idx, "MyVariable", ua.Variant(0, ua.VariantType.Double))
     myvar.set_writable()    # Set MyVariable to be writable by clients
+
+    # Configure server to use sqlite as history database (default is a simple in memory dict)
+    server.iserver.history_manager.set_storage(HistorySQLite(":memory:"))
 
     # starting!
     server.start()
-    
-    # historize must be called after the server is started!
-    server.historize_node(myvar)
-    server.historize_node(myvarA)
-    
+
+    # enable history for this particular node, must be called after start since it uses subscription
+    server.iserver.enable_history(myvar, period=None, count=100)
     try:
         count = 0
         while True:
             time.sleep(1)
             count += 0.1
-            myvar.set_value(count)
-            my_val = myvarA.get_value()
-            if my_val:
-                myvarA.set_value(False)
-            else:
-                myvarA.set_value(True)
-
+            myvar.set_value(math.sin(count))
     finally:
-        # close connection, remove subscriptions, etc
+        #close connection, remove subcsriptions, etc
         server.stop()
