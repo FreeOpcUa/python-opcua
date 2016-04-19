@@ -26,6 +26,7 @@ if __name__ == "__main__":
 
     # starting!
     server.start()
+    
     try:
         count = 0
         while True:

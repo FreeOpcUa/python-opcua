@@ -251,11 +251,13 @@ class InternalSubscription(object):
             # FIXME this will never be send since we do not have publish request anyway
             self.monitored_item_srv.trigger_statuschange(ua.StatusCode(ua.StatusCodes.BadTimeout))
             self._stopev = True
+        result = None
         with self._lock:
             if self.has_published_results():  # FIXME: should we pop a publish request here? or we do not care?
                 self._publish_cycles_count += 1
                 result = self._pop_publish_result()
-                self.callback(result)
+        if result is not None:
+            self.callback(result)
 
     def _pop_publish_result(self):
         result = ua.PublishResult()

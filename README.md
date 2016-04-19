@@ -4,6 +4,10 @@ http://freeopcua.github.io/, https://github.com/FreeOpcUa/python-opcua
 [![Build Status](https://travis-ci.org/FreeOpcUa/python-opcua.svg?branch=master)](https://travis-ci.org/FreeOpcUa/python-opcua)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/FreeOpcUa/python-opcua/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/FreeOpcUa/python-opcua/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/FreeOpcUa/python-opcua/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/FreeOpcUa/python-opcua/?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/f7f9a138ee7c4541b3b794b86e61e929)](https://www.codacy.com/app/olivier-roulet/python-opcua)
+[![Code Climate](https://codeclimate.com/github/FreeOpcUa/python-opcua/badges/gpa.svg)](https://codeclimate.com/github/FreeOpcUa/python-opcua)
+
+[![PyPI Oackage](https://badge.fury.io/py/freeopcua.svg)](https://badge.fury.io/py/freeopcua)
 
 OPC-UA implementation is quasi complete and has been tested against many different OPC-UA stacks. API offers both a low level interface to send and receive all UA defined structures and high level classes allowing to write a server or a client in a few lines. It is easy to mix high level objects and low level UA calls in one application.
 
@@ -70,11 +74,12 @@ Server: what works:
 * encryption
 * certificate handling
 * removing nodes 
+* history support
 
 Tested clients: freeopcua C++, freeopcua Python, uaexpert, prosys, quickopc
 
 Server: what is not implemented
-* history support
+* history support for events
 * views
 * localized text feature
 * better securty model with users and password

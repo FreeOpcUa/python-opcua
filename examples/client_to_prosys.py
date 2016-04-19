@@ -25,6 +25,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     #client = Client("opc.tcp://localhost:53530/OPCUA/SimulationServer/")
     client = Client("opc.tcp://olivier:olivierpass@localhost:53530/OPCUA/SimulationServer/")
+    client.set_security_string("Basic256,SignAndEncrypt,example-certificate.der,example-private-key.pem")
     try:
         client.connect()
         root = client.get_root_node()

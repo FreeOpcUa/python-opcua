@@ -1,7 +1,7 @@
 import sys
-sys.path.insert(0, "..")
 import time
 
+sys.path.insert(0, "..")
 
 from opcua import ua, Server
 
@@ -14,8 +14,8 @@ if __name__ == "__main__":
 
     # load server certificate and private key. This enables endpoints
     # with signing and encryption.
-    server.load_certificate("example-certificate.der")
-    server.load_private_key("example-private-key.pem")
+    server.load_certificate("certificate-example.der")
+    server.load_private_key("private-key-example.pem")
 
     # setup our own namespace, not really necessary but should as spec
     uri = "http://examples.freeopcua.github.io"

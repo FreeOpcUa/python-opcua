@@ -58,7 +58,7 @@ class AttributeService(object):
                     continue
                 al = self._aspace.get_attribute_value(writevalue.NodeId, ua.AttributeIds.AccessLevel)
                 ual = self._aspace.get_attribute_value(writevalue.NodeId, ua.AttributeIds.UserAccessLevel)
-                if not al.Value.Value & ua.AccessLevelMask.CurrentWrite or not ual.Value.Value & ua.AccessLevelMask.CurrentWrite:
+                if not ua.test_bit(al.Value.Value, ua.AccessLevel.CurrentWrite) or not ua.test_bit(ual.Value.Value, ua.AccessLevel.CurrentWrite):
                     res.append(ua.StatusCode(ua.StatusCodes.BadUserAccessDenied))
                     continue
             res.append(self._aspace.set_attribute_value(writevalue.NodeId, writevalue.AttributeId, writevalue.Value))
@@ -180,15 +180,12 @@ class NodeManagementService(object):
     def _add_node(self, item, user):
         result = ua.AddNodesResult()
 
-        # Check if the null NodeId is given
-        if item.RequestedNewNodeId.is_null():
-            self.logger.debug("RequestedNewNodeId is null")
-            if item.BrowseName.NamespaceIndex:
-                idx = item.BrowseName.NamespaceIndex
-            else:
-                idx = item.ParentNodeId.NamespaceIndex
-            nodedata = NodeData(self._aspace.generate_nodeid(idx))
-            item.BrowseName = ua.QualifiedName(item.BrowseName.Name, nodedata.nodeid.NamespaceIndex)
+        # If Identifier of requested NodeId is null we generate a new NodeId using
+        # the namespace of the nodeid, this is an extention of the spec to allow
+        # to requests the server to generate a new nodeid in a specified namespace
+        if item.RequestedNewNodeId.has_null_identifier():
+            self.logger.debug("RequestedNewNodeId has null identifier, generating Identifier")
+            nodedata = NodeData(self._aspace.generate_nodeid(item.RequestedNewNodeId.NamespaceIndex))
         else:
             nodedata = NodeData(item.RequestedNewNodeId)
 
@@ -198,10 +195,12 @@ class NodeManagementService(object):
             return result
 
         if item.ParentNodeId.is_null():
-            #self.logger.warning("add_node: creating node %s without parent", nodedata.nodeid)
+            # self.logger.warning("add_node: creating node %s without parent", nodedata.nodeid)
+            # We should return Error here, but the standard namespace seems to define many nodes
+            # without parents, so ignore...
             pass
         elif item.ParentNodeId not in self._aspace:
-            #self.logger.warning("add_node: while adding node %s, requested parent node %s does not exists", nodedata.nodeid, item.ParentNodeId)
+            self.logger.warning("add_node: while adding node %s, requested parent node %s does not exists", nodedata.nodeid, item.ParentNodeId)
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
             return result
 

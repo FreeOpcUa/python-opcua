@@ -23,8 +23,8 @@ class TestCryptoConnect(unittest.TestCase):
         self.srv_crypto.set_endpoint(self.uri_crypto)
         # load server certificate and private key. This enables endpoints
         # with signing and encryption.
-        self.srv_crypto.load_certificate("examples/example-certificate.der")
-        self.srv_crypto.load_private_key("examples/example-private-key.pem")
+        self.srv_crypto.load_certificate("examples/certificate-example.der")
+        self.srv_crypto.load_private_key("examples/private-key-example.pem")
         self.srv_crypto.start()
 
         # start a server without crypto
@@ -50,12 +50,12 @@ class TestCryptoConnect(unittest.TestCase):
     def test_nocrypto_feil(self):
         clt = Client(self.uri_no_crypto)
         with self.assertRaises(ua.UaError):
-            clt.set_security_string("Basic256,Sign,examples/example-certificate.der,examples/example-private-key.pem")
+            clt.set_security_string("Basic256,Sign,examples/certificate-example.der,examples/private-key-example.pem")
 
     def test_basic256(self):
         clt = Client(self.uri_crypto)
         try:
-            clt.set_security_string("Basic256,Sign,examples/example-certificate.der,examples/example-private-key.pem")
+            clt.set_security_string("Basic256,Sign,examples/certificate-example.der,examples/private-key-example.pem")
             clt.connect()
             self.assertTrue(clt.get_objects_node().get_children())
         finally:
@@ -64,7 +64,7 @@ class TestCryptoConnect(unittest.TestCase):
     def test_basic256_encrypt(self):
         clt = Client(self.uri_crypto)
         try:
-            clt.set_security_string("Basic256,SignAndEncrypt,examples/example-certificate.der,examples/example-private-key.pem")
+            clt.set_security_string("Basic256,SignAndEncrypt,examples/certificate-example.der,examples/private-key-example.pem")
             clt.connect()
             self.assertTrue(clt.get_objects_node().get_children())
         finally:
@@ -73,7 +73,7 @@ class TestCryptoConnect(unittest.TestCase):
     def test_basic128Rsa15(self):
         clt = Client(self.uri_crypto)
         try:
-            clt.set_security_string("Basic128Rsa15,Sign,examples/example-certificate.der,examples/example-private-key.pem")
+            clt.set_security_string("Basic128Rsa15,Sign,examples/certificate-example.der,examples/private-key-example.pem")
             clt.connect()
             self.assertTrue(clt.get_objects_node().get_children())
         finally:
@@ -82,7 +82,7 @@ class TestCryptoConnect(unittest.TestCase):
     def test_basic128Rsa15_encrypt(self):
         clt = Client(self.uri_crypto)
         try:
-            clt.set_security_string("Basic128Rsa15,SignAndEncrypt,examples/example-certificate.der,examples/example-private-key.pem")
+            clt.set_security_string("Basic128Rsa15,SignAndEncrypt,examples/certificate-example.der,examples/private-key-example.pem")
             clt.connect()
             self.assertTrue(clt.get_objects_node().get_children())
         finally:
@@ -92,8 +92,8 @@ class TestCryptoConnect(unittest.TestCase):
         clt = Client(self.uri_crypto)
         try:
             clt.set_security(security_policies.SecurityPolicyBasic256,
-                             'examples/example-certificate.der',
-                             'examples/example-private-key.pem',
+                             'examples/certificate-example.der',
+                             'examples/private-key-example.pem',
                              None,
                              ua.MessageSecurityMode.SignAndEncrypt
                              )
@@ -107,8 +107,8 @@ class TestCryptoConnect(unittest.TestCase):
         clt = Client(self.uri_crypto)
         with self.assertRaises(ua.UaError):
             clt.set_security(security_policies.SecurityPolicyBasic256,
-                             'examples/example-certificate.der',
-                             'examples/example-private-key.pem',
+                             'examples/certificate-example.der',
+                             'examples/private-key-example.pem',
                              None,
                              ua.MessageSecurityMode.None_
                              )

@@ -12,7 +12,7 @@ from opcua.ua.uatypes import flatten, get_shape, reshape
 
 
 
-class Unit(unittest.TestCase):
+class TestUnit(unittest.TestCase):
 
     '''
     Simple unit test that do not need to setup a server or a client
@@ -140,12 +140,21 @@ class Unit(unittest.TestCase):
         with self.assertRaises(ua.UaError):
             ua.QualifiedName.from_string("i:::yu")
 
-
     def test_expandednodeid(self):
         nid = ua.ExpandedNodeId()
         self.assertEqual(nid.NodeIdType, ua.NodeIdType.TwoByte)
         nid2 = ua.ExpandedNodeId.from_binary(ua.utils.Buffer(nid.to_binary()))
         self.assertEqual(nid, nid2)
+
+    def test_null_string(self):
+        v = ua.Variant(None, ua.VariantType.String)
+        b = v.to_binary()
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(b))
+        self.assertEqual(v.Value, v2.Value)
+        v = ua.Variant("", ua.VariantType.String)
+        b = v.to_binary()
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(b))
+        self.assertEqual(v.Value, v2.Value)
 
     def test_extension_object(self):
         obj = ua.UserNameIdentityToken()
@@ -320,6 +329,35 @@ class Unit(unittest.TestCase):
             seq += 1
             chunk.SequenceHeader.SequenceNumber = seq
             self.assertTrue(len(chunk.to_binary()) <= 28)
+
+    def test_null(self):
+        n = ua.NodeId(b'000000', 0, nodeidtype=ua.NodeIdType.Guid)
+        self.assertTrue(n.is_null())
+        self.assertTrue(n.has_null_identifier())
+
+        n = ua.NodeId(b'000000', 1, nodeidtype=ua.NodeIdType.Guid)
+        self.assertFalse(n.is_null())
+        self.assertTrue(n.has_null_identifier())
+
+        n = ua.NodeId()
+        self.assertTrue(n.is_null())
+        self.assertTrue(n.has_null_identifier())
+
+        n = ua.NodeId(0, 0)
+        self.assertTrue(n.is_null())
+        self.assertTrue(n.has_null_identifier())
+
+        n = ua.NodeId("", 0)
+        self.assertTrue(n.is_null())
+        self.assertTrue(n.has_null_identifier())
+
+        n = ua.TwoByteNodeId(0)
+        self.assertTrue(n.is_null())
+        self.assertTrue(n.has_null_identifier())
+
+        n = ua.NodeId(0, 3)
+        self.assertFalse(n.is_null())
+        self.assertTrue(n.has_null_identifier())
 
 
 if __name__ == '__main__':

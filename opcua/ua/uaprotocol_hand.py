@@ -14,34 +14,6 @@ logger = logging.getLogger('opcua.uaprotocol')
 OPC_TCP_SCHEME = 'opc.tcp'
 
 
-class ValueRank(IntEnum):
-    """
-    Defines dimensions of a variable.
-    This enum does not support all cases since ValueRank support any n>0
-    but since it is an IntEnum it can be replace by a normal int
-    """
-    ScalarOrOneDimension = -3
-    Any = -2
-    Scalar = -1
-    OneOrMoreDimensions = 0
-    OneDimension = 1
-    # the next names are not in spec but so common we express them here
-    TwoDimensions = 2
-    ThreeDimensions = 3
-    FourDimensions = 3
-
-
-class AccessLevelMask(object):
-    """
-    Used by AccessLevel and UserAccessLevel
-    """
-    CurrentRead = 0
-    CurrentWrite = 1
-    HistoryRead = 2
-    HistoryWrite = 3
-    SemanticChange = 4
-
-
 class Hello(uatypes.FrozenClass):
 
     def __init__(self):
@@ -191,8 +163,8 @@ class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
 
     def __init__(self):
         self.SecurityPolicyURI = "http://opcfoundation.org/UA/SecurityPolicy#None"
-        self.SenderCertificate = b""
-        self.ReceiverCertificateThumbPrint = b""
+        self.SenderCertificate = None
+        self.ReceiverCertificateThumbPrint = None
         self._freeze = True
 
     def to_binary(self):
@@ -336,8 +308,8 @@ class SecurityPolicy(object):
         self.asymmetric_cryptography = CryptographyNone()
         self.symmetric_cryptography = CryptographyNone()
         self.Mode = auto.MessageSecurityMode.None_
-        self.server_certificate = b""
-        self.client_certificate = b""
+        self.server_certificate = None
+        self.client_certificate = None
 
     def make_symmetric_key(self, a, b):
         pass

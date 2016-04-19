@@ -2,13 +2,14 @@
 implement ua datatypes
 """
 import logging
-from enum import Enum
+from enum import Enum, IntEnum
 from datetime import datetime, timedelta, tzinfo, MAXYEAR
 from calendar import timegm
 import sys
 import os
 import uuid
 import struct
+import re
 if sys.version_info.major > 2:
     unicode = str
 
@@ -59,6 +60,10 @@ def win_epoch_to_datetime(epch):
         # FILETIMEs after 31 Dec 9999 can't be converted to datetime
         logger.warning("datetime overflow: {}".format(epch))
         return datetime(MAXYEAR, 12, 31, 23, 59, 59, 999999)
+
+
+#  minimum datetime as in ua spec, used for history
+DateTimeMinValue = datetime(1606, 1, 1, 12, 0, 0)
 
 
 def build_array_format_py2(prefix, length, fmtchar):
@@ -208,11 +213,11 @@ def unpack_datetime(data):
 
 
 def pack_string(string):
+    if string is None:
+        return uatype_Int32.pack(-1)
     if isinstance(string, unicode):
         string = string.encode('utf-8')
     length = len(string)
-    if length == 0:
-        return b'\xff\xff\xff\xff'
     return uatype_Int32.pack(length) + string
 
 pack_bytes = pack_string
@@ -221,12 +226,14 @@ pack_bytes = pack_string
 def unpack_bytes(data):
     length = uatype_Int32.unpack(data.read(4))[0]
     if length == -1:
-        return b''
+        return None
     return data.read(length)
 
 
 def py3_unpack_string(data):
     b = unpack_bytes(data)
+    if b is None:
+        return b
     return b.decode("utf-8")
 
 
@@ -244,6 +251,11 @@ def test_bit(data, offset):
 def set_bit(data, offset):
     mask = 1 << offset
     return data | mask
+
+
+def unset_bit(data, offset):
+    mask = 1 << offset
+    return data & ~mask
 
 
 class _FrozenClass(object):
@@ -267,6 +279,44 @@ if "PYOPCUA_NO_TYPO_CHECK" in os.environ:
     FrozenClass = object
 else:
     FrozenClass = _FrozenClass
+
+
+class ValueRank(IntEnum):
+    """
+    Defines dimensions of a variable.
+    This enum does not support all cases since ValueRank support any n>0
+    but since it is an IntEnum it can be replace by a normal int
+    """
+    ScalarOrOneDimension = -3
+    Any = -2
+    Scalar = -1
+    OneOrMoreDimensions = 0
+    OneDimension = 1
+    # the next names are not in spec but so common we express them here
+    TwoDimensions = 2
+    ThreeDimensions = 3
+    FourDimensions = 3
+
+
+class AccessLevel(IntEnum):
+    """
+    """
+    CurrentRead = 0
+    CurrentWrite = 1
+    HistoryRead = 2
+    HistoryWrite = 3
+    SemanticChange = 4
+
+
+class AccessLevelMask(IntEnum):
+    """
+    Mask for access level
+    """
+    CurrentRead = 1 << AccessLevel.CurrentRead
+    CurrentWrite = 1 << AccessLevel.CurrentWrite
+    HistoryRead = 1 << AccessLevel.HistoryRead
+    HistoryWrite = 1 << AccessLevel.HistoryWrite
+    SemanticChange = 1 << AccessLevel.SemanticChange
 
 
 class Guid(FrozenClass):
@@ -412,19 +462,16 @@ class NodeId(FrozenClass):
         return hash(self.__key())
 
     def is_null(self):
-        ret = True
         if self.NamespaceIndex != 0:
-            ret = False
-        if self.NodeIdType  in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric):
-            if self.Identifier != 0:
-                ret = False
-        elif self.NodeIdType is NodeIdType.String:
-            if self.Identifier or self.Identifier != '':
-                ret = False
-        elif self.NodeIdType is NodeIdType.ByteString:
-            if not len(self.Identifier):
-                ret = False
-        return ret
+            return False
+        return self.has_null_identifier()
+
+    def has_null_identifier(self):
+        if not self.Identifier:
+            return True
+        if self.NodeIdType == NodeIdType.Guid and re.match(b'0.', self.Identifier):
+            return True
+        return False
 
     @staticmethod
     def from_string(string):

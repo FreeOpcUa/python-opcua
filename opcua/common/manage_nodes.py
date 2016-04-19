@@ -6,24 +6,28 @@ from opcua.common import node
 
 
 def _parse_add_args(*args):
-    nodeid = ua.NodeId()
-    qname = ua.QualifiedName()
-    if isinstance(args[0], ua.NodeId):
-        nodeid = args[0]
-    elif isinstance(args[0], str):
-        nodeid = ua.NodeId.from_string(args[0])
-
-    if isinstance(args[1], ua.QualifiedName):
-        qname = args[1]
-    elif isinstance(args[1], str):
+    try:
         if isinstance(args[0], int):
-            qname = ua.QualifiedName(args[1], args[0])
+            nodeid = ua.NodeId(0, int(args[0]))
+            qname = ua.QualifiedName(args[1], int(args[0]))
+            return nodeid, qname
+        if isinstance(args[0], ua.NodeId):
+            nodeid = args[0]
+        elif isinstance(args[0], str):
+            nodeid = ua.NodeId.from_string(args[0])
         else:
+            raise RuntimeError()
+        if isinstance(args[1], ua.QualifiedName):
+            qname = args[1]
+        elif isinstance(args[1], str):
             qname = ua.QualifiedName.from_string(args[1])
-    else:
-        raise TypeError("Add methods takes a nodeid and a qualifiedname as argument, for qualified name received %s" % args[1])
-
-    return nodeid, qname
+        else:
+            raise RuntimeError()
+        return nodeid, qname
+    except ua.UaError:
+        raise
+    except Exception as ex:
+        raise TypeError("This method takes either a namespace index and a string as argument or a nodeid and a qualifiedname. Received arguments {} and got exception {}".format(args, ex))
 
 
 def create_folder(parent, *args):
@@ -101,8 +105,8 @@ def _create_folder(server, parentnodeid, nodeid, qname):
     attrs = ua.ObjectAttributes()
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
-    attrs.WriteMask = ua.OpenFileMode.Read
-    attrs.UserWriteMask = ua.OpenFileMode.Read
+    attrs.WriteMask = 0
+    attrs.UserWriteMask = 0
     attrs.EventNotifier = 0
     addnode.NodeAttributes = attrs
     results = server.add_nodes([addnode])
@@ -122,8 +126,8 @@ def _create_object(server, parentnodeid, nodeid, qname):
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
     attrs.EventNotifier = 0
-    attrs.WriteMask = ua.OpenFileMode.Read
-    attrs.UserWriteMask = ua.OpenFileMode.Read
+    attrs.WriteMask = 0
+    attrs.UserWriteMask = 0
     addnode.NodeAttributes = attrs
     results = server.add_nodes([addnode])
     results[0].StatusCode.check()
@@ -159,9 +163,11 @@ def _create_variable(server, parentnodeid, nodeid, qname, val, isproperty=False)
     else:
         attrs.ValueRank = ua.ValueRank.Scalar
     #attrs.ArrayDimensions = None
-    attrs.WriteMask = ua.OpenFileMode.Read
-    attrs.UserWriteMask = ua.OpenFileMode.Read
+    attrs.WriteMask = 0
+    attrs.UserWriteMask = 0
     attrs.Historizing = 0
+    attrs.AccessLevel = ua.AccessLevelMask.CurrentRead
+    attrs.UserAccessLevel = ua.AccessLevelMask.CurrentRead
     addnode.NodeAttributes = attrs
     results = server.add_nodes([addnode])
     results[0].StatusCode.check()
@@ -179,8 +185,8 @@ def _create_method(parent, nodeid, qname, callback, inputs, outputs):
     attrs = ua.MethodAttributes()
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
-    attrs.WriteMask = ua.OpenFileMode.Read
-    attrs.UserWriteMask = ua.OpenFileMode.Read
+    attrs.WriteMask = 0
+    attrs.UserWriteMask = 0
     attrs.Executable = True
     attrs.UserExecutable = True
     addnode.NodeAttributes = attrs
