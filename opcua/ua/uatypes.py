@@ -1174,14 +1174,30 @@ class DataValue(FrozenClass):
     __repr__ = __str__
 
 
+class Event(object):
+
+    def fill_default_fields(self, time=None, message=None):
+        """
+        Fills default fileds of event. This will send a notification to all subscribed clients
+        """
+        self.EventId = Variant(uuid.uuid4().hex, VariantType.ByteString)
+        if time:
+            self.Time = time
+        else:
+            self.Time = datetime.utcnow()
+        self.ReciveTime = datetime.utcnow()
+        #FIXME: LocalTime is wrong but currently know better. For description s. Part 5 page 18
+        self.LocaleTime = datetime.utcnow()
+        if message:
+            self.Message = LocalizedText(message)
+
+
 # TODO: This should be autogeneratd form XML description of EventTypes
-class BaseEvent(FrozenClass):
+class BaseEvent(Event, FrozenClass):
 
     '''
     BaseEvent implements BaseEventType from which inherit all other events and it is used per default.
-
     '''
-
     def __init__(self, sourcenode=NodeId(ObjectIds.Server), message=None, severity=1):
         self.EventId = bytes()
         self.EventType = NodeId(ObjectIds.BaseEventType)
@@ -1194,21 +1210,6 @@ class BaseEvent(FrozenClass):
         self.Severity = Variant(severity, VariantType.UInt16)
         # FIXME: Should be frozen but for now is not because of asigning parameters
         #self._freeze = True
-
-    def fill_fields(self, time=None, message=None):
-        """
-        Trigger the event. This will send a notification to all subscribed clients
-        """
-        self.EventId = Variant(uuid.uuid4().hex, VariantType.ByteString)
-        if time:
-            self.Time = time
-        else:
-            self.Time = datetime.utcnow()
-        self.ReciveTime = datetime.utcnow()
-        #FIXME: LocalTime is wrong but currently know better. For description s. Part 5 page 18
-        self.LocaleTime = datetime.utcnow()
-        if message:
-            self.Message = LocalizedText(message)
 
     def __str__(self):
         s = 'BaseEventType(EventId:{}'.format(self.EventId)
