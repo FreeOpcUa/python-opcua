@@ -1,6 +1,7 @@
 import sys
 sys.path.insert(0, "..")
 import logging
+import time
 
 try:
     from IPython import embed
@@ -105,8 +106,13 @@ if __name__ == "__main__":
         #sub = server.create_subscription(500, handler)
         #handle = sub.subscribe_data_change(myvar)
         # trigger event, all subscribed clients wil receive it
-        myevent.trigger()
+
+        while True:
+            myevent.trigger()
+            time.sleep(3)
 
         embed()
+
+
     finally:
         server.stop()

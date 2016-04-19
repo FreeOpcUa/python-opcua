@@ -138,7 +138,28 @@ class HistorySQLite(HistoryStorageInterface):
             return results, cont
 
     def new_historized_event(self, event, period):
-        raise NotImplementedError
+        with self._lock:
+            _c_new = self._conn.cursor()
+
+            table = self._get_table_name(event)
+
+            self._datachanges_period[event] = period
+
+            # create a table for the event which will store attributes of the Event object
+            # note: Value/VariantType TEXT is only for human reading, the actual data is stored in VariantBinary column
+            try:
+                _c_new.execute('CREATE TABLE "{tn}" (Id INTEGER PRIMARY KEY NOT NULL,'
+                               ' ServerTimestamp TIMESTAMP,'
+                               ' SourceTimestamp TIMESTAMP,'
+                               ' StatusCode INTEGER,'
+                               ' Value TEXT,'
+                               ' VariantType TEXT,'
+                               ' VariantBinary BLOB)'.format(tn=table))
+
+            except sqlite3.Error as e:
+                self.logger.info('Historizing SQL Table Creation Error for %s: %s', node_id, e)
+
+            self._conn.commit()
 
     def save_event(self, event):
         raise NotImplementedError

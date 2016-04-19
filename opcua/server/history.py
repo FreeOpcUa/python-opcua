@@ -175,6 +175,15 @@ class HistoryManager(object):
         self._sub.unsubscribe(self._handlers[node])
         del(self._handlers[node])
 
+    def historize_event(self, event, period=timedelta(days=7)):
+        if not self._sub:
+            self._sub = self._create_subscription(SubHandler(self.storage))
+        if event in self._handlers:
+            raise ua.UaError("Event {} is already historized".format(event))
+        self.storage.new_historized_event(event.node.nodeid, period)
+        handler = self._sub.subscribe_data_change(event)
+        self._handlers[event] = handler
+
     def read_history(self, params):
         """
         Read history for a node

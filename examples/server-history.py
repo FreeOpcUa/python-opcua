@@ -26,6 +26,12 @@ if __name__ == "__main__":
     myvar = myobj.add_variable(idx, "MyVariable", ua.Variant(0, ua.VariantType.Double))
     myvar.set_writable()    # Set MyVariable to be writable by clients
 
+    # creating an event object
+    # The event object automatically will have members for all events properties
+    myevent = server.get_event_object(ua.ObjectIds.BaseEventType)
+    myevent.Message.Text = "This is my event"
+    myevent.Severity = 300
+
     # Configure server to use sqlite as history database (default is a simple in memory dict)
     server.iserver.history_manager.set_storage(HistorySQLite(":memory:"))
 
@@ -40,6 +46,7 @@ if __name__ == "__main__":
             time.sleep(1)
             count += 0.1
             myvar.set_value(math.sin(count))
+            myevent.trigger()
     finally:
         #close connection, remove subcsriptions, etc
         server.stop()

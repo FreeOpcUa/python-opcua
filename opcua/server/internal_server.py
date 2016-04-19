@@ -171,6 +171,15 @@ class InternalServer(object):
         node.unset_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.HistoryRead)
         self.history_manager.dehistorize(node)
 
+    def enable_event_history(self, event, period=timedelta(days=7)):
+        """
+        Set attribute Historizing of node to True and start storing data for history
+        """
+        event.node.set_attribute(ua.AttributeIds.Historizing, ua.DataValue(True))
+        event.node.set_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.HistoryRead)
+        event.node.set_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.HistoryRead)
+        self.history_manager.historize(event, period)
+
 
 
 class InternalSession(object):
