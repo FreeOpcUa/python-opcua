@@ -1,7 +1,7 @@
 import unittest
-from tests_common import CommonTests, add_server_methods
+from tests_common import CommonTests, add_server_methods, MySubHandler
 import time
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from opcua import Server
 from opcua import Client
@@ -50,7 +50,7 @@ class TestServer(unittest.TestCase, CommonTests):
             self.assertTrue(new_app_uri in [s.ApplicationUri for s in new_servers])
         finally:
             client.disconnect()
-    
+
     def test_find_servers2(self):
         client = Client(self.discovery.endpoint.geturl())
         client.connect()
@@ -119,6 +119,29 @@ class TestServer(unittest.TestCase, CommonTests):
         v = o.add_method(3, 'Method1', func, [ua.VariantType.Int64], [ua.VariantType.Int64])
         result = o.call_method(v, ua.Variant(2.1))
         self.assertEqual(result, 4.2)
+
+    def test_events(self):
+        msclt = MySubHandler()
+        sub = self.opc.create_subscription(100, msclt)
+        handle = sub.subscribe_events()
+
+        event = self.opc.get_event_object()
+        event.Severity = 500
+        msg = b"this is my msg "
+        tid = datetime.utcnow()
+        event.fill_fields(tid, msg)
+        self.opc.trigger_event(event)
+
+        event = msclt.future.result()
+        self.assertIsNot(event, None)  # we did not receive event
+        self.assertEqual(event.SourceNode, self.opc.get_server_node().nodeid)
+        self.assertEqual(event.Message.Text, msg)
+        self.assertEqual(event.Time, tid)
+        self.assertEqual(event.Severity, 500)
+
+        # time.sleep(0.1)
+        sub.unsubscribe(handle)
+        sub.delete()
 
     def test_xml_import(self):
         self.srv.import_xml("tests/custom_nodes.xml")

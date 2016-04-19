@@ -6,7 +6,6 @@ from datetime import timedelta
 import math
 
 from opcua import ua
-from opcua import EventGenerator
 from opcua import uamethod
 
 
@@ -64,6 +63,7 @@ class MySubHandlerDeprecated():
     def event(self, handle, event):
         self.future.set_result((handle, event))
 
+
 class MySubHandler():
 
     '''
@@ -96,8 +96,8 @@ class MySubHandler2():
 
 class MySubHandlerCounter():
     def __init__(self):
-        self.datachange_count = 0 
-        self.event_count = 0 
+        self.datachange_count = 0
+        self.event_count = 0
 
     def datachange_notification(self, node, val, data):
         self.datachange_count += 1
@@ -260,29 +260,6 @@ class CommonTests(object):
         v = o.add_variable(3, 'VariableNoEventNofierAttribute', 4)
         with self.assertRaises(ua.UaStatusCodeError):
             handle = sub.subscribe_events(v)
-        sub.delete()
-
-    def test_events(self):
-        msclt = MySubHandler()
-        sub = self.opc.create_subscription(100, msclt)
-        handle = sub.subscribe_events()
-
-        eg = EventGenerator(self.srv.iserver.isession)
-        msg = b"this is my msg "
-        eg.event.Message.Text = msg
-        tid = datetime.utcnow()
-        eg.event.Time = tid
-        eg.event.Severity = 500
-        eg.trigger()
-
-        event = msclt.future.result()
-        self.assertIsNot(event, None)  # we did not receive event
-        self.assertEqual(event.Message.Text, msg)
-        self.assertEqual(event.Severity, 500)
-        self.assertEqual(event.SourceNode, self.opc.get_server_node().nodeid)
-
-        # time.sleep(0.1)
-        sub.unsubscribe(handle)
         sub.delete()
 
     def test_non_existing_path(self):

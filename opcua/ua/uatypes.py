@@ -1068,8 +1068,6 @@ class XmlElement(FrozenClass):
     __repr__ = __str__
 
 
-
-
 class DataValue(FrozenClass):
 
     '''
@@ -1196,6 +1194,21 @@ class BaseEvent(FrozenClass):
         self.Severity = Variant(severity, VariantType.UInt16)
         # FIXME: Should be frozen but for now is not because of asigning parameters
         #self._freeze = True
+
+    def fill_fields(self, time=None, message=None):
+        """
+        Trigger the event. This will send a notification to all subscribed clients
+        """
+        self.EventId = Variant(uuid.uuid4().hex, VariantType.ByteString)
+        if time:
+            self.Time = time
+        else:
+            self.Time = datetime.utcnow()
+        self.ReciveTime = datetime.utcnow()
+        #FIXME: LocalTime is wrong but currently know better. For description s. Part 5 page 18
+        self.LocaleTime = datetime.utcnow()
+        if message:
+            self.Message = LocalizedText(message)
 
     def __str__(self):
         s = 'BaseEventType(EventId:{}'.format(self.EventId)
