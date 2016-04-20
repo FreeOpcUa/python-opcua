@@ -4,6 +4,7 @@ from datetime import datetime
 from threading import Lock
 from opcua import ua
 from opcua.common.utils import Buffer
+from opcua.common.event import Event
 from opcua.server.history import HistoryStorageInterface
 import sqlite3
 
@@ -115,7 +116,7 @@ class HistorySQLite(HistoryStorageInterface):
             cont = None
             results = []
 
-            # select values from the database; recreate UA Variant from binary ORDER BY "ServerTimestamp" DESC
+            # select values from the database; recreate UA Variant from binary
             try:
                 for row in _c_read.execute('SELECT * FROM "{tn}" WHERE "ServerTimestamp" BETWEEN ? AND ? '
                                            'ORDER BY "Id" {dir} LIMIT ?'.format(tn=table, dir=order), (start_time, end_time, limit,)):
@@ -207,8 +208,57 @@ class HistorySQLite(HistoryStorageInterface):
 
                 self._conn.commit()
 
-    def read_event_history(self, start, end, evfilter):
-        raise NotImplementedError
+    def read_event_history(self, obj_id, start, end, nb_values, evfilter):
+        with self._lock:
+            _c_read = self._conn.cursor()
+
+            order = "ASC"
+
+            if start is None or start == ua.DateTimeMinValue:
+                order = "DESC"
+                start = ua.DateTimeMinValue
+
+            if end is None or end == ua.DateTimeMinValue:
+                end = datetime.utcnow() + timedelta(days=1)
+
+            if start < end:
+                start_time = start.isoformat(' ')
+                end_time = end.isoformat(' ')
+            else:
+                order = "DESC"
+                start_time = end.isoformat(' ')
+                end_time = start.isoformat(' ')
+
+            if nb_values:
+                limit = nb_values + 1  # add 1 to the number of values for retrieving a continuation point
+            else:
+                limit = -1  # in SQLite a LIMIT of -1 returns all results
+
+            table = self._get_table_name(obj_id)
+
+            results = []
+
+            # select events from the database
+            # FIXME use EventFilter to customize SQL clause
+            try:
+                for row in _c_read.execute('SELECT * FROM "{tn}" WHERE "ServerTimestamp" BETWEEN ? AND ? '
+                                           'ORDER BY "Id" {dir} LIMIT ?'.format(tn=table, dir=order), (start_time, end_time, limit,)):
+                    ev = Event()
+                    ev.Time = row[1]
+                    # FIXME finish rebuilding event from SQL data
+
+                    results.append(ev)
+
+            except sqlite3.Error as e:
+                self.logger.error('Historizing SQL Read Error events for node %s: %s', obj_id, e)
+
+            if nb_values:
+                if start > ua.DateTimeMinValue and len(results) > nb_values:
+                    cont = results[nb_values].Time
+
+                results = results[:nb_values]
+
+            return results
 
     def _get_table_name(self, node_id):
         return str(node_id.NamespaceIndex) + '_' + str(node_id.Identifier)
