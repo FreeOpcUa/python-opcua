@@ -137,32 +137,75 @@ class HistorySQLite(HistoryStorageInterface):
 
             return results, cont
 
-    def new_historized_event(self, event, period):
+    def new_historized_event(self, obj_id, period):
         with self._lock:
             _c_new = self._conn.cursor()
 
-            table = self._get_table_name(event)
+            table = self._get_table_name(obj_id)
 
-            self._datachanges_period[event] = period
+            self._datachanges_period[obj_id] = period
 
             # create a table for the event which will store attributes of the Event object
             # note: Value/VariantType TEXT is only for human reading, the actual data is stored in VariantBinary column
             try:
                 _c_new.execute('CREATE TABLE "{tn}" (Id INTEGER PRIMARY KEY NOT NULL,'
-                               ' ServerTimestamp TIMESTAMP,'
-                               ' SourceTimestamp TIMESTAMP,'
-                               ' StatusCode INTEGER,'
-                               ' Value TEXT,'
-                               ' VariantType TEXT,'
-                               ' VariantBinary BLOB)'.format(tn=table))
+                               ' Time TIMESTAMP,'
+                               ' ReceiveTime TIMESTAMP,'
+                               ' EventIdBinary BLOB,'
+                               ' EventTypeBinary BLOB,'
+                               ' Severity INTEGER,'
+                               ' Message TEXT,'
+                               ' MessageBinary BLOB,'
+                               ' SourceName TEXT,'
+                               ' SourceNodeBinary BLOB,'
+                               ' ServerHandle INTEGER)'.format(tn=table))
 
             except sqlite3.Error as e:
-                self.logger.info('Historizing SQL Table Creation Error for %s: %s', node_id, e)
+                self.logger.info('Historizing SQL Table Creation Error for events from %s: %s', obj_id, e)
 
             self._conn.commit()
 
     def save_event(self, event):
-        raise NotImplementedError
+        with self._lock:
+            _c_sub = self._conn.cursor()
+
+            table = self._get_table_name(event.SourceNode)
+
+            # insert the event into the database
+            try:
+                _c_sub.execute('INSERT INTO "{tn}" VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'.format(tn=table),
+                               (
+                                   event.Time,
+                                   event.ReceiveTime,
+                                   event.EventId,
+                                   event.EventType.to_binary(),
+                                   event.Severity,
+                                   event.Message.Text,
+                                   event.Message.to_binary(),
+                                   event.SourceName,
+                                   event.SourceNode.to_binary(),
+                                   event.server_handle,
+                               )
+                               )
+            except sqlite3.Error as e:
+                self.logger.error('Historizing SQL Insert Error for events from %s: %s', event.SourceNode, e)
+
+            self._conn.commit()
+
+            # get this node's period from the period dict and calculate the limit
+            period = self._datachanges_period[event.SourceNode]
+
+            if period:
+                # after the insert, if a period was specified delete all records older than period
+                date_limit = datetime.now() - period
+
+                try:
+                    _c_sub.execute('DELETE FROM "{tn}" WHERE Time < ?'.format(tn=table),
+                                   (date_limit.isoformat(' '),))
+                except sqlite3.Error as e:
+                    self.logger.error('Historizing SQL Delete Old Data Error for events from %s: %s', event.SourceNode, e)
+
+                self._conn.commit()
 
     def read_event_history(self, start, end, evfilter):
         raise NotImplementedError

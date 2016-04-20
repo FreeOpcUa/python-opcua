@@ -32,14 +32,20 @@ if __name__ == "__main__":
     myevent.Message.Text = "This is my event"
     myevent.Severity = 300
 
+    server_obj = server.get_node(myevent.SourceNode)
+
     # Configure server to use sqlite as history database (default is a simple in memory dict)
-    server.iserver.history_manager.set_storage(HistorySQLite(":memory:"))
+    server.iserver.history_manager.set_storage(HistorySQLite("history.db"))
 
     # starting!
     server.start()
 
     # enable history for this particular node, must be called after start since it uses subscription
     server.iserver.enable_history(myvar, period=None, count=100)
+
+    # enable history for server events
+    server.iserver.enable_event_history(server_obj, period=None)
+
     try:
         count = 0
         while True:
