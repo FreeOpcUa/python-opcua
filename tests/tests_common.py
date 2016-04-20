@@ -23,7 +23,7 @@ def add_server_methods(srv):
     def func2(parent, methodname, value):
         return math.sin(value)
 
-    o = srv.get_objects_node()
+    o = srv.get_objects_node()š
     v = o.add_method(ua.NodeId("ServerMethodArray", 2), ua.QualifiedName('ServerMethodArray', 2), func2, [ua.VariantType.String, ua.VariantType.Int64], [ua.VariantType.Int64])
 
     @uamethod
@@ -86,7 +86,7 @@ class MySubHandler():
 
 class MySubHandler2():
     def __init__(self):
-        self.results = [] 
+        self.results = []
 
     def datachange_notification(self, node, val, data):
         self.results.append((node, val))
@@ -97,8 +97,8 @@ class MySubHandler2():
 
 class MySubHandlerCounter():
     def __init__(self):
-        self.datachange_count = 0 
-        self.event_count = 0 
+        self.datachange_count = 0
+        self.event_count = 0
 
     def datachange_notification(self, node, val, data):
         self.datachange_count += 1
@@ -263,30 +263,6 @@ class CommonTests(object):
             handle = sub.subscribe_events(v)
         sub.delete()
 
-    def test_events_deprecated(self):
-        msclt = MySubHandlerDeprecated()
-        sub = self.opc.create_subscription(100, msclt)
-        handle = sub.subscribe_events()
-
-        ev = Event(self.srv.iserver.isession)
-        msg = b"this is my msg "
-        ev.Message.Text = msg
-        tid = datetime.utcnow()
-        ev.Time = tid
-        ev.Severity = 500
-        ev.trigger()
-
-        clthandle, ev = msclt.future.result()
-        self.assertIsNot(ev, None)  # we did not receive event
-        self.assertEqual(ev.Message.Text, msg)
-        #self.assertEqual(msclt.ev.Time, tid)
-        self.assertEqual(ev.Severity, 500)
-        self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
-
-        # time.sleep(0.1)
-        sub.unsubscribe(handle)
-        sub.delete()
-
     def test_events(self):
         msclt = MySubHandler()
         sub = self.opc.create_subscription(100, msclt)
@@ -302,10 +278,10 @@ class CommonTests(object):
 
         ev = msclt.future.result()
         self.assertIsNot(ev, None)  # we did not receive event
+        self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
         self.assertEqual(ev.Message.Text, msg)
         #self.assertEqual(msclt.ev.Time, tid)
         self.assertEqual(ev.Severity, 500)
-        self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
 
         # time.sleep(0.1)
         sub.unsubscribe(handle)
@@ -387,7 +363,7 @@ class CommonTests(object):
     def test_utf8(self):
         objects = self.opc.get_objects_node()
         utf_string = "æøå@%&"
-        bn = ua.QualifiedName(utf_string, 3) 
+        bn = ua.QualifiedName(utf_string, 3)
         nid = ua.NodeId("æølå", 3)
         val = "æøå"
         v = objects.add_variable(nid, bn, val)
@@ -747,7 +723,7 @@ class CommonTests(object):
         o = self.opc.get_objects_node()
 
         # subscribe to a variable
-        startv1 = True 
+        startv1 = True
         v1 = o.add_variable(3, 'SubscriptionVariableBool', startv1)
         sub = self.opc.create_subscription(100, msclt)
         handle1 = sub.subscribe_data_change(v1)
@@ -777,9 +753,9 @@ class CommonTests(object):
         msclt = MySubHandler2()
         o = self.opc.get_objects_node()
 
-        startv1 = True 
+        startv1 = True
         v1 = o.add_variable(3, 'SubscriptionVariableMany1', startv1)
-        startv2 = [1.22, 1.65] 
+        startv2 = [1.22, 1.65]
         v2 = o.add_variable(3, 'SubscriptionVariableMany2', startv2)
 
         sub = self.opc.create_subscription(100, msclt)
@@ -787,7 +763,7 @@ class CommonTests(object):
 
         # Now check we get the start values
         nodes = [v1, v2]
-       
+
         count = 0
         while not len(msclt.results) > 1:
             count += 1
@@ -804,7 +780,7 @@ class CommonTests(object):
             else:
                 self.fail("Error node {} is neither {} nor {}".format(node, v1, v2))
 
-        sub.delete() 
+        sub.delete()
 
     def test_subscribe_server_time(self):
         msclt = MySubHandler()

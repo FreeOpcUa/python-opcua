@@ -14,7 +14,7 @@ except ImportError:
         shell.interact()
 
 
-from opcua import ua, uamethod, Server, Event
+from opcua import ua, uamethod, Server, EventGenerator
 
 
 class SubHandler(object):
