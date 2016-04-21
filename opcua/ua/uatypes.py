@@ -642,7 +642,7 @@ class QualifiedName(FrozenClass):
     A string qualified with a namespace index.
     '''
 
-    def __init__(self, name="", namespaceidx=0):
+    def __init__(self, name=None, namespaceidx=0):
         if not isinstance(namespaceidx, int):
             raise UaError("namespaceidx must be an int")
         self.NamespaceIndex = namespaceidx
