@@ -696,14 +696,14 @@ class LocalizedText(FrozenClass):
     A string qualified with a namespace index.
     '''
 
-    def __init__(self, text=""):
+    def __init__(self, text=None):
         self.Encoding = 0
         self.Text = text
         if isinstance(self.Text, unicode):
             self.Text = self.Text.encode('utf-8')
         if self.Text:
             self.Encoding |= (1 << 1)
-        self.Locale = b''
+        self.Locale = None 
         self._freeze = True
 
     def to_binary(self):
