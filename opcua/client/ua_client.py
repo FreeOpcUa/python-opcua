@@ -37,6 +37,7 @@ class UASocketClient(object):
         should not be necessary to call directly
         """
         self._thread = Thread(target=self._run)
+        self._thread.daemon = True
         self._thread.start()
 
     def _send_request(self, request, callback=None, timeout=1000, message_type=ua.MessageType.SecureMessage):
