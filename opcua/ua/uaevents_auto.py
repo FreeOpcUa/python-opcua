@@ -6,10 +6,8 @@ For now only events!
 
 from opcua.ua import *
 
-
 # TODO: This should be autogeneratd form XML description of EventTypes
 class BaseEvent(FrozenClass):
-
     '''
     BaseEvent implements BaseEventType from which inherit all other events and it is used per default.
     '''
@@ -39,3 +37,8 @@ class BaseEvent(FrozenClass):
         s += ')'
         return s
     __repr__ = __str__
+
+
+IMPLEMNTED_EVENTS = {
+    ObjectIds.BaseEventType: BaseEvent,
+    }

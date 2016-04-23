@@ -22,36 +22,32 @@ class EventGenerator(object):
         etype: The event type, either an objectId, a NodeId or a Node object
     """
 
-    def __init__(self, isession, etype=ua.ObjectIds.BaseEventType, source=ua.ObjectIds.Server):
+    def __init__(self, isession, etype=ua.BaseEvent(), source=ua.ObjectIds.Server):
         self.isession = isession
-        self.node = None
-        self.event = etype
+        self.event = None
+        node = None
 
         if isinstance(etype, ua.BaseEvent):
-            pass
+            self.event = etype
         elif isinstance(etype, Node):
-            self.node = etype
+            node = etype
         elif isinstance(etype, ua.NodeId):
-            self.node = Node(self.isession, etype)
+            node = Node(self.isession, etype)
         else:
-            self.node = Node(self.isession, ua.NodeId(etype))
+            node = Node(self.isession, ua.NodeId(etype))
 
-        if self.node:
-            event = CustomEvent()
-            references = node.get_children_descriptions(refs=ua.ObjectIds.HasProperty)
-            for desc in references:
-                node = Node(self.isession, desc.NodeId)
-                setattr(self, desc.BrowseName.Name, node.get_value())
+        if node:
+            self.event = get_event_from_node(node)
 
         if isinstance(source, Node):
             pass
-        elif isinstance(source, NodeId):
-            source = ua.Node(isession, source)
+        elif isinstance(source, ua.NodeId):
+            source = Node(isession, source)
         else:
             source = Node(isession, ua.NodeId(source))
 
         if self.event.SourceNode.Identifier:
-            source = Node(self.iserver.isession, self.event.SourceNode)
+            source = Node(self.isession, self.event.SourceNode)
 
         self.event.SourceName = source.get_display_name().Text
         source.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(1, ua.VariantType.Byte)))
@@ -69,9 +65,9 @@ class EventGenerator(object):
             self.event.Time = time
         else:
             self.event.Time = datetime.utcnow()
-        self.event.ReciveTime = datetime.utcnow()
+        self.event.RecieveTime = datetime.utcnow()
         #FIXME: LocalTime is wrong but currently know better. For description s. Part 5 page 18
-        self.event.LocaleTime = datetime.utcnow()
+        self.event.LocalTime = datetime.utcnow()
         if message:
             self.Message = ua.LocalizedText(message)
         elif not self.event.Message:
@@ -79,15 +75,36 @@ class EventGenerator(object):
         self.isession.subscription_service.trigger_event(self.event)
 
 
+def get_event_from_node(node):
+    event = None
+    if node.nodeid.Identifier in ua.uaevents_auto.IMPLEMNTED_EVENTS.keys():
+        event = ua.uaevents_auto.IMPLEMNTED_EVENTS[node.nodeid.Identifier]()
+
+    else:
+        pass
+        #node.get
+
+        #class CustomEvent():
+
+            #pass
+    #references = node.get_children_descriptions(refs=ua.ObjectIds.HasProperty)
+    #for desc in references:
+        #child = Node(self.isession, desc.NodeId)
+        #setattr(self.event, desc.BrowseName.Name, child.get_value())
+
+    return event
+
+
 class CustomEvent(ua.BaseEvent):
 
-    def __init__(self, etype=ua.ObjectIds.BaseEventType, sourcenode=ua.NodeId(ua.ObjectIds.Server), message=None, severity=1):
-        super(ua.BaseEvent, self).__init__(sourcenode, message, severity, True)
+    def __init__(self, etype=ua.BaseEvent, sourcenode=ua.NodeId(ua.ObjectIds.Server), message=None, severity=1):
+        super(CustomEvent, self).__init__(sourcenode, message, severity, True)
         #TODO: Add fileds
 
     #TODO: Extend to show all fields of CustomEvent
     def __str__(self):
-        s = 'CustomEvent(EventId:{}'.format(self.EventId)
+        s = 'CustomEvent('
+        s += 'EventId:{}'.format(self.EventId)
         s += ', EventType:{}'.format(self.EventType)
         s += ', SourceNode:{}'.format(self.SourceNode)
         s += ', SourceName:{}'.format(self.SourceName)
@@ -97,5 +114,7 @@ class CustomEvent(ua.BaseEvent):
         s += ', Message:{}'.format(self.Message)
         s += ', Severity:{}'.format(self.Severity)
         s += ')'
+
+
         return s
     __repr__ = __str__

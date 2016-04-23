@@ -4,6 +4,6 @@ from opcua.ua.object_ids import ObjectIds
 from opcua.ua.status_codes import StatusCodes
 from opcua.ua.uaprotocol_auto import *
 from opcua.ua.uaprotocol_hand import *
-from opcua.ua.uatypes_auto import *
 from opcua.ua.uatypes import *  #TODO: This should be renamed to uatypes_hand
+from opcua.ua.uaevents_auto import *
 
