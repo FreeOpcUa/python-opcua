@@ -242,7 +242,6 @@ class Node(object):
         HasNotifier = 48
         HasOrderedComponent = 49
         """
-        #references = self.get_children_descriptions(refs, nodeclassmask)
         return self.get_referenced_nodes(refs, ua.BrowseDirection.Forward, nodeclassmask)
 
     def get_properties(self):

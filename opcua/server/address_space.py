@@ -108,7 +108,8 @@ class ViewService(object):
         """
         if ref1.Identifier == ref2.Identifier:
             return True
-        elif not subtypes or ref2.Identifier == ua.ObjectIds.HasSubtype:
+        #TODO: Please check the changes here
+        elif not subtypes:
             return False
         oktypes = self._get_sub_ref(ref1)
         return ref2 in oktypes
@@ -221,13 +222,15 @@ class NodeManagementService(object):
         self._aspace[nodedata.nodeid] = nodedata
 
         if not item.ParentNodeId.is_null():
-            addref = ua.AddReferencesItem()
-            addref.ReferenceTypeId = item.ReferenceTypeId
-            addref.SourceNodeId = item.ParentNodeId
-            addref.TargetNodeId = nodedata.nodeid
-            addref.TargetNodeClass = item.NodeClass
-            addref.IsForward = True
-            self._add_reference(addref, user)
+            desc = ua.ReferenceDescription()
+            desc.ReferenceTypeId = item.ReferenceTypeId
+            desc.NodeId = nodedata.nodeid
+            desc.NodeClass = item.NodeClass
+            desc.BrowseName = item.BrowseName
+            desc.DisplayName = ua.LocalizedText(item.BrowseName.Name)
+            desc.TypeDefinition = item.TypeDefinition
+            desc.IsForward = True
+            self._aspace[item.ParentNodeId].references.append(desc)
 
             addref = ua.AddReferencesItem()
             addref.ReferenceTypeId = item.ReferenceTypeId
