@@ -242,12 +242,8 @@ class Node(object):
         HasNotifier = 48
         HasOrderedComponent = 49
         """
-        references = self.get_children_descriptions(refs, nodeclassmask)
-        nodes = []
-        for desc in references:
-            node = Node(self.server, desc.NodeId)
-            nodes.append(node)
-        return nodes
+        #references = self.get_children_descriptions(refs, nodeclassmask)
+        return self.get_referenced_nodes(refs, ua.BrowseDirection.Forward, nodeclassmask)
 
     def get_properties(self):
         """
@@ -257,11 +253,19 @@ class Node(object):
         return self.get_children(refs=ua.ObjectIds.HasProperty, nodeclassmask=ua.NodeClass.Variable)
 
     def get_children_descriptions(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
+        return self.get_references(refs, ua.BrowseDirection.Forward, nodeclassmask, includesubtypes)
+
+    def get_references(self, refs=ua.ObjectIds.References, direction=ua.BrowseDirection.Both, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
         """
-        return all attributes of child nodes as UA BrowseResult structs
+        returns references of the node based on specific filter defined with:
+
+        refs = ObjectId of the Reference
+        direction = Browse direction for references
+        nodeclassmask = filter nodes based on specific class
+        includesubtypes = If true subtypes of the reference (ref) are also included
         """
         desc = ua.BrowseDescription()
-        desc.BrowseDirection = ua.BrowseDirection.Forward
+        desc.BrowseDirection = direction
         desc.ReferenceTypeId = ua.TwoByteNodeId(refs)
         desc.IncludeSubtypes = includesubtypes
         desc.NodeClassMask = nodeclassmask
@@ -273,6 +277,36 @@ class Node(object):
         params.NodesToBrowse.append(desc)
         results = self.server.browse(params)
         return results[0].References
+
+    def get_referenced_nodes(self, refs=ua.ObjectIds.References, direction=ua.BrowseDirection.Both, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
+        """
+        returns referenced nodes based on specific filter
+        Paramters are the same as for get_references
+
+        """
+        references = self.get_references(refs, direction, nodeclassmask, includesubtypes)
+        nodes = []
+        for desc in references:
+            node = Node(self.server, desc.NodeId)
+            nodes.append(node)
+        return nodes
+
+    def get_type_definition(self):
+        """
+        returns type definition of the node.
+        """
+        references = self.get_references(refs=ua.ObjectIds.HasTypeDefinition, direction=ua.BrowseDirection.Forward)
+        if len(references) == 0:
+            return ua.ObjectIds.BaseObjectType
+        return references[0].NodeId.Identifier
+
+    def get_parent(self):
+        """
+        returns parent of the node.
+        """
+        refs = self.get_references(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse)
+
+        return Node(self.server, refs[0].NodeId)
 
     def get_child(self, path):
         """

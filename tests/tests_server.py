@@ -6,6 +6,7 @@ from datetime import timedelta
 from opcua import Server
 from opcua import Client
 from opcua import ua
+from opcua import uamethod
 
 
 port_num = 485140
@@ -50,7 +51,7 @@ class TestServer(unittest.TestCase, CommonTests):
             self.assertTrue(new_app_uri in [s.ApplicationUri for s in new_servers])
         finally:
             client.disconnect()
-    
+
     def test_find_servers2(self):
         client = Client(self.discovery.endpoint.geturl())
         client.connect()
@@ -136,5 +137,23 @@ class TestServer(unittest.TestCase, CommonTests):
         var.set_value(3.0)
         self.srv.iserver.disable_history(var)
 
+    def test_references_for_added_nodes_method(self):
+        objects = self.opc.get_objects_node()
+        o = objects.add_object(3, 'MyObject')
+        nodes = objects.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Forward, includesubtypes=False)
+        self.assertTrue(o in nodes)
+        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        self.assertTrue(objects in nodes)
+        self.assertEqual(o.get_parent(), objects)
+        self.assertEqual(o.get_type_definition(), ua.ObjectIds.BaseObjectType)
 
+        @uamethod
+        def callback(parent):
+            return
 
+        m = o.add_method(3, 'MyMethod', callback)
+        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Forward, includesubtypes=False)
+        self.assertTrue(m in nodes)
+        nodes = m.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        self.assertTrue(o in nodes)
+        self.assertEqual(m.get_parent(), o)
