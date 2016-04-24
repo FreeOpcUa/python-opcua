@@ -37,7 +37,7 @@ def create_folder(parent, *args):
     or namespace index, name
     """
     nodeid, qname = _parse_add_args(*args)
-    return node.Node(parent.server, _create_folder(parent.server, parent.nodeid, nodeid, qname))
+    return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, ua.ObjectIds.FolderType))
 
 
 def create_object(parent, *args):
@@ -47,7 +47,7 @@ def create_object(parent, *args):
     or namespace index, name
     """
     nodeid, qname = _parse_add_args(*args)
-    return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname))
+    return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, ua.ObjectIds.BaseObjectType))
 
 
 def create_property(parent, *args):
@@ -91,37 +91,21 @@ def create_method(parent, *args):
         outputs = args[4]
     else:
         outputs = []
-    return _create_method(parent, nodeid, qname, callback, inputs, outputs)
+    return node.Node(parent.server, _create_method(parent, nodeid, qname, callback, inputs, outputs))
 
 
-def _create_folder(server, parentnodeid, nodeid, qname):
+def _create_object(server, parentnodeid, nodeid, qname, objecttype):
     addnode = ua.AddNodesItem()
     addnode.RequestedNewNodeId = nodeid
     addnode.BrowseName = qname
     addnode.NodeClass = ua.NodeClass.Object
     addnode.ParentNodeId = parentnodeid
-    addnode.ReferenceTypeId = ua.NodeId.from_string("i=35")
-    addnode.TypeDefinition = ua.NodeId.from_string("i=61")
-    attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText(qname.Name)
-    attrs.DisplayName = ua.LocalizedText(qname.Name)
-    attrs.WriteMask = 0
-    attrs.UserWriteMask = 0
-    attrs.EventNotifier = 0
-    addnode.NodeAttributes = attrs
-    results = server.add_nodes([addnode])
-    results[0].StatusCode.check()
-    return results[0].AddedNodeId
-
-
-def _create_object(server, parentnodeid, nodeid, qname):
-    addnode = ua.AddNodesItem()
-    addnode.RequestedNewNodeId = nodeid
-    addnode.BrowseName = qname
-    addnode.NodeClass = ua.NodeClass.Object
-    addnode.ParentNodeId = parentnodeid
-    addnode.ReferenceTypeId = ua.NodeId.from_string("i=35")
-    addnode.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseObjectType)
+    #TODO: maybe move to address_space.py and implement for all node types?
+    if node.Node(server, parentnodeid).get_type_definition() == ua.ObjectIds.FolderType:
+        addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
+    else:
+        addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
+    addnode.TypeDefinition = ua.NodeId(objecttype)
     attrs = ua.ObjectAttributes()
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
@@ -180,7 +164,7 @@ def _create_method(parent, nodeid, qname, callback, inputs, outputs):
     addnode.BrowseName = qname
     addnode.NodeClass = ua.NodeClass.Method
     addnode.ParentNodeId = parent.nodeid
-    addnode.ReferenceTypeId = ua.NodeId.from_string("i=47")
+    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
     #node.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseObjectType)
     attrs = ua.MethodAttributes()
     attrs.Description = ua.LocalizedText(qname.Name)
