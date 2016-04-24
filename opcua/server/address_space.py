@@ -222,38 +222,46 @@ class NodeManagementService(object):
         self._aspace[nodedata.nodeid] = nodedata
 
         if not item.ParentNodeId.is_null():
-            desc = ua.ReferenceDescription()
-            desc.ReferenceTypeId = item.ReferenceTypeId
-            desc.NodeId = nodedata.nodeid
-            desc.NodeClass = item.NodeClass
-            desc.BrowseName = item.BrowseName
-            desc.DisplayName = ua.LocalizedText(item.BrowseName.Name)
-            desc.TypeDefinition = item.TypeDefinition
-            desc.IsForward = True
-            self._aspace[item.ParentNodeId].references.append(desc)
-
-            addref = ua.AddReferencesItem()
-            addref.ReferenceTypeId = item.ReferenceTypeId
-            addref.SourceNodeId = nodedata.nodeid
-            addref.TargetNodeId = item.ParentNodeId
-            addref.TargetNodeClass = self._aspace[item.ParentNodeId].attributes[ua.AttributeIds.NodeClass].value.Value.Value
-            addref.IsForward = False
-            self._add_reference(addref, user)
+            self._add_ref_from_parent(nodedata, item)
+            self._add_ref_to_parent(nodedata, item, user)
 
         # add type definition
         if item.TypeDefinition != ua.NodeId():
-            addref = ua.AddReferencesItem()
-            addref.SourceNodeId = nodedata.nodeid
-            addref.IsForward = True
-            addref.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasTypeDefinition)
-            addref.TargetNodeId = item.TypeDefinition
-            addref.TargetNodeClass = ua.NodeClass.DataType
-            self._add_reference(addref, user)
+            self._add_type_definition(nodedata, item, user)
 
         result.StatusCode = ua.StatusCode()
         result.AddedNodeId = nodedata.nodeid
 
         return result
+
+    def _add_ref_from_parent(self, nodedata, item):
+        desc = ua.ReferenceDescription()
+        desc.ReferenceTypeId = item.ReferenceTypeId
+        desc.NodeId = nodedata.nodeid
+        desc.NodeClass = item.NodeClass
+        desc.BrowseName = item.BrowseName
+        desc.DisplayName = ua.LocalizedText(item.BrowseName.Name)
+        desc.TypeDefinition = item.TypeDefinition
+        desc.IsForward = True
+        self._aspace[item.ParentNodeId].references.append(desc)
+
+    def _add_ref_to_parent(self, nodedata, item, user):
+        addref = ua.AddReferencesItem()
+        addref.ReferenceTypeId = item.ReferenceTypeId
+        addref.SourceNodeId = nodedata.nodeid
+        addref.TargetNodeId = item.ParentNodeId
+        addref.TargetNodeClass = self._aspace[item.ParentNodeId].attributes[ua.AttributeIds.NodeClass].value.Value.Value
+        addref.IsForward = False
+        self._add_reference(addref, user)
+
+    def _add_type_definition(self, nodedata, item, user):
+        addref = ua.AddReferencesItem()
+        addref.SourceNodeId = nodedata.nodeid
+        addref.IsForward = True
+        addref.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasTypeDefinition)
+        addref.TargetNodeId = item.TypeDefinition
+        addref.TargetNodeClass = ua.NodeClass.DataType
+        self._add_reference(addref, user)
 
     def delete_nodes(self, deletenodeitems, user=User.Admin):
         results = []
