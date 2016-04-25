@@ -106,8 +106,6 @@ class MySubHandlerCounter():
         self.event_count += 1
 
 
-
-
 class CommonTests(object):
 
     '''
@@ -222,13 +220,41 @@ class CommonTests(object):
         self.assertTrue(prop2 in props)
         self.assertFalse(var in props)
         self.assertFalse(folder in props)
+        self.assertFalse(obj2 in props)
         all_vars = obj.get_children(nodeclassmask=ua.NodeClass.Variable)
         self.assertTrue(prop in all_vars)
         self.assertTrue(var in all_vars)
+        self.assertFalse(folder in props)
+        self.assertFalse(obj2 in props)
         all_objs = obj.get_children(nodeclassmask=ua.NodeClass.Object)
         self.assertTrue(folder in all_objs)
         self.assertTrue(obj2 in all_objs)
         self.assertFalse(var in all_objs)
+
+    def test_browse_references(self):
+        objects = self.opc.get_objects_node()
+        folder = objects.add_folder(4, "folder")
+
+        childs = objects.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Forward, includesubtypes=False)
+        self.assertTrue(folder in childs)
+
+        childs = objects.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Both, includesubtypes=False)
+        self.assertTrue(folder in childs)
+
+        childs = objects.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        self.assertFalse(folder in childs)
+
+        parents = folder.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        self.assertTrue(objects in parents)
+
+        parents = folder.get_referenced_nodes(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        self.assertFalse(objects in parents)
+
+        parents = folder.get_referenced_nodes(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
+        self.assertTrue(objects in parents)
+
+        parent = folder.get_parent()
+        self.assertEqual(parent, objects)
 
     def test_browsename_with_spaces(self):
         o = self.opc.get_objects_node()
@@ -831,14 +857,57 @@ class CommonTests(object):
     def test_add_nodes(self):
         objects = self.opc.get_objects_node()
         f = objects.add_folder(3, 'MyFolder')
+        child = objects.get_child("3:MyFolder")
+        self.assertEqual(child, f)
+        o = f.add_object(3, 'MyObject')
+        child = f.get_child("3:MyObject")
+        self.assertEqual(child, o)
         v = f.add_variable(3, 'MyVariable', 6)
+        child = f.get_child("3:MyVariable")
+        self.assertEqual(child, v)
         p = f.add_property(3, 'MyProperty', 10)
+        child = f.get_child("3:MyProperty")
+        self.assertEqual(child, p)
         childs = f.get_children()
+        self.assertTrue(o in childs)
         self.assertTrue(v in childs)
         self.assertTrue(p in childs)
+
+    def test_references_for_added_nodes(self):
+        objects = self.opc.get_objects_node()
+        o = objects.add_object(3, 'MyObject')
+        nodes = objects.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Forward, includesubtypes=False)
+        self.assertTrue(o in nodes)
+        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        self.assertTrue(objects in nodes)
+        self.assertEqual(o.get_parent(), objects)
+        self.assertEqual(o.get_type_definition(), ua.ObjectIds.BaseObjectType)
+
+        o2 = o.add_object(3, 'MySecondObject')
+        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Forward, includesubtypes=False)
+        self.assertTrue(o2 in nodes)
+        nodes = o2.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        self.assertTrue(o in nodes)
+        self.assertEqual(o2.get_parent(), o)
+        self.assertEqual(o2.get_type_definition(), ua.ObjectIds.BaseObjectType)
+
+        v = o.add_variable(3, 'MyVariable', 6)
+        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Forward, includesubtypes=False)
+        self.assertTrue(v in nodes)
+        nodes = v.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        self.assertTrue(o in nodes)
+        self.assertEqual(v.get_parent(), o)
+        self.assertEqual(v.get_type_definition(), ua.ObjectIds.BaseDataVariableType)
+
+        p = o.add_property(3, 'MyProperty', 2)
+        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasProperty, direction=ua.BrowseDirection.Forward, includesubtypes=False)
+        self.assertTrue(p in nodes)
+        nodes = p.get_referenced_nodes(refs=ua.ObjectIds.HasProperty, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        self.assertTrue(o in nodes)
+        self.assertEqual(p.get_parent(), o)
+        self.assertEqual(p.get_type_definition(), ua.ObjectIds.PropertyType)
 
     def test_get_endpoints(self):
         endpoints = self.opc.get_endpoints()
         self.assertTrue(len(endpoints) > 0)
         self.assertTrue(endpoints[0].EndpointUrl.startswith("opc.tcp://"))
-

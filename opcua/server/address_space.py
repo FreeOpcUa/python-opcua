@@ -108,7 +108,8 @@ class ViewService(object):
         """
         if ref1.Identifier == ref2.Identifier:
             return True
-        if not subtypes and ref2.Identifier == ua.ObjectIds.HasSubtype:
+        #TODO: Please check the changes here
+        elif not subtypes:
             return False
         oktypes = self._get_sub_ref(ref1)
         return ref2 in oktypes
@@ -117,7 +118,7 @@ class ViewService(object):
         res = []
         nodedata = self._aspace[ref]
         for ref in nodedata.references:
-            if ref.ReferenceTypeId.Identifier == ua.ObjectIds.HasSubtype:
+            if ref.ReferenceTypeId.Identifier == ua.ObjectIds.HasSubtype and ref.IsForward:
                 res.append(ref.NodeId)
                 res += self._get_sub_ref(ref.NodeId)
         return res
@@ -126,6 +127,8 @@ class ViewService(object):
         if desc == ua.BrowseDirection.Both:
             return True
         if desc == ua.BrowseDirection.Forward and isforward:
+            return True
+        if desc == ua.BrowseDirection.Inverse and not isforward:
             return True
         return False
 
@@ -215,34 +218,50 @@ class NodeManagementService(object):
         # add requested attrs
         self._add_nodeattributes(item.NodeAttributes, nodedata)
 
-        if not item.ParentNodeId.is_null():
-            desc = ua.ReferenceDescription()
-            desc.ReferenceTypeId = item.ReferenceTypeId
-            desc.NodeId = nodedata.nodeid
-            desc.NodeClass = item.NodeClass
-            desc.BrowseName = item.BrowseName
-            desc.DisplayName = ua.LocalizedText(item.BrowseName.Name)
-            desc.TypeDefinition = item.TypeDefinition
-            desc.IsForward = True
-            self._aspace[item.ParentNodeId].references.append(desc)
-
         # now add our node to db
         self._aspace[nodedata.nodeid] = nodedata
 
+        if not item.ParentNodeId.is_null():
+            self._add_ref_from_parent(nodedata, item)
+            self._add_ref_to_parent(nodedata, item, user)
+
         # add type definition
         if item.TypeDefinition != ua.NodeId():
-            addref = ua.AddReferencesItem()
-            addref.SourceNodeId = nodedata.nodeid
-            addref.IsForward = True
-            addref.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasTypeDefinition)
-            addref.TargetNodeId = item.TypeDefinition
-            addref.TargetNodeClass = ua.NodeClass.DataType
-            self._add_reference(addref, user)
+            self._add_type_definition(nodedata, item, user)
 
         result.StatusCode = ua.StatusCode()
         result.AddedNodeId = nodedata.nodeid
 
         return result
+
+    def _add_ref_from_parent(self, nodedata, item):
+        desc = ua.ReferenceDescription()
+        desc.ReferenceTypeId = item.ReferenceTypeId
+        desc.NodeId = nodedata.nodeid
+        desc.NodeClass = item.NodeClass
+        desc.BrowseName = item.BrowseName
+        desc.DisplayName = ua.LocalizedText(item.BrowseName.Name)
+        desc.TypeDefinition = item.TypeDefinition
+        desc.IsForward = True
+        self._aspace[item.ParentNodeId].references.append(desc)
+
+    def _add_ref_to_parent(self, nodedata, item, user):
+        addref = ua.AddReferencesItem()
+        addref.ReferenceTypeId = item.ReferenceTypeId
+        addref.SourceNodeId = nodedata.nodeid
+        addref.TargetNodeId = item.ParentNodeId
+        addref.TargetNodeClass = self._aspace[item.ParentNodeId].attributes[ua.AttributeIds.NodeClass].value.Value.Value
+        addref.IsForward = False
+        self._add_reference(addref, user)
+
+    def _add_type_definition(self, nodedata, item, user):
+        addref = ua.AddReferencesItem()
+        addref.SourceNodeId = nodedata.nodeid
+        addref.IsForward = True
+        addref.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasTypeDefinition)
+        addref.TargetNodeId = item.TypeDefinition
+        addref.TargetNodeClass = ua.NodeClass.DataType
+        self._add_reference(addref, user)
 
     def delete_nodes(self, deletenodeitems, user=User.Admin):
         results = []

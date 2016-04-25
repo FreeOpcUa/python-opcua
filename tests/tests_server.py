@@ -7,6 +7,7 @@ import opcua
 from opcua import Server
 from opcua import Client
 from opcua import ua
+from opcua import uamethod
 
 
 port_num = 485140
@@ -137,6 +138,27 @@ class TestServer(unittest.TestCase, CommonTests):
         var.set_value(3.0)
         self.srv.iserver.disable_history(var)
 
+    def test_references_for_added_nodes_method(self):
+        objects = self.opc.get_objects_node()
+        o = objects.add_object(3, 'MyObject')
+        nodes = objects.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Forward, includesubtypes=False)
+        self.assertTrue(o in nodes)
+        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        self.assertTrue(objects in nodes)
+        self.assertEqual(o.get_parent(), objects)
+        self.assertEqual(o.get_type_definition(), ua.ObjectIds.BaseObjectType)
+
+        @uamethod
+        def callback(parent):
+            return
+
+        m = o.add_method(3, 'MyMethod', callback)
+        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Forward, includesubtypes=False)
+        self.assertTrue(m in nodes)
+        nodes = m.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        self.assertTrue(o in nodes)
+        self.assertEqual(m.get_parent(), o)
+
     # This should work for following BaseEvent tests to work (maybe to write it a bit differentlly since they are not independent)
     def test_get_event_from_node_BaseEvent(self):
         ev = opcua.common.event.get_event_from_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType)))
@@ -151,7 +173,6 @@ class TestServer(unittest.TestCase, CommonTests):
         self.assertEqual(base, nodes[0])
         properties = event.get_properties()
         self.assertIsNot(properties, None)
-
 
     def test_get_event_from_node_CustomEvent(self):
         ev = opcua.common.event.get_event_from_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.AuditEventType)))
@@ -240,7 +261,6 @@ class TestServer(unittest.TestCase, CommonTests):
         ## time.sleep(0.1)
         #sub.unsubscribe(handle)
         #sub.delete()
-
 
 def check_eventgenerator_BaseEvent(test, evgen):
     test.assertIsNot(evgen, None)  # we did not receive event generator
