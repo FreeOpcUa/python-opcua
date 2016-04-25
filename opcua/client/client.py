@@ -98,6 +98,13 @@ class Client(object):
         self._session_counter = 1
         self.keepalive = None
 
+    def __enter__(self):
+        self.connect()
+        return self
+
+    def __exit__(self):
+        self.disconnect()
+
     @staticmethod
     def find_endpoint(endpoints, security_mode, policy_uri):
         """
