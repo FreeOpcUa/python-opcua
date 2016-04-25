@@ -39,12 +39,6 @@ class SubHandler(object):
         """
         pass
 
-    def event(self, handle, event):
-        """
-        Deprecated use event_notification
-        """
-        pass
-
 
 class EventResult():
     """

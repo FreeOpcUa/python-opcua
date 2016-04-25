@@ -466,4 +466,4 @@ class Client(object):
 
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.uaclient, nodes, recursive)
-            
+

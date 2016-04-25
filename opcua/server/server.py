@@ -14,7 +14,6 @@ from opcua import ua
 from opcua.server.binary_server_asyncio import BinaryServer
 from opcua.server.internal_server import InternalServer
 from opcua.common.node import Node
-from opcua.common.event import Event
 from opcua.common.subscription import Subscription
 from opcua.common import xmlimporter
 from opcua.common.manage_nodes import delete_nodes
@@ -322,12 +321,37 @@ class Server(object):
         uries = self.get_namespace_array()
         return uries.index(uri)
 
-    def get_event_object(self, etype=ua.ObjectIds.BaseEventType, source=ua.ObjectIds.Server):
+    def get_event_object(self, etype=ua.ObjectIds.BaseEventType):
         """
         Returns an event object using an event type from address space.
         Use this object to fire events
         """
-        return Event(self.iserver.isession, etype, source)
+        node = None
+
+        if isinstance(etype, ua.BaseEvent):
+            event = etype
+            source = Node(self.iserver.isession, event.SourceNode)
+            if event.SourceNode.Identifier:
+                event.SourceName = source.get_display_name().Text
+                source.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(1, ua.VariantType.Byte)))
+        elif isinstance(etype, Node):
+            node = etype
+        elif isinstance(etype, ua.NodeId):
+            node = Node(self.iserver.isession, etype)
+        else:
+            node = Node(self.iserver.isession, ua.NodeId(etype))
+
+        if node:
+            event = ua.Event()
+            references = node.get_children_descriptions(refs=ua.ObjectIds.HasProperty)
+            for desc in references:
+                node = Node(self.iserver.isession, desc.NodeId)
+                setattr(event, desc.BrowseName.Name, node.get_value())
+
+        return event
+
+    def trigger_event(self, event):
+        self.iserver.isession.subscription_service.trigger_event(event)
 
     def import_xml(self, path):
         """
@@ -338,9 +362,9 @@ class Server(object):
 
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.iserver.isession, nodes, recursive)
-        
+
     def historize_node(self, node):
         self.iserver.enable_history(node)
-    
+
     def dehistorize_node(self, node):
         self.iserver.disable_history(node)

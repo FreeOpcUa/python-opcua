@@ -6,9 +6,7 @@ from datetime import timedelta
 import math
 
 from opcua import ua
-from opcua import Event
 from opcua import uamethod
-from opcua import Event
 
 
 def add_server_methods(srv):
@@ -64,6 +62,7 @@ class MySubHandlerDeprecated():
 
     def event(self, handle, event):
         self.future.set_result((handle, event))
+
 
 class MySubHandler():
 
@@ -287,54 +286,6 @@ class CommonTests(object):
         v = o.add_variable(3, 'VariableNoEventNofierAttribute', 4)
         with self.assertRaises(ua.UaStatusCodeError):
             handle = sub.subscribe_events(v)
-        sub.delete()
-
-    def test_events_deprecated(self):
-        msclt = MySubHandlerDeprecated()
-        sub = self.opc.create_subscription(100, msclt)
-        handle = sub.subscribe_events()
-
-        ev = Event(self.srv.iserver.isession)
-        msg = b"this is my msg "
-        ev.Message.Text = msg
-        tid = datetime.utcnow()
-        ev.Time = tid
-        ev.Severity = 500
-        ev.trigger()
-
-        clthandle, ev = msclt.future.result()
-        self.assertIsNot(ev, None)  # we did not receive event
-        self.assertEqual(ev.Message.Text, msg)
-        #self.assertEqual(msclt.ev.Time, tid)
-        self.assertEqual(ev.Severity, 500)
-        self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
-
-        # time.sleep(0.1)
-        sub.unsubscribe(handle)
-        sub.delete()
-
-    def test_events(self):
-        msclt = MySubHandler()
-        sub = self.opc.create_subscription(100, msclt)
-        handle = sub.subscribe_events()
-
-        ev = Event(self.srv.iserver.isession)
-        msg = b"this is my msg "
-        ev.Message.Text = msg
-        tid = datetime.utcnow()
-        ev.Time = tid
-        ev.Severity = 500
-        ev.trigger()
-
-        ev = msclt.future.result()
-        self.assertIsNot(ev, None)  # we did not receive event
-        self.assertEqual(ev.Message.Text, msg)
-        #self.assertEqual(msclt.ev.Time, tid)
-        self.assertEqual(ev.Severity, 500)
-        self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
-
-        # time.sleep(0.1)
-        sub.unsubscribe(handle)
         sub.delete()
 
     def test_non_existing_path(self):

@@ -14,7 +14,7 @@ except ImportError:
         shell.interact()
 
 
-from opcua import ua, uamethod, Server, Event
+from opcua import ua, uamethod, Server
 
 
 class SubHandler(object):
@@ -92,9 +92,7 @@ if __name__ == "__main__":
 
     # creating an event object
     # The event object automatically will have members for all events properties
-    myevent = server.get_event_object(ua.ObjectIds.BaseEventType)
-    myevent.Message.Text = "This is my event"
-    myevent.Severity = 300
+    event = server.get_event_object(ua.BaseEvent(objects.nodeid, "This is my event", 300))
 
     # starting!
     server.start()
@@ -105,7 +103,8 @@ if __name__ == "__main__":
         #sub = server.create_subscription(500, handler)
         #handle = sub.subscribe_data_change(myvar)
         # trigger event, all subscribed clients wil receive it
-        myevent.trigger()
+        event.fill_fields()
+        server.trigger_event(event)
 
         embed()
     finally:
