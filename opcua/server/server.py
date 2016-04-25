@@ -329,12 +329,14 @@ class Server(object):
         """
         return EventGenerator(self.iserver.isession, etype, source)
 
-    def create_custom_event(self, name, baseetype=ua.ObjectIds.BaseEventType, properties=[]):
+    def create_custom_event(self, idx, name, baseetype=ua.ObjectIds.BaseEventType, properties=[]):
 
-        base_event = self.get_node(baseetype)
-        custom_event = base_event.add_object(name)
+        base_event = self.get_node(ua.NodeId(baseetype))
+        custom_event = base_event.add_subtype(idx, name)
         for property in properties:
-            custom_event.add_property(property[0], property[1])
+            custom_event.add_property(idx, property[0], ua.Variant(None, property[1]))
+
+        return custom_event
 
     def import_xml(self, path):
         """

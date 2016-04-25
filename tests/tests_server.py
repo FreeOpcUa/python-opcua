@@ -142,6 +142,17 @@ class TestServer(unittest.TestCase, CommonTests):
         ev = opcua.common.event.get_event_from_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType)))
         check_base_event(self, ev)
 
+    def test_create_custom_event(self):
+        event = self.opc.create_custom_event(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+
+        base = opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType))
+        self.assertTrue(event in base.get_children())
+        nodes = event.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        self.assertEqual(base, nodes[0])
+        properties = event.get_properties()
+        self.assertIsNot(properties, None)
+
+
     def test_get_event_from_node_CustomEvent(self):
         ev = opcua.common.event.get_event_from_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.AuditEventType)))
         check_base_event(self, ev)

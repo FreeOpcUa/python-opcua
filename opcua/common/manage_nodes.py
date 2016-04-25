@@ -94,34 +94,31 @@ def create_method(parent, *args):
     return _create_method(parent, nodeid, qname, callback, inputs, outputs)
 
 
-def _create_folder(server, parentnodeid, nodeid, qname):
+def create_subtype(parent, *args):
+    """
+    create a child node subtype
+    arguments are nodeid, browsename
+    or namespace index, name
+    """
+    nodeid, qname = _parse_add_args(*args)
+    return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, None))
+
+
+def _create_object(server, parentnodeid, nodeid, qname, objecttype):
     addnode = ua.AddNodesItem()
     addnode.RequestedNewNodeId = nodeid
     addnode.BrowseName = qname
     addnode.NodeClass = ua.NodeClass.Object
     addnode.ParentNodeId = parentnodeid
-    addnode.ReferenceTypeId = ua.NodeId.from_string("i=35")
-    addnode.TypeDefinition = ua.NodeId.from_string("i=61")
-    attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText(qname.Name)
-    attrs.DisplayName = ua.LocalizedText(qname.Name)
-    attrs.WriteMask = 0
-    attrs.UserWriteMask = 0
-    attrs.EventNotifier = 0
-    addnode.NodeAttributes = attrs
-    results = server.add_nodes([addnode])
-    results[0].StatusCode.check()
-    return results[0].AddedNodeId
-
-
-def _create_object(server, parentnodeid, nodeid, qname):
-    addnode = ua.AddNodesItem()
-    addnode.RequestedNewNodeId = nodeid
-    addnode.BrowseName = qname
-    addnode.NodeClass = ua.NodeClass.Object
-    addnode.ParentNodeId = parentnodeid
-    addnode.ReferenceTypeId = ua.NodeId.from_string("i=35")
-    addnode.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseObjectType)
+    #TODO: maybe move to address_space.py and implement for all node types?
+    if not objecttype:
+        addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
+    else:
+        addnode.TypeDefinition = ua.NodeId(objecttype)
+        if node.Node(server, parentnodeid).get_type_definition() == ua.ObjectIds.FolderType:
+            addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
+        else:
+            addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
     attrs = ua.ObjectAttributes()
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)

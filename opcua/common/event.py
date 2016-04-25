@@ -76,13 +76,41 @@ class EventGenerator(object):
 
 
 def get_event_from_node(node):
-    event = None
     if node.nodeid.Identifier in ua.uaevents_auto.IMPLEMNTED_EVENTS.keys():
-        event = ua.uaevents_auto.IMPLEMNTED_EVENTS[node.nodeid.Identifier]()
-
+        return ua.uaevents_auto.IMPLEMNTED_EVENTS[node.nodeid.Identifier]()
     else:
-        pass
-        #node.get
+        parent_identifier, parent_eventtype = _find_parent_eventtype(node)
+        if not parent_eventtype:
+            return None
+
+        class CustomEvent(parent_eventtype):
+
+            def __init__(self):
+                super(CustomEvent, self).__init__()
+                curr_node = node
+                while curr_node.nodeid.Identifier != parent_identifier:
+                    properties = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasProperty, direction=ua.BrowseDirection.Forward)
+                    for prop in properties:
+                        setattr(self, prop.get_browse_name().Name, prop.get_value())
+
+                    parents = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+                    if len(parents) != 1: # Something went wrong
+                        return None
+                    curr_node = parents[0]
+
+            #TODO: Extend to show all fields of CustomEvent
+            def __str__(self):
+                s = 'CustomEvent('
+                s += 'EventId:{}'.format(self.EventId)
+                s += ', EventType:{}'.format(self.EventType)
+                s += ', SourceNode:{}'.format(self.SourceNode)
+                s += ', SourceName:{}'.format(self.SourceName)
+                s += ', Time:{}'.format(self.Time)
+                s += ', RecieveTime:{}'.format(self.RecieveTime)
+                s += ', LocalTime:{}'.format(self.LocalTime)
+                s += ', Message:{}'.format(self.Message)
+                s += ', Severity:{}'.format(self.Severity)
+                s += ')'
 
         #class CustomEvent():
 
@@ -92,29 +120,15 @@ def get_event_from_node(node):
         #child = Node(self.isession, desc.NodeId)
         #setattr(self.event, desc.BrowseName.Name, child.get_value())
 
-    return event
+    return CustomEvent()
 
 
-class CustomEvent(ua.BaseEvent):
+def _find_parent_eventtype(node):
+    parents = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
 
-    def __init__(self, etype=ua.BaseEvent, sourcenode=ua.NodeId(ua.ObjectIds.Server), message=None, severity=1):
-        super(CustomEvent, self).__init__(sourcenode, message, severity, True)
-        #TODO: Add fileds
-
-    #TODO: Extend to show all fields of CustomEvent
-    def __str__(self):
-        s = 'CustomEvent('
-        s += 'EventId:{}'.format(self.EventId)
-        s += ', EventType:{}'.format(self.EventType)
-        s += ', SourceNode:{}'.format(self.SourceNode)
-        s += ', SourceName:{}'.format(self.SourceName)
-        s += ', Time:{}'.format(self.Time)
-        s += ', RecieveTime:{}'.format(self.RecieveTime)
-        s += ', LocalTime:{}'.format(self.LocalTime)
-        s += ', Message:{}'.format(self.Message)
-        s += ', Severity:{}'.format(self.Severity)
-        s += ')'
-
-
-        return s
-    __repr__ = __str__
+    if len(parents) != 1:   # Something went wrong
+        return None
+    if parents[0].nodeid.Identifier in ua.uaevents_auto.IMPLEMNTED_EVENTS.keys():
+        return node.nodeid.Identifier, ua.uaevents_auto.IMPLEMNTED_EVENTS[parents[0].nodeid.Identifier]
+    else:
+        _find_parent_eventtype(parents[0])
