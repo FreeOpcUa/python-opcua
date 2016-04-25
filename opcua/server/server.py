@@ -81,6 +81,13 @@ class Server(object):
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
         sa_node.set_value([self.application_uri])
 
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self):
+        self.stop()
+
     def load_certificate(self, path):
         """
         load server certificate from file, either pem or der
