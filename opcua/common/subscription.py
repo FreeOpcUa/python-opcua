@@ -46,7 +46,7 @@ class SubHandler(object):
         pass
 
 
-class EventResult():
+class EventResult(object):
     """
     To be sent to clients for every events from server
     """
@@ -59,7 +59,7 @@ class EventResult():
     __repr__ = __str__
 
 
-class SubscriptionItemData():
+class SubscriptionItemData(object):
     """
     To store usefull data from a monitored item
     """
@@ -71,7 +71,7 @@ class SubscriptionItemData():
         self.mfilter = None
 
 
-class DataChangeNotif():
+class DataChangeNotif(object):
     """
     To be send to clients for every datachange notification from server
     """
