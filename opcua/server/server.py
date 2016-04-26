@@ -329,16 +329,24 @@ class Server(object):
         uries = self.get_namespace_array()
         return uries.index(uri)
 
-    def get_event_generator(self, etype=ua.BaseEvent(), source=ua.ObjectIds.Server):
+    def get_event_generator(self, etype=None, source=ua.ObjectIds.Server):
         """
         Returns an event object using an event type from address space.
         Use this object to fire events
         """
+        if not etype:
+            etype = ua.BaseEvent()
         return EventGenerator(self.iserver.isession, etype, source)
 
     def create_custom_event(self, idx, name, baseetype=ua.ObjectIds.BaseEventType, properties=[]):
 
-        base_event = self.get_node(ua.NodeId(baseetype))
+        if isinstance(baseetype, Node):
+            base_event = baseetype
+        elif isinstance(baseetype, ua.NodeId):
+            base_event = Node(self.iserver.isession, baseetype)
+        else:
+            base_event = Node(self.iserver.isession, ua.NodeId(baseetype))
+
         custom_event = base_event.add_subtype(idx, name)
         for property in properties:
             custom_event.add_property(idx, property[0], ua.Variant(None, property[1]))
