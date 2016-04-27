@@ -115,8 +115,6 @@ def get_event_properties_from_type_node(node):
     properties = []
     curr_node = node
 
-    print node
-
     while True:
         properties.extend(curr_node.get_properties())
 
