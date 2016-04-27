@@ -36,6 +36,7 @@ class AuditEvent(BaseEvent):
     '''
     def __init__(self, sourcenode=None, message=None, severity=1, extended=False):
         super(AuditEvent, self).__init__(sourcenode, message, severity, True)
+        self.EventType = NodeId(ObjectIds.AuditEventType)
 
         self.ActionTimeStamp = None
         self.Status = False
@@ -46,7 +47,7 @@ class AuditEvent(BaseEvent):
             self._freeze = True
 
 
-IMPLEMNTED_EVENTS = {
+IMPLEMENTED_EVENTS = {
     ObjectIds.BaseEventType: BaseEvent,
     ObjectIds.AuditEventType: AuditEvent,
     }

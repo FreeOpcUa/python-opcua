@@ -338,7 +338,7 @@ class Server(object):
             etype = ua.BaseEvent()
         return EventGenerator(self.iserver.isession, etype, source)
 
-    def create_custom_event(self, idx, name, baseetype=ua.ObjectIds.BaseEventType, properties=[]):
+    def create_custom_event_type(self, idx, name, baseetype=ua.ObjectIds.BaseEventType, properties=[]):
 
         if isinstance(baseetype, Node):
             base_event = baseetype

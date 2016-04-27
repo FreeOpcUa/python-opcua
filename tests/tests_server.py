@@ -1,7 +1,7 @@
 import unittest
 from tests_common import CommonTests, add_server_methods, MySubHandler
 import time
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 import opcua
 from opcua import Server
@@ -160,9 +160,23 @@ class TestServer(unittest.TestCase, CommonTests):
         self.assertEqual(m.get_parent(), o)
 
     # This should work for following BaseEvent tests to work (maybe to write it a bit differentlly since they are not independent)
-    def test_get_event_from_node_BaseEvent(self):
-        ev = opcua.common.event.get_event_from_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType)))
+    def test_get_event_from_type_node_BaseEvent(self):
+        ev = opcua.common.event.get_event_from_type_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType)))
         check_base_event(self, ev)
+
+    def test_get_event_from_type_node_Inhereted_AuditEvent(self):
+        ev = opcua.common.event.get_event_from_type_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.AuditEventType)))
+        self.assertIsNot(ev, None)  # we did not receive event
+        self.assertIsInstance(ev, ua.BaseEvent)
+        self.assertIsInstance(ev, ua.AuditEvent)
+        self.assertEqual(ev.EventType, ua.NodeId(ua.ObjectIds.AuditEventType))
+        self.assertEqual(ev.Severity, ua.Variant(1, ua.VariantType.UInt16))
+        self.assertEqual(ev.ActionTimeStamp, None)
+        self.assertEqual(ev.Status, False)
+        self.assertEqual(ev.ServerId, None)
+        self.assertEqual(ev.ClientAuditEntryId, None)
+        self.assertEqual(ev.ClientUserId, None)
+        self.assertEqual(ev._freeze, True)
 
     def test_eventgenerator_default(self):
         evgen = self.opc.get_event_generator()
@@ -228,82 +242,77 @@ class TestServer(unittest.TestCase, CommonTests):
         self.assertEqual(evgen.event.SourceNode, o.nodeid)
         self.assertEqual(o.get_attribute(ua.AttributeIds.EventNotifier).Value, ua.Variant(1, ua.VariantType.Byte))
 
-    #def test_eventgenerator_InheritedEvent(self):
-        #pass
+    def test_eventgenerator_InheritedEvent(self):
+        evgen = self.opc.get_event_generator(ua.ObjectIds.AuditEventType)
+        check_eventgenerator_SourceServer(self, evgen)
 
-    #def test_events_default(self):
-        #msclt = MySubHandler()
-        #sub = self.opc.create_subscription(100, msclt)
-        #handle = sub.subscribe_events()
+        ev = evgen.event
+        self.assertIsNot(ev, None)  # we did not receive event
+        self.assertIsInstance(ev, ua.BaseEvent)
+        self.assertIsInstance(ev, ua.AuditEvent)
+        self.assertEqual(ev.EventType, ua.NodeId(ua.ObjectIds.AuditEventType))
+        self.assertEqual(ev.Severity, ua.Variant(1, ua.VariantType.UInt16))
+        self.assertEqual(ev.ActionTimeStamp, None)
+        self.assertEqual(ev.Status, False)
+        self.assertEqual(ev.ServerId, None)
+        self.assertEqual(ev.ClientAuditEntryId, None)
+        self.assertEqual(ev.ClientUserId, None)
+        self.assertEqual(ev._freeze, True)
 
-        #ev = EventGenerator(self.srv.iserver.isession)
-        #msg = b"this is my msg "
-        #ev.Message.Text = msg
-        #tid = datetime.utcnow()
-        #ev.Time = tid
-        #ev.Severity = 500
-        #ev.trigger()
+    def test_create_custom_event_type_ObjectId(self):
+        etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+        check_custom_event_type(self, etype)
 
-        #ev = msclt.future.result()
-        #self.assertIsNot(ev, None)  # we did not receive event
-        #self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
-        #self.assertEqual(ev.Message.Text, msg)
-        ##self.assertEqual(msclt.ev.Time, tid)
-        #self.assertEqual(ev.Severity, 500)
+    def test_create_custom_event_type_NodeId(self):
+        etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.NodeId(ua.ObjectIds.BaseEventType), [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+        check_custom_event_type(self, etype)
 
-        ## time.sleep(0.1)
-        #sub.unsubscribe(handle)
-        #sub.delete()
+    def test_create_custom_event_type_Node(self):
+        etype = self.opc.create_custom_event_type(2, 'MyEvent', opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType)), [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+        check_custom_event_type(self, etype)
 
-    def test_create_custom_event_ObjectId(self):
-        event = self.opc.create_custom_event(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
-        check_custom_event(self, event)
+    def test_get_event_from_type_node_CustomEvent(self):
+        etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
 
-    def test_create_custom_event_NodeId(self):
-        event = self.opc.create_custom_event(2, 'MyEvent', ua.NodeId(ua.ObjectIds.BaseEventType), [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
-        check_custom_event(self, event)
-
-    def test_create_custom_event_Node(self):
-        event = self.opc.create_custom_event(2, 'MyEvent', opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType)), [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
-        check_custom_event(self, event)
-
-    def test_get_event_from_node_CustomEvent(self):
-        event = self.opc.create_custom_event(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
-
-        ev = opcua.common.event.get_event_from_node(event)
-        check_base_event(self, ev)
+        ev = opcua.common.event.get_event_from_type_node(etype)
+        check_custom_event(self, ev, etype)
         self.assertEqual(ev.PropertyNum, None)
         self.assertEqual(ev.PropertyString, None)
 
     def test_eventgenerator_customEvent(self):
-        event = self.opc.create_custom_event(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+        etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
 
-        evgen = self.opc.get_event_generator(event, ua.ObjectIds.Server)
-        check_eventgenerator_BaseEvent(self, evgen)
+        evgen = self.opc.get_event_generator(etype, ua.ObjectIds.Server)
+        check_eventgenerator_CustomEvent(self, evgen, etype)
         check_eventgenerator_SourceServer(self, evgen)
 
         self.assertEqual(evgen.event.PropertyNum, None)
         self.assertEqual(evgen.event.PropertyString, None)
 
-    def test_eventgenerator_Double_customEvent(self):
-        event = self.opc.create_custom_event(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+    def test_eventgenerator_double_customEvent(self):
+        event1 = self.opc.create_custom_event_type(3, 'MyEvent1', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
 
+        event2 = self.opc.create_custom_event_type(4, 'MyEvent2', event1, [('PropertyBool', ua.VariantType.Boolean), ('PropertyInt', ua.VariantType.Int32)])
 
-
-        evgen = self.opc.get_event_generator(event, ua.ObjectIds.Server)
-        check_eventgenerator_BaseEvent(self, evgen)
+        evgen = self.opc.get_event_generator(event2, ua.ObjectIds.Server)
+        check_eventgenerator_CustomEvent(self, evgen, event2)
         check_eventgenerator_SourceServer(self, evgen)
 
+        # Properties from MyEvent1
         self.assertEqual(evgen.event.PropertyNum, None)
         self.assertEqual(evgen.event.PropertyString, None)
+
+         # Properties from MyEvent2
+        self.assertEqual(evgen.event.PropertyBool, None)
+        self.assertEqual(evgen.event.PropertyInt, None)
 
     def test_eventgenerator_customEvent_MyObject(self):
         objects = self.opc.get_objects_node()
         o = objects.add_object(3, 'MyObject')
-        event = self.opc.create_custom_event(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+        etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
 
-        evgen = self.opc.get_event_generator(event, o)
-        check_eventgenerator_BaseEvent(self, evgen)
+        evgen = self.opc.get_event_generator(etype, o)
+        check_eventgenerator_CustomEvent(self, evgen, etype)
         self.assertEqual(evgen.event.SourceName, 'MyObject')
         self.assertEqual(evgen.event.SourceNode, o.nodeid)
         self.assertEqual(o.get_attribute(ua.AttributeIds.EventNotifier).Value, ua.Variant(1, ua.VariantType.Byte))
@@ -312,27 +321,10 @@ class TestServer(unittest.TestCase, CommonTests):
         self.assertEqual(evgen.event.PropertyString, None)
 
 
-    #def test_get_event_from_node_InheritanceEvent(self):
-        #ev = opcua.common.event.get_event_from_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.AuditEventType)))
-        #self.assertIsNot(ev, None)  # we did not receive event
-        #self.assertIsInstance(ev, ua.BaseEvent)
-        #self.assertIsInstance(ev, ua.AuditEventType)
-        #self.assertEqual(ev.EventType, ua.NodeId(ua.ObjectIds.AuditEventType))
-        #self.assertEqual(ev.SourceNode, ua.NodeId(ua.ObjectIds.Server))
-        #self.assertEqual(ev.Severity, ua.Variant(1, ua.VariantType.UInt16))
-        #self.assertEqual(ev._freeze, True)
-
-    def test_eventgenerator_CustomEvent_object(self):
-        pass
-
-    def test_eventgenerator_CustomEvent_Node(self):
-        pass
-
-    def test_eventgenerator_CustomEvent_NodeId(self):
-        pass
-
-    def test_eventgenerator_CustomEvent_ObjectIds(self):
-        pass
+def check_eventgenerator_SourceServer(test, evgen):
+    test.assertEqual(evgen.event.SourceName, test.opc.get_server_node().get_display_name().Text)
+    test.assertEqual(evgen.event.SourceNode, ua.NodeId(ua.ObjectIds.Server))
+    test.assertEqual(test.opc.get_server_node().get_attribute(ua.AttributeIds.EventNotifier).Value, ua.Variant(1, ua.VariantType.Byte))
 
 
 def check_eventgenerator_BaseEvent(test, evgen):
@@ -349,13 +341,21 @@ def check_base_event(test, ev):
     test.assertEqual(ev._freeze, True)
 
 
-def check_eventgenerator_SourceServer(test, evgen):
-    test.assertEqual(evgen.event.SourceName, test.opc.get_server_node().get_display_name().Text)
-    test.assertEqual(evgen.event.SourceNode, ua.NodeId(ua.ObjectIds.Server))
-    test.assertEqual(test.opc.get_server_node().get_attribute(ua.AttributeIds.EventNotifier).Value, ua.Variant(1, ua.VariantType.Byte))
+def check_eventgenerator_CustomEvent(test, evgen, etype):
+    test.assertIsNot(evgen, None)  # we did not receive event generator
+    test.assertIs(evgen.isession, test.opc.iserver.isession)
+    check_custom_event(test, evgen.event, etype)
 
 
-def check_custom_event(test, ev):
+def check_custom_event(test, ev, etype):
+    test.assertIsNot(ev, None)  # we did not receive event
+    test.assertIsInstance(ev, ua.BaseEvent)
+    test.assertEqual(ev.EventType, etype.nodeid)
+    test.assertEqual(ev.Severity, ua.Variant(1, ua.VariantType.UInt16))
+    test.assertEqual(ev._freeze, True)
+
+
+def check_custom_event_type(test, ev):
     base = opcua.Node(test.opc.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType))
     test.assertTrue(ev in base.get_children())
     nodes = ev.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
@@ -364,4 +364,6 @@ def check_custom_event(test, ev):
     test.assertIsNot(properties, None)
     test.assertEqual(len(properties), 2)
     test.assertTrue(ev.get_child("2:PropertyNum") in properties)
+    test.assertEqual(ev.get_child("2:PropertyNum").get_data_value().Value.VariantType, ua.VariantType.Float)
     test.assertTrue(ev.get_child("2:PropertyString") in properties)
+    test.assertEqual(ev.get_child("2:PropertyString").get_data_value().Value.VariantType, ua.VariantType.String)
