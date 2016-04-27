@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     # creating an event object
     # The event object automatically will have members for all events properties
-    myevgen = server.get_event_generator(ua.BaseEvent(message="This is my event", severity=300))
+    myevgen = server.get_event_generator(ua.BaseEvent(message="This is BaseEvent", severity=300))
 
     # starting!
     server.start()
