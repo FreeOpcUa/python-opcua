@@ -350,7 +350,7 @@ class CommonTests(object):
         self.assertIsNot(ev, None)  # we did not receive event
         self.assertEqual(ev.EventType, ua.NodeId(ua.ObjectIds.BaseEventType))
         self.assertEqual(ev.Severity, 1)
-        self.assertEqual(ev.SourceName, "MyObject")
+        self.assertEqual(ev.SourceName, b'MyObject')
         self.assertEqual(ev.SourceNode, o.nodeid)
         self.assertEqual(ev.Message.Text, msg)
         self.assertEqual(ev.Time, tid)
@@ -434,7 +434,7 @@ class CommonTests(object):
         self.assertIsNot(ev, None)  # we did not receive event
         self.assertEqual(ev.EventType, etype.nodeid)
         self.assertEqual(ev.Severity, 1)
-        self.assertEqual(ev.SourceName, "MyObject")
+        self.assertEqual(ev.SourceName, b'MyObject')
         self.assertEqual(ev.SourceNode, o.nodeid)
         self.assertEqual(ev.Message.Text, msg)
         self.assertEqual(ev.Time, tid)
