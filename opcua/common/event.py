@@ -1,4 +1,4 @@
-
+import logging
 from datetime import datetime
 
 from opcua import ua
@@ -6,7 +6,7 @@ from opcua import Node
 import uuid
 
 
-class Event(object):
+class EventGenerator(object):
 
     """
     Create an event based on an event type. Per default is BaseEventType used.
@@ -22,53 +22,119 @@ class Event(object):
         etype: The event type, either an objectId, a NodeId or a Node object
     """
 
-    def __init__(self, isession, etype=ua.ObjectIds.BaseEventType, source=ua.ObjectIds.Server):
+    def __init__(self, isession, etype=None, source=ua.ObjectIds.Server):
+        if not etype:
+            etype = ua.BaseEvent()
+
+        self.logger = logging.getLogger(__name__)
         self.isession = isession
+        self.event = None
+        node = None
 
-        if isinstance(etype, Node):
-            self.node = etype
+        if isinstance(etype, ua.BaseEvent):
+            self.event = etype
+        elif isinstance(etype, Node):
+            node = etype
         elif isinstance(etype, ua.NodeId):
-            self.node = Node(self.isession, etype)
+            node = Node(self.isession, etype)
         else:
-            self.node = Node(self.isession, ua.NodeId(etype))
+            node = Node(self.isession, ua.NodeId(etype))
 
-        self._set_members_from_node(self.node)
+        if node:
+            self.event = get_event_from_type_node(node)
+
         if isinstance(source, Node):
-            self.SourceNode = source.NodeId
-        elif isinstance(etype, ua.NodeId):
-            self.SourceNode = source.NodeId
+            pass
+        elif isinstance(source, ua.NodeId):
+            source = Node(isession, source)
         else:
-            self.SourceNode = ua.NodeId(source)
+            source = Node(isession, ua.NodeId(source))
 
-        # set some default values for attributes from BaseEventType, thus that all event must have
-        self.EventId = uuid.uuid4().bytes
-        self.EventType = self.node.nodeid
-        self.LocaleTime = datetime.utcnow()
-        self.ReceiveTime = datetime.utcnow()
-        self.Time = datetime.utcnow()
-        self.Message = ua.LocalizedText()
-        self.Severity = ua.Variant(1, ua.VariantType.UInt16)
-        self.SourceName = "Server"
+        if self.event.SourceNode:
+            if source.nodeid != self.event.SourceNode:
+                self.logger.warning("Source NodeId: '%s' and event SourceNode: '%s' are not the same. Using '%s' as SourceNode", str(source.nodeid), str(self.event.SourceNode), str(self.event.SourceNode))
+                source = Node(self.isession, self.event.SourceNode)
 
-        # og set some node attributed we also are expected to have
-        self.BrowseName = self.node.get_browse_name()
-        self.DisplayName = self.node.get_display_name()
-        self.NodeId = self.node.nodeid
-        self.NodeClass = self.node.get_node_class()
-        self.Description = self.node.get_description()
+        self.event.SourceNode = source.nodeid
+        self.event.SourceName = source.get_display_name().Text
+
+        source.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(1, ua.VariantType.Byte)))
 
     def __str__(self):
-        return "Event(Type:{}, Source:{}, Time:{}, Message: {})".format(self.EventType, self.SourceNode, self.Time, self.Message)
+        return "EventGenerator(Type:{}, Source:{}, Time:{}, Message: {})".format(self.EventType, self.SourceNode, self.Time, self.Message)
     __repr__ = __str__
 
-    def trigger(self):
+    def trigger(self, time=None, message=None):
         """
         Trigger the event. This will send a notification to all subscribed clients
         """
-        self.isession.subscription_service.trigger_event(self)
+        self.event.EventId = ua.Variant(uuid.uuid4().hex, ua.VariantType.ByteString)
+        if time:
+            self.event.Time = time
+        else:
+            self.event.Time = datetime.utcnow()
+        self.event.RecieveTime = datetime.utcnow()
+        #FIXME: LocalTime is wrong but currently know better. For description s. Part 5 page 18
+        self.event.LocalTime = datetime.utcnow()
+        if message:
+            self.event.Message = ua.LocalizedText(message)
+        elif not self.event.Message:
+            self.event.Message = ua.LocalizedText(Node(self.isession, self.event.SourceNode).get_browse_name().Text)
+        self.isession.subscription_service.trigger_event(self.event)
 
-    def _set_members_from_node(self, node):
-        references = node.get_children_descriptions(refs=ua.ObjectIds.HasProperty)
-        for desc in references:
-            node = Node(self.isession, desc.NodeId)
-            setattr(self, desc.BrowseName.Name, node.get_value())
+
+def get_event_from_type_node(node):
+    if node.nodeid.Identifier in ua.uaevents_auto.IMPLEMENTED_EVENTS.keys():
+        return ua.uaevents_auto.IMPLEMENTED_EVENTS[node.nodeid.Identifier]()
+    else:
+        parent_identifier, parent_eventtype = _find_parent_eventtype(node)
+        if not parent_eventtype:
+            return None
+
+        class CustomEvent(parent_eventtype):
+
+            def __init__(self):
+                super(CustomEvent, self).__init__(extended=True)
+                self.EventType = node.nodeid
+                curr_node = node
+
+                while curr_node.nodeid.Identifier != parent_identifier:
+                    for prop in curr_node.get_properties():
+                        setattr(self, prop.get_browse_name().Name, prop.get_value())
+                    parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+                    if len(parents) != 1: # Something went wrong
+                        return None
+                    curr_node = parents[0]
+
+                self._freeze = True
+
+    return CustomEvent()
+
+
+def get_event_properties_from_type_node(node):
+    properties = []
+    curr_node = node
+
+    while True:
+        properties.extend(curr_node.get_properties())
+
+        if curr_node.nodeid.Identifier == ua.ObjectIds.BaseEventType:
+            break
+
+        parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        if len(parents) != 1: # Something went wrong
+            return None
+        curr_node = parents[0]
+
+    return properties
+
+
+def _find_parent_eventtype(node):
+    parents = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+
+    if len(parents) != 1:   # Something went wrong
+        return None, None
+    if parents[0].nodeid.Identifier in ua.uaevents_auto.IMPLEMENTED_EVENTS.keys():
+        return parents[0].nodeid.Identifier, ua.uaevents_auto.IMPLEMENTED_EVENTS[parents[0].nodeid.Identifier]
+    else:
+        return _find_parent_eventtype(parents[0])

@@ -7,6 +7,7 @@ from threading import Lock
 
 from opcua import ua
 from opcua import Node
+from opcua.common import event
 
 
 class SubHandler(object):
@@ -36,12 +37,6 @@ class SubHandler(object):
     def status_change_notification(self, status):
         """
         called for every status change notfication from server
-        """
-        pass
-
-    def event(self, handle, event):
-        """
-        Deprecated use event_notification
         """
         pass
 
@@ -207,11 +202,11 @@ class Subscription(object):
     def _get_filter_from_event_type(self, eventtype):
         eventtype = self._get_node(eventtype)
         evfilter = ua.EventFilter()
-        for desc in eventtype.get_children_descriptions(refs=ua.ObjectIds.HasProperty, nodeclassmask=ua.NodeClass.Variable):
+        for property in event.get_event_properties_from_type_node(eventtype):
             op = ua.SimpleAttributeOperand()
             op.TypeDefinitionId = eventtype.nodeid
             op.AttributeId = ua.AttributeIds.Value
-            op.BrowsePath = [desc.BrowseName]
+            op.BrowsePath = [property.get_browse_name()]
             evfilter.SelectClauses.append(op)
         return evfilter
 
