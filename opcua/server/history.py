@@ -38,7 +38,7 @@ class HistoryStorageInterface(object):
         """
         raise NotImplementedError
 
-    def new_historized_event(self, event, period):
+    def new_historized_event(self, source_id, etype, period):
         """
         Called when historization of events is enabled on server side
         FIXME: we may need to store events per nodes in future...
@@ -53,7 +53,7 @@ class HistoryStorageInterface(object):
         """
         raise NotImplementedError
 
-    def read_event_history(self, obj_id, start, end, nb_values, evfilter):
+    def read_event_history(self, source_id, start, end, nb_values, evfilter):
         """
         Called when a client make a history read request for events
         Start time and end time are inclusive
@@ -118,13 +118,13 @@ class HistoryDict(HistoryStorageInterface):
                 results = results[:nb_values]
             return results, cont
 
-    def new_historized_event(self, event, period):
+    def new_historized_event(self, source_id, etype, period):
         self._events = []
 
     def save_event(self, event):
         raise NotImplementedError
 
-    def read_event_history(self, obj_id, start, end, nb_values, evfilter):
+    def read_event_history(self, source_id, start, end, nb_values, evfilter):
         raise NotImplementedError
 
     def stop(self):
@@ -175,14 +175,14 @@ class HistoryManager(object):
         self._sub.unsubscribe(self._handlers[node])
         del(self._handlers[node])
 
-    def historize_event(self, obj, period=timedelta(days=7)):
+    def historize_event(self, source, etype, period=timedelta(days=7)):
         if not self._sub:
             self._sub = self._create_subscription(SubHandler(self.storage))
-        if obj in self._handlers:
-            raise ua.UaError("Object events {} are already historized".format(obj))
-        self.storage.new_historized_event(obj.nodeid, period)
-        handler = self._sub.subscribe_events(obj)
-        self._handlers[obj] = handler
+        if source in self._handlers:
+            raise ua.UaError("Object events {} are already historized".format(source))
+        self.storage.new_historized_event(source.nodeid, etype, period)
+        handler = self._sub.subscribe_events(source)
+        self._handlers[source] = handler
 
     def read_history(self, params):
         """
@@ -216,7 +216,7 @@ class HistoryManager(object):
             result.HistoryData = ua.HistoryEvent()
             # FIXME: filter is a cumbersome type, maybe transform it something easier
             # to handle for storage
-            ev, cont = self.storage.read_event_history(rv, details)
+            ev, cont = self._read_event_history(rv, details)
             result.HistoryData.Events = ev
             result.ContinuationPoint = cont
 
