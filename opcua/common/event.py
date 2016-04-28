@@ -59,6 +59,15 @@ class EventGenerator(object):
         self.event.SourceName = source.get_display_name().Text
 
         source.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(1, ua.VariantType.Byte)))
+        refs = []
+        ref = ua.AddReferencesItem()
+        ref.IsForward = True
+        ref.ReferenceTypeId = ua.ObjectIds.GeneratesEvent
+        ref.SourceNodeId = source
+        ref.TargetNodeClass = ua.NodeClass.ObjectType
+        ref.TargetNodeId = self.event.EventType
+        refs.append(ref)
+        self.isession.add_references(refs)
 
     def __str__(self):
         return "EventGenerator(Type:{}, Source:{}, Time:{}, Message: {})".format(self.EventType, self.SourceNode, self.Time, self.Message)

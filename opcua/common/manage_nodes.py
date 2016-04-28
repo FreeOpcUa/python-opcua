@@ -108,21 +108,26 @@ def _create_object(server, parentnodeid, nodeid, qname, objecttype):
     addnode = ua.AddNodesItem()
     addnode.RequestedNewNodeId = nodeid
     addnode.BrowseName = qname
-    addnode.NodeClass = ua.NodeClass.Object
     addnode.ParentNodeId = parentnodeid
     #TODO: maybe move to address_space.py and implement for all node types?
     if not objecttype:
         addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
+        addnode.NodeClass = ua.NodeClass.ObjectType
+        attrs = ua.ObjectTypeAttributes()
+        attrs.IsAbstract = True
     else:
-        addnode.TypeDefinition = ua.NodeId(objecttype)
         if node.Node(server, parentnodeid).get_type_definition() == ua.ObjectIds.FolderType:
             addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
         else:
             addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
-    attrs = ua.ObjectAttributes()
+
+        addnode.NodeClass = ua.NodeClass.Object
+        addnode.TypeDefinition = ua.NodeId(objecttype)
+        attrs = ua.ObjectAttributes()
+        attrs.EventNotifier = 0
+
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
-    attrs.EventNotifier = 0
     attrs.WriteMask = 0
     attrs.UserWriteMask = 0
     addnode.NodeAttributes = attrs
