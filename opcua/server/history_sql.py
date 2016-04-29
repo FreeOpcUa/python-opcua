@@ -20,6 +20,7 @@ class HistorySQLite(HistoryStorageInterface):
         self._events = {}
         self._db_file = path
         self._lock = Lock()
+        self._event_attributes = {}
 
         self._conn = sqlite3.connect(self._db_file, detect_types=sqlite3.PARSE_DECLTYPES, check_same_thread=False)
 
@@ -149,20 +150,23 @@ class HistorySQLite(HistoryStorageInterface):
 
             self._datachanges_period[source_id] = period
 
+            self._event_attributes[source_id] = etype.__dict__.keys()
+
             # create a table for the event which will store attributes of the Event object
             # note: Value/VariantType TEXT is only for human reading, the actual data is stored in VariantBinary column
             try:
                 _c_new.execute('CREATE TABLE "{tn}" (Id INTEGER PRIMARY KEY NOT NULL,'
-                               ' Time TIMESTAMP,'
-                               ' ReceiveTime TIMESTAMP,'
-                               ' EventIdBinary BLOB,'
-                               ' EventTypeBinary BLOB,'
-                               ' Severity INTEGER,'
-                               ' Message TEXT,'
-                               ' MessageBinary BLOB,'
-                               ' SourceName TEXT,'
-                               ' SourceNodeBinary BLOB,'
-                               ' ServerHandle INTEGER)'.format(tn=table))
+                               ' Timestamp TIMESTAMP,'
+                               ' Time BLOB,'
+                               ' ReceiveTime BLOB,'
+                               ' LocalTime BLOB,'
+                               ' EventId BLOB,'
+                               ' EventType BLOB,'
+                               ' Severity BLOB,'
+                               ' Message BLOB,'
+                               ' SourceName BLOB,'
+                               ' SourceNode BLOB,'
+                               ' ServerHandle BLOB)'.format(tn=table))
 
             except sqlite3.Error as e:
                 self.logger.info('Historizing SQL Table Creation Error for events from %s: %s', source_id, e)
@@ -175,23 +179,13 @@ class HistorySQLite(HistoryStorageInterface):
 
             table = self._get_table_name(event.SourceNode)
 
+            placeholders, evtup = self._format_event(event)
+
             # insert the event into the database
             # FIXME need to build insert data dynamically based on etype
+            #print('INSERT INTO "{tn}" VALUES (NULL, "{ts}", '.format(tn=table, ts=event.Time) + placeholders + ')')
             try:
-                _c_sub.execute('INSERT INTO "{tn}" VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'.format(tn=table),
-                               (
-                                   event.Time,
-                                   event.ReceiveTime,
-                                   event.EventId,
-                                   event.EventType.to_binary(),
-                                   event.Severity,
-                                   event.Message.Text,
-                                   event.Message.to_binary(),
-                                   event.SourceName,
-                                   event.SourceNode.to_binary(),
-                                   event.server_handle,
-                               )
-                               )
+                _c_sub.execute('INSERT INTO "{tn}" VALUES (NULL, "{ts}",'.format(tn=table, ts=event.Time) + placeholders + ')', evtup)
             except sqlite3.Error as e:
                 self.logger.error('Historizing SQL Insert Error for events from %s: %s', event.SourceNode, e)
 
@@ -240,20 +234,25 @@ class HistorySQLite(HistoryStorageInterface):
                 limit = -1  # in SQLite a LIMIT of -1 returns all results
 
             table = self._get_table_name(source_id)
-            clauses = self._get_select_clauses(evfilter)
+            clauses = self._get_select_clauses(source_id, evfilter)
 
-            results = []
+            cont = None
+            results = ua.EventFieldList()
 
+
+            print('SELECT {cl} FROM "{tn}" WHERE "Time" BETWEEN ? AND ? ORDER BY "Id" {dir} LIMIT ?'.format(cl=clauses, tn=table, dir=order))
             # select events from the database
             # FIXME use EventFilter to customize SQL clause
             try:
-                for row in _c_read.execute('SELECT {cl} FROM "{tn}" WHERE "Time" BETWEEN ? AND ? '
+                for row in _c_read.execute('SELECT "EventId", "EventType", "SourceName", "Time", "Message", "Severity" FROM "{tn}" WHERE "Timestamp" BETWEEN ? AND ? '
                                            'ORDER BY "Id" {dir} LIMIT ?'.format(cl=clauses, tn=table, dir=order), (start_time, end_time, limit,)):
-                    ev = row
+                    fields = []
+                    for field in row:
+                        fields.append(ua.Variant.from_binary(Buffer(field)))
                     # ev.Time = row[1]
                     # FIXME finish rebuilding event from SQL data
 
-                    results.append(ev)
+                    results.EventFields.append(fields)
 
             except sqlite3.Error as e:
                 self.logger.error('Historizing SQL Read Error events for node %s: %s', source_id, e)
@@ -264,35 +263,57 @@ class HistorySQLite(HistoryStorageInterface):
 
                 results = results[:nb_values]
 
-            return results
+            return results, cont
 
     def _get_table_name(self, node_id):
         return str(node_id.NamespaceIndex) + '_' + str(node_id.Identifier)
+
+    def _format_event(self, event_result):
+        placeholder = ''
+        ev_variant_binaries = []
+
+        ev_variants = event_result.get_fields()
+
+        for variant in ev_variants:
+            placeholder += '?, '
+            ev_variant_binaries.append(variant.to_binary())
+
+        placeholder = placeholder[:-2]  # remove trailing space and comma for SQL syntax
+        evtup = tuple(ev_variant_binaries)
+
+        return placeholder, evtup
 
     def _get_event_type_fields(self, etype):
         # FIXME finish and test
         etype_vars = vars(etype)
         etype_attr = etype_vars.keys()
 
-    def _get_sql_type(self):
-        # FIXME check how to derive SQL datatype from supplied event field
-        pass
-
-    def _get_select_clauses(self, evfilter):
-        clauses = []
+    def _get_select_clauses(self, source_id, evfilter):
+        s_clauses = []
         for sattr in evfilter.SelectClauses:
             try:
                 if not sattr.BrowsePath:
-                    clauses.append(sattr.Attribute.name)
+                    s_clauses.append(sattr.Attribute.name)
                 else:
                     name = sattr.BrowsePath[0].Name
-                    clauses.append(name)
+                    s_clauses.append(name)
             except AttributeError:
                 pass
                 # fields.append(ua.Variant())
-        return clauses
+
+        # remove select clauses that the event type doesn't have
+        clauses = [x for x in s_clauses if self.check(source_id, x)]
+        clause_str = str(clauses)
+
+        return clause_str[1:-1]
+
+    def check(self, source_id, sattr):
+        if sattr in self._event_attributes[source_id]:
+            return True
+        else:
+            return False
 
     def stop(self):
         with self._lock:
             self._conn.close()
-
+            self.logger.info('Historizing SQL connection closed')

@@ -44,7 +44,7 @@ if __name__ == "__main__":
     server.iserver.enable_history(myvar, period=None, count=100)
 
     # enable history for server events
-    server.iserver.enable_event_history(server_obj, period=None)
+    server.iserver.enable_event_history(server_obj, myevent, period=None)
 
     try:
         count = 0

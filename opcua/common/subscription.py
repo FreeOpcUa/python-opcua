@@ -58,6 +58,13 @@ class EventResult():
         return "EventResult({})".format([str(k) + ":" + str(v) for k, v in self.__dict__.items()])
     __repr__ = __str__
 
+    def get_fields(self):
+        fields = []
+        for key, value in vars(self).items():
+            if not key.startswith("__"):
+                fields.append(ua.Variant(value))
+        return fields
+
 
 class SubscriptionItemData():
     """
