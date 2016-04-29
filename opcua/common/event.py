@@ -62,12 +62,13 @@ class EventGenerator(object):
         refs = []
         ref = ua.AddReferencesItem()
         ref.IsForward = True
-        ref.ReferenceTypeId = ua.ObjectIds.GeneratesEvent
-        ref.SourceNodeId = source
+        ref.ReferenceTypeId = ua.NodeId(ua.ObjectIds.GeneratesEvent)
+        ref.SourceNodeId = source.nodeid
         ref.TargetNodeClass = ua.NodeClass.ObjectType
         ref.TargetNodeId = self.event.EventType
         refs.append(ref)
-        self.isession.add_references(refs)
+        results = self.isession.add_references(refs)
+        #result.StatusCode.check()
 
     def __str__(self):
         return "EventGenerator(Type:{}, Source:{}, Time:{}, Message: {})".format(self.EventType, self.SourceNode, self.Time, self.Message)

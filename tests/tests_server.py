@@ -228,9 +228,7 @@ class TestServer(unittest.TestCase, CommonTests):
         o = objects.add_object(3, 'MyObject')
         evgen = self.opc.get_event_generator(source=o)
         check_eventgenerator_BaseEvent(self, evgen)
-        self.assertEqual(evgen.event.SourceName, b'MyObject')
-        self.assertEqual(evgen.event.SourceNode, o.nodeid)
-        self.assertEqual(o.get_attribute(ua.AttributeIds.EventNotifier).Value, ua.Variant(1, ua.VariantType.Byte))
+        check_event_generator_object(self, evgen, o)
 
     def test_eventgenerator_source_collision(self):
         objects = self.opc.get_objects_node()
@@ -238,9 +236,7 @@ class TestServer(unittest.TestCase, CommonTests):
         event = ua.BaseEvent(sourcenode=o.nodeid)
         evgen = self.opc.get_event_generator(event, ua.ObjectIds.Server)
         check_eventgenerator_BaseEvent(self, evgen)
-        self.assertEqual(evgen.event.SourceName, b'MyObject')
-        self.assertEqual(evgen.event.SourceNode, o.nodeid)
-        self.assertEqual(o.get_attribute(ua.AttributeIds.EventNotifier).Value, ua.Variant(1, ua.VariantType.Byte))
+        check_event_generator_object(self, evgen, o)
 
     def test_eventgenerator_InheritedEvent(self):
         evgen = self.opc.get_event_generator(ua.ObjectIds.AuditEventType)
@@ -313,18 +309,28 @@ class TestServer(unittest.TestCase, CommonTests):
 
         evgen = self.opc.get_event_generator(etype, o)
         check_eventgenerator_CustomEvent(self, evgen, etype)
-        self.assertEqual(evgen.event.SourceName, b'MyObject')
-        self.assertEqual(evgen.event.SourceNode, o.nodeid)
-        self.assertEqual(o.get_attribute(ua.AttributeIds.EventNotifier).Value, ua.Variant(1, ua.VariantType.Byte))
+        check_event_generator_object(self, evgen, o)
 
         self.assertEqual(evgen.event.PropertyNum, None)
         self.assertEqual(evgen.event.PropertyString, None)
 
 
 def check_eventgenerator_SourceServer(test, evgen):
-    test.assertEqual(evgen.event.SourceName, test.opc.get_server_node().get_display_name().Text)
+    server = test.opc.get_server_node()
+    test.assertEqual(evgen.event.SourceName, server.get_display_name().Text)
     test.assertEqual(evgen.event.SourceNode, ua.NodeId(ua.ObjectIds.Server))
-    test.assertEqual(test.opc.get_server_node().get_attribute(ua.AttributeIds.EventNotifier).Value, ua.Variant(1, ua.VariantType.Byte))
+    test.assertEqual(server.get_attribute(ua.AttributeIds.EventNotifier).Value, ua.Variant(1, ua.VariantType.Byte))
+    refs = server.get_referenced_nodes(ua.ObjectIds.GeneratesEvent, ua.BrowseDirection.Forward, ua.NodeClass.ObjectType, False)
+    test.assertGreaterEqual(len(refs), 1)
+
+
+def check_event_generator_object(test, evgen, obj):
+    test.assertEqual(evgen.event.SourceName, obj.get_display_name().Text)
+    test.assertEqual(evgen.event.SourceNode, obj.nodeid)
+    test.assertEqual(obj.get_attribute(ua.AttributeIds.EventNotifier).Value, ua.Variant(1, ua.VariantType.Byte))
+    refs = obj.get_referenced_nodes(ua.ObjectIds.GeneratesEvent, ua.BrowseDirection.Forward, ua.NodeClass.ObjectType, False)
+    test.assertEqual(len(refs), 1)
+    test.assertEqual(refs[0].nodeid, evgen.event.EventType)
 
 
 def check_eventgenerator_BaseEvent(test, evgen):
