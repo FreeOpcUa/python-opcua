@@ -18,7 +18,7 @@ class BaseEvent(FrozenClass):
         self.SourceNode = sourcenode
         self.SourceName = None
         self.Time = None
-        self.RecieveTime = None
+        self.ReceiveTime = None
         self.LocalTime = None
         self.Message = LocalizedText(message)
         self.Severity = Variant(severity, VariantType.UInt16)

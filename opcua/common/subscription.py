@@ -54,10 +54,10 @@ class EventResult(object):
     __repr__ = __str__
 
     def get_field_variants(self):
-        field_vars = []
+        field_vars = {}
         for key, value in vars(self).items():
             if not key.startswith("__") and key is not "server_handle":
-                field_vars.append(ua.Variant(value))
+                field_vars[key] = ua.Variant(value)
         return field_vars
 
 

@@ -173,12 +173,12 @@ class HistorySQLite(HistoryStorageInterface):
 
             table = self._get_table_name(event.SourceNode)
 
-            placeholders, evtup = self._format_event(event)
+            fields, placeholders, evtup = self._format_event(event)
 
             # insert the event into the database
             # print('INSERT INTO "{tn}" VALUES (NULL, "{ts}", '.format(tn=table, ts=event.Time) + placeholders + ')')
             try:
-                _c_sub.execute('INSERT INTO "{tn}" VALUES (NULL, "{ts}", {pl})'.format(tn=table, ts=event.Time, pl=placeholders), evtup)
+                _c_sub.execute('INSERT INTO "{tn}" ("Id", "Timestamp", {fd}) VALUES (NULL, "{ts}", {pl})'.format(tn=table, fd=fields, ts=event.Time, pl=placeholders), evtup)
             except sqlite3.Error as e:
                 self.logger.error('Historizing SQL Insert Error for events from %s: %s', event.SourceNode, e)
 
@@ -263,24 +263,26 @@ class HistorySQLite(HistoryStorageInterface):
 
     def _format_event(self, event_result):
         placeholders = []
+        ev_fields = []
         ev_variant_binaries = []
 
-        ev_variants = event_result.get_field_variants()
+        ev_variant_dict = event_result.get_field_variants()
 
-        # convert the variants in each field to binary for storing in SQL BLOBs
-        for variant in ev_variants:
+        # split dict into two synchronized lists which will be converted to SQL strings
+        # note that the variants are converted to binary objects for storing in BLOB format
+        for field, variant in ev_variant_dict.items():
             placeholders.append('?')
+            ev_fields.append(field)
             ev_variant_binaries.append(variant.to_binary())
 
-        return self._list_to_sql_str(placeholders), tuple(ev_variant_binaries)
+        return self._list_to_sql_str(ev_fields), self._list_to_sql_str(placeholders, False), tuple(ev_variant_binaries)
 
     def _get_event_fields(self, etype):
-        # FIXME finish and test
         fields = []
         for key, value in vars(etype).items():
             if not key.startswith("__") and key is not "_freeze":
                 fields.append(key + ' BLOB')
-        return self._list_to_sql_str(fields)
+        return self._list_to_sql_str(fields, False)
 
     def _get_select_clauses(self, source_id, evfilter):
         s_clauses = []
@@ -306,10 +308,13 @@ class HistorySQLite(HistoryStorageInterface):
         else:
             return False
 
-    def _list_to_sql_str(self, l):
+    def _list_to_sql_str(self, l, quotes=True):
         sql_str = ''
         for item in l:
-            sql_str += '"' + item + '", '
+            if quotes:
+                sql_str += '"' + item + '", '
+            else:
+                sql_str += item + ', '
         return sql_str[:-2]  # remove trailing space and comma for SQL syntax
 
     def stop(self):
