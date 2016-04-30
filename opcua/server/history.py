@@ -241,7 +241,7 @@ class HistoryManager(object):
                                                   details.NumValuesPerNode)
         if cont:
             # cont = datetime_to_bytes(dv[-1].ServerTimestamp)
-            cont = ua.pack_datetime(dv[-1].ServerTimestamp)
+            cont = ua.pack_datetime(dv[-1].ServerTimestamp)  # FIXME pretty sure this isn't correct; should just pack cont itself, not dv[-1]
         # FIXME, parse index range and filter out if necessary
         # rv.IndexRange
         # rv.DataEncoding # xml or binary, seems spec say we can ignore that one
@@ -264,7 +264,7 @@ class HistoryManager(object):
                                                    details.Filter)
         if cont:
             # cont = datetime_to_bytes(dv[-1].ServerTimestamp)
-            cont = ua.pack_datetime(ev[-1].Time)
+            cont = ua.pack_datetime(ev[-1].Time)  # FIXME pretty sure this isn't correct; should just pack cont itself, not ev[-1]
         return ev, cont
 
     def update_history(self, params):

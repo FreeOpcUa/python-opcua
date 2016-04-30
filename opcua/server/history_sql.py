@@ -121,6 +121,8 @@ class HistorySQLite(HistoryStorageInterface):
             try:
                 for row in _c_read.execute('SELECT * FROM "{tn}" WHERE "ServerTimestamp" BETWEEN ? AND ? '
                                            'ORDER BY "Id" {dir} LIMIT ?'.format(tn=table, dir=order), (start_time, end_time, limit,)):
+
+                    # rebuild the data value object
                     dv = ua.DataValue(ua.Variant.from_binary(Buffer(row[6])))
                     dv.ServerTimestamp = row[1]
                     dv.SourceTimestamp = row[2]
@@ -182,10 +184,9 @@ class HistorySQLite(HistoryStorageInterface):
             placeholders, evtup = self._format_event(event)
 
             # insert the event into the database
-            # FIXME need to build insert data dynamically based on etype
-            #print('INSERT INTO "{tn}" VALUES (NULL, "{ts}", '.format(tn=table, ts=event.Time) + placeholders + ')')
+            # print('INSERT INTO "{tn}" VALUES (NULL, "{ts}", '.format(tn=table, ts=event.Time) + placeholders + ')')
             try:
-                _c_sub.execute('INSERT INTO "{tn}" VALUES (NULL, "{ts}",'.format(tn=table, ts=event.Time) + placeholders + ')', evtup)
+                _c_sub.execute('INSERT INTO "{tn}" VALUES (NULL, "{ts}", {pl})'.format(tn=table, ts=event.Time, pl=placeholders), evtup)
             except sqlite3.Error as e:
                 self.logger.error('Historizing SQL Insert Error for events from %s: %s', event.SourceNode, e)
 
@@ -237,22 +238,22 @@ class HistorySQLite(HistoryStorageInterface):
             clauses = self._get_select_clauses(source_id, evfilter)
 
             cont = None
-            results = ua.EventFieldList()
+            results = []
 
+            # print('SELECT {cl} FROM "{tn}" WHERE "Time" BETWEEN ? AND ? ORDER BY "Id" {dir} LIMIT ?'.format(cl=clauses, tn=table, dir=order))
+            # test "EventId", "EventType", "SourceName", "Time", "Message", "Severity"
 
-            print('SELECT {cl} FROM "{tn}" WHERE "Time" BETWEEN ? AND ? ORDER BY "Id" {dir} LIMIT ?'.format(cl=clauses, tn=table, dir=order))
-            # select events from the database
-            # FIXME use EventFilter to customize SQL clause
+            # select events from the database; SQL select clause is built from EventFilter and available fields
             try:
-                for row in _c_read.execute('SELECT "EventId", "EventType", "SourceName", "Time", "Message", "Severity" FROM "{tn}" WHERE "Timestamp" BETWEEN ? AND ? '
+                for row in _c_read.execute('SELECT {cl} FROM "{tn}" WHERE "Timestamp" BETWEEN ? AND ? '
                                            'ORDER BY "Id" {dir} LIMIT ?'.format(cl=clauses, tn=table, dir=order), (start_time, end_time, limit,)):
-                    fields = []
-                    for field in row:
-                        fields.append(ua.Variant.from_binary(Buffer(field)))
-                    # ev.Time = row[1]
-                    # FIXME finish rebuilding event from SQL data
 
-                    results.EventFields.append(fields)
+                    # place all the variants in the event field list object
+                    hist_ev_field_list = ua.HistoryEventFieldList()
+                    for field in row:
+                        hist_ev_field_list.EventFields.append(ua.Variant.from_binary(Buffer(field)))
+
+                    results.append(hist_ev_field_list)
 
             except sqlite3.Error as e:
                 self.logger.error('Historizing SQL Read Error events for node %s: %s', source_id, e)
@@ -274,6 +275,7 @@ class HistorySQLite(HistoryStorageInterface):
 
         ev_variants = event_result.get_fields()
 
+        # convert the variants in each field to binary for storing in SQL BLOBs
         for variant in ev_variants:
             placeholder += '?, '
             ev_variant_binaries.append(variant.to_binary())
@@ -290,25 +292,28 @@ class HistorySQLite(HistoryStorageInterface):
 
     def _get_select_clauses(self, source_id, evfilter):
         s_clauses = []
-        for sattr in evfilter.SelectClauses:
+        for select_clause in evfilter.SelectClauses:
             try:
-                if not sattr.BrowsePath:
-                    s_clauses.append(sattr.Attribute.name)
+                if not select_clause.BrowsePath:
+                    s_clauses.append(select_clause.Attribute.name)
                 else:
-                    name = sattr.BrowsePath[0].Name
+                    name = select_clause.BrowsePath[0].Name
                     s_clauses.append(name)
             except AttributeError:
                 pass
-                # fields.append(ua.Variant())
+                # FIXME what to do here?
 
-        # remove select clauses that the event type doesn't have
-        clauses = [x for x in s_clauses if self.check(source_id, x)]
-        clause_str = str(clauses)
+        # remove select clauses that the event type doesn't have; SQL will error because the column doesn't exist
+        clauses = [x for x in s_clauses if self._check(source_id, x)]
+        clause_str = ''
 
-        return clause_str[1:-1]
+        for select_clause in clauses:
+            clause_str += '"' + select_clause + '", '
 
-    def check(self, source_id, sattr):
-        if sattr in self._event_attributes[source_id]:
+        return clause_str[:-2]  # remove trailing space and comma for SQL syntax
+
+    def _check(self, source_id, s_clause):
+        if s_clause in self._event_attributes[source_id]:
             return True
         else:
             return False
