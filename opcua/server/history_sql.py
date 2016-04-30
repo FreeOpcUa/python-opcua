@@ -4,7 +4,6 @@ from datetime import datetime
 from threading import Lock
 from opcua import ua
 from opcua.common.utils import Buffer
-from opcua.common.event import Event
 from opcua.server.history import HistoryStorageInterface
 import sqlite3
 
@@ -152,7 +151,7 @@ class HistorySQLite(HistoryStorageInterface):
 
             self._datachanges_period[source_id] = period
 
-            self._event_attributes[source_id] = etype.__dict__.keys()
+            self._event_attributes[source_id] = etype.__dict__.keys()  # get fields (find a better way?)
 
             # create a table for the event which will store attributes of the Event object
             # note: Value/VariantType TEXT is only for human reading, the actual data is stored in VariantBinary column
