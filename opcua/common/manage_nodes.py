@@ -94,22 +94,40 @@ def create_method(parent, *args):
     return node.Node(parent.server, _create_method(parent, nodeid, qname, callback, inputs, outputs))
 
 
+def create_subtype(parent, *args):
+    """
+    create a child node subtype
+    arguments are nodeid, browsename
+    or namespace index, name
+    """
+    nodeid, qname = _parse_add_args(*args)
+    return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, None))
+
+
 def _create_object(server, parentnodeid, nodeid, qname, objecttype):
     addnode = ua.AddNodesItem()
     addnode.RequestedNewNodeId = nodeid
     addnode.BrowseName = qname
-    addnode.NodeClass = ua.NodeClass.Object
     addnode.ParentNodeId = parentnodeid
     #TODO: maybe move to address_space.py and implement for all node types?
-    if node.Node(server, parentnodeid).get_type_definition() == ua.ObjectIds.FolderType:
-        addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
+    if not objecttype:
+        addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
+        addnode.NodeClass = ua.NodeClass.ObjectType
+        attrs = ua.ObjectTypeAttributes()
+        attrs.IsAbstract = True
     else:
-        addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
-    addnode.TypeDefinition = ua.NodeId(objecttype)
-    attrs = ua.ObjectAttributes()
+        if node.Node(server, parentnodeid).get_type_definition() == ua.ObjectIds.FolderType:
+            addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
+        else:
+            addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
+
+        addnode.NodeClass = ua.NodeClass.Object
+        addnode.TypeDefinition = ua.NodeId(objecttype)
+        attrs = ua.ObjectAttributes()
+        attrs.EventNotifier = 0
+
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
-    attrs.EventNotifier = 0
     attrs.WriteMask = 0
     attrs.UserWriteMask = 0
     addnode.NodeAttributes = attrs

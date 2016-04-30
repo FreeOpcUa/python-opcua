@@ -1,14 +1,13 @@
 # encoding: utf-8
-from concurrent.futures import Future
+from concurrent.futures import Future, TimeoutError
 import time
 from datetime import datetime
 from datetime import timedelta
 import math
 
+import opcua
 from opcua import ua
-from opcua import Event
 from opcua import uamethod
-from opcua import Event
 
 
 def add_server_methods(srv):
@@ -289,49 +288,158 @@ class CommonTests(object):
             handle = sub.subscribe_events(v)
         sub.delete()
 
-    def test_events_deprecated(self):
-        msclt = MySubHandlerDeprecated()
+    def test_get_event_from_type_node_BaseEvent(self):
+        etype = self.opc.get_node(ua.ObjectIds.BaseEventType)
+        properties = opcua.common.event.get_event_properties_from_type_node(etype)
+        for child in etype.get_properties():
+            self.assertTrue(child in properties)
+
+    def test_get_event_from_type_node_CustomEvent(self):
+        etype = self.srv.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.AuditEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+
+        properties = opcua.common.event.get_event_properties_from_type_node(etype)
+
+        for child in self.opc.get_node(ua.ObjectIds.BaseEventType).get_properties():
+            self.assertTrue(child in properties)
+        for child in self.opc.get_node(ua.ObjectIds.AuditEventType).get_properties():
+            self.assertTrue(child in properties)
+        for child in self.opc.get_node(etype.nodeid).get_properties():
+                self.assertTrue(child in properties)
+
+        self.assertTrue(etype.get_child("2:PropertyNum") in properties)
+        self.assertTrue(etype.get_child("2:PropertyString") in properties)
+
+    def test_events_default(self):
+        evgen = self.srv.get_event_generator()
+
+        msclt = MySubHandler()
         sub = self.opc.create_subscription(100, msclt)
         handle = sub.subscribe_events()
 
-        ev = Event(self.srv.iserver.isession)
-        msg = b"this is my msg "
-        ev.Message.Text = msg
         tid = datetime.utcnow()
-        ev.Time = tid
-        ev.Severity = 500
-        ev.trigger()
+        msg = b"this is my msg "
+        evgen.trigger(tid, msg)
 
-        clthandle, ev = msclt.future.result()
+        ev = msclt.future.result()
         self.assertIsNot(ev, None)  # we did not receive event
-        self.assertEqual(ev.Message.Text, msg)
-        #self.assertEqual(msclt.ev.Time, tid)
-        self.assertEqual(ev.Severity, 500)
+        self.assertEqual(ev.EventType, ua.NodeId(ua.ObjectIds.BaseEventType))
+        self.assertEqual(ev.Severity, 1)
+        self.assertEqual(ev.SourceName, self.opc.get_server_node().get_display_name().Text)
         self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
+        self.assertEqual(ev.Message.Text, msg)
+        self.assertEqual(ev.Time, tid)
 
         # time.sleep(0.1)
         sub.unsubscribe(handle)
         sub.delete()
 
-    def test_events(self):
+    def test_events_MyObject(self):
+        objects = self.srv.get_objects_node()
+        o = objects.add_object(3, 'MyObject')
+        evgen = self.srv.get_event_generator(source=o)
+
+        msclt = MySubHandler()
+        sub = self.opc.create_subscription(100, msclt)
+        handle = sub.subscribe_events(o)
+
+        tid = datetime.utcnow()
+        msg = b"this is my msg "
+        evgen.trigger(tid, msg)
+
+        ev = msclt.future.result(10)
+        self.assertIsNot(ev, None)  # we did not receive event
+        self.assertEqual(ev.EventType, ua.NodeId(ua.ObjectIds.BaseEventType))
+        self.assertEqual(ev.Severity, 1)
+        self.assertEqual(ev.SourceName, b'MyObject')
+        self.assertEqual(ev.SourceNode, o.nodeid)
+        self.assertEqual(ev.Message.Text, msg)
+        self.assertEqual(ev.Time, tid)
+
+        # time.sleep(0.1)
+        sub.unsubscribe(handle)
+        sub.delete()
+
+    def test_events_wrong_source(self):
+        objects = self.srv.get_objects_node()
+        o = objects.add_object(3, 'MyObject')
+        evgen = self.srv.get_event_generator(source=o)
+
         msclt = MySubHandler()
         sub = self.opc.create_subscription(100, msclt)
         handle = sub.subscribe_events()
 
-        ev = Event(self.srv.iserver.isession)
-        msg = b"this is my msg "
-        ev.Message.Text = msg
         tid = datetime.utcnow()
-        ev.Time = tid
-        ev.Severity = 500
-        ev.trigger()
+        msg = b"this is my msg "
+        evgen.trigger(tid, msg)
 
-        ev = msclt.future.result()
+        with self.assertRaises(TimeoutError):  # we should not receive event
+            ev = msclt.future.result(10)
+
+        # time.sleep(0.1)
+        sub.unsubscribe(handle)
+        sub.delete()
+
+    def test_events_CustomEvent(self):
+        etype = self.srv.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+        evgen = self.srv.get_event_generator(etype)
+
+        msclt = MySubHandler()
+        sub = self.opc.create_subscription(100, msclt)
+        handle = sub.subscribe_events(evtype=etype)
+
+        propertynum = 2
+        propertystring = "This is my test"
+        evgen.event.PropertyNum = propertynum
+        evgen.event.PropertyString = propertystring
+        serverity = 500
+        evgen.event.Severity = serverity
+        tid = datetime.utcnow()
+        msg = b"this is my msg "
+        evgen.trigger(tid, msg)
+
+        ev = msclt.future.result(10)
         self.assertIsNot(ev, None)  # we did not receive event
-        self.assertEqual(ev.Message.Text, msg)
-        #self.assertEqual(msclt.ev.Time, tid)
-        self.assertEqual(ev.Severity, 500)
+        self.assertEqual(ev.EventType, etype.nodeid)
+        self.assertEqual(ev.Severity, serverity)
+        self.assertEqual(ev.SourceName, self.opc.get_server_node().get_display_name().Text)
         self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
+        self.assertEqual(ev.Message.Text, msg)
+        self.assertEqual(ev.Time, tid)
+        self.assertEqual(ev.PropertyNum, propertynum)
+        self.assertEqual(ev.PropertyString, propertystring)
+
+        # time.sleep(0.1)
+        sub.unsubscribe(handle)
+        sub.delete()
+
+    def test_events_CustomEvent_MyObject(self):
+        objects = self.srv.get_objects_node()
+        o = objects.add_object(3, 'MyObject')
+        etype = self.srv.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+        evgen = self.srv.get_event_generator(etype, o)
+
+        msclt = MySubHandler()
+        sub = self.opc.create_subscription(100, msclt)
+        handle = sub.subscribe_events(o, etype)
+
+        propertynum = 2
+        propertystring = "This is my test"
+        evgen.event.PropertyNum = propertynum
+        evgen.event.PropertyString = propertystring
+        tid = datetime.utcnow()
+        msg = b"this is my msg "
+        evgen.trigger(tid, msg)
+
+        ev = msclt.future.result(10)
+        self.assertIsNot(ev, None)  # we did not receive event
+        self.assertEqual(ev.EventType, etype.nodeid)
+        self.assertEqual(ev.Severity, 1)
+        self.assertEqual(ev.SourceName, b'MyObject')
+        self.assertEqual(ev.SourceNode, o.nodeid)
+        self.assertEqual(ev.Message.Text, msg)
+        self.assertEqual(ev.Time, tid)
+        self.assertEqual(ev.PropertyNum, propertynum)
+        self.assertEqual(ev.PropertyString, propertystring)
 
         # time.sleep(0.1)
         sub.unsubscribe(handle)

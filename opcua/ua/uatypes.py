@@ -1068,8 +1068,6 @@ class XmlElement(FrozenClass):
     __repr__ = __str__
 
 
-
-
 class DataValue(FrozenClass):
 
     '''

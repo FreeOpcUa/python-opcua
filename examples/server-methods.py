@@ -14,10 +14,10 @@ except ImportError:
         shell.interact()
 
 
-from opcua import ua, uamethod, Server, Event
+from opcua import ua, uamethod, Server
+
 
 # method to be exposed through server
-
 def func(parent, variant):
     ret = False
     if variant.Value % 2 == 0:
