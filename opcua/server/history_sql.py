@@ -153,21 +153,14 @@ class HistorySQLite(HistoryStorageInterface):
 
             self._event_attributes[source_id] = etype.__dict__.keys()  # get fields (find a better way?)
 
+            fields = self._get_event_fields(etype)
+
             # create a table for the event which will store attributes of the Event object
             # note: Value/VariantType TEXT is only for human reading, the actual data is stored in VariantBinary column
             try:
-                _c_new.execute('CREATE TABLE "{tn}" (Id INTEGER PRIMARY KEY NOT NULL,'
-                               ' Timestamp TIMESTAMP,'
-                               ' Time BLOB,'
-                               ' ReceiveTime BLOB,'
-                               ' LocalTime BLOB,'
-                               ' EventId BLOB,'
-                               ' EventType BLOB,'
-                               ' Severity BLOB,'
-                               ' Message BLOB,'
-                               ' SourceName BLOB,'
-                               ' SourceNode BLOB,'
-                               ' ServerHandle BLOB)'.format(tn=table))
+                _c_new.execute('CREATE TABLE "{tn}" (Id INTEGER PRIMARY KEY NOT NULL, '
+                               'Timestamp TIMESTAMP, '
+                               '{fd})'.format(tn=table, fd=fields))
 
             except sqlite3.Error as e:
                 self.logger.info('Historizing SQL Table Creation Error for events from %s: %s', source_id, e)
@@ -269,25 +262,25 @@ class HistorySQLite(HistoryStorageInterface):
         return str(node_id.NamespaceIndex) + '_' + str(node_id.Identifier)
 
     def _format_event(self, event_result):
-        placeholder = ''
+        placeholders = []
         ev_variant_binaries = []
 
-        ev_variants = event_result.get_fields()
+        ev_variants = event_result.get_field_variants()
 
         # convert the variants in each field to binary for storing in SQL BLOBs
         for variant in ev_variants:
-            placeholder += '?, '
+            placeholders.append('?')
             ev_variant_binaries.append(variant.to_binary())
 
-        placeholder = placeholder[:-2]  # remove trailing space and comma for SQL syntax
-        evtup = tuple(ev_variant_binaries)
+        return self._list_to_sql_str(placeholders), tuple(ev_variant_binaries)
 
-        return placeholder, evtup
-
-    def _get_event_type_fields(self, etype):
+    def _get_event_fields(self, etype):
         # FIXME finish and test
-        etype_vars = vars(etype)
-        etype_attr = etype_vars.keys()
+        fields = []
+        for key, value in vars(etype).items():
+            if not key.startswith("__") and key is not "_freeze":
+                fields.append(key + ' BLOB')
+        return self._list_to_sql_str(fields)
 
     def _get_select_clauses(self, source_id, evfilter):
         s_clauses = []
@@ -304,18 +297,20 @@ class HistorySQLite(HistoryStorageInterface):
 
         # remove select clauses that the event type doesn't have; SQL will error because the column doesn't exist
         clauses = [x for x in s_clauses if self._check(source_id, x)]
-        clause_str = ''
 
-        for select_clause in clauses:
-            clause_str += '"' + select_clause + '", '
-
-        return clause_str[:-2]  # remove trailing space and comma for SQL syntax
+        return self._list_to_sql_str(clauses)
 
     def _check(self, source_id, s_clause):
         if s_clause in self._event_attributes[source_id]:
             return True
         else:
             return False
+
+    def _list_to_sql_str(self, l):
+        sql_str = ''
+        for item in l:
+            sql_str += '"' + item + '", '
+        return sql_str[:-2]  # remove trailing space and comma for SQL syntax
 
     def stop(self):
         with self._lock:
