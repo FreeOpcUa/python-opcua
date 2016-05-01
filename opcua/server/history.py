@@ -38,7 +38,7 @@ class HistoryStorageInterface(object):
         """
         raise NotImplementedError
 
-    def new_historized_event(self, event, period):
+    def new_historized_event(self, source_id, etype, period):
         """
         Called when historization of events is enabled on server side
         FIXME: we may need to store events per nodes in future...
@@ -53,7 +53,7 @@ class HistoryStorageInterface(object):
         """
         raise NotImplementedError
 
-    def read_event_history(self, start, end, evfilter):
+    def read_event_history(self, source_id, start, end, nb_values, evfilter):
         """
         Called when a client make a history read request for events
         Start time and end time are inclusive
@@ -118,13 +118,13 @@ class HistoryDict(HistoryStorageInterface):
                 results = results[:nb_values]
             return results, cont
 
-    def new_historized_event(self, event, period):
+    def new_historized_event(self, source_id, etype, period):
         self._events = []
 
     def save_event(self, event):
         raise NotImplementedError
 
-    def read_event_history(self, start, end, evfilter):
+    def read_event_history(self, source_id, start, end, nb_values, evfilter):
         raise NotImplementedError
 
     def stop(self):
@@ -171,6 +171,15 @@ class HistoryManager(object):
         handler = self._sub.subscribe_data_change(node)
         self._handlers[node] = handler
 
+    def historize_event(self, source, etype, period=timedelta(days=7)):
+        if not self._sub:
+            self._sub = self._create_subscription(SubHandler(self.storage))
+        if source in self._handlers:
+            raise ua.UaError("Events from {} are already historized".format(source))
+        self.storage.new_historized_event(source.nodeid, etype, period)
+        handler = self._sub.subscribe_events(source)
+        self._handlers[source] = handler
+
     def dehistorize(self, node):
         self._sub.unsubscribe(self._handlers[node])
         del(self._handlers[node])
@@ -207,9 +216,10 @@ class HistoryManager(object):
             result.HistoryData = ua.HistoryEvent()
             # FIXME: filter is a cumbersome type, maybe transform it something easier
             # to handle for storage
-            result.HistoryData.Events = self.storage.read_event_history(details.StartTime,
-                                                                        details.EndTime,
-                                                                        details.Filter)
+            ev, cont = self._read_event_history(rv, details)
+            result.HistoryData.Events = ev
+            result.ContinuationPoint = cont
+
         else:
             # we do not currently support the other types, clients can process data themselves
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadNotImplemented)
@@ -231,11 +241,31 @@ class HistoryManager(object):
                                                   details.NumValuesPerNode)
         if cont:
             # cont = datetime_to_bytes(dv[-1].ServerTimestamp)
-            cont = ua.pack_datetime(dv[-1].ServerTimestamp)
+            cont = ua.pack_datetime(dv[-1].ServerTimestamp)  # FIXME pretty sure this isn't correct; should just pack cont itself, not dv[-1]
         # FIXME, parse index range and filter out if necessary
         # rv.IndexRange
         # rv.DataEncoding # xml or binary, seems spec say we can ignore that one
         return dv, cont
+
+    def _read_event_history(self, rv, details):
+        starttime = details.StartTime
+        if rv.ContinuationPoint:
+            # Spec says we should ignore details if cont point is present
+            # but they also say we can use cont point as timestamp to enable stateless
+            # implementation. This is contradictory, so we assume details is
+            # send correctly with continuation point
+            #starttime = bytes_to_datetime(rv.ContinuationPoint)
+            starttime = ua.unpack_datetime(utils.Buffer(rv.ContinuationPoint))
+
+        ev, cont = self.storage.read_event_history(rv.NodeId,
+                                                   starttime,
+                                                   details.EndTime,
+                                                   details.NumValuesPerNode,
+                                                   details.Filter)
+        if cont:
+            # cont = datetime_to_bytes(dv[-1].ServerTimestamp)
+            cont = ua.pack_datetime(ev[-1].Time)  # FIXME pretty sure this isn't correct; should just pack cont itself, not ev[-1]
+        return ev, cont
 
     def update_history(self, params):
         """
