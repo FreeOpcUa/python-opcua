@@ -71,7 +71,10 @@ class EventGenerator(object):
         #result.StatusCode.check()
 
     def __str__(self):
-        return "EventGenerator(Type:{}, Source:{}, Time:{}, Message: {})".format(self.EventType, self.SourceNode, self.Time, self.Message)
+        return "EventGenerator(Type:{}, Source:{}, Time:{}, Message: {})".format(self.event.EventType,
+                                                                                 self.event.SourceNode,
+                                                                                 self.event.Time,
+                                                                                 self.event.Message)
     __repr__ = __str__
 
     def trigger(self, time=None, message=None):

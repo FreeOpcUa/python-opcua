@@ -4,6 +4,9 @@ from datetime import datetime
 from opcua import Subscription
 from opcua import ua
 from opcua.common import utils
+from opcua.common import event
+
+import itertools
 
 
 class HistoryStorageInterface(object):
@@ -171,14 +174,22 @@ class HistoryManager(object):
         handler = self._sub.subscribe_data_change(node)
         self._handlers[node] = handler
 
-    def historize_event(self, source, etype, period=timedelta(days=7)):
+    def historize_event(self, source, period=timedelta(days=7)):
         if not self._sub:
             self._sub = self._create_subscription(SubHandler(self.storage))
-        if source in self._handlers:
+        if source in self._handlers:  # FIXME a single source might have many event has a handlers, how to check?
             raise ua.UaError("Events from {} are already historized".format(source))
-        self.storage.new_historized_event(source.nodeid, etype, period)
-        handler = self._sub.subscribe_events(source)
-        self._handlers[source] = handler
+
+        # get the event types the source node generates and a list of all possible event fields
+        event_types, ev_fields = self._get_source_event_data(source)
+
+        self.storage.new_historized_event(source.nodeid, ev_fields, period)
+
+        ev_handlers = []
+        for event_type in event_types:
+            handler = self._sub.subscribe_events(source, event_type)
+            ev_handlers.append(handler)
+        self._handlers[source] = ev_handlers  # FIXME no way to dehistorize because of this at the moment
 
     def dehistorize(self, node):
         self._sub.unsubscribe(self._handlers[node])
@@ -266,6 +277,19 @@ class HistoryManager(object):
             # cont = datetime_to_bytes(dv[-1].ServerTimestamp)
             cont = ua.pack_datetime(ev[-1].Time)  # FIXME pretty sure this isn't correct; should just pack cont itself, not ev[-1]
         return ev, cont
+
+    def _get_source_event_data(self, source):
+        # get all event types which the source node can generate; get the fields of those event types
+        event_types = source.get_referenced_nodes(ua.ObjectIds.GeneratesEvent)
+
+        ev_aggregate_fields = []
+        for event_type in event_types:
+            ev_aggregate_fields.extend((event.get_event_properties_from_type_node(event_type)))
+
+        ev_fields = []
+        for field in set(ev_aggregate_fields):
+            ev_fields.append(field.get_display_name().Text.decode(encoding='utf-8'))
+        return event_types, ev_fields
 
     def update_history(self, params):
         """
