@@ -1,6 +1,17 @@
 import sys
 import logging
 
+try:
+    from IPython import embed
+except ImportError:
+    import code
+
+    def embed():
+        vars = globals()
+        vars.update(locals())
+        shell = code.InteractiveConsole(vars)
+        shell.interact()
+
 from opcua import ua, Server
 
 
@@ -42,12 +53,12 @@ if __name__ == "__main__":
     try:
         # time.sleep is here just because we want to see events in UaExpert
         import time
-        time.sleep(10)
+        for i in range(1, 10):
+            time.sleep(10)
+            myevgen.trigger(message="This is MyFirstEvent with MyNumericProperty and MyStringProperty.")
+            mysecondevgen.trigger(message="This is MySecondEvent with MyIntProperty and MyBoolProperty.")
 
-        myevgen.trigger(message="This is MyFirstEvent with MyNumericProperty and MyStringProperty.")
-        mysecondevgen.trigger(message="This is MySecondEvent with MyIntProperty and MyBoolProperty.")
-
-        time.sleep(20)
+        embed()
     finally:
         #close connection, remove subcsriptions, etc
         server.stop()
