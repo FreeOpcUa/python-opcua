@@ -121,24 +121,6 @@ def get_event_from_type_node(node):
     return CustomEvent()
 
 
-def get_event_properties_from_type_node(node):
-    properties = []
-    curr_node = node
-
-    while True:
-        properties.extend(curr_node.get_properties())
-
-        if curr_node.nodeid.Identifier == ua.ObjectIds.BaseEventType:
-            break
-
-        parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
-        if len(parents) != 1: # Something went wrong
-            return None
-        curr_node = parents[0]
-
-    return properties
-
-
 def _find_parent_eventtype(node):
     parents = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
 

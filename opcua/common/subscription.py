@@ -7,7 +7,6 @@ from threading import Lock
 
 from opcua import ua
 from opcua import Node
-from opcua.common import event
 
 
 class SubHandler(object):
@@ -202,7 +201,7 @@ class Subscription(object):
     def _get_filter_from_event_type(self, eventtype):
         eventtype = self._get_node(eventtype)
         evfilter = ua.EventFilter()
-        for property in event.get_event_properties_from_type_node(eventtype):
+        for property in get_event_properties_from_type_node(eventtype):
             op = ua.SimpleAttributeOperand()
             op.TypeDefinitionId = eventtype.nodeid
             op.AttributeId = ua.AttributeIds.Value
@@ -308,3 +307,20 @@ class Subscription(object):
                     del(self._monitoreditems_map[k])
                     return
 
+
+def get_event_properties_from_type_node(node):
+    properties = []
+    curr_node = node
+
+    while True:
+        properties.extend(curr_node.get_properties())
+
+        if curr_node.nodeid.Identifier == ua.ObjectIds.BaseEventType:
+            break
+
+        parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        if len(parents) != 1: # Something went wrong
+            return None
+        curr_node = parents[0]
+
+    return properties
