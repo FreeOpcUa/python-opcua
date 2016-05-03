@@ -171,6 +171,17 @@ class InternalServer(object):
         node.unset_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.HistoryRead)
         self.history_manager.dehistorize(node)
 
+    def enable_event_history(self, source, period=timedelta(days=7)):
+        """
+        Set attribute Historizing of object events to True and start storing data for history
+        """
+        # to historize events of an object, first check if object supports events
+        source_event_notifier = source.get_attribute(ua.AttributeIds.EventNotifier)
+        if source_event_notifier.Value.Value & 1 == 1:  # check bit 0
+            # if it supports events, turn on bit 2 (enables history read)
+            source.set_attr_bit(ua.AttributeIds.EventNotifier, 2)
+            # send the object to history manager
+            self.history_manager.historize_event(source, period)
 
 
 class InternalSession(object):

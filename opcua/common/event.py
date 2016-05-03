@@ -56,7 +56,7 @@ class EventGenerator(object):
                 source = Node(self.isession, self.event.SourceNode)
 
         self.event.SourceNode = source.nodeid
-        self.event.SourceName = source.get_display_name().Text
+        self.event.SourceName = source.get_display_name().Text.decode(encoding='utf-8')  # FIXME is it OK to decode? without some clients will display bytes instead of string in this field
 
         source.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(1, ua.VariantType.Byte)))
         refs = []
@@ -71,7 +71,10 @@ class EventGenerator(object):
         #result.StatusCode.check()
 
     def __str__(self):
-        return "EventGenerator(Type:{}, Source:{}, Time:{}, Message: {})".format(self.EventType, self.SourceNode, self.Time, self.Message)
+        return "EventGenerator(Type:{}, Source:{}, Time:{}, Message: {})".format(self.event.EventType,
+                                                                                 self.event.SourceNode,
+                                                                                 self.event.Time,
+                                                                                 self.event.Message)
     __repr__ = __str__
 
     def trigger(self, time=None, message=None):
@@ -83,8 +86,8 @@ class EventGenerator(object):
             self.event.Time = time
         else:
             self.event.Time = datetime.utcnow()
-        self.event.RecieveTime = datetime.utcnow()
-        #FIXME: LocalTime is wrong but currently know better. For description s. Part 5 page 18
+        self.event.ReceiveTime = datetime.utcnow()
+        # FIXME: LocalTime is wrong but currently know better. For description s. Part 5 page 18
         self.event.LocalTime = datetime.utcnow()
         if message:
             self.event.Message = ua.LocalizedText(message)
@@ -112,7 +115,7 @@ def get_event_from_type_node(node):
                     for prop in curr_node.get_properties():
                         setattr(self, prop.get_browse_name().Name, prop.get_value())
                     parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
-                    if len(parents) != 1: # Something went wrong
+                    if len(parents) != 1:  # Something went wrong
                         return None
                     curr_node = parents[0]
 
@@ -132,7 +135,7 @@ def get_event_properties_from_type_node(node):
             break
 
         parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
-        if len(parents) != 1: # Something went wrong
+        if len(parents) != 1:  # Something went wrong
             return None
         curr_node = parents[0]
 

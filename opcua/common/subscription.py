@@ -53,6 +53,13 @@ class EventResult(object):
         return "EventResult({})".format([str(k) + ":" + str(v) for k, v in self.__dict__.items()])
     __repr__ = __str__
 
+    def get_field_variants(self):
+        field_vars = {}
+        for key, value in vars(self).items():
+            if not key.startswith("__") and key is not "server_handle":
+                field_vars[key] = ua.Variant(value)
+        return field_vars
+
 
 class SubscriptionItemData(object):
     """
