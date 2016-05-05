@@ -229,16 +229,25 @@ class Subscription(object):
         cf = ua.ContentFilter()
         el = ua.ContentFilterElement()
         # operands can be ElementOperand, LiteralOperand, AttributeOperand, SimpleAttribute
-        op1 = ua.SimpleAttributeOperand()
-        op1.AttributeId = ua.AttributeIds.NodeId
-        op2 = ua.LiteralOperand()
-        op2.Value = evtype.nodeid
-
-        el.FilterOperands = [op1, op2]
-        el.FilterOperator = ua.FilterOperator.Equals  # FIXME: maybe equal is wrong, we want a recursive equal...
+        op = ua.SimpleAttributeOperand()
+        op.AttributeId = ua.AttributeIds.NodeId
+        el.FilterOperands.append(op)
+        for subtypeid in [st.nodeid for st in self._get_subtypes(evtype)]:
+            op = ua.LiteralOperand()
+            op.Value = subtypeid
+            el.FilterOperands.append(op)
+        el.FilterOperator = ua.FilterOperator.InList
 
         cf.Elements.append(el)
         return cf
+
+    def _get_subtypes(self, parent, nodes=None):
+        if nodes is None:
+            nodes = [parent]
+        for child in parent.get_children(refs=ua.ObjectIds.HasSubtype):
+            nodes.append(child)
+            self._get_subtypes(child, nodes)
+        return nodes
 
     def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtype=ua.ObjectIds.BaseEventType, evfilter=None):
         """
