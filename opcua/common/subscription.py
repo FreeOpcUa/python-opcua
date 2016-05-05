@@ -211,22 +211,45 @@ class Subscription(object):
     def _get_filter_from_event_type(self, eventtype):
         eventtype = self._get_node(eventtype)
         evfilter = ua.EventFilter()
-        for property in get_event_properties_from_type_node(eventtype):
-            op = ua.SimpleAttributeOperand()
-            op.TypeDefinitionId = eventtype.nodeid
-            op.AttributeId = ua.AttributeIds.Value
-            op.BrowsePath = [property.get_browse_name()]
-            evfilter.SelectClauses.append(op)
+        evfilter.SelectClauses = self._select_clauses_from_evtype(eventtype)
+        evfilter.WhereClause = self._where_clause_from_evtype(eventtype)
         return evfilter
 
-    def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtype=ua.ObjectIds.BaseEventType):
+    def _select_clauses_from_evtype(self, evtype):
+        clauses = []
+        for property in get_event_properties_from_type_node(evtype):
+            op = ua.SimpleAttributeOperand()
+            op.TypeDefinitionId = evtype.nodeid
+            op.AttributeId = ua.AttributeIds.Value
+            op.BrowsePath = [property.get_browse_name()]
+            clauses.append(op)
+        return clauses
+
+    def _where_clause_from_evtype(self, evtype):
+        cf = ua.ContentFilter()
+        el = ua.ContentFilterElement()
+        # operands can be ElementOperand, LiteralOperand, AttributeOperand, SimpleAttribute
+        op1 = ua.SimpleAttributeOperand()
+        op1.AttributeId = ua.AttributeIds.NodeId
+        op2 = ua.LiteralOperand()
+        op2.Value = evtype.nodeid
+
+        el.FilterOperands = [op1, op2]
+        el.FilterOperator = ua.FilterOperator.Equals  # FIXME: maybe equal is wrong, we want a recursive equal...
+
+        cf.Elements.append(el)
+        return cf
+
+    def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtype=ua.ObjectIds.BaseEventType, evfilter=None):
         """
         Subscribe to events from a node. Default node is Server node.
         In most servers the server node is the only one you can subscribe to.
+        if evfilter is provided, evtype is ignored
         Return a handle which can be used to unsubscribe
         """
         sourcenode = self._get_node(sourcenode)
-        evfilter = self._get_filter_from_event_type(evtype)
+        if evfilter is None:
+            evfilter = self._get_filter_from_event_type(evtype)
         return self._subscribe(sourcenode, ua.AttributeIds.EventNotifier, evfilter)
 
     def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):
