@@ -56,7 +56,7 @@ class EventGenerator(object):
                 source = Node(self.isession, self.event.SourceNode)
 
         self.event.SourceNode = source.nodeid
-        self.event.SourceName = source.get_display_name().Text
+        self.event.SourceName = source.get_browse_name()
 
         source.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(1, ua.VariantType.Byte)))
         refs = []

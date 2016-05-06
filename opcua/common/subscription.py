@@ -234,7 +234,7 @@ class Subscription(object):
         el.FilterOperands.append(op)
         for subtypeid in [st.nodeid for st in self._get_subtypes(evtype)]:
             op = ua.LiteralOperand()
-            op.Value = subtypeid
+            op.Value = ua.Variant(subtypeid)
             el.FilterOperands.append(op)
         el.FilterOperator = ua.FilterOperator.InList
 

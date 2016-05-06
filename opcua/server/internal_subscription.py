@@ -113,7 +113,7 @@ class MonitoredItemService(object):
         for _ in params.RequestedParameters.Filter.SelectClauses:
             result.FilterResult.SelectClauseResults.append(ua.StatusCode())
         # FIXME: where clause result
-        mdata.where_clause_evaluator = WhereClauseEvaluator(mdata.mfilter.WhereClause, self.aspace)
+        mdata.where_clause_evaluator = WhereClauseEvaluator(self.logger, self.aspace, mdata.mfilter.WhereClause)
         self._commit_monitored_item(result, mdata)
         self._monitored_events[params.ItemToMonitor.NodeId] = result.MonitoredItemId
         return result
@@ -188,9 +188,9 @@ class MonitoredItemService(object):
                                   mid, event, self)
                 return False
             mdata = self._monitored_items[mid]
-            #if not mdata.where_clause_evaluator.eval(event):
-                #self.logger.debug("Event does not fit WhereClause, not generating event", mid, event, self)
-                #return
+            if not mdata.where_clause_evaluator.eval(event):
+                self.logger.debug("Event does not fit WhereClause, not generating event", mid, event, self)
+                return
             fieldlist = ua.EventFieldList()
             fieldlist.ClientHandle = mdata.client_handle
             fieldlist.EventFields = self._get_event_fields(mdata.mfilter, event)
@@ -363,13 +363,21 @@ class InternalSubscription(object):
 
 
 class WhereClauseEvaluator(object):
-    def __init__(self, whereclause, aspace):
+    def __init__(self, logger, aspace, whereclause):
+        self.logger = logger
         self.elements = whereclause.Elements
         self._aspace = aspace
 
     def eval(self, event):
+        if not self.elements:
+            return True
         # spec says we should only evaluate first element, which may use other elements
-        return self._eval_el(0, event)
+        try:
+            res = self._eval_el(0, event)
+        except Exception as ex:
+            self.logger.warning("Exception while evaluating WhereClause %s for event %s: %s", self.elements, event, ex)
+            return False
+        return res
 
     def _eval_el(self, index, event):
         el = self.elements[index]
@@ -393,19 +401,23 @@ class WhereClauseEvaluator(object):
             print("WhereClause not implemented for element: %s", el)
 
     def _eval_op(self, op, event):
+        # seems spec says we should return Null if issues
         if type(op) is ua.ElementOperand:
             el = self.elements[op.FilterOperands[0].Index]
             return self._eval_el(el)
         elif type(op) is ua.AttributeOperand:
-            pass
+            if op.BrowsePath:
+                return getattr(event, op.BrowsePath.Elements[0].TargetName.Name)
+            else:
+                return self._aspace.get_attribute_value(event.EventType, op.AttributeId).Value.Value
+            # FIXME: check, this is probably broken
         elif type(op) is ua.SimpleAttributeOperand:
             if op.BrowsePath:
                 # we only support depth of 1
-                return getattr(event, op.BrowsePath[0].BrowseName)
-            elif op.AttributeId:
-                return True
-                #return self._aspace.get_attribute_value(event.nodeid, op.AttributeId)
-                #return getattr(event, op.AttributeId.name)  # FIXME: need to add attributeIds
+                return getattr(event, op.BrowsePath[0].BrowseName.Name)
+            else:
+                # TODO: write code for index range.... but doe it make any sense
+                return self._aspace.get_attribute_value(event.EventType, op.AttributeId).Value.Value
         elif type(op) is ua.LiteralOperand:
             return op.Value.Value
         else:
