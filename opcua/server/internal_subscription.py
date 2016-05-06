@@ -18,6 +18,7 @@ class MonitoredItemData(object):
         self.parameters = None
         self.mode = None
         self.mfilter = None
+        self.where_clause_evaluator = None
 
 
 class MonitoredItemService(object):
@@ -99,7 +100,9 @@ class MonitoredItemService(object):
         return result, mdata
 
     def _create_events_monitored_item(self, params):
-        self.logger.info("request to subscribe to events for node %s and attribute %s", params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+        self.logger.info("request to subscribe to events for node %s and attribute %s",
+                         params.ItemToMonitor.NodeId,
+                         params.ItemToMonitor.AttributeId)
 
         result, mdata = self._make_monitored_item_common(params)
         ev_notify_byte = self.aspace.get_attribute_value(params.ItemToMonitor.NodeId, ua.AttributeIds.EventNotifier).Value.Value
@@ -110,12 +113,15 @@ class MonitoredItemService(object):
         for _ in params.RequestedParameters.Filter.SelectClauses:
             result.FilterResult.SelectClauseResults.append(ua.StatusCode())
         # FIXME: where clause result
+        mdata.where_clause_evaluator = WhereClauseEvaluator(mdata.mfilter.WhereClause, self.aspace)
         self._commit_monitored_item(result, mdata)
         self._monitored_events[params.ItemToMonitor.NodeId] = result.MonitoredItemId
         return result
 
     def _create_data_change_monitored_item(self, params):
-        self.logger.info("request to subscribe to datachange for node %s and attribute %s", params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+        self.logger.info("request to subscribe to datachange for node %s and attribute %s",
+                         params.ItemToMonitor.NodeId,
+                         params.ItemToMonitor.AttributeId)
 
         result, mdata = self._make_monitored_item_common(params)
         result.FilterResult = params.RequestedParameters.Filter
@@ -154,10 +160,12 @@ class MonitoredItemService(object):
 
     def datachange_callback(self, handle, value, error=None):
         if error:
-            self.logger.info("subscription %s: datachange callback called with handle '%s' and erorr '%s'", self, handle, error)
+            self.logger.info("subscription %s: datachange callback called with handle '%s' and erorr '%s'",
+                             self, handle, error)
             self.trigger_statuschange(error)
         else:
-            self.logger.info("subscription %s: datachange callback called with handle '%s' and value '%s'", self, handle, value.Value)
+            self.logger.info("subscription %s: datachange callback called with handle '%s' and value '%s'",
+                             self, handle, value.Value)
             event = ua.MonitoredItemNotification()
             with self._lock:
                 mid = self._monitored_datachange[handle]
@@ -169,14 +177,20 @@ class MonitoredItemService(object):
     def trigger_event(self, event):
         with self._lock:
             if event.SourceNode not in self._monitored_events:
-                self.logger.debug("%s has no subscription for events %s from node: %s", self, event, event.SourceNode)
+                self.logger.debug("%s has no subscription for events %s from node: %s",
+                                  self, event, event.SourceNode)
                 return False
-            self.logger.debug("%s has subscription for events %s from node: %s", self, event, event.SourceNode)
+            self.logger.debug("%s has subscription for events %s from node: %s",
+                              self, event, event.SourceNode)
             mid = self._monitored_events[event.SourceNode]
             if mid not in self._monitored_items:
-                self.logger.debug("Could not find monitored items for id %s for event %s in subscription %s", mid, event, self)
+                self.logger.debug("Could not find monitored items for id %s for event %s in subscription %s",
+                                  mid, event, self)
                 return False
             mdata = self._monitored_items[mid]
+            #if not mdata.where_clause_evaluator.eval(event):
+                #self.logger.debug("Event does not fit WhereClause, not generating event", mid, event, self)
+                #return
             fieldlist = ua.EventFieldList()
             fieldlist.ClientHandle = mdata.client_handle
             fieldlist.EventFields = self._get_event_fields(mdata.mfilter, event)
@@ -188,7 +202,6 @@ class MonitoredItemService(object):
         for sattr in evfilter.SelectClauses:
             try:
                 if not sattr.BrowsePath:
-                    #val = getattr(event, ua.AttributeIdsInv[sattr.Attribute])
                     val = getattr(event, sattr.Attribute.name)
                     val = copy.deepcopy(val)
                     fields.append(ua.Variant(val))
@@ -347,3 +360,56 @@ class InternalSubscription(object):
             if len(queue[mid]) >= size:
                 queue[mid].pop(0)
         queue[mid].append(eventdata)
+
+
+class WhereClauseEvaluator(object):
+    def __init__(self, whereclause, aspace):
+        self.elements = whereclause.Elements
+        self._aspace = aspace
+
+    def eval(self, event):
+        # spec says we should only evaluate first element, which may use other elements
+        return self._eval_el(0, event)
+
+    def _eval_el(self, index, event):
+        el = self.elements[index]
+        if el.FilterOperator == ua.FilterOperator.And:
+            self.elements(el.FilterOperands[0].Index)
+            return self._eval_op(el.FilterOperands[0], event) and self._eval_op(el.FilterOperands[1], event)
+        elif el.FilterOperator == ua.FilterOperator.Or:
+            return self._eval_op(el.FilterOperands[0], event) or self._eval_el(el.FilterOperands[1], event)
+        elif el.FilterOperator == ua.FilterOperator.InList:
+            return self._eval_op(el.FilterOperands[0], event) in [self._eval_op(op, event) for op in el.FilterOperands[1:]]
+        elif el.FilterOperator == ua.FilterOperator.Equals:
+            return self._eval_op(el.FilterOperands[0], event) == self._eval_el(el.FilterOperands[1], event)
+        elif el.FilterOperator == ua.FilterOperator.IsNull:
+            return self._eval_op(el.FilterOperands[0], event) is None  # FIXME: might be too strict
+        elif el.FilterOperator == ua.FilterOperator.LessThan:
+            return self._eval_op(el.FilterOperands[0], event) < self._eval_el(el.FilterOperands[1], event)
+        elif el.FilterOperator == ua.FilterOperator.LessThanOrEqual:
+            return self._eval_op(el.FilterOperands[0], event) < self._eval_el(el.FilterOperands[1], event)
+        else:
+            # TODO: implement missing operators
+            print("WhereClause not implemented for element: %s", el)
+
+    def _eval_op(self, op, event):
+        if type(op) is ua.ElementOperand:
+            el = self.elements[op.FilterOperands[0].Index]
+            return self._eval_el(el)
+        elif type(op) is ua.AttributeOperand:
+            pass
+        elif type(op) is ua.SimpleAttributeOperand:
+            if op.BrowsePath:
+                # we only support depth of 1
+                return getattr(event, op.BrowsePath[0].BrowseName)
+            elif op.AttributeId:
+                return True
+                #return self._aspace.get_attribute_value(event.nodeid, op.AttributeId)
+                #return getattr(event, op.AttributeId.name)  # FIXME: need to add attributeIds
+        elif type(op) is ua.LiteralOperand:
+            return op.Value.Value
+        else:
+            self.logger.warning("Where clause element % is not of a known type", el)
+
+
+
