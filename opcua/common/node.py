@@ -377,6 +377,51 @@ class Node(object):
         result = self.server.history_read(params)[0]
         return result
 
+    def read_event_history(self, evfilter, starttime=None, endtime=None, numvalues=0):
+        """
+        Read raw history of a node
+        result code from server is checked and an exception is raised in case of error
+        If numvalues is > 0 and number of events in period is > numvalues
+        then result will be truncated
+        """
+
+        # FIXME event filter must be supplied externally, the problem is the node class doesn't have a way to get
+        # FIXME another node from the address space as these methods are at the server level, there fore so there is
+        # FIXME no way to build an event filter here (although it would be nicer for the user)
+
+        details = ua.ReadEventDetails()
+        if starttime:
+            details.StartTime = starttime
+        else:
+            details.StartTime = ua.DateTimeMinValue
+        if endtime:
+            details.EndTime = endtime
+        else:
+            details.EndTime = ua.DateTimeMinValue
+        details.NumValuesPerNode = numvalues
+
+        details.Filter = evfilter
+
+        result = self.history_read_events(details)
+        return result.HistoryData.Events
+
+    def history_read_events(self, details):
+        """
+        Read raw event history of a node, low-level function
+        result code from server is checked and an exception is raised in case of error
+        """
+        valueid = ua.HistoryReadValueId()
+        valueid.NodeId = self.nodeid
+        valueid.IndexRange = ''
+
+        params = ua.HistoryReadParameters()
+        params.HistoryReadDetails = details
+        params.TimestampsToReturn = ua.TimestampsToReturn.Both
+        params.ReleaseContinuationPoints = False
+        params.NodesToRead.append(valueid)
+        result = self.server.history_read(params)[0]
+        return result
+
     # Hack for convenience methods
     # local import is ugly but necessary for python2 support
     # feel fri to propose something better but I want to split all those

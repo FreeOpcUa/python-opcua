@@ -1,24 +1,24 @@
-'''
+"""
 Example auto_generated file with UA Types
 
 For now only events!
-'''
+"""
 
 from opcua.ua import *
 
 
-# TODO: This should be autogeneratd form XML description of EventTypes
+# TODO: This should be auto generated form XML description of EventTypes
 class BaseEvent(FrozenClass):
-    '''
+    """
     BaseEvent implements BaseEventType from which inherit all other events and it is used per default.
-    '''
+    """
     def __init__(self, sourcenode=None, message=None, severity=1, extended=False):
         self.EventId = bytes()
         self.EventType = NodeId(ObjectIds.BaseEventType)
         self.SourceNode = sourcenode
         self.SourceName = None
         self.Time = None
-        self.RecieveTime = None
+        self.ReceiveTime = None
         self.LocalTime = None
         self.Message = LocalizedText(message)
         self.Severity = Variant(severity, VariantType.UInt16)
@@ -31,9 +31,9 @@ class BaseEvent(FrozenClass):
 
 
 class AuditEvent(BaseEvent):
-    '''
+    """
     Audit implements AuditEventType from which inherit all other Audit events.
-    '''
+    """
     def __init__(self, sourcenode=None, message=None, severity=1, extended=False):
         super(AuditEvent, self).__init__(sourcenode, message, severity, True)
         self.EventType = NodeId(ObjectIds.AuditEventType)

@@ -129,14 +129,21 @@ class TestServer(unittest.TestCase, CommonTests):
         val = v.get_value()
         self.assertEqual(val, "StringValue")
 
-    def test_historize(self):
+    def test_historize_variable(self):
         o = self.opc.get_objects_node()
         var = o.add_variable(3, "test_hist", 1.0)
-        self.srv.iserver.enable_history(var, timedelta(days=1))
+        self.srv.iserver.enable_history_var(var, timedelta(days=1))
         time.sleep(1)
         var.set_value(2.0)
         var.set_value(3.0)
-        self.srv.iserver.disable_history(var)
+        self.srv.iserver.disable_history_var(var)
+
+    def test_historize_events(self):
+        srv_node = self.srv.get_node(ua.ObjectIds.Server)
+        srvevgen = self.srv.get_event_generator()
+        self.srv.iserver.enable_history_event(srv_node, period=None)
+        srvevgen.trigger(message="Message")
+        self.srv.iserver.disable_history_event(srv_node)
 
     def test_references_for_added_nodes_method(self):
         objects = self.opc.get_objects_node()

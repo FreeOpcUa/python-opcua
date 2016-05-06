@@ -153,16 +153,16 @@ class InternalServer(object):
     def create_session(self, name, user=User.Anonymous, external=False):
         return InternalSession(self, self.aspace, self.subscription_service, name, user=user, external=external)
 
-    def enable_history(self, node, period=timedelta(days=7), count=0):
+    def enable_history_var(self, node, period=timedelta(days=7), count=0):
         """
         Set attribute Historizing of node to True and start storing data for history
         """
         node.set_attribute(ua.AttributeIds.Historizing, ua.DataValue(True))
         node.set_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.HistoryRead)
         node.set_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.HistoryRead)
-        self.history_manager.historize(node, period, count)
+        self.history_manager.historize_var(node, period, count)
 
-    def disable_history(self, node):
+    def disable_history_var(self, node):
         """
         Set attribute Historizing of node to False and stop storing data for history
         """
@@ -171,6 +171,24 @@ class InternalServer(object):
         node.unset_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.HistoryRead)
         self.history_manager.dehistorize(node)
 
+    def enable_history_event(self, source, period=timedelta(days=7)):
+        """
+        Set attribute History Read of object events to True and start storing data for history
+        """
+        # to historize events of an object, first check if object supports events
+        source_event_notifier = source.get_attribute(ua.AttributeIds.EventNotifier)
+        if source_event_notifier.Value.Value & 1 == 1:  # check bit 0
+            # if it supports events, turn on bit 2 (enables history read)
+            source.set_attr_bit(ua.AttributeIds.EventNotifier, 2)
+            # send the object to history manager
+            self.history_manager.historize_event(source, period)
+
+    def disable_history_event(self, source):
+        """
+        Set attribute History Read of node to False and stop storing data for history
+        """
+        source.unset_attr_bit(ua.AttributeIds.EventNotifier, 2)
+        self.history_manager.dehistorize(source)
 
 
 class InternalSession(object):

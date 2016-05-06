@@ -91,7 +91,11 @@ class MonitoredItemService(object):
 
             if params.ItemToMonitor.AttributeId == ua.AttributeIds.EventNotifier:
                 self.logger.info("request to subscribe to events for node %s and attribute %s", params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
-                if self.aspace.get_attribute_value(params.ItemToMonitor.NodeId, ua.AttributeIds.EventNotifier).Value.Value != 1:
+                ev_notify_byte = self.aspace.get_attribute_value(params.ItemToMonitor.NodeId, ua.AttributeIds.EventNotifier).Value.Value
+                if ev_notify_byte is not None:
+                    if ev_notify_byte & 1 == 0:
+                        result.StatusCode = ua.StatusCode(ua.StatusCodes.BadServiceUnsupported)
+                else:
                     result.StatusCode = ua.StatusCode(ua.StatusCodes.BadServiceUnsupported)
                 result.FilterResult = ua.EventFilterResult()
                 for _ in params.RequestedParameters.Filter.SelectClauses:

@@ -71,7 +71,10 @@ class EventGenerator(object):
         #result.StatusCode.check()
 
     def __str__(self):
-        return "EventGenerator(Type:{}, Source:{}, Time:{}, Message: {})".format(self.EventType, self.SourceNode, self.Time, self.Message)
+        return "EventGenerator(Type:{}, Source:{}, Time:{}, Message: {})".format(self.event.EventType,
+                                                                                 self.event.SourceNode,
+                                                                                 self.event.Time,
+                                                                                 self.event.Message)
     __repr__ = __str__
 
     def trigger(self, time=None, message=None):
@@ -83,7 +86,7 @@ class EventGenerator(object):
             self.event.Time = time
         else:
             self.event.Time = datetime.utcnow()
-        self.event.RecieveTime = datetime.utcnow()
+        self.event.ReceiveTime = datetime.utcnow()
         #FIXME: LocalTime is wrong but currently know better. For description s. Part 5 page 18
         self.event.LocalTime = datetime.utcnow()
         if message:
