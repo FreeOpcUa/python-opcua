@@ -9,6 +9,7 @@ from opcua import ua
 from opcua.ua import extensionobject_from_binary
 from opcua.ua import extensionobject_to_binary
 from opcua.ua.uatypes import flatten, get_shape, reshape
+from opcua.server.internal_subscription import WhereClauseEvaluator
 
 
 
@@ -358,7 +359,31 @@ class TestUnit(unittest.TestCase):
         n = ua.NodeId(0, 3)
         self.assertFalse(n.is_null())
         self.assertTrue(n.has_null_identifier())
+    
+    def test_where_clause(self):
+        cf = ua.ContentFilter()
 
+        el = ua.ContentFilterElement()
+
+        op = ua.SimpleAttributeOperand()
+        op.BrowsePath.append(ua.QualifiedName("property", 2))
+        el.FilterOperands.append(op)
+
+        for i in range(10):
+            op = ua.LiteralOperand()
+            op.Value = ua.Variant(i)
+            el.FilterOperands.append(op)
+
+        el.FilterOperator = ua.FilterOperator.InList
+        cf.Elements.append(el)
+
+        wce = WhereClauseEvaluator(logging.getLogger(__name__), None, cf)
+
+        ev = ua.BaseEvent()
+        ev._freeze = False
+        ev.property = 3
+
+        self.assertTrue(wce.eval(ev))
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARN)

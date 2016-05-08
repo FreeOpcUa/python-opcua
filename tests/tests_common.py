@@ -324,7 +324,7 @@ class CommonTests(object):
         self.assertIsNot(ev, None)  # we did not receive event
         self.assertEqual(ev.EventType, ua.NodeId(ua.ObjectIds.BaseEventType))
         self.assertEqual(ev.Severity, 1)
-        self.assertEqual(ev.SourceName, self.opc.get_server_node().get_display_name().Text)
+        self.assertEqual(ev.SourceName, self.opc.get_server_node().get_browse_name().Name)
         self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
         self.assertEqual(ev.Message.Text, msg)
         self.assertEqual(ev.Time, tid)
@@ -350,7 +350,7 @@ class CommonTests(object):
         self.assertIsNot(ev, None)  # we did not receive event
         self.assertEqual(ev.EventType, ua.NodeId(ua.ObjectIds.BaseEventType))
         self.assertEqual(ev.Severity, 1)
-        self.assertEqual(ev.SourceName, b'MyObject')
+        self.assertEqual(ev.SourceName, 'MyObject')
         self.assertEqual(ev.SourceNode, o.nodeid)
         self.assertEqual(ev.Message.Text, msg)
         self.assertEqual(ev.Time, tid)
@@ -373,7 +373,7 @@ class CommonTests(object):
         evgen.trigger(tid, msg)
 
         with self.assertRaises(TimeoutError):  # we should not receive event
-            ev = msclt.future.result(10)
+            ev = msclt.future.result(2)
 
         # time.sleep(0.1)
         sub.unsubscribe(handle)
@@ -401,7 +401,7 @@ class CommonTests(object):
         self.assertIsNot(ev, None)  # we did not receive event
         self.assertEqual(ev.EventType, etype.nodeid)
         self.assertEqual(ev.Severity, serverity)
-        self.assertEqual(ev.SourceName, self.opc.get_server_node().get_display_name().Text)
+        self.assertEqual(ev.SourceName, self.opc.get_server_node().get_browse_name().Name)
         self.assertEqual(ev.SourceNode, self.opc.get_server_node().nodeid)
         self.assertEqual(ev.Message.Text, msg)
         self.assertEqual(ev.Time, tid)
@@ -434,7 +434,7 @@ class CommonTests(object):
         self.assertIsNot(ev, None)  # we did not receive event
         self.assertEqual(ev.EventType, etype.nodeid)
         self.assertEqual(ev.Severity, 1)
-        self.assertEqual(ev.SourceName, b'MyObject')
+        self.assertEqual(ev.SourceName, 'MyObject')
         self.assertEqual(ev.SourceNode, o.nodeid)
         self.assertEqual(ev.Message.Text, msg)
         self.assertEqual(ev.Time, tid)

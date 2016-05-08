@@ -112,10 +112,12 @@ class MonitoredItemService(object):
         result.FilterResult = ua.EventFilterResult()
         for _ in params.RequestedParameters.Filter.SelectClauses:
             result.FilterResult.SelectClauseResults.append(ua.StatusCode())
-        # FIXME: where clause result
+        # TODO: spec says we should check WhereClause here
         mdata.where_clause_evaluator = WhereClauseEvaluator(self.logger, self.aspace, mdata.mfilter.WhereClause)
         self._commit_monitored_item(result, mdata)
-        self._monitored_events[params.ItemToMonitor.NodeId] = result.MonitoredItemId
+        if params.ItemToMonitor.NodeId not in self._monitored_events:
+            self._monitored_events[params.ItemToMonitor.NodeId] = []
+        self._monitored_events[params.ItemToMonitor.NodeId].append(result.MonitoredItemId)
         return result
 
     def _create_data_change_monitored_item(self, params):
@@ -147,8 +149,10 @@ class MonitoredItemService(object):
         if mid not in self._monitored_items:
             return ua.StatusCode(ua.StatusCodes.BadMonitoredItemIdInvalid)
         for k, v in self._monitored_events.items():
-            if v == mid:
-                self._monitored_events.pop(k)
+            if mid in v:
+                v.remove(mid)
+                if not v:
+                    self._monitored_events.pop(k)
                 break
         for k, v in self._monitored_datachange.items():
             if v == mid:
@@ -182,20 +186,22 @@ class MonitoredItemService(object):
                 return False
             self.logger.debug("%s has subscription for events %s from node: %s",
                               self, event, event.SourceNode)
-            mid = self._monitored_events[event.SourceNode]
-            if mid not in self._monitored_items:
-                self.logger.debug("Could not find monitored items for id %s for event %s in subscription %s",
-                                  mid, event, self)
-                return False
-            mdata = self._monitored_items[mid]
-            if not mdata.where_clause_evaluator.eval(event):
-                self.logger.debug("Event does not fit WhereClause, not generating event", mid, event, self)
-                return
-            fieldlist = ua.EventFieldList()
-            fieldlist.ClientHandle = mdata.client_handle
-            fieldlist.EventFields = self._get_event_fields(mdata.mfilter, event)
-            self.isub.enqueue_event(mid, fieldlist, mdata.parameters.RevisedQueueSize)
-            return True
+            mids = self._monitored_events[event.SourceNode]
+            for mid in mids:
+                self._trigger_event(event, mid)
+
+    def _trigger_event(self, event, mid):
+        if mid not in self._monitored_items:
+            self.logger.debug("Could not find monitored items for id %s for event %s in subscription %s", mid, event, self)
+            return
+        mdata = self._monitored_items[mid]
+        if not mdata.where_clause_evaluator.eval(event):
+            self.logger.debug("Event does not fit WhereClause, not generating event", mid, event, self)
+            return
+        fieldlist = ua.EventFieldList()
+        fieldlist.ClientHandle = mdata.client_handle
+        fieldlist.EventFields = self._get_event_fields(mdata.mfilter, event)
+        self.isub.enqueue_event(mid, fieldlist, mdata.parameters.RevisedQueueSize)
 
     def _get_event_fields(self, evfilter, event):
         fields = []
@@ -381,24 +387,43 @@ class WhereClauseEvaluator(object):
 
     def _eval_el(self, index, event):
         el = self.elements[index]
-        if el.FilterOperator == ua.FilterOperator.And:
-            self.elements(el.FilterOperands[0].Index)
-            return self._eval_op(el.FilterOperands[0], event) and self._eval_op(el.FilterOperands[1], event)
-        elif el.FilterOperator == ua.FilterOperator.Or:
-            return self._eval_op(el.FilterOperands[0], event) or self._eval_el(el.FilterOperands[1], event)
-        elif el.FilterOperator == ua.FilterOperator.InList:
-            return self._eval_op(el.FilterOperands[0], event) in [self._eval_op(op, event) for op in el.FilterOperands[1:]]
-        elif el.FilterOperator == ua.FilterOperator.Equals:
-            return self._eval_op(el.FilterOperands[0], event) == self._eval_el(el.FilterOperands[1], event)
+        #ops = [self._eval_op(op, event) for op in el.FilterOperands]
+        ops = el.FilterOperands  # just to make code more readable
+        if el.FilterOperator == ua.FilterOperator.Equals:
+            return self._eval_op(ops[0], event) == self._eval_el(ops[1], event)
         elif el.FilterOperator == ua.FilterOperator.IsNull:
-            return self._eval_op(el.FilterOperands[0], event) is None  # FIXME: might be too strict
+            return self._eval_op(ops[0], event) is None  # FIXME: might be too strict
+        elif el.FilterOperator == ua.FilterOperator.GreaterThan:
+            return self._eval_op(ops[0], event) > self._eval_el(ops[1], event)
         elif el.FilterOperator == ua.FilterOperator.LessThan:
-            return self._eval_op(el.FilterOperands[0], event) < self._eval_el(el.FilterOperands[1], event)
+            return self._eval_op(ops[0], event) < self._eval_el(ops[1], event)
+        elif el.FilterOperator == ua.FilterOperator.GreaterThanOrEqual:
+            return self._eval_op(ops[0], event) >= self._eval_el(ops[1], event)
         elif el.FilterOperator == ua.FilterOperator.LessThanOrEqual:
-            return self._eval_op(el.FilterOperands[0], event) < self._eval_el(el.FilterOperands[1], event)
+            return self._eval_op(ops[0], event) <= self._eval_el(ops[1], event)
+        elif el.FilterOperator == ua.FilterOperator.Like:
+            return self._likeoperator(self._eval_op(ops[0], event), self._eval_el(ops[1], event))
+        elif el.FilterOperator == ua.FilterOperator.Not:
+            return not self._eval_op(ops[0], event)
+        elif el.FilterOperator == ua.FilterOperator.Between:
+            return self._eval_el(ops[2], event) >= self._eval_op(ops[0], event) >= self._eval_el(ops[1], event)
+        elif el.FilterOperator == ua.FilterOperator.InList:
+            return self._eval_op(ops[0], event) in [self._eval_op(op, event) for op in ops[1:]]
+        elif el.FilterOperator == ua.FilterOperator.And:
+            self.elements(ops[0].Index)
+            return self._eval_op(ops[0], event) and self._eval_op(ops[1], event)
+        elif el.FilterOperator == ua.FilterOperator.Or:
+            return self._eval_op(ops[0], event) or self._eval_el(ops[1], event)
+        elif el.FilterOperator == ua.FilterOperator.Cast:
+            self.logger("Cast operand not implemented")
+            raise NotImplementError
         else:
             # TODO: implement missing operators
             print("WhereClause not implemented for element: %s", el)
+            raise NotImplementError
+
+    def _like_operator(self, string, pattern):
+        raise NotImplementError
 
     def _eval_op(self, op, event):
         # seems spec says we should return Null if issues
@@ -414,7 +439,7 @@ class WhereClauseEvaluator(object):
         elif type(op) is ua.SimpleAttributeOperand:
             if op.BrowsePath:
                 # we only support depth of 1
-                return getattr(event, op.BrowsePath[0].BrowseName.Name)
+                return getattr(event, op.BrowsePath[0].Name)
             else:
                 # TODO: write code for index range.... but doe it make any sense
                 return self._aspace.get_attribute_value(event.EventType, op.AttributeId).Value.Value
@@ -422,6 +447,7 @@ class WhereClauseEvaluator(object):
             return op.Value.Value
         else:
             self.logger.warning("Where clause element % is not of a known type", el)
+            raise NotImplementError
 
 
 
