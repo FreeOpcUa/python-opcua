@@ -271,7 +271,7 @@ class HistorySQLite(HistoryStorageInterface):
         ev_fields = []
         ev_variant_binaries = []
 
-        ev_variant_dict = event_result.get_event_props_as_field_dict()
+        ev_variant_dict = event_result.get_event_props_as_fields_dict()
 
         # split dict into two synchronized lists which will be converted to SQL strings
         # note that the variants are converted to binary objects for storing in SQL BLOB format
