@@ -153,16 +153,16 @@ class InternalServer(object):
     def create_session(self, name, user=User.Anonymous, external=False):
         return InternalSession(self, self.aspace, self.subscription_service, name, user=user, external=external)
 
-    def enable_history_var(self, node, period=timedelta(days=7), count=0):
+    def enable_history_data_change(self, node, period=timedelta(days=7), count=0):
         """
         Set attribute Historizing of node to True and start storing data for history
         """
         node.set_attribute(ua.AttributeIds.Historizing, ua.DataValue(True))
         node.set_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.HistoryRead)
         node.set_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.HistoryRead)
-        self.history_manager.historize_var(node, period, count)
+        self.history_manager.historize_data_change(node, period, count)
 
-    def disable_history_var(self, node):
+    def disable_history_data_change(self, node):
         """
         Set attribute Historizing of node to False and stop storing data for history
         """

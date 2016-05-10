@@ -53,7 +53,7 @@ if __name__ == "__main__":
     server.start()
 
     # enable history for this particular node, must be called after start since it uses subscription
-    server.iserver.enable_history_var(myvar, period=None, count=100)
+    server.iserver.enable_history_data_change(myvar, period=None, count=100)
 
     # enable history for myobj events
     server.iserver.enable_history_event(myobj, period=None)

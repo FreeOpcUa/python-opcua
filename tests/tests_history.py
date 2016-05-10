@@ -40,7 +40,7 @@ class HistoryCommon(object):
         o = cls.srv.get_objects_node()
         cls.values = [i for i in range(20)]
         cls.var = o.add_variable(3, "history_var", 0)
-        cls.srv.iserver.enable_history_var(cls.var, period=None, count=10)
+        cls.srv.iserver.enable_history_data_change(cls.var, period=None, count=10)
         for i in cls.values:
             cls.var.set_value(i)
         time.sleep(1)
@@ -178,6 +178,27 @@ class HistoryCommon(object):
         self.assertEqual(res[2].Value.Value, self.values[-3])
         self.assertEqual(res[0].Value.Value, self.values[-1])
 
+
+class TestHistory(unittest.TestCase, HistoryCommon):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.start_server_and_client()
+        cls.create_var()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.stop_server_and_client()
+
+
+class TestHistorySQL(unittest.TestCase, HistoryCommon):
+    @classmethod
+    def setUpClass(cls):
+        cls.start_server_and_client()
+        cls.srv.iserver.history_manager.set_storage(HistorySQLite(":memory:"))
+        cls.create_var()
+        cls.create_srv_events()
+
     # ~~~~~~~~~~~~~~~~~~~~~~~ events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     # only has end time, should return reverse order
@@ -189,7 +210,7 @@ class HistoryCommon(object):
         self.assertEqual(len(res), 2)
         self.assertEqual(res[-1].EventFields[8].Value, self.ev_values[-2])
 
-    # both start and endtime, return from start to end
+    # both start and end time, return from start to end
     def test_history_ev_read_all(self):
         now = datetime.utcnow()
         old = now - timedelta(days=6)
@@ -260,28 +281,6 @@ class HistoryCommon(object):
         self.assertEqual(len(res), 20)
         self.assertEqual(res[-1].EventFields[0].Value, self.ev_values[-1])
         self.assertEqual(res[0].EventFields[0].Value, self.ev_values[0])
-
-
-class TestHistory(unittest.TestCase, HistoryCommon):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.start_server_and_client()
-        cls.create_var()
-        cls.create_srv_events()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.stop_server_and_client()
-
-
-class TestHistorySQL(unittest.TestCase, HistoryCommon):
-    @classmethod
-    def setUpClass(cls):
-        cls.start_server_and_client()
-        cls.srv.iserver.history_manager.set_storage(HistorySQLite(":memory:"))
-        cls.create_var()
-        cls.create_srv_events()
 
     @classmethod
     def tearDownClass(cls):

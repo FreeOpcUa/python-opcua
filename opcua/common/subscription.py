@@ -52,15 +52,14 @@ class EventResult(object):
         return "EventResult({})".format([str(k) + ":" + str(v) for k, v in self.__dict__.items()])
     __repr__ = __str__
 
-    def get_field_variants(self):
+    def get_event_props_as_fields_dict(self):
+        """
+        convert all properties of the EventResult class to a dict of variants
+        """
         field_vars = {}
         for key, value in vars(self).items():
             if not key.startswith("__") and key is not "server_handle":
-                if key is "SourceName":
-                    # hack because client is expecting string not byte string?
-                    field_vars[key] = ua.Variant(value.decode(encoding='utf-8'))
-                else:
-                    field_vars[key] = ua.Variant(value)
+                field_vars[key] = ua.Variant(value)
         return field_vars
 
 
@@ -85,7 +84,7 @@ class DataChangeNotif(object):
         self.subscription_data = subscription_data
 
     def __str__(self):
-        return "DataChangeNotfication({}, {})".format(self.subscription_data, self.monitored_item)
+        return "DataChangeNotification({}, {})".format(self.subscription_data, self.monitored_item)
     __repr__ = __str__
 
 

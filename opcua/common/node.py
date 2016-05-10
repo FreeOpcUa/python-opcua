@@ -379,15 +379,15 @@ class Node(object):
 
     def read_event_history(self, evfilter, starttime=None, endtime=None, numvalues=0):
         """
-        Read raw history of a node
+        Read event history of a source node based on supplied UA EventFilter
         result code from server is checked and an exception is raised in case of error
         If numvalues is > 0 and number of events in period is > numvalues
         then result will be truncated
         """
 
         # FIXME event filter must be supplied externally, the problem is the node class doesn't have a way to get
-        # FIXME another node from the address space as these methods are at the server level, there fore so there is
-        # FIXME no way to build an event filter here (although it would be nicer for the user)
+        # FIXME another node from the address space as these methods are at the server level, therefore there is
+        # FIXME no way to build an event filter here (although it could be nicer for a user who doesn't want a filter)
 
         details = ua.ReadEventDetails()
         if starttime:
@@ -407,7 +407,7 @@ class Node(object):
 
     def history_read_events(self, details):
         """
-        Read raw event history of a node, low-level function
+        Read event history of a node, low-level function
         result code from server is checked and an exception is raised in case of error
         """
         valueid = ua.HistoryReadValueId()

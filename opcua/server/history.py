@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 from datetime import datetime
 
@@ -145,12 +146,16 @@ class SubHandler(object):
 
 class HistoryManager(object):
     def __init__(self, iserver):
+        self.logger = logging.getLogger(__name__)
         self.iserver = iserver
         self.storage = HistoryDict()
         self._sub = None
         self._handlers = {}
 
     def set_storage(self, storage):
+        """
+        set the desired HistoryStorageInterface which History Manager will use for historizing
+        """
         self.storage = storage
 
     def _create_subscription(self, handler):
@@ -163,7 +168,10 @@ class HistoryManager(object):
         params.Priority = 0
         return Subscription(self.iserver.isession, params, handler)
 
-    def historize_var(self, node, period=timedelta(days=7), count=0):
+    def historize_data_change(self, node, period=timedelta(days=7), count=0):
+        """
+        subscribe to the nodes' data changes and store the data in the active storage
+        """
         if not self._sub:
             self._sub = self._create_subscription(SubHandler(self.storage))
         if node in self._handlers:
@@ -173,6 +181,9 @@ class HistoryManager(object):
         self._handlers[node] = handler
 
     def historize_event(self, source, period=timedelta(days=7)):
+        """
+        subscribe to the source nodes' events and store the data in the active storage; custom event properties included
+        """
         if not self._sub:
             self._sub = self._create_subscription(SubHandler(self.storage))
         if source in self._handlers:
@@ -187,8 +198,14 @@ class HistoryManager(object):
         self._handlers[source] = handler
 
     def dehistorize(self, node):
-        self._sub.unsubscribe(self._handlers[node])
-        del(self._handlers[node])
+        """
+        remove subscription to the node/source which is being historized
+        """
+        if node in self._handlers:
+            self._sub.unsubscribe(self._handlers[node])
+            del(self._handlers[node])
+        else:
+            self.logger.error("History Manager isn't subscribed to %s", node)
 
     def read_history(self, params):
         """
@@ -205,7 +222,7 @@ class HistoryManager(object):
         
     def _read_history(self, details, rv):
         """
-        read history for a node
+        determine if the history read is for a data changes or events; then read the history for that node
         """
         result = ua.HistoryReadResult()
         if isinstance(details, ua.ReadRawModifiedDetails):
@@ -300,4 +317,7 @@ class HistoryManager(object):
         return results
 
     def stop(self):
+        """
+        call stop methods of active storage interface whenever the server is stopped
+        """
         self.storage.stop()

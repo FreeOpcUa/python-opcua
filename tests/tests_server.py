@@ -132,11 +132,11 @@ class TestServer(unittest.TestCase, CommonTests):
     def test_historize_variable(self):
         o = self.opc.get_objects_node()
         var = o.add_variable(3, "test_hist", 1.0)
-        self.srv.iserver.enable_history_var(var, timedelta(days=1))
+        self.srv.iserver.enable_history_data_change(var, timedelta(days=1))
         time.sleep(1)
         var.set_value(2.0)
         var.set_value(3.0)
-        self.srv.iserver.disable_history_var(var)
+        self.srv.iserver.disable_history_data_change(var)
 
     def test_historize_events(self):
         srv_node = self.srv.get_node(ua.ObjectIds.Server)

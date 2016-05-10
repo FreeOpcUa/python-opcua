@@ -16,7 +16,6 @@ class HistorySQLite(HistoryStorageInterface):
     def __init__(self, path="history.db"):
         self.logger = logging.getLogger(__name__)
         self._datachanges_period = {}
-        self._events = {}
         self._db_file = path
         self._lock = Lock()
         self._event_fields = {}
@@ -272,7 +271,7 @@ class HistorySQLite(HistoryStorageInterface):
         ev_fields = []
         ev_variant_binaries = []
 
-        ev_variant_dict = event_result.get_field_variants()
+        ev_variant_dict = event_result.get_event_props_as_field_dict()
 
         # split dict into two synchronized lists which will be converted to SQL strings
         # note that the variants are converted to binary objects for storing in SQL BLOB format
@@ -299,8 +298,7 @@ class HistorySQLite(HistoryStorageInterface):
                     name = select_clause.BrowsePath[0].Name
                     s_clauses.append(name)
             except AttributeError:
-                pass
-                # FIXME what to do here?
+                self.logger.error('Historizing SQL OPC UA Select Clauses Error for node %s', source_id)
 
         # remove select clauses that the event type doesn't have; SQL will error because the column doesn't exist
         clauses = [x for x in s_clauses if self._check(source_id, x)]
