@@ -34,6 +34,7 @@ class KeepAlive(Thread):
         if timeout == 0:  # means no timeout bu we do not trust such servers
             timeout = 360000
         self.timeout = timeout
+        self.daemon = True
         self.client = client
         self._dostop = False
         self._cond = Condition()
