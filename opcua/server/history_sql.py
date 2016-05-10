@@ -10,7 +10,10 @@ import sqlite3
 
 class HistorySQLite(HistoryStorageInterface):
     """
-    very minimal history backend storing data in SQLite database
+    history backend which stores data values and object events in a SQLite database
+    this backend is intended to only be accessed via OPC UA, therefore all UA Variants saved in
+    the history database are in binary format (SQLite BLOBs)
+    note that PARSE_DECLTYPES is active so certain data types (such as datetime) will not be BLOBs
     """
 
     def __init__(self, path="history.db"):
@@ -61,7 +64,7 @@ class HistorySQLite(HistoryStorageInterface):
                                    datavalue.StatusCode.value,
                                    str(datavalue.Value.Value),
                                    datavalue.Value.VariantType.name,
-                                   datavalue.Value.to_binary()
+                                   sqlite3.Binary(datavalue.Value.to_binary())
                                )
                                )
             except sqlite3.Error as e:
@@ -118,7 +121,8 @@ class HistorySQLite(HistoryStorageInterface):
             # select values from the database; recreate UA Variant from binary
             try:
                 for row in _c_read.execute('SELECT * FROM "{tn}" WHERE "ServerTimestamp" BETWEEN ? AND ? '
-                                           'ORDER BY "_Id" {dir} LIMIT ?'.format(tn=table, dir=order), (start_time, end_time, limit,)):
+                                           'ORDER BY "_Id" {dir} LIMIT ?'.format(tn=table, dir=order),
+                                           (start_time, end_time, limit,)):
 
                     # rebuild the data value object
                     dv = ua.DataValue(ua.Variant.from_binary(Buffer(row[6])))
@@ -278,7 +282,7 @@ class HistorySQLite(HistoryStorageInterface):
         for field, variant in ev_variant_dict.items():
             placeholders.append('?')
             ev_fields.append(field)
-            ev_variant_binaries.append(variant.to_binary())
+            ev_variant_binaries.append(sqlite3.Binary(variant.to_binary()))
 
         return self._list_to_sql_str(ev_fields), self._list_to_sql_str(placeholders, False), tuple(ev_variant_binaries)
 
@@ -298,7 +302,8 @@ class HistorySQLite(HistoryStorageInterface):
                     name = select_clause.BrowsePath[0].Name
                     s_clauses.append(name)
             except AttributeError:
-                self.logger.error('Historizing SQL OPC UA Select Clauses Error for node %s', source_id)
+                self.logger.warning('Historizing SQL OPC UA Select Clause Warning for node %s,'
+                                    ' Clause: %s:', source_id, select_clause)
 
         # remove select clauses that the event type doesn't have; SQL will error because the column doesn't exist
         clauses = [x for x in s_clauses if self._check(source_id, x)]
