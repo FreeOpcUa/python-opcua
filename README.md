@@ -74,14 +74,14 @@ Server: what works:
 * encryption
 * certificate handling
 * removing nodes 
-* history support
+* history support for data change and events
 
 Tested clients: freeopcua C++, freeopcua Python, uaexpert, prosys, quickopc
 
 Server: what is not implemented
-* history support for events
+* alarms
 * views
-* localized text feature
+* localized text features
 * better securty model with users and password
 * adding some missing modify methods
 
@@ -89,7 +89,7 @@ Server: what is not implemented
 
 # Development
 
-Code follows PEP8 apart for line lengths and autogenerate class and enums that keep camel case from XML definition.
+Code follows PEP8 apart for line lengths which should be max 120 characters and OPC UA enums that keep camel case from XML definition.
 
 All code is under opcua directory
 
