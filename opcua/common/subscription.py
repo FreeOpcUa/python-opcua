@@ -23,19 +23,19 @@ class SubHandler(object):
 
     def datachange_notification(self, node, val, data):
         """
-        called for every datachange notfication from server
+        called for every datachange notification from server
         """
         pass
 
     def event_notification(self, event):
         """
-        called for every event notfication from server
+        called for every event notification from server
         """
         pass
 
     def status_change_notification(self, status):
         """
-        called for every status change notfication from server
+        called for every status change notification from server
         """
         pass
 
@@ -52,10 +52,20 @@ class EventResult(object):
         return "EventResult({})".format([str(k) + ":" + str(v) for k, v in self.__dict__.items()])
     __repr__ = __str__
 
+    def get_event_props_as_fields_dict(self):
+        """
+        convert all properties of the EventResult class to a dict of variants
+        """
+        field_vars = {}
+        for key, value in vars(self).items():
+            if not key.startswith("__") and key is not "server_handle":
+                field_vars[key] = ua.Variant(value)
+        return field_vars
+
 
 class SubscriptionItemData(object):
     """
-    To store usefull data from a monitored item
+    To store useful data from a monitored item
     """
     def __init__(self):
         self.node = None
@@ -74,7 +84,7 @@ class DataChangeNotif(object):
         self.subscription_data = subscription_data
 
     def __str__(self):
-        return "DataChangeNotfication({}, {})".format(self.subscription_data, self.monitored_item)
+        return "DataChangeNotification({}, {})".format(self.subscription_data, self.monitored_item)
     __repr__ = __str__
 
 
@@ -266,7 +276,7 @@ class Subscription(object):
         params.ItemsToCreate = monitored_items
         params.TimestampsToReturn = ua.TimestampsToReturn.Neither
 
-        # insert monitoried item into map to avoid notification arrive before result return
+        # insert monitored item into map to avoid notification arrive before result return
         # server_handle is left as None in purpose as we don't get it yet.
         with self._lock:
             for mi in monitored_items:
@@ -319,7 +329,7 @@ def get_event_properties_from_type_node(node):
             break
 
         parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
-        if len(parents) != 1: # Something went wrong
+        if len(parents) != 1:  # Something went wrong
             return None
         curr_node = parents[0]
 

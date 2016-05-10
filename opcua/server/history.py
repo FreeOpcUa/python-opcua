@@ -1,9 +1,11 @@
+import logging
 from datetime import timedelta
 from datetime import datetime
 
 from opcua import Subscription
 from opcua import ua
 from opcua.common import utils
+from opcua.common import subscription
 
 
 class HistoryStorageInterface(object):
@@ -38,7 +40,7 @@ class HistoryStorageInterface(object):
         """
         raise NotImplementedError
 
-    def new_historized_event(self, event, period):
+    def new_historized_event(self, source_id, etype, period):
         """
         Called when historization of events is enabled on server side
         FIXME: we may need to store events per nodes in future...
@@ -53,7 +55,7 @@ class HistoryStorageInterface(object):
         """
         raise NotImplementedError
 
-    def read_event_history(self, start, end, evfilter):
+    def read_event_history(self, source_id, start, end, nb_values, evfilter):
         """
         Called when a client make a history read request for events
         Start time and end time are inclusive
@@ -118,13 +120,13 @@ class HistoryDict(HistoryStorageInterface):
                 results = results[:nb_values]
             return results, cont
 
-    def new_historized_event(self, event, period):
+    def new_historized_event(self, source_id, etype, period):
         self._events = []
 
     def save_event(self, event):
         raise NotImplementedError
 
-    def read_event_history(self, start, end, evfilter):
+    def read_event_history(self, source_id, start, end, nb_values, evfilter):
         raise NotImplementedError
 
     def stop(self):
@@ -144,12 +146,16 @@ class SubHandler(object):
 
 class HistoryManager(object):
     def __init__(self, iserver):
+        self.logger = logging.getLogger(__name__)
         self.iserver = iserver
         self.storage = HistoryDict()
         self._sub = None
         self._handlers = {}
 
     def set_storage(self, storage):
+        """
+        set the desired HistoryStorageInterface which History Manager will use for historizing
+        """
         self.storage = storage
 
     def _create_subscription(self, handler):
@@ -162,7 +168,10 @@ class HistoryManager(object):
         params.Priority = 0
         return Subscription(self.iserver.isession, params, handler)
 
-    def historize(self, node, period=timedelta(days=7), count=0):
+    def historize_data_change(self, node, period=timedelta(days=7), count=0):
+        """
+        subscribe to the nodes' data changes and store the data in the active storage
+        """
         if not self._sub:
             self._sub = self._create_subscription(SubHandler(self.storage))
         if node in self._handlers:
@@ -171,9 +180,32 @@ class HistoryManager(object):
         handler = self._sub.subscribe_data_change(node)
         self._handlers[node] = handler
 
+    def historize_event(self, source, period=timedelta(days=7)):
+        """
+        subscribe to the source nodes' events and store the data in the active storage; custom event properties included
+        """
+        if not self._sub:
+            self._sub = self._create_subscription(SubHandler(self.storage))
+        if source in self._handlers:
+            raise ua.UaError("Events from {} are already historized".format(source))
+
+        # get the event types the source node generates and a list of all possible event fields
+        event_types, ev_fields = self._get_source_event_data(source)
+
+        self.storage.new_historized_event(source.nodeid, ev_fields, period)
+
+        handler = self._sub.subscribe_events(source)  # FIXME supply list of event types when master is fixed
+        self._handlers[source] = handler
+
     def dehistorize(self, node):
-        self._sub.unsubscribe(self._handlers[node])
-        del(self._handlers[node])
+        """
+        remove subscription to the node/source which is being historized
+        """
+        if node in self._handlers:
+            self._sub.unsubscribe(self._handlers[node])
+            del(self._handlers[node])
+        else:
+            self.logger.error("History Manager isn't subscribed to %s", node)
 
     def read_history(self, params):
         """
@@ -190,7 +222,7 @@ class HistoryManager(object):
         
     def _read_history(self, details, rv):
         """
-        read history for a node
+        determine if the history read is for a data changes or events; then read the history for that node
         """
         result = ua.HistoryReadResult()
         if isinstance(details, ua.ReadRawModifiedDetails):
@@ -207,9 +239,10 @@ class HistoryManager(object):
             result.HistoryData = ua.HistoryEvent()
             # FIXME: filter is a cumbersome type, maybe transform it something easier
             # to handle for storage
-            result.HistoryData.Events = self.storage.read_event_history(details.StartTime,
-                                                                        details.EndTime,
-                                                                        details.Filter)
+            ev, cont = self._read_event_history(rv, details)
+            result.HistoryData.Events = ev
+            result.ContinuationPoint = cont
+
         else:
             # we do not currently support the other types, clients can process data themselves
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadNotImplemented)
@@ -222,7 +255,7 @@ class HistoryManager(object):
             # but they also say we can use cont point as timestamp to enable stateless
             # implementation. This is contradictory, so we assume details is
             # send correctly with continuation point
-            #starttime = bytes_to_datetime(rv.ContinuationPoint)
+            # starttime = bytes_to_datetime(rv.ContinuationPoint)
             starttime = ua.unpack_datetime(utils.Buffer(rv.ContinuationPoint))
 
         dv, cont = self.storage.read_node_history(rv.NodeId,
@@ -231,11 +264,43 @@ class HistoryManager(object):
                                                   details.NumValuesPerNode)
         if cont:
             # cont = datetime_to_bytes(dv[-1].ServerTimestamp)
-            cont = ua.pack_datetime(dv[-1].ServerTimestamp)
-        # FIXME, parse index range and filter out if necessary
+            cont = ua.pack_datetime(cont)
         # rv.IndexRange
         # rv.DataEncoding # xml or binary, seems spec say we can ignore that one
         return dv, cont
+
+    def _read_event_history(self, rv, details):
+        starttime = details.StartTime
+        if rv.ContinuationPoint:
+            # Spec says we should ignore details if cont point is present
+            # but they also say we can use cont point as timestamp to enable stateless
+            # implementation. This is contradictory, so we assume details is
+            # send correctly with continuation point
+            # starttime = bytes_to_datetime(rv.ContinuationPoint)
+            starttime = ua.unpack_datetime(utils.Buffer(rv.ContinuationPoint))
+
+        ev, cont = self.storage.read_event_history(rv.NodeId,
+                                                   starttime,
+                                                   details.EndTime,
+                                                   details.NumValuesPerNode,
+                                                   details.Filter)
+        if cont:
+            # cont = datetime_to_bytes(dv[-1].ServerTimestamp)
+            cont = ua.pack_datetime(cont)
+        return ev, cont
+
+    def _get_source_event_data(self, source):
+        # get all event types which the source node can generate; get the fields of those event types
+        event_types = source.get_referenced_nodes(ua.ObjectIds.GeneratesEvent)
+
+        ev_aggregate_fields = []
+        for event_type in event_types:
+            ev_aggregate_fields.extend((subscription.get_event_properties_from_type_node(event_type)))
+
+        ev_fields = []
+        for field in set(ev_aggregate_fields):
+            ev_fields.append(field.get_display_name().Text.decode(encoding='utf-8'))
+        return event_types, ev_fields
 
     def update_history(self, params):
         """
@@ -252,4 +317,7 @@ class HistoryManager(object):
         return results
 
     def stop(self):
+        """
+        call stop methods of active storage interface whenever the server is stopped
+        """
         self.storage.stop()
