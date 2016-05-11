@@ -1,6 +1,8 @@
 from threading import RLock
 import logging
 from datetime import datetime
+import collections
+import shelve
 try:
     import cPickle as pickle
 except:
@@ -466,15 +468,43 @@ class AddressSpace(object):
         """
         dump address space as binary to file
         """
-        with open(path, 'wb') as f:
-            pickle.dump(self._nodes, f, pickle.HIGHEST_PROTOCOL)
+        s = shelve.open(path, "n", protocol = pickle.HIGHEST_PROTOCOL)
+        for nodeid in self._nodes.keys():
+            s[nodeid.to_string()] = self._nodes[nodeid]
+        s.close()
 
     def load(self, path):
         """
         load address space from file, overwritting everything current address space
         """
-        with open(path, 'rb') as f:
-            self._nodes = pickle.load(f)
+        class LazyLoadingDict(collections.MutableMapping):
+            def __init__(self, source):
+                self.source = source
+                self.cache = {}
+
+            def __getitem__(self, key):
+                try:
+                    return self.cache[key]
+                except KeyError:
+                    node = self.cache[key] = self.source[key.to_string()]
+                    return node
+
+            def __setitem__(self, key, value):
+                self.cache[key] = value
+
+            def __contains__(self, key):
+                return key in self.cache or key.to_string() in self.source
+
+            def __delitem__(self, key):
+                raise NotImplementedError
+
+            def __iter__(self):
+                raise NotImplementedError
+
+            def __len__(self):
+                raise NotImplementedError
+
+        self._nodes = LazyLoader(shelve.open(path, "r"))
 
     def get_attribute_value(self, nodeid, attr):
         with self._lock:
