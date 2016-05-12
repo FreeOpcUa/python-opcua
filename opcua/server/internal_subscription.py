@@ -59,15 +59,16 @@ class MonitoredItemService(object):
     def _modify_monitored_item(self, params):
         with self._lock:
             for mdata in self._monitored_items.values():
-                result = ua.MonitoredItemCreateResult()
+                result = ua.MonitoredItemModifyResult() # main thing that was wrong
                 if mdata.monitored_item_id == params.MonitoredItemId:
-                    result.RevisedSamplingInterval = self.isub.data.RevisedPublishingInterval
+                    self.isub.data.RevisedPublishingInterval = params.RequestedParameters.SamplingInterval #To change the subscription interval
+                    result.RevisedSamplingInterval = self.isub.data.RevisedPublishingInterval #to set the interval on the monitoring item
                     result.RevisedQueueSize = params.RequestedParameters.QueueSize
                     result.FilterResult = params.RequestedParameters.Filter
                     mdata.parameters = result
                     return result
             # FIXME modify event subscriptions
-            result = ua.MonitoredItemCreateResult()
+            result = ua.MonitoredItemModifyResult()
             result.StatusCode(ua.StatusCodes.BadMonitoredItemIdInvalid)
             return result
 
