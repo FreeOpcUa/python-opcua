@@ -1,8 +1,10 @@
 import unittest
-from tests_common import CommonTests, add_server_methods, MySubHandler
 import os
 import shelve
 import time
+
+from tests_common import CommonTests, add_server_methods
+from tests_subscriptions import SubscriptionTests
 from datetime import timedelta, datetime
 from tempfile import NamedTemporaryFile
 
@@ -17,7 +19,7 @@ port_num = 485140
 port_discovery = 48550
 
 
-class TestServer(unittest.TestCase, CommonTests):
+class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
 
     '''
     Run common tests on server side
