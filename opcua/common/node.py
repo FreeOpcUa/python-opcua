@@ -318,6 +318,17 @@ class Node(object):
         """
         if type(path) not in (list, tuple):
             path = [path]
+        rpath = self._make_relative_path(path)
+        bpath = ua.BrowsePath()
+        bpath.StartingNode = self.nodeid
+        bpath.RelativePath = rpath
+        result = self.server.translate_browsepaths_to_nodeids([bpath])
+        result = result[0]
+        result.StatusCode.check()
+        # FIXME: seems this method may return several nodes
+        return Node(self.server, result.Targets[0].TargetId)
+
+    def _make_relative_path(self, path):
         rpath = ua.RelativePath()
         for item in path:
             el = ua.RelativePathElement()
@@ -329,14 +340,7 @@ class Node(object):
             else:
                 el.TargetName = ua.QualifiedName.from_string(item)
             rpath.Elements.append(el)
-        bpath = ua.BrowsePath()
-        bpath.StartingNode = self.nodeid
-        bpath.RelativePath = rpath
-        result = self.server.translate_browsepaths_to_nodeids([bpath])
-        result = result[0]
-        result.StatusCode.check()
-        # FIXME: seems this method may return several nodes
-        return Node(self.server, result.Targets[0].TargetId)
+        return rpath
 
     def read_raw_history(self, starttime=None, endtime=None, numvalues=0):
         """

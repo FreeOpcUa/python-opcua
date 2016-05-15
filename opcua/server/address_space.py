@@ -201,8 +201,7 @@ class NodeManagementService(object):
 
         if item.ParentNodeId.is_null():
             # self.logger.warning("add_node: creating node %s without parent", nodedata.nodeid)
-            # We should return Error here, but the standard namespace seems to define many nodes
-            # without parents, so ignore...
+            # should return Error here, but the standard namespace define many nodes without parents...
             pass
         elif item.ParentNodeId not in self._aspace:
             self.logger.warning("add_node: while adding node %s, requested parent node %s does not exists", nodedata.nodeid, item.ParentNodeId)
@@ -213,12 +212,7 @@ class NodeManagementService(object):
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
             return result
 
-        # add common attrs
-        nodedata.attributes[ua.AttributeIds.NodeId] = AttributeValue(ua.DataValue(ua.Variant(nodedata.nodeid, ua.VariantType.NodeId)))
-        nodedata.attributes[ua.AttributeIds.BrowseName] = AttributeValue(ua.DataValue(ua.Variant(item.BrowseName, ua.VariantType.QualifiedName)))
-        nodedata.attributes[ua.AttributeIds.NodeClass] = AttributeValue(ua.DataValue(ua.Variant(item.NodeClass, ua.VariantType.Int32)))
-        # add requested attrs
-        self._add_nodeattributes(item.NodeAttributes, nodedata)
+        self._add_node_attributes(nodedata, item)
 
         # now add our node to db
         self._aspace[nodedata.nodeid] = nodedata
@@ -235,6 +229,20 @@ class NodeManagementService(object):
         result.AddedNodeId = nodedata.nodeid
 
         return result
+
+    def _add_node_attributes(self, nodedata, item):
+        # add common attrs
+        nodedata.attributes[ua.AttributeIds.NodeId] = AttributeValue(
+            ua.DataValue(ua.Variant(nodedata.nodeid, ua.VariantType.NodeId))
+        )
+        nodedata.attributes[ua.AttributeIds.BrowseName] = AttributeValue(
+            ua.DataValue(ua.Variant(item.BrowseName, ua.VariantType.QualifiedName))
+        )
+        nodedata.attributes[ua.AttributeIds.NodeClass] = AttributeValue(
+            ua.DataValue(ua.Variant(item.NodeClass, ua.VariantType.Int32))
+        )
+        # add requested attrs
+        self._add_nodeattributes(item.NodeAttributes, nodedata)
 
     def _add_ref_from_parent(self, nodedata, item):
         desc = ua.ReferenceDescription()

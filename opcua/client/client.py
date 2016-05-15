@@ -381,43 +381,55 @@ class Client(object):
         params.ClientSignature.Signature = self.security_policy.asymmetric_cryptography.signature(challenge)
         params.LocaleIds.append("en")
         if not username and not certificate:
-            params.UserIdentityToken = ua.AnonymousIdentityToken()
-            params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Anonymous, b"anonymous")
+            self._add_anonymous_auth(params)
         elif certificate:
-            params.UserIdentityToken = ua.X509IdentityToken()
-            params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Certificate, b"certificate_basic256")
-            params.UserIdentityToken.CertificateData = uacrypto.der_from_x509(certificate)
-            # specs part 4, 5.6.3.1: the data to sign is created by appending
-            # the last serverNonce to the serverCertificate
-            sig = uacrypto.sign_sha1(self.user_private_key, challenge)
-            params.UserTokenSignature = ua.SignatureData()
-            params.UserTokenSignature.Algorithm = b"http://www.w3.org/2000/09/xmldsig#rsa-sha1"
-            params.UserTokenSignature.Signature = sig
+            self._add_cetificate_auth(params, certificate, challenge)
         else:
-            params.UserIdentityToken = ua.UserNameIdentityToken()
-            params.UserIdentityToken.UserName = username
-            policy_uri = self.server_policy_uri(ua.UserTokenType.UserName)
-            if not policy_uri or policy_uri == security_policies.POLICY_NONE_URI:
-                # see specs part 4, 7.36.3: if the token is NOT encrypted,
-                # then the password only contains UTF-8 encoded password
-                # and EncryptionAlgorithm is null
-                if self.server_url.password:
-                    self.logger.warning("Sending plain-text password")
-                    params.UserIdentityToken.Password = password
-                params.UserIdentityToken.EncryptionAlgorithm = ''
-            elif self.server_url.password:
-                pubkey = uacrypto.x509_from_der(self.security_policy.server_certificate).public_key()
-                # see specs part 4, 7.36.3: if the token is encrypted, password
-                # shall be converted to UTF-8 and serialized with server nonce
-                passwd = bytes(password, "utf8")
-                if self._server_nonce is not None:
-                    passwd += self._server_nonce
-                etoken = ua.pack_bytes(passwd)
-                data, uri = security_policies.encrypt_asymmetric(pubkey, etoken, policy_uri)
-                params.UserIdentityToken.Password = data
-                params.UserIdentityToken.EncryptionAlgorithm = uri
-            params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")
+            self._add_user_auth(params, username, password)
         return self.uaclient.activate_session(params)
+
+    def _add_anonymous_auth(self, params):
+        params.UserIdentityToken = ua.AnonymousIdentityToken()
+        params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Anonymous, b"anonymous")
+
+    def _add_certificate_auth(self, params, certificate, challenge):
+        params.UserIdentityToken = ua.X509IdentityToken()
+        params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Certificate, b"certificate_basic256")
+        params.UserIdentityToken.CertificateData = uacrypto.der_from_x509(certificate)
+        # specs part 4, 5.6.3.1: the data to sign is created by appending
+        # the last serverNonce to the serverCertificate
+        sig = uacrypto.sign_sha1(self.user_private_key, challenge)
+        params.UserTokenSignature = ua.SignatureData()
+        params.UserTokenSignature.Algorithm = b"http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+        params.UserTokenSignature.Signature = sig
+
+    def _add_user_auth(self, params, username, password):
+        params.UserIdentityToken = ua.UserNameIdentityToken()
+        params.UserIdentityToken.UserName = username
+        policy_uri = self.server_policy_uri(ua.UserTokenType.UserName)
+        if not policy_uri or policy_uri == security_policies.POLICY_NONE_URI:
+            # see specs part 4, 7.36.3: if the token is NOT encrypted,
+            # then the password only contains UTF-8 encoded password
+            # and EncryptionAlgorithm is null
+            if self.server_url.password:
+                self.logger.warning("Sending plain-text password")
+                params.UserIdentityToken.Password = password
+            params.UserIdentityToken.EncryptionAlgorithm = ''
+        elif self.server_url.password:
+            data, uri = self._encrypt_password(password, policy_uri)
+            params.UserIdentityToken.Password = data 
+            params.UserIdentityToken.EncryptionAlgorithm = uri
+        params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")
+
+    def _encrypt_password(self, password, policy_uri):
+        pubkey = uacrypto.x509_from_der(self.security_policy.server_certificate).public_key()
+        # see specs part 4, 7.36.3: if the token is encrypted, password
+        # shall be converted to UTF-8 and serialized with server nonce
+        passwd = bytes(password, "utf8")
+        if self._server_nonce is not None:
+            passwd += self._server_nonce
+        etoken = ua.pack_bytes(passwd)
+        data, uri = security_policies.encrypt_asymmetric(pubkey, etoken, policy_uri)
 
     def close_session(self):
         """
