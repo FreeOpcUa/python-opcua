@@ -42,7 +42,12 @@ class MonitoredItemService(object):
     def create_monitored_items(self, params):
         results = []
         for item in params.ItemsToCreate:
-            results.append(self._create_monitored_item(item))
+            with self._lock:
+                if item.ItemToMonitor.AttributeId == ua.AttributeIds.EventNotifier:
+                    result = self._create_events_monitored_item(item)
+                else:
+                    result = self._create_data_change_monitored_item(item)
+            results.append(result)
         return results
 
     def modify_monitored_items(self, params):
@@ -71,53 +76,58 @@ class MonitoredItemService(object):
             result.StatusCode(ua.StatusCodes.BadMonitoredItemIdInvalid)
             return result
 
-    def _create_monitored_item(self, params):
-        with self._lock:
-            result = ua.MonitoredItemCreateResult()
-            result.RevisedSamplingInterval = self.isub.data.RevisedPublishingInterval
-            result.RevisedQueueSize = params.RequestedParameters.QueueSize
-            self._monitored_item_counter += 1
-            result.MonitoredItemId = self._monitored_item_counter
-            self.logger.debug("Creating MonitoredItem with id %s", result.MonitoredItemId)
-
-            mdata = MonitoredItemData()
-            mdata.parameters = result
-            mdata.mode = params.MonitoringMode
-            mdata.client_handle = params.RequestedParameters.ClientHandle
-            mdata.mfilter = params.RequestedParameters.Filter
-            mdata.monitored_item_id = result.MonitoredItemId
-
+    def _commit_monitored_item(self, result, mdata):
+        if result.StatusCode.is_good():
             self._monitored_items[result.MonitoredItemId] = mdata
+            self._monitored_item_counter += 1
 
-            if params.ItemToMonitor.AttributeId == ua.AttributeIds.EventNotifier:
-                self.logger.info("request to subscribe to events for node %s and attribute %s", params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
-                ev_notify_byte = self.aspace.get_attribute_value(params.ItemToMonitor.NodeId, ua.AttributeIds.EventNotifier).Value.Value
-                if ev_notify_byte is not None:
-                    if ev_notify_byte & 1 == 0:
-                        result.StatusCode = ua.StatusCode(ua.StatusCodes.BadServiceUnsupported)
-                else:
-                    result.StatusCode = ua.StatusCode(ua.StatusCodes.BadServiceUnsupported)
-                result.FilterResult = ua.EventFilterResult()
-                for _ in params.RequestedParameters.Filter.SelectClauses:
-                    result.FilterResult.SelectClauseResults.append(ua.StatusCode())
-                # FIXME: where clause result
-                self._monitored_events[params.ItemToMonitor.NodeId] = result.MonitoredItemId
-            else:
-                self.logger.info("request to subscribe to datachange for node %s and attribute %s", params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
-                result.FilterResult = params.RequestedParameters.Filter
-                result.StatusCode, handle = self.aspace.add_datachange_callback(params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId, self.datachange_callback)
-                self.logger.debug("adding callback return status %s and handle %s", result.StatusCode, handle)
-                mdata.callback_handle = handle
-                self._monitored_datachange[handle] = result.MonitoredItemId
-                if result.StatusCode.is_good():
-                    # force data change event generation
-                    self.trigger_datachange(handle, params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+    def _make_monitored_item_common(self, params):
+        result = ua.MonitoredItemCreateResult()
+        result.RevisedSamplingInterval = self.isub.data.RevisedPublishingInterval
+        result.RevisedQueueSize = params.RequestedParameters.QueueSize
+        self._monitored_item_counter += 1
+        result.MonitoredItemId = self._monitored_item_counter
+        self.logger.debug("Creating MonitoredItem with id %s", result.MonitoredItemId)
 
-            if not result.StatusCode.is_good():
-                del(self._monitored_items[result.MonitoredItemId])
-                self._monitored_item_counter -= 1
+        mdata = MonitoredItemData()
+        mdata.parameters = result
+        mdata.mode = params.MonitoringMode
+        mdata.client_handle = params.RequestedParameters.ClientHandle
+        mdata.mfilter = params.RequestedParameters.Filter
+        mdata.monitored_item_id = result.MonitoredItemId
 
+        return result, mdata
+
+    def _create_events_monitored_item(self, params):
+        self.logger.info("request to subscribe to events for node %s and attribute %s", params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+
+        result, mdata = self._make_monitored_item_common(params)
+        ev_notify_byte = self.aspace.get_attribute_value(params.ItemToMonitor.NodeId, ua.AttributeIds.EventNotifier).Value.Value
+        if ev_notify_byte is None or ev_notify_byte & 1 == 0:
+            result.StatusCode = ua.StatusCode(ua.StatusCodes.BadServiceUnsupported)
             return result
+        result.FilterResult = ua.EventFilterResult()
+        for _ in params.RequestedParameters.Filter.SelectClauses:
+            result.FilterResult.SelectClauseResults.append(ua.StatusCode())
+        # FIXME: where clause result
+        self._commit_monitored_item(result, mdata)
+        self._monitored_events[params.ItemToMonitor.NodeId] = result.MonitoredItemId
+        return result
+
+    def _create_data_change_monitored_item(self, params):
+        self.logger.info("request to subscribe to datachange for node %s and attribute %s", params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+
+        result, mdata = self._make_monitored_item_common(params)
+        result.FilterResult = params.RequestedParameters.Filter
+        result.StatusCode, handle = self.aspace.add_datachange_callback(params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId, self.datachange_callback)
+        self.logger.debug("adding callback return status %s and handle %s", result.StatusCode, handle)
+        mdata.callback_handle = handle
+        self._commit_monitored_item(result, mdata)
+        if result.StatusCode.is_good():
+            self._monitored_datachange[handle] = result.MonitoredItemId
+            # force data change event generation
+            self.trigger_datachange(handle, params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId)
+        return result
 
     def delete_monitored_items(self, ids):
         self.logger.debug("delete monitored items %s", ids)
