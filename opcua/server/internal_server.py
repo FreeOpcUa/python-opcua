@@ -5,6 +5,7 @@ Internal server implementing opcu-ua interface. can be used on server side or to
 from datetime import datetime
 from copy import copy, deepcopy
 from datetime import timedelta
+from os import path
 import logging
 from threading import Lock
 from enum import Enum
@@ -43,7 +44,7 @@ class ServerDesc(object):
 
 class InternalServer(object):
 
-    def __init__(self):
+    def __init__(self, cacheFile = None):
         self.logger = logging.getLogger(__name__)
         self.endpoints = []
         self._channel_id_counter = 5
@@ -56,14 +57,19 @@ class InternalServer(object):
         self.view_service = ViewService(self.aspace)
         self.method_service = MethodService(self.aspace)
         self.node_mgt_service = NodeManagementService(self.aspace)
-        # import address space from code generated from xml
-        standard_address_space.fill_address_space(self.node_mgt_service)
-        # import address space from save db to disc
-        #standard_address_space.fill_address_space_from_disk(self.aspace)
 
-        # import address space directly from xml, this has preformance impact so disabled
-        #importer = xmlimporter.XmlImporter(self.node_mgt_service)
-        #importer.import_xml("/home/olivier/python-opcua/schemas/Opc.Ua.NodeSet2.xml")
+        if cacheFile and path.isfile(cacheFile):
+            # import address space from shelve
+            self.aspace.load(cacheFile)
+        else:
+            # import address space from code generated from xml
+            standard_address_space.fill_address_space(self.node_mgt_service)
+            # import address space directly from xml, this has preformance impact so disabled
+            #importer = xmlimporter.XmlImporter(self.node_mgt_service)
+            #importer.import_xml("/path/to/python-opcua/schemas/Opc.Ua.NodeSet2.xml")
+
+            if cacheFile:
+                self.aspace.dump(cacheFile)
 
         self.loop = utils.ThreadLoop()
         self.asyncio_transports = []

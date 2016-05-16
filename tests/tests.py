@@ -14,7 +14,7 @@ except ImportError:
 
 
 from tests_cmd_lines import TestCmdLines
-from tests_server import TestServer
+from tests_server import TestServer, TestServerCaching
 from tests_client import TestClient
 from tests_unit import TestUnit
 from tests_history import TestHistory

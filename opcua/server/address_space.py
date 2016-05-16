@@ -512,7 +512,7 @@ class AddressSpace(object):
             def __len__(self):
                 raise NotImplementedError
 
-        self._nodes = LazyLoader(shelve.open(path, "r"))
+        self._nodes = LazyLoadingDict(shelve.open(path, "r"))
 
     def get_attribute_value(self, nodeid, attr):
         with self._lock:
