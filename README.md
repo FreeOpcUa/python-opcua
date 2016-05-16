@@ -85,7 +85,9 @@ Server: what is not implemented
 * better securty model with users and password
 * adding some missing modify methods
 
+Server: Running on a Raspberry Pi
 
+Setting up the standard address-space from scratch is the most time-consuming step of the startup process which may lead to long startup times on less powerful devices like a Raspberry Pi. By passing a path to a cache-file to the server constructor, a shelve holding the address space will be created during the first startup. All following startups will make use of the cache-file which leads to significantly better startup performance (~3.5 vs 125 seconds on a Raspbery Pi Model B).
 
 # Development
 

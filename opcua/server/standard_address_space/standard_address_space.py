@@ -22,9 +22,3 @@ def fill_address_space(nodeservice):
     create_standard_address_space_Part10(nodeservice)
     create_standard_address_space_Part11(nodeservice)
     create_standard_address_space_Part13(nodeservice)
-
-
-def fill_address_space_from_disk(aspace):
-    dirname = os.path.dirname(opcua.__file__)
-    path = os.path.join(dirname, "binary_address_space.pickle")
-    aspace.load(path)
