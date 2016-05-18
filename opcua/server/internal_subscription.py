@@ -60,7 +60,7 @@ class MonitoredItemService(object):
     def trigger_datachange(self, handle, nodeid, attr):
         self.logger.debug("triggering datachange for handle %s, nodeid %s, and attribute %s", handle, nodeid, attr)
         variant = self.aspace.get_attribute_value(nodeid, attr)
-        self.datachange_callback(handle, variant)
+        self.datachange_callback(handle, variant, variant)
 
     def _modify_monitored_item(self, params):
         with self._lock:
@@ -71,6 +71,7 @@ class MonitoredItemService(object):
                     result.RevisedSamplingInterval = self.isub.data.RevisedPublishingInterval
                     result.RevisedQueueSize = params.RequestedParameters.QueueSize
                     result.FilterResult = params.RequestedParameters.Filter
+                    mdata.mfilter = result.FilterResult
                     mdata.parameters = result
                     return result
             result = ua.MonitoredItemModifyResult()
@@ -162,21 +163,32 @@ class MonitoredItemService(object):
         self._monitored_items.pop(mid)
         return ua.StatusCode()
 
-    def datachange_callback(self, handle, value, error=None):
+    def datachange_callback(self, handle, value, value_old, error=None):
         if error:
-            self.logger.info("subscription %s: datachange callback called with handle '%s' and erorr '%s'",
-                             self, handle, error)
+            self.logger.info("subscription %s: datachange callback called with handle '%s' and erorr '%s'", self,
+                             handle, error)
             self.trigger_statuschange(error)
         else:
-            self.logger.info("subscription %s: datachange callback called with handle '%s' and value '%s'",
-                             self, handle, value.Value)
+            self.logger.info("subscription %s: datachange callback called with handle '%s' and value '%s'", self,
+                             handle, value.Value)
             event = ua.MonitoredItemNotification()
             with self._lock:
                 mid = self._monitored_datachange[handle]
                 mdata = self._monitored_items[mid]
-                event.ClientHandle = mdata.client_handle
-                event.Value = value
-                self.isub.enqueue_datachange_event(mid, event, mdata.parameters.RevisedQueueSize)
+                if mdata.mfilter != None:
+                    deadband_flag_pass = self.deadband_callback(value, value_old, mdata.mfilter)
+                else:
+                    deadband_flag_pass = True
+                if deadband_flag_pass:
+                    event.ClientHandle = mdata.client_handle
+                    event.Value = value
+                    self.isub.enqueue_datachange_event(mid, event, mdata.parameters.RevisedQueueSize)
+
+    def deadband_callback(self, value, value_old, filter):
+        if ((abs(value.Value.Value - value_old.Value.Value)) > filter.DeadbandValue):
+            return True
+        else:
+            return False
 
     def trigger_event(self, event):
         with self._lock:
