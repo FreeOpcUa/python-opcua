@@ -94,7 +94,7 @@ class HistoryDict(HistoryStorageInterface):
             while now - data[0].ServerTimestamp > period:
                 data.pop(0)
         if count and len(data) > count:
-            data = data[-count:]
+            data.pop(0)
 
     def read_node_history(self, node_id, start, end, nb_values):
         cont = None
