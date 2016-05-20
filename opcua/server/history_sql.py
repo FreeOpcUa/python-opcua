@@ -75,17 +75,24 @@ class HistorySQLite(HistoryStorageInterface):
             # get this node's period from the period dict and calculate the limit
             period, count = self._datachanges_period[node_id]
 
-            if period:
-                # after the insert, if a period was specified delete all records older than period
-                date_limit = datetime.now() - period
+            def executeDeleteStatement(condition, args):
+                query = ('DELETE FROM "{tn}" WHERE ' + condition).format(tn = table)
 
                 try:
-                    _c_sub.execute('DELETE FROM "{tn}" WHERE ServerTimestamp < ?'.format(tn=table),
-                                   (date_limit.isoformat(' '),))
+                    _c_sub.execute(query, args)
                 except sqlite3.Error as e:
                     self.logger.error('Historizing SQL Delete Old Data Error for %s: %s', node_id, e)
 
                 self._conn.commit()
+
+            if period:
+                # after the insert, if a period was specified delete all records older than period
+                date_limit = datetime.utcnow() - period
+                executeDeleteStatement('ServerTimestamp < ?', (date_limit,))
+
+            if count:
+                #ensure that no more than count records are stored for the specified node
+                executeDeleteStatement('ServerTimestamp = (SELECT CASE WHEN COUNT(*) > ? THEN MIN(ServerTimestamp) ELSE NULL END FROM "{tn}")', (count,))
 
     def read_node_history(self, node_id, start, end, nb_values):
         with self._lock:

@@ -7,6 +7,7 @@ from opcua import Server
 from opcua import ua
 
 from opcua.server.history_sql import HistorySQLite
+from opcua.server.history import HistoryDict
 
 from tests_common import CommonTests, add_server_methods
 
@@ -114,7 +115,7 @@ class HistoryCommon(object):
         res = self.var.read_raw_history(None, now, 2)
         self.assertEqual(len(res), 2)
         self.assertEqual(res[-1].Value.Value, self.values[-2])
-    
+
     # both start and endtime, return from start to end
     def test_history_var_read_all(self):
         now = datetime.utcnow()
@@ -143,7 +144,7 @@ class HistoryCommon(object):
         self.assertEqual(len(res), 5)
         self.assertEqual(res[-1].Value.Value, self.values[-5])
         self.assertEqual(res[0].Value.Value, self.values[-1])
-    
+
     # only start return original order
     def test_history_var_read_6_with_start(self):
         now = datetime.utcnow()
@@ -286,12 +287,71 @@ class TestHistorySQL(unittest.TestCase, HistoryCommon):
     def tearDownClass(cls):
         cls.stop_server_and_client()
 
+class TestHistoryLimitsCommon(unittest.TestCase):
+    id = ua.NodeId(123)
+
+    def setUp(self):
+        self.history = self.createHistoryInstance()
+
+    def createHistoryInstance(self):
+        assert(False)
+
+    def resultCount(self):
+        results, cont = self.history.read_node_history(self.id, None, None, None)
+        return len(results)
+
+    def addValue(self, age):
+        value = ua.DataValue()
+        value.ServerTimestamp = datetime.utcnow() - timedelta(hours = age)
+        self.history.save_node_value(self.id, value)
+
+    def test_count_limit(self):
+        self.history.new_historized_node(self.id, period = None, count = 3)
+        self.assertEqual(self.resultCount(), 0)
+        self.addValue(5)
+        self.assertEqual(self.resultCount(), 1)
+        self.addValue(4)
+        self.assertEqual(self.resultCount(), 2)
+        self.addValue(3)
+        self.assertEqual(self.resultCount(), 3)
+        self.addValue(2)
+        self.assertEqual(self.resultCount(), 3)
+        self.addValue(1)
+        self.assertEqual(self.resultCount(), 3)
+
+    def test_period_limit(self):
+        self.history.new_historized_node(self.id, period = timedelta(hours = 3))
+        self.assertEqual(self.resultCount(), 0)
+        self.addValue(5)
+        self.assertEqual(self.resultCount(), 0)
+        self.addValue(4)
+        self.assertEqual(self.resultCount(), 0)
+        self.addValue(2)
+        self.assertEqual(self.resultCount(), 1)
+        self.addValue(1)
+        self.assertEqual(self.resultCount(), 2)
+        self.addValue(0)
+        self.assertEqual(self.resultCount(), 3)
+
+    def test_combined_limit(self):
+        self.history.new_historized_node(self.id, period = timedelta(hours = 3), count = 2)
+        self.assertEqual(self.resultCount(), 0)
+        self.addValue(5)
+        self.assertEqual(self.resultCount(), 0)
+        self.addValue(4)
+        self.assertEqual(self.resultCount(), 0)
+        self.addValue(2)
+        self.assertEqual(self.resultCount(), 1)
+        self.addValue(1)
+        self.assertEqual(self.resultCount(), 2)
+        self.addValue(0)
+        self.assertEqual(self.resultCount(), 2)
 
 
+class TestHistoryLimits(TestHistoryLimitsCommon):
+    def createHistoryInstance(self):
+        return HistoryDict()
 
-
-
-
-
-
-
+class TestHistorySQLLimits(TestHistoryLimitsCommon):
+    def createHistoryInstance(self):
+        return HistorySQLite(":memory:")

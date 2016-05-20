@@ -91,7 +91,7 @@ class HistoryDict(HistoryStorageInterface):
         data.append(datavalue)
         now = datetime.utcnow()
         if period:
-            while now - data[0].ServerTimestamp > period:
+            while len(data) and now - data[0].ServerTimestamp > period:
                 data.pop(0)
         if count and len(data) > count:
             data.pop(0)
@@ -214,12 +214,12 @@ class HistoryManager(object):
         since it requires more logic than other attribute service methods
         """
         results = []
-        
+
         for rv in params.NodesToRead:
             res = self._read_history(params.HistoryReadDetails, rv)
             results.append(res)
         return results
-        
+
     def _read_history(self, details, rv):
         """
         determine if the history read is for a data changes or events; then read the history for that node
