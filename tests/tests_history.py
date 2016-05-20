@@ -40,7 +40,7 @@ class HistoryCommon(object):
         o = cls.srv.get_objects_node()
         cls.values = [i for i in range(20)]
         cls.var = o.add_variable(3, "history_var", 0)
-        cls.srv.iserver.enable_history_data_change(cls.var, period=None, count=10)
+        cls.srv.iserver.enable_history_data_change(cls.var, period=None, count=0)
         for i in cls.values:
             cls.var.set_value(i)
         time.sleep(1)
