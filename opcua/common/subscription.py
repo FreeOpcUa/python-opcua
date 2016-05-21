@@ -217,11 +217,11 @@ class Subscription(object):
 
     def _select_clauses_from_evtype(self, evtype):
         clauses = []
-        for property in get_event_properties_from_type_node(evtype):
+        for prop in get_event_properties_from_type_node(evtype):
             op = ua.SimpleAttributeOperand()
             op.TypeDefinitionId = evtype.nodeid
             op.AttributeId = ua.AttributeIds.Value
-            op.BrowsePath = [property.get_browse_name()]
+            op.BrowsePath = [prop.get_browse_name()]
             clauses.append(op)
         return clauses
 
@@ -230,7 +230,9 @@ class Subscription(object):
         el = ua.ContentFilterElement()
         # operands can be ElementOperand, LiteralOperand, AttributeOperand, SimpleAttribute
         op = ua.SimpleAttributeOperand()
-        op.AttributeId = ua.AttributeIds.NodeId
+        op.TypeDefinitionId = evtype.nodeid
+        op.BrowsePath.append(ua.QualifiedName("EventType", 0))
+        op.AttributeId = ua.AttributeIds.Value
         el.FilterOperands.append(op)
         for subtypeid in [st.nodeid for st in self._get_subtypes(evtype)]:
             op = ua.LiteralOperand()
