@@ -4,12 +4,13 @@ from opcua import Client
 from opcua import Server
 from opcua import ua
 
+from tests_subscriptions import SubscriptionTests
 from tests_common import CommonTests, add_server_methods
 
 port_num1 = 48510
 
 
-class TestClient(unittest.TestCase, CommonTests):
+class TestClient(unittest.TestCase, CommonTests, SubscriptionTests):
 
     '''
     Run common tests on client side
