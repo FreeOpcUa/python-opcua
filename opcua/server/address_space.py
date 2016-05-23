@@ -1,6 +1,8 @@
 from threading import RLock
 import logging
 from datetime import datetime
+import collections
+import shelve
 try:
     import cPickle as pickle
 except:
@@ -199,8 +201,7 @@ class NodeManagementService(object):
 
         if item.ParentNodeId.is_null():
             # self.logger.warning("add_node: creating node %s without parent", nodedata.nodeid)
-            # We should return Error here, but the standard namespace seems to define many nodes
-            # without parents, so ignore...
+            # should return Error here, but the standard namespace define many nodes without parents...
             pass
         elif item.ParentNodeId not in self._aspace:
             self.logger.warning("add_node: while adding node %s, requested parent node %s does not exists", nodedata.nodeid, item.ParentNodeId)
@@ -211,12 +212,7 @@ class NodeManagementService(object):
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
             return result
 
-        # add common attrs
-        nodedata.attributes[ua.AttributeIds.NodeId] = AttributeValue(ua.DataValue(ua.Variant(nodedata.nodeid, ua.VariantType.NodeId)))
-        nodedata.attributes[ua.AttributeIds.BrowseName] = AttributeValue(ua.DataValue(ua.Variant(item.BrowseName, ua.VariantType.QualifiedName)))
-        nodedata.attributes[ua.AttributeIds.NodeClass] = AttributeValue(ua.DataValue(ua.Variant(item.NodeClass, ua.VariantType.Int32)))
-        # add requested attrs
-        self._add_nodeattributes(item.NodeAttributes, nodedata)
+        self._add_node_attributes(nodedata, item)
 
         # now add our node to db
         self._aspace[nodedata.nodeid] = nodedata
@@ -233,6 +229,20 @@ class NodeManagementService(object):
         result.AddedNodeId = nodedata.nodeid
 
         return result
+
+    def _add_node_attributes(self, nodedata, item):
+        # add common attrs
+        nodedata.attributes[ua.AttributeIds.NodeId] = AttributeValue(
+            ua.DataValue(ua.Variant(nodedata.nodeid, ua.VariantType.NodeId))
+        )
+        nodedata.attributes[ua.AttributeIds.BrowseName] = AttributeValue(
+            ua.DataValue(ua.Variant(item.BrowseName, ua.VariantType.QualifiedName))
+        )
+        nodedata.attributes[ua.AttributeIds.NodeClass] = AttributeValue(
+            ua.DataValue(ua.Variant(item.NodeClass, ua.VariantType.Int32))
+        )
+        # add requested attrs
+        self._add_nodeattributes(item.NodeAttributes, nodedata)
 
     def _add_ref_from_parent(self, nodedata, item):
         desc = ua.ReferenceDescription()
@@ -466,15 +476,43 @@ class AddressSpace(object):
         """
         dump address space as binary to file
         """
-        with open(path, 'wb') as f:
-            pickle.dump(self._nodes, f, pickle.HIGHEST_PROTOCOL)
+        s = shelve.open(path, "n", protocol = pickle.HIGHEST_PROTOCOL)
+        for nodeid in self._nodes.keys():
+            s[nodeid.to_string()] = self._nodes[nodeid]
+        s.close()
 
     def load(self, path):
         """
         load address space from file, overwritting everything current address space
         """
-        with open(path, 'rb') as f:
-            self._nodes = pickle.load(f)
+        class LazyLoadingDict(collections.MutableMapping):
+            def __init__(self, source):
+                self.source = source
+                self.cache = {}
+
+            def __getitem__(self, key):
+                try:
+                    return self.cache[key]
+                except KeyError:
+                    node = self.cache[key] = self.source[key.to_string()]
+                    return node
+
+            def __setitem__(self, key, value):
+                self.cache[key] = value
+
+            def __contains__(self, key):
+                return key in self.cache or key.to_string() in self.source
+
+            def __delitem__(self, key):
+                raise NotImplementedError
+
+            def __iter__(self):
+                raise NotImplementedError
+
+            def __len__(self):
+                raise NotImplementedError
+
+        self._nodes = LazyLoadingDict(shelve.open(path, "r"))
 
     def get_attribute_value(self, nodeid, attr):
         with self._lock:

@@ -53,10 +53,12 @@ if __name__ == "__main__":
     try:
         # time.sleep is here just because we want to see events in UaExpert
         import time
-        for i in range(1, 10):
-            time.sleep(10)
-            myevgen.trigger(message="This is MyFirstEvent with MyNumericProperty and MyStringProperty.")
-            mysecondevgen.trigger(message="This is MySecondEvent with MyIntProperty and MyBoolProperty.")
+        count = 0
+        while True:
+            time.sleep(2)
+            myevgen.trigger(message="MyFirstEvent " + str(count))
+            mysecondevgen.trigger(message="MySecondEvent " + str(count))
+            count += 1
 
         embed()
     finally:

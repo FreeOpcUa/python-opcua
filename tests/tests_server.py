@@ -1,7 +1,12 @@
 import unittest
-from tests_common import CommonTests, add_server_methods, MySubHandler
+import os
+import shelve
 import time
+
+from tests_common import CommonTests, add_server_methods
+from tests_subscriptions import SubscriptionTests
 from datetime import timedelta, datetime
+from tempfile import NamedTemporaryFile
 
 import opcua
 from opcua import Server
@@ -14,7 +19,7 @@ port_num = 485140
 port_discovery = 48550
 
 
-class TestServer(unittest.TestCase, CommonTests):
+class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
 
     '''
     Run common tests on server side
@@ -324,7 +329,7 @@ class TestServer(unittest.TestCase, CommonTests):
 
 def check_eventgenerator_SourceServer(test, evgen):
     server = test.opc.get_server_node()
-    test.assertEqual(evgen.event.SourceName, server.get_display_name().Text)
+    test.assertEqual(evgen.event.SourceName, server.get_browse_name().Name)
     test.assertEqual(evgen.event.SourceNode, ua.NodeId(ua.ObjectIds.Server))
     test.assertEqual(server.get_attribute(ua.AttributeIds.EventNotifier).Value, ua.Variant(1, ua.VariantType.Byte))
     refs = server.get_referenced_nodes(ua.ObjectIds.GeneratesEvent, ua.BrowseDirection.Forward, ua.NodeClass.ObjectType, False)
@@ -332,7 +337,7 @@ def check_eventgenerator_SourceServer(test, evgen):
 
 
 def check_event_generator_object(test, evgen, obj):
-    test.assertEqual(evgen.event.SourceName, obj.get_display_name().Text)
+    test.assertEqual(evgen.event.SourceName, obj.get_browse_name().Name)
     test.assertEqual(evgen.event.SourceNode, obj.nodeid)
     test.assertEqual(obj.get_attribute(ua.AttributeIds.EventNotifier).Value, ua.Variant(1, ua.VariantType.Byte))
     refs = obj.get_referenced_nodes(ua.ObjectIds.GeneratesEvent, ua.BrowseDirection.Forward, ua.NodeClass.ObjectType, False)
@@ -380,3 +385,24 @@ def check_custom_event_type(test, ev):
     test.assertEqual(ev.get_child("2:PropertyNum").get_data_value().Value.VariantType, ua.VariantType.Float)
     test.assertTrue(ev.get_child("2:PropertyString") in properties)
     test.assertEqual(ev.get_child("2:PropertyString").get_data_value().Value.VariantType, ua.VariantType.String)
+
+class TestServerCaching(unittest.TestCase):
+    def runTest(self):
+        tmpfile = NamedTemporaryFile()
+        path = tmpfile.name
+        tmpfile.close()
+
+        #create cache file
+        server = Server(cacheFile = path)
+
+        #modify cache content
+        id = ua.NodeId(ua.ObjectIds.Server_ServerStatus_SecondsTillShutdown)
+        s = shelve.open(path, "w", writeback = True)
+        s[id.to_string()].attributes[ua.AttributeIds.Value].value = ua.DataValue(123)
+        s.close()
+
+        #ensure that we are actually loading from the cache
+        server = Server(cacheFile = path)
+        self.assertEqual(server.get_node(id).get_value(), 123)
+
+        os.remove(path)

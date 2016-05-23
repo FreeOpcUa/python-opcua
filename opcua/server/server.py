@@ -44,6 +44,14 @@ class Server(object):
     If you need more flexibility you call directly the Ua Service methods
     on the iserver  or iserver.isesssion object members.
 
+    During startup the standard address space will be constructed, which may be
+    time-consuming when running a server on a less powerful device (e.g. a
+    Raspberry Pi). In order to improve startup performance, a optional path to a
+    cache file can be passed to the server constructor.
+    If the parameter is defined, the address space will be loaded from the
+    cache file or the file will be created if it does not exist yet.
+    As a result the first startup will be even slower due to the cache file
+    generation but all further startups will be significantly faster.
 
     :ivar application_uri:
     :vartype application_uri: uri
@@ -60,7 +68,7 @@ class Server(object):
 
     """
 
-    def __init__(self):
+    def __init__(self, cacheFile = None):
         self.logger = logging.getLogger(__name__)
         self.endpoint = urlparse("opc.tcp://0.0.0.0:4840/freeopcua/server/")
         self.application_uri = "urn:freeopcua:python:server"
@@ -68,7 +76,7 @@ class Server(object):
         self.name = "FreeOpcUa Python Server"
         self.application_type = ua.ApplicationType.ClientAndServer
         self.default_timeout = 3600000
-        self.iserver = InternalServer()
+        self.iserver = InternalServer(cacheFile)
         self.bserver = None
         self._discovery_clients = {}
         self._discovery_period = 60
