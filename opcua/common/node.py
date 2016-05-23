@@ -3,9 +3,8 @@ High level node object, to access node attribute
 and browse address space
 """
 
-from datetime import datetime
-
 from opcua import ua
+from opcua.common import events
 
 
 class Node(object):
@@ -21,7 +20,9 @@ class Node(object):
     def __init__(self, server, nodeid):
         self.server = server
         self.nodeid = None
-        if isinstance(nodeid, ua.NodeId):
+        if isinstance(nodeid, Node):
+            self.nodeid = nodeid.nodeid
+        elif isinstance(nodeid, ua.NodeId):
             self.nodeid = nodeid
         elif type(nodeid) in (str, bytes):
             self.nodeid = ua.NodeId.from_string(nodeid)
@@ -381,9 +382,9 @@ class Node(object):
         result = self.server.history_read(params)[0]
         return result
 
-    def read_event_history(self, evfilter, starttime=None, endtime=None, numvalues=0):
+    def read_event_history(self, starttime=None, endtime=None, numvalues=0, evtype=ua.ObjectIds.BaseEventType):
         """
-        Read event history of a source node based on supplied UA EventFilter
+        Read event history of a source node 
         result code from server is checked and an exception is raised in case of error
         If numvalues is > 0 and number of events in period is > numvalues
         then result will be truncated
@@ -404,10 +405,14 @@ class Node(object):
             details.EndTime = ua.DateTimeMinValue
         details.NumValuesPerNode = numvalues
 
+        evfilter = events.get_filter_from_event_type(Node(self.server, evtype))
         details.Filter = evfilter
 
         result = self.history_read_events(details)
-        return result.HistoryData.Events
+        event_res = []
+        for res in result.HistoryData.Events:
+            event_res.append(events.event_obj_from_event_fields(evfilter.SelectClauses, res.EventFields))
+        return event_res
 
     def history_read_events(self, details):
         """

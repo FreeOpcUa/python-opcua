@@ -1,7 +1,7 @@
 import logging
 import sys
 import argparse
-from datetime import datetime
+from datetime import datetime, timedelta
 import math
 import time
 
@@ -600,8 +600,10 @@ def print_history(o):
             print("{:30} {:10} {}".format(str(d.SourceTimestamp), d.StatusCode.name, d.Value))
 
 
-def str_to_datetime(s):
+def str_to_datetime(s, default=None):
     if not s:
+        if default is not None:
+            return default
         return datetime.utcnow()
     # FIXME: try different datetime formats
     for fmt in ["%Y-%m-%d", "%Y-%m-%d %H:%M", "%Y-%m-%d %H:%M:%S"]:
@@ -615,11 +617,20 @@ def uahistoryread():
     parser = argparse.ArgumentParser(description="Read history of a node")
     add_common_args(parser)
     parser.add_argument("--starttime",
-                        default="",
-                        help="Start time, formatted as YYYY-MM-DD [HH:MM[:SS]]. Default: current time")
+                        default=None,
+                        help="Start time, formatted as YYYY-MM-DD [HH:MM[:SS]]. Default: current time - one day")
     parser.add_argument("--endtime",
-                        default="",
+                        default=None,
                         help="End time, formatted as YYYY-MM-DD [HH:MM[:SS]]. Default: current time")
+    parser.add_argument("-e",
+                        "--events",
+                        action="store_true",
+                        help="Read event history instead of data change history")
+    parser.add_argument("-l",
+                        "--limit",
+                        type=int,
+                        default=10,
+                        help="Maximum number of notfication to return")
 
     args = parse_args(parser, requirenodeid=True)
 
@@ -628,10 +639,15 @@ def uahistoryread():
     client.connect()
     try:
         node = get_node(client, args)
-        starttime = str_to_datetime(args.starttime)
-        endtime = str_to_datetime(args.endtime)
+        starttime = str_to_datetime(args.starttime, datetime.utcnow() - timedelta(days=1))
+        endtime = str_to_datetime(args.endtime, datetime.utcnow())
         print("Reading raw history of node {} at {}; start at {}, end at {}\n".format(node, args.url, starttime, endtime))
-        print_history(node.read_raw_history(starttime, endtime))
+        if args.events:
+            evs = node.read_event_history(starttime, endtime, numvalues=args.limit)
+            for ev in evs:
+                print(ev)
+        else:
+            print_history(node.read_raw_history(starttime, endtime, numvalues=args.limit))
     finally:
         client.disconnect()
     sys.exit(0)
