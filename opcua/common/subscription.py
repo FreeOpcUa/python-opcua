@@ -208,39 +208,58 @@ class Subscription(object):
             node = Node(self.server, ua.NodeId(nodeid))
         return node
 
-    def _get_filter_from_event_type(self, eventtype):
-        eventtype = self._get_node(eventtype)
+    def _get_filter_from_event_type(self, eventtypes):
+        # FIXME must be a nicer way to make a list out of eventtypes when it's passed
+        # FIXME an integer (such as ua.ObjectIds.BaseEventType)
+        evtypes = []
+        if type(eventtypes) is not list:
+            evtypes.append(eventtypes)
+        else:
+            evtypes = eventtypes
+
+        evtype_node_list = []
+        for evtype in evtypes:
+            evtype_node_list.append(self._get_node(evtype))  # make sure we have a list of Node objects
+
         evfilter = ua.EventFilter()
-        evfilter.SelectClauses = self._select_clauses_from_evtype(eventtype)
-        evfilter.WhereClause = self._where_clause_from_evtype(eventtype)
+        evfilter.SelectClauses = self._select_clauses_from_evtype(evtype_node_list)
+        evfilter.WhereClause = self._where_clause_from_evtype(evtype_node_list)
         return evfilter
 
-    def _select_clauses_from_evtype(self, evtype):
+    def _select_clauses_from_evtype(self, evtypes):
         clauses = []
-        for prop in get_event_properties_from_type_node(evtype):
-            op = ua.SimpleAttributeOperand()
-            op.TypeDefinitionId = evtype.nodeid
-            op.AttributeId = ua.AttributeIds.Value
-            op.BrowsePath = [prop.get_browse_name()]
-            clauses.append(op)
+
+        selected_paths = []
+        for evtype in evtypes:
+            for prop in get_event_properties_from_type_node(evtype):
+                if prop.get_browse_name() not in selected_paths:
+                    op = ua.SimpleAttributeOperand()
+                    op.TypeDefinitionId = evtype.nodeid
+                    op.AttributeId = ua.AttributeIds.Value
+                    op.BrowsePath = [prop.get_browse_name()]
+                    clauses.append(op)
+                    selected_paths.append(prop.get_browse_name())
         return clauses
 
-    def _where_clause_from_evtype(self, evtype):
+    def _where_clause_from_evtype(self, evtypes):
         cf = ua.ContentFilter()
         el = ua.ContentFilterElement()
-        # operands can be ElementOperand, LiteralOperand, AttributeOperand, SimpleAttribute
-        op = ua.SimpleAttributeOperand()
-        op.TypeDefinitionId = evtype.nodeid
-        op.BrowsePath.append(ua.QualifiedName("EventType", 0))
-        op.AttributeId = ua.AttributeIds.Value
-        el.FilterOperands.append(op)
-        for subtypeid in [st.nodeid for st in self._get_subtypes(evtype)]:
-            op = ua.LiteralOperand()
-            op.Value = ua.Variant(subtypeid)
-            el.FilterOperands.append(op)
-        el.FilterOperator = ua.FilterOperator.InList
 
+        for evtype in evtypes:
+            # operands can be ElementOperand, LiteralOperand, AttributeOperand, SimpleAttribute
+            op = ua.SimpleAttributeOperand()
+            op.TypeDefinitionId = evtype.nodeid
+            op.BrowsePath.append(ua.QualifiedName("EventType", 0))
+            op.AttributeId = ua.AttributeIds.Value
+            el.FilterOperands.append(op)
+            for subtypeid in [st.nodeid for st in self._get_subtypes(evtype)]:
+                op = ua.LiteralOperand()
+                op.Value = ua.Variant(subtypeid)
+                el.FilterOperands.append(op)
+
+        el.FilterOperator = ua.FilterOperator.InList
         cf.Elements.append(el)
+
         return cf
 
     def _get_subtypes(self, parent, nodes=None):
@@ -251,7 +270,7 @@ class Subscription(object):
             self._get_subtypes(child, nodes)
         return nodes
 
-    def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtype=ua.ObjectIds.BaseEventType, evfilter=None):
+    def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtypes=ua.ObjectIds.BaseEventType, evfilter=None):
         """
         Subscribe to events from a node. Default node is Server node.
         In most servers the server node is the only one you can subscribe to.
@@ -260,7 +279,7 @@ class Subscription(object):
         """
         sourcenode = self._get_node(sourcenode)
         if evfilter is None:
-            evfilter = self._get_filter_from_event_type(evtype)
+            evfilter = self._get_filter_from_event_type(evtypes)
         return self._subscribe(sourcenode, ua.AttributeIds.EventNotifier, evfilter)
 
     def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):
