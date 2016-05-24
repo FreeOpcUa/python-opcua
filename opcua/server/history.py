@@ -304,7 +304,7 @@ class HistoryManager(object):
     def _get_source_event_data(self, source):
         # get all event types which the source node can generate; get the fields of those event types
         event_types = source.get_referenced_nodes(ua.ObjectIds.GeneratesEvent)
-        test = ua.ObjectIds.BaseEventType
+
         ev_aggregate_fields = []
         for event_type in event_types:
             ev_aggregate_fields.extend((subscription.get_event_properties_from_type_node(event_type)))
