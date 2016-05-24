@@ -170,7 +170,7 @@ class HistoryManager(object):
 
     def historize_data_change(self, node, period=timedelta(days=7), count=0):
         """
-        subscribe to the nodes' data changes and store the data in the active storage
+        Subscribe to the nodes' data changes and store the data in the active storage.
         """
         if not self._sub:
             self._sub = self._create_subscription(SubHandler(self.storage))
@@ -182,7 +182,16 @@ class HistoryManager(object):
 
     def historize_event(self, source, period=timedelta(days=7)):
         """
-        subscribe to the source nodes' events and store the data in the active storage; custom event properties included
+        Subscribe to the source nodes' events and store the data in the active storage.
+
+        SQL Implementation
+        The default is to historize every event type the source generates, custom event properties are included. At
+        this time there is no way to historize a specific event type. The user software can filter out events which are
+        not desired when reading.
+
+        Note that adding custom events to a source node AFTER historizing has been activated is not supported at this
+        time (in SQL history there will be no columns in the SQL table for the new event properties). For SQL The table
+        must be deleted manually so that a new table with the custom event fields can be created.
         """
         if not self._sub:
             self._sub = self._create_subscription(SubHandler(self.storage))
@@ -194,12 +203,15 @@ class HistoryManager(object):
 
         self.storage.new_historized_event(source.nodeid, ev_fields, period)
 
-        handler = self._sub.subscribe_events(source)  # FIXME supply list of event types when master is fixed
+        handler = self._sub.subscribe_events(source, event_types)
         self._handlers[source] = handler
 
     def dehistorize(self, node):
         """
-        remove subscription to the node/source which is being historized
+        Remove subscription to the node/source which is being historized
+
+        SQL Implementation
+        Only the subscriptions is removed. The historical data remains.
         """
         if node in self._handlers:
             self._sub.unsubscribe(self._handlers[node])

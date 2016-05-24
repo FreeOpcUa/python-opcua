@@ -420,7 +420,7 @@ class SubscriptionTests(object):
 
         myhandler = MySubHandler()
         sub = self.opc.create_subscription(100, myhandler)
-        handle = sub.subscribe_events(evtype=etype)
+        handle = sub.subscribe_events(evtypes=etype)
 
         propertynum = 2
         propertystring = "This is my test"
