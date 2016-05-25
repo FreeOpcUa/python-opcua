@@ -6,6 +6,7 @@ import logging
 from threading import Lock
 
 from opcua import ua
+from opcua.common import events
 from opcua import Node
 
 
@@ -38,29 +39,6 @@ class SubHandler(object):
         called for every status change notification from server
         """
         pass
-
-
-class EventResult(object):
-    """
-    To be sent to clients for every events from server
-    """
-
-    def __init__(self):
-        self.server_handle = None
-
-    def __str__(self):
-        return "EventResult({})".format([str(k) + ":" + str(v) for k, v in self.__dict__.items()])
-    __repr__ = __str__
-
-    def get_event_props_as_fields_dict(self):
-        """
-        convert all properties of the EventResult class to a dict of variants
-        """
-        field_vars = {}
-        for key, value in vars(self).items():
-            if not key.startswith("__") and key is not "server_handle":
-                field_vars[key] = ua.Variant(value)
-        return field_vars
 
 
 class SubscriptionItemData(object):
@@ -164,13 +142,8 @@ class Subscription(object):
         for event in eventlist.Events:
             with self._lock:
                 data = self._monitoreditems_map[event.ClientHandle]
-            result = EventResult()
+            result = events.event_obj_from_event_fields(data.mfilter.SelectClauses, event.EventFields)
             result.server_handle = data.server_handle
-            for idx, sattr in enumerate(data.mfilter.SelectClauses):
-                if len(sattr.BrowsePath) == 0:
-                    setattr(result, sattr.AttributeId.name, event.EventFields[idx].Value)
-                else:
-                    setattr(result, sattr.BrowsePath[0].Name, event.EventFields[idx].Value)
             if hasattr(self._handler, "event_notification"):
                 try:
                     self._handler.event_notification(result)
@@ -199,58 +172,6 @@ class Subscription(object):
         """
         return self._subscribe(nodes, attr, queuesize=0)
 
-    def _get_node(self, nodeid):
-        if isinstance(nodeid, ua.NodeId):
-            node = Node(self.server, nodeid)
-        elif isinstance(nodeid, Node):
-            node = nodeid
-        else:
-            node = Node(self.server, ua.NodeId(nodeid))
-        return node
-
-    def _get_filter_from_event_type(self, eventtype):
-        eventtype = self._get_node(eventtype)
-        evfilter = ua.EventFilter()
-        evfilter.SelectClauses = self._select_clauses_from_evtype(eventtype)
-        evfilter.WhereClause = self._where_clause_from_evtype(eventtype)
-        return evfilter
-
-    def _select_clauses_from_evtype(self, evtype):
-        clauses = []
-        for prop in get_event_properties_from_type_node(evtype):
-            op = ua.SimpleAttributeOperand()
-            op.TypeDefinitionId = evtype.nodeid
-            op.AttributeId = ua.AttributeIds.Value
-            op.BrowsePath = [prop.get_browse_name()]
-            clauses.append(op)
-        return clauses
-
-    def _where_clause_from_evtype(self, evtype):
-        cf = ua.ContentFilter()
-        el = ua.ContentFilterElement()
-        # operands can be ElementOperand, LiteralOperand, AttributeOperand, SimpleAttribute
-        op = ua.SimpleAttributeOperand()
-        op.TypeDefinitionId = evtype.nodeid
-        op.BrowsePath.append(ua.QualifiedName("EventType", 0))
-        op.AttributeId = ua.AttributeIds.Value
-        el.FilterOperands.append(op)
-        for subtypeid in [st.nodeid for st in self._get_subtypes(evtype)]:
-            op = ua.LiteralOperand()
-            op.Value = ua.Variant(subtypeid)
-            el.FilterOperands.append(op)
-        el.FilterOperator = ua.FilterOperator.InList
-
-        cf.Elements.append(el)
-        return cf
-
-    def _get_subtypes(self, parent, nodes=None):
-        if nodes is None:
-            nodes = [parent]
-        for child in parent.get_children(refs=ua.ObjectIds.HasSubtype):
-            nodes.append(child)
-            self._get_subtypes(child, nodes)
-        return nodes
-
     def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtype=ua.ObjectIds.BaseEventType, evfilter=None):
         """
         Subscribe to events from a node. Default node is Server node.
@@ -258,9 +179,9 @@ class Subscription(object):
         if evfilter is provided, evtype is ignored
         Return a handle which can be used to unsubscribe
         """
-        sourcenode = self._get_node(sourcenode)
+        sourcenode = Node(self.server, sourcenode)
         if evfilter is None:
-            evfilter = self._get_filter_from_event_type(evtype)
+            evfilter = events.get_filter_from_event_type(Node(self.server, evtype))
         return self._subscribe(sourcenode, ua.AttributeIds.EventNotifier, evfilter)
 
     def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):
@@ -352,19 +273,3 @@ class Subscription(object):
                     return
 
 
-def get_event_properties_from_type_node(node):
-    properties = []
-    curr_node = node
-
-    while True:
-        properties.extend(curr_node.get_properties())
-
-        if curr_node.nodeid.Identifier == ua.ObjectIds.BaseEventType:
-            break
-
-        parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
-        if len(parents) != 1:  # Something went wrong
-            return None
-        curr_node = parents[0]
-
-    return properties

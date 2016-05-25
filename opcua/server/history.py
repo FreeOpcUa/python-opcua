@@ -5,7 +5,7 @@ from datetime import datetime
 from opcua import Subscription
 from opcua import ua
 from opcua.common import utils
-from opcua.common import subscription
+from opcua.common import events
 
 
 class HistoryStorageInterface(object):
@@ -295,7 +295,7 @@ class HistoryManager(object):
 
         ev_aggregate_fields = []
         for event_type in event_types:
-            ev_aggregate_fields.extend((subscription.get_event_properties_from_type_node(event_type)))
+            ev_aggregate_fields.extend((events.get_event_properties_from_type_node(event_type)))
 
         ev_fields = []
         for field in set(ev_aggregate_fields):

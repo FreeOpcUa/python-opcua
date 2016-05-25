@@ -47,7 +47,7 @@ if __name__ == "__main__":
     serverevgen.event.Severity = 111
 
     # Configure server to use sqlite as history database (default is a simple in memory dict)
-    server.iserver.history_manager.set_storage(HistorySQLite(":memory:"))
+    server.iserver.history_manager.set_storage(HistorySQLite("my_event_history.sql"))
 
     # starting!
     server.start()

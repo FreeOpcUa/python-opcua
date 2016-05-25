@@ -11,7 +11,7 @@ from opcua.server.history import HistoryDict
 
 from tests_common import CommonTests, add_server_methods
 
-from opcua.common.subscription import get_event_properties_from_type_node as get_props
+from opcua.common.events import get_event_properties_from_type_node as get_props
 
 port_num1 = 48530
 port_num2 = 48530
@@ -50,24 +50,6 @@ class HistoryCommon(object):
     def create_srv_events(cls):
         cls.ev_values = [i for i in range(20)]
         cls.srvevgen = cls.srv.get_event_generator()
-
-        # for now we need to build our own filter explicitly because node class can't do it
-        cls.evfilter = ua.EventFilter()
-        ev_type_node = cls.srv.get_node(cls.srvevgen.event.EventType)
-        for ev_property in get_props(ev_type_node):
-            op = ua.SimpleAttributeOperand()
-            op.TypeDefinitionId = ev_type_node.nodeid
-            op.AttributeId = ua.AttributeIds.Value
-            op.BrowsePath = [ev_property.get_browse_name()]
-            cls.evfilter.SelectClauses.append(op)
-
-        cls.revevfilter = ua.EventFilter()
-        for ev_property in reversed(get_props(ev_type_node)):
-            op = ua.SimpleAttributeOperand()
-            op.TypeDefinitionId = ev_type_node.nodeid
-            op.AttributeId = ua.AttributeIds.Value
-            op.BrowsePath = [ev_property.get_browse_name()]
-            cls.revevfilter.SelectClauses.append(op)
 
         cls.srv_node = cls.srv.get_node(ua.ObjectIds.Server)
         cls.srv.iserver.enable_history_event(cls.srv_node, period=None)
@@ -207,81 +189,81 @@ class TestHistorySQL(unittest.TestCase, HistoryCommon):
         now = datetime.utcnow()
         old = now - timedelta(days=6)
 
-        res = self.srv_node.read_event_history(self.evfilter, None, now, 2)
+        res = self.srv_node.read_event_history(None, now, 2)
         self.assertEqual(len(res), 2)
-        self.assertEqual(res[-1].EventFields[8].Value, self.ev_values[-2])
+        self.assertEqual(res[-1].Severity, self.ev_values[-2])
 
     # both start and end time, return from start to end
     def test_history_ev_read_all(self):
         now = datetime.utcnow()
         old = now - timedelta(days=6)
 
-        res = self.srv_node.read_event_history(self.evfilter, old, now, 0)
+        res = self.srv_node.read_event_history(old, now, 0)
         self.assertEqual(len(res), 20)
-        self.assertEqual(res[-1].EventFields[8].Value, self.ev_values[-1])
-        self.assertEqual(res[0].EventFields[8].Value, self.ev_values[0])
+        self.assertEqual(res[-1].Severity, self.ev_values[-1])
+        self.assertEqual(res[0].Severity, self.ev_values[0])
 
     def test_history_ev_read_5_in_timeframe(self):
         now = datetime.utcnow()
         old = now - timedelta(days=6)
 
-        res = self.srv_node.read_event_history(self.evfilter, old, now, 5)
+        res = self.srv_node.read_event_history(old, now, 5)
         self.assertEqual(len(res), 5)
-        self.assertEqual(res[-1].EventFields[8].Value, self.ev_values[4])
-        self.assertEqual(res[0].EventFields[8].Value, self.ev_values[0])
+        self.assertEqual(res[-1].Severity, self.ev_values[4])
+        self.assertEqual(res[0].Severity, self.ev_values[0])
 
     # start time greater than end time, should return reverse order
     def test_history_ev_read_5_in_timeframe_start_greater_than_end(self):
         now = datetime.utcnow()
         old = now - timedelta(days=6)
 
-        res = self.srv_node.read_event_history(self.evfilter, now, old, 5)
+        res = self.srv_node.read_event_history(now, old, 5)
         self.assertEqual(len(res), 5)
-        self.assertEqual(res[-1].EventFields[8].Value, self.ev_values[-5])
-        self.assertEqual(res[0].EventFields[8].Value, self.ev_values[-1])
+        self.assertEqual(res[-1].Severity, self.ev_values[-5])
+        self.assertEqual(res[0].Severity, self.ev_values[-1])
 
     # only start return original order
     def test_history_ev_read_6_with_start(self):
         now = datetime.utcnow()
         old = now - timedelta(days=6)
-        res = self.srv_node.read_event_history(self.evfilter, old, None, 6)
+        res = self.srv_node.read_event_history(old, None, 6)
         self.assertEqual(len(res), 6)
-        self.assertEqual(res[-1].EventFields[8].Value, self.ev_values[5])
-        self.assertEqual(res[0].EventFields[8].Value, self.ev_values[0])
+        self.assertEqual(res[-1].Severity, self.ev_values[5])
+        self.assertEqual(res[0].Severity, self.ev_values[0])
 
     # only start return original order
     def test_history_ev_read_all_with_start(self):
         now = datetime.utcnow()
         old = now - timedelta(days=6)
-        res = self.srv_node.read_event_history(self.evfilter, old, None, 0)
+        res = self.srv_node.read_event_history(old, None, 0)
         self.assertEqual(len(res), 20)
-        self.assertEqual(res[-1].EventFields[8].Value, self.ev_values[-1])
-        self.assertEqual(res[0].EventFields[8].Value, self.ev_values[0])
+        self.assertEqual(res[-1].Severity, self.ev_values[-1])
+        self.assertEqual(res[0].Severity, self.ev_values[0])
 
     # only end return reversed order
     def test_history_ev_read_all_with_end(self):
         end = datetime.utcnow() + timedelta(days=6)
-        res = self.srv_node.read_event_history(self.evfilter, None, end, 0)
+        res = self.srv_node.read_event_history(None, end, 0)
         self.assertEqual(len(res), 20)
-        self.assertEqual(res[-1].EventFields[8].Value, self.ev_values[0])
-        self.assertEqual(res[0].EventFields[8].Value, self.ev_values[-1])
+        self.assertEqual(res[-1].Severity, self.ev_values[0])
+        self.assertEqual(res[0].Severity, self.ev_values[-1])
 
     # only end return reversed order
     def test_history_ev_read_3_with_end(self):
         end = datetime.utcnow() + timedelta(days=6)
-        res = self.srv_node.read_event_history(self.evfilter, None, end, 3)
+        res = self.srv_node.read_event_history(None, end, 3)
         self.assertEqual(len(res), 3)
-        self.assertEqual(res[2].EventFields[8].Value, self.ev_values[-3])
-        self.assertEqual(res[0].EventFields[8].Value, self.ev_values[-1])
+        self.assertEqual(res[2].Severity, self.ev_values[-3])
+        self.assertEqual(res[0].Severity, self.ev_values[-1])
 
     # reverse event filter select clauses and test that results match the filter order
     def test_history_ev_read_all_filter_order_reversed(self):
         now = datetime.utcnow()
         old = now - timedelta(days=6)
-        res = self.srv_node.read_event_history(self.revevfilter, old, None, 0)
+        res = self.srv_node.read_event_history(old, None, 0)
         self.assertEqual(len(res), 20)
-        self.assertEqual(res[-1].EventFields[0].Value, self.ev_values[-1])
-        self.assertEqual(res[0].EventFields[0].Value, self.ev_values[0])
+        self.assertEqual(res[-1].Severity, self.ev_values[-1])
+        self.assertEqual(res[0].Severity, self.ev_values[0])
 
     @classmethod
     def tearDownClass(cls):

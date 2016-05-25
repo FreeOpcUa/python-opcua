@@ -199,6 +199,3 @@ class ThreadLoop(threading.Thread):
         p = functools.partial(self._run_until_complete, future, coro)
         self.loop.call_soon_threadsafe(p)
         return future.result()
-
-
-
