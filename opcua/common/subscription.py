@@ -142,7 +142,7 @@ class Subscription(object):
         for event in eventlist.Events:
             with self._lock:
                 data = self._monitoreditems_map[event.ClientHandle]
-            result = events.event_obj_from_event_fields(data.mfilter.SelectClauses, event.EventFields)
+            result = events.EventResult.from_event_fields(data.mfilter.SelectClauses, event.EventFields)
             result.server_handle = data.server_handle
             if hasattr(self._handler, "event_notification"):
                 try:

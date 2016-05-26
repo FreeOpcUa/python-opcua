@@ -46,20 +46,6 @@ class HistoryCommon(object):
             cls.var.set_value(i)
         time.sleep(1)
 
-    @classmethod
-    def create_srv_events(cls):
-        cls.ev_values = [i for i in range(20)]
-        cls.srvevgen = cls.srv.get_event_generator()
-
-        cls.srv_node = cls.srv.get_node(ua.ObjectIds.Server)
-        cls.srv.iserver.enable_history_event(cls.srv_node, period=None)
-
-        for i in cls.ev_values:
-            cls.srvevgen.event.Severity = cls.ev_values[i]
-            cls.srvevgen.trigger(message="test message")
-            time.sleep(.1)
-        time.sleep(2)
-
     # no start and no end is not defined by spec, return reverse order
     def test_history_var_read_one(self):
         # Spec says that at least two parameters should be provided, so
@@ -162,27 +148,22 @@ class HistoryCommon(object):
         self.assertEqual(res[0].Value.Value, self.values[-1])
 
 
-class TestHistory(unittest.TestCase, HistoryCommon):
+class TestHistoryEvents(object):
 
     @classmethod
-    def setUpClass(cls):
-        cls.start_server_and_client()
-        cls.create_var()
+    def create_srv_events(cls):
+        cls.ev_values = [i for i in range(20)]
+        cls.srvevgen = cls.srv.get_event_generator()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.stop_server_and_client()
+        cls.srv_node = cls.srv.get_node(ua.ObjectIds.Server)
+        cls.srv.iserver.enable_history_event(cls.srv_node, period=None)
 
+        for i in cls.ev_values:
+            cls.srvevgen.event.Severity = cls.ev_values[i]
+            cls.srvevgen.trigger(message="test message")
+            time.sleep(.1)
+        time.sleep(2)
 
-class TestHistorySQL(unittest.TestCase, HistoryCommon):
-    @classmethod
-    def setUpClass(cls):
-        cls.start_server_and_client()
-        cls.srv.iserver.history_manager.set_storage(HistorySQLite(":memory:"))
-        cls.create_var()
-        cls.create_srv_events()
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~ events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     # only has end time, should return reverse order
     def test_history_ev_read_2_with_end(self):
@@ -265,9 +246,6 @@ class TestHistorySQL(unittest.TestCase, HistoryCommon):
         self.assertEqual(res[-1].Severity, self.ev_values[-1])
         self.assertEqual(res[0].Severity, self.ev_values[0])
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.stop_server_and_client()
 
 class TestHistoryLimitsCommon(unittest.TestCase):
     id = ua.NodeId(123)
@@ -337,3 +315,29 @@ class TestHistoryLimits(TestHistoryLimitsCommon):
 class TestHistorySQLLimits(TestHistoryLimitsCommon):
     def createHistoryInstance(self):
         return HistorySQLite(":memory:")
+
+
+class TestHistory(unittest.TestCase, HistoryCommon, TestHistoryEvents):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.start_server_and_client()
+        cls.create_var()
+        cls.create_srv_events()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.stop_server_and_client()
+
+
+class TestHistorySQL(unittest.TestCase, HistoryCommon, TestHistoryEvents):
+    @classmethod
+    def setUpClass(cls):
+        cls.start_server_and_client()
+        cls.srv.iserver.history_manager.set_storage(HistorySQLite(":memory:"))
+        cls.create_var()
+        cls.create_srv_events()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.stop_server_and_client()
