@@ -553,7 +553,7 @@ class AddressSpace(object):
 
         for k, v in cbs:
             try:
-                v(k, value, old)
+                v(k, value)
             except Exception as ex:
                 self.logger.exception("Error calling datachange callback %s, %s, %s", k, v, ex)
 
