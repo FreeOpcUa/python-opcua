@@ -8,6 +8,10 @@ from opcua.common import utils
 from opcua.common import events
 
 
+class UaNodeAlreadyHistorizedError(ua.UaError):
+    pass
+
+
 class HistoryStorageInterface(object):
 
     """
@@ -40,10 +44,9 @@ class HistoryStorageInterface(object):
         """
         raise NotImplementedError
 
-    def new_historized_event(self, source_id, etype, period):
+    def new_historized_event(self, source_id, etype, period, count=0):
         """
         Called when historization of events is enabled on server side
-        FIXME: we may need to store events per nodes in future...
         Returns None
         """
         raise NotImplementedError
@@ -80,8 +83,11 @@ class HistoryDict(HistoryStorageInterface):
         self._datachanges = {}
         self._datachanges_period = {}
         self._events = {}
+        self._events_periods = {}
 
     def new_historized_node(self, node_id, period, count=0):
+        if node_id in self._datachanges:
+            raise UaNodeAlreadyHistorizedError(node_id)
         self._datachanges[node_id] = []
         self._datachanges_period[node_id] = period, count
 
@@ -120,14 +126,46 @@ class HistoryDict(HistoryStorageInterface):
                 results = results[:nb_values]
             return results, cont
 
-    def new_historized_event(self, source_id, etype, period):
-        self._events = []
+    def new_historized_event(self, source_id, etype, period, count):
+        if source_id in self._events:
+            raise UaNodeAlreadyHistorizedError(source_id)
+        self._events[source_id] = []
+        self._events_periods[source_id] = period, count
 
     def save_event(self, event):
-        raise NotImplementedError
+        evts = self._events[event.SourceNode]
+        evts.append(event)
+        period, count = self._events_periods[event.SourceNode]
+        now = datetime.utcnow()
+        if period:
+            while len(evts) and now - evts[0].ServerTimestamp > period:
+                evts.pop(0)
+        if count and len(evts) > count:
+            evts.pop(0)
 
     def read_event_history(self, source_id, start, end, nb_values, evfilter):
-        raise NotImplementedError
+        cont = None
+        if source_id not in self._events:
+            print("Error attempt to read event history for a node which does not historize events")
+            return [], cont
+        else:
+            if start is None:
+                start = ua.DateTimeMinValue
+            if end is None:
+                end = ua.DateTimeMinValue
+            if start == ua.DateTimeMinValue:
+                results = [ev for ev in reversed(self._events[source_id]) if start <= ev.Time]
+            elif end == ua.DateTimeMinValue:
+                results = [ev for ev in self._events[source_id] if start <= ev.Time]
+            elif start > end:
+                results = [ev for ev in reversed(self._events[source_id]) if end <= ev.Time <= start]
+
+            else:
+                results = [ev for ev in self._events[source_id] if start <= ev.Time <= end]
+            if nb_values and len(results) > nb_values:
+                cont = results[nb_values + 1].Time
+                results = results[:nb_values]
+            return results, cont
 
     def stop(self):
         pass
@@ -180,7 +218,7 @@ class HistoryManager(object):
         handler = self._sub.subscribe_data_change(node)
         self._handlers[node] = handler
 
-    def historize_event(self, source, period=timedelta(days=7)):
+    def historize_event(self, source, period=timedelta(days=7), count=0):
         """
         subscribe to the source nodes' events and store the data in the active storage; custom event properties included
         """
@@ -192,7 +230,7 @@ class HistoryManager(object):
         # get the event types the source node generates and a list of all possible event fields
         event_types, ev_fields = self._get_source_event_data(source)
 
-        self.storage.new_historized_event(source.nodeid, ev_fields, period)
+        self.storage.new_historized_event(source.nodeid, ev_fields, period, count)
 
         handler = self._sub.subscribe_events(source)  # FIXME supply list of event types when master is fixed
         self._handlers[source] = handler
@@ -255,7 +293,6 @@ class HistoryManager(object):
             # but they also say we can use cont point as timestamp to enable stateless
             # implementation. This is contradictory, so we assume details is
             # send correctly with continuation point
-            # starttime = bytes_to_datetime(rv.ContinuationPoint)
             starttime = ua.unpack_datetime(utils.Buffer(rv.ContinuationPoint))
 
         dv, cont = self.storage.read_node_history(rv.NodeId,
@@ -263,7 +300,6 @@ class HistoryManager(object):
                                                   details.EndTime,
                                                   details.NumValuesPerNode)
         if cont:
-            # cont = datetime_to_bytes(dv[-1].ServerTimestamp)
             cont = ua.pack_datetime(cont)
         # rv.IndexRange
         # rv.DataEncoding # xml or binary, seems spec say we can ignore that one
@@ -276,18 +312,21 @@ class HistoryManager(object):
             # but they also say we can use cont point as timestamp to enable stateless
             # implementation. This is contradictory, so we assume details is
             # send correctly with continuation point
-            # starttime = bytes_to_datetime(rv.ContinuationPoint)
             starttime = ua.unpack_datetime(utils.Buffer(rv.ContinuationPoint))
 
-        ev, cont = self.storage.read_event_history(rv.NodeId,
-                                                   starttime,
-                                                   details.EndTime,
-                                                   details.NumValuesPerNode,
-                                                   details.Filter)
+        evts, cont = self.storage.read_event_history(rv.NodeId,
+                                                     starttime,
+                                                     details.EndTime,
+                                                     details.NumValuesPerNode,
+                                                     details.Filter)
+        results = []
+        for ev in evts:
+            field_list = ua.HistoryEventFieldList()
+            field_list.EventFields = ev.to_event_fields(details.Filter.SelectClauses)
+            results.append(field_list)
         if cont:
-            # cont = datetime_to_bytes(dv[-1].ServerTimestamp)
             cont = ua.pack_datetime(cont)
-        return ev, cont
+        return results, cont
 
     def _get_source_event_data(self, source):
         # get all event types which the source node can generate; get the fields of those event types

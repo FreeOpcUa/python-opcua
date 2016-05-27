@@ -8,9 +8,14 @@ class EventResult(object):
 
     def __init__(self):
         self.server_handle = None
+        self.select_clauses = None
+        self.event_fields = None
+        self.data_types = {}
+        # save current attributes
+        self.internal_properties = list(self.__dict__.keys())[:] + ["internal_properties"]
 
     def __str__(self):
-        return "EventResult({})".format([str(k) + ":" + str(v) for k, v in self.__dict__.items()])
+        return "EventResult({})".format([str(k) + ":" + str(v) for k, v in self.__dict__.items() if k not in self.internal_properties])
     __repr__ = __str__
 
     def get_event_props_as_fields_dict(self):
@@ -19,19 +24,64 @@ class EventResult(object):
         """
         field_vars = {}
         for key, value in vars(self).items():
-            if not key.startswith("__") and key is not "server_handle":
-                field_vars[key] = ua.Variant(value)
+            if not key.startswith("__") and key not in self.internal_properties:
+                field_vars[key] = ua.Variant(value, self.data_types[key])
         return field_vars
 
+    @staticmethod
+    def from_field_dict(fields):
+        """
+        Create an Event object from a dict of name and variants
+        """
+        result = EventResult()
+        for k, v in fields.items():
+            setattr(result, k, v.Value)
+            result.data_types[k] = v.VariantType
+        return result
 
-def event_obj_from_event_fields(select_clauses, fields):
-    result = EventResult()
-    for idx, sattr in enumerate(select_clauses):
-        if len(sattr.BrowsePath) == 0:
-            setattr(result, sattr.AttributeId.name, fields[idx].Value)
-        else:
-            setattr(result, sattr.BrowsePath[0].Name, fields[idx].Value)
-    return result
+    def to_event_fields_using_subscription_fields(self, select_clauses):
+        """
+        Using a new select_clauses and the original select_clauses
+        used during subscription, return a field list 
+        """
+        fields = []
+        for sattr in select_clauses:
+            for idx, o_sattr in enumerate(self.select_clauses):
+                if sattr.BrowsePath == o_sattr.BrowsePath and sattr.AttributeId == o_sattr.AttributeId:
+                    fields.append(self.event_fields[idx])
+                    break
+        return fields
+
+    def to_event_fields(self, select_clauses):
+        """
+        return a field list using a select clause and the object properties
+        """
+        fields = []
+        for sattr in select_clauses:
+            if len(sattr.BrowsePath) == 0:
+                name = sattr.AttributeId.name
+            else:
+                name = sattr.BrowsePath[0].Name
+            field = getattr(self, name)
+            fields.append(ua.Variant(field, self.data_types[name]))
+        return fields
+
+    @staticmethod
+    def from_event_fields(select_clauses, fields):
+        """
+        Instanciate an Event object from a select_clauses and fields 
+        """
+        result = EventResult()
+        result.select_clauses = select_clauses
+        result.event_fields = fields
+        for idx, sattr in enumerate(select_clauses):
+            if len(sattr.BrowsePath) == 0:
+                name = sattr.AttributeId.name
+            else:
+                name = sattr.BrowsePath[0].Name
+            setattr(result, name, fields[idx].Value)
+            result.data_types[name] = fields[idx].VariantType
+        return result
 
 
 def get_filter_from_event_type(eventtype):
@@ -96,3 +146,5 @@ def get_event_properties_from_type_node(node):
         curr_node = parents[0]
 
     return properties
+
+

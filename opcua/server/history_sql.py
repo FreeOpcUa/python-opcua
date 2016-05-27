@@ -2,10 +2,12 @@ import logging
 from datetime import timedelta
 from datetime import datetime
 from threading import Lock
+import sqlite3
+
 from opcua import ua
 from opcua.common.utils import Buffer
+from opcua.common import events
 from opcua.server.history import HistoryStorageInterface
-import sqlite3
 
 
 class HistorySQLite(HistoryStorageInterface):
@@ -66,7 +68,7 @@ class HistorySQLite(HistoryStorageInterface):
                                    datavalue.Value.VariantType.name,
                                    sqlite3.Binary(datavalue.Value.to_binary())
                                )
-                               )
+                              )
             except sqlite3.Error as e:
                 self.logger.error('Historizing SQL Insert Error for %s: %s', node_id, e)
 
@@ -76,7 +78,7 @@ class HistorySQLite(HistoryStorageInterface):
             period, count = self._datachanges_period[node_id]
 
             def executeDeleteStatement(condition, args):
-                query = ('DELETE FROM "{tn}" WHERE ' + condition).format(tn = table)
+                query = ('DELETE FROM "{tn}" WHERE ' + condition).format(tn=table)
 
                 try:
                     _c_sub.execute(query, args)
@@ -150,7 +152,7 @@ class HistorySQLite(HistoryStorageInterface):
 
             return results, cont
 
-    def new_historized_event(self, source_id, ev_fields, period):
+    def new_historized_event(self, source_id, ev_fields, period, count):
         with self._lock:
             _c_new = self._conn.cursor()
 
@@ -164,10 +166,9 @@ class HistorySQLite(HistoryStorageInterface):
             # note that _Timestamp is for SQL query, _EventTypeName is for debugging, be careful not to create event
             # properties with these names
             try:
-                _c_new.execute('CREATE TABLE "{tn}" (_Id INTEGER PRIMARY KEY NOT NULL, '
-                               '_Timestamp TIMESTAMP, '
-                               '_EventTypeName TEXT, '
-                               '{co})'.format(tn=table, co=columns))
+                _c_new.execute(
+                    'CREATE TABLE "{tn}" (_Id INTEGER PRIMARY KEY NOT NULL, _Timestamp TIMESTAMP, _EventTypeName TEXT, {co})'
+                    .format(tn=table, co=columns))
 
             except sqlite3.Error as e:
                 self.logger.info('Historizing SQL Table Creation Error for events from %s: %s', source_id, e)
@@ -184,8 +185,9 @@ class HistorySQLite(HistoryStorageInterface):
 
             # insert the event into the database
             try:
-                _c_sub.execute('INSERT INTO "{tn}" ("_Id", "_Timestamp", "_EventTypeName", {co}) '
-                               'VALUES (NULL, "{ts}", "{et}", {pl})'.format(tn=table, co=columns, ts=event.Time, et=event_type, pl=placeholders), evtup)
+                _c_sub.execute(
+                    'INSERT INTO "{tn}" ("_Id", "_Timestamp", "_EventTypeName", {co}) VALUES (NULL, "{ts}", "{et}", {pl})'
+                    .format(tn=table, co=columns, ts=event.Time, et=event_type, pl=placeholders), evtup)
 
             except sqlite3.Error as e:
                 self.logger.error('Historizing SQL Insert Error for events from %s: %s', event.SourceNode, e)
@@ -235,7 +237,7 @@ class HistorySQLite(HistoryStorageInterface):
                 limit = -1  # in SQLite a LIMIT of -1 returns all results
 
             table = self._get_table_name(source_id)
-            clauses = self._get_select_clauses(source_id, evfilter)
+            clauses, clauses_str = self._get_select_clauses(source_id, evfilter)
 
             cont = None
             cont_timestamps = []
@@ -243,25 +245,19 @@ class HistorySQLite(HistoryStorageInterface):
 
             # select events from the database; SQL select clause is built from EventFilter and available fields
             try:
-                for row in _c_read.execute('SELECT "_Timestamp", {cl} FROM "{tn}" WHERE "_Timestamp" BETWEEN ? AND ? '
-                                           'ORDER BY "_Id" {dir} LIMIT ?'.format(cl=clauses, tn=table, dir=order),
-                                           (start_time, end_time, limit,)):
+                for row in _c_read.execute(
+                        'SELECT "_Timestamp", {cl} FROM "{tn}" WHERE "_Timestamp" BETWEEN ? AND ? ORDER BY "_Id" {dir} LIMIT ?'
+                        .format(cl=clauses_str, tn=table, dir=order), (start_time, end_time, limit)):
 
-                    # place all the variants in the event field list object
-                    hist_ev_field_list = ua.HistoryEventFieldList()
-                    i = 0
-                    for field in row:
-                        # if the field is the _Timestamp column store it in a list used for getting the continuation
-                        if i == 0:
-                            cont_timestamps.append(field)
+                    fdict = {}
+                    cont_timestamps.append(row[0])
+                    for i, field in enumerate(row[1:]):
+                        if field is not None:
+                            fdict[clauses[i]] = ua.Variant.from_binary(Buffer(field))
                         else:
-                            if field is not None:
-                                hist_ev_field_list.EventFields.append(ua.Variant.from_binary(Buffer(field)))
-                            else:
-                                hist_ev_field_list.EventFields.append(ua.Variant(None))
-                        i += 1
+                            fdict[clauses[i]] = ua.Variant(None)
 
-                    results.append(hist_ev_field_list)
+                    results.append(events.EventResult.from_field_dict(fdict))
 
             except sqlite3.Error as e:
                 self.logger.error('Historizing SQL Read Error events for node %s: %s', source_id, e)
@@ -279,24 +275,25 @@ class HistorySQLite(HistoryStorageInterface):
 
     def _format_event(self, event_result):
         placeholders = []
-        ev_fields = []
         ev_variant_binaries = []
 
         ev_variant_dict = event_result.get_event_props_as_fields_dict()
+        names = list(ev_variant_dict.keys())
+        names.sort()  # sort alphabatically since dict is not sorted
 
         # split dict into two synchronized lists which will be converted to SQL strings
         # note that the variants are converted to binary objects for storing in SQL BLOB format
-        for field, variant in ev_variant_dict.items():
+        for name in names:
+            variant = ev_variant_dict[name]
             placeholders.append('?')
-            ev_fields.append(field)
             ev_variant_binaries.append(sqlite3.Binary(variant.to_binary()))
 
-        return self._list_to_sql_str(ev_fields), self._list_to_sql_str(placeholders, False), tuple(ev_variant_binaries)
+        return self._list_to_sql_str(names), self._list_to_sql_str(placeholders, False), tuple(ev_variant_binaries)
 
     def _get_event_columns(self, ev_fields):
         fields = []
         for field in ev_fields:
-                fields.append(field + ' BLOB')
+            fields.append(field + ' BLOB')
         return self._list_to_sql_str(fields, False)
 
     def _get_select_clauses(self, source_id, evfilter):
@@ -313,15 +310,8 @@ class HistorySQLite(HistoryStorageInterface):
                                     ' Clause: %s:', source_id, select_clause)
 
         # remove select clauses that the event type doesn't have; SQL will error because the column doesn't exist
-        clauses = [x for x in s_clauses if self._check(source_id, x)]
-
-        return self._list_to_sql_str(clauses)
-
-    def _check(self, source_id, s_clause):
-        if s_clause in self._event_fields[source_id]:
-            return True
-        else:
-            return False
+        clauses = [x for x in s_clauses if x in self._event_fields[source_id]]
+        return clauses, self._list_to_sql_str(clauses)
 
     def _list_to_sql_str(self, ls, quotes=True):
         sql_str = ''
