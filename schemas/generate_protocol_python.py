@@ -326,9 +326,9 @@ class CodeGenerator(object):
             enum = self.model.get_enum(field.uatype)
             return enum.name + "(0)"
         if field.uatype in ("String"):
-            return "''"
+            return None 
         elif field.uatype in ("ByteString", "CharArray", "Char"):
-            return "b''"
+            return None 
         elif field.uatype in ("Boolean"):
             return "True"
         elif field.uatype in ("DateTime"):

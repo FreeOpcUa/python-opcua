@@ -745,7 +745,7 @@ class DiagnosticInfo(FrozenClass):
         self.NamespaceURI = 0
         self.Locale = 0
         self.LocalizedText = 0
-        self.AdditionalInfo = b''
+        self.AdditionalInfo = None
         self.InnerStatusCode = StatusCode()
         self.InnerDiagnosticInfo = None
         self._freeze = True
@@ -801,7 +801,7 @@ class DiagnosticInfo(FrozenClass):
         if self.Encoding & (1 << 4):
             self.AdditionalInfo = unpack_bytes(data)
         else:
-            self.AdditionalInfo = b''
+            self.AdditionalInfo = None
         if self.Encoding & (1 << 5):
             self.InnerStatusCode = StatusCode.from_binary(data)
         else:
@@ -907,7 +907,7 @@ class Argument(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.Name = ''
+        self.Name = None
         self.DataType = NodeId()
         self.ValueRank = 0
         self.ArrayDimensions = []
@@ -1005,8 +1005,8 @@ class OptionSet(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.Value = b''
-        self.ValidBits = b''
+        self.Value = None
+        self.ValidBits = None
         self._freeze = True
 
     def to_binary(self):
@@ -1120,12 +1120,12 @@ class ApplicationDescription(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.ApplicationUri = ''
-        self.ProductUri = ''
+        self.ApplicationUri = None
+        self.ProductUri = None
         self.ApplicationName = LocalizedText()
         self.ApplicationType = ApplicationType(0)
-        self.GatewayServerUri = ''
-        self.DiscoveryProfileUri = ''
+        self.GatewayServerUri = None
+        self.DiscoveryProfileUri = None
         self.DiscoveryUrls = []
         self._freeze = True
 
@@ -1195,7 +1195,7 @@ class RequestHeader(FrozenClass):
         self.Timestamp = datetime.now()
         self.RequestHandle = 0
         self.ReturnDiagnostics = 0
-        self.AuditEntryId = ''
+        self.AuditEntryId = None
         self.TimeoutHint = 0
         self.AdditionalHeader = None
         self._freeze = True
@@ -1354,7 +1354,7 @@ class FindServersParameters(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.EndpointUrl = ''
+        self.EndpointUrl = None
         self.LocaleIds = []
         self.ServerUris = []
         self._freeze = True
@@ -1501,8 +1501,8 @@ class ServerOnNetwork(FrozenClass):
             self._freeze = True
             return
         self.RecordId = 0
-        self.ServerName = ''
-        self.DiscoveryUrl = ''
+        self.ServerName = None
+        self.DiscoveryUrl = None
         self.ServerCapabilities = []
         self._freeze = True
 
@@ -1730,11 +1730,11 @@ class UserTokenPolicy(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.PolicyId = ''
+        self.PolicyId = None
         self.TokenType = UserTokenType(0)
-        self.IssuedTokenType = ''
-        self.IssuerEndpointUrl = ''
-        self.SecurityPolicyUri = ''
+        self.IssuedTokenType = None
+        self.IssuerEndpointUrl = None
+        self.SecurityPolicyUri = None
         self._freeze = True
 
     def to_binary(self):
@@ -1793,13 +1793,13 @@ class EndpointDescription(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.EndpointUrl = ''
+        self.EndpointUrl = None
         self.Server = ApplicationDescription()
-        self.ServerCertificate = b''
+        self.ServerCertificate = None
         self.SecurityMode = MessageSecurityMode(0)
-        self.SecurityPolicyUri = ''
+        self.SecurityPolicyUri = None
         self.UserIdentityTokens = []
-        self.TransportProfileUri = ''
+        self.TransportProfileUri = None
         self.SecurityLevel = 0
         self._freeze = True
 
@@ -1863,7 +1863,7 @@ class GetEndpointsParameters(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.EndpointUrl = ''
+        self.EndpointUrl = None
         self.LocaleIds = []
         self.ProfileUris = []
         self._freeze = True
@@ -2019,13 +2019,13 @@ class RegisteredServer(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.ServerUri = ''
-        self.ProductUri = ''
+        self.ServerUri = None
+        self.ProductUri = None
         self.ServerNames = []
         self.ServerType = ApplicationType(0)
-        self.GatewayServerUri = ''
+        self.GatewayServerUri = None
         self.DiscoveryUrls = []
-        self.SemaphoreFilePath = ''
+        self.SemaphoreFilePath = None
         self.IsOnline = True
         self._freeze = True
 
@@ -2204,7 +2204,7 @@ class MdnsDiscoveryConfiguration(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.MdnsServerName = ''
+        self.MdnsServerName = None
         self.ServerCapabilities = []
         self._freeze = True
 
@@ -2453,7 +2453,7 @@ class OpenSecureChannelParameters(FrozenClass):
         self.ClientProtocolVersion = 0
         self.RequestType = SecurityTokenRequestType(0)
         self.SecurityMode = MessageSecurityMode(0)
-        self.ClientNonce = b''
+        self.ClientNonce = None
         self.RequestedLifetime = 0
         self._freeze = True
 
@@ -2548,7 +2548,7 @@ class OpenSecureChannelResult(FrozenClass):
             return
         self.ServerProtocolVersion = 0
         self.SecurityToken = ChannelSecurityToken()
-        self.ServerNonce = b''
+        self.ServerNonce = None
         self._freeze = True
 
     def to_binary(self):
@@ -2712,8 +2712,8 @@ class SignedSoftwareCertificate(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.CertificateData = b''
-        self.Signature = b''
+        self.CertificateData = None
+        self.Signature = None
         self._freeze = True
 
     def to_binary(self):
@@ -2751,8 +2751,8 @@ class SignatureData(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.Algorithm = ''
-        self.Signature = b''
+        self.Algorithm = None
+        self.Signature = None
         self._freeze = True
 
     def to_binary(self):
@@ -2801,11 +2801,11 @@ class CreateSessionParameters(FrozenClass):
             self._freeze = True
             return
         self.ClientDescription = ApplicationDescription()
-        self.ServerUri = ''
-        self.EndpointUrl = ''
-        self.SessionName = ''
-        self.ClientNonce = b''
-        self.ClientCertificate = b''
+        self.ServerUri = None
+        self.EndpointUrl = None
+        self.SessionName = None
+        self.ClientNonce = None
+        self.ClientCertificate = None
         self.RequestedSessionTimeout = 0
         self.MaxResponseMessageSize = 0
         self._freeze = True
@@ -2923,8 +2923,8 @@ class CreateSessionResult(FrozenClass):
         self.SessionId = NodeId()
         self.AuthenticationToken = NodeId()
         self.RevisedSessionTimeout = 0
-        self.ServerNonce = b''
-        self.ServerCertificate = b''
+        self.ServerNonce = None
+        self.ServerCertificate = None
         self.ServerEndpoints = []
         self.ServerSoftwareCertificates = []
         self.ServerSignature = SignatureData()
@@ -3044,7 +3044,7 @@ class UserIdentityToken(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.PolicyId = ''
+        self.PolicyId = None
         self._freeze = True
 
     def to_binary(self):
@@ -3077,7 +3077,7 @@ class AnonymousIdentityToken(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.PolicyId = ''
+        self.PolicyId = None
         self._freeze = True
 
     def to_binary(self):
@@ -3116,10 +3116,10 @@ class UserNameIdentityToken(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.PolicyId = ''
-        self.UserName = ''
-        self.Password = b''
-        self.EncryptionAlgorithm = ''
+        self.PolicyId = None
+        self.UserName = None
+        self.Password = None
+        self.EncryptionAlgorithm = None
         self._freeze = True
 
     def to_binary(self):
@@ -3163,8 +3163,8 @@ class X509IdentityToken(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.PolicyId = ''
-        self.CertificateData = b''
+        self.PolicyId = None
+        self.CertificateData = None
         self._freeze = True
 
     def to_binary(self):
@@ -3200,8 +3200,8 @@ class KerberosIdentityToken(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.PolicyId = ''
-        self.TicketData = b''
+        self.PolicyId = None
+        self.TicketData = None
         self._freeze = True
 
     def to_binary(self):
@@ -3241,9 +3241,9 @@ class IssuedIdentityToken(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.PolicyId = ''
-        self.TokenData = b''
-        self.EncryptionAlgorithm = ''
+        self.PolicyId = None
+        self.TokenData = None
+        self.EncryptionAlgorithm = None
         self._freeze = True
 
     def to_binary(self):
@@ -3393,7 +3393,7 @@ class ActivateSessionResult(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.ServerNonce = b''
+        self.ServerNonce = None
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
@@ -4653,7 +4653,7 @@ class AddReferencesItem(FrozenClass):
         self.SourceNodeId = NodeId()
         self.ReferenceTypeId = NodeId()
         self.IsForward = True
-        self.TargetServerUri = ''
+        self.TargetServerUri = None
         self.TargetNodeId = ExpandedNodeId()
         self.TargetNodeClass = NodeClass(0)
         self._freeze = True
@@ -5425,7 +5425,7 @@ class BrowseResult(FrozenClass):
             self._freeze = True
             return
         self.StatusCode = StatusCode()
-        self.ContinuationPoint = b''
+        self.ContinuationPoint = None
         self.References = []
         self._freeze = True
 
@@ -6550,9 +6550,9 @@ class SupportedProfile(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.OrganizationUri = ''
-        self.ProfileId = ''
-        self.ComplianceTool = ''
+        self.OrganizationUri = None
+        self.ProfileId = None
+        self.ComplianceTool = None
         self.ComplianceDate = datetime.now()
         self.ComplianceLevel = ComplianceLevel(0)
         self.UnsupportedUnitIds = []
@@ -6621,14 +6621,14 @@ class SoftwareCertificate(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.ProductName = ''
-        self.ProductUri = ''
-        self.VendorName = ''
-        self.VendorProductCertificate = b''
-        self.SoftwareVersion = ''
-        self.BuildNumber = ''
+        self.ProductName = None
+        self.ProductUri = None
+        self.VendorName = None
+        self.VendorProductCertificate = None
+        self.SoftwareVersion = None
+        self.BuildNumber = None
         self.BuildDate = datetime.now()
-        self.IssuedBy = ''
+        self.IssuedBy = None
         self.IssueDate = datetime.now()
         self.SupportedProfiles = []
         self._freeze = True
@@ -6701,7 +6701,7 @@ class QueryDataDescription(FrozenClass):
             return
         self.RelativePath = RelativePath()
         self.AttributeId = 0
-        self.IndexRange = ''
+        self.IndexRange = None
         self._freeze = True
 
     def to_binary(self):
@@ -7047,10 +7047,10 @@ class AttributeOperand(FrozenClass):
             self._freeze = True
             return
         self.NodeId = NodeId()
-        self.Alias = ''
+        self.Alias = None
         self.BrowsePath = RelativePath()
         self.AttributeId = 0
-        self.IndexRange = ''
+        self.IndexRange = None
         self._freeze = True
 
     def to_binary(self):
@@ -7102,7 +7102,7 @@ class SimpleAttributeOperand(FrozenClass):
         self.TypeDefinitionId = NodeId()
         self.BrowsePath = []
         self.AttributeId = 0
-        self.IndexRange = ''
+        self.IndexRange = None
         self._freeze = True
 
     def to_binary(self):
@@ -7428,7 +7428,7 @@ class QueryFirstResult(FrozenClass):
             self._freeze = True
             return
         self.QueryDataSets = []
-        self.ContinuationPoint = b''
+        self.ContinuationPoint = None
         self.ParsingResults = []
         self.DiagnosticInfos = []
         self.FilterResult = ContentFilterResult()
@@ -7541,7 +7541,7 @@ class QueryNextParameters(FrozenClass):
             self._freeze = True
             return
         self.ReleaseContinuationPoint = True
-        self.ContinuationPoint = b''
+        self.ContinuationPoint = None
         self._freeze = True
 
     def to_binary(self):
@@ -7621,7 +7621,7 @@ class QueryNextResult(FrozenClass):
             self._freeze = True
             return
         self.QueryDataSets = []
-        self.RevisedContinuationPoint = b''
+        self.RevisedContinuationPoint = None
         self._freeze = True
 
     def to_binary(self):
@@ -7713,7 +7713,7 @@ class ReadValueId(FrozenClass):
             return
         self.NodeId = NodeId()
         self.AttributeId = 0
-        self.IndexRange = ''
+        self.IndexRange = None
         self.DataEncoding = QualifiedName()
         self._freeze = True
 
@@ -7917,9 +7917,9 @@ class HistoryReadValueId(FrozenClass):
             self._freeze = True
             return
         self.NodeId = NodeId()
-        self.IndexRange = ''
+        self.IndexRange = None
         self.DataEncoding = QualifiedName()
-        self.ContinuationPoint = b''
+        self.ContinuationPoint = None
         self._freeze = True
 
     def to_binary(self):
@@ -7964,7 +7964,7 @@ class HistoryReadResult(FrozenClass):
             self._freeze = True
             return
         self.StatusCode = StatusCode()
-        self.ContinuationPoint = b''
+        self.ContinuationPoint = None
         self.HistoryData = None
         self._freeze = True
 
@@ -8278,7 +8278,7 @@ class ModificationInfo(FrozenClass):
             return
         self.ModificationTime = datetime.now()
         self.UpdateType = HistoryUpdateType(0)
-        self.UserName = ''
+        self.UserName = None
         self._freeze = True
 
     def to_binary(self):
@@ -8574,7 +8574,7 @@ class WriteValue(FrozenClass):
             return
         self.NodeId = NodeId()
         self.AttributeId = 0
-        self.IndexRange = ''
+        self.IndexRange = None
         self.Value = DataValue()
         self._freeze = True
 
@@ -12586,11 +12586,11 @@ class BuildInfo(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.ProductUri = ''
-        self.ManufacturerName = ''
-        self.ProductName = ''
-        self.SoftwareVersion = ''
-        self.BuildNumber = ''
+        self.ProductUri = None
+        self.ManufacturerName = None
+        self.ProductName = None
+        self.SoftwareVersion = None
+        self.BuildNumber = None
         self.BuildDate = datetime.now()
         self._freeze = True
 
@@ -12641,7 +12641,7 @@ class RedundantServerDataType(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.ServerId = ''
+        self.ServerId = None
         self.ServiceLevel = 0
         self.ServerState = ServerState(0)
         self._freeze = True
@@ -12715,7 +12715,7 @@ class NetworkGroupDataType(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.ServerUri = ''
+        self.ServerUri = None
         self.NetworkPaths = []
         self._freeze = True
 
@@ -13049,10 +13049,10 @@ class SessionDiagnosticsDataType(FrozenClass):
             self._freeze = True
             return
         self.SessionId = NodeId()
-        self.SessionName = ''
+        self.SessionName = None
         self.ClientDescription = ApplicationDescription()
-        self.ServerUri = ''
-        self.EndpointUrl = ''
+        self.ServerUri = None
+        self.EndpointUrl = None
         self.LocaleIds = []
         self.ActualSessionTimeout = 0
         self.MaxResponseMessageSize = 0
@@ -13266,14 +13266,14 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
             self._freeze = True
             return
         self.SessionId = NodeId()
-        self.ClientUserIdOfSession = ''
+        self.ClientUserIdOfSession = None
         self.ClientUserIdHistory = []
-        self.AuthenticationMechanism = ''
-        self.Encoding = ''
-        self.TransportProtocol = ''
+        self.AuthenticationMechanism = None
+        self.Encoding = None
+        self.TransportProtocol = None
         self.SecurityMode = MessageSecurityMode(0)
-        self.SecurityPolicyUri = ''
-        self.ClientCertificate = b''
+        self.SecurityPolicyUri = None
+        self.ClientCertificate = None
         self._freeze = True
 
     def to_binary(self):
@@ -13738,7 +13738,7 @@ class EUInformation(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.NamespaceUri = ''
+        self.NamespaceUri = None
         self.UnitId = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
@@ -13968,10 +13968,10 @@ class ProgramDiagnosticDataType(FrozenClass):
             self._freeze = True
             return
         self.CreateSessionId = NodeId()
-        self.CreateClientName = ''
+        self.CreateClientName = None
         self.InvocationCreationTime = datetime.now()
         self.LastTransitionTime = datetime.now()
-        self.LastMethodCall = ''
+        self.LastMethodCall = None
         self.LastMethodSessionId = NodeId()
         self.LastMethodInputArguments = []
         self.LastMethodOutputArguments = []
@@ -14052,8 +14052,8 @@ class Annotation(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.Message = ''
-        self.UserName = ''
+        self.Message = None
+        self.UserName = None
         self.AnnotationTime = datetime.now()
         self._freeze = True
 
