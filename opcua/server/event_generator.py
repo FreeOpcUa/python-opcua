@@ -1,9 +1,10 @@
 import logging
 from datetime import datetime
+import uuid
 
 from opcua import ua
 from opcua import Node
-import uuid
+from opcua.common import events
 
 
 class EventGenerator(object):
@@ -41,7 +42,7 @@ class EventGenerator(object):
             node = Node(self.isession, ua.NodeId(etype))
 
         if node:
-            self.event = get_event_from_type_node(node)
+            self.event = events.get_event_obj_from_type_node(node)
 
         if isinstance(source, Node):
             pass
@@ -52,7 +53,8 @@ class EventGenerator(object):
 
         if self.event.SourceNode:
             if source.nodeid != self.event.SourceNode:
-                self.logger.warning("Source NodeId: '%s' and event SourceNode: '%s' are not the same. Using '%s' as SourceNode", str(source.nodeid), str(self.event.SourceNode), str(self.event.SourceNode))
+                self.logger.warning(
+                    "Source NodeId: '%s' and event SourceNode: '%s' are not the same. Using '%s' as SourceNode", str(source.nodeid), str(self.event.SourceNode), str(self.event.SourceNode))
                 source = Node(self.isession, self.event.SourceNode)
 
         self.event.SourceNode = source.nodeid
@@ -96,40 +98,3 @@ class EventGenerator(object):
         self.isession.subscription_service.trigger_event(self.event)
 
 
-def get_event_from_type_node(node):
-    if node.nodeid.Identifier in ua.uaevents_auto.IMPLEMENTED_EVENTS.keys():
-        return ua.uaevents_auto.IMPLEMENTED_EVENTS[node.nodeid.Identifier]()
-    else:
-        parent_identifier, parent_eventtype = _find_parent_eventtype(node)
-        if not parent_eventtype:
-            return None
-
-        class CustomEvent(parent_eventtype):
-
-            def __init__(self):
-                super(CustomEvent, self).__init__(extended=True)
-                self.EventType = node.nodeid
-                curr_node = node
-
-                while curr_node.nodeid.Identifier != parent_identifier:
-                    for prop in curr_node.get_properties():
-                        setattr(self, prop.get_browse_name().Name, prop.get_value())
-                    parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
-                    if len(parents) != 1: # Something went wrong
-                        return None
-                    curr_node = parents[0]
-
-                self._freeze = True
-
-    return CustomEvent()
-
-
-def _find_parent_eventtype(node):
-    parents = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
-
-    if len(parents) != 1:   # Something went wrong
-        return None, None
-    if parents[0].nodeid.Identifier in ua.uaevents_auto.IMPLEMENTED_EVENTS.keys():
-        return parents[0].nodeid.Identifier, ua.uaevents_auto.IMPLEMENTED_EVENTS[parents[0].nodeid.Identifier]
-    else:
-        return _find_parent_eventtype(parents[0])

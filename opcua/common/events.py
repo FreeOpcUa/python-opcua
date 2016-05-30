@@ -148,3 +148,46 @@ def get_event_properties_from_type_node(node):
     return properties
 
 
+def get_event_obj_from_type_node(node):
+    """
+    return an Event object from an event type node
+    """
+    if node.nodeid.Identifier in ua.uaevents_auto.IMPLEMENTED_EVENTS.keys():
+        return ua.uaevents_auto.IMPLEMENTED_EVENTS[node.nodeid.Identifier]()
+    else:
+        parent_identifier, parent_eventtype = _find_parent_eventtype(node)
+        if not parent_eventtype:
+            return None
+
+        class CustomEvent(parent_eventtype):
+
+            def __init__(self):
+                super(CustomEvent, self).__init__(extended=True)
+                self.EventType = node.nodeid
+                curr_node = node
+
+                while curr_node.nodeid.Identifier != parent_identifier:
+                    for prop in curr_node.get_properties():
+                        setattr(self, prop.get_browse_name().Name, prop.get_value())
+                    parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+                    if len(parents) != 1: # Something went wrong
+                        return None
+                    curr_node = parents[0]
+
+                self._freeze = True
+
+    return CustomEvent()
+
+
+def _find_parent_eventtype(node):
+    """
+    """
+    parents = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+
+    if len(parents) != 1:   # Something went wrong
+        return None, None
+    if parents[0].nodeid.Identifier in ua.uaevents_auto.IMPLEMENTED_EVENTS.keys():
+        return parents[0].nodeid.Identifier, ua.uaevents_auto.IMPLEMENTED_EVENTS[parents[0].nodeid.Identifier]
+    else:
+        return _find_parent_eventtype(parents[0])
+

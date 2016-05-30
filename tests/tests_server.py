@@ -173,11 +173,11 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
 
     # This should work for following BaseEvent tests to work (maybe to write it a bit differentlly since they are not independent)
     def test_get_event_from_type_node_BaseEvent(self):
-        ev = opcua.server.event.get_event_from_type_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType)))
+        ev = opcua.common.events.get_event_obj_from_type_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType)))
         check_base_event(self, ev)
 
     def test_get_event_from_type_node_Inhereted_AuditEvent(self):
-        ev = opcua.server.event.get_event_from_type_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.AuditEventType)))
+        ev = opcua.common.events.get_event_obj_from_type_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.AuditEventType)))
         self.assertIsNot(ev, None)  # we did not receive event
         self.assertIsInstance(ev, ua.BaseEvent)
         self.assertIsInstance(ev, ua.AuditEvent)
@@ -282,7 +282,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
     def test_get_event_from_type_node_CustomEvent(self):
         etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
 
-        ev = opcua.server.event.get_event_from_type_node(etype)
+        ev = opcua.common.events.get_event_obj_from_type_node(etype)
         check_custom_event(self, ev, etype)
         self.assertEqual(ev.PropertyNum, None)
         self.assertEqual(ev.PropertyString, None)

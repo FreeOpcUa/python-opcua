@@ -13,7 +13,7 @@ from opcua.common.methods import uamethod
 from opcua.common.subscription import Subscription
 from opcua.client.client import Client
 from opcua.server.server import Server
-from opcua.server.event import EventGenerator
+from opcua.server.event_generator import EventGenerator
 from opcua.common.instanciate import instanciate_node
 
 
