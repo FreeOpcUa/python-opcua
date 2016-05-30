@@ -13,7 +13,7 @@ from opcua import ua
 #from opcua.binary_server import BinaryServer
 from opcua.server.binary_server_asyncio import BinaryServer
 from opcua.server.internal_server import InternalServer
-from opcua.server.event import EventGenerator
+from opcua.server.event_generator import EventGenerator
 from opcua.common.node import Node
 from opcua.common.subscription import Subscription
 from opcua.common import xmlimporter
