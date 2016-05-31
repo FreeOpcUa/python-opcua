@@ -330,14 +330,3 @@ class Subscription(object):
         deadband_filter.DeadbandType = deadbandtype
         deadband_filter.DeadbandValue = deadband_val  # absolute float value or from 0 to 100 for percentage deadband
         return self._subscribe(var, attr, deadband_filter, queuesize)
-
-    def _modify_monitored_item_request(self, new_queuesize, new_samp_time, mod_filter):
-        req_params = ua.MonitoringParameters()
-        with self._lock:
-            req_params.ClientHandle = self._client_handle
-        req_params.QueueSize = new_queuesize
-        req_params.Filter = mod_filter
-        req_params.SamplingInterval = new_samp_time
-        return req_params
-
-
