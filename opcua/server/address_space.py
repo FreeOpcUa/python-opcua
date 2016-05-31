@@ -374,7 +374,7 @@ class NodeManagementService(object):
 
     def _add_nodeattributes(self, item, nodedata):
         self._add_node_attr(item, nodedata, "AccessLevel", ua.VariantType.Byte)
-        self._add_node_attr(item, nodedata, "ArrayDimensions", ua.VariantType.Int32)
+        self._add_node_attr(item, nodedata, "ArrayDimensions", ua.VariantType.UInt32)
         self._add_node_attr(item, nodedata, "BrowseName", ua.VariantType.QualifiedName)
         self._add_node_attr(item, nodedata, "ContainsNoLoops", ua.VariantType.Boolean)
         self._add_node_attr(item, nodedata, "DataType", ua.VariantType.NodeId)
@@ -390,11 +390,11 @@ class NodeManagementService(object):
         self._add_node_attr(item, nodedata, "NodeId", ua.VariantType.NodeId)
         self._add_node_attr(item, nodedata, "Symmetric", ua.VariantType.Boolean)
         self._add_node_attr(item, nodedata, "UserAccessLevel", ua.VariantType.Byte)
-        self._add_node_attr(item, nodedata, "UserExecutable", ua.VariantType.Byte)
+        self._add_node_attr(item, nodedata, "UserExecutable", ua.VariantType.Boolean)
         self._add_node_attr(item, nodedata, "UserWriteMask", ua.VariantType.Byte)
         self._add_node_attr(item, nodedata, "ValueRank", ua.VariantType.Int32)
-        self._add_node_attr(item, nodedata, "WriteMask", ua.VariantType.Byte)
-        self._add_node_attr(item, nodedata, "UserWriteMask", ua.VariantType.Byte)
+        self._add_node_attr(item, nodedata, "WriteMask", ua.VariantType.UInt32)
+        self._add_node_attr(item, nodedata, "UserWriteMask", ua.VariantType.UInt32)
         self._add_node_attr(item, nodedata, "Value")
 
 
