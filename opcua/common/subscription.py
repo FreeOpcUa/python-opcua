@@ -88,7 +88,6 @@ class Subscription(object):
         self.subscription_id = response.SubscriptionId  # move to data class
         self.server.publish()
         self.server.publish()
-        self.filters = dict()
 
     def delete(self):
         """
@@ -240,6 +239,7 @@ class Subscription(object):
                 data.client_handle = mi.RequestedParameters.ClientHandle
                 data.node = Node(self.server, mi.ItemToMonitor.NodeId)
                 data.attribute = mi.ItemToMonitor.AttributeId
+                #TODO: Either use the filter from request or from response. Here it uses from request, in modify it uses from response
                 data.mfilter = mi.RequestedParameters.Filter
                 self._monitoreditems_map[mi.RequestedParameters.ClientHandle] = data
         results = self.server.create_monitored_items(params)
@@ -254,7 +254,6 @@ class Subscription(object):
                     continue
                 data = self._monitoreditems_map[mi.RequestedParameters.ClientHandle]
                 data.server_handle = result.MonitoredItemId
-                self.filters[result.MonitoredItemId]=result.FilterResult
                 mids.append(result.MonitoredItemId)
         return mids
 
@@ -283,10 +282,14 @@ class Subscription(object):
         :param mod_filter_val: New deadband filter value
         :return: Return a Modify Monitored Item Result
         """
+        for monitored_item_index in self._monitoreditems_map:
+            if self._monitoreditems_map[monitored_item_index].server_handle == handle:
+                item_to_change = self._monitoreditems_map[monitored_item_index]
+                break
         if mod_filter_val == None:
             mod_filter = None
         elif mod_filter_val < 0:
-            mod_filter = self.filters[handle]
+            mod_filter = item_to_change.mfilter
         else:
             mod_filter = ua.DataChangeFilter()
             mod_filter.Trigger = ua.DataChangeTrigger(1)  # send notification when status or value change
@@ -300,7 +303,7 @@ class Subscription(object):
         params.SubscriptionId = self.subscription_id
         params.ItemsToModify.append(modif_item)
         results = self.server.modify_monitored_items(params)
-        self.filters[handle]=results[0].FilterResult
+        item_to_change.mfilter = results[0].FilterResult
         return results
 
     def _modify_monitored_item_request(self, new_queuesize, new_samp_time, mod_filter):
