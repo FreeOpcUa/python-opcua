@@ -18,6 +18,7 @@ class MonitoredItemData(object):
         self.parameters = None
         self.mode = None
         self.mfilter = None
+        self.mvalue = MonitoredItemValues()
         self.where_clause_evaluator = None
 
 class MonitoredItemValues(object):
