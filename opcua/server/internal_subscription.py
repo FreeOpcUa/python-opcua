@@ -415,21 +415,23 @@ class WhereClauseEvaluator(object):
         elif el.FilterOperator == ua.FilterOperator.Or:
             return self._eval_op(ops[0], event) or self._eval_el(ops[1], event)
         elif el.FilterOperator == ua.FilterOperator.Cast:
-            self.logger("Cast operand not implemented")
-            raise NotImplementError
+            self.logger.warn("Cast operand not implemented, assuming True")
+            return True
+        elif el.FilterOperator == ua.FilterOperator.OfType:
+            self.logger.warn("OfType operand not implemented, assuming True")
+            return True
         else:
             # TODO: implement missing operators
             print("WhereClause not implemented for element: %s", el)
-            raise NotImplementError
+            raise NotImplementedError
 
     def _like_operator(self, string, pattern):
-        raise NotImplementError
+        raise NotImplementedError
 
     def _eval_op(self, op, event):
         # seems spec says we should return Null if issues
         if type(op) is ua.ElementOperand:
-            el = self.elements[op.FilterOperands[0].Index]
-            return self._eval_el(el)
+            return self._eval_el(op.Index, event)
         elif type(op) is ua.AttributeOperand:
             if op.BrowsePath:
                 return getattr(event, op.BrowsePath.Elements[0].TargetName.Name)
@@ -446,8 +448,8 @@ class WhereClauseEvaluator(object):
         elif type(op) is ua.LiteralOperand:
             return op.Value.Value
         else:
-            self.logger.warning("Where clause element % is not of a known type", el)
-            raise NotImplementError
+            self.logger.warning("Where clause element % is not of a known type", op)
+            raise NotImplementedError
 
 
 
