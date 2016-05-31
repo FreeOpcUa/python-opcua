@@ -478,7 +478,7 @@ class UaClient(object):
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
-    def modify_monitored_item(self, params):
+    def modify_monitored_items(self, params):
         self.logger.info("modify_monitored_items")
         request = ua.ModifyMonitoredItemsRequest()
         request.Parameters = params

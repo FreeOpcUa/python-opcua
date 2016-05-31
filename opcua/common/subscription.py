@@ -88,6 +88,7 @@ class Subscription(object):
         self.subscription_id = response.SubscriptionId  # move to data class
         self.server.publish()
         self.server.publish()
+        self.filters = dict()
 
     def delete(self):
         """
@@ -253,6 +254,7 @@ class Subscription(object):
                     continue
                 data = self._monitoreditems_map[mi.RequestedParameters.ClientHandle]
                 data.server_handle = result.MonitoredItemId
+                self.filters[result.MonitoredItemId]=result.FilterResult
                 mids.append(result.MonitoredItemId)
         return mids
 
@@ -272,7 +274,7 @@ class Subscription(object):
                     del(self._monitoreditems_map[k])
                     return
 
-    def modify_monitored_item(self, handle, new_samp_time, new_queuesize=0, mod_filter_val=None):
+    def modify_monitored_item(self, handle, new_samp_time, new_queuesize=0, mod_filter_val=-1):
         """
         Modify a monitored item.
         :param handle: Handle returned when originally subscribing
@@ -281,9 +283,10 @@ class Subscription(object):
         :param mod_filter_val: New deadband filter value
         :return: Return a Modify Monitored Item Result
         """
-        if mod_filter_val < 0:
-            mod_filter = ua.DataChangeFilter()
-            mod_filter.DeadbandValue = -1
+        if mod_filter_val == None:
+            mod_filter = None
+        elif mod_filter_val < 0:
+            mod_filter = self.filters[handle]
         else:
             mod_filter = ua.DataChangeFilter()
             mod_filter.Trigger = ua.DataChangeTrigger(1)  # send notification when status or value change
@@ -297,6 +300,7 @@ class Subscription(object):
         params.SubscriptionId = self.subscription_id
         params.ItemsToModify.append(modif_item)
         results = self.server.modify_monitored_items(params)
+        self.filters[handle]=results[0].FilterResult
         return results
 
     def _modify_monitored_item_request(self, new_queuesize, new_samp_time, mod_filter):

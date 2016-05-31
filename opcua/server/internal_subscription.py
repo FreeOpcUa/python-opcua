@@ -83,7 +83,7 @@ class MonitoredItemService(object):
                 result = ua.MonitoredItemModifyResult()
                 if mdata.monitored_item_id == params.MonitoredItemId:
                     self.isub.data.RevisedPublishingInterval = params.RequestedParameters.SamplingInterval
-                    result.RevisedSamplingInterval = self.isub.data.RevisedPublishingInterval
+                    result.RevisedSamplingInterval = params.RequestedParameters.SamplingInterval
                     result.RevisedQueueSize = params.RequestedParameters.QueueSize
                     result.FilterResult = params.RequestedParameters.Filter
                     mdata.mfilter = result.FilterResult
