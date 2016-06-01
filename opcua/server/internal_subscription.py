@@ -15,10 +15,10 @@ class MonitoredItemData(object):
         self.client_handle = None
         self.callback_handle = None
         self.monitored_item_id = None
-        self.parameters = None
         self.mode = None
-        self.mfilter = None
+        self.filter = None  
         self.where_clause_evaluator = None
+        self.queue_size = 0
 
 
 class MonitoredItemService(object):
@@ -67,11 +67,11 @@ class MonitoredItemService(object):
             for mdata in self._monitored_items.values():
                 result = ua.MonitoredItemModifyResult()
                 if mdata.monitored_item_id == params.MonitoredItemId:
-                    self.isub.data.RevisedPublishingInterval = params.RequestedParameters.SamplingInterval
-                    result.RevisedSamplingInterval = self.isub.data.RevisedPublishingInterval
+                    result.RevisedSamplingInterval = params.RequestedParameters.SamplingInterval
                     result.RevisedQueueSize = params.RequestedParameters.QueueSize
-                    result.FilterResult = params.RequestedParameters.Filter
-                    mdata.parameters = result
+                    if params.RequestedParameters.Filter is not None:
+                        mdata.filter = params.RequestedParameters.Filter
+                    mdata.queue_size = params.RequestedParameters.QueueSize
                     return result
             result = ua.MonitoredItemModifyResult()
             result.StatusCode(ua.StatusCodes.BadMonitoredItemIdInvalid)
@@ -91,11 +91,11 @@ class MonitoredItemService(object):
         self.logger.debug("Creating MonitoredItem with id %s", result.MonitoredItemId)
 
         mdata = MonitoredItemData()
-        mdata.parameters = result
         mdata.mode = params.MonitoringMode
         mdata.client_handle = params.RequestedParameters.ClientHandle
-        mdata.mfilter = params.RequestedParameters.Filter
         mdata.monitored_item_id = result.MonitoredItemId
+        mdata.queue_size = params.RequestedParameters.QueueSize
+        mdata.filter = params.RequestedParameters.Filter
 
         return result, mdata
 
@@ -109,11 +109,8 @@ class MonitoredItemService(object):
         if ev_notify_byte is None or ev_notify_byte & 1 == 0:
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadServiceUnsupported)
             return result
-        result.FilterResult = ua.EventFilterResult()
-        for _ in params.RequestedParameters.Filter.SelectClauses:
-            result.FilterResult.SelectClauseResults.append(ua.StatusCode())
-        # TODO: spec says we should check WhereClause here
-        mdata.where_clause_evaluator = WhereClauseEvaluator(self.logger, self.aspace, mdata.mfilter.WhereClause)
+        # result.FilterResult = ua.EventFilterResult()  # spec says we can ignore if not error
+        mdata.where_clause_evaluator = WhereClauseEvaluator(self.logger, self.aspace, mdata.filter.WhereClause)
         self._commit_monitored_item(result, mdata)
         if params.ItemToMonitor.NodeId not in self._monitored_events:
             self._monitored_events[params.ItemToMonitor.NodeId] = []
@@ -176,7 +173,7 @@ class MonitoredItemService(object):
                 mdata = self._monitored_items[mid]
                 event.ClientHandle = mdata.client_handle
                 event.Value = value
-                self.isub.enqueue_datachange_event(mid, event, mdata.parameters.RevisedQueueSize)
+                self.isub.enqueue_datachange_event(mid, event, mdata.queue_size)
 
     def trigger_event(self, event):
         with self._lock:
@@ -196,12 +193,12 @@ class MonitoredItemService(object):
             return
         mdata = self._monitored_items[mid]
         if not mdata.where_clause_evaluator.eval(event):
-            self.logger.debug("Event does not fit WhereClause, not generating event", mid, event, self)
+            self.logger.info("%s, %s, Event %s does not fit WhereClause, not generating event", self, mid, event)
             return
         fieldlist = ua.EventFieldList()
         fieldlist.ClientHandle = mdata.client_handle
-        fieldlist.EventFields = self._get_event_fields(mdata.mfilter, event)
-        self.isub.enqueue_event(mid, fieldlist, mdata.parameters.RevisedQueueSize)
+        fieldlist.EventFields = self._get_event_fields(mdata.filter, event)
+        self.isub.enqueue_event(mid, fieldlist, mdata.queue_size)
 
     def _get_event_fields(self, evfilter, event):
         fields = []
@@ -227,7 +224,7 @@ class MonitoredItemService(object):
 class InternalSubscription(object):
 
     def __init__(self, subservice, data, addressspace, callback):
-        self.logger = logging.getLogger(__name__ + "." + str(data.SubscriptionId))
+        self.logger = logging.getLogger(__name__)
         self.aspace = addressspace
         self.subservice = subservice
         self.data = data
