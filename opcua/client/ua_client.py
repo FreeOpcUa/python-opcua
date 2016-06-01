@@ -477,3 +477,13 @@ class UaClient(object):
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
+
+    def modify_monitored_items(self, params):
+        self.logger.info("modify_monitored_items")
+        request = ua.ModifyMonitoredItemsRequest()
+        request.Parameters = params
+        data = self._uasocket.send_request(request)
+        response = ua.ModifyMonitoredItemsResponse.from_binary(data)
+        self.logger.debug(response)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results

@@ -239,6 +239,7 @@ class Subscription(object):
                 data.client_handle = mi.RequestedParameters.ClientHandle
                 data.node = Node(self.server, mi.ItemToMonitor.NodeId)
                 data.attribute = mi.ItemToMonitor.AttributeId
+                #TODO: Either use the filter from request or from response. Here it uses from request, in modify it uses from response
                 data.mfilter = mi.RequestedParameters.Filter
                 self._monitoreditems_map[mi.RequestedParameters.ClientHandle] = data
         results = self.server.create_monitored_items(params)
@@ -272,4 +273,60 @@ class Subscription(object):
                     del(self._monitoreditems_map[k])
                     return
 
+    def modify_monitored_item(self, handle, new_samp_time, new_queuesize=0, mod_filter_val=-1):
+        """
+        Modify a monitored item.
+        :param handle: Handle returned when originally subscribing
+        :param new_samp_time: New wanted sample time
+        :param new_queuesize: New wanted queuesize, default is 0
+        :param mod_filter_val: New deadband filter value
+        :return: Return a Modify Monitored Item Result
+        """
+        for monitored_item_index in self._monitoreditems_map:
+            if self._monitoreditems_map[monitored_item_index].server_handle == handle:
+                item_to_change = self._monitoreditems_map[monitored_item_index]
+                break
+        if mod_filter_val == None:
+            mod_filter = None
+        elif mod_filter_val < 0:
+            mod_filter = item_to_change.mfilter
+        else:
+            mod_filter = ua.DataChangeFilter()
+            mod_filter.Trigger = ua.DataChangeTrigger(1)  # send notification when status or value change
+            mod_filter.DeadbandType = 1
+            mod_filter.DeadbandValue = mod_filter_val  # absolute float value or from 0 to 100 for percentage deadband
+        modif_item = ua.MonitoredItemModifyRequest()
+        modif_item.MonitoredItemId = handle
+        modif_item.RequestedParameters = self._modify_monitored_item_request(new_queuesize, new_samp_time,
+                                                                             mod_filter)
+        params = ua.ModifyMonitoredItemsParameters()
+        params.SubscriptionId = self.subscription_id
+        params.ItemsToModify.append(modif_item)
+        results = self.server.modify_monitored_items(params)
+        item_to_change.mfilter = results[0].FilterResult
+        return results
 
+    def _modify_monitored_item_request(self, new_queuesize, new_samp_time, mod_filter):
+        req_params = ua.MonitoringParameters()
+        with self._lock:
+            req_params.ClientHandle = self._client_handle
+        req_params.QueueSize = new_queuesize
+        req_params.Filter = mod_filter
+        req_params.SamplingInterval = new_samp_time
+        return req_params
+
+    def deadband_monitor(self, var, deadband_val, deadbandtype=1, queuesize=0, attr=ua.AttributeIds.Value):
+        """
+        Method to create a subscription with a Deadband Value.
+        Default deadband value type is absolute.
+        Return a handle which can be used to unsubscribe
+        :param var: Variable to which you want to subscribe
+        :param deadband_val: Absolute float value
+        :param deadbandtype: Default value is 1 (absolute), change to 2 for percentage deadband
+        :param queuesize: Wanted queue size, default is 1
+        """
+        deadband_filter = ua.DataChangeFilter()
+        deadband_filter.Trigger = ua.DataChangeTrigger(1)  # send notification when status or value change
+        deadband_filter.DeadbandType = deadbandtype
+        deadband_filter.DeadbandValue = deadband_val  # absolute float value or from 0 to 100 for percentage deadband
+        return self._subscribe(var, attr, deadband_filter, queuesize)

@@ -16,9 +16,27 @@ class MonitoredItemData(object):
         self.callback_handle = None
         self.monitored_item_id = None
         self.mode = None
-        self.filter = None  
+        self.filter = None
+        self.mvalue = MonitoredItemValues()
         self.where_clause_evaluator = None
         self.queue_size = 0
+
+
+class MonitoredItemValues(object):
+
+    def __init__(self):
+        self.current_value = None
+        self.old_value = None
+
+    def set_current_value(self, cur_val):
+        self.old_value = self.current_value
+        self.current_value = cur_val
+
+    def get_current_value(self):
+        return self.current_value
+
+    def get_old_value(self):
+        return self.old_value
 
 
 class MonitoredItemService(object):
@@ -161,19 +179,32 @@ class MonitoredItemService(object):
 
     def datachange_callback(self, handle, value, error=None):
         if error:
-            self.logger.info("subscription %s: datachange callback called with handle '%s' and erorr '%s'",
-                             self, handle, error)
+            self.logger.info("subscription %s: datachange callback called with handle '%s' and erorr '%s'", self,
+                             handle, error)
             self.trigger_statuschange(error)
         else:
-            self.logger.info("subscription %s: datachange callback called with handle '%s' and value '%s'",
-                             self, handle, value.Value)
+            self.logger.info("subscription %s: datachange callback called with handle '%s' and value '%s'", self,
+                             handle, value.Value)
             event = ua.MonitoredItemNotification()
             with self._lock:
                 mid = self._monitored_datachange[handle]
                 mdata = self._monitored_items[mid]
-                event.ClientHandle = mdata.client_handle
-                event.Value = value
-                self.isub.enqueue_datachange_event(mid, event, mdata.queue_size)
+                mdata.mvalue.set_current_value(value.Value.Value)
+                if mdata.filter is not None:
+                    deadband_flag_pass = self.deadband_callback(mdata.mvalue, mdata.filter)
+                else:
+                    deadband_flag_pass = True
+                if deadband_flag_pass:
+                    event.ClientHandle = mdata.client_handle
+                    event.Value = value
+                    self.isub.enqueue_datachange_event(mid, event, mdata.queue_size)
+
+    def deadband_callback(self, values, flt):
+        if (values.get_old_value() is not None) or \
+                ((abs(values.get_current_value() - values.get_old_value())) > flt.DeadbandValue):
+            return True
+        else:
+            return False
 
     def trigger_event(self, event):
         with self._lock:
@@ -255,7 +286,6 @@ class InternalSubscription(object):
         self.monitored_item_srv.delete_all_monitored_items()
 
     def _subscription_loop(self):
-        #self.logger.debug("%s loop", self)
         if not self._stopev:
             self.subservice.loop.call_later(self.data.RevisedPublishingInterval / 1000.0, self._sub_loop)
 
