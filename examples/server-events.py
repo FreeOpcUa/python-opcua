@@ -17,6 +17,8 @@ from opcua import ua, Server
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARN)
+    logger = logging.getLogger("opcua.server.internal_subscription")
+    logger.setLevel(logging.DEBUG)
 
     # setup our server
     server = Server()
@@ -37,7 +39,6 @@ if __name__ == "__main__":
     etype = server.create_custom_event_type(2, 'MyFirstEvent', ua.ObjectIds.BaseEventType, [('MyNumericProperty', ua.VariantType.Float), ('MyStringProperty', ua.VariantType.String)])
 
     myevgen = server.get_event_generator(etype, myobj)
-    myevgen.event.Severity = 500
 
     # Creating a custom event: Approach 2
     base_etype = server.get_node(ua.ObjectIds.BaseEventType)
@@ -55,8 +56,10 @@ if __name__ == "__main__":
         import time
         count = 0
         while True:
-            time.sleep(2)
-            myevgen.trigger(message="MyFirstEvent " + str(count))
+            time.sleep(5)
+            myevgen.event.Message = "MyFirstEvent " + str(count)
+            myevgen.event.Severity = count
+            myevgen.trigger()
             mysecondevgen.trigger(message="MySecondEvent " + str(count))
             count += 1
 

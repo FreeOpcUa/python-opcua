@@ -1,7 +1,7 @@
 import sys
 sys.path.insert(0, "..")
 import time
-import math
+import logging
 
 
 from opcua import ua, Server
@@ -9,6 +9,12 @@ from opcua.server.history_sql import HistorySQLite
 
 
 if __name__ == "__main__":
+
+    logging.basicConfig(level=logging.WARN)
+    logger = logging.getLogger("opcua.server.internal_subscription")
+    logger.setLevel(logging.DEBUG)
+
+
 
     # setup our server
     server = Server()
@@ -52,9 +58,6 @@ if __name__ == "__main__":
     # starting!
     server.start()
 
-    # enable history for this particular node, must be called after start since it uses subscription
-    server.iserver.enable_history_data_change(myvar, period=None, count=100)
-
     # enable history for myobj events
     server.iserver.enable_history_event(myobj, period=None)
 
@@ -67,9 +70,8 @@ if __name__ == "__main__":
         while True:
             time.sleep(1)
             count += 0.1
-            myvar.set_value(math.sin(count))
-            myevgen.trigger(message="This is MyFirstEvent with MyNumericProperty and MyStringProperty.")
-            myevgen2.trigger(message="This is MySecondEvent with MyOtherProperty.")
+            myevgen.trigger(message="This is MyFirstEvent " + str(count))
+            myevgen2.trigger(message="This is MySecondEvent " + str(count))
             serverevgen.trigger(message="Server Event Message")
 
     finally:
