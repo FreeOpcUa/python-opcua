@@ -115,6 +115,11 @@ def pack_uatype(uatype, value):
         return pack_bytes(value)
     elif uatype == "DateTime":
         return pack_datetime(value)
+    elif uatype == "LocalizedText":
+        if isinstance(value, LocalizedText):
+            return value.to_binary()
+        else:
+            return LocalizedText(value).to_binary()
     elif uatype == "ExtensionObject":
         # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
         # but Variant can contain any object from uaprotocol_auto as ExtensionObject.

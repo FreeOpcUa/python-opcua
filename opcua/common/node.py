@@ -411,7 +411,7 @@ class Node(object):
         result = self.history_read_events(details)
         event_res = []
         for res in result.HistoryData.Events:
-            event_res.append(events.EventResult.from_event_fields(evfilter.SelectClauses, res.EventFields))
+            event_res.append(events.Event.from_event_fields(evfilter.SelectClauses, res.EventFields))
         return event_res
 
     def history_read_events(self, details):

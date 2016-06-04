@@ -5,6 +5,7 @@ import uuid
 from opcua import ua
 from opcua import Node
 from opcua.common import events
+from  opcua.common import event_objects
 
 
 class EventGenerator(object):
@@ -25,14 +26,14 @@ class EventGenerator(object):
 
     def __init__(self, isession, etype=None, source=ua.ObjectIds.Server):
         if not etype:
-            etype = ua.BaseEvent()
+            etype = event_objects.BaseEvent()
 
         self.logger = logging.getLogger(__name__)
         self.isession = isession
         self.event = None
         node = None
 
-        if isinstance(etype, ua.BaseEvent):
+        if isinstance(etype, event_objects.BaseEvent):
             self.event = etype
         elif isinstance(etype, Node):
             node = etype

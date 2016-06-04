@@ -5,6 +5,7 @@ server side implementation of a subscription object
 from threading import RLock
 import logging
 import copy
+import traceback
 
 from opcua import ua
 
@@ -228,25 +229,8 @@ class MonitoredItemService(object):
             return
         fieldlist = ua.EventFieldList()
         fieldlist.ClientHandle = mdata.client_handle
-        fieldlist.EventFields = self._get_event_fields(mdata.filter, event)
+        fieldlist.EventFields = event.to_event_fields(mdata.filter.SelectClauses)
         self.isub.enqueue_event(mid, fieldlist, mdata.queue_size)
-
-    def _get_event_fields(self, evfilter, event):
-        fields = []
-        for sattr in evfilter.SelectClauses:
-            try:
-                if not sattr.BrowsePath:
-                    val = getattr(event, sattr.Attribute.name)
-                    val = copy.deepcopy(val)
-                    fields.append(ua.Variant(val))
-                else:
-                    name = sattr.BrowsePath[0].Name
-                    val = getattr(event, name)
-                    val = copy.deepcopy(val)
-                    fields.append(ua.Variant(val))
-            except AttributeError:
-                fields.append(ua.Variant())
-        return fields
 
     def trigger_statuschange(self, code):
         self.isub.enqueue_statuschange(code)
@@ -313,7 +297,8 @@ class InternalSubscription(object):
             self._stopev = True
         result = None
         with self._lock:
-            if self.has_published_results():  # FIXME: should we pop a publish request here? or we do not care?
+            if self.has_published_results():  
+                # FIXME: should we pop a publish request here? or we do not care?
                 self._publish_cycles_count += 1
                 result = self._pop_publish_result()
         if result is not None:
@@ -408,7 +393,7 @@ class WhereClauseEvaluator(object):
         try:
             res = self._eval_el(0, event)
         except Exception as ex:
-            self.logger.warning("Exception while evaluating WhereClause %s for event %s: %s", self.elements, event, ex)
+            self.logger.exception("Exception while evaluating WhereClause %s for event %s: %s", self.elements, event, ex)
             return False
         return res
 
@@ -445,11 +430,10 @@ class WhereClauseEvaluator(object):
             self.logger.warn("Cast operand not implemented, assuming True")
             return True
         elif el.FilterOperator == ua.FilterOperator.OfType:
-            self.logger.warn("OfType operand not implemented, assuming True")
-            return True
+            return event.EventType == self._eval_op(ops[0], event)
         else:
             # TODO: implement missing operators
-            print("WhereClause not implemented for element: %s", el)
+            self.logger.warning("WhereClause not implemented for element: %s", el)
             raise NotImplementedError
 
     def _like_operator(self, string, pattern):

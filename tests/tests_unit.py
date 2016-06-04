@@ -10,6 +10,7 @@ from opcua.ua import extensionobject_from_binary
 from opcua.ua import extensionobject_to_binary
 from opcua.ua.uatypes import flatten, get_shape, reshape
 from opcua.server.internal_subscription import WhereClauseEvaluator
+from opcua.common.event_objects import BaseEvent
 
 
 
@@ -379,7 +380,7 @@ class TestUnit(unittest.TestCase):
 
         wce = WhereClauseEvaluator(logging.getLogger(__name__), None, cf)
 
-        ev = ua.BaseEvent()
+        ev = BaseEvent()
         ev._freeze = False
         ev.property = 3
 

@@ -59,6 +59,8 @@ if __name__ == "__main__":
             time.sleep(5)
             myevgen.event.Message = "MyFirstEvent " + str(count)
             myevgen.event.Severity = count
+            myevgen.event.MyNumericProperty = count
+            myevgen.event.MyStringProperty = "Property " + str(count)
             myevgen.trigger()
             mysecondevgen.trigger(message="MySecondEvent " + str(count))
             count += 1
