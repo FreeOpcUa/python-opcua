@@ -1,3 +1,5 @@
+import copy
+
 from opcua import ua
 import opcua
 from opcua.common.uaerrors import UaError
@@ -76,12 +78,17 @@ class Event(object):
         """
         fields = []
         for sattr in select_clauses:
-            if len(sattr.BrowsePath) == 0:
-                name = sattr.AttributeId.name
+            if not sattr.BrowsePath:
+                name = ua.AttributeIds(sattr.AttributeId).name
             else:
                 name = sattr.BrowsePath[0].Name
-            field = getattr(self, name)
-            fields.append(ua.Variant(field, self.data_types[name]))
+            try:
+                val = getattr(self, name)
+            except AttributeError:
+                field = ua.Variant(None)
+            else:
+                field = ua.Variant(copy.deepcopy(val), self.data_types[name])
+            fields.append(field)
         return fields
 
     @staticmethod
