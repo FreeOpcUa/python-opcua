@@ -257,7 +257,7 @@ class HistorySQLite(HistoryStorageInterface):
                         else:
                             fdict[clauses[i]] = ua.Variant(None)
 
-                    results.append(events.EventResult.from_field_dict(fdict))
+                    results.append(events.Event.from_field_dict(fdict))
 
             except sqlite3.Error as e:
                 self.logger.error('Historizing SQL Read Error events for node %s: %s', source_id, e)

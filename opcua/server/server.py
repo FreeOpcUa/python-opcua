@@ -20,6 +20,7 @@ from opcua.common import xmlimporter
 from opcua.common.manage_nodes import delete_nodes
 from opcua.client.client import Client
 from opcua.crypto import security_policies
+from opcua.common.event_objects import BaseEvent
 use_crypto = True
 try:
     from opcua.crypto import uacrypto
@@ -343,7 +344,7 @@ class Server(object):
         Use this object to fire events
         """
         if not etype:
-            etype = ua.BaseEvent()
+            etype = BaseEvent()
         return EventGenerator(self.iserver.isession, etype, source)
 
     def create_custom_event_type(self, idx, name, baseetype=ua.ObjectIds.BaseEventType, properties=[]):

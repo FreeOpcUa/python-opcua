@@ -13,6 +13,7 @@ from opcua import Server
 from opcua import Client
 from opcua import ua
 from opcua import uamethod
+from opcua.common.event_objects import BaseEvent, AuditEvent
 
 
 port_num = 485140
@@ -179,16 +180,15 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
     def test_get_event_from_type_node_Inhereted_AuditEvent(self):
         ev = opcua.common.events.get_event_obj_from_type_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.AuditEventType)))
         self.assertIsNot(ev, None)  # we did not receive event
-        self.assertIsInstance(ev, ua.BaseEvent)
-        self.assertIsInstance(ev, ua.AuditEvent)
+        self.assertIsInstance(ev, BaseEvent)
+        self.assertIsInstance(ev, AuditEvent)
         self.assertEqual(ev.EventType, ua.NodeId(ua.ObjectIds.AuditEventType))
-        self.assertEqual(ev.Severity, ua.Variant(1, ua.VariantType.UInt16))
+        self.assertEqual(ev.Severity, 1)
         self.assertEqual(ev.ActionTimeStamp, None)
         self.assertEqual(ev.Status, False)
         self.assertEqual(ev.ServerId, None)
         self.assertEqual(ev.ClientAuditEntryId, None)
         self.assertEqual(ev.ClientUserId, None)
-        self.assertEqual(ev._freeze, True)
 
     def test_eventgenerator_default(self):
         evgen = self.opc.get_event_generator()
@@ -196,7 +196,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         check_eventgenerator_SourceServer(self, evgen)
 
     def test_eventgenerator_BaseEvent_object(self):
-        evgen = self.opc.get_event_generator(ua.BaseEvent())
+        evgen = self.opc.get_event_generator(BaseEvent())
         check_eventgenerator_BaseEvent(self, evgen)
         check_eventgenerator_SourceServer(self, evgen)
 
@@ -245,7 +245,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
     def test_eventgenerator_source_collision(self):
         objects = self.opc.get_objects_node()
         o = objects.add_object(3, 'MyObject')
-        event = ua.BaseEvent(sourcenode=o.nodeid)
+        event = BaseEvent(sourcenode=o.nodeid)
         evgen = self.opc.get_event_generator(event, ua.ObjectIds.Server)
         check_eventgenerator_BaseEvent(self, evgen)
         check_event_generator_object(self, evgen, o)
@@ -256,16 +256,15 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
 
         ev = evgen.event
         self.assertIsNot(ev, None)  # we did not receive event
-        self.assertIsInstance(ev, ua.BaseEvent)
-        self.assertIsInstance(ev, ua.AuditEvent)
+        self.assertIsInstance(ev, BaseEvent)
+        self.assertIsInstance(ev, AuditEvent)
         self.assertEqual(ev.EventType, ua.NodeId(ua.ObjectIds.AuditEventType))
-        self.assertEqual(ev.Severity, ua.Variant(1, ua.VariantType.UInt16))
+        self.assertEqual(ev.Severity, 1)
         self.assertEqual(ev.ActionTimeStamp, None)
         self.assertEqual(ev.Status, False)
         self.assertEqual(ev.ServerId, None)
         self.assertEqual(ev.ClientAuditEntryId, None)
         self.assertEqual(ev.ClientUserId, None)
-        self.assertEqual(ev._freeze, True)
 
     def test_create_custom_event_type_ObjectId(self):
         etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
@@ -353,10 +352,9 @@ def check_eventgenerator_BaseEvent(test, evgen):
 
 def check_base_event(test, ev):
     test.assertIsNot(ev, None)  # we did not receive event
-    test.assertIsInstance(ev, ua.BaseEvent)
+    test.assertIsInstance(ev, BaseEvent)
     test.assertEqual(ev.EventType, ua.NodeId(ua.ObjectIds.BaseEventType))
-    test.assertEqual(ev.Severity, ua.Variant(1, ua.VariantType.UInt16))
-    test.assertEqual(ev._freeze, True)
+    test.assertEqual(ev.Severity, 1)
 
 
 def check_eventgenerator_CustomEvent(test, evgen, etype):
@@ -367,10 +365,9 @@ def check_eventgenerator_CustomEvent(test, evgen, etype):
 
 def check_custom_event(test, ev, etype):
     test.assertIsNot(ev, None)  # we did not receive event
-    test.assertIsInstance(ev, ua.BaseEvent)
+    test.assertIsInstance(ev, BaseEvent)
     test.assertEqual(ev.EventType, etype.nodeid)
-    test.assertEqual(ev.Severity, ua.Variant(1, ua.VariantType.UInt16))
-    test.assertEqual(ev._freeze, True)
+    test.assertEqual(ev.Severity, 1)
 
 
 def check_custom_event_type(test, ev):

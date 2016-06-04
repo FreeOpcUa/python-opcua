@@ -228,25 +228,8 @@ class MonitoredItemService(object):
             return
         fieldlist = ua.EventFieldList()
         fieldlist.ClientHandle = mdata.client_handle
-        fieldlist.EventFields = self._get_event_fields(mdata.filter, event)
+        fieldlist.EventFields = event.to_event_fields(mdata.filter.SelectClauses)
         self.isub.enqueue_event(mid, fieldlist, mdata.queue_size)
-
-    def _get_event_fields(self, evfilter, event):
-        fields = []
-        for sattr in evfilter.SelectClauses:
-            try:
-                if not sattr.BrowsePath:
-                    val = getattr(event, sattr.Attribute.name)
-                    val = copy.deepcopy(val)
-                    fields.append(ua.Variant(val))
-                else:
-                    name = sattr.BrowsePath[0].Name
-                    val = getattr(event, name)
-                    val = copy.deepcopy(val)
-                    fields.append(ua.Variant(val))
-            except AttributeError:
-                fields.append(ua.Variant())
-        return fields
 
     def trigger_statuschange(self, code):
         self.isub.enqueue_statuschange(code)
