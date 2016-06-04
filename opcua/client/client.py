@@ -383,7 +383,7 @@ class Client(object):
         if not username and not certificate:
             self._add_anonymous_auth(params)
         elif certificate:
-            self._add_cetificate_auth(params, certificate, challenge)
+            self._add_certificate_auth(params, certificate, challenge)
         else:
             self._add_user_auth(params, username, password)
         return self.uaclient.activate_session(params)
