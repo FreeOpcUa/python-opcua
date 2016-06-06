@@ -10,12 +10,6 @@ from opcua.server.history_sql import HistorySQLite
 
 if __name__ == "__main__":
 
-    logging.basicConfig(level=logging.WARN)
-    logger = logging.getLogger("opcua.server.internal_subscription")
-    logger.setLevel(logging.DEBUG)
-
-
-
     # setup our server
     server = Server()
     server.set_endpoint("opc.tcp://0.0.0.0:4840/freeopcua/server/")
@@ -44,6 +38,7 @@ if __name__ == "__main__":
     myevgen = server.get_event_generator(etype, myobj)
     myevgen.event.Severity = 500
     myevgen.event.MyStringProperty = ua.Variant("hello world")
+    myevgen.event.MyNumericProperty = ua.Variant(-456)
 
     myevgen2 = server.get_event_generator(etype2, myobj)
     myevgen2.event.Severity = 123

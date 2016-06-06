@@ -172,16 +172,23 @@ class Subscription(object):
         """
         return self._subscribe(nodes, attr, queuesize=0)
 
-    def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtype=ua.ObjectIds.BaseEventType, evfilter=None):
+    def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtypes=ua.ObjectIds.BaseEventType, evfilter=None):
         """
         Subscribe to events from a node. Default node is Server node.
         In most servers the server node is the only one you can subscribe to.
-        if evfilter is provided, evtype is ignored
+        if evtypes is not provided, evtype defaults to BaseEventType
+        if evtypes is a list or tuple of custom event types, the events will be filtered to the supplied types
         Return a handle which can be used to unsubscribe
         """
         sourcenode = Node(self.server, sourcenode)
+
         if evfilter is None:
-            evfilter = events.get_filter_from_event_type(Node(self.server, evtype))
+            if not type(evtypes) in (list, tuple):
+                evtypes = [evtypes]
+
+            evtypes = [Node(self.server, i) for i in evtypes]  # make sure we have a list of Node objects
+
+            evfilter = events.get_filter_from_event_type(evtypes)
         return self._subscribe(sourcenode, ua.AttributeIds.EventNotifier, evfilter)
 
     def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):
