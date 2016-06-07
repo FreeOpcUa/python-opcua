@@ -9,9 +9,9 @@ from opcua import ua
 
 class SubHandler():
 
-    '''
-        Dummy subscription client
-    '''
+    """
+    Dummy subscription client
+    """
 
     def datachange_notification(self, node, val, data):
         pass
@@ -22,9 +22,9 @@ class SubHandler():
 
 class MySubHandler():
 
-    '''
+    """
     More advanced subscription client using Future, so we can wait for events in tests
-    '''
+    """
 
     def __init__(self):
         self.future = Future()
@@ -168,12 +168,12 @@ class SubscriptionTests(object):
         sub.delete()
 
     def test_subscription_data_change(self):
-        '''
+        """
         test subscriptions. This is far too complicated for
         a unittest but, setting up subscriptions requires a lot
         of code, so when we first set it up, it is best
         to test as many things as possible
-        '''
+        """
         myhandler = MySubHandler()
 
         o = self.opc.get_objects_node()
@@ -207,14 +207,13 @@ class SubscriptionTests(object):
         with self.assertRaises(ua.UaStatusCodeError):
             sub.unsubscribe(handle1)  # sub does not exist anymore
 
-
     def test_subscription_data_change_bool(self):
-        '''
+        """
         test subscriptions. This is far too complicated for
         a unittest but, setting up subscriptions requires a lot
         of code, so when we first set it up, it is best
         to test as many things as possible
-        '''
+        """
         myhandler = MySubHandler()
 
         o = self.opc.get_objects_node()
@@ -241,12 +240,12 @@ class SubscriptionTests(object):
         sub.delete() # should delete our monitoreditem too
 
     def test_subscription_data_change_many(self):
-        '''
+        """
         test subscriptions. This is far too complicated for
         a unittest but, setting up subscriptions requires a lot
         of code, so when we first set it up, it is best
         to test as many things as possible
-        '''
+        """
         myhandler = MySubHandler2()
         o = self.opc.get_objects_node()
 
@@ -420,7 +419,7 @@ class SubscriptionTests(object):
 
         myhandler = MySubHandler()
         sub = self.opc.create_subscription(100, myhandler)
-        handle = sub.subscribe_events(evtype=etype)
+        handle = sub.subscribe_events(evtypes=etype)
 
         propertynum = 2
         propertystring = "This is my test"

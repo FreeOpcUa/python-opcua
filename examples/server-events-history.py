@@ -69,6 +69,8 @@ if __name__ == "__main__":
             myevgen2.trigger(message="This is MySecondEvent " + str(count))
             serverevgen.trigger(message="Server Event Message")
 
+            res = server_node.read_event_history(None, None, 0)
+
     finally:
         # close connection, remove subscriptions, etc
         server.stop()

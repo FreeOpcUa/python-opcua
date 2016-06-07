@@ -383,23 +383,24 @@ def check_custom_event_type(test, ev):
     test.assertTrue(ev.get_child("2:PropertyString") in properties)
     test.assertEqual(ev.get_child("2:PropertyString").get_data_value().Value.VariantType, ua.VariantType.String)
 
+
 class TestServerCaching(unittest.TestCase):
     def runTest(self):
         tmpfile = NamedTemporaryFile()
         path = tmpfile.name
         tmpfile.close()
 
-        #create cache file
-        server = Server(cacheFile = path)
+        # create cache file
+        server = Server(cacheFile=path)
 
-        #modify cache content
+        # modify cache content
         id = ua.NodeId(ua.ObjectIds.Server_ServerStatus_SecondsTillShutdown)
-        s = shelve.open(path, "w", writeback = True)
+        s = shelve.open(path, "w", writeback=True)
         s[id.to_string()].attributes[ua.AttributeIds.Value].value = ua.DataValue(123)
         s.close()
 
-        #ensure that we are actually loading from the cache
-        server = Server(cacheFile = path)
+        # ensure that we are actually loading from the cache
+        server = Server(cacheFile=path)
         self.assertEqual(server.get_node(id).get_value(), 123)
 
         os.remove(path)
