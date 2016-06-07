@@ -77,7 +77,7 @@ class HistorySQLite(HistoryStorageInterface):
             # get this node's period from the period dict and calculate the limit
             period, count = self._datachanges_period[node_id]
 
-            def executeDeleteStatement(condition, args):
+            def execute_sql_delete(condition, args):
                 query = ('DELETE FROM "{tn}" WHERE ' + condition).format(tn=table)
 
                 try:
@@ -90,39 +90,19 @@ class HistorySQLite(HistoryStorageInterface):
             if period:
                 # after the insert, if a period was specified delete all records older than period
                 date_limit = datetime.utcnow() - period
-                executeDeleteStatement('ServerTimestamp < ?', (date_limit,))
+                execute_sql_delete('ServerTimestamp < ?', (date_limit,))
 
             if count:
-                #ensure that no more than count records are stored for the specified node
-                executeDeleteStatement('ServerTimestamp = (SELECT CASE WHEN COUNT(*) > ? THEN MIN(ServerTimestamp) ELSE NULL END FROM "{tn}")', (count,))
+                # ensure that no more than count records are stored for the specified node
+                execute_sql_delete('ServerTimestamp = (SELECT CASE WHEN COUNT(*) > ? '
+                                   'THEN MIN(ServerTimestamp) ELSE NULL END FROM "{tn}")', (count,))
 
     def read_node_history(self, node_id, start, end, nb_values):
         with self._lock:
             _c_read = self._conn.cursor()
 
-            order = "ASC"
-
-            if start is None or start == ua.DateTimeMinValue:
-                order = "DESC"
-                start = ua.DateTimeMinValue
-
-            if end is None or end == ua.DateTimeMinValue:
-                end = datetime.utcnow() + timedelta(days=1)
-
-            if start < end:
-                start_time = start.isoformat(' ')
-                end_time = end.isoformat(' ')
-            else:
-                order = "DESC"
-                start_time = end.isoformat(' ')
-                end_time = start.isoformat(' ')
-
-            if nb_values:
-                limit = nb_values + 1  # add 1 to the number of values for retrieving a continuation point
-            else:
-                limit = -1  # in SQLite a LIMIT of -1 returns all results
-
             table = self._get_table_name(node_id)
+            start_time, end_time, order, limit = self._get_bounds(start, end, nb_values)
 
             cont = None
             results = []
@@ -152,7 +132,7 @@ class HistorySQLite(HistoryStorageInterface):
 
             return results, cont
 
-    def new_historized_event(self, source_id, ev_fields, period, count):
+    def new_historized_event(self, source_id, ev_fields, period, count=0):
         with self._lock:
             _c_new = self._conn.cursor()
 
@@ -211,32 +191,10 @@ class HistorySQLite(HistoryStorageInterface):
 
     def read_event_history(self, source_id, start, end, nb_values, evfilter):
         with self._lock:
-
             _c_read = self._conn.cursor()
 
-            order = "ASC"
-
-            if start is None or start == ua.DateTimeMinValue:
-                order = "DESC"
-                start = ua.DateTimeMinValue
-
-            if end is None or end == ua.DateTimeMinValue:
-                end = datetime.utcnow() + timedelta(days=1)
-
-            if start < end:
-                start_time = start.isoformat(' ')
-                end_time = end.isoformat(' ')
-            else:
-                order = "DESC"
-                start_time = end.isoformat(' ')
-                end_time = start.isoformat(' ')
-
-            if nb_values:
-                limit = nb_values + 1  # add 1 to the number of values for retrieving a continuation point
-            else:
-                limit = -1  # in SQLite a LIMIT of -1 returns all results
-
             table = self._get_table_name(source_id)
+            start_time, end_time, order, limit = self._get_bounds(start, end, nb_values)
             clauses, clauses_str = self._get_select_clauses(source_id, evfilter)
 
             cont = None
@@ -273,13 +231,39 @@ class HistorySQLite(HistoryStorageInterface):
     def _get_table_name(self, node_id):
         return str(node_id.NamespaceIndex) + '_' + str(node_id.Identifier)
 
+    @staticmethod
+    def _get_bounds(start, end, nb_values):
+        order = "ASC"
+
+        if start is None or start == ua.DateTimeMinValue:
+            order = "DESC"
+            start = ua.DateTimeMinValue
+
+        if end is None or end == ua.DateTimeMinValue:
+            end = datetime.utcnow() + timedelta(days=1)
+
+        if start < end:
+            start_time = start.isoformat(' ')
+            end_time = end.isoformat(' ')
+        else:
+            order = "DESC"
+            start_time = end.isoformat(' ')
+            end_time = start.isoformat(' ')
+
+        if nb_values:
+            limit = nb_values + 1  # add 1 to the number of values for retrieving a continuation point
+        else:
+            limit = -1  # in SQLite a LIMIT of -1 returns all results
+
+        return start_time, end_time, order, limit
+
     def _format_event(self, event_result):
         placeholders = []
         ev_variant_binaries = []
 
         ev_variant_dict = event_result.get_event_props_as_fields_dict()
         names = list(ev_variant_dict.keys())
-        names.sort()  # sort alphabatically since dict is not sorted
+        names.sort()  # sort alphabetically since dict is not sorted
 
         # split dict into two synchronized lists which will be converted to SQL strings
         # note that the variants are converted to binary objects for storing in SQL BLOB format
@@ -313,7 +297,8 @@ class HistorySQLite(HistoryStorageInterface):
         clauses = [x for x in s_clauses if x in self._event_fields[source_id]]
         return clauses, self._list_to_sql_str(clauses)
 
-    def _list_to_sql_str(self, ls, quotes=True):
+    @staticmethod
+    def _list_to_sql_str(ls, quotes=True):
         sql_str = ''
         for item in ls:
             if quotes:
