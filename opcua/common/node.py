@@ -404,15 +404,9 @@ class Node(object):
         if not type(evtypes) in (list, tuple):
             evtypes = [evtypes]
 
-        # FIXME not a very nice way to make sure events.get_filter gets a list of nodes...
-        evtype_nodes = []
-        for evtype in evtypes:
-            if not isinstance(evtype, Node):
-                evtype_nodes.append(Node(self.server, ua.NodeId(evtype)))  # make sure we have a list of Node objects
-            else:
-                evtype_nodes.append(evtype)
+        evtypes = [Node(self.server, evtype) for evtype in evtypes]
 
-        evfilter = events.get_filter_from_event_type(Node(self.server, evtype_nodes))
+        evfilter = events.get_filter_from_event_type(evtypes)
         details.Filter = evfilter
 
         result = self.history_read_events(details)
