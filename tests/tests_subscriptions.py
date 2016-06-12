@@ -526,14 +526,62 @@ class SubscriptionTests(object):
         self.assertEqual(len(ev2s), 4)
         self.assertEqual(len(ev1s), 7)
 
-        #self.assertEqual(ev.SourceName, 'MyObject')
-        #self.assertEqual(ev.SourceNode, o.nodeid)
-        #self.assertEqual(ev.Message.Text, msg)
-        #self.assertEqual(ev.Time, tid)
-        #self.assertEqual(ev.PropertyNum, propertynum)
-        #self.assertEqual(ev.PropertyString, propertystring)
+        sub.unsubscribe(handle)
+        sub.delete()
 
-        # time.sleep(0.1)
+    def test_several_different_events_2(self):
+        objects = self.srv.get_objects_node()
+        o = objects.add_object(3, 'MyObject')
+
+        etype1 = self.srv.create_custom_event_type(2, 'MyEvent1', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+        evgen1 = self.srv.get_event_generator(etype1, o)
+
+        etype2 = self.srv.create_custom_event_type(2, 'MyEvent2', ua.ObjectIds.BaseEventType, [('PropertyNum2', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+        evgen2 = self.srv.get_event_generator(etype2, o)
+
+        etype3 = self.srv.create_custom_event_type(2, 'MyEvent3', ua.ObjectIds.BaseEventType, [('PropertyNum3', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+        evgen3 = self.srv.get_event_generator(etype3, o)
+
+        myhandler = MySubHandler2()
+        sub = self.opc.create_subscription(100, myhandler)
+        handle = sub.subscribe_events(o, [etype1, etype3])
+
+        propertynum1 = 1
+        propertystring1 = "This is my test 1"
+        evgen1.event.PropertyNum = propertynum1
+        evgen1.event.PropertyString = propertystring1
+
+        propertynum2 = 2
+        propertystring2 = "This is my test 2"
+        evgen2.event.PropertyNum2 = propertynum2
+        evgen2.event.PropertyString = propertystring2
+
+        propertynum3 = 3
+        propertystring3 = "This is my test 3"
+        evgen3.event.PropertyNum3 = propertynum3
+        evgen3.event.PropertyString = propertystring2
+        
+        for i in range(3):
+            evgen1.trigger()
+            evgen2.trigger()
+            evgen3.trigger()
+        evgen3.event.PropertyNum3 = 9999
+        evgen3.trigger()
+        time.sleep(1)
+
+        ev1s = [ev for ev in myhandler.results if ev.EventType == etype1.nodeid]
+        ev2s = [ev for ev in myhandler.results if ev.EventType == etype2.nodeid]
+        ev3s = [ev for ev in myhandler.results if ev.EventType == etype3.nodeid]
+
+        self.assertEqual(len(myhandler.results), 7)
+        self.assertEqual(len(ev1s), 3)
+        self.assertEqual(len(ev2s), 0)
+        self.assertEqual(len(ev3s), 4)
+        self.assertEqual(ev1s[0].PropertyNum, propertynum1)
+        self.assertEqual(ev3s[0].PropertyNum3, propertynum3)
+        self.assertEqual(ev3s[-1].PropertyNum3, 9999)
+        self.assertEqual(ev1s[0].PropertyNum3, None)
+
         sub.unsubscribe(handle)
         sub.delete()
 
