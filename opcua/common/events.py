@@ -94,7 +94,7 @@ class Event(object):
     @staticmethod
     def from_event_fields(select_clauses, fields):
         """
-        Instanciate an Event object from a select_clauses and fields
+        Instantiate an Event object from a select_clauses and fields
         """
         ev = Event()
         ev.select_clauses = select_clauses
@@ -108,40 +108,56 @@ class Event(object):
         return ev
 
 
-def get_filter_from_event_type(eventtype):
+def get_filter_from_event_type(eventtypes):
     evfilter = ua.EventFilter()
-    evfilter.SelectClauses = select_clauses_from_evtype(eventtype)
-    evfilter.WhereClause = where_clause_from_evtype(eventtype)
+    evfilter.SelectClauses = select_clauses_from_evtype(eventtypes)
+    evfilter.WhereClause = where_clause_from_evtype(eventtypes)
     return evfilter
 
 
-def select_clauses_from_evtype(evtype):
+def select_clauses_from_evtype(evtypes):
     clauses = []
-    for prop in get_event_properties_from_type_node(evtype):
-        op = ua.SimpleAttributeOperand()
-        op.TypeDefinitionId = evtype.nodeid
-        op.AttributeId = ua.AttributeIds.Value
-        op.BrowsePath = [prop.get_browse_name()]
-        clauses.append(op)
+
+    selected_paths = []
+    for evtype in evtypes:
+        for prop in get_event_properties_from_type_node(evtype):
+            if prop.get_browse_name() not in selected_paths:
+                op = ua.SimpleAttributeOperand()
+                op.AttributeId = ua.AttributeIds.Value
+                op.BrowsePath = [prop.get_browse_name()]
+                clauses.append(op)
+                selected_paths.append(prop.get_browse_name())
     return clauses
 
 
-def where_clause_from_evtype(evtype):
+def where_clause_from_evtype(evtypes):
     cf = ua.ContentFilter()
     el = ua.ContentFilterElement()
+    
     # operands can be ElementOperand, LiteralOperand, AttributeOperand, SimpleAttribute
+    # Create a clause where the generate event type property EventType
+    # must be a subtype of events in evtypes argument
+
+    # the first operand is the attribute event type
     op = ua.SimpleAttributeOperand()
-    op.TypeDefinitionId = evtype.nodeid
+    # op.TypeDefinitionId = evtype.nodeid
     op.BrowsePath.append(ua.QualifiedName("EventType", 0))
     op.AttributeId = ua.AttributeIds.Value
     el.FilterOperands.append(op)
-    for subtypeid in [st.nodeid for st in get_node_subtypes(evtype)]:
+
+    # now create a list of all subtypes we want to accept
+    subtypes = []
+    for evtype in evtypes:
+        subtypes += [st.nodeid for st in get_node_subtypes(evtype)]
+    subtypes = list(set(subtypes))  # remove duplicates
+    for subtypeid in subtypes:
         op = ua.LiteralOperand()
         op.Value = ua.Variant(subtypeid)
         el.FilterOperands.append(op)
-    el.FilterOperator = ua.FilterOperator.InList
 
+    el.FilterOperator = ua.FilterOperator.InList
     cf.Elements.append(el)
+
     return cf
 
 
@@ -180,8 +196,6 @@ def get_event_obj_from_type_node(node):
         return opcua.common.event_objects.IMPLEMENTED_EVENTS[node.nodeid.Identifier]()
     else:
         parent_identifier, parent_eventtype = _find_parent_eventtype(node)
-        if not parent_eventtype:
-            return None
 
         class CustomEvent(parent_eventtype):
 
@@ -212,7 +226,7 @@ def _find_parent_eventtype(node):
     parents = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
 
     if len(parents) != 1:   # Something went wrong
-        return None, None
+        raise UaError("Parent of event type could notbe found")
     if parents[0].nodeid.Identifier in opcua.common.event_objects.IMPLEMENTED_EVENTS.keys():
         return parents[0].nodeid.Identifier, opcua.common.event_objects.IMPLEMENTED_EVENTS[parents[0].nodeid.Identifier]
     else:

@@ -172,16 +172,35 @@ class Subscription(object):
         """
         return self._subscribe(nodes, attr, queuesize=0)
 
-    def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtype=ua.ObjectIds.BaseEventType, evfilter=None):
+    def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtypes=ua.ObjectIds.BaseEventType, evfilter=None):
         """
         Subscribe to events from a node. Default node is Server node.
         In most servers the server node is the only one you can subscribe to.
-        if evfilter is provided, evtype is ignored
+        if evtypes is not provided, evtype defaults to BaseEventType
+        if evtypes is a list or tuple of custom event types, the events will be filtered to the supplied types
         Return a handle which can be used to unsubscribe
         """
         sourcenode = Node(self.server, sourcenode)
+
         if evfilter is None:
-            evfilter = events.get_filter_from_event_type(Node(self.server, evtype))
+            # FIXME Review this, the commented out way doesn't support evtypes being passed a Node object
+            # if not type(evtypes) in (list, tuple):
+            #     evtypes = [evtypes]
+            #
+            # evtypes = [Node(self.server, i) for i in evtypes]  # make sure we have a list of Node objects
+
+            if not type(evtypes) in (list, tuple):
+                evtypes = [evtypes]
+
+            # FIXME not a very nice way to make sure events.get_filter gets a list of nodes...
+            evtype_nodes = []
+            for evtype in evtypes:
+                if not isinstance(evtype, Node):
+                    evtype_nodes.append(Node(self.server, ua.NodeId(evtype)))  # make sure we have a list of Node objects
+                else:
+                    evtype_nodes.append(evtype)
+
+            evfilter = events.get_filter_from_event_type(evtype_nodes)
         return self._subscribe(sourcenode, ua.AttributeIds.EventNotifier, evfilter)
 
     def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):

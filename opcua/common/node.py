@@ -382,17 +382,13 @@ class Node(object):
         result = self.server.history_read(params)[0]
         return result
 
-    def read_event_history(self, starttime=None, endtime=None, numvalues=0, evtype=ua.ObjectIds.BaseEventType):
+    def read_event_history(self, starttime=None, endtime=None, numvalues=0, evtypes=ua.ObjectIds.BaseEventType):
         """
         Read event history of a source node 
         result code from server is checked and an exception is raised in case of error
         If numvalues is > 0 and number of events in period is > numvalues
         then result will be truncated
         """
-
-        # FIXME event filter must be supplied externally, the problem is the node class doesn't have a way to get
-        # FIXME another node from the address space as these methods are at the server level, therefore there is
-        # FIXME no way to build an event filter here (although it could be nicer for a user who doesn't want a filter)
 
         details = ua.ReadEventDetails()
         if starttime:
@@ -405,7 +401,12 @@ class Node(object):
             details.EndTime = ua.DateTimeMinValue
         details.NumValuesPerNode = numvalues
 
-        evfilter = events.get_filter_from_event_type(Node(self.server, evtype))
+        if not type(evtypes) in (list, tuple):
+            evtypes = [evtypes]
+
+        evtypes = [Node(self.server, evtype) for evtype in evtypes]
+
+        evfilter = events.get_filter_from_event_type(evtypes)
         details.Filter = evfilter
 
         result = self.history_read_events(details)

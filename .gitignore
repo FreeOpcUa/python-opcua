@@ -17,3 +17,4 @@ dist
 *.swp
 newdocs
 examples/history.db
+*.sql

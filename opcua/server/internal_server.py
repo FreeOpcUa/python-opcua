@@ -177,7 +177,7 @@ class InternalServer(object):
         node.unset_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.HistoryRead)
         self.history_manager.dehistorize(node)
 
-    def enable_history_event(self, source, period=timedelta(days=7)):
+    def enable_history_event(self, source, period=timedelta(days=7), count=0):
         """
         Set attribute History Read of object events to True and start storing data for history
         """
@@ -187,7 +187,7 @@ class InternalServer(object):
             # if it supports events, turn on bit 2 (enables history read)
             source.set_attr_bit(ua.AttributeIds.EventNotifier, 2)
             # send the object to history manager
-            self.history_manager.historize_event(source, period)
+            self.history_manager.historize_event(source, period, count)
 
     def disable_history_event(self, source):
         """
