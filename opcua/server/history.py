@@ -44,7 +44,7 @@ class HistoryStorageInterface(object):
         """
         raise NotImplementedError
 
-    def new_historized_event(self, source_id, etype, period, count=0):
+    def new_historized_event(self, source_id, evtypes, period, count=0):
         """
         Called when historization of events is enabled on server side
         Returns None
@@ -126,7 +126,7 @@ class HistoryDict(HistoryStorageInterface):
                 results = results[:nb_values]
             return results, cont
 
-    def new_historized_event(self, source_id, etype, period, count=0):
+    def new_historized_event(self, source_id, evtypes, period, count=0):
         if source_id in self._events:
             raise UaNodeAlreadyHistorizedError(source_id)
         self._events[source_id] = []
@@ -236,12 +236,10 @@ class HistoryManager(object):
         if source in self._handlers:
             raise ua.UaError("Events from {} are already historized".format(source))
 
-        # get the event types the source node generates and a list of all possible event fields
-        event_types, ev_fields = self._get_source_event_data(source)
+        # get list of all event types that the source node generates; change this to only historize specific events
+        event_types = source.get_referenced_nodes(ua.ObjectIds.GeneratesEvent)
 
-        # FIXME passing ev_fields instead of event type only works because HistoryDict doesn't use this parameter,
-        # FIXME SQL needs to be fixed to get the fields in the SQL module, not here; only event types should be here
-        self.storage.new_historized_event(source.nodeid, ev_fields, period, count)
+        self.storage.new_historized_event(source.nodeid, event_types, period, count)
 
         handler = self._sub.subscribe_events(source, event_types)
         self._handlers[source] = handler
@@ -341,19 +339,6 @@ class HistoryManager(object):
         if cont:
             cont = ua.pack_datetime(cont)
         return results, cont
-
-    def _get_source_event_data(self, source):
-        # get all event types which the source node can generate; get the fields of those event types
-        event_types = source.get_referenced_nodes(ua.ObjectIds.GeneratesEvent)
-
-        ev_aggregate_fields = []
-        for event_type in event_types:
-            ev_aggregate_fields.extend((events.get_event_properties_from_type_node(event_type)))
-
-        ev_fields = []
-        for field in set(ev_aggregate_fields):
-            ev_fields.append(field.get_display_name().Text.decode(encoding='utf-8'))
-        return event_types, ev_fields
 
     def update_history(self, params):
         """
