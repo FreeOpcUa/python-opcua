@@ -162,7 +162,7 @@ class UASocketClient(object):
 
         response = ua.OpenSecureChannelResponse.from_binary(future.result(self.timeout))
         response.ResponseHeader.ServiceResult.check()
-        self._connection.set_security_token(response.Parameters.SecurityToken)
+        self._connection.set_channel(response.Parameters)
         return response.Parameters
 
     def close_secure_channel(self):

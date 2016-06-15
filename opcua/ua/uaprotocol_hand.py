@@ -1,7 +1,7 @@
 import struct
 import logging
 import hashlib
-from enum import IntEnum
+from datetime import datetime
 
 from opcua.ua import uaprotocol_auto as auto
 from opcua.ua import uatypes
@@ -484,8 +484,37 @@ class SecureConnection(object):
         self._incoming_parts = []
         self._security_policy = security_policy
         self._policies = []
-        self._security_token = auto.ChannelSecurityToken()
+        self.channel = auto.OpenSecureChannelResult()
+        self._open = False
         self._max_chunk_size = 65536
+
+    def set_channel(self, channel):
+        """
+        Called on client side when getting secure channel data from server
+        """
+        self.channel = channel
+
+    def open(self, params, server):
+        """
+        called on server side to open secure channel
+        """
+        if not self._open or params.RequestType == auto.SecurityTokenRequestType.Issue:
+            self.channel = auto.OpenSecureChannelResult()
+            self.channel.SecurityToken.TokenId = 13  # random value
+            self.channel.SecurityToken.ChannelId = server.get_new_channel_id()
+            self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
+        self.channel.SecurityToken.TokenId += 1
+        self.channel.SecurityToken.CreatedAt = datetime.utcnow()
+        self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
+        self.channel.ServerNonce = utils.create_nonce(self._security_policy.symmetric_key_size)
+        self._security_policy.make_symmetric_key(self.channel.ServerNonce, params.ClientNonce)
+        return self.channel
+
+    def close(self):
+        self._open = False
+
+    def is_open(self):
+        return self._open
 
     def set_policy_factories(self, policies):
         """
@@ -507,9 +536,6 @@ class SecureConnection(object):
                                                 self._security_policy.Mode != mode):
             raise UaError("No matching policy: {}, {}".format(uri, mode))
 
-    def set_security_token(self, tok):
-        self._security_token = tok
-
     def tcp_to_binary(self, message_type, message):
         """
         Convert OPC UA TCP message (see OPC UA specs Part 6, 7.1) to binary.
@@ -529,9 +555,9 @@ class SecureConnection(object):
         chunks = MessageChunk.message_to_chunks(
             self._security_policy, message, self._max_chunk_size,
             message_type=message_type,
-            channel_id=self._security_token.ChannelId,
+            channel_id=self.channel.SecurityToken.ChannelId,
             request_id=request_id,
-            token_id=self._security_token.TokenId)
+            token_id=self.channel.SecurityToken.TokenId)
         for chunk in chunks:
             self._sequence_number += 1
             if self._sequence_number >= (1 << 32):
@@ -544,14 +570,14 @@ class SecureConnection(object):
     def _check_incoming_chunk(self, chunk):
         assert isinstance(chunk, MessageChunk), "Expected chunk, got: {}".format(chunk)
         if chunk.MessageHeader.MessageType != MessageType.SecureOpen:
-            if chunk.MessageHeader.ChannelId != self._security_token.ChannelId:
+            if chunk.MessageHeader.ChannelId != self.channel.SecurityToken.ChannelId:
                 raise UaError("Wrong channel id {}, expected {}".format(
                     chunk.MessageHeader.ChannelId,
-                    self._security_token.ChannelId))
-            if chunk.SecurityHeader.TokenId != self._security_token.TokenId:
+                    self.channel.SecurityToken.ChannelId))
+            if chunk.SecurityHeader.TokenId != self.channel.SecurityToken.TokenId:
                 raise UaError("Wrong token id {}, expected {}".format(
                     chunk.SecurityHeader.TokenId,
-                    self._security_token.TokenId))
+                    self.channel.SecurityToken.TokenId))
         if self._incoming_parts:
             if self._incoming_parts[0].SequenceHeader.RequestId != chunk.SequenceHeader.RequestId:
                 raise UaError("Wrong request id {}, expected {}".format(

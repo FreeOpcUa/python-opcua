@@ -25,7 +25,6 @@ class UaProcessor(object):
         self.name = socket.get_extra_info('peername')
         self.sockname = socket.get_extra_info('sockname')
         self.session = None
-        self.channel = None
         self.socket = socket
         self._socketlock = Lock()
         self._datalock = RLock()
@@ -46,7 +45,7 @@ class UaProcessor(object):
         request = ua.OpenSecureChannelRequest.from_binary(body)
 
         self._connection.select_policy(algohdr.SecurityPolicyURI, algohdr.SenderCertificate, request.Parameters.SecurityMode)
-        channel = self._open_secure_channel(request.Parameters)
+        channel = self._connection.open(request.Parameters, self.iserver)
         # send response
         response = ua.OpenSecureChannelResponse()
         response.Parameters = channel
@@ -76,8 +75,7 @@ class UaProcessor(object):
                 self.open_secure_channel(msg.SecurityHeader(), msg.SequenceHeader(), msg.body())
 
             elif header.MessageType == ua.MessageType.SecureClose:
-                if not self.channel or header.ChannelId != self.channel.SecurityToken.ChannelId:
-                    self.logger.warning("Request to close channel %s which was not issued, current channel is %s", header.ChannelId, self.channel)
+                self._connection.close()
                 return False
 
             elif header.MessageType == ua.MessageType.SecureMessage:
@@ -386,9 +384,9 @@ class UaProcessor(object):
 
         elif typeid == ua.NodeId(ua.ObjectIds.CloseSecureChannelRequest_Encoding_DefaultBinary):
             self.logger.info("close secure channel request")
+            self._connection.close()
             response = ua.CloseSecureChannelResponse()
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
-            self.channel = None
             return False
 
         elif typeid == ua.NodeId(ua.ObjectIds.CallRequest_Encoding_DefaultBinary):
@@ -408,21 +406,6 @@ class UaProcessor(object):
             raise utils.ServiceError(ua.StatusCodes.BadNotImplemented)
 
         return True
-
-    def _open_secure_channel(self, params):
-        self.logger.info("open secure channel")
-        if not self.channel or params.RequestType == ua.SecurityTokenRequestType.Issue:
-            self.channel = ua.OpenSecureChannelResult()
-            self.channel.SecurityToken.TokenId = 13  # random value
-            self.channel.SecurityToken.ChannelId = self.iserver.get_new_channel_id()
-            self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
-        self.channel.SecurityToken.TokenId += 1
-        self.channel.SecurityToken.CreatedAt = datetime.utcnow()
-        self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
-        self.channel.ServerNonce = utils.create_nonce(self._connection._security_policy.symmetric_key_size)
-        self._connection.set_security_token(self.channel.SecurityToken)
-        self._connection._security_policy.make_symmetric_key(self.channel.ServerNonce, params.ClientNonce)
-        return self.channel
 
     def close(self):
         """
