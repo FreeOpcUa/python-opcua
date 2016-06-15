@@ -59,7 +59,6 @@ def create_object(parent, *args):
                 objecttype = ua.NodeId.from_string(objecttype)
             else:
                 raise RuntimeError()
-            return nodeid, qname
         except ua.UaError:
             raise
         except Exception as ex:
