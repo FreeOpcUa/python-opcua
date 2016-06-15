@@ -485,6 +485,7 @@ class SecureConnection(object):
         self._security_policy = security_policy
         self._policies = []
         self.channel = auto.OpenSecureChannelResult()
+        self._old_tokens = []
         self._open = False
         self._max_chunk_size = 65536
 
@@ -503,6 +504,8 @@ class SecureConnection(object):
             self.channel.SecurityToken.TokenId = 13  # random value
             self.channel.SecurityToken.ChannelId = server.get_new_channel_id()
             self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
+        else:
+            self._old_tokens.append(self.channel.SecurityToken.TokenId)
         self.channel.SecurityToken.TokenId += 1
         self.channel.SecurityToken.CreatedAt = datetime.utcnow()
         self.channel.SecurityToken.RevisedLifetime = params.RequestedLifetime
@@ -546,18 +549,22 @@ class SecureConnection(object):
         header.body_size = len(binmsg)
         return header.to_binary() + binmsg
 
-    def message_to_binary(self, message,
-                          message_type=MessageType.SecureMessage, request_id=0):
+    def message_to_binary(self, message, message_type=MessageType.SecureMessage, request_id=0, algohdr=None):
         """
         Convert OPC UA secure message to binary.
         The only supported types are SecureOpen, SecureMessage, SecureClose
+        if message_type is SecureMessage, the AlgoritmHeader should be passed as arg
         """
+        if algohdr is None:
+            token_id =  self.channel.SecurityToken.TokenId
+        else:
+            token_id=algohdr.TokenId
         chunks = MessageChunk.message_to_chunks(
             self._security_policy, message, self._max_chunk_size,
             message_type=message_type,
             channel_id=self.channel.SecurityToken.ChannelId,
             request_id=request_id,
-            token_id=self.channel.SecurityToken.TokenId)
+            token_id=token_id)
         for chunk in chunks:
             self._sequence_number += 1
             if self._sequence_number >= (1 << 32):
@@ -575,9 +582,15 @@ class SecureConnection(object):
                     chunk.MessageHeader.ChannelId,
                     self.channel.SecurityToken.ChannelId))
             if chunk.SecurityHeader.TokenId != self.channel.SecurityToken.TokenId:
-                raise UaError("Wrong token id {}, expected {}".format(
-                    chunk.SecurityHeader.TokenId,
-                    self.channel.SecurityToken.TokenId))
+                if chunk.SecurityHeader.TokenId not in self._old_tokens:
+                    raise UaError("Wrong token id {}, expected {}".format(
+                        chunk.SecurityHeader.TokenId,
+                        self.channel.SecurityToken.TokenId))
+                else:
+                    # Do some cleanup, spec says we can remove old tokens when new one are used
+                    idx = self._old_tokens.index(chunk.SecurityHeader.TokenId)
+                    if idx != 0:
+                        self._old_tokens = self._old_tokens[idx:]
         if self._incoming_parts:
             if self._incoming_parts[0].SequenceHeader.RequestId != chunk.SequenceHeader.RequestId:
                 raise UaError("Wrong request id {}, expected {}".format(

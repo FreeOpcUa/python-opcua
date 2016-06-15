@@ -61,7 +61,7 @@ class UASocketClient(object):
             if callback:
                 future.add_done_callback(callback)
             self._callbackmap[self._request_id] = future
-            msg = self._connection.message_to_binary(binreq, message_type, self._request_id)
+            msg = self._connection.message_to_binary(binreq, message_type=message_type, request_id=self._request_id)
             self._socket.write(msg)
         return future
 

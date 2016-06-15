@@ -38,7 +38,7 @@ class UaProcessor(object):
     def send_response(self, requesthandle, algohdr, seqhdr, response, msgtype=ua.MessageType.SecureMessage):
         with self._socketlock:
             response.ResponseHeader.RequestHandle = requesthandle
-            data = self._connection.message_to_binary(response.to_binary(), msgtype, seqhdr.RequestId)
+            data = self._connection.message_to_binary(response.to_binary(), message_type=msgtype, request_id=seqhdr.RequestId, algohdr=algohdr)
             self.socket.write(data)
 
     def open_secure_channel(self, algohdr, seqhdr, body):
@@ -49,7 +49,7 @@ class UaProcessor(object):
         # send response
         response = ua.OpenSecureChannelResponse()
         response.Parameters = channel
-        self.send_response(request.RequestHeader.RequestHandle, algohdr, seqhdr, response, ua.MessageType.SecureOpen)
+        self.send_response(request.RequestHeader.RequestHandle, None, seqhdr, response, ua.MessageType.SecureOpen)
 
     def forward_publish_response(self, result):
         self.logger.info("forward publish response %s", result)
