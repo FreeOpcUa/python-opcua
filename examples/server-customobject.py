@@ -42,11 +42,8 @@ if __name__ == "__main__":
     server.start()
 
     try:
-        count = 0
         while True:
             time.sleep(1)
-            count += 0.1
-            myvar.set_value(count)
     finally:
         # close connection, remove subcsriptions, etc
         server.stop()
