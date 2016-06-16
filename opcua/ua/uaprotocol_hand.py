@@ -500,6 +500,7 @@ class SecureConnection(object):
         called on server side to open secure channel
         """
         if not self._open or params.RequestType == auto.SecurityTokenRequestType.Issue:
+            self._open = True
             self.channel = auto.OpenSecureChannelResult()
             self.channel.SecurityToken.TokenId = 13  # random value
             self.channel.SecurityToken.ChannelId = server.get_new_channel_id()
