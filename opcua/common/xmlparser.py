@@ -27,7 +27,7 @@ class NodeData(object):
         # variable
         self.datatype = None
         self.rank = -1  # check default value
-        self.value = None
+        self.value = []
         self.valuetype = None
         self.dimensions = None
         self.accesslevel = None
