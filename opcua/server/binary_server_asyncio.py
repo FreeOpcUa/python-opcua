@@ -91,8 +91,7 @@ class BinaryServer(object):
                             return
                     except Exception:
                         logger.exception("Exception raised while parsing message from client, closing")
-                        self.transport.close()
-                        break
+                        return
 
         coro = self.loop.create_server(OPCUAProtocol, self.hostname, self.port)
         self._server = self.loop.run_coro_and_wait(coro)
