@@ -736,6 +736,8 @@ class LocalizedText(FrozenClass):
 
     def to_string(self):
         # FIXME: use local
+        if self.Text is None:
+            return ""
         return self.Text.decode()
 
     def __str__(self):

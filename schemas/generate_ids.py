@@ -5,6 +5,7 @@ if __name__ == "__main__":
     outputfile.write("\n")
     outputfile.write("from enum import IntEnum\n")
     outputfile.write("\n")
+    # Making ObjectIds inherit IntEnum has a huge performance impact!!!!!
     outputfile.write("class ObjectIds(object):\n")
     for line in inputfile:
         name, nb, datatype = line.split(",")
