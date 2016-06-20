@@ -430,6 +430,7 @@ class Client(object):
             passwd += self._server_nonce
         etoken = ua.pack_bytes(passwd)
         data, uri = security_policies.encrypt_asymmetric(pubkey, etoken, policy_uri)
+        return data, uri
 
     def close_session(self):
         """
