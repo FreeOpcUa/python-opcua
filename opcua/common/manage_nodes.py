@@ -47,7 +47,24 @@ def create_object(parent, *args):
     or namespace index, name
     """
     nodeid, qname = _parse_add_args(*args)
-    return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, ua.ObjectIds.BaseObjectType))
+    objecttype = ua.ObjectIds.BaseObjectType
+    if(len(args) == 3):
+        objecttype = args[2]
+        try:
+            if isinstance(objecttype, int):
+                objecttype = ua.NodeId(objecttype)
+            elif isinstance(objecttype, ua.NodeId):
+                objecttype = objecttype
+            elif isinstance(objecttype, str):
+                objecttype = ua.NodeId.from_string(objecttype)
+            else:
+                raise RuntimeError()
+            return nodeid, qname
+        except ua.UaError:
+            raise
+        except Exception as ex:
+            raise TypeError("This provided objecttype takes either a index, nodeid or string. Received arguments {} and got exception {}".format(args, ex))
+    return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, objecttype))
 
 
 def create_property(parent, *args):
@@ -122,7 +139,10 @@ def _create_object(server, parentnodeid, nodeid, qname, objecttype):
             addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
 
         addnode.NodeClass = ua.NodeClass.Object
-        addnode.TypeDefinition = ua.NodeId(objecttype)
+        if isinstance(objecttype, int):
+            addnode.TypeDefinition = ua.NodeId(objecttype)
+        elif isinstance(objecttype, ua.NodeId):
+            addnode.TypeDefinition = objecttype
         attrs = ua.ObjectAttributes()
         attrs.EventNotifier = 0
 

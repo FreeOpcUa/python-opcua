@@ -10,6 +10,7 @@ from functools import partial
 
 from opcua import ua
 from opcua.common import utils
+from opcua.common.uaerrors import UaError
 
 
 class UASocketClient(object):
@@ -60,7 +61,7 @@ class UASocketClient(object):
             if callback:
                 future.add_done_callback(callback)
             self._callbackmap[self._request_id] = future
-            msg = self._connection.message_to_binary(binreq, message_type, self._request_id)
+            msg = self._connection.message_to_binary(binreq, message_type=message_type, request_id=self._request_id)
             self._socket.write(msg)
         return future
 
@@ -94,6 +95,8 @@ class UASocketClient(object):
             except ua.utils.SocketClosedException:
                 self.logger.info("Socket has closed connection")
                 break
+            except UaError:
+                self.logger.exception("Protocol Error")
         self.logger.info("Thread ended")
 
     def _receive(self):
@@ -159,7 +162,7 @@ class UASocketClient(object):
 
         response = ua.OpenSecureChannelResponse.from_binary(future.result(self.timeout))
         response.ResponseHeader.ServiceResult.check()
-        self._connection.set_security_token(response.Parameters.SecurityToken)
+        self._connection.set_channel(response.Parameters)
         return response.Parameters
 
     def close_secure_channel(self):
