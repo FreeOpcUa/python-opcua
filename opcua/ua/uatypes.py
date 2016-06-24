@@ -358,8 +358,12 @@ class StatusCode(FrozenClass):
     """
 
     def __init__(self, value=0):
-        self.value = value
-        self.name, self.doc = status_codes.get_name_and_doc(value)
+        if isinstance(value, str):
+            self.name = value
+            self.value = getattr(status_codes.StatusCodes, value)
+        else:
+            self.value = value
+            self.name, self.doc = status_codes.get_name_and_doc(value)
         self._freeze = True
 
     def to_binary(self):

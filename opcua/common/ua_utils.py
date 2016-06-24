@@ -4,7 +4,7 @@ Usefull method and classes not belonging anywhere and depending on opcua library
 
 from dateutil import parser
 from datetime import datetime
-from enum import Enum
+from enum import Enum, IntEnum
 
 from opcua import ua
 
@@ -23,11 +23,11 @@ def val_to_string(val):
             res.append(val_to_string(v))
         return "[" + ", ".join(res) + "]"
 
-    if isinstance(val, (ua.NodeId)):
+    if hasattr(val, "to_string"):
         val = val.to_string()
-    elif isinstance(val, (ua.QualifiedName, ua.LocalizedText)):
-        val = val.to_string()
-    elif isinstance(val, Enum):
+    elif isinstance(val, ua.StatusCode):
+        val = val.name
+    elif isinstance(val, (Enum, IntEnum)):
         val = val.name
     elif isinstance(val, ua.DataValue):
         val = variant_to_string(val.Value)
@@ -37,7 +37,10 @@ def val_to_string(val):
         val = str(val)
     elif isinstance(val, datetime):
         val = val.isoformat()
+    elif isinstance(val, (int, float)):
+        val = str(val)
     else:
+        # FIXME: Some types are probably missing!
         val = str(val)
     return val
 
@@ -65,19 +68,30 @@ def string_to_val(string, vtype):
             var.append(val)
         return var
 
-    if vtype == ua.VariantType.Boolean:
+    if vtype == ua.VariantType.Null:
+        val = None
+    elif vtype == ua.VariantType.Boolean:
         val = bool(string)
     elif 4 <= vtype.value < 9:
         val = int(string)
     elif vtype in (ua.VariantType.Float, ua.VariantType.Double):
         val = float(string)
-    elif vtype == ua.VariantType.String:
+    elif vtype in (ua.VariantType.String, ua.VariantType.XmlElement):
         val = string
-    elif vtype == ua.VariantType.NodeId:
+    elif vtype in (ua.VariantType.SByte, ua.VariantType.Guid, ua.VariantType.ByteString):
+        val = bytes(string)
+    elif vtype in (ua.VariantType.NodeId, ua.VariantType.ExpandedNodeId):
         val = ua.NodeId.from_string(string)
+    elif vtype == ua.VariantType.QualifiedName:
+        val = ua.QualifiedName.from_string(string)
     elif vtype == ua.VariantType.DateTime:
         val = parser.parse(string)
+    elif vtype == ua.VariantType.LocalizedText:
+        val = ua.LocalizedText(string)
+    elif vtype == ua.VariantType.StatusCode:
+        val = ua.StatusCode(string)
     else:
+        # FIXME: Some types are probably missing!
         raise NotImplementedError
     return val
 

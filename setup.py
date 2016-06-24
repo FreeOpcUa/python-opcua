@@ -3,9 +3,9 @@ from setuptools import setup, find_packages
 import sys
 
 if sys.version_info[0] < 3:
-    install_requires = ["enum34", "trollius", "futures"]
+    install_requires = ["python-dateutil", "enum34", "trollius", "futures"]
 else:
-    install_requires = []
+    install_requires = ["python-dateutil"]
 
 setup(name="freeopcua", 
       version="0.10.12",

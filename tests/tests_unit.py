@@ -21,33 +21,55 @@ class TestUnit(unittest.TestCase):
     Simple unit test that do not need to setup a server or a client
     '''
 
-    def test_string_to_variant(self):
+    def test_string_to_variant_int(self):
         s_arr_uint = "[1, 2, 3, 4]"
         arr_uint = [1, 2, 3, 4]
-        s_arr_float = "[1.1, 2.1, 3, 4.0]"
-        arr_float = [1.1, 2.1, 3, 4.0]
-        s_arr_nodeid = "[ns=2;i=56, i=45]"
-        arr_nodeid = [ua.NodeId.from_string("ns=2;i=56"), ua.NodeId.from_string("i=45")]
-        s_arr_datetime = "[2014-05-6, 2016-10-3]"
-        arr_string = ['2014-05-6', '2016-10-3']
         s_uint = "1"
-        s_float = "1.9"
-        s_nodeid = "i=45"
-        s_datetime = "2014-05-3"
 
         self.assertEqual(string_to_val(s_arr_uint, ua.VariantType.UInt32), arr_uint)
         self.assertEqual(string_to_val(s_arr_uint, ua.VariantType.UInt16), arr_uint)
-        self.assertEqual(string_to_val(s_float, ua.VariantType.UInt32), 1.9)
-        self.assertEqual(string_to_val(s_arr_datetime, ua.VariantType.String), arr_string)
-        self.assertEqual(val_to_string(arr_string), s_arr_datetime)
         self.assertEqual(val_to_string(arr_uint), s_arr_uint)
+
+    def test_string_to_variant_float(self):
+        s_arr_float = "[1.1, 2.1, 3, 4.0]"
+        arr_float = [1.1, 2.1, 3, 4.0]
+        s_float = "1.9"
+        self.assertEqual(string_to_val(s_float, ua.VariantType.Float), 1.9)
         self.assertEqual(val_to_string(arr_float), s_arr_float)
+
+    def test_string_to_variant_datetime_string(self):
+        s_arr_datetime = "[2014-05-6, 2016-10-3]"
+        arr_string = ['2014-05-6', '2016-10-3']
+        arr_datetime = [datetime(2014, 5, 6), datetime(2016, 10, 3)]
+        s_datetime = "2014-05-3"
+        self.assertEqual(val_to_string(arr_string), s_arr_datetime)
+        self.assertEqual(string_to_val(s_arr_datetime, ua.VariantType.String), arr_string)
+        self.assertEqual(string_to_val(s_arr_datetime, ua.VariantType.DateTime), arr_datetime )
+
+    def test_string_to_variant_nodeid(self):
+        s_arr_nodeid = "[ns=2;i=56, i=45]"
+        arr_nodeid = [ua.NodeId.from_string("ns=2;i=56"), ua.NodeId.from_string("i=45")]
+        s_nodeid = "i=45"
         self.assertEqual(string_to_val(s_arr_nodeid, ua.VariantType.NodeId), arr_nodeid)
 
-        #FIXME disable to not rely on dateutil installed
-        #self.assertEqual(string_to_val(s_arr_datetime, ua.VariantType.DateTime), )
-        
+    def test_string_to_variant_status_code(self):
+        s_statuscode = "Good"
+        statuscode = ua.StatusCode(ua.StatusCodes.Good)
+        s_statuscode2 = "Uncertain"
+        statuscode2 = ua.StatusCode(ua.StatusCodes.Uncertain)
+        self.assertEqual(string_to_val(s_statuscode, ua.VariantType.StatusCode), statuscode)
+        self.assertEqual(string_to_val(s_statuscode2, ua.VariantType.StatusCode), statuscode2)
+    def test_string_to_variant_qname(self):
+        string = "2:name"
+        obj = ua.QualifiedName("name", 2)
+        self.assertEqual(string_to_val(string, ua.VariantType.QualifiedName), obj)
+        self.assertEqual(val_to_string(obj), string)
 
+    def test_string_to_variant_localized_text(self):
+        string = "_This is my nøåæ"
+        obj = ua.LocalizedText(string)
+        self.assertEqual(string_to_val(string, ua.VariantType.LocalizedText), obj)
+        self.assertEqual(val_to_string(obj), string)
 
     def test_variant_dimensions(self):
         l = [[[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0], [3.0, 3.0, 3.0, 3.0]],[[5.0, 5.0, 5.0, 5.0], [7.0, 8.0, 9.0, 01.0], [1.0, 1.0, 1.0, 1.0]]]
