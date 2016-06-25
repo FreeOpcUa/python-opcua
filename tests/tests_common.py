@@ -290,10 +290,10 @@ class CommonTests(object):
         objects = self.opc.get_objects_node()
         var = objects.add_variable(3, 'stringfordatatype', "a string")
         val = var.get_data_type()
-        self.assertEqual(val, ua.NodeId(ua.ObjectIds.String))
+        self.assertEqual(val, ua.VariantType.String)
         var = objects.add_variable(3, 'stringarrayfordatatype', ["a", "b"])
         val = var.get_data_type()
-        self.assertEqual(val, ua.NodeId(ua.ObjectIds.String))
+        self.assertEqual(val, ua.VariantType.String)
 
     def test_add_string_array_variable(self):
         objects = self.opc.get_objects_node()
@@ -415,7 +415,7 @@ class CommonTests(object):
         o = self.opc.get_objects_node()
         v = o.add_variable(3, 'BoolVariable', True)
         dt = v.get_data_type()
-        self.assertEqual(dt, ua.TwoByteNodeId(ua.ObjectIds.Boolean))
+        self.assertEqual(dt, ua.VariantType.Boolean)
         val = v.get_value()
         self.assertEqual(True, val)
         v.set_value(False)

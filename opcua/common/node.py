@@ -63,10 +63,34 @@ class Node(object):
 
     def get_data_type(self):
         """
-        get data type of node
+        get data type of node as VariantType
         """
         result = self.get_attribute(ua.AttributeIds.DataType)
-        return result.Value.Value
+        return ua.DataType_to_VariantType(result.Value.Value)
+
+    def get_access_level(self):
+        """
+        get access level of node as a list of AccessLevel Enum
+        """
+        result = self.get_attribute(ua.AttributeIds.AccessLevel)
+        return ua.int_to_AccessLevel(result.Value.Value)
+
+    def get_user_access_level(self):
+        """
+        get user access level of node as a list of AccessLevel Enum
+        """
+        result = self.get_attribute(ua.AttributeIds.UserAccessLevel)
+        return ua.int_to_AccessLevel(result.Value.Value)
+
+    def set_event_notifier(self, enum_list):
+        """
+        set event notifier attribute,
+        arg is a list of EventNotifier Enum
+        """
+        res = 1
+        for en in enum_list:
+            ua.set_bit(res, en.value)
+        self.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(res, ua.VariantType.Byte)))
 
     def get_node_class(self):
         """
@@ -401,7 +425,7 @@ class Node(object):
             details.EndTime = ua.DateTimeMinValue
         details.NumValuesPerNode = numvalues
 
-        if not type(evtypes) in (list, tuple):
+        if not isinstance(evtypes, (list, tuple)):
             evtypes = [evtypes]
 
         evtypes = [Node(self.server, evtype) for evtype in evtypes]
