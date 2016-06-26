@@ -324,6 +324,43 @@ class AccessLevelMask(IntEnum):
     SemanticChange = 1 << AccessLevel.SemanticChange
 
 
+class WriteMask(IntEnum):
+    """
+    Mask to indicate which attribute of a node is writable
+    Rmq: This is not a mask but bit index....
+    """
+    AccessLevel = 0
+    ArrayDimensions = 1
+    BrowseName = 2
+    ContainsNoLoops = 3
+    DataType = 4
+    Description = 5
+    DisplayName = 6
+    EventNotifier = 7
+    Executable = 8
+    Historizing = 9
+    InverseName = 10
+    IsAbstract = 11
+    MinimumSamplingInterval = 12
+    NodeClass = 13
+    NodeId = 14
+    Symmetric = 15
+    UserAccessLevel = 16
+    UserExecutable = 17
+    UserWriteMask = 18
+    ValueRank = 19
+    WriteMask = 20
+    ValueForVariableType = 21
+
+
+class EventNotifier(IntEnum):
+    """
+    """
+    SubscribeToEvents = 0
+    HistoryRead = 2
+    HistoryWrite = 3
+
+
 class Guid(FrozenClass):
 
     def __init__(self):
@@ -358,8 +395,12 @@ class StatusCode(FrozenClass):
     """
 
     def __init__(self, value=0):
-        self.value = value
-        self.name, self.doc = status_codes.get_name_and_doc(value)
+        if isinstance(value, str):
+            self.name = value
+            self.value = getattr(status_codes.StatusCodes, value)
+        else:
+            self.value = value
+            self.name, self.doc = status_codes.get_name_and_doc(value)
         self._freeze = True
 
     def to_binary(self):
@@ -736,7 +777,9 @@ class LocalizedText(FrozenClass):
 
     def to_string(self):
         # FIXME: use local
-        return self.Text.decode()
+        if self.Text is None:
+            return ""
+        return self.Text.decode('utf-8')
 
     def __str__(self):
         return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', ' + \
@@ -875,7 +918,7 @@ class VariantTypeCustom(object):
         self.name = "Custom"
         self.value = val
         if self.value > 0b00111111:
-            raise UaError("Cannot create VariantType. VariantType must be %s > x > %s", 0b111111, 25)
+            raise UaError("Cannot create VariantType. VariantType must be {} > x > {}, received {}".format(0b111111, 25, val))
 
     def __str__(self):
         return "VariantType.Custom:{}".format(self.value)
@@ -978,10 +1021,7 @@ class Variant(FrozenClass):
         dimensions = None
         encoding = ord(data.read(1))
         int_type = encoding & 0b00111111
-        if int_type > 25:
-            vtype = VariantTypeCustom(int_type)
-        else:
-            vtype = VariantType(int_type)
+        vtype = DataType_to_VariantType(int_type)
         if vtype == VariantType.Null:
             return Variant(None, vtype, encoding)
         if test_bit(encoding, 7):
@@ -1179,4 +1219,48 @@ class DataValue(FrozenClass):
     __repr__ = __str__
 
 
+def DataType_to_VariantType(int_type):
+    """
+    Takes a NodeId or int and return a VariantType
+    This is only supported if int_type < 63 due to VariantType encoding
+    """
+    if isinstance(int_type, NodeId):
+        int_type = int_type.Identifier
 
+    if int_type <= 25:
+        return VariantType(int_type)
+    else:
+        return VariantTypeCustom(int_type)
+
+
+def int_to_AccessLevel(level):
+    """
+    take an int and return a list of AccessLevel Enum
+    """
+    res = []
+    for val in AccessLevel:
+        test_bit(level, val.value)
+        res.append(val)
+    return res
+
+
+def int_to_WriteMask(level):
+    """
+    take an int and return a list of WriteMask Enum
+    """
+    res = []
+    for val in WriteMask:
+        test_bit(level, val.value)
+        res.append(val)
+    return res
+
+
+def int_to_EventNotifier(level):
+    """
+    take an int and return a list of EventNotifier Enum
+    """
+    res = []
+    for val in EventNotifier:
+        test_bit(level, val.value)
+        res.append(val)
+    return res

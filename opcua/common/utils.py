@@ -1,3 +1,8 @@
+"""
+Usefull methods and classes not depending on opcua library
+"""
+
+
 import logging
 import os
 from concurrent.futures import Future

@@ -61,7 +61,7 @@ class EventGenerator(object):
         self.event.SourceNode = source.nodeid
         self.event.SourceName = source.get_browse_name().Name
 
-        source.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(1, ua.VariantType.Byte)))
+        source.set_event_notifier([ua.EventNotifier.SubscribeToEvents, ua.EventNotifier.HistoryRead])
         refs = []
         ref = ua.AddReferencesItem()
         ref.IsForward = True
