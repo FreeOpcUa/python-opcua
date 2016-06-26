@@ -779,7 +779,7 @@ class LocalizedText(FrozenClass):
         # FIXME: use local
         if self.Text is None:
             return ""
-        return self.Text.decode()
+        return self.Text.decode('utf-8')
 
     def __str__(self):
         return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', ' + \
@@ -1240,7 +1240,7 @@ def int_to_AccessLevel(level):
     res = []
     for val in AccessLevel:
         test_bit(level, val.value)
-        res.append(val.name)
+        res.append(val)
     return res
 
 
@@ -1251,7 +1251,7 @@ def int_to_WriteMask(level):
     res = []
     for val in WriteMask:
         test_bit(level, val.value)
-        res.append(val.name)
+        res.append(val)
     return res
 
 
@@ -1262,5 +1262,5 @@ def int_to_EventNotifier(level):
     res = []
     for val in EventNotifier:
         test_bit(level, val.value)
-        res.append(val.name)
+        res.append(val)
     return res

@@ -82,6 +82,13 @@ class Node(object):
         result = self.get_attribute(ua.AttributeIds.UserAccessLevel)
         return ua.int_to_AccessLevel(result.Value.Value)
 
+    def get_event_notifier(self):
+        """
+        get EventNotifier attribute value as a list of EventNotifier Enum
+        """
+        result = self.get_attribute(ua.AttributeIds.EventNotifier)
+        return ua.int_to_EventNotifier(result.Value.Value)
+
     def set_event_notifier(self, enum_list):
         """
         set event notifier attribute,
