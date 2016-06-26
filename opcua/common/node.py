@@ -63,7 +63,16 @@ class Node(object):
 
     def get_data_type(self):
         """
+        get data type of node as NodeId
+        """
+        result = self.get_attribute(ua.AttributeIds.DataType)
+        return result.Value.Value
+
+    def get_data_type_as_variant_type(self):
+        """
         get data type of node as VariantType
+        This only works if node is a variable, otherwise type 
+        may not be convertible to VariantType
         """
         result = self.get_attribute(ua.AttributeIds.DataType)
         return ua.DataType_to_VariantType(result.Value.Value)
