@@ -425,11 +425,12 @@ class Client(object):
         pubkey = uacrypto.x509_from_der(self.security_policy.server_certificate).public_key()
         # see specs part 4, 7.36.3: if the token is encrypted, password
         # shall be converted to UTF-8 and serialized with server nonce
-        passwd = bytes(password, "utf8")
+        passwd = password.encode("utf8")
         if self._server_nonce is not None:
             passwd += self._server_nonce
         etoken = ua.pack_bytes(passwd)
         data, uri = security_policies.encrypt_asymmetric(pubkey, etoken, policy_uri)
+        return data, uri
 
     def close_session(self):
         """

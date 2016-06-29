@@ -1,6 +1,7 @@
 import sys
 sys.path.insert(0, "..")
 import logging
+from datetime import datetime
 
 try:
     from IPython import embed
@@ -81,6 +82,10 @@ if __name__ == "__main__":
     myobj = objects.add_object(idx, "MyObject")
     myvar = myobj.add_variable(idx, "MyVariable", 6.7)
     myvar.set_writable()    # Set MyVariable to be writable by clients
+    mystringvar = myobj.add_variable(idx, "MyStringVariable", "Really nice string")
+    mystringvar.set_writable()    # Set MyVariable to be writable by clients
+    mydtvar = myobj.add_variable(idx, "MyDateTimeVar", datetime.now())
+    mydtvar.set_writable()    # Set MyVariable to be writable by clients
     myarrayvar = myobj.add_variable(idx, "myarrayvar", [6.7, 7.9])
     myarrayvar = myobj.add_variable(idx, "myStronglytTypedVariable", ua.Variant([], ua.VariantType.UInt32))
     myprop = myobj.add_property(idx, "myproperty", "I am a property")

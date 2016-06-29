@@ -132,9 +132,12 @@ class HistorySQLite(HistoryStorageInterface):
 
             return results, cont
 
-    def new_historized_event(self, source_id, ev_fields, period, count=0):
+    def new_historized_event(self, source_id, evtypes, period, count=0):
         with self._lock:
             _c_new = self._conn.cursor()
+
+            # get all fields for the event type nodes
+            ev_fields = self._get_event_fields(evtypes)
 
             self._datachanges_period[source_id] = period
             self._event_fields[source_id] = ev_fields
@@ -231,6 +234,25 @@ class HistorySQLite(HistoryStorageInterface):
     def _get_table_name(self, node_id):
         return str(node_id.NamespaceIndex) + '_' + str(node_id.Identifier)
 
+    def _get_event_fields(self, evtypes):
+        """
+        Get all fields from the event types that are to be historized
+        Args:
+            evtypes: List of event type nodes
+
+        Returns: List of fields for all event types
+
+        """
+        # get all fields from the event types that are to be historized
+        ev_aggregate_fields = []
+        for event_type in evtypes:
+            ev_aggregate_fields.extend((events.get_event_properties_from_type_node(event_type)))
+
+        ev_fields = []
+        for field in set(ev_aggregate_fields):
+            ev_fields.append(field.get_display_name().Text.decode(encoding='utf-8'))
+        return ev_fields
+
     @staticmethod
     def _get_bounds(start, end, nb_values):
         order = "ASC"
@@ -257,11 +279,20 @@ class HistorySQLite(HistoryStorageInterface):
 
         return start_time, end_time, order, limit
 
-    def _format_event(self, event_result):
+    def _format_event(self, event):
+        """
+        Convert an event object triggered by the subscription into ordered lists for the SQL insert string
+
+        Args:
+            event: The event returned by the subscription
+
+        Returns: List of event fields (SQL column names), List of '?' placeholders, Tuple of variant binaries
+
+        """
         placeholders = []
         ev_variant_binaries = []
 
-        ev_variant_dict = event_result.get_event_props_as_fields_dict()
+        ev_variant_dict = event.get_event_props_as_fields_dict()
         names = list(ev_variant_dict.keys())
         names.sort()  # sort alphabetically since dict is not sorted
 

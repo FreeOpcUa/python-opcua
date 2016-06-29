@@ -5,6 +5,7 @@ python:
   - "pypy"  
 # command to install dependencies
 install:
+  - pip install python-dateutil
   - if [[ $TRAVIS_PYTHON_VERSION == '3.4' ]]; then pip install cryptography ; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install futures ; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install cryptography ; fi
