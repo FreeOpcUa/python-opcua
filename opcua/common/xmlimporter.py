@@ -45,28 +45,25 @@ class XmlImporter(object):
         if obj.parent:
             node.ParentNodeId = ua.NodeId.from_string(obj.parent)
         if obj.parentlink:
-            node.ReferenceTypeId = self.to_ref_type(obj.parentlink)
+            node.ReferenceTypeId = self.to_nodeid(obj.parentlink)
         if obj.typedef:
             node.TypeDefinition = ua.NodeId.from_string(obj.typedef)
         return node
 
-    def to_data_type(self, nodeid):
+    def to_nodeid(self, nodeid):
         if not nodeid:
             return ua.NodeId(ua.ObjectIds.String)
-        if "=" in nodeid:
+        elif "=" in nodeid:
             return ua.NodeId.from_string(nodeid)
-        else:
+        elif hasattr(ua.ObjectIds, nodeid):
             return ua.NodeId(getattr(ua.ObjectIds, nodeid))
-
-    def to_ref_type(self, nodeid):
-        if "=" not in nodeid:
+        else:
             if nodeid in self.parser.aliases:
                 nodeid = self.parser.aliases[nodeid]
             else:
                 nodeid = "i={}".format(getattr(ua.ObjectIds, nodeid))
-
-        return ua.NodeId.from_string(nodeid)
-
+            return ua.NodeId.from_string(nodeid)                
+        
     def add_object(self, obj):
         node = self._get_node(obj)
         attrs = ua.ObjectAttributes()
@@ -95,7 +92,7 @@ class XmlImporter(object):
         if obj.desc:
             attrs.Description = ua.LocalizedText(obj.desc)
         attrs.DisplayName = ua.LocalizedText(obj.displayname)
-        attrs.DataType = self.to_data_type(obj.datatype)
+        attrs.DataType = self.to_nodeid(obj.datatype)
         # if obj.value and len(obj.value) == 1:
         if obj.value is not None:
             attrs.Value = ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
@@ -119,7 +116,7 @@ class XmlImporter(object):
         if obj.desc:
             attrs.Description = ua.LocalizedText(obj.desc)
         attrs.DisplayName = ua.LocalizedText(obj.displayname)
-        attrs.DataType = self.to_data_type(obj.datatype)
+        attrs.DataType = self.to_nodeid(obj.datatype)
         if obj.value and len(obj.value) == 1:
             attrs.Value = obj.value[0]
         if obj.rank:
@@ -185,7 +182,7 @@ class XmlImporter(object):
         for data in obj.refs:
             ref = ua.AddReferencesItem()
             ref.IsForward = True
-            ref.ReferenceTypeId = self.to_ref_type(data.reftype)
+            ref.ReferenceTypeId = self.to_nodeid(data.reftype)
             ref.SourceNodeId = ua.NodeId.from_string(obj.nodeid)
             ref.TargetNodeClass = ua.NodeClass.DataType
             ref.TargetNodeId = ua.NodeId.from_string(data.target)
