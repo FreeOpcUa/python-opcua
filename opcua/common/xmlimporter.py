@@ -55,8 +55,10 @@ class XmlImporter(object):
             return ua.NodeId(ua.ObjectIds.String)
         if "=" in nodeid:
             return ua.NodeId.from_string(nodeid)
-        else:
+        elif hasattr(ua.ObjectIds, nodeid):
             return ua.NodeId(getattr(ua.ObjectIds, nodeid))
+        else:
+            return self.to_ref_type(nodeid) 
 
     def to_ref_type(self, nodeid):
         if "=" not in nodeid:
