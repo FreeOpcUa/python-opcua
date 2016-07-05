@@ -71,7 +71,7 @@ class Node(object):
     def get_data_type_as_variant_type(self):
         """
         get data type of node as VariantType
-        This only works if node is a variable, otherwise type 
+        This only works if node is a variable, otherwise type
         may not be convertible to VariantType
         """
         result = self.get_attribute(ua.AttributeIds.DataType)
@@ -424,7 +424,7 @@ class Node(object):
 
     def read_event_history(self, starttime=None, endtime=None, numvalues=0, evtypes=ua.ObjectIds.BaseEventType):
         """
-        Read event history of a source node 
+        Read event history of a source node
         result code from server is checked and an exception is raised in case of error
         If numvalues is > 0 and number of events in period is > numvalues
         then result will be truncated
