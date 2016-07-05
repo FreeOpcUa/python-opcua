@@ -85,7 +85,13 @@ def create_variable(parent, *args):
     """
     nodeid, qname = _parse_add_args(*args[:2])
     val = _to_variant(*args[2:])
-    return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, val, isproperty=False))
+    if len(args) > 3:
+        datatype = args[3]
+        if  isinstance(datatype, ua.NodeId) == False:
+            raise RuntimeError()
+    else:
+        datatype = None
+    return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, val, datatype, isproperty=False))
 
 
 def create_method(parent, *args):
@@ -162,7 +168,7 @@ def _to_variant(val, vtype=None):
         return ua.Variant(val, vtype)
 
 
-def _create_variable(server, parentnodeid, nodeid, qname, val, isproperty=False):
+def _create_variable(server, parentnodeid, nodeid, qname, val, datatype=None, isproperty=False):
     addnode = ua.AddNodesItem()
     addnode.RequestedNewNodeId = nodeid
     addnode.BrowseName = qname
@@ -177,7 +183,11 @@ def _create_variable(server, parentnodeid, nodeid, qname, val, isproperty=False)
     attrs = ua.VariableAttributes()
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
-    attrs.DataType = _guess_uatype(val)
+    if datatype:
+        attrs.DataType = datatype
+    else:
+        attrs.DataType = _guess_uatype(val)
+        
     attrs.Value = val
     if isinstance(val, list) or isinstance(val, tuple):
         attrs.ValueRank = ua.ValueRank.OneDimension

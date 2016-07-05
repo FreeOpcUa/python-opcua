@@ -325,6 +325,16 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         self.assertEqual(evgen.event.PropertyNum, None)
         self.assertEqual(evgen.event.PropertyString, None)
 
+    def test_add_variable_with_datatype(self):
+        o = self.opc.get_objects_node()
+        v1 = o.add_variable(3, 'VariableEnumType1', ua.ApplicationType.ClientAndServer, ua.NodeId(ua.ObjectIds.ApplicationType))
+        tp1 = v1.get_data_type()
+        self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp1)
+        
+        v2 = o.add_variable(3, 'VariableEnumType2', ua.ApplicationType.ClientAndServer, ua.NodeId(ua.ObjectIds.ApplicationType) )
+        tp2 = v2.get_data_type()
+        self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp2)         
+
 
 def check_eventgenerator_SourceServer(test, evgen):
     server = test.opc.get_server_node()
