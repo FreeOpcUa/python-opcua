@@ -117,8 +117,8 @@ def create_subtype(parent, *args):
     or namespace index, name
     """
     nodeid, qname = _parse_add_args(*args[:2])
-    if len(args) > 3:
-        node_class = args[3]
+    if len(args) > 2:
+        node_class = args[2]
     else:
         node_class = ua.NodeClass.ObjectType
     return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, None, node_class))
