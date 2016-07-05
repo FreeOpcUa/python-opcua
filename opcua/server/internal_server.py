@@ -17,6 +17,7 @@ except ImportError:
 
 from opcua import ua
 from opcua.common import utils
+from opcua.common.callback import CallbackType, ServerItemCallback, CallbackDispatcher
 from opcua.common.node import Node
 from opcua.server.history import HistoryManager
 from opcua.server.address_space import AddressSpace
@@ -46,6 +47,9 @@ class InternalServer(object):
 
     def __init__(self, cacheFile = None):
         self.logger = logging.getLogger(__name__)
+        
+        self.server_callback_dispatcher = CallbackDispatcher()
+        
         self.endpoints = []
         self._channel_id_counter = 5
         self.allow_remote_admin = True
@@ -83,6 +87,8 @@ class InternalServer(object):
         uries = ["http://opcfoundation.org/UA/"]
         ns_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         ns_node.set_value(uries)
+        
+        
 
     def load_address_space(self, path):
         self.aspace.load(path)
@@ -195,6 +201,18 @@ class InternalServer(object):
         """
         source.unset_attr_bit(ua.AttributeIds.EventNotifier, ua.EventNotifier.HistoryRead)
         self.history_manager.dehistorize(source)
+        
+    def subscribe_server_callback(self, event, handle):
+        """
+        Create a subscription from event to handle
+        """
+        self.server_callback_dispatcher.addListener(event, handle)
+        
+    def unsubscribe_server_callback(self, event, handle):
+        """
+        Remove a subscription from event to handle
+        """
+        self.server_callback_dispatcher.removeListener(event, handle)
 
 
 class InternalSession(object):
@@ -307,12 +325,16 @@ class InternalSession(object):
             self.subscriptions.append(result.SubscriptionId)
         return result
 
-    def create_monitored_items(self, params):
-        return self.subscription_service.create_monitored_items(params)
+    def create_monitored_items(self, params):        
+        subscription_result = self.subscription_service.create_monitored_items(params)
+        self.iserver.server_callback_dispatcher.dispatch(CallbackType.ItemCreated, ServerItemCallback(params, subscription_result))
+        return subscription_result
 
     def modify_monitored_items(self, params):
-        return self.subscription_service.modify_monitored_items(params)
-
+        subscription_result = self.subscription_service.modify_monitored_items(params)
+        self.iserver.server_callback_dispatcher.dispatch(CallbackType.ItemModified, ServerItemCallback(params, subscription_result))
+        return subscription_result
+    
     def republish(self, params):
         return self.subscription_service.republish(params)
 
@@ -324,7 +346,9 @@ class InternalSession(object):
         return self.subscription_service.delete_subscriptions(ids)
 
     def delete_monitored_items(self, params):
-        return self.subscription_service.delete_monitored_items(params)
+        subscription_result = self.subscription_service.delete_monitored_items(params)
+        self.iserver.server_callback_dispatcher.dispatch(CallbackType.ItemDeleted, ServerItemCallback(params, subscription_result))
+        return subscription_result
 
     def publish(self, acks=None):
         if acks is None:
