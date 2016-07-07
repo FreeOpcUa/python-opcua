@@ -327,12 +327,12 @@ class InternalSession(object):
 
     def create_monitored_items(self, params):        
         subscription_result = self.subscription_service.create_monitored_items(params)
-        self.iserver.server_callback_dispatcher.dispatch(CallbackType.ItemCreated, ServerItemCallback(params, subscription_result))
+        self.iserver.server_callback_dispatcher.dispatch(CallbackType.ItemSubscriptionCreated, ServerItemCallback(params, subscription_result))
         return subscription_result
 
     def modify_monitored_items(self, params):
         subscription_result = self.subscription_service.modify_monitored_items(params)
-        self.iserver.server_callback_dispatcher.dispatch(CallbackType.ItemModified, ServerItemCallback(params, subscription_result))
+        self.iserver.server_callback_dispatcher.dispatch(CallbackType.ItemSubscriptionModified, ServerItemCallback(params, subscription_result))
         return subscription_result
     
     def republish(self, params):
@@ -347,7 +347,7 @@ class InternalSession(object):
 
     def delete_monitored_items(self, params):
         subscription_result = self.subscription_service.delete_monitored_items(params)
-        self.iserver.server_callback_dispatcher.dispatch(CallbackType.ItemDeleted, ServerItemCallback(params, subscription_result))
+        self.iserver.server_callback_dispatcher.dispatch(CallbackType.ItemSubscriptionDeleted, ServerItemCallback(params, subscription_result))
         return subscription_result
 
     def publish(self, acks=None):
