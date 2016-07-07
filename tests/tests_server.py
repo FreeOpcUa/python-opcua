@@ -134,7 +134,11 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         v = o.get_child(["MyXMLFolder", "MyXMLObject", "MyXMLVariable"])
         val = v.get_value()
         self.assertEqual(val, "StringValue")
+        
+        o = self.opc.get_root_node().get_child(["Types", "DataTypes", "BaseDataType", "Enumeration", "1:MyEnum", "0:EnumStrings"])
+        self.assertEqual(len(o.get_value() ), 3)
 
+        
     def test_historize_variable(self):
         o = self.opc.get_objects_node()
         var = o.add_variable(3, "test_hist", 1.0)

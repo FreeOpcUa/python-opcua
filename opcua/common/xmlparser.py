@@ -167,9 +167,23 @@ class XMLParser(object):
             elif ntag == "ListOfExtensionObject":
                 self.logger.info("Value type not implemented: %s", ntag)
             elif ntag == "ListOfLocalizedText":
-                self.logger.info("Value type not implemented: %s", ntag)
+                obj.value = self._parse_list_of_localized_text(el)
             else:
                 self.logger.info("Value type not implemented: %s", ntag)
+
+    def _parse_list_of_localized_text(self, el):
+        value = []
+        for localized_text_list in el:
+            for localized_text in localized_text_list:
+                ntag = self._retag.match(localized_text.tag).groups()[1]
+                for child in localized_text:
+                    ntag = self._retag.match(child.tag).groups()[1]
+                    if ntag == 'Text':
+                        txt = ""
+                        for text  in child.itertext():
+                            txt += text                        
+                        value.append(txt)
+        return value
 
     def _parse_refs(self, el, obj):
         for ref in el:
