@@ -80,17 +80,14 @@ def create_property(parent, *args):
 def create_variable(parent, *args):
     """
     create a child node variable
-    args are nodeid, browsename, value, [variant type]
-    or idx, name, value, [variant type]
+    args are nodeid, browsename, value, [variant type], [data type]
+    or idx, name, value, [variant type], [data type] 
     """
     nodeid, qname = _parse_add_args(*args[:2])
-    val = _to_variant(*args[2:])
-    if len(args) > 3:
-        datatype = args[3]
-        if  isinstance(datatype, ua.NodeId) == False:
-            raise RuntimeError()
-    else:
-        datatype = None
+    val, datatype = _to_variant_with_datatype(*args[2:])
+    if  datatype and not isinstance(datatype, ua.NodeId):
+        raise RuntimeError()
+    
     return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, val, datatype, isproperty=False))
 
 
@@ -162,11 +159,15 @@ def _create_object(server, parentnodeid, nodeid, qname, objecttype):
 
 
 def _to_variant(val, vtype=None):
-    if isinstance(val, ua.Variant):
-        return val
-    else:
-        return ua.Variant(val, vtype)
+    return _to_variant_with_datatype(val, vtype, datatype=None )[0]
 
+def _to_variant_with_datatype(val, vtype=None, datatype=None):
+    if isinstance(val, ua.Variant):
+        if vtype:
+            datatype = vtype
+        return val, datatype
+    else:
+        return ua.Variant(val, vtype), datatype  
 
 def _create_variable(server, parentnodeid, nodeid, qname, val, datatype=None, isproperty=False):
     addnode = ua.AddNodesItem()
