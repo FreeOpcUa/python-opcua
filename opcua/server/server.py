@@ -377,3 +377,10 @@ class Server(object):
 
     def dehistorize_node(self, node):
         self.iserver.disable_history(node)
+        
+        
+    def subscribe_server_callback(self, event, handle):
+        self.iserver.subscribe_server_callback(event, handle)
+        
+    def unsubscribe_server_callback(self, event, handle):
+        self.iserver.unsubscribe_server_callback(event, handle)
