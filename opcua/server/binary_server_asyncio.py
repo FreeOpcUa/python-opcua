@@ -95,6 +95,14 @@ class BinaryServer(object):
 
         coro = self.loop.create_server(OPCUAProtocol, self.hostname, self.port)
         self._server = self.loop.run_coro_and_wait(coro)
+        # get the port and the hostname from the created server socket
+        # only relevant for dynamic port asignment (when self.port == 0)
+        if self.port == 0 and len(self._server.sockets) == 1:
+            # will work for AF_INET and AF_INET6 socket names
+            # these are to only families supported by the create_server call
+            sockname = socket_server.sockets[0].getsockname()
+            self.hostname = sockname[0]
+            self.port = sockname[1]
         print('Listening on {}:{}'.format(self.hostname, self.port))
 
     def stop(self):
