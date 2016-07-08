@@ -100,7 +100,7 @@ class BinaryServer(object):
         if self.port == 0 and len(self._server.sockets) == 1:
             # will work for AF_INET and AF_INET6 socket names
             # these are to only families supported by the create_server call
-            sockname = socket_server.sockets[0].getsockname()
+            sockname = self._server.sockets[0].getsockname()
             self.hostname = sockname[0]
             self.port = sockname[1]
         print('Listening on {}:{}'.format(self.hostname, self.port))
