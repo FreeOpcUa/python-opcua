@@ -165,11 +165,17 @@ class XMLParser(object):
                 # obj.value.append('b"{}"'.format(mytext))
                 obj.value = mytext
             elif ntag == "ListOfExtensionObject":
-                self.logger.info("Value type not implemented: %s", ntag)
+                obj.value, obj.valuetype = self._parse_list_of_extension_object(el)
             elif ntag == "ListOfLocalizedText":
                 obj.value = self._parse_list_of_localized_text(el)
             else:
                 self.logger.info("Value type not implemented: %s", ntag)
+
+    def _get_text(self, el):
+        txt = ""
+        for text  in el.itertext():
+            txt += text
+        return txt
 
     def _parse_list_of_localized_text(self, el):
         value = []
@@ -179,11 +185,37 @@ class XMLParser(object):
                 for child in localized_text:
                     ntag = self._retag.match(child.tag).groups()[1]
                     if ntag == 'Text':
-                        txt = ""
-                        for text  in child.itertext():
-                            txt += text                        
-                        value.append(txt)
+                        value.append(self._get_text(child))
         return value
+
+    def _parse_list_of_extension_object(self, el):
+        '''
+        Parse a uax:ListOfExtensionObject Value
+        
+        Return an array with a value of each uax:ExtensionObject/*/* (each element is convert to a netry in a dict.
+               also the valuetype is returned. The valuetype is  uax:ExtensionObject/*/tag()
+        '''
+        value = []
+        valuetype = None
+        for extension_object_list in el:
+            for extension_object in extension_object_list:
+                extension_object.find('Body')
+                for extension_object_part in extension_object:
+                    ntag = self._retag.match(extension_object_part.tag).groups()[1]
+                    if ntag == 'Body':
+                        data = {}
+                        ntag = self._retag.match(extension_object_part.find('*').tag).groups()[1]
+                        valuetype = ntag
+                        for body_item in extension_object_part.findall('*/*'):
+                            ntag = self._retag.match(body_item.tag).groups()[1]
+
+                            child = body_item.find('*')
+                            if child is not None:
+                                data[ntag] = self._get_text(child)
+                            else:
+                                data[ntag] = self._get_text(body_item)
+                        value.append(data)
+        return value, valuetype
 
     def _parse_refs(self, el, obj):
         for ref in el:
@@ -191,7 +223,7 @@ class XMLParser(object):
                 obj.typedef = ref.text
             elif "IsForward" in ref.attrib and ref.attrib["IsForward"] == "false":
                 # if obj.parent:
-                    #sys.stderr.write("Parent is already set with: "+ obj.parent + " " + ref.text + "\n")
+                    # sys.stderr.write("Parent is already set with: "+ obj.parent + " " + ref.text + "\n")
                 obj.parent = ref.text
                 obj.parentlink = ref.attrib["ReferenceType"]
             else:
