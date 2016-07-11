@@ -8,6 +8,7 @@
      <Alias Alias="HasProperty">i=46</Alias>
      <Alias Alias="MyCustomString">ns=1;i=3008</Alias>
      <Alias Alias="MyEnum">ns=1;i=3010</Alias>
+     <Alias Alias="MyEnumVal">ns=1;i=3011</Alias>
   </Aliases>
 
   <UAObject NodeId="i=30001" BrowseName="MyXMLFolder"  >
@@ -70,6 +71,7 @@
     </References>
   </UAVariable>
   
+  <!-- test data Enumeration with EnumStrings -->
   <UADataType NodeId="ns=1;i=3010" BrowseName="1:MyEnum">
         <DisplayName>MyEnum</DisplayName>
         <Description>Demonstrates enums</Description>
@@ -104,6 +106,75 @@
                 </uax:LocalizedText>
             </uax:ListOfLocalizedText>
         </Value>
-    </UAVariable>
+  </UAVariable>
+  
+  <!-- test data Enumeration with EnumValues -->  
+  <UADataType NodeId="ns=1;i=3011" BrowseName="1:MyEnumVal">
+        <DisplayName>MyEnumVal</DisplayName>
+        <References>
+            <Reference ReferenceType="HasProperty">ns=1;i=6002</Reference>
+            <Reference ReferenceType="HasSubtype" IsForward="false">i=29</Reference>
+        </References>
+        <Definition Name="1:MyEnumVal">
+            <Field Name="idle" Value="1"/>
+            <Field Name="run" Value="2"/>
+            <Field Name="error" Value="4"/>
+        </Definition>
+  </UADataType>
+  
+  <UAVariable DataType="EnumValueType" ParentNodeId="ns=1;i=3011" ValueRank="1" NodeId="ns=1;i=6002" ArrayDimensions="3" BrowseName="EnumValues">
+        <DisplayName>EnumValues</DisplayName>
+        <References>
+            <Reference ReferenceType="HasModellingRule">i=78</Reference>
+            <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+            <Reference ReferenceType="HasProperty" IsForward="false">ns=1;i=3011</Reference>
+        </References>
+        <Value>
+            <uax:ListOfExtensionObject>
+                <uax:ExtensionObject>
+                    <uax:TypeId>
+                        <uax:Identifier>i=7616</uax:Identifier>
+                    </uax:TypeId>
+                    <uax:Body>
+                        <uax:EnumValueType>
+                            <uax:Value>1</uax:Value>
+                            <uax:DisplayName>
+                                <uax:Text>idle</uax:Text>
+                            </uax:DisplayName>
+                            <uax:Description/>
+                        </uax:EnumValueType>
+                    </uax:Body>
+                </uax:ExtensionObject>
+                <uax:ExtensionObject>
+                    <uax:TypeId>
+                        <uax:Identifier>i=7616</uax:Identifier>
+                    </uax:TypeId>
+                    <uax:Body>
+                        <uax:EnumValueType>
+                            <uax:Value>2</uax:Value>
+                            <uax:DisplayName>
+                                <uax:Text>run</uax:Text>
+                            </uax:DisplayName>
+                            <uax:Description/>
+                        </uax:EnumValueType>
+                    </uax:Body>
+                </uax:ExtensionObject>
+                <uax:ExtensionObject>
+                    <uax:TypeId>
+                        <uax:Identifier>i=7616</uax:Identifier>
+                    </uax:TypeId>
+                    <uax:Body>
+                        <uax:EnumValueType>
+                            <uax:Value>4</uax:Value>
+                            <uax:DisplayName>
+                                <uax:Text>error</uax:Text>
+                            </uax:DisplayName>
+                            <uax:Description/>
+                        </uax:EnumValueType>
+                    </uax:Body>
+                </uax:ExtensionObject>
+            </uax:ListOfExtensionObject>
+        </Value>
+  </UAVariable>    
       
 </UANodeSet>

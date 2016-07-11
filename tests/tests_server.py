@@ -138,6 +138,9 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         o = self.opc.get_root_node().get_child(["Types", "DataTypes", "BaseDataType", "Enumeration", "1:MyEnum", "0:EnumStrings"])
         self.assertEqual(len(o.get_value() ), 3)
 
+        o = self.opc.get_root_node().get_child(["Types", "DataTypes", "BaseDataType", "Enumeration", "1:MyEnumVal", "0:EnumValues"])
+        self.assertEqual(len(o.get_value() ), 3)
+
         
     def test_historize_variable(self):
         o = self.opc.get_objects_node()

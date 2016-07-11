@@ -62,8 +62,8 @@ class XmlImporter(object):
                 nodeid = self.parser.aliases[nodeid]
             else:
                 nodeid = "i={}".format(getattr(ua.ObjectIds, nodeid))
-            return ua.NodeId.from_string(nodeid)                
-        
+            return ua.NodeId.from_string(nodeid)
+
     def add_object(self, obj):
         node = self._get_node(obj)
         attrs = ua.ObjectAttributes()
@@ -95,8 +95,18 @@ class XmlImporter(object):
         attrs.DataType = self.to_nodeid(obj.datatype)
         # if obj.value and len(obj.value) == 1:
         if obj.value is not None:
+            #TODO: If non variant based types grow move it to a seperate function 
             if obj.valuetype == 'ListOfLocalizedText':
                 attrs.Value = ua.Variant([ua.LocalizedText(txt) for txt in obj.value], None)
+            elif obj.valuetype == 'EnumValueType':
+                values = []
+                for ev in obj.value:
+                    enum_value = ua.EnumValueType()
+                    enum_value.DisplayName = ua.LocalizedText(ev['DisplayName'])
+                    enum_value.Description = ua.LocalizedText(ev['Description'])
+                    enum_value.Value = int(ev['Value'])
+                    values.append(enum_value)
+                attrs.Value = values
             else:
                 attrs.Value = ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
         if obj.rank:
