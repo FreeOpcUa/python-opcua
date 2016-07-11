@@ -73,21 +73,23 @@ def create_property(parent, *args):
     or idx, name, value, [variant type]
     """
     nodeid, qname = _parse_add_args(*args[:2])
-    val = _to_variant(*args[2:])
-    return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, val, isproperty=True))
+    val, datatype = _to_variant_with_datatype(*args[2:])
+    if datatype and not isinstance(datatype, ua.NodeId):
+        raise RuntimeError()
+    return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, val, datatype, isproperty=True))
 
 
 def create_variable(parent, *args):
     """
     create a child node variable
     args are nodeid, browsename, value, [variant type], [data type]
-    or idx, name, value, [variant type], [data type] 
+    or idx, name, value, [variant type], [data type]
     """
     nodeid, qname = _parse_add_args(*args[:2])
     val, datatype = _to_variant_with_datatype(*args[2:])
-    if  datatype and not isinstance(datatype, ua.NodeId):
+    if datatype and not isinstance(datatype, ua.NodeId):
         raise RuntimeError()
-    
+
     return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, val, datatype, isproperty=False))
 
 
@@ -162,7 +164,8 @@ def _create_object(server, parentnodeid, nodeid, qname, objecttype, node_class):
 
 
 def _to_variant(val, vtype=None):
-    return _to_variant_with_datatype(val, vtype, datatype=None )[0]
+    return _to_variant_with_datatype(val, vtype, datatype=None)[0]
+
 
 def _to_variant_with_datatype(val, vtype=None, datatype=None):
     if isinstance(val, ua.Variant):
@@ -170,7 +173,8 @@ def _to_variant_with_datatype(val, vtype=None, datatype=None):
             datatype = vtype
         return val, datatype
     else:
-        return ua.Variant(val, vtype), datatype  
+        return ua.Variant(val, vtype), datatype
+
 
 def _create_variable(server, parentnodeid, nodeid, qname, val, datatype=None, isproperty=False):
     addnode = ua.AddNodesItem()
@@ -191,7 +195,7 @@ def _create_variable(server, parentnodeid, nodeid, qname, val, datatype=None, is
         attrs.DataType = datatype
     else:
         attrs.DataType = _guess_uatype(val)
-        
+
     attrs.Value = val
     if isinstance(val, list) or isinstance(val, tuple):
         attrs.ValueRank = ua.ValueRank.OneDimension

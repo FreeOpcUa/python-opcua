@@ -348,21 +348,21 @@ class Server(object):
         return EventGenerator(self.iserver.isession, etype, source)
 
     def create_custom_data_type(self, idx, name, basetype=ua.ObjectIds.BaseDataType, properties=[]):
-        return self._create_custom_type(idx, name, basetype, properties)
+        return self._create_custom_type(idx, name, basetype, properties, [], [])
 
     def create_custom_event_type(self, idx, name, basetype=ua.ObjectIds.BaseEventType, properties=[]):
-        return self._create_custom_type(idx, name, basetype, properties)
+        return self._create_custom_type(idx, name, basetype, properties, [], [])
 
-    def create_custom_object_type(self, idx, name, basetype=ua.ObjectIds.BaseObjectType, properties=[]):
-        return self._create_custom_type(idx, name, basetype, properties)
+    def create_custom_object_type(self, idx, name, basetype=ua.ObjectIds.BaseObjectType, properties=[], variables=[], methods=[]):
+        return self._create_custom_type(idx, name, basetype, properties, variables, methods)
 
     #def create_custom_reference_type(self, idx, name, basetype=ua.ObjectIds.BaseReferenceType, properties=[]):
         #return self._create_custom_type(idx, name, basetype, properties)
 
-    def create_custom_variable_type(self, idx, name, basetype=ua.ObjectIds.BaseVariableType, properties=[]):
-        return self._create_custom_type(idx, name, basetype, properties)
+    def create_custom_variable_type(self, idx, name, basetype=ua.ObjectIds.BaseVariableType, properties=[], variables=[], methods=[]):
+        return self._create_custom_type(idx, name, basetype, properties, variables, methods)
 
-    def _create_custom_type(self, idx, name, basetype, properties):
+    def _create_custom_type(self, idx, name, basetype, properties, variables, methods):
         if isinstance(basetype, Node):
             base_t = basetype
         elif isinstance(basetype, ua.NodeId):
@@ -372,7 +372,17 @@ class Server(object):
 
         custom_t = base_t.add_subtype(idx, name)
         for property in properties:
-            custom_t.add_property(idx, property[0], ua.Variant(None, property[1]))
+            datatype = None
+            if len(property) > 2:
+                datatype = property[2]
+            custom_t.add_property(idx, property[0], ua.Variant(None, property[1]), datatype)
+        for variable in variables:
+            datatype = None
+            if len(variable) > 2:
+                datatype = variable[2]
+            custom_t.add_variable(idx, variable[0], ua.Variant(None, variable[1]), datatype)
+        for method in methods:
+            custom_t.add_method(idx, method[0], method[1], method[2], method[3])
 
         return custom_t
 
@@ -391,10 +401,10 @@ class Server(object):
 
     def dehistorize_node(self, node):
         self.iserver.disable_history(node)
-        
-        
+
+
     def subscribe_server_callback(self, event, handle):
         self.iserver.subscribe_server_callback(event, handle)
-        
+
     def unsubscribe_server_callback(self, event, handle):
         self.iserver.unsubscribe_server_callback(event, handle)
