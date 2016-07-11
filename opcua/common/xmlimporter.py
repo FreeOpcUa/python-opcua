@@ -95,7 +95,10 @@ class XmlImporter(object):
         attrs.DataType = self.to_nodeid(obj.datatype)
         # if obj.value and len(obj.value) == 1:
         if obj.value is not None:
-            attrs.Value = ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
+            if obj.valuetype == 'ListOfLocalizedText':
+                attrs.Value = ua.Variant([ua.LocalizedText(txt) for txt in obj.value], None)
+            else:
+                attrs.Value = ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
         if obj.rank:
             attrs.ValueRank = obj.rank
         if obj.accesslevel:

@@ -134,7 +134,11 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         v = o.get_child(["MyXMLFolder", "MyXMLObject", "MyXMLVariable"])
         val = v.get_value()
         self.assertEqual(val, "StringValue")
+        
+        o = self.opc.get_root_node().get_child(["Types", "DataTypes", "BaseDataType", "Enumeration", "1:MyEnum", "0:EnumStrings"])
+        self.assertEqual(len(o.get_value() ), 3)
 
+        
     def test_historize_variable(self):
         o = self.opc.get_objects_node()
         var = o.add_variable(3, "test_hist", 1.0)
@@ -341,6 +345,16 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
 
         self.assertEqual(evgen.event.PropertyNum, None)
         self.assertEqual(evgen.event.PropertyString, None)
+
+    def test_add_variable_with_datatype(self):
+        o = self.opc.get_objects_node()
+        v1 = o.add_variable(3, 'VariableEnumType1', ua.ApplicationType.ClientAndServer, None, ua.NodeId(ua.ObjectIds.ApplicationType))
+        tp1 = v1.get_data_type()
+        self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp1)
+        
+        v2 = o.add_variable(3, 'VariableEnumType2', ua.ApplicationType.ClientAndServer, None, ua.NodeId(ua.ObjectIds.ApplicationType) )
+        tp2 = v2.get_data_type()
+        self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp2)         
 
 
 def check_eventgenerator_SourceServer(test, evgen):

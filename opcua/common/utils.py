@@ -1,8 +1,3 @@
-"""
-Usefull methods and classes not depending on opcua library
-"""
-
-
 import logging
 import os
 from concurrent.futures import Future
@@ -204,3 +199,6 @@ class ThreadLoop(threading.Thread):
         p = functools.partial(self._run_until_complete, future, coro)
         self.loop.call_soon_threadsafe(p)
         return future.result()
+
+
+
