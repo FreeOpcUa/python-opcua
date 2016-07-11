@@ -82,4 +82,21 @@ class TestClient(unittest.TestCase, CommonTests, SubscriptionTests):
             v_ro.set_value(9)
         self.assertEqual(v_ro.get_value(), 2)
 
+    def test_context_manager(self):
+        """ Context manager calls connect() and disconnect()
+        """
+        state = [0]
+        def increment_state(self, *args, **kwargs):
+            state[0] += 1
 
+        # create client and replace instance methods with dummy methods
+        client = Client('opc.tcp://dummy_address:10000')
+        client.connect    = increment_state.__get__(client)
+        client.disconnect = increment_state.__get__(client)
+
+        assert state[0] == 0
+        with client:
+            # test if client connected
+            self.assertEqual(state[0], 1)
+        # test if client disconnected
+        self.assertEqual(state[0], 2)

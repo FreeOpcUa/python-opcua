@@ -102,7 +102,7 @@ class Client(object):
         self.connect()
         return self
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, traceback):
         self.disconnect()
 
     @staticmethod

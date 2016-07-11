@@ -339,6 +339,24 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         tp2 = v2.get_data_type()
         self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp2)         
 
+    def test_context_manager(self):
+        """ Context manager calls start() and stop()
+        """
+        state = [0]
+        def increment_state(self, *args, **kwargs):
+            state[0] += 1
+
+        # create server and replace instance methods with dummy methods
+        server = Server()
+        server.start = increment_state.__get__(server)
+        server.stop  = increment_state.__get__(server)
+
+        assert state[0] == 0
+        with server:
+            # test if server started
+            self.assertEqual(state[0], 1)
+        # test if server stopped
+        self.assertEqual(state[0], 2)
 
 def check_eventgenerator_SourceServer(test, evgen):
     server = test.opc.get_server_node()
