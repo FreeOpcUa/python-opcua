@@ -34,7 +34,7 @@ if __name__ == "__main__":
     # Example 2 - create a new object type and a instance of the new object type
     #-------------------------------------------------------------------------------
     types = server.get_node(ua.ObjectIds.BaseObjectType)
-    mycustomobj_type = types.create_type(idx, "MyCustomObject")
+    mycustomobj_type = types.create_object_type(idx, "MyCustomObject")
     
     myobj = objects.create_object(idx, "MyCustomObjectA", mycustomobj_type.nodeid)
     #-------------------------------------------------------------------------------
