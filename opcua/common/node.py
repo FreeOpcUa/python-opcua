@@ -292,6 +292,20 @@ class Node(object):
         """
         return self.get_children(refs=ua.ObjectIds.HasProperty, nodeclassmask=ua.NodeClass.Variable)
 
+    def get_variables(self):
+        """
+        return variables of node.
+        properties are child nodes with a reference of type HasComponent and a NodeClass of Variable
+        """
+        return self.get_children(refs=ua.ObjectIds.HasComponent, nodeclassmask=ua.NodeClass.Variable)
+
+    def get_methods(self):
+        """
+        return methods of node.
+        properties are child nodes with a reference of type HasComponent and a NodeClass of Method
+        """
+        return self.get_children(refs=ua.ObjectIds.HasComponent, nodeclassmask=ua.NodeClass.Method)
+
     def get_children_descriptions(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
         return self.get_references(refs, ua.BrowseDirection.Forward, nodeclassmask, includesubtypes)
 

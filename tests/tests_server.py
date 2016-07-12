@@ -134,14 +134,10 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         v = o.get_child(["MyXMLFolder", "MyXMLObject", "MyXMLVariable"])
         val = v.get_value()
         self.assertEqual(val, "StringValue")
-        
+
         o = self.opc.get_root_node().get_child(["Types", "DataTypes", "BaseDataType", "Enumeration", "1:MyEnum", "0:EnumStrings"])
-        self.assertEqual(len(o.get_value() ), 3)
+        self.assertEqual(len(o.get_value()), 3)
 
-        o = self.opc.get_root_node().get_child(["Types", "DataTypes", "BaseDataType", "Enumeration", "1:MyEnumVal", "0:EnumValues"])
-        self.assertEqual(len(o.get_value() ), 3)
-
-        
     def test_historize_variable(self):
         o = self.opc.get_objects_node()
         var = o.add_variable(3, "test_hist", 1.0)
@@ -273,20 +269,55 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         self.assertEqual(ev.ClientAuditEntryId, None)
         self.assertEqual(ev.ClientUserId, None)
 
+    # For the custom events all posibilites are tested. For other custom types only one test case is done since they are using the same code
+    def test_create_custom_data_type_ObjectId(self):
+        type = self.opc.create_custom_data_type(2, 'MyDataType', ua.ObjectIds.BaseDataType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+        check_custom_type(self, type, ua.ObjectIds.BaseDataType)
+
     def test_create_custom_event_type_ObjectId(self):
-        etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
-        check_custom_event_type(self, etype)
+        type = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+        check_custom_type(self, type, ua.ObjectIds.BaseEventType)
+
+    def test_create_custom_object_type_ObjectId(self):
+        def func(parent, variant):
+            return [ua.Variant(ret, ua.VariantType.Boolean)]
+
+        properties = [('PropertyNum', ua.VariantType.Int32),
+                      ('PropertyString', ua.VariantType.String)]
+        variables = [('VariableString', ua.VariantType.String),
+                     ('MyEnumVar', ua.VariantType.Int32, ua.NodeId(ua.ObjectIds.ApplicationType))]
+        methods = [('MyMethod', func, [ua.VariantType.Int64], [ua.VariantType.Boolean])]
+
+        type = self.opc.create_custom_object_type(2, 'MyObjectType', ua.ObjectIds.BaseObjectType, properties, variables, methods)
+
+        check_custom_type(self, type, ua.ObjectIds.BaseObjectType)
+        variables = type.get_variables()
+        self.assertTrue(type.get_child("2:VariableString") in variables)
+        self.assertEqual(type.get_child("2:VariableString").get_data_value().Value.VariantType, ua.VariantType.String)
+        self.assertTrue(type.get_child("2:MyEnumVar") in variables)
+        self.assertEqual(type.get_child("2:MyEnumVar").get_data_value().Value.VariantType, ua.VariantType.Int32)
+        self.assertEqual(type.get_child("2:MyEnumVar").get_data_type(), ua.NodeId(ua.ObjectIds.ApplicationType))
+        methods = type.get_methods()
+        self.assertTrue(type.get_child("2:MyMethod") in methods)
+
+    #def test_create_custom_refrence_type_ObjectId(self):
+        #type = self.opc.create_custom_reference_type(2, 'MyEvent', ua.ObjectIds.Base, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+        #check_custom_type(self, type, ua.ObjectIds.BaseObjectType)
+
+    def test_create_custom_variable_type_ObjectId(self):
+        type = self.opc.create_custom_variable_type(2, 'MyVariableType', ua.ObjectIds.BaseVariableType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+        check_custom_type(self, type, ua.ObjectIds.BaseVariableType)
 
     def test_create_custom_event_type_NodeId(self):
-        etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.NodeId(ua.ObjectIds.BaseEventType), [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
-        check_custom_event_type(self, etype)
+        etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.NodeId(ua.ObjectIds.BaseEventType), [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+        check_custom_type(self, etype, ua.ObjectIds.BaseEventType)
 
     def test_create_custom_event_type_Node(self):
-        etype = self.opc.create_custom_event_type(2, 'MyEvent', opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType)), [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
-        check_custom_event_type(self, etype)
+        etype = self.opc.create_custom_event_type(2, 'MyEvent', opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType)), [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+        check_custom_type(self, etype, ua.ObjectIds.BaseEventType)
 
     def test_get_event_from_type_node_CustomEvent(self):
-        etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+        etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
 
         ev = opcua.common.events.get_event_obj_from_type_node(etype)
         check_custom_event(self, ev, etype)
@@ -294,7 +325,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         self.assertEqual(ev.PropertyString, None)
 
     def test_eventgenerator_customEvent(self):
-        etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+        etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
 
         evgen = self.opc.get_event_generator(etype, ua.ObjectIds.Server)
         check_eventgenerator_CustomEvent(self, evgen, etype)
@@ -304,7 +335,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         self.assertEqual(evgen.event.PropertyString, None)
 
     def test_eventgenerator_double_customEvent(self):
-        event1 = self.opc.create_custom_event_type(3, 'MyEvent1', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+        event1 = self.opc.create_custom_event_type(3, 'MyEvent1', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
 
         event2 = self.opc.create_custom_event_type(4, 'MyEvent2', event1, [('PropertyBool', ua.VariantType.Boolean), ('PropertyInt', ua.VariantType.Int32)])
 
@@ -323,7 +354,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
     def test_eventgenerator_customEvent_MyObject(self):
         objects = self.opc.get_objects_node()
         o = objects.add_object(3, 'MyObject')
-        etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)])
+        etype = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
 
         evgen = self.opc.get_event_generator(etype, o)
         check_eventgenerator_CustomEvent(self, evgen, etype)
@@ -337,10 +368,10 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         v1 = o.add_variable(3, 'VariableEnumType1', ua.ApplicationType.ClientAndServer, None, ua.NodeId(ua.ObjectIds.ApplicationType))
         tp1 = v1.get_data_type()
         self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp1)
-        
+
         v2 = o.add_variable(3, 'VariableEnumType2', ua.ApplicationType.ClientAndServer, None, ua.NodeId(ua.ObjectIds.ApplicationType) )
         tp2 = v2.get_data_type()
-        self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp2)         
+        self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp2)
 
     def test_context_manager(self):
         """ Context manager calls start() and stop()
@@ -405,18 +436,18 @@ def check_custom_event(test, ev, etype):
     test.assertEqual(ev.Severity, 1)
 
 
-def check_custom_event_type(test, ev):
-    base = opcua.Node(test.opc.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType))
-    test.assertTrue(ev in base.get_children())
-    nodes = ev.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+def check_custom_type(test, type, base_type):
+    base = opcua.Node(test.opc.iserver.isession, ua.NodeId(base_type))
+    test.assertTrue(type in base.get_children())
+    nodes = type.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
     test.assertEqual(base, nodes[0])
-    properties = ev.get_properties()
+    properties = type.get_properties()
     test.assertIsNot(properties, None)
     test.assertEqual(len(properties), 2)
-    test.assertTrue(ev.get_child("2:PropertyNum") in properties)
-    test.assertEqual(ev.get_child("2:PropertyNum").get_data_value().Value.VariantType, ua.VariantType.Float)
-    test.assertTrue(ev.get_child("2:PropertyString") in properties)
-    test.assertEqual(ev.get_child("2:PropertyString").get_data_value().Value.VariantType, ua.VariantType.String)
+    test.assertTrue(type.get_child("2:PropertyNum") in properties)
+    test.assertEqual(type.get_child("2:PropertyNum").get_data_value().Value.VariantType, ua.VariantType.Int32)
+    test.assertTrue(type.get_child("2:PropertyString") in properties)
+    test.assertEqual(type.get_child("2:PropertyString").get_data_value().Value.VariantType, ua.VariantType.String)
 
 
 class TestServerCaching(unittest.TestCase):
