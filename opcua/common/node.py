@@ -503,6 +503,18 @@ class Node(object):
         from opcua.common import manage_nodes
         return manage_nodes.create_variable(*args, **kwargs)
 
+    def add_object_type(*args, **kwargs):
+        from opcua.common import manage_nodes
+        return manage_nodes.create_object_type(*args, **kwargs)
+
+    def add_variable_type(*args, **kwargs):
+        from opcua.common import manage_nodes
+        return manage_nodes.create_variable_type(*args, **kwargs)
+
+    def add_data_type(*args, **kwargs):
+        from opcua.common import manage_nodes
+        return manage_nodes.create_data_type(*args, **kwargs)
+
     def add_property(*args, **kwargs):
         from opcua.common import manage_nodes
         return manage_nodes.create_property(*args, **kwargs)

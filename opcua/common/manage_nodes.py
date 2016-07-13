@@ -141,7 +141,7 @@ def create_method(parent, *args):
     return node.Node(parent.server, _create_method(parent, nodeid, qname, callback, inputs, outputs))
 
 
-# FIXME: remove
+# FIXME: remove, it implicitely means create_object_type
 def create_subtype(parent, *args):
     """
     create a child node subtype
