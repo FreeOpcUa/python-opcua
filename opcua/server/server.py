@@ -69,7 +69,7 @@ class Server(object):
 
     """
 
-    def __init__(self, cacheFile = None):
+    def __init__(self, cacheFile = None, iserver = None):
         self.logger = logging.getLogger(__name__)
         self.endpoint = urlparse("opc.tcp://0.0.0.0:4840/freeopcua/server/")
         self.application_uri = "urn:freeopcua:python:server"
@@ -77,7 +77,10 @@ class Server(object):
         self.name = "FreeOpcUa Python Server"
         self.application_type = ua.ApplicationType.ClientAndServer
         self.default_timeout = 3600000
-        self.iserver = InternalServer(cacheFile)
+        if iserver is not None : 
+            self.iserver = iserver
+        else :
+            self.iserver = InternalServer(cacheFile)
         self.bserver = None
         self._discovery_clients = {}
         self._discovery_period = 60
