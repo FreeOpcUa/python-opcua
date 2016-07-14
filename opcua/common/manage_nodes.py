@@ -141,17 +141,6 @@ def create_method(parent, *args):
     return node.Node(parent.server, _create_method(parent, nodeid, qname, callback, inputs, outputs))
 
 
-# FIXME: remove, it implicitely means create_object_type
-def create_subtype(parent, *args):
-    """
-    create a child node subtype
-    arguments are nodeid, browsename
-    or namespace index, name
-    """
-    nodeid, qname = _parse_nodeid_qname(*args[:2])
-    return node.Node(parent.server, _create_object_type(parent.server, parent.nodeid, nodeid, qname))
-
-
 def _create_object(server, parentnodeid, nodeid, qname, objecttype):
     addnode = ua.AddNodesItem()
     addnode.RequestedNewNodeId = nodeid

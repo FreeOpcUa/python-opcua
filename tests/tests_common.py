@@ -505,7 +505,7 @@ class CommonTests(object):
         self.assertEqual(o.get_type_definition(), ua.ObjectIds.BaseObjectType)
 
         base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
-        custom_otype = base_otype.add_subtype(2, 'MyFooObjectType')
+        custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
 
         o = f.add_object(3, 'MyObject3', custom_otype.nodeid)
         self.assertEqual(o.get_type_definition(), custom_otype.nodeid.Identifier)

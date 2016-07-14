@@ -523,10 +523,6 @@ class Node(object):
         from opcua.common import manage_nodes
         return manage_nodes.create_method(*args, **kwargs)
 
-    def add_subtype(*args, **kwargs):
-        from opcua.common import manage_nodes
-        return manage_nodes.create_subtype(*args, **kwargs)
-
     def call_method(*args, **kwargs):
         from opcua.common import methods
         return methods.call_method(*args, **kwargs)

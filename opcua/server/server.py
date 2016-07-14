@@ -370,7 +370,7 @@ class Server(object):
         else:
             base_t = Node(self.iserver.isession, ua.NodeId(basetype))
 
-        custom_t = base_t.add_subtype(idx, name)
+        custom_t = base_t.add_object_type(idx, name)
         for property in properties:
             datatype = None
             if len(property) > 2:
