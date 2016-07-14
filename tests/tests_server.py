@@ -439,7 +439,7 @@ def check_custom_event(test, ev, etype):
 def check_custom_type(test, type, base_type):
     base = opcua.Node(test.opc.iserver.isession, ua.NodeId(base_type))
     test.assertTrue(type in base.get_children())
-    nodes = type.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+    nodes = type.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
     test.assertEqual(base, nodes[0])
     properties = type.get_properties()
     test.assertIsNot(properties, None)

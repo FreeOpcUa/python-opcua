@@ -175,9 +175,6 @@ class CommonTests(object):
         self.assertTrue(objects in parents)
 
         parents = folder.get_referenced_nodes(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
-        self.assertFalse(objects in parents)
-
-        parents = folder.get_referenced_nodes(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
         self.assertTrue(objects in parents)
 
         parent = folder.get_parent()
