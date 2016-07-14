@@ -8,6 +8,7 @@ import math
 import opcua
 from opcua import ua
 from opcua import uamethod
+from opcua import instantiate
 
 
 def add_server_methods(srv):
@@ -475,6 +476,23 @@ class CommonTests(object):
         self.assertTrue(o in childs)
         self.assertTrue(v in childs)
         self.assertTrue(p in childs)
+
+    def test_incl_subtypes(self):
+        base_type = self.opc.get_root_node().get_child(["0:Types", "0:ObjectTypes", "0:BaseObjectType"])
+        descs = base_type.get_children_descriptions(includesubtypes=True)
+        self.assertTrue(len(descs) > 10)
+        descs = base_type.get_children_descriptions(includesubtypes=False)
+        self.assertEqual(len(descs), 0)
+
+    def test_instanciate_1(self):
+        base_type = self.opc.get_root_node().get_child(["0:Types", "0:ObjectTypes", "0:BaseObjectType"])
+        dev_t = base_type.add_object_type(0, "MyDevice")
+        v_t = dev_t.add_variable(0, "sensor", 1.0)
+        p_t = dev_t.add_property(0, "sensor_id", "0340")
+        ctrl_t = dev_t.add_object(0, "controller")
+        ctrl_t.add_property(0, "state", "Running")
+        objects = self.opc.get_objects_node()
+        mydevice = instantiate(objects, dev_t, bname="2:Device0001")
 
     def test_add_node_withtype(self):
         objects = self.opc.get_objects_node()
