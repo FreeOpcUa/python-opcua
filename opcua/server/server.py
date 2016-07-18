@@ -375,12 +375,12 @@ class Server(object):
             datatype = None
             if len(property) > 2:
                 datatype = property[2]
-            custom_t.add_property(idx, property[0], ua.Variant(None, property[1]), datatype)
+            custom_t.add_property(idx, property[0], None, property[1], datatype=datatype)
         for variable in variables:
             datatype = None
             if len(variable) > 2:
                 datatype = variable[2]
-            custom_t.add_variable(idx, variable[0], ua.Variant(None, variable[1]), datatype)
+            custom_t.add_variable(idx, variable[0], None, variable[1], datatype=datatype)
         for method in methods:
             custom_t.add_method(idx, method[0], method[1], method[2], method[3])
 

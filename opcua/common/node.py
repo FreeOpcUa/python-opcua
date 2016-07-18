@@ -351,8 +351,8 @@ class Node(object):
         """
         references = self.get_references(refs=ua.ObjectIds.HasTypeDefinition, direction=ua.BrowseDirection.Forward)
         if len(references) == 0:
-            return ua.ObjectIds.BaseObjectType
-        return references[0].NodeId.Identifier
+            return None
+        return references[0].NodeId
 
     def get_parent(self):
         """

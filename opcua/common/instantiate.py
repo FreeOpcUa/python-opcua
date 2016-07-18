@@ -22,9 +22,12 @@ def instantiate(parent, node_type, nodeid=None, bname=None, idx=0):
     rdesc.BrowseName = qname
     rdesc.DisplayName = dname
     rdesc.NodeClass = nclass
-    rdesc.ReferenceTypeId = ua.TwoByteNodeId(ua.ObjectIds.HasComponent)
+
+    if parent.get_type_definition() == ua.NodeId(ua.ObjectIds.FolderType):
+        rdesc.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
+    else:
+        rdesc.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
     rdesc.TypeDefinition = node_type.nodeid
-    print("MYRDESC", rdesc)
     if nodeid is None:
         nodeid = ua.NodeId(namespaceidx=idx)  # will trigger automatic node generation in namespace idx
     if bname is None:
@@ -40,8 +43,6 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
     instantiate a node type under parent
     """
 
-    print("\n\nInstanciating: node %s in %s" % (nodeid, parentid))
-    print(rdesc)
     addnode = ua.AddNodesItem()
     addnode.RequestedNewNodeId = nodeid 
     addnode.BrowseName = bname 
@@ -60,20 +61,19 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
         _read_and_copy_attrs(node_type, ua.VariableAttributes(), addnode)
 
     else:
-        print("Node class not supported: ", rdesc.NodeClass)
+        print("Instantiate: Node class not supported: ", rdesc.NodeClass)
 
     res = server.add_nodes([addnode])[0]
 
     if recursive:
         descs = node_type.get_children_descriptions(includesubtypes=False)
         for c_rdesc in descs:
-            print("       Instanciating children", c_rdesc)
             _instantiate_node(server, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
-    return Node(server, addnode.RequestedNewNodeId)
+    return Node(server, res.AddedNodeId)
 
 
 def _read_and_copy_attrs(node_type, struct, addnode):
-    names = [name for name in struct.__dict__.keys() if not name.startswith("_") and name not in ("BodyLength", "TypeId", "SpecifiedAttributes", "Encoding", "IsAbstract")]
+    names = [name for name in struct.__dict__.keys() if not name.startswith("_") and name not in ("BodyLength", "TypeId", "SpecifiedAttributes", "Encoding", "IsAbstract", "EventNotifier")]
     attrs = [getattr(ua.AttributeIds, name) for name in names]
     for name in names:
         results = node_type.get_attributes(attrs)
@@ -84,6 +84,6 @@ def _read_and_copy_attrs(node_type, struct, addnode):
             else:
                 setattr(struct, name, results[idx].Value.Value)
         else:
-            print("!!!!!!!!!!!!Error, for nodeid %s, attribute %s, statuscode is %s" % (node_type, name, results[idx].StatusCode))
+            print("Instantiate: while copying attributes from node type %s, attribute %s, statuscode is %s" % (node_type, name, results[idx].StatusCode))
     addnode.NodeAttributes = struct
 

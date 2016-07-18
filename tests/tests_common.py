@@ -499,16 +499,16 @@ class CommonTests(object):
         f = objects.add_folder(3, 'MyFolder_TypeTest')
 
         o = f.add_object(3, 'MyObject1', ua.ObjectIds.BaseObjectType)
-        self.assertEqual(o.get_type_definition(), ua.ObjectIds.BaseObjectType)
+        self.assertEqual(o.get_type_definition().Identifier, ua.ObjectIds.BaseObjectType)
 
         o = f.add_object(3, 'MyObject2', ua.NodeId(ua.ObjectIds.BaseObjectType, 0))
-        self.assertEqual(o.get_type_definition(), ua.ObjectIds.BaseObjectType)
+        self.assertEqual(o.get_type_definition().Identifier, ua.ObjectIds.BaseObjectType)
 
         base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
         custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
 
         o = f.add_object(3, 'MyObject3', custom_otype.nodeid)
-        self.assertEqual(o.get_type_definition(), custom_otype.nodeid.Identifier)
+        self.assertEqual(o.get_type_definition().Identifier, custom_otype.nodeid.Identifier)
 
         references = o.get_references(refs=ua.ObjectIds.HasTypeDefinition, direction=ua.BrowseDirection.Forward)
         self.assertEqual(len(references), 1)
@@ -522,7 +522,7 @@ class CommonTests(object):
         nodes = o.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
         self.assertTrue(objects in nodes)
         self.assertEqual(o.get_parent(), objects)
-        self.assertEqual(o.get_type_definition(), ua.ObjectIds.BaseObjectType)
+        self.assertEqual(o.get_type_definition().Identifier, ua.ObjectIds.BaseObjectType)
 
         o2 = o.add_object(3, 'MySecondObject')
         nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Forward, includesubtypes=False)
@@ -530,7 +530,7 @@ class CommonTests(object):
         nodes = o2.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
         self.assertTrue(o in nodes)
         self.assertEqual(o2.get_parent(), o)
-        self.assertEqual(o2.get_type_definition(), ua.ObjectIds.BaseObjectType)
+        self.assertEqual(o2.get_type_definition().Identifier, ua.ObjectIds.BaseObjectType)
 
         v = o.add_variable(3, 'MyVariable', 6)
         nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Forward, includesubtypes=False)
@@ -538,7 +538,7 @@ class CommonTests(object):
         nodes = v.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
         self.assertTrue(o in nodes)
         self.assertEqual(v.get_parent(), o)
-        self.assertEqual(v.get_type_definition(), ua.ObjectIds.BaseDataVariableType)
+        self.assertEqual(v.get_type_definition().Identifier, ua.ObjectIds.BaseDataVariableType)
 
         p = o.add_property(3, 'MyProperty', 2)
         nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasProperty, direction=ua.BrowseDirection.Forward, includesubtypes=False)
@@ -546,7 +546,7 @@ class CommonTests(object):
         nodes = p.get_referenced_nodes(refs=ua.ObjectIds.HasProperty, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
         self.assertTrue(o in nodes)
         self.assertEqual(p.get_parent(), o)
-        self.assertEqual(p.get_type_definition(), ua.ObjectIds.PropertyType)
+        self.assertEqual(p.get_type_definition().Identifier, ua.ObjectIds.PropertyType)
 
     def test_get_endpoints(self):
         endpoints = self.opc.get_endpoints()

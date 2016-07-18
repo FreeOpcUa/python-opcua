@@ -162,7 +162,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         nodes = o.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
         self.assertTrue(objects in nodes)
         self.assertEqual(o.get_parent(), objects)
-        self.assertEqual(o.get_type_definition(), ua.ObjectIds.BaseObjectType)
+        self.assertEqual(o.get_type_definition().Identifier, ua.ObjectIds.BaseObjectType)
 
         @uamethod
         def callback(parent):
@@ -288,17 +288,17 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
                      ('MyEnumVar', ua.VariantType.Int32, ua.NodeId(ua.ObjectIds.ApplicationType))]
         methods = [('MyMethod', func, [ua.VariantType.Int64], [ua.VariantType.Boolean])]
 
-        type = self.opc.create_custom_object_type(2, 'MyObjectType', ua.ObjectIds.BaseObjectType, properties, variables, methods)
+        node_type = self.opc.create_custom_object_type(2, 'MyObjectType', ua.ObjectIds.BaseObjectType, properties, variables, methods)
 
-        check_custom_type(self, type, ua.ObjectIds.BaseObjectType)
-        variables = type.get_variables()
-        self.assertTrue(type.get_child("2:VariableString") in variables)
-        self.assertEqual(type.get_child("2:VariableString").get_data_value().Value.VariantType, ua.VariantType.String)
-        self.assertTrue(type.get_child("2:MyEnumVar") in variables)
-        self.assertEqual(type.get_child("2:MyEnumVar").get_data_value().Value.VariantType, ua.VariantType.Int32)
-        self.assertEqual(type.get_child("2:MyEnumVar").get_data_type(), ua.NodeId(ua.ObjectIds.ApplicationType))
-        methods = type.get_methods()
-        self.assertTrue(type.get_child("2:MyMethod") in methods)
+        check_custom_type(self, node_type, ua.ObjectIds.BaseObjectType)
+        variables = node_type.get_variables()
+        self.assertTrue(node_type.get_child("2:VariableString") in variables)
+        self.assertEqual(node_type.get_child("2:VariableString").get_data_value().Value.VariantType, ua.VariantType.String)
+        self.assertTrue(node_type.get_child("2:MyEnumVar") in variables)
+        self.assertEqual(node_type.get_child("2:MyEnumVar").get_data_value().Value.VariantType, ua.VariantType.Int32)
+        self.assertEqual(node_type.get_child("2:MyEnumVar").get_data_type(), ua.NodeId(ua.ObjectIds.ApplicationType))
+        methods = node_type.get_methods()
+        self.assertTrue(node_type.get_child("2:MyMethod") in methods)
 
     #def test_create_custom_refrence_type_ObjectId(self):
         #type = self.opc.create_custom_reference_type(2, 'MyEvent', ua.ObjectIds.Base, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
@@ -365,11 +365,11 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
 
     def test_add_variable_with_datatype(self):
         o = self.opc.get_objects_node()
-        v1 = o.add_variable(3, 'VariableEnumType1', ua.ApplicationType.ClientAndServer, None, ua.NodeId(ua.ObjectIds.ApplicationType))
+        v1 = o.add_variable(3, 'VariableEnumType1', ua.ApplicationType.ClientAndServer, datatype=ua.NodeId(ua.ObjectIds.ApplicationType))
         tp1 = v1.get_data_type()
         self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp1)
 
-        v2 = o.add_variable(3, 'VariableEnumType2', ua.ApplicationType.ClientAndServer, None, ua.NodeId(ua.ObjectIds.ApplicationType) )
+        v2 = o.add_variable(3, 'VariableEnumType2', ua.ApplicationType.ClientAndServer, datatype=ua.NodeId(ua.ObjectIds.ApplicationType) )
         tp2 = v2.get_data_type()
         self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp2)
 
