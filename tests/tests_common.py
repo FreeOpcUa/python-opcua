@@ -484,17 +484,7 @@ class CommonTests(object):
         descs = base_type.get_children_descriptions(includesubtypes=False)
         self.assertEqual(len(descs), 0)
 
-    def test_instanciate_1(self):
-        base_type = self.opc.get_root_node().get_child(["0:Types", "0:ObjectTypes", "0:BaseObjectType"])
-        dev_t = base_type.add_object_type(0, "MyDevice")
-        v_t = dev_t.add_variable(0, "sensor", 1.0)
-        p_t = dev_t.add_property(0, "sensor_id", "0340")
-        ctrl_t = dev_t.add_object(0, "controller")
-        ctrl_t.add_property(0, "state", "Running")
-        objects = self.opc.get_objects_node()
-        mydevice = instantiate(objects, dev_t, bname="2:Device0001")
-
-    def test_add_node_withtype(self):
+    def test_add_node_with_type(self):
         objects = self.opc.get_objects_node()
         f = objects.add_folder(3, 'MyFolder_TypeTest')
 
@@ -552,3 +542,26 @@ class CommonTests(object):
         endpoints = self.opc.get_endpoints()
         self.assertTrue(len(endpoints) > 0)
         self.assertTrue(endpoints[0].EndpointUrl.startswith("opc.tcp://"))
+
+
+    def test_instantiate_1(self):
+        base_type = self.opc.get_root_node().get_child(["0:Types", "0:ObjectTypes", "0:BaseObjectType"])
+
+        dev_t = base_type.add_object_type(0, "MyDevice")
+        v_t = dev_t.add_variable(0, "sensor", 1.0)
+        p_t = dev_t.add_property(0, "sensor_id", "0340")
+        ctrl_t = dev_t.add_object(0, "controller")
+        prop_t = ctrl_t.add_property(0, "state", "Running")
+        objects = self.opc.get_objects_node()
+
+        mydevice = instantiate(objects, dev_t, bname="2:Device0001")
+
+        self.assertEqual(mydevice.get_type_definition(), dev_t.nodeid)
+        obj = mydevice.get_child(["0:controller"])
+        prop = mydevice.get_child(["0:controller", "0:state"])
+        self.assertEqual(prop.get_type_definition().Identifier, ua.ObjectIds.PropertyType)
+        self.assertEqual(prop.get_value(), "Running")
+        self.assertNotEqual(prop.nodeid, prop_t.nodeid)
+
+
+
