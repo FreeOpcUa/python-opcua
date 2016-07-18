@@ -564,4 +564,28 @@ class CommonTests(object):
         self.assertNotEqual(prop.nodeid, prop_t.nodeid)
 
 
+    def test_variable_with_datatype(self):
+        o = self.opc.get_objects_node()
+        v1 = o.add_variable(3, 'VariableEnumType1', ua.ApplicationType.ClientAndServer, datatype=ua.NodeId(ua.ObjectIds.ApplicationType))
+        tp1 = v1.get_data_type()
+        self.assertEqual(ua.NodeId(ua.ObjectIds.ApplicationType), tp1)
+
+        v2 = o.add_variable(3, 'VariableEnumType2', ua.ApplicationType.ClientAndServer, datatype=ua.NodeId(ua.ObjectIds.ApplicationType) )
+        tp2 = v2.get_data_type()
+        self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp2)
+
+    def test_enum(self):
+        # create enum type
+        enums = self.opc.get_root_node().get_child(["0:Types", "0:DataTypes", "0:BaseDataType", "0:Enumeration"])
+        myenum_type = enums.add_data_type(0, "MyEnum")
+        es = myenum_type.add_variable(0, "EnumStrings", ["String0", "String1", "String2"], ua.VariantType.LocalizedText) 
+        #es.set_value_rank(1)
+        # instantiate
+        o = self.opc.get_objects_node()
+        myvar = o.add_variable(2, "MyEnumVar", "String1", ua.VariantType.LocalizedText, datatype=myenum_type.nodeid)
+        #myvar.set_writable(True)
+        # tests
+        self.assertEqual(myvar.get_data_type(), myenum_type.nodeid)
+        myvar.set_value("String2", ua.VariantType.LocalizedText)
+
 

@@ -97,7 +97,7 @@ def create_variable_type(parent, nodeid, bname, datatype):
     addnode.BrowseName = qname
     addnode.NodeClass = ua.NodeClass.Variable
     addnode.ParentNodeId = parent.nodeid
-    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubType)
+    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
     attrs = ua.VariableTypeAttributes()
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
@@ -126,7 +126,7 @@ def create_reference_type(parent, nodeid, bname):
     addnode.BrowseName = qname
     addnode.NodeClass = ua.NodeClass.Variable
     addnode.ParentNodeId = parent.nodeid
-    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubType)
+    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
     attrs = ua.ReferenceTypeAttributes()
     attrs.IsAbstract = False
     attrs.Description = ua.LocalizedText(qname.Name)
@@ -260,7 +260,7 @@ def _create_variable_type(server, parentnodeid, nodeid, qname, datatype, value=N
     addnode.BrowseName = qname
     addnode.NodeClass = ua.NodeClass.VariableType
     addnode.ParentNodeId = parentnodeid
-    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubType)
+    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
     #addnode.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseDataVariableType)
     attrs = ua.VariableTypeAttributes()
     attrs.Description = ua.LocalizedText(qname.Name)
@@ -284,7 +284,7 @@ def _create_variable_type(server, parentnodeid, nodeid, qname, datatype, value=N
     return results[0].AddedNodeId
 
 
-def create_data_type(server, parentnodeid, nodeid, qname, description=None):
+def create_data_type(parent, nodeid, bname, description=None):
     """
     Create a new data type to be used in new variables, etc ..
     arguments are nodeid, browsename
@@ -296,8 +296,8 @@ def create_data_type(server, parentnodeid, nodeid, qname, description=None):
     addnode.RequestedNewNodeId = nodeid
     addnode.BrowseName = qname
     addnode.NodeClass = ua.NodeClass.DataType
-    addnode.ParentNodeId = parentnodeid
-    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubType)
+    addnode.ParentNodeId = parent.nodeid
+    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
     #addnode.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseDataVariableType) # No type definition for types
     attrs = ua.DataTypeAttributes()
     if description is None:
@@ -307,12 +307,11 @@ def create_data_type(server, parentnodeid, nodeid, qname, description=None):
     attrs.DisplayName = ua.LocalizedText(qname.Name)
     attrs.WriteMask = 0
     attrs.UserWriteMask = 0
-    attrs.Historizing = 0
     attrs.IsAbstract = False  # True mean they cannot be instanciated
     addnode.NodeAttributes = attrs
-    results = server.add_nodes([addnode])
+    results = parent.server.add_nodes([addnode])
     results[0].StatusCode.check()
-    return results[0].AddedNodeId
+    return node.Node(parent.server, results[0].AddedNodeId)
 
 
 def _create_method(parent, nodeid, qname, callback, inputs, outputs):

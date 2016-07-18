@@ -1,6 +1,5 @@
 """
-instantiate a node from a node type.
-Can also be used to duplicate a node tree
+Instantiate a new node and its child nodes from a node type.
 """
 
 
@@ -12,6 +11,8 @@ def instantiate(parent, node_type, nodeid=None, bname=None, idx=0):
     """
     instantiate a node type under a parent node.
     nodeid and browse name of new node can be specified, or just namespace index
+    If they exists children of the node type, such as components, variables and 
+    properties are also instantiated
     """
 
     results = node_type.get_attributes([ua.AttributeIds.NodeClass, ua.AttributeIds.BrowseName, ua.AttributeIds.DisplayName])
@@ -22,7 +23,6 @@ def instantiate(parent, node_type, nodeid=None, bname=None, idx=0):
     rdesc.BrowseName = qname
     rdesc.DisplayName = dname
     rdesc.NodeClass = nclass
-
     if parent.get_type_definition() == ua.NodeId(ua.ObjectIds.FolderType):
         rdesc.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
     else:
