@@ -21,6 +21,7 @@ from opcua.common.manage_nodes import delete_nodes
 from opcua.client.client import Client
 from opcua.crypto import security_policies
 from opcua.common.event_objects import BaseEvent
+from opcua.common.shortcuts import Shortcuts
 use_crypto = True
 try:
     from opcua.crypto import uacrypto
@@ -66,6 +67,8 @@ class Server(object):
     :vartype default_timeout: InternalServer
     :ivar bserver: binary protocol server
     :vartype bserver: BinaryServer
+    :ivar nodes: shortcuts to common nodes 
+    :vartype nodes: Shortcuts
 
     """
 
@@ -84,6 +87,7 @@ class Server(object):
         self.certificate = None
         self.private_key = None
         self._policies = []
+        self.nodes = Shortcuts(self.iserver.isession)
 
         # setup some expected values
         self.register_namespace(self.application_uri)

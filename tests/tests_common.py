@@ -545,16 +545,13 @@ class CommonTests(object):
 
 
     def test_instantiate_1(self):
-        base_type = self.opc.get_root_node().get_child(["0:Types", "0:ObjectTypes", "0:BaseObjectType"])
-
-        dev_t = base_type.add_object_type(0, "MyDevice")
+        dev_t = self.opc.nodes.base_data_type.add_object_type(0, "MyDevice")
         v_t = dev_t.add_variable(0, "sensor", 1.0)
         p_t = dev_t.add_property(0, "sensor_id", "0340")
         ctrl_t = dev_t.add_object(0, "controller")
         prop_t = ctrl_t.add_property(0, "state", "Running")
-        objects = self.opc.get_objects_node()
 
-        mydevice = instantiate(objects, dev_t, bname="2:Device0001")
+        mydevice = instantiate(self.opc.nodes.objects, dev_t, bname="2:Device0001")
 
         self.assertEqual(mydevice.get_type_definition(), dev_t.nodeid)
         obj = mydevice.get_child(["0:controller"])
@@ -565,12 +562,11 @@ class CommonTests(object):
 
 
     def test_variable_with_datatype(self):
-        o = self.opc.get_objects_node()
-        v1 = o.add_variable(3, 'VariableEnumType1', ua.ApplicationType.ClientAndServer, datatype=ua.NodeId(ua.ObjectIds.ApplicationType))
+        v1 = self.opc.nodes.objects.add_variable(3, 'VariableEnumType1', ua.ApplicationType.ClientAndServer, datatype=ua.NodeId(ua.ObjectIds.ApplicationType))
         tp1 = v1.get_data_type()
         self.assertEqual(ua.NodeId(ua.ObjectIds.ApplicationType), tp1)
 
-        v2 = o.add_variable(3, 'VariableEnumType2', ua.ApplicationType.ClientAndServer, datatype=ua.NodeId(ua.ObjectIds.ApplicationType) )
+        v2 = self.opc.nodes.objects.add_variable(3, 'VariableEnumType2', ua.ApplicationType.ClientAndServer, datatype=ua.NodeId(ua.ObjectIds.ApplicationType) )
         tp2 = v2.get_data_type()
         self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp2)
 
