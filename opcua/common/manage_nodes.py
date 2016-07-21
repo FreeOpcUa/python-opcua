@@ -3,9 +3,10 @@ High level functions to create nodes
 """
 from opcua import ua
 from opcua.common import node
+from opcua.common.instantiate import instantiate
 
 
-def _parse_add_args(*args):
+def _parse_nodeid_qname(*args):
     try:
         if isinstance(args[0], int):
             nodeid = ua.NodeId(0, int(args[0]))
@@ -30,67 +31,122 @@ def _parse_add_args(*args):
         raise TypeError("This method takes either a namespace index and a string as argument or a nodeid and a qualifiedname. Received arguments {} and got exception {}".format(args, ex))
 
 
-def create_folder(parent, *args):
+def create_folder(parent, nodeid, bname):
     """
     create a child node folder
     arguments are nodeid, browsename
     or namespace index, name
     """
-    nodeid, qname = _parse_add_args(*args)
-    return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, ua.ObjectIds.FolderType, ua.NodeClass.Object))
+    nodeid, qname = _parse_nodeid_qname(nodeid, bname)
+    return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, ua.ObjectIds.FolderType))
 
 
-def create_object(parent, *args):
+def create_object(parent, nodeid, bname, objecttype=None):
     """
     create a child node object
-    arguments are nodeid, browsename
-    or namespace index, name
+    arguments are nodeid, browsename, [objecttype]
+    or namespace index, name, [objecttype]
+    if objectype is given (a NodeId) then the type node is instantiated inclusive its child nodes
     """
-    nodeid, qname = _parse_add_args(*args)
-    objecttype = ua.ObjectIds.BaseObjectType
-    if(len(args) == 3):
-        objecttype = args[2]
-        try:
-            if isinstance(objecttype, int):
-                objecttype = ua.NodeId(objecttype)
-            elif isinstance(objecttype, ua.NodeId):
-                objecttype = objecttype
-            elif isinstance(objecttype, str):
-                objecttype = ua.NodeId.from_string(objecttype)
-            else:
-                raise RuntimeError()
-        except ua.UaError:
-            raise
-        except Exception as ex:
-            raise TypeError("This provided objecttype takes either a index, nodeid or string. Received arguments {} and got exception {}".format(args, ex))
-    return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, objecttype, ua.NodeClass.Object))
+    nodeid, qname = _parse_nodeid_qname(nodeid, bname)
+    if objecttype is not None:
+        objecttype = node.Node(parent.server, objecttype)
+        return instantiate(parent, objecttype, nodeid, bname)
+    else:
+        return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, ua.ObjectIds.BaseObjectType))
 
 
-def create_property(parent, *args):
+def create_property(parent, nodeid, bname, val, varianttype=None, datatype=None):
     """
     create a child node property
     args are nodeid, browsename, value, [variant type]
     or idx, name, value, [variant type]
     """
-    nodeid, qname = _parse_add_args(*args[:2])
-    val, datatype = _to_variant_with_datatype(*args[2:])
+    nodeid, qname = _parse_nodeid_qname(nodeid, bname)
+    var = ua.Variant(val, varianttype)
     if datatype and not isinstance(datatype, ua.NodeId):
         raise RuntimeError()
-    return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, val, datatype, isproperty=True))
+    return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, var, datatype=datatype, isproperty=True))
 
 
-def create_variable(parent, *args):
+def create_variable(parent, nodeid, bname, val, varianttype=None, datatype=None):
     """
     create a child node variable
     args are nodeid, browsename, value, [variant type], [data type]
     or idx, name, value, [variant type], [data type]
     """
-    nodeid, qname = _parse_add_args(*args[:2])
-    val, datatype = _to_variant_with_datatype(*args[2:])
+    nodeid, qname = _parse_nodeid_qname(nodeid, bname)
+    var = ua.Variant(val, varianttype)
     if datatype and not isinstance(datatype, ua.NodeId):
         raise RuntimeError()
 
-    return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, val, datatype, isproperty=False))
+    return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, var, datatype=datatype, isproperty=False))
+
+
+def create_variable_type(parent, nodeid, bname, datatype):
+    """
+    Create a new variable type
+    args are nodeid, browsename and datatype
+    or idx, name and data type
+    """
+    nodeid, qname = _parse_nodeid_qname(nodeid, bname)
+    if datatype and not isinstance(datatype, ua.NodeId):
+        raise RuntimeError()
+    addnode = ua.AddNodesItem()
+    addnode.RequestedNewNodeId = nodeid
+    addnode.BrowseName = qname
+    addnode.NodeClass = ua.NodeClass.Variable
+    addnode.ParentNodeId = parent.nodeid
+    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
+    attrs = ua.VariableTypeAttributes()
+    attrs.Description = ua.LocalizedText(qname.Name)
+    attrs.DisplayName = ua.LocalizedText(qname.Name)
+    attrs.DataType = datatype
+    attrs.IsAbstract = False
+    attrs.WriteMask = 0
+    attrs.UserWriteMask = 0
+    attrs.Historizing = 0
+    attrs.AccessLevel = ua.AccessLevelMask.CurrentRead
+    attrs.UserAccessLevel = ua.AccessLevelMask.CurrentRead
+    addnode.NodeAttributes = attrs
+    results = parent.server.add_nodes([addnode])
+    results[0].StatusCode.check()
+    return results[0].AddedNodeId
+
+
+def create_reference_type(parent, nodeid, bname):
+    """
+    Create a new reference type
+    args are nodeid and browsename
+    or idx and name
+    """
+    nodeid, qname = _parse_nodeid_qname(nodeid, bname)
+    addnode = ua.AddNodesItem()
+    addnode.RequestedNewNodeId = nodeid
+    addnode.BrowseName = qname
+    addnode.NodeClass = ua.NodeClass.Variable
+    addnode.ParentNodeId = parent.nodeid
+    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
+    attrs = ua.ReferenceTypeAttributes()
+    attrs.IsAbstract = False
+    attrs.Description = ua.LocalizedText(qname.Name)
+    attrs.DisplayName = ua.LocalizedText(qname.Name)
+    attrs.AccessLevel = ua.AccessLevelMask.CurrentRead
+    attrs.UserAccessLevel = ua.AccessLevelMask.CurrentRead
+    addnode.NodeAttributes = attrs
+    results = parent.server.add_nodes([addnode])
+    results[0].StatusCode.check()
+    return results[0].AddedNodeId
+
+
+def create_object_type(parent, nodeid, bname):
+    """
+    Create a new object type to be instanciated in address space.
+    arguments are nodeid, browsename
+    or namespace index, name
+    """
+    nodeid, qname = _parse_nodeid_qname(nodeid, bname)
+    return node.Node(parent.server, _create_object_type(parent.server, parent.nodeid, nodeid, qname))
 
 
 def create_method(parent, *args):
@@ -102,7 +158,7 @@ def create_method(parent, *args):
     if argument types is specified, child nodes advertising what arguments the method uses and returns will be created
     a callback is a method accepting the nodeid of the parent as first argument and variants after. returns a list of variants
     """
-    nodeid, qname = _parse_add_args(*args[:2])
+    nodeid, qname = _parse_nodeid_qname(*args[:2])
     callback = args[2]
     if len(args) > 3:
         inputs = args[3]
@@ -115,43 +171,22 @@ def create_method(parent, *args):
     return node.Node(parent.server, _create_method(parent, nodeid, qname, callback, inputs, outputs))
 
 
-def create_subtype(parent, *args):
-    """
-    create a child node subtype
-    arguments are nodeid, browsename
-    or namespace index, name
-    """
-    nodeid, qname = _parse_add_args(*args[:2])
-    if len(args) > 2:
-        node_class = args[2]
-    else:
-        node_class = ua.NodeClass.ObjectType
-    return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, None, node_class))
-
-
-def _create_object(server, parentnodeid, nodeid, qname, objecttype, node_class):
+def _create_object(server, parentnodeid, nodeid, qname, objecttype):
     addnode = ua.AddNodesItem()
     addnode.RequestedNewNodeId = nodeid
     addnode.BrowseName = qname
     addnode.ParentNodeId = parentnodeid
-    addnode.NodeClass = node_class
-    #TODO: maybe move to address_space.py and implement for all node types?
-    if not objecttype:
-        addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
-        attrs = ua.ObjectTypeAttributes()
-        attrs.IsAbstract = True
+    if node.Node(server, parentnodeid).get_type_definition() == ua.NodeId(ua.ObjectIds.FolderType):
+        addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
     else:
-        if node.Node(server, parentnodeid).get_type_definition() == ua.ObjectIds.FolderType:
-            addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
-        else:
-            addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
-
-        if isinstance(objecttype, int):
-            addnode.TypeDefinition = ua.NodeId(objecttype)
-        elif isinstance(objecttype, ua.NodeId):
-            addnode.TypeDefinition = objecttype
-        attrs = ua.ObjectAttributes()
-        attrs.EventNotifier = 0
+        addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
+    addnode.NodeClass = ua.NodeClass.Object
+    if isinstance(objecttype, int):
+        addnode.TypeDefinition = ua.NodeId(objecttype)
+    elif isinstance(objecttype, ua.NodeId):
+        addnode.TypeDefinition = objecttype
+    attrs = ua.ObjectAttributes()
+    attrs.EventNotifier = 0
 
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
@@ -163,20 +198,26 @@ def _create_object(server, parentnodeid, nodeid, qname, objecttype, node_class):
     return results[0].AddedNodeId
 
 
-def _to_variant(val, vtype=None):
-    return _to_variant_with_datatype(val, vtype, datatype=None)[0]
+def _create_object_type(server, parentnodeid, nodeid, qname):
+    addnode = ua.AddNodesItem()
+    addnode.RequestedNewNodeId = nodeid
+    addnode.BrowseName = qname
+    addnode.ParentNodeId = parentnodeid
+    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
+    addnode.NodeClass = ua.NodeClass.ObjectType
+    attrs = ua.ObjectTypeAttributes()
+    attrs.IsAbstract = False
+    attrs.Description = ua.LocalizedText(qname.Name)
+    attrs.DisplayName = ua.LocalizedText(qname.Name)
+    attrs.WriteMask = 0
+    attrs.UserWriteMask = 0
+    addnode.NodeAttributes = attrs
+    results = server.add_nodes([addnode])
+    results[0].StatusCode.check()
+    return results[0].AddedNodeId
 
 
-def _to_variant_with_datatype(val, vtype=None, datatype=None):
-    if isinstance(val, ua.Variant):
-        if vtype:
-            datatype = vtype
-        return val, datatype
-    else:
-        return ua.Variant(val, vtype), datatype
-
-
-def _create_variable(server, parentnodeid, nodeid, qname, val, datatype=None, isproperty=False):
+def _create_variable(server, parentnodeid, nodeid, qname, var, datatype=None, isproperty=False):
     addnode = ua.AddNodesItem()
     addnode.RequestedNewNodeId = nodeid
     addnode.BrowseName = qname
@@ -194,10 +235,10 @@ def _create_variable(server, parentnodeid, nodeid, qname, val, datatype=None, is
     if datatype:
         attrs.DataType = datatype
     else:
-        attrs.DataType = _guess_uatype(val)
+        attrs.DataType = _guess_datatype(var)
 
-    attrs.Value = val
-    if isinstance(val, list) or isinstance(val, tuple):
+    attrs.Value = var
+    if isinstance(var, list) or isinstance(var, tuple):
         attrs.ValueRank = ua.ValueRank.OneDimension
     else:
         attrs.ValueRank = ua.ValueRank.Scalar
@@ -211,6 +252,66 @@ def _create_variable(server, parentnodeid, nodeid, qname, val, datatype=None, is
     results = server.add_nodes([addnode])
     results[0].StatusCode.check()
     return results[0].AddedNodeId
+
+
+def _create_variable_type(server, parentnodeid, nodeid, qname, datatype, value=None):
+    addnode = ua.AddNodesItem()
+    addnode.RequestedNewNodeId = nodeid
+    addnode.BrowseName = qname
+    addnode.NodeClass = ua.NodeClass.VariableType
+    addnode.ParentNodeId = parentnodeid
+    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
+    #addnode.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseDataVariableType)
+    attrs = ua.VariableTypeAttributes()
+    attrs.Description = ua.LocalizedText(qname.Name)
+    attrs.DisplayName = ua.LocalizedText(qname.Name)
+    attrs.DataType = datatype
+    if value:
+        attrs.Value = value
+        if isinstance(value, (list, tuple)):
+            attrs.ValueRank = ua.ValueRank.OneDimension
+        else:
+            attrs.ValueRank = ua.ValueRank.Scalar
+    #attrs.ArrayDimensions = None
+    attrs.WriteMask = 0
+    attrs.UserWriteMask = 0
+    attrs.Historizing = 0
+    attrs.AccessLevel = ua.AccessLevelMask.CurrentRead
+    attrs.UserAccessLevel = ua.AccessLevelMask.CurrentRead
+    addnode.NodeAttributes = attrs
+    results = server.add_nodes([addnode])
+    results[0].StatusCode.check()
+    return results[0].AddedNodeId
+
+
+def create_data_type(parent, nodeid, bname, description=None):
+    """
+    Create a new data type to be used in new variables, etc ..
+    arguments are nodeid, browsename
+    or namespace index, name
+    """
+    nodeid, qname = _parse_nodeid_qname(nodeid, bname)
+
+    addnode = ua.AddNodesItem()
+    addnode.RequestedNewNodeId = nodeid
+    addnode.BrowseName = qname
+    addnode.NodeClass = ua.NodeClass.DataType
+    addnode.ParentNodeId = parent.nodeid
+    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
+    #addnode.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseDataVariableType) # No type definition for types
+    attrs = ua.DataTypeAttributes()
+    if description is None:
+        attrs.Description = ua.LocalizedText(qname.Name)
+    else:
+        attrs.Description = ua.LocalizedText(description)
+    attrs.DisplayName = ua.LocalizedText(qname.Name)
+    attrs.WriteMask = 0
+    attrs.UserWriteMask = 0
+    attrs.IsAbstract = False  # True mean they cannot be instanciated
+    addnode.NodeAttributes = attrs
+    results = parent.server.add_nodes([addnode])
+    results[0].StatusCode.check()
+    return node.Node(parent.server, results[0].AddedNodeId)
 
 
 def _create_method(parent, nodeid, qname, callback, inputs, outputs):
@@ -246,11 +347,11 @@ def _vtype_to_argument(vtype):
 
     arg = ua.Argument()
     v = ua.Variant(None, vtype)
-    arg.DataType = _guess_uatype(v)
+    arg.DataType = _guess_datatype(v)
     return arg
 
 
-def _guess_uatype(variant):
+def _guess_datatype(variant):
     if variant.VariantType == ua.VariantType.ExtensionObject:
         if variant.Value is None:
             raise ua.UaError("Cannot guess DataType from Null ExtensionObject")

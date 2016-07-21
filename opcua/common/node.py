@@ -351,8 +351,8 @@ class Node(object):
         """
         references = self.get_references(refs=ua.ObjectIds.HasTypeDefinition, direction=ua.BrowseDirection.Forward)
         if len(references) == 0:
-            return ua.ObjectIds.BaseObjectType
-        return references[0].NodeId.Identifier
+            return None
+        return references[0].NodeId
 
     def get_parent(self):
         """
@@ -486,35 +486,3 @@ class Node(object):
         result = self.server.history_read(params)[0]
         return result
 
-    # Hack for convenience methods
-    # local import is ugly but necessary for python2 support
-    # feel fri to propose something better but I want to split all those
-    # create methods from Node
-
-    def add_folder(*args, **kwargs):
-        from opcua.common import manage_nodes
-        return manage_nodes.create_folder(*args, **kwargs)
-
-    def add_object(*args, **kwargs):
-        from opcua.common import manage_nodes
-        return manage_nodes.create_object(*args, **kwargs)
-
-    def add_variable(*args, **kwargs):
-        from opcua.common import manage_nodes
-        return manage_nodes.create_variable(*args, **kwargs)
-
-    def add_property(*args, **kwargs):
-        from opcua.common import manage_nodes
-        return manage_nodes.create_property(*args, **kwargs)
-
-    def add_method(*args, **kwargs):
-        from opcua.common import manage_nodes
-        return manage_nodes.create_method(*args, **kwargs)
-
-    def add_subtype(*args, **kwargs):
-        from opcua.common import manage_nodes
-        return manage_nodes.create_subtype(*args, **kwargs)
-
-    def call_method(*args, **kwargs):
-        from opcua.common import methods
-        return methods.call_method(*args, **kwargs)
