@@ -72,27 +72,22 @@ if __name__ == "__main__":
     uri = "http://examples.freeopcua.github.io"
     idx = server.register_namespace(uri)
 
-
     # create a new node type we can instantiate in our address space
-    base_type = server.get_root_node().get_child(["0:Types", "0:ObjectTypes", "0:BaseObjectType"])
-    dev = base_type.add_object_type(0, "MyDevice")
+    dev = server.nodes.base_object_type.add_object_type(0, "MyDevice")
     dev.add_variable(0, "sensor1", 1.0)
     dev.add_property(0, "device_id", "0340")
     ctrl = dev.add_object(0, "controller")
     ctrl.add_property(0, "state", "Idle")
 
-
-    # get Objects node, this is where we should put our nodes
-    objects = server.get_objects_node()
-
     # populating our address space
+
     # First a folder to organise our nodes
-    myfolder = objects.add_folder(idx, "myEmptyFolder")
+    myfolder = server.nodes.objects.add_folder(idx, "myEmptyFolder")
     # instanciate one instance of our device
-    mydevice = objects.add_object(idx, "Device0001", dev)
+    mydevice = server.nodes.objects.add_object(idx, "Device0001", dev)
     mydevice_var = mydevice.get_child(["0:controller", "0:state"])  # get proxy to our device state variable 
     # create directly some objects and variables
-    myobj = objects.add_object(idx, "MyObject")
+    myobj = server.nodes.objects.add_object(idx, "MyObject")
     myvar = myobj.add_variable(idx, "MyVariable", 6.7)
     myvar.set_writable()    # Set MyVariable to be writable by clients
     mystringvar = myobj.add_variable(idx, "MyStringVariable", "Really nice string")
