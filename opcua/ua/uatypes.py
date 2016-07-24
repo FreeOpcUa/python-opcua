@@ -730,6 +730,14 @@ class QualifiedName(FrozenClass):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    def __lt__(self, other):
+        if not isinstance(other, QualifiedName):
+            raise TypeError("Cannot compare QualifiedName and {}".format(other))
+        if self.NamespaceIndex == other.NamespaceIndex:
+            return self.Name < other.Name
+        else:
+            return self.NamespaceIndex < other.NamespaceIndex
+
     def __str__(self):
         return 'QualifiedName({}:{})'.format(self.NamespaceIndex, self.Name)
 
