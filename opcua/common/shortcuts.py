@@ -13,3 +13,4 @@ class Shortcuts(object):
         self.types = Node(server, ObjectIds.TypesFolder)
         self.base_object_type = Node(server, ObjectIds.BaseObjectType)
         self.base_data_type = Node(server, ObjectIds.BaseDataType)
+        self.base_event_type = Node(server, ObjectIds.BaseEventType)
