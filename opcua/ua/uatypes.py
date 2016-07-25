@@ -300,7 +300,7 @@ class ValueRank(IntEnum):
     # the next names are not in spec but so common we express them here
     TwoDimensions = 2
     ThreeDimensions = 3
-    FourDimensions = 3
+    FourDimensions = 4
 
 
 class AccessLevel(IntEnum):
