@@ -3,12 +3,21 @@ import unittest
 from opcua import Client
 from opcua import Server
 from opcua import ua
-from opcua.crypto import security_policies
+
+try:
+    from opcua.crypto import uacrypto
+    from opcua.crypto import security_policies
+except ImportError:
+    print("WARNING: CRYPTO NOT AVAILABLE, CRYPTO TESTS DISABLED!!")
+    disable_crypto_tests = True
+else:
+    disable_crypto_tests = False
+
 
 port_num1 = 48515
 port_num2 = 48512
 
-
+@unittest.skipIf(disable_crypto_tests, "crypto not available")
 class TestCryptoConnect(unittest.TestCase):
 
     '''
@@ -112,8 +121,3 @@ class TestCryptoConnect(unittest.TestCase):
                              None,
                              ua.MessageSecurityMode.None_
                              )
-
-
-
-
-
