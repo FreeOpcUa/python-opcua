@@ -94,14 +94,20 @@ class XMLParser(object):
         return self.__next__()
 
     def _get_node_id(self, value):
-        node_id = value
+        """
+        Check if the nodeid given in the xml model file must be converted
+        to a already existing namespace id based on the files namespace uri
+
+        :returns: NodeId (str)
+        """
+        result = value
         r_match = self._re_nodeid.search(value)
         if r_match:
             node_ns, node_id = r_match.groups()
             ns_server = self.namespaces.get(int(node_ns), None)
             if ns_server:
-                node_id = "ns={};i={}".format(ns_server[0], node_id)
-        return node_id
+                result = "ns={};i={}".format(ns_server[0], node_id)
+        return result
 
     def _parse_node(self, name, child):
         obj = NodeData()

@@ -335,7 +335,6 @@ class Server(object):
         ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         uries = ns_node.get_value()
         if uri in uries:
-            print('WARNING: Uri already in namespace')
             return uries.index(uri)
         uries.append(uri)
         ns_node.set_value(uries)
