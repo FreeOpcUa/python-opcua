@@ -73,7 +73,6 @@ class XMLParser(object):
 
     def __next__(self):
         while True:
-            print('----------------------')
             if sys.version_info[0] < 3:
                 child = self.it.next()
             else:
@@ -95,15 +94,17 @@ class XMLParser(object):
         return self.__next__()
 
     def _get_node_id(self, value):
+        """
+        Get the node id of the object and convert it to the node id
+        depending on the server namespace.
+        """
         node_id = value
         r_match = self._re_nodeid.search(value)
         if r_match:
-            print(r_match.groups())
             node_ns, node_id = r_match.groups()
             ns_server = self.namespaces.get(int(node_ns), None)
             if ns_server:
                 node_id = "ns={};i={}".format(ns_server[0], node_id)
-        print(node_id)
         return node_id
 
     def _parse_node(self, name, child):
@@ -130,7 +131,6 @@ class XMLParser(object):
         elif key == "IsAbstract":
             obj.abstract = val
         elif key == "EventNotifier":
-            print("Notfiier", key, val)
             obj.eventnotifier = 1 if val == "1" else 0
         elif key == "ValueRank":
             obj.rank = int(val)
@@ -241,7 +241,6 @@ class XMLParser(object):
 
     def _parse_refs(self, el, obj):
         for ref in el:
-            print(ref)
             if ref.attrib["ReferenceType"] == "HasTypeDefinition":
                 obj.typedef = self._get_node_id(ref.text)
             elif "IsForward" in ref.attrib and ref.attrib["IsForward"] == "false":
@@ -256,4 +255,3 @@ class XMLParser(object):
                 struct.target = self._get_node_id(ref.text)
                 struct.reftype = ref.attrib["ReferenceType"]
                 obj.refs.append(struct)
-        print(obj.refs)
