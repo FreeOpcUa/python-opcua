@@ -111,6 +111,14 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         idx2 = self.opc.get_namespace_index(uri)
         self.assertEqual(idx1, idx2)
 
+    def test_register_existing_namespace(self):
+        uri = 'http://mycustom.Namespace.com'
+        idx1 = self.opc.register_namespace(uri)
+        idx2 = self.opc.register_namespace(uri)
+        idx3 = self.opc.get_namespace_index(uri)
+        self.assertEqual(idx1, idx2)
+        self.assertEqual(idx1, idx3)
+
     def test_register_use_namespace(self):
         uri = 'http://my_very_custom.Namespace.com'
         idx = self.opc.register_namespace(uri)
