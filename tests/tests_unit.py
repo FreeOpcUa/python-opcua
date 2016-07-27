@@ -12,7 +12,7 @@ from opcua.ua.uatypes import flatten, get_shape, reshape
 from opcua.server.internal_subscription import WhereClauseEvaluator
 from opcua.common.event_objects import BaseEvent
 from opcua.common.ua_utils import string_to_variant, variant_to_string, string_to_val, val_to_string
-
+from opcua.common.xmlparser import XMLParser
 
 
 class TestUnit(unittest.TestCase):
@@ -437,6 +437,26 @@ class TestUnit(unittest.TestCase):
         ev.property = 3
 
         self.assertTrue(wce.eval(ev))
+
+    def test_xmlparser_get_node_id(self):
+        server = None
+        xmlpath = 'tests/custom_nodes.xml'
+        parser = XMLParser(xmlpath, server)
+
+        res1 = parser._get_node_id('i=1001')
+        self.assertEqual(res1, 'i=1001')
+
+        res2 = parser._get_node_id('ns=1;i=1001')
+        self.assertEqual(res2, 'ns=1;i=1001')
+
+        parser.namespaces = {1: [3, 'http://someuri.com']}
+        res3 = parser._get_node_id('ns=1;i=1001')
+        self.assertEqual(res3, 'ns=3;i=1001')
+
+        parser.namespaces = {1: [3, 'http://someuri.com']}
+        res4 = parser._get_node_id('ns=2;i=1001')
+        self.assertEqual(res4, 'ns=2;i=1001')
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARN)
