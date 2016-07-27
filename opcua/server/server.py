@@ -334,6 +334,9 @@ class Server(object):
         """
         ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         uries = ns_node.get_value()
+        if uri in uries:
+            print('WARNING: Uri already in namespace')
+            return uries.index(uri)
         uries.append(uri)
         ns_node.set_value(uries)
         return len(uries) - 1
@@ -398,7 +401,7 @@ class Server(object):
         import nodes defined in xml
         """
         importer = xmlimporter.XmlImporter(self.iserver.node_mgt_service)
-        importer.import_xml(path)
+        importer.import_xml(path, self)
 
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.iserver.isession, nodes, recursive)

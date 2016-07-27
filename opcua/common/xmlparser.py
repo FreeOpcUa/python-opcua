@@ -53,7 +53,8 @@ class RefStruct(object):
 
 class XMLParser(object):
 
-    def __init__(self, xmlpath):
+    def __init__(self, xmlpath, server):
+        self.server = server  # POC
         self.logger = logging.getLogger(__name__)
         self._retag = re.compile(r"(\{.*\})(.*)")
         self.path = xmlpath
@@ -62,6 +63,9 @@ class XMLParser(object):
         self.tree = ET.parse(xmlpath)
         self.root = self.tree.getroot()
         self.it = None
+
+        self.namespaces = {}
+        self._re_nodeid = re.compile(r"^ns=(?P<ns>\d+[^;]*);i=(?P<i>\d+)")
 
     def __iter__(self):
         self.it = iter(self.root)
@@ -77,12 +81,27 @@ class XMLParser(object):
             if name == "Aliases":
                 for el in child:
                     self.aliases[el.attrib["Alias"]] = el.text
+            elif name == 'NamespaceUris':
+                for ns_index, ns_element in enumerate(child):
+                    ns_uri = ns_element.text
+                    ns_server_index = self.server.register_namespace(ns_uri)
+                    self.namespaces[ns_index + 1] = (ns_server_index, ns_uri)
             else:
                 node = self._parse_node(name, child)
                 return node
 
     def next(self):  # support for python2
         return self.__next__()
+
+    def _get_node_id(self, value):
+        node_id = value
+        r_match = self._re_nodeid.search(value)
+        if r_match:
+            node_ns, node_id = r_match.groups()
+            ns_server = self.namespaces.get(int(node_ns), None)
+            if ns_server:
+                node_id = "ns={};i={}".format(ns_server[0], node_id)
+        return node_id
 
     def _parse_node(self, name, child):
         obj = NodeData()
@@ -96,19 +115,18 @@ class XMLParser(object):
 
     def _set_attr(self, key, val, obj):
         if key == "NodeId":
-            obj.nodeid = val
+            obj.nodeid = self._get_node_id(val)
         elif key == "BrowseName":
             obj.browsename = val
         elif key == "SymbolicName":
             obj.symname = val
         elif key == "ParentNodeId":
-            obj.parent = val
+            obj.parent = self._get_node_id(val)
         elif key == "DataType":
             obj.datatype = val
         elif key == "IsAbstract":
             obj.abstract = val
         elif key == "EventNotifier":
-            print("Notfiier", key, val)
             obj.eventnotifier = 1 if val == "1" else 0
         elif key == "ValueRank":
             obj.rank = int(val)
@@ -173,7 +191,7 @@ class XMLParser(object):
 
     def _get_text(self, el):
         txt = ""
-        for text  in el.itertext():
+        for text in el.itertext():
             txt += text
         return txt
 
@@ -220,16 +238,16 @@ class XMLParser(object):
     def _parse_refs(self, el, obj):
         for ref in el:
             if ref.attrib["ReferenceType"] == "HasTypeDefinition":
-                obj.typedef = ref.text
+                obj.typedef = self._get_node_id(ref.text)
             elif "IsForward" in ref.attrib and ref.attrib["IsForward"] == "false":
                 # if obj.parent:
                     # sys.stderr.write("Parent is already set with: "+ obj.parent + " " + ref.text + "\n")
-                obj.parent = ref.text
+                obj.parent = self._get_node_id(ref.text)
                 obj.parentlink = ref.attrib["ReferenceType"]
             else:
                 struct = RefStruct()
                 if "IsForward" in ref.attrib:
                     struct.forward = ref.attrib["IsForward"]
-                struct.target = ref.text
+                struct.target = self._get_node_id(ref.text)
                 struct.reftype = ref.attrib["ReferenceType"]
                 obj.refs.append(struct)
