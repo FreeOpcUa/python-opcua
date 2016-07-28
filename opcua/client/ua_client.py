@@ -10,7 +10,7 @@ from functools import partial
 
 from opcua import ua
 from opcua.common import utils
-from opcua.common.uaerrors import UaError, BadTimeout
+from opcua.common.uaerrors import UaError, BadTimeout, BadNoSubscription
 
 
 class UASocketClient(object):
@@ -407,12 +407,30 @@ class UaClient(object):
         self.logger.info("call_publish_callback")
         data = future.result()
 
+        # check if answer looks ok
         try:
             self._uasocket.check_answer(data, "while waiting for publish response")
         except BadTimeout: # Spec Part 4, 7.28
             self.publish()
             return
+        except BadNoSubscription: # Spec Part 5, 13.8.1
+            # BadNoSubscription is expected after deleting the last subscription.
+            #
+            # We should therefore also check for len(self._publishcallbacks) == 0, but
+            # this gets us into trouble if a Publish response arrives before the
+            # DeleteSubscription response.
+            #
+            # We could remove the callback already when sending the DeleteSubscription request,
+            # but there are some legitimate reasons to keep them around, such as when the server
+            # responds with "BadTimeout" and we should try again later instead of just removing
+            # the subscription client-side.
+            #
+            # There are a variety of ways to act correctly, but the most practical solution seems
+            # to be to just ignore any BadNoSubscription responses.
+            self.logger.info("BadNoSubscription received, ignoring because it's probably valid.")
+            return
 
+        # parse publish response
         try:
             response = ua.PublishResponse.from_binary(data)
             self.logger.debug(response)
@@ -424,12 +442,14 @@ class UaClient(object):
             self.publish([]) #send publish request ot server so he does stop sending notifications
             return
 
+        # look for callback
         try:
             callback = self._publishcallbacks[response.Parameters.SubscriptionId]
         except KeyError:
             self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
             return
 
+        # do callback
         try:
             callback(response.Parameters)
         except Exception:  # we call client code, catch everything!
