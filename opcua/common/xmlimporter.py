@@ -95,20 +95,7 @@ class XmlImporter(object):
         attrs.DataType = self.to_nodeid(obj.datatype)
         # if obj.value and len(obj.value) == 1:
         if obj.value is not None:
-            #TODO: If non variant based types grow move it to a seperate function 
-            if obj.valuetype == 'ListOfLocalizedText':
-                attrs.Value = ua.Variant([ua.LocalizedText(txt) for txt in obj.value], None)
-            elif obj.valuetype == 'EnumValueType':
-                values = []
-                for ev in obj.value:
-                    enum_value = ua.EnumValueType()
-                    enum_value.DisplayName = ua.LocalizedText(ev['DisplayName'])
-                    enum_value.Description = ua.LocalizedText(ev['Description'])
-                    enum_value.Value = int(ev['Value'])
-                    values.append(enum_value)
-                attrs.Value = values
-            else:
-                attrs.Value = ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
+            attrs.Value = self._add_variable_value(obj, )
         if obj.rank:
             attrs.ValueRank = obj.rank
         if obj.accesslevel:
@@ -122,6 +109,36 @@ class XmlImporter(object):
         node.NodeAttributes = attrs
         self.server.add_nodes([node])
         self._add_refs(obj)
+
+    def _add_variable_value(self, obj):
+        """
+        Returns the value for a Variable based on the objects valuetype. 
+        """
+        if obj.valuetype == 'ListOfLocalizedText':
+            return ua.Variant([ua.LocalizedText(txt) for txt in obj.value], None)
+        elif obj.valuetype == 'EnumValueType':
+            values = []
+            for ev in obj.value:
+                enum_value = ua.EnumValueType()
+                enum_value.DisplayName = ua.LocalizedText(ev['DisplayName'])
+                enum_value.Description = ua.LocalizedText(ev['Description'])
+                enum_value.Value = int(ev['Value'])
+                values.append(enum_value)
+            return values
+        elif obj.valuetype == 'Argument':
+            values = []
+            for arg in obj.value:
+                argument = ua.Argument()
+                argument.Name = arg['Name']
+                argument.Description = ua.LocalizedText(arg['Description'])
+                argument.DataType = self.to_nodeid(arg['DataType'])
+                argument.ValueRank = int(arg['ValueRank'])
+                argument.ArrayDimensions = arg['ArrayDimensions']
+                values.append(argument)
+            return values
+
+        return ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
+
 
     def add_variable_type(self, obj):
         node = self._get_node(obj)

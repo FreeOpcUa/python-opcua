@@ -143,8 +143,23 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         val = v.get_value()
         self.assertEqual(val, "StringValue")
 
-        o = self.opc.get_root_node().get_child(["Types", "DataTypes", "BaseDataType", "Enumeration", "1:MyEnum", "0:EnumStrings"])
+        node_path = ["Types", "DataTypes", "BaseDataType", "Enumeration",
+                     "1:MyEnum", "0:EnumStrings"]
+        o = self.opc.get_root_node().get_child(node_path)
         self.assertEqual(len(o.get_value()), 3)
+
+        # Check if method is imported
+        node_path = ["Types", "ObjectTypes", "BaseObjectType",
+                     "1:MyObjectType", "1:MyMethod"]
+        o = self.opc.get_root_node().get_child(node_path)
+        self.assertEqual(len(o.get_referenced_nodes()), 4)
+
+        # Check if InputArgs are imported and can be read
+        node_path = ["Types", "ObjectTypes", "BaseObjectType",
+                     "1:MyObjectType", "1:MyMethod", "InputArguments"]
+        o = self.opc.get_root_node().get_child(node_path)
+        input_arg = o.get_data_value().Value.Value[0]
+        self.assertEqual(input_arg.Name, 'Context')
 
     def test_historize_variable(self):
         o = self.opc.get_objects_node()
