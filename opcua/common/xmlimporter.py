@@ -95,7 +95,6 @@ class XmlImporter(object):
         attrs.DataType = self.to_nodeid(obj.datatype)
         # if obj.value and len(obj.value) == 1:
         if obj.value is not None:
-            #TODO: If non variant based types grow move it to a seperate function 
             attrs.Value = self._add_variable_value(obj, )
         if obj.rank:
             attrs.ValueRank = obj.rank
