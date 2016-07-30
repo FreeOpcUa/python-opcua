@@ -51,7 +51,6 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
     addnode.TypeDefinition = rdesc.TypeDefinition
 
     node_type = Node(server, rdesc.NodeId)
-
     if rdesc.NodeClass in (ua.NodeClass.Object, ua.NodeClass.ObjectType):
         addnode.NodeClass = ua.NodeClass.Object
         _read_and_copy_attrs(node_type, ua.ObjectAttributes(), addnode)
@@ -59,14 +58,12 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
     elif rdesc.NodeClass in (ua.NodeClass.Variable, ua.NodeClass.VariableType):
         addnode.NodeClass = ua.NodeClass.Variable
         _read_and_copy_attrs(node_type, ua.VariableAttributes(), addnode)
-    elif rdesc.NodeClass in (ua.NodeClass.DataType,):
-        addnode.NodeClass = ua.NodeClass.DataType
-        _read_and_copy_attrs(node_type, ua.DataTypeAttributes(), addnode)
     elif rdesc.NodeClass in (ua.NodeClass.Method,):
         addnode.NodeClass = ua.NodeClass.Method
         _read_and_copy_attrs(node_type, ua.MethodAttributes(), addnode)
     else:
         print("Instantiate: Node class not supported: ", rdesc.NodeClass)
+        return
 
     res = server.add_nodes([addnode])[0]
 
