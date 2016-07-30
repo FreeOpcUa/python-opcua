@@ -44,8 +44,8 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
     """
 
     addnode = ua.AddNodesItem()
-    addnode.RequestedNewNodeId = nodeid 
-    addnode.BrowseName = bname 
+    addnode.RequestedNewNodeId = nodeid
+    addnode.BrowseName = bname
     addnode.ParentNodeId = parentid
     addnode.ReferenceTypeId = rdesc.ReferenceTypeId
     addnode.TypeDefinition = rdesc.TypeDefinition
@@ -59,7 +59,12 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
     elif rdesc.NodeClass in (ua.NodeClass.Variable, ua.NodeClass.VariableType):
         addnode.NodeClass = ua.NodeClass.Variable
         _read_and_copy_attrs(node_type, ua.VariableAttributes(), addnode)
-
+    elif rdesc.NodeClass in (ua.NodeClass.DataType,):
+        addnode.NodeClass = ua.NodeClass.DataType
+        _read_and_copy_attrs(node_type, ua.DataTypeAttributes(), addnode)
+    elif rdesc.NodeClass in (ua.NodeClass.Method,):
+        addnode.NodeClass = ua.NodeClass.Method
+        _read_and_copy_attrs(node_type, ua.MethodAttributes(), addnode)
     else:
         print("Instantiate: Node class not supported: ", rdesc.NodeClass)
 
@@ -86,4 +91,3 @@ def _read_and_copy_attrs(node_type, struct, addnode):
         else:
             print("Instantiate: while copying attributes from node type %s, attribute %s, statuscode is %s" % (node_type, name, results[idx].StatusCode))
     addnode.NodeAttributes = struct
-

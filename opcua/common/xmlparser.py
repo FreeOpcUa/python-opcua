@@ -80,7 +80,7 @@ class XMLParser(object):
             name = self._retag.match(child.tag).groups()[1]
             if name == "Aliases":
                 for el in child:
-                    self.aliases[el.attrib["Alias"]] = el.text
+                    self.aliases[el.attrib["Alias"]] = self._get_node_id(el.text)
             elif name == 'NamespaceUris':
                 for ns_index, ns_element in enumerate(child):
                     ns_uri = ns_element.text
