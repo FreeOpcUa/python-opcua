@@ -103,9 +103,9 @@ class Node(object):
         set event notifier attribute,
         arg is a list of EventNotifier Enum
         """
-        res = 1
+        res = 0
         for en in enum_list:
-            ua.set_bit(res, en.value)
+            res = ua.set_bit(res, en.value)
         self.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(res, ua.VariantType.Byte)))
 
     def get_node_class(self):
