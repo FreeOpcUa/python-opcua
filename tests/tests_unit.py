@@ -13,6 +13,7 @@ from opcua.server.internal_subscription import WhereClauseEvaluator
 from opcua.common.event_objects import BaseEvent
 from opcua.common.ua_utils import string_to_variant, variant_to_string, string_to_val, val_to_string
 from opcua.common.xmlparser import XMLParser
+from opcua.ua.uatypes import _MaskEnum
 
 
 class TestUnit(unittest.TestCase):
@@ -456,6 +457,30 @@ class TestUnit(unittest.TestCase):
         parser.namespaces = {1: [3, 'http://someuri.com']}
         res4 = parser._get_node_id('ns=2;i=1001')
         self.assertEqual(res4, 'ns=2;i=1001')
+
+
+class TestMaskEnum(unittest.TestCase):
+    class MyEnum(_MaskEnum):
+        member1 = 0
+        member2 = 1
+
+    def test_invalid_input(self):
+        with self.assertRaises(ValueError):
+            self.MyEnum(12345)
+
+    def test_parsing(self):
+        self.assertEqual(self.MyEnum.parse_bitfield(0b0), set())
+        self.assertEqual(self.MyEnum.parse_bitfield(0b1), {self.MyEnum.member1})
+        self.assertEqual(self.MyEnum.parse_bitfield(0b10), {self.MyEnum.member2})
+        self.assertEqual(self.MyEnum.parse_bitfield(0b11), {self.MyEnum.member1, self.MyEnum.member2})
+
+    def test_identity(self):
+        bitfields = [0b00, 0b01, 0b10, 0b11]
+
+        for bitfield in bitfields:
+            as_set = self.MyEnum.parse_bitfield(bitfield)
+            back_to_bitfield = self.MyEnum.to_bitfield(as_set)
+            self.assertEqual(back_to_bitfield, bitfield)
 
 
 if __name__ == '__main__':

@@ -79,34 +79,33 @@ class Node(object):
 
     def get_access_level(self):
         """
-        get access level of node as a list of AccessLevel Enum
+        Get the access level attribute of the node as a set of AccessLevel enum values.
         """
         result = self.get_attribute(ua.AttributeIds.AccessLevel)
-        return ua.int_to_AccessLevel(result.Value.Value)
+        return ua.AccessLevel.parse_bitfield(result.Value.Value)
 
     def get_user_access_level(self):
         """
-        get user access level of node as a list of AccessLevel Enum
+        Get the user access level attribute of the node as a set of AccessLevel enum values.
         """
         result = self.get_attribute(ua.AttributeIds.UserAccessLevel)
-        return ua.int_to_AccessLevel(result.Value.Value)
+        return ua.AccessLevel.parse_bitfield(result.Value.Value)
 
     def get_event_notifier(self):
         """
-        get EventNotifier attribute value as a list of EventNotifier Enum
+        Get the event notifier attribute of the node as a set of EventNotifier enum values.
         """
         result = self.get_attribute(ua.AttributeIds.EventNotifier)
-        return ua.int_to_EventNotifier(result.Value.Value)
+        return ua.EventNotifier.parse_bitfield(result.Value.Value)
 
-    def set_event_notifier(self, enum_list):
+    def set_event_notifier(self, values):
         """
-        set event notifier attribute,
-        arg is a list of EventNotifier Enum
+        Set the event notifier attribute.
+
+        :param values: an iterable of EventNotifier enum values.
         """
-        res = 0
-        for en in enum_list:
-            res = ua.set_bit(res, en.value)
-        self.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(res, ua.VariantType.Byte)))
+        event_notifier_bitfield = ua.EventNotifier.to_bitfield(values)
+        self.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(event_notifier_bitfield, ua.VariantType.Byte)))
 
     def get_node_class(self):
         """

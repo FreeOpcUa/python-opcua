@@ -106,8 +106,8 @@ def create_variable_type(parent, nodeid, bname, datatype):
     attrs.WriteMask = 0
     attrs.UserWriteMask = 0
     attrs.Historizing = 0
-    attrs.AccessLevel = ua.AccessLevelMask.CurrentRead
-    attrs.UserAccessLevel = ua.AccessLevelMask.CurrentRead
+    attrs.AccessLevel = ua.AccessLevel.CurrentRead.mask
+    attrs.UserAccessLevel = ua.AccessLevel.CurrentRead.mask
     addnode.NodeAttributes = attrs
     results = parent.server.add_nodes([addnode])
     results[0].StatusCode.check()
@@ -131,8 +131,8 @@ def create_reference_type(parent, nodeid, bname):
     attrs.IsAbstract = False
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
-    attrs.AccessLevel = ua.AccessLevelMask.CurrentRead
-    attrs.UserAccessLevel = ua.AccessLevelMask.CurrentRead
+    attrs.AccessLevel = ua.AccessLevel.CurrentRead.mask
+    attrs.UserAccessLevel = ua.AccessLevel.CurrentRead.mask
     addnode.NodeAttributes = attrs
     results = parent.server.add_nodes([addnode])
     results[0].StatusCode.check()
@@ -246,8 +246,8 @@ def _create_variable(server, parentnodeid, nodeid, qname, var, datatype=None, is
     attrs.WriteMask = 0
     attrs.UserWriteMask = 0
     attrs.Historizing = 0
-    attrs.AccessLevel = ua.AccessLevelMask.CurrentRead
-    attrs.UserAccessLevel = ua.AccessLevelMask.CurrentRead
+    attrs.AccessLevel = ua.AccessLevel.CurrentRead.mask
+    attrs.UserAccessLevel = ua.AccessLevel.CurrentRead.mask
     addnode.NodeAttributes = attrs
     results = server.add_nodes([addnode])
     results[0].StatusCode.check()
@@ -276,8 +276,8 @@ def _create_variable_type(server, parentnodeid, nodeid, qname, datatype, value=N
     attrs.WriteMask = 0
     attrs.UserWriteMask = 0
     attrs.Historizing = 0
-    attrs.AccessLevel = ua.AccessLevelMask.CurrentRead
-    attrs.UserAccessLevel = ua.AccessLevelMask.CurrentRead
+    attrs.AccessLevel = ua.AccessLevel.CurrentRead.mask
+    attrs.UserAccessLevel = ua.AccessLevel.CurrentRead.mask
     addnode.NodeAttributes = attrs
     results = server.add_nodes([addnode])
     results[0].StatusCode.check()
