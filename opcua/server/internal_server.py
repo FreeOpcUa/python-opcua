@@ -190,9 +190,11 @@ class InternalServer(object):
         event_notifier = source.get_event_notifier()
         if ua.EventNotifier.SubscribeToEvents not in event_notifier:
             raise ua.UaError("Node does not generate events", event_notifier)
-        if ua.EventNotifier.SubscribeToEvents not in event_notifier:
+
+        if ua.EventNotifier.HistoryRead not in event_notifier:
             event_notifier.append(ua.EventNotifier.HistoryRead)
             source.set_event_notifier(event_notifier)
+
         self.history_manager.historize_event(source, period, count)
 
     def disable_history_event(self, source):
