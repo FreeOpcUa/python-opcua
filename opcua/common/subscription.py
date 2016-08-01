@@ -236,7 +236,7 @@ class Subscription(object):
         params = ua.CreateMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
         params.ItemsToCreate = monitored_items
-        params.TimestampsToReturn = ua.TimestampsToReturn.Neither
+        params.TimestampsToReturn = ua.TimestampsToReturn.Both
 
         # insert monitored item into map to avoid notification arrive before result return
         # server_handle is left as None in purpose as we don't get it yet.
