@@ -20,6 +20,9 @@ class XmlImporter(object):
         self.logger.info("Importing XML file %s", xmlpath)
         self.parser = xmlparser.XMLParser(xmlpath, act_server)
         for node in self.parser:
+            print(node)
+            print(dir(node))
+            print(node.parent)
             if node.nodetype == 'UAObject':
                 self.add_object(node)
             elif node.nodetype == 'UAObjectType':

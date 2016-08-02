@@ -68,15 +68,8 @@ class XMLParser(object):
         self._re_nodeid = re.compile(r"^ns=(?P<ns>\d+[^;]*);i=(?P<i>\d+)")
 
     def __iter__(self):
-        self.it = iter(self.root)
-        return self
-
-    def __next__(self):
-        while True:
-            if sys.version_info[0] < 3:
-                child = self.it.next()
-            else:
-                child = self.it.__next__()
+        items = []
+        for child in self.root:
             name = self._retag.match(child.tag).groups()[1]
             if name == "Aliases":
                 for el in child:
@@ -88,7 +81,19 @@ class XMLParser(object):
                     self.namespaces[ns_index + 1] = (ns_server_index, ns_uri)
             else:
                 node = self._parse_node(name, child)
-                return node
+                items.append(node)
+        # here comes the logic for ordering
+        # TBD
+        self.it = iter(items)
+        return self
+
+    def __next__(self):
+        while True:
+            if sys.version_info[0] < 3:
+                child = self.it.next()
+            else:
+                child = self.it.__next__()
+            return child
 
     def next(self):  # support for python2
         return self.__next__()
