@@ -3,6 +3,9 @@
   - Create a custom enum type
   - Create an object that contains a variable of this type
 '''
+import sys
+sys.path.insert(0, "..")
+
 try:
     from IPython import embed
 except ImportError:
@@ -50,7 +53,7 @@ if __name__ == "__main__":
 
     # 1.
     # Create Enum Type
-    myenum_type = enums.create_data_type(nsidx, 'MyEnum')
+    myenum_type = enums.add_data_type(nsidx, 'MyEnum')
 
     # 2.
     # Add enumerations as EnumStrings (Not yet tested with EnumValues)
@@ -61,7 +64,7 @@ if __name__ == "__main__":
     #                                                       ua.LocalizedText("idle")])
 
     # Or convert the existing IntEnum MyEnum
-    es = myenum_type.create_variable(0, "EnumStrings" , enum_to_stringlist(MyEnum))
+    es = myenum_type.add_variable(0, "EnumStrings" , enum_to_stringlist(MyEnum))
 
     es.set_value_rank(1)
     es.set_array_dimensions([0])
@@ -73,10 +76,10 @@ if __name__ == "__main__":
     objects = server.get_objects_node()
 
     # create object
-    myobj = objects.create_object(nsidx, 'MyObjectWithEnumVar')
+    myobj = objects.add_object(nsidx, 'MyObjectWithEnumVar')
 
     # add var with as type the custom enumeration
-    myenum_var = myobj.create_variable(nsidx, 'MyEnum2Var', MyEnum.ok, None, myenum_type.nodeid)
+    myenum_var = myobj.add_variable(nsidx, 'MyEnum2Var', MyEnum.ok, datatype = myenum_type.nodeid)
     myenum_var.set_writable()
     myenum_var.set_value(MyEnum.idle)  # change value of enumeration
 

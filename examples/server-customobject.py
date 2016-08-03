@@ -27,16 +27,21 @@ if __name__ == "__main__":
 
     # Example 1 - create a basic object
     #-------------------------------------------------------------------------------
-    myobj = objects.create_object(idx, "MyObject",)    
+    myobj = objects.add_object(idx, "MyObject")    
     #-------------------------------------------------------------------------------
 
 
     # Example 2 - create a new object type and a instance of the new object type
     #-------------------------------------------------------------------------------
     types = server.get_node(ua.ObjectIds.BaseObjectType)
-    mycustomobj_type = types.create_object_type(idx, "MyCustomObject")
     
-    myobj = objects.create_object(idx, "MyCustomObjectA", mycustomobj_type.nodeid)
+    object_type_to_derive_from = server.get_root_node().get_child(["0:Types", 
+                                                                   "0:ObjectTypes", 
+                                                                   "0:BaseObjectType"])
+    mycustomobj_type = types.add_object_type(idx, "MyCustomObject")
+    mycustomobj_type.add_variable(0, "var_should_be_there_after_instantiate", 1.0) # demonstrates instantiate
+    
+    myobj = objects.add_object(idx, "MyCustomObjectA", mycustomobj_type.nodeid)
     #-------------------------------------------------------------------------------
 
 
@@ -56,7 +61,7 @@ if __name__ == "__main__":
 
 
     # populating our address space    
-    myobj = objects.create_object(idx, "MyCustomObjectB", myobject3_type_nodeid)
+    myobj = objects.add_object(idx, "MyCustomObjectB", myobject3_type_nodeid)
     #-------------------------------------------------------------------------------
 
     
