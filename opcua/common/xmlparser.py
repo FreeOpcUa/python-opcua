@@ -83,7 +83,11 @@ class XMLParser(object):
                 node = self._parse_node(name, child)
                 nodes.append(node)
 
-        nodes = self._sort_nodes_by_parentid(nodes)
+        # The ordering of nodes currently only works if namespaces are
+        # defined in XML.
+        # Also, it is recommended not to use node ids without namespace prefix!
+        if self.namespaces:
+            nodes = self._sort_nodes_by_parentid(nodes)
 
         self.it = iter(nodes)
         return self
