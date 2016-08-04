@@ -1,5 +1,6 @@
 """
-Internal server implementing opcu-ua interface. can be used on server side or to implement binary/https opc-ua servers
+Internal server implementing opcu-ua interface.
+Can be used on server side or to implement binary/https opc-ua servers
 """
 
 from datetime import datetime
@@ -17,7 +18,8 @@ except ImportError:
 
 from opcua import ua
 from opcua.common import utils
-from opcua.common.callback import CallbackType, ServerItemCallback, CallbackDispatcher
+from opcua.common.callback import (CallbackType, ServerItemCallback,
+                                   CallbackDispatcher)
 from opcua.common.node import Node
 from opcua.server.history import HistoryManager
 from opcua.server.address_space import AddressSpace
@@ -45,11 +47,11 @@ class ServerDesc(object):
 
 class InternalServer(object):
 
-    def __init__(self, cacheFile = None):
+    def __init__(self, cacheFile=None):
         self.logger = logging.getLogger(__name__)
-        
+
         self.server_callback_dispatcher = CallbackDispatcher()
-        
+
         self.endpoints = []
         self._channel_id_counter = 5
         self.allow_remote_admin = True
@@ -69,8 +71,8 @@ class InternalServer(object):
             # import address space from code generated from xml
             standard_address_space.fill_address_space(self.node_mgt_service)
             # import address space directly from xml, this has preformance impact so disabled
-            #importer = xmlimporter.XmlImporter(self.node_mgt_service)
-            #importer.import_xml("/path/to/python-opcua/schemas/Opc.Ua.NodeSet2.xml")
+            # importer = xmlimporter.XmlImporter(self.node_mgt_service)
+            # importer.import_xml("/path/to/python-opcua/schemas/Opc.Ua.NodeSet2.xml", self)
 
             if cacheFile:
                 self.aspace.dump(cacheFile)
@@ -87,8 +89,6 @@ class InternalServer(object):
         uries = ["http://opcfoundation.org/UA/"]
         ns_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         ns_node.set_value(uries)
-        
-        
 
     def load_address_space(self, path):
         self.aspace.load(path)
@@ -125,7 +125,7 @@ class InternalServer(object):
     def get_endpoints(self, params=None, sockname=None):
         self.logger.info("get endpoint")
         if sockname:
-            #return to client the ip address it has access to
+            # return to client the ip address it has access to
             edps = []
             for edp in self.endpoints:
                 edp1 = copy(edp)
@@ -153,10 +153,12 @@ class InternalServer(object):
         appdesc = ua.ApplicationDescription()
         appdesc.ApplicationUri = server.ServerUri
         appdesc.ProductUri = server.ProductUri
-        appdesc.ApplicationName = server.ServerNames[0]  # FIXME: select name from client locale
+        # FIXME: select name from client locale
+        appdesc.ApplicationName = server.ServerNames[0]
         appdesc.ApplicationType = server.ServerType
+        appdesc.DiscoveryUrls = server.DiscoveryUrls
+        # FIXME: select discovery uri using reachability from client network
         appdesc.GatewayServerUri = server.GatewayServerUri
-        appdesc.DiscoveryUrls = server.DiscoveryUrls  # FIXME: select discovery uri using reachability from client network
         self._known_servers[server.ServerUri] = ServerDesc(appdesc, conf)
 
     def register_server2(self, params):
@@ -203,13 +205,13 @@ class InternalServer(object):
         """
         source.unset_attr_bit(ua.AttributeIds.EventNotifier, ua.EventNotifier.HistoryRead)
         self.history_manager.dehistorize(source)
-        
+
     def subscribe_server_callback(self, event, handle):
         """
         Create a subscription from event to handle
         """
         self.server_callback_dispatcher.addListener(event, handle)
-        
+
     def unsubscribe_server_callback(self, event, handle):
         """
         Remove a subscription from event to handle
@@ -240,7 +242,8 @@ class InternalSession(object):
         self._lock = Lock()
 
     def __str__(self):
-        return "InternalSession(name:{}, user:{}, id:{}, auth_token:{})".format(self.name, self.user, self.session_id, self.authentication_token)
+        return "InternalSession(name:{}, user:{}, id:{}, auth_token:{})".format(
+            self.name, self.user, self.session_id, self.authentication_token)
 
     def get_endpoints(self, params=None, sockname=None):
         return self.iserver.get_endpoints(params, sockname)
@@ -293,7 +296,7 @@ class InternalSession(object):
     def write(self, params):
         if not self.external:
             # If session is internal we need to store a copy og object, not a reference,
-            #otherwise users may change it and we will not generate expected events
+            # otherwise users may change it and we will not generate expected events
             params.NodesToWrite = [deepcopy(ntw) for ntw in params.NodesToWrite]
         return self.iserver.attribute_service.write(params, self.user)
 
@@ -327,16 +330,18 @@ class InternalSession(object):
             self.subscriptions.append(result.SubscriptionId)
         return result
 
-    def create_monitored_items(self, params):        
+    def create_monitored_items(self, params):
         subscription_result = self.subscription_service.create_monitored_items(params)
-        self.iserver.server_callback_dispatcher.dispatch(CallbackType.ItemSubscriptionCreated, ServerItemCallback(params, subscription_result))
+        self.iserver.server_callback_dispatcher.dispatch(
+            CallbackType.ItemSubscriptionCreated, ServerItemCallback(params, subscription_result))
         return subscription_result
 
     def modify_monitored_items(self, params):
         subscription_result = self.subscription_service.modify_monitored_items(params)
-        self.iserver.server_callback_dispatcher.dispatch(CallbackType.ItemSubscriptionModified, ServerItemCallback(params, subscription_result))
+        self.iserver.server_callback_dispatcher.dispatch(
+            CallbackType.ItemSubscriptionModified, ServerItemCallback(params, subscription_result))
         return subscription_result
-    
+
     def republish(self, params):
         return self.subscription_service.republish(params)
 
@@ -349,7 +354,8 @@ class InternalSession(object):
 
     def delete_monitored_items(self, params):
         subscription_result = self.subscription_service.delete_monitored_items(params)
-        self.iserver.server_callback_dispatcher.dispatch(CallbackType.ItemSubscriptionDeleted, ServerItemCallback(params, subscription_result))
+        self.iserver.server_callback_dispatcher.dispatch(
+            CallbackType.ItemSubscriptionDeleted, ServerItemCallback(params, subscription_result))
         return subscription_result
 
     def publish(self, acks=None):

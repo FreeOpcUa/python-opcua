@@ -1,7 +1,6 @@
 
 import logging
 from threading import RLock, Lock
-from datetime import datetime
 import time
 
 from opcua import ua
@@ -38,13 +37,17 @@ class UaProcessor(object):
     def send_response(self, requesthandle, algohdr, seqhdr, response, msgtype=ua.MessageType.SecureMessage):
         with self._socketlock:
             response.ResponseHeader.RequestHandle = requesthandle
-            data = self._connection.message_to_binary(response.to_binary(), message_type=msgtype, request_id=seqhdr.RequestId, algohdr=algohdr)
+            data = self._connection.message_to_binary(
+                response.to_binary(), message_type=msgtype, request_id=seqhdr.RequestId, algohdr=algohdr)
+
             self.socket.write(data)
 
     def open_secure_channel(self, algohdr, seqhdr, body):
         request = ua.OpenSecureChannelRequest.from_binary(body)
 
-        self._connection.select_policy(algohdr.SecurityPolicyURI, algohdr.SenderCertificate, request.Parameters.SecurityMode)
+        self._connection.select_policy(
+            algohdr.SecurityPolicyURI, algohdr.SenderCertificate, request.Parameters.SecurityMode)
+
         channel = self._connection.open(request.Parameters, self.iserver)
         # send response
         response = ua.OpenSecureChannelResponse()
@@ -57,7 +60,9 @@ class UaProcessor(object):
             while True:
                 if len(self._publishdata_queue) == 0:
                     self._publish_result_queue.append(result)
-                    self.logger.info("Server wants to send publish answer but no publish request is available, enqueing notification, length of result queue is %s", len(self._publish_result_queue))
+                    self.logger.info("Server wants to send publish answer but no publish request is available,"
+                                     "enqueing notification, length of result queue is %s",
+                                     len(self._publish_result_queue))
                     return
                 requestdata = self._publishdata_queue.pop(0)
                 if time.time() - requestdata.timestamp < requestdata.requesthdr.TimeoutHint / 1000:
@@ -114,8 +119,10 @@ class UaProcessor(object):
             self.logger.info("Create session request")
             params = ua.CreateSessionParameters.from_binary(body)
 
-            self.session = self.iserver.create_session(self.name, external=True)  # create the session on server
-            sessiondata = self.session.create_session(params, sockname=self.sockname)  # get a session creation result to send back
+            # create the session on server
+            self.session = self.iserver.create_session(self.name, external=True)
+            # get a session creation result to send back
+            sessiondata = self.session.create_session(params, sockname=self.sockname)
 
             response = ua.CreateSessionResponse()
             response.Parameters = sessiondata
@@ -124,7 +131,9 @@ class UaProcessor(object):
                 data = params.ClientNonce
             else:
                 data = self._connection._security_policy.server_certificate + params.ClientNonce
-            response.Parameters.ServerSignature.Signature = self._connection._security_policy.asymmetric_cryptography.signature(data)
+            response.Parameters.ServerSignature.Signature =\
+                self._connection._security_policy.asymmetric_cryptography.signature(data)
+
             response.Parameters.ServerSignature.Algorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
 
             self.logger.info("sending create sesssion response")

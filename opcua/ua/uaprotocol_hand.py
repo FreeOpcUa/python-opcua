@@ -103,7 +103,8 @@ class Header(uatypes.FrozenClass):
         return struct.calcsize("<3scII")
 
     def __str__(self):
-        return "Header(type:{}, chunk_type:{}, body_size:{}, channel:{})".format(self.MessageType, self.ChunkType, self.body_size, self.ChannelId)
+        return "Header(type:{}, chunk_type:{}, body_size:{}, channel:{})".format(
+            self.MessageType, self.ChunkType, self.body_size, self.ChannelId)
     __repr__ = __str__
 
 
@@ -183,7 +184,9 @@ class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
         return hdr
 
     def __str__(self):
-        return "{}(SecurityPolicy:{}, certificatesize:{}, receiverCertificatesize:{} )".format(self.__class__.__name__, self.SecurityPolicyURI, len(self.SenderCertificate), len(self.ReceiverCertificateThumbPrint))
+        return "{}(SecurityPolicy:{}, certificatesize:{}, receiverCertificatesize:{} )".format(
+            self.__class__.__name__, self.SecurityPolicyURI, len(self.SenderCertificate),
+            len(self.ReceiverCertificateThumbPrint))
     __repr__ = __str__
 
 
@@ -236,7 +239,8 @@ class SequenceHeader(uatypes.FrozenClass):
         return struct.calcsize("<II")
 
     def __str__(self):
-        return "{}(SequenceNumber:{}, RequestId:{} )".format(self.__class__.__name__, self.SequenceNumber, self.RequestId)
+        return "{}(SequenceNumber:{}, RequestId:{} )".format(
+            self.__class__.__name__, self.SequenceNumber, self.RequestId)
     __repr__ = __str__
 
 
@@ -412,7 +416,8 @@ class MessageChunk(uatypes.FrozenClass):
         return max_plain_size - SequenceHeader.max_size() - crypto.signature_size() - crypto.min_padding_size()
 
     @staticmethod
-    def message_to_chunks(security_policy, body, max_chunk_size, message_type=MessageType.SecureMessage, channel_id=1, request_id=1, token_id=1):
+    def message_to_chunks(security_policy, body, max_chunk_size,
+                          message_type=MessageType.SecureMessage, channel_id=1, request_id=1, token_id=1):
         """
         Pack message body (as binary string) into one or more chunks.
         Size of each chunk will not exceed max_chunk_size.
@@ -426,7 +431,8 @@ class MessageChunk(uatypes.FrozenClass):
             if security_policy.client_certificate:
                 chunk.SecurityHeader.SenderCertificate = security_policy.client_certificate
             if security_policy.server_certificate:
-                chunk.SecurityHeader.ReceiverCertificateThumbPrint = hashlib.sha1(security_policy.server_certificate).digest()
+                chunk.SecurityHeader.ReceiverCertificateThumbPrint =\
+                    hashlib.sha1(security_policy.server_certificate).digest()
             chunk.MessageHeader.ChannelId = channel_id
             chunk.SequenceHeader.RequestId = request_id
             return [chunk]
@@ -450,7 +456,8 @@ class MessageChunk(uatypes.FrozenClass):
 
     def __str__(self):
         return "{}({}, {}, {}, {} bytes)".format(self.__class__.__name__,
-                                                 self.MessageHeader, self.SequenceHeader, self.SecurityHeader, len(self.Body))
+                                                 self.MessageHeader, self.SequenceHeader,
+                                                 self.SecurityHeader, len(self.Body))
     __repr__ = __str__
 
 
@@ -557,9 +564,9 @@ class SecureConnection(object):
         if message_type is SecureMessage, the AlgoritmHeader should be passed as arg
         """
         if algohdr is None:
-            token_id =  self.channel.SecurityToken.TokenId
+            token_id = self.channel.SecurityToken.TokenId
         else:
-            token_id=algohdr.TokenId
+            token_id = algohdr.TokenId
         chunks = MessageChunk.message_to_chunks(
             self._security_policy, message, self._max_chunk_size,
             message_type=message_type,
@@ -745,6 +752,5 @@ class Argument(auto.Argument):
     def __init__(self):
         auto.Argument.__init__(self)
         self.ValueRank = -2
-
 
 #AttributeIdsInv = {v: k for k, v in AttributeIds.__dict__.items()}

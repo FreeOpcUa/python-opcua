@@ -274,7 +274,8 @@ class _FrozenClass(object):
 
     def __setattr__(self, key, value):
         if self._freeze and not hasattr(self, key):
-            raise TypeError("Error adding member '{}' to class '{}', class is frozen, members are {}".format(key, self.__class__.__name__, self.__dict__.keys()))
+            raise TypeError("Error adding member '{}' to class '{}', class is frozen, members are {}".format(
+                key, self.__class__.__name__, self.__dict__.keys()))
         object.__setattr__(self, key, value)
 
 if "PYOPCUA_NO_TYPO_CHECK" in os.environ:
@@ -302,6 +303,7 @@ class ValueRank(IntEnum):
     TwoDimensions = 2
     ThreeDimensions = 3
     FourDimensions = 4
+
 
 class _MaskEnum(IntEnum):
 
