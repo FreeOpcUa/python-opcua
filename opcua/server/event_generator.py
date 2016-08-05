@@ -5,7 +5,7 @@ import uuid
 from opcua import ua
 from opcua import Node
 from opcua.common import events
-from  opcua.common import event_objects
+from opcua.common import event_objects
 
 
 class EventGenerator(object):
@@ -55,7 +55,8 @@ class EventGenerator(object):
         if self.event.SourceNode:
             if source.nodeid != self.event.SourceNode:
                 self.logger.warning(
-                    "Source NodeId: '%s' and event SourceNode: '%s' are not the same. Using '%s' as SourceNode", str(source.nodeid), str(self.event.SourceNode), str(self.event.SourceNode))
+                    "Source NodeId: '%s' and event SourceNode: '%s' are not the same. Using '%s' as SourceNode",
+                    str(source.nodeid), str(self.event.SourceNode), str(self.event.SourceNode))
                 source = Node(self.isession, self.event.SourceNode)
 
         self.event.SourceNode = source.nodeid
@@ -71,7 +72,7 @@ class EventGenerator(object):
         ref.TargetNodeId = self.event.EventType
         refs.append(ref)
         results = self.isession.add_references(refs)
-        #result.StatusCode.check()
+        # result.StatusCode.check()
 
     def __str__(self):
         return "EventGenerator(Type:{}, Source:{}, Time:{}, Message: {})".format(self.event.EventType,
@@ -90,12 +91,10 @@ class EventGenerator(object):
         else:
             self.event.Time = datetime.utcnow()
         self.event.ReceiveTime = datetime.utcnow()
-        #FIXME: LocalTime is wrong but currently know better. For description s. Part 5 page 18
+        # FIXME: LocalTime is wrong but currently know better. For description s. Part 5 page 18
         self.event.LocalTime = datetime.utcnow()
         if message:
             self.event.Message = ua.LocalizedText(message)
         elif not self.event.Message:
             self.event.Message = ua.LocalizedText(Node(self.isession, self.event.SourceNode).get_browse_name().Text)
         self.isession.subscription_service.trigger_event(self.event)
-
-

@@ -188,7 +188,8 @@ class HistorySQLite(HistoryStorageInterface):
                     _c_sub.execute('DELETE FROM "{tn}" WHERE Time < ?'.format(tn=table),
                                    (date_limit.isoformat(' '),))
                 except sqlite3.Error as e:
-                    self.logger.error('Historizing SQL Delete Old Data Error for events from %s: %s', event.SourceNode, e)
+                    self.logger.error('Historizing SQL Delete Old Data Error for events from %s: %s',
+                                      event.SourceNode, e)
 
                 self._conn.commit()
 

@@ -68,15 +68,8 @@ class XMLParser(object):
         self._re_nodeid = re.compile(r"^ns=(?P<ns>\d+[^;]*);i=(?P<i>\d+)")
 
     def __iter__(self):
-        self.it = iter(self.root)
-        return self
-
-    def __next__(self):
-        while True:
-            if sys.version_info[0] < 3:
-                child = self.it.next()
-            else:
-                child = self.it.__next__()
+        nodes = []
+        for child in self.root:
             name = self._retag.match(child.tag).groups()[1]
             if name == "Aliases":
                 for el in child:
@@ -88,10 +81,90 @@ class XMLParser(object):
                     self.namespaces[ns_index + 1] = (ns_server_index, ns_uri)
             else:
                 node = self._parse_node(name, child)
-                return node
+                nodes.append(node)
+
+        # The ordering of nodes currently only works if namespaces are
+        # defined in XML.
+        # Also, it is recommended not to use node ids without namespace prefix!
+        if self.namespaces:
+            nodes = self._sort_nodes_by_parentid(nodes)
+
+        self.it = iter(nodes)
+        return self
+
+    def __next__(self):
+        while True:
+            if sys.version_info[0] < 3:
+                child = self.it.next()
+            else:
+                child = self.it.__next__()
+            return child
 
     def next(self):  # support for python2
         return self.__next__()
+
+    def _sort_nodes_by_parentid(self, nodes):
+        """
+        Sort the list of nodes according theire parent node in order to respect
+        the depency between nodes.
+
+        :param nodes: list of NodeDataObjects
+        :returns: list of sorted nodes
+        """
+        _nodes = list(nodes)
+        # list of node ids that are already sorted / inserted
+        sorted_nodes_ids = []
+        # list of sorted nodes (i.e. XML Elements)
+        sorted_nodes = []
+        # list of namespace indexes that are relevant for this import
+        # we can only respect ordering nodes for namespaces indexes that
+        # are defined in the xml file itself. Thus we assume that all other
+        # references namespaces are already known to the server and should
+        # not create any dependency problems (like "NodeNotFound")
+        relevant_namespaces = [str(i[0]) for i in self.namespaces.values()]
+        while len(_nodes) > 0:
+            pop_nodes = []
+            for node in _nodes:
+                insert = None
+                # Get the node and parent node namespace and id parts
+                node_ns, node_id = self._split_node_id(node.nodeid)
+                parent_ns, parent_id = self._split_node_id(node.parent)
+
+                # Insert nodes that
+                #   (1) have no parent / parent_ns is None (e.g. namespace 0)
+                #   (2) ns is not in list of relevant namespaces
+                if (parent_ns is None or node_ns not in relevant_namespaces or
+                    parent_id is None):
+                    insert = 0
+                else:
+                    # Check if the nodes parent is already in the list of
+                    # inserted nodes
+                    if node.parent in sorted_nodes_ids:
+                        insert = -1
+                if insert in [0, -1]:
+                    sorted_nodes.insert(insert, node)
+                    sorted_nodes_ids.insert(insert, node.nodeid)
+                    pop_nodes.append(node)
+
+            # Remove inserted nodes from the list
+            for node in pop_nodes:
+                _nodes.pop(_nodes.index(node))
+
+        return sorted_nodes
+
+    def _split_node_id(self, value):
+        """
+        Split the fq node id into namespace and id part.
+
+        :returns: (namespace, id)
+        """
+        if not value:
+            return (None, value)
+        r_match = self._re_nodeid.search(value)
+        if r_match:
+            return r_match.groups()
+
+        return (None, value)
 
     def _get_node_id(self, value):
         """
@@ -101,9 +174,9 @@ class XMLParser(object):
         :returns: NodeId (str)
         """
         result = value
-        r_match = self._re_nodeid.search(value)
-        if r_match:
-            node_ns, node_id = r_match.groups()
+
+        node_ns, node_id = self._split_node_id(value)
+        if node_ns:
             ns_server = self.namespaces.get(int(node_ns), None)
             if ns_server:
                 result = "ns={};i={}".format(ns_server[0], node_id)

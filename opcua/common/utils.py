@@ -87,9 +87,10 @@ class Buffer(object):
 
 class SocketWrapper(object):
     """
-    wrapper to make it possible to have same api for 
+    wrapper to make it possible to have same api for
     normal sockets, socket from asyncio, StringIO, etc....
     """
+
     def __init__(self, sock):
         self.socket = sock
 
