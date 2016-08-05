@@ -129,6 +129,7 @@ class XMLParser(object):
                 # Get the node and parent node namespace and id parts
                 node_ns, node_id = self._split_node_id(node.nodeid)
                 parent_ns, parent_id = self._split_node_id(node.parent)
+
                 # Insert nodes that
                 #   (1) have no parent / parent_ns is None (e.g. namespace 0)
                 #   (2) ns is not in list of relevant namespaces
@@ -140,6 +141,7 @@ class XMLParser(object):
                     # inserted nodes
                     if node.parent in sorted_nodes_ids:
                         insert = -1
+
                 if insert == 0:
                     sorted_nodes.insert(insert, node)
                     sorted_nodes_ids.insert(insert, node.nodeid)

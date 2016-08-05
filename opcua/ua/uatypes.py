@@ -452,11 +452,12 @@ class StatusCode(FrozenClass):
 
     def check(self):
         """
-        raise en exception if status code is anything else than 0
-        use is is_good() method if not exception is desired
+        Raises an exception if the status code is anything else than 0 (good).
+
+        Use the is_good() method if you do not want an exception.
         """
         if self.value != 0:
-            raise UaStatusCodeError("{}({})".format(self.doc, self.name))
+            raise UaStatusCodeError(self.value)
 
     def is_good(self):
         """
