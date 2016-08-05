@@ -6,41 +6,9 @@ Instantiate a new node and its child nodes from a node type.
 from opcua import Node
 from opcua import ua
 from opcua.common.uaerrors import UaError
+from opcua.common import ua_utils 
 
-#TODO: Should this be move to a more general location that instantiate.py ?
-def get_sub_types(server, node, includeitself=False, skipbase = True):
-    """
-    return get all subtype parents of node recursive
-    :param server: used in case node is nodeid         
-    :param node: can be a ua.Node or ua.NodeId
-    :param includeitself: include also node to the list
-    :param skipbase don't include the toplevel one
-    :returns list of ua.Node, top parent first 
-    """
-    parents =[]    
-    if isinstance(node, ua.NodeId): 
-        node = Node(server, node)    
-    if includeitself:
-        parents.append(node)
-    parents.extend(_get_sub_types(node))
-    if skipbase and len(parents) > 1:
-        parents = parents [:-1]
-        
-    return parents
 
-def _get_sub_types(node):
-    """
-    recursive implementation of get_sub_types
-    """
-    basetypes = []
-    parents = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
-    if len(parents) != 0:  
-        #TODO: Is it possible to have multiple subtypes ? If so extended support for it
-       basetypes.append(parents[0])  
-       basetypes.extend( _get_sub_types(parents[0]) )
-       
-    return basetypes
-    
 def instantiate(parent, node_type, nodeid=None, bname=None, idx=0):
     """
     instantiate a node type under a parent node.
@@ -107,7 +75,7 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
         res = server.add_nodes([addnode])[0]
         
         if recursive:
-            parents = get_sub_types( server,node_type, includeitself = True)
+            parents = ua_utils.get_node_supertypes(node_type, includeitself = True)
             for parent in parents:
                 descs = parent.get_children_descriptions(includesubtypes=False)
                 for c_rdesc in descs:
