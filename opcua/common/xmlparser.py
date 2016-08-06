@@ -141,15 +141,19 @@ class XMLParser(object):
                     # inserted nodes
                     if node.parent in sorted_nodes_ids:
                         insert = -1
-                if insert in [0, -1]:
+
+                if insert == 0:
                     sorted_nodes.insert(insert, node)
                     sorted_nodes_ids.insert(insert, node.nodeid)
+                    pop_nodes.append(node)
+                elif insert == -1:
+                    sorted_nodes.append(node)
+                    sorted_nodes_ids.append(node.nodeid)
                     pop_nodes.append(node)
 
             # Remove inserted nodes from the list
             for node in pop_nodes:
                 _nodes.pop(_nodes.index(node))
-
         return sorted_nodes
 
     def _split_node_id(self, value):
@@ -183,6 +187,9 @@ class XMLParser(object):
         return result
 
     def _parse_node(self, name, child):
+        """
+        Parse a XML node and create a NodeData object.
+        """
         obj = NodeData()
         obj.nodetype = name
         for key, val in child.attrib.items():

@@ -4,6 +4,7 @@ import logging
 import io
 from datetime import datetime
 import unittest
+from collections import namedtuple
 
 from opcua import ua
 from opcua.ua import extensionobject_from_binary
@@ -413,7 +414,7 @@ class TestUnit(unittest.TestCase):
         n = ua.NodeId(0, 3)
         self.assertFalse(n.is_null())
         self.assertTrue(n.has_null_identifier())
-    
+
     def test_where_clause(self):
         cf = ua.ContentFilter()
 
@@ -457,6 +458,33 @@ class TestUnit(unittest.TestCase):
         parser.namespaces = {1: [3, 'http://someuri.com']}
         res4 = parser._get_node_id('ns=2;i=1001')
         self.assertEqual(res4, 'ns=2;i=1001')
+
+    def test_xmlparser_sort_nodes_by_parentid(self):
+        NodeMock = namedtuple('NodeMock', 'nodeid parent')
+
+        server = None
+        # We actually dont need this. Thus we just pass the available file
+        xml_path = 'tests/custom_nodes.xml'
+
+        unordered_nodes = [
+            NodeMock('ns=1;i=1001', None),
+            NodeMock('ns=1;i=1002', 'ns=1;i=1003'),
+            NodeMock('ns=1;i=1003', 'ns=1;i=1001'),
+            NodeMock('ns=1;i=1004', 'ns=1;i=1002')
+        ]
+
+        ordered_nodes = [
+            unordered_nodes[0],
+            unordered_nodes[2],
+            unordered_nodes[1],
+            unordered_nodes[3],
+        ]
+        namespaces = {'1': (1, 'http://someuri.com')}
+
+        parser = XMLParser(xml_path, server)
+        parser.namespaces = namespaces
+        res = parser._sort_nodes_by_parentid(unordered_nodes)
+        self.assertEqual(res, ordered_nodes)
 
 
 class TestMaskEnum(unittest.TestCase):
