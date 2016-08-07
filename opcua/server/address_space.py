@@ -473,6 +473,13 @@ class AddressSpace(object):
         with self._lock:
             return self._nodes.keys()
 
+    def empty(self):
+        """
+        Delete all nodes in address space
+        """
+        with self._lock:
+            self._nodes = {}
+
     def dump(self, path):
         """
         dump address space as binary to file

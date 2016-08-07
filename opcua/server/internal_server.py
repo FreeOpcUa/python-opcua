@@ -64,6 +64,29 @@ class InternalServer(object):
         self.method_service = MethodService(self.aspace)
         self.node_mgt_service = NodeManagementService(self.aspace)
 
+        self.load_standard_address_space(cacheFile)
+
+        self.loop = utils.ThreadLoop()
+        self.asyncio_transports = []
+        self.subscription_service = SubscriptionService(self.loop, self.aspace)
+
+        self.history_manager = HistoryManager(self)
+
+        # create a session to use on server side
+        self.isession = InternalSession(self, self.aspace, self.subscription_service, "Internal", user=User.Admin)
+
+        self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
+        self.setup_nodes()
+
+    def setup_nodes(self):
+        """
+        Set up some nodes as defined by spec
+        """
+        uries = ["http://opcfoundation.org/UA/"]
+        ns_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
+        ns_node.set_value(uries)
+
+    def load_standard_address_space(self, cacheFile=None):
         if cacheFile and path.isfile(cacheFile):
             # import address space from shelve
             self.aspace.load(cacheFile)
@@ -74,26 +97,16 @@ class InternalServer(object):
             # importer = xmlimporter.XmlImporter(self.node_mgt_service)
             # importer.import_xml("/path/to/python-opcua/schemas/Opc.Ua.NodeSet2.xml", self)
 
-            if cacheFile:
-                self.aspace.dump(cacheFile)
-
-        self.loop = utils.ThreadLoop()
-        self.asyncio_transports = []
-        self.subscription_service = SubscriptionService(self.loop, self.aspace)
-
-        self.history_manager = HistoryManager(self)
-
-        # create a session to use on server side
-        self.isession = InternalSession(self, self.aspace, self.subscription_service, "Internal", user=User.Admin)
-        self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
-        uries = ["http://opcfoundation.org/UA/"]
-        ns_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
-        ns_node.set_value(uries)
-
     def load_address_space(self, path):
+        """
+        Load address space frfrom path
+        """
         self.aspace.load(path)
 
     def dump_address_space(self, path):
+        """
+        Dump current address space to path
+        """
         self.aspace.dump(path)
 
     def start(self):
