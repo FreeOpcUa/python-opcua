@@ -957,6 +957,7 @@ class EnumValueType(FrozenClass):
     :ivar Description:
     :vartype Description: LocalizedText
     '''
+
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)

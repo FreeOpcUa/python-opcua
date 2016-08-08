@@ -180,7 +180,7 @@ def get_event_properties_from_type_node(node):
         if curr_node.nodeid.Identifier == ua.ObjectIds.BaseEventType:
             break
 
-        parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
         if len(parents) != 1:  # Something went wrong
             return None
         curr_node = parents[0]
@@ -209,7 +209,7 @@ def get_event_obj_from_type_node(node):
                         name = prop.get_browse_name().Name
                         val = prop.get_data_value()
                         self.add_property(name, val.Value.Value, val.Value.VariantType)
-                    parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+                    parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
 
                     if len(parents) != 1:  # Something went wrong
                         raise UaError("Parent of event type could notbe found")
@@ -223,7 +223,7 @@ def get_event_obj_from_type_node(node):
 def _find_parent_eventtype(node):
     """
     """
-    parents = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+    parents = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
 
     if len(parents) != 1:   # Something went wrong
         raise UaError("Parent of event type could notbe found")

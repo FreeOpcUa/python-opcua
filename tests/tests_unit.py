@@ -4,6 +4,7 @@ import logging
 import io
 from datetime import datetime
 import unittest
+from collections import namedtuple
 
 from opcua import ua
 from opcua.ua import extensionobject_from_binary
@@ -12,7 +13,8 @@ from opcua.ua.uatypes import flatten, get_shape, reshape
 from opcua.server.internal_subscription import WhereClauseEvaluator
 from opcua.common.event_objects import BaseEvent
 from opcua.common.ua_utils import string_to_variant, variant_to_string, string_to_val, val_to_string
-
+from opcua.common.xmlparser import XMLParser
+from opcua.ua.uatypes import _MaskEnum
 
 
 class TestUnit(unittest.TestCase):
@@ -412,7 +414,7 @@ class TestUnit(unittest.TestCase):
         n = ua.NodeId(0, 3)
         self.assertFalse(n.is_null())
         self.assertTrue(n.has_null_identifier())
-    
+
     def test_where_clause(self):
         cf = ua.ContentFilter()
 
@@ -437,6 +439,77 @@ class TestUnit(unittest.TestCase):
         ev.property = 3
 
         self.assertTrue(wce.eval(ev))
+
+    def test_xmlparser_get_node_id(self):
+        server = None
+        xmlpath = 'tests/custom_nodes.xml'
+        parser = XMLParser(xmlpath, server)
+
+        res1 = parser._get_node_id('i=1001')
+        self.assertEqual(res1, 'i=1001')
+
+        res2 = parser._get_node_id('ns=1;i=1001')
+        self.assertEqual(res2, 'ns=1;i=1001')
+
+        parser.namespaces = {1: [3, 'http://someuri.com']}
+        res3 = parser._get_node_id('ns=1;i=1001')
+        self.assertEqual(res3, 'ns=3;i=1001')
+
+        parser.namespaces = {1: [3, 'http://someuri.com']}
+        res4 = parser._get_node_id('ns=2;i=1001')
+        self.assertEqual(res4, 'ns=2;i=1001')
+
+    def test_xmlparser_sort_nodes_by_parentid(self):
+        NodeMock = namedtuple('NodeMock', 'nodeid parent')
+
+        server = None
+        # We actually dont need this. Thus we just pass the available file
+        xml_path = 'tests/custom_nodes.xml'
+
+        unordered_nodes = [
+            NodeMock('ns=1;i=1001', None),
+            NodeMock('ns=1;i=1002', 'ns=1;i=1003'),
+            NodeMock('ns=1;i=1003', 'ns=1;i=1001'),
+            NodeMock('ns=1;i=1004', 'ns=1;i=1002')
+        ]
+
+        ordered_nodes = [
+            unordered_nodes[0],
+            unordered_nodes[2],
+            unordered_nodes[1],
+            unordered_nodes[3],
+        ]
+        namespaces = {'1': (1, 'http://someuri.com')}
+
+        parser = XMLParser(xml_path, server)
+        parser.namespaces = namespaces
+        res = parser._sort_nodes_by_parentid(unordered_nodes)
+        self.assertEqual(res, ordered_nodes)
+
+
+class TestMaskEnum(unittest.TestCase):
+    class MyEnum(_MaskEnum):
+        member1 = 0
+        member2 = 1
+
+    def test_invalid_input(self):
+        with self.assertRaises(ValueError):
+            self.MyEnum(12345)
+
+    def test_parsing(self):
+        self.assertEqual(self.MyEnum.parse_bitfield(0b0), set())
+        self.assertEqual(self.MyEnum.parse_bitfield(0b1), {self.MyEnum.member1})
+        self.assertEqual(self.MyEnum.parse_bitfield(0b10), {self.MyEnum.member2})
+        self.assertEqual(self.MyEnum.parse_bitfield(0b11), {self.MyEnum.member1, self.MyEnum.member2})
+
+    def test_identity(self):
+        bitfields = [0b00, 0b01, 0b10, 0b11]
+
+        for bitfield in bitfields:
+            as_set = self.MyEnum.parse_bitfield(bitfield)
+            back_to_bitfield = self.MyEnum.to_bitfield(as_set)
+            self.assertEqual(back_to_bitfield, bitfield)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARN)

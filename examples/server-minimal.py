@@ -16,7 +16,7 @@ if __name__ == "__main__":
     uri = "http://examples.freeopcua.github.io"
     idx = server.register_namespace(uri)
 
-    # get Objects node, this is where we should put our custom stuff
+    # get Objects node, this is where we should put our nodes
     objects = server.get_objects_node()
 
     # populating our address space

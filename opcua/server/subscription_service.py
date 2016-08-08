@@ -40,7 +40,7 @@ class SubscriptionService(object):
         res = []
         for i in ids:
             with self._lock:
-                if not i in self.subscriptions:
+                if i not in self.subscriptions:
                     res.append(ua.StatusCode(ua.StatusCodes.BadSubscriptionIdInvalid))
                 else:
                     sub = self.subscriptions.pop(i)
@@ -57,7 +57,7 @@ class SubscriptionService(object):
     def create_monitored_items(self, params):
         self.logger.info("create monitored items")
         with self._lock:
-            if not params.SubscriptionId in self.subscriptions:
+            if params.SubscriptionId not in self.subscriptions:
                 res = []
                 for _ in params.ItemsToCreate:
                     response = ua.MonitoredItemCreateResult()
@@ -69,7 +69,7 @@ class SubscriptionService(object):
     def modify_monitored_items(self, params):
         self.logger.info("modify monitored items")
         with self._lock:
-            if not params.SubscriptionId in self.subscriptions:
+            if params.SubscriptionId not in self.subscriptions:
                 res = []
                 for _ in params.ItemsToModify:
                     result = ua.MonitoredItemModifyResult()
@@ -81,17 +81,18 @@ class SubscriptionService(object):
     def delete_monitored_items(self, params):
         self.logger.info("delete monitored items")
         with self._lock:
-            if not params.SubscriptionId in self.subscriptions:
+            if params.SubscriptionId not in self.subscriptions:
                 res = []
                 for _ in params.MonitoredItemIds:
                     res.append(ua.StatusCode(ua.StatusCodes.BadSubscriptionIdInvalid))
                 return res
-            return self.subscriptions[params.SubscriptionId].monitored_item_srv.delete_monitored_items(params.MonitoredItemIds)
+            return self.subscriptions[params.SubscriptionId].monitored_item_srv.delete_monitored_items(
+                params.MonitoredItemIds)
 
     def republish(self, params):
         with self._lock:
-            if not params.SubscriptionId in self.subscriptions:
-                # what should I do?
+            if params.SubscriptionId not in self.subscriptions:
+                # TODO: what should I do?
                 return ua.NotificationMessage()
             return self.subscriptions[params.SubscriptionId].republish(params.RetransmitSequenceNumber)
 

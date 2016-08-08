@@ -41,8 +41,7 @@ if __name__ == "__main__":
     myevgen = server.get_event_generator(etype, myobj)
 
     # Creating a custom event: Approach 2
-    base_etype = server.get_node(ua.ObjectIds.BaseEventType)
-    custom_etype = base_etype.add_subtype(2, 'MySecondEvent')
+    custom_etype = server.nodes.base_event_type.add_object_type(2, 'MySecondEvent')
     custom_etype.add_property(2, 'MyIntProperty', ua.Variant(None, ua.VariantType.Int32))
     custom_etype.add_property(2, 'MyBoolProperty', ua.Variant(None, ua.VariantType.Boolean))
 

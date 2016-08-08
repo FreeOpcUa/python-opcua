@@ -175,6 +175,80 @@
                 </uax:ExtensionObject>
             </uax:ListOfExtensionObject>
         </Value>
+  </UAVariable>
+
+  <!-- test data Object with Method and MethodArguments -->
+  <UAObjectType NodeId="ns=1;i=1050" BrowseName="1:MyObjectType">
+      <DisplayName>MyObjectType</DisplayName>
+      <References>
+          <Reference ReferenceType="HasComponent">ns=1;i=7050</Reference>
+          <Reference ReferenceType="HasSubtype" IsForward="false">i=58</Reference>
+      </References>
+  </UAObjectType>
+  <UAMethod ParentNodeId="ns=1;i=1050" NodeId="ns=1;i=7050" BrowseName="1:MyMethod">
+      <DisplayName>MyMethod</DisplayName>
+      <References>
+          <Reference ReferenceType="HasProperty">ns=1;i=6050</Reference>
+          <Reference ReferenceType="HasModellingRule">i=78</Reference>
+          <Reference ReferenceType="HasComponent" IsForward="false">ns=1;i=1050</Reference>
+          <Reference ReferenceType="HasProperty">ns=1;i=6051</Reference>
+      </References>
+  </UAMethod>
+  <UAVariable DataType="Argument" ParentNodeId="ns=1;i=7050" ValueRank="1" NodeId="ns=1;i=6050" ArrayDimensions="1" BrowseName="InputArguments">
+      <DisplayName>InputArguments</DisplayName>
+      <References>
+          <Reference ReferenceType="HasProperty" IsForward="false">ns=1;i=7050</Reference>
+          <Reference ReferenceType="HasModellingRule">i=78</Reference>
+          <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      </References>
+      <Value>
+          <uax:ListOfExtensionObject>
+              <uax:ExtensionObject>
+                  <uax:TypeId>
+                      <uax:Identifier>i=297</uax:Identifier>
+                  </uax:TypeId>
+                  <uax:Body>
+                      <uax:Argument>
+                          <uax:Name>Context</uax:Name>
+                          <uax:DataType>
+                              <uax:Identifier>i=12</uax:Identifier>
+                          </uax:DataType>
+                          <uax:ValueRank>-1</uax:ValueRank>
+                          <uax:ArrayDimensions/>
+                          <uax:Description/>
+                      </uax:Argument>
+                  </uax:Body>
+              </uax:ExtensionObject>
+          </uax:ListOfExtensionObject>
+      </Value>
+  </UAVariable>
+  <UAVariable DataType="Argument" ParentNodeId="ns=1;i=7050" ValueRank="1" NodeId="ns=1;i=6051" ArrayDimensions="1" BrowseName="OutputArguments">
+      <DisplayName>OutputArguments</DisplayName>
+      <References>
+          <Reference ReferenceType="HasModellingRule">i=78</Reference>
+          <Reference ReferenceType="HasProperty" IsForward="false">ns=1;i=7050</Reference>
+          <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      </References>
+      <Value>
+          <uax:ListOfExtensionObject>
+              <uax:ExtensionObject>
+                  <uax:TypeId>
+                      <uax:Identifier>i=297</uax:Identifier>
+                  </uax:TypeId>
+                  <uax:Body>
+                      <uax:Argument>
+                          <uax:Name>Status</uax:Name>
+                          <uax:DataType>
+                              <uax:Identifier>i=6</uax:Identifier>
+                          </uax:DataType>
+                          <uax:ValueRank>-1</uax:ValueRank>
+                          <uax:ArrayDimensions/>
+                          <uax:Description/>
+                      </uax:Argument>
+                  </uax:Body>
+              </uax:ExtensionObject>
+          </uax:ListOfExtensionObject>
+      </Value>
   </UAVariable>    
       
 </UANodeSet>

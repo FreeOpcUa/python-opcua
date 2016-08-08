@@ -60,8 +60,6 @@ if __name__ == "__main__":
     # logger.setLevel(logging.DEBUG)
     #logger = logging.getLogger("opcua.uaprocessor")
     # logger.setLevel(logging.DEBUG)
-    logger = logging.getLogger("opcua.subscription_service")
-    logger.setLevel(logging.DEBUG)
 
     # now setup our server
     server = Server()
@@ -74,12 +72,22 @@ if __name__ == "__main__":
     uri = "http://examples.freeopcua.github.io"
     idx = server.register_namespace(uri)
 
-    # get Objects node, this is where we should put our custom stuff
-    objects = server.get_objects_node()
+    # create a new node type we can instantiate in our address space
+    dev = server.nodes.base_object_type.add_object_type(0, "MyDevice")
+    dev.add_variable(0, "sensor1", 1.0)
+    dev.add_property(0, "device_id", "0340")
+    ctrl = dev.add_object(0, "controller")
+    ctrl.add_property(0, "state", "Idle")
 
     # populating our address space
-    myfolder = objects.add_folder(idx, "myEmptyFolder")
-    myobj = objects.add_object(idx, "MyObject")
+
+    # First a folder to organise our nodes
+    myfolder = server.nodes.objects.add_folder(idx, "myEmptyFolder")
+    # instanciate one instance of our device
+    mydevice = server.nodes.objects.add_object(idx, "Device0001", dev)
+    mydevice_var = mydevice.get_child(["0:controller", "0:state"])  # get proxy to our device state variable 
+    # create directly some objects and variables
+    myobj = server.nodes.objects.add_object(idx, "MyObject")
     myvar = myobj.add_variable(idx, "MyVariable", 6.7)
     myvar.set_writable()    # Set MyVariable to be writable by clients
     mystringvar = myobj.add_variable(idx, "MyStringVariable", "Really nice string")
@@ -95,8 +103,9 @@ if __name__ == "__main__":
     # import some nodes from xml
     server.import_xml("custom_nodes.xml")
 
-    # creating an event object
+    # creating a default event object
     # The event object automatically will have members for all events properties
+    # you probably want to create a custom event type, see other examples
     myevgen = server.get_event_generator()
     myevgen.event.Severity = 300
 
@@ -109,6 +118,7 @@ if __name__ == "__main__":
         #sub = server.create_subscription(500, handler)
         #handle = sub.subscribe_data_change(myvar)
         # trigger event, all subscribed clients wil receive it
+        mydevice_var.set_value("Running")
         myevgen.trigger(message="This is BaseEvent")
 
         embed()

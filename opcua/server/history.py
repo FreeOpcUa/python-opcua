@@ -5,7 +5,6 @@ from datetime import datetime
 from opcua import Subscription
 from opcua import ua
 from opcua.common import utils
-from opcua.common import events
 
 
 class UaNodeAlreadyHistorizedError(ua.UaError):
@@ -77,8 +76,9 @@ class HistoryStorageInterface(object):
 
 class HistoryDict(HistoryStorageInterface):
     """
-    very minimal history back end storing data in memory using a Python dictionary
+    Very minimal history backend storing data in memory using a Python dictionary
     """
+
     def __init__(self):
         self._datachanges = {}
         self._datachanges_period = {}

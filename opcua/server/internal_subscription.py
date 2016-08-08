@@ -4,8 +4,8 @@ server side implementation of a subscription object
 
 from threading import RLock
 import logging
-import copy
-import traceback
+# import copy
+# import traceback
 
 from opcua import ua
 
@@ -124,7 +124,9 @@ class MonitoredItemService(object):
                          params.ItemToMonitor.AttributeId)
 
         result, mdata = self._make_monitored_item_common(params)
-        ev_notify_byte = self.aspace.get_attribute_value(params.ItemToMonitor.NodeId, ua.AttributeIds.EventNotifier).Value.Value
+        ev_notify_byte = self.aspace.get_attribute_value(
+            params.ItemToMonitor.NodeId, ua.AttributeIds.EventNotifier).Value.Value
+
         if ev_notify_byte is None or not ua.test_bit(ev_notify_byte, ua.EventNotifier.SubscribeToEvents):
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadServiceUnsupported)
             return result
@@ -143,7 +145,9 @@ class MonitoredItemService(object):
 
         result, mdata = self._make_monitored_item_common(params)
         result.FilterResult = params.RequestedParameters.Filter
-        result.StatusCode, handle = self.aspace.add_datachange_callback(params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId, self.datachange_callback)
+        result.StatusCode, handle = self.aspace.add_datachange_callback(
+            params.ItemToMonitor.NodeId, params.ItemToMonitor.AttributeId, self.datachange_callback)
+
         self.logger.debug("adding callback return status %s and handle %s", result.StatusCode, handle)
         mdata.callback_handle = handle
         self._commit_monitored_item(result, mdata)
@@ -221,7 +225,8 @@ class MonitoredItemService(object):
 
     def _trigger_event(self, event, mid):
         if mid not in self._monitored_items:
-            self.logger.debug("Could not find monitored items for id %s for event %s in subscription %s", mid, event, self)
+            self.logger.debug("Could not find monitored items for id %s for event %s in subscription %s",
+                              mid, event, self)
             return
         mdata = self._monitored_items[mid]
         if not mdata.where_clause_evaluator.eval(event):
@@ -284,14 +289,16 @@ class InternalSubscription(object):
             if self._startup or self._triggered_datachanges or self._triggered_events:
                 return True
             if self._keep_alive_count > self.data.RevisedMaxKeepAliveCount:
-                self.logger.debug("keep alive count %s is > than max keep alive count %s, sending publish event", self._keep_alive_count, self.data.RevisedMaxKeepAliveCount)
+                self.logger.debug("keep alive count %s is > than max keep alive count %s, sending publish event",
+                                  self._keep_alive_count, self.data.RevisedMaxKeepAliveCount)
                 return True
             self._keep_alive_count += 1
             return False
 
     def publish_results(self):
         if self._publish_cycles_count > self.data.RevisedLifetimeCount:
-            self.logger.warning("Subscription %s has expired, publish cycle count(%s) > lifetime count (%s)", self, self._publish_cycles_count, self.data.RevisedLifetimeCount)
+            self.logger.warning("Subscription %s has expired, publish cycle count(%s) > lifetime count (%s)",
+                                self, self._publish_cycles_count, self.data.RevisedLifetimeCount)
             # FIXME this will never be send since we do not have publish request anyway
             self.monitored_item_srv.trigger_statuschange(ua.StatusCode(ua.StatusCodes.BadTimeout))
             self._stopev = True
@@ -393,13 +400,14 @@ class WhereClauseEvaluator(object):
         try:
             res = self._eval_el(0, event)
         except Exception as ex:
-            self.logger.exception("Exception while evaluating WhereClause %s for event %s: %s", self.elements, event, ex)
+            self.logger.exception("Exception while evaluating WhereClause %s for event %s: %s",
+                                  self.elements, event, ex)
             return False
         return res
 
     def _eval_el(self, index, event):
         el = self.elements[index]
-        #ops = [self._eval_op(op, event) for op in el.FilterOperands]
+        # ops = [self._eval_op(op, event) for op in el.FilterOperands]
         ops = el.FilterOperands  # just to make code more readable
         if el.FilterOperator == ua.FilterOperator.Equals:
             return self._eval_op(ops[0], event) == self._eval_el(ops[1], event)

@@ -21,6 +21,7 @@ from opcua.common.manage_nodes import delete_nodes
 from opcua.client.client import Client
 from opcua.crypto import security_policies
 from opcua.common.event_objects import BaseEvent
+from opcua.common.shortcuts import Shortcuts
 use_crypto = True
 try:
     from opcua.crypto import uacrypto
@@ -66,10 +67,12 @@ class Server(object):
     :vartype default_timeout: InternalServer
     :ivar bserver: binary protocol server
     :vartype bserver: BinaryServer
+    :ivar nodes: shortcuts to common nodes
+    :vartype nodes: Shortcuts
 
     """
 
-    def __init__(self, cacheFile = None):
+    def __init__(self, cacheFile=None, iserver=None):
         self.logger = logging.getLogger(__name__)
         self.endpoint = urlparse("opc.tcp://0.0.0.0:4840/freeopcua/server/")
         self.application_uri = "urn:freeopcua:python:server"
@@ -77,13 +80,17 @@ class Server(object):
         self.name = "FreeOpcUa Python Server"
         self.application_type = ua.ApplicationType.ClientAndServer
         self.default_timeout = 3600000
-        self.iserver = InternalServer(cacheFile)
+        if iserver is not None:
+            self.iserver = iserver
+        else:
+            self.iserver = InternalServer(cacheFile)
         self.bserver = None
         self._discovery_clients = {}
         self._discovery_period = 60
         self.certificate = None
         self.private_key = None
         self._policies = []
+        self.nodes = Shortcuts(self.iserver.isession)
 
         # setup some expected values
         self.register_namespace(self.application_uri)
@@ -327,6 +334,8 @@ class Server(object):
         """
         ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         uries = ns_node.get_value()
+        if uri in uries:
+            return uries.index(uri)
         uries.append(uri)
         ns_node.set_value(uries)
         return len(uries) - 1
@@ -370,17 +379,17 @@ class Server(object):
         else:
             base_t = Node(self.iserver.isession, ua.NodeId(basetype))
 
-        custom_t = base_t.add_subtype(idx, name)
+        custom_t = base_t.add_object_type(idx, name)
         for property in properties:
             datatype = None
             if len(property) > 2:
                 datatype = property[2]
-            custom_t.add_property(idx, property[0], ua.Variant(None, property[1]), datatype)
+            custom_t.add_property(idx, property[0], None, varianttype=property[1], datatype=datatype)
         for variable in variables:
             datatype = None
             if len(variable) > 2:
                 datatype = variable[2]
-            custom_t.add_variable(idx, variable[0], ua.Variant(None, variable[1]), datatype)
+            custom_t.add_variable(idx, variable[0], None, varianttype=variable[1], datatype=datatype)
         for method in methods:
             custom_t.add_method(idx, method[0], method[1], method[2], method[3])
 
@@ -391,7 +400,7 @@ class Server(object):
         import nodes defined in xml
         """
         importer = xmlimporter.XmlImporter(self.iserver.node_mgt_service)
-        importer.import_xml(path)
+        importer.import_xml(path, self)
 
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.iserver.isession, nodes, recursive)

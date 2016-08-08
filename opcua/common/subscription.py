@@ -86,6 +86,10 @@ class Subscription(object):
         self.subscription_id = None
         response = self.server.create_subscription(params, self.publish_callback)
         self.subscription_id = response.SubscriptionId  # move to data class
+
+        # Launching two publish requests is a heuristic. We try to ensure
+        # that the server always has at least one publish request in the queue,
+        # even after it just replied to a publish request.
         self.server.publish()
         self.server.publish()
 
@@ -236,7 +240,7 @@ class Subscription(object):
         params = ua.CreateMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
         params.ItemsToCreate = monitored_items
-        params.TimestampsToReturn = ua.TimestampsToReturn.Neither
+        params.TimestampsToReturn = ua.TimestampsToReturn.Both
 
         # insert monitored item into map to avoid notification arrive before result return
         # server_handle is left as None in purpose as we don't get it yet.

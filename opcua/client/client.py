@@ -13,6 +13,7 @@ from opcua.common.manage_nodes import delete_nodes
 from opcua.common.subscription import Subscription
 from opcua.common import utils
 from opcua.crypto import security_policies
+from opcua.common.shortcuts import Shortcuts
 use_crypto = True
 try:
     from opcua.crypto import uacrypto
@@ -97,6 +98,7 @@ class Client(object):
         self.user_private_key = None
         self._session_counter = 1
         self.keepalive = None
+        self.nodes = Shortcuts(self.uaclient)
 
     def __enter__(self):
         self.connect()

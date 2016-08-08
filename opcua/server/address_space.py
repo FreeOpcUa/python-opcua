@@ -108,12 +108,13 @@ class ViewService(object):
     def _suitable_reftype(self, ref1, ref2, subtypes):
         """
         """
+        if not subtypes and ref2.Identifier == ua.ObjectIds.HasSubtype:
+            return False
         if ref1.Identifier == ref2.Identifier:
             return True
-        #TODO: Please check the changes here
-        elif not subtypes:
-            return False
         oktypes = self._get_sub_ref(ref1)
+        if not subtypes and ua.NodeId(ua.ObjectIds.HasSubtype) in oktypes:
+            oktypes.remove(ua.NodeId(ua.ObjectIds.HasSubtype))
         return ref2 in oktypes
 
     def _get_sub_ref(self, ref):

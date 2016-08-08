@@ -2,7 +2,7 @@
 implement ua datatypes
 """
 import logging
-from enum import Enum, IntEnum
+from enum import Enum, IntEnum, EnumMeta
 from datetime import datetime, timedelta, tzinfo, MAXYEAR
 from calendar import timegm
 import sys
@@ -10,6 +10,7 @@ import os
 import uuid
 import struct
 import re
+import itertools
 if sys.version_info.major > 2:
     unicode = str
 
@@ -273,7 +274,8 @@ class _FrozenClass(object):
 
     def __setattr__(self, key, value):
         if self._freeze and not hasattr(self, key):
-            raise TypeError("Error adding member '{}' to class '{}', class is frozen, members are {}".format(key, self.__class__.__name__, self.__dict__.keys()))
+            raise TypeError("Error adding member '{}' to class '{}', class is frozen, members are {}".format(
+                key, self.__class__.__name__, self.__dict__.keys()))
         object.__setattr__(self, key, value)
 
 if "PYOPCUA_NO_TYPO_CHECK" in os.environ:
@@ -300,65 +302,101 @@ class ValueRank(IntEnum):
     # the next names are not in spec but so common we express them here
     TwoDimensions = 2
     ThreeDimensions = 3
-    FourDimensions = 3
+    FourDimensions = 4
 
 
-class AccessLevel(IntEnum):
+class _MaskEnum(IntEnum):
+
+    @classmethod
+    def parse_bitfield(cls, the_int):
+        """ Take an integer and interpret it as a set of enum values. """
+        assert isinstance(the_int, int)
+
+        return {cls(b) for b in cls._bits(the_int)}
+
+    @classmethod
+    def to_bitfield(cls, collection):
+        """ Takes some enum values and creates an integer from them. """
+        # make sure all elements are of the correct type (use itertools.tee in case we get passed an
+        # iterator)
+        iter1, iter2 = itertools.tee(iter(collection))
+        assert all(isinstance(x, cls) for x in iter1)
+
+        return sum(x.mask for x in iter2)
+
+    @property
+    def mask(self):
+        return 1 << self.value
+
+    @staticmethod
+    def _bits(n):
+        """ Iterate over the bits in n.
+
+            e.g. bits(44) yields at 2, 3, 5
+        """
+        assert n >= 0 # avoid infinite recursion
+
+        pos = 0
+        while n:
+            if n & 0x1:
+                yield pos
+            n = n // 2
+            pos += 1
+
+class AccessLevel(_MaskEnum):
     """
+    Bit index to indicate what the access level is.
+
+    Spec Part 3, appears multiple times, e.g. paragraph 5.6.2 Variable NodeClass
     """
-    CurrentRead = 0
-    CurrentWrite = 1
-    HistoryRead = 2
-    HistoryWrite = 3
+    CurrentRead    = 0
+    CurrentWrite   = 1
+    HistoryRead    = 2
+    HistoryWrite   = 3
     SemanticChange = 4
+    StatusWrite    = 5
+    TimestampWrite = 6
 
+class WriteMask(_MaskEnum):
+    """
+    Bit index to indicate which attribute of a node is writable
 
-class AccessLevelMask(IntEnum):
+    Spec Part 3, Paragraph 5.2.7 WriteMask
     """
-    Mask for access level
-    """
-    CurrentRead = 1 << AccessLevel.CurrentRead
-    CurrentWrite = 1 << AccessLevel.CurrentWrite
-    HistoryRead = 1 << AccessLevel.HistoryRead
-    HistoryWrite = 1 << AccessLevel.HistoryWrite
-    SemanticChange = 1 << AccessLevel.SemanticChange
-
-
-class WriteMask(IntEnum):
-    """
-    Mask to indicate which attribute of a node is writable
-    Rmq: This is not a mask but bit index....
-    """
-    AccessLevel = 0
-    ArrayDimensions = 1
-    BrowseName = 2
-    ContainsNoLoops = 3
-    DataType = 4
-    Description = 5
-    DisplayName = 6
-    EventNotifier = 7
-    Executable = 8
-    Historizing = 9
-    InverseName = 10
-    IsAbstract = 11
+    AccessLevel             = 0
+    ArrayDimensions         = 1
+    BrowseName              = 2
+    ContainsNoLoops         = 3
+    DataType                = 4
+    Description             = 5
+    DisplayName             = 6
+    EventNotifier           = 7
+    Executable              = 8
+    Historizing             = 9
+    InverseName             = 10
+    IsAbstract              = 11
     MinimumSamplingInterval = 12
-    NodeClass = 13
-    NodeId = 14
-    Symmetric = 15
-    UserAccessLevel = 16
-    UserExecutable = 17
-    UserWriteMask = 18
-    ValueRank = 19
-    WriteMask = 20
-    ValueForVariableType = 21
+    NodeClass               = 13
+    NodeId                  = 14
+    Symmetric               = 15
+    UserAccessLevel         = 16
+    UserExecutable          = 17
+    UserWriteMask           = 18
+    ValueRank               = 19
+    WriteMask               = 20
+    ValueForVariableType    = 21
 
 
-class EventNotifier(IntEnum):
+class EventNotifier(_MaskEnum):
     """
+    Bit index to indicate how a node can be used for events.
+
+    Spec Part 3, appears multiple times, e.g. Paragraph 5.4 View NodeClass
     """
     SubscribeToEvents = 0
-    HistoryRead = 2
-    HistoryWrite = 3
+    # Reserved        = 1
+    HistoryRead       = 2
+    HistoryWrite      = 3
 
 
 class Guid(FrozenClass):
@@ -414,11 +452,12 @@ class StatusCode(FrozenClass):
 
     def check(self):
         """
-        raise en exception if status code is anything else than 0
-        use is is_good() method if not exception is desired
+        Raises an exception if the status code is anything else than 0 (good).
+
+        Use the is_good() method if you do not want an exception.
         """
         if self.value != 0:
-            raise UaStatusCodeError("{}({})".format(self.doc, self.name))
+            raise UaStatusCodeError(self.value)
 
     def is_good(self):
         """
@@ -729,6 +768,14 @@ class QualifiedName(FrozenClass):
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def __lt__(self, other):
+        if not isinstance(other, QualifiedName):
+            raise TypeError("Cannot compare QualifiedName and {}".format(other))
+        if self.NamespaceIndex == other.NamespaceIndex:
+            return self.Name < other.Name
+        else:
+            return self.NamespaceIndex < other.NamespaceIndex
 
     def __str__(self):
         return 'QualifiedName({}:{})'.format(self.NamespaceIndex, self.Name)
@@ -1231,36 +1278,3 @@ def DataType_to_VariantType(int_type):
         return VariantType(int_type)
     else:
         return VariantTypeCustom(int_type)
-
-
-def int_to_AccessLevel(level):
-    """
-    take an int and return a list of AccessLevel Enum
-    """
-    res = []
-    for val in AccessLevel:
-        test_bit(level, val.value)
-        res.append(val)
-    return res
-
-
-def int_to_WriteMask(level):
-    """
-    take an int and return a list of WriteMask Enum
-    """
-    res = []
-    for val in WriteMask:
-        test_bit(level, val.value)
-        res.append(val)
-    return res
-
-
-def int_to_EventNotifier(level):
-    """
-    take an int and return a list of EventNotifier Enum
-    """
-    res = []
-    for val in EventNotifier:
-        test_bit(level, val.value)
-        res.append(val)
-    return res

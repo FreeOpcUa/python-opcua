@@ -16,7 +16,7 @@ from opcua import uamethod
 from opcua.common.event_objects import BaseEvent, AuditEvent
 
 
-port_num = 485140
+port_num = 48540
 port_discovery = 48550
 
 
@@ -111,6 +111,14 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         idx2 = self.opc.get_namespace_index(uri)
         self.assertEqual(idx1, idx2)
 
+    def test_register_existing_namespace(self):
+        uri = 'http://mycustom.Namespace.com'
+        idx1 = self.opc.register_namespace(uri)
+        idx2 = self.opc.register_namespace(uri)
+        idx3 = self.opc.get_namespace_index(uri)
+        self.assertEqual(idx1, idx2)
+        self.assertEqual(idx1, idx3)
+
     def test_register_use_namespace(self):
         uri = 'http://my_very_custom.Namespace.com'
         idx = self.opc.register_namespace(uri)
@@ -135,8 +143,23 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         val = v.get_value()
         self.assertEqual(val, "StringValue")
 
-        o = self.opc.get_root_node().get_child(["Types", "DataTypes", "BaseDataType", "Enumeration", "1:MyEnum", "0:EnumStrings"])
+        node_path = ["Types", "DataTypes", "BaseDataType", "Enumeration",
+                     "1:MyEnum", "0:EnumStrings"]
+        o = self.opc.get_root_node().get_child(node_path)
         self.assertEqual(len(o.get_value()), 3)
+
+        # Check if method is imported
+        node_path = ["Types", "ObjectTypes", "BaseObjectType",
+                     "1:MyObjectType", "1:MyMethod"]
+        o = self.opc.get_root_node().get_child(node_path)
+        self.assertEqual(len(o.get_referenced_nodes()), 4)
+
+        # Check if InputArgs are imported and can be read
+        node_path = ["Types", "ObjectTypes", "BaseObjectType",
+                     "1:MyObjectType", "1:MyMethod", "InputArguments"]
+        o = self.opc.get_root_node().get_child(node_path)
+        input_arg = o.get_data_value().Value.Value[0]
+        self.assertEqual(input_arg.Name, 'Context')
 
     def test_historize_variable(self):
         o = self.opc.get_objects_node()
@@ -162,7 +185,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         nodes = o.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
         self.assertTrue(objects in nodes)
         self.assertEqual(o.get_parent(), objects)
-        self.assertEqual(o.get_type_definition(), ua.ObjectIds.BaseObjectType)
+        self.assertEqual(o.get_type_definition().Identifier, ua.ObjectIds.BaseObjectType)
 
         @uamethod
         def callback(parent):
@@ -288,17 +311,17 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
                      ('MyEnumVar', ua.VariantType.Int32, ua.NodeId(ua.ObjectIds.ApplicationType))]
         methods = [('MyMethod', func, [ua.VariantType.Int64], [ua.VariantType.Boolean])]
 
-        type = self.opc.create_custom_object_type(2, 'MyObjectType', ua.ObjectIds.BaseObjectType, properties, variables, methods)
+        node_type = self.opc.create_custom_object_type(2, 'MyObjectType', ua.ObjectIds.BaseObjectType, properties, variables, methods)
 
-        check_custom_type(self, type, ua.ObjectIds.BaseObjectType)
-        variables = type.get_variables()
-        self.assertTrue(type.get_child("2:VariableString") in variables)
-        self.assertEqual(type.get_child("2:VariableString").get_data_value().Value.VariantType, ua.VariantType.String)
-        self.assertTrue(type.get_child("2:MyEnumVar") in variables)
-        self.assertEqual(type.get_child("2:MyEnumVar").get_data_value().Value.VariantType, ua.VariantType.Int32)
-        self.assertEqual(type.get_child("2:MyEnumVar").get_data_type(), ua.NodeId(ua.ObjectIds.ApplicationType))
-        methods = type.get_methods()
-        self.assertTrue(type.get_child("2:MyMethod") in methods)
+        check_custom_type(self, node_type, ua.ObjectIds.BaseObjectType)
+        variables = node_type.get_variables()
+        self.assertTrue(node_type.get_child("2:VariableString") in variables)
+        self.assertEqual(node_type.get_child("2:VariableString").get_data_value().Value.VariantType, ua.VariantType.String)
+        self.assertTrue(node_type.get_child("2:MyEnumVar") in variables)
+        self.assertEqual(node_type.get_child("2:MyEnumVar").get_data_value().Value.VariantType, ua.VariantType.Int32)
+        self.assertEqual(node_type.get_child("2:MyEnumVar").get_data_type(), ua.NodeId(ua.ObjectIds.ApplicationType))
+        methods = node_type.get_methods()
+        self.assertTrue(node_type.get_child("2:MyMethod") in methods)
 
     #def test_create_custom_refrence_type_ObjectId(self):
         #type = self.opc.create_custom_reference_type(2, 'MyEvent', ua.ObjectIds.Base, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
@@ -363,16 +386,6 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests):
         self.assertEqual(evgen.event.PropertyNum, None)
         self.assertEqual(evgen.event.PropertyString, None)
 
-    def test_add_variable_with_datatype(self):
-        o = self.opc.get_objects_node()
-        v1 = o.add_variable(3, 'VariableEnumType1', ua.ApplicationType.ClientAndServer, None, ua.NodeId(ua.ObjectIds.ApplicationType))
-        tp1 = v1.get_data_type()
-        self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp1)
-
-        v2 = o.add_variable(3, 'VariableEnumType2', ua.ApplicationType.ClientAndServer, None, ua.NodeId(ua.ObjectIds.ApplicationType) )
-        tp2 = v2.get_data_type()
-        self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp2)
-
     def test_context_manager(self):
         """ Context manager calls start() and stop()
         """
@@ -396,7 +409,12 @@ def check_eventgenerator_SourceServer(test, evgen):
     server = test.opc.get_server_node()
     test.assertEqual(evgen.event.SourceName, server.get_browse_name().Name)
     test.assertEqual(evgen.event.SourceNode, ua.NodeId(ua.ObjectIds.Server))
-    test.assertEqual(server.get_attribute(ua.AttributeIds.EventNotifier).Value, ua.Variant(1, ua.VariantType.Byte))
+
+    test.assertEqual(
+        server.get_event_notifier(),
+        {ua.EventNotifier.SubscribeToEvents, ua.EventNotifier.HistoryRead}
+    )
+
     refs = server.get_referenced_nodes(ua.ObjectIds.GeneratesEvent, ua.BrowseDirection.Forward, ua.NodeClass.ObjectType, False)
     test.assertGreaterEqual(len(refs), 1)
 
@@ -404,7 +422,12 @@ def check_eventgenerator_SourceServer(test, evgen):
 def check_event_generator_object(test, evgen, obj):
     test.assertEqual(evgen.event.SourceName, obj.get_browse_name().Name)
     test.assertEqual(evgen.event.SourceNode, obj.nodeid)
-    test.assertEqual(obj.get_attribute(ua.AttributeIds.EventNotifier).Value, ua.Variant(1, ua.VariantType.Byte))
+
+    test.assertEqual(
+        obj.get_event_notifier(),
+        {ua.EventNotifier.SubscribeToEvents, ua.EventNotifier.HistoryRead}
+    )
+
     refs = obj.get_referenced_nodes(ua.ObjectIds.GeneratesEvent, ua.BrowseDirection.Forward, ua.NodeClass.ObjectType, False)
     test.assertEqual(len(refs), 1)
     test.assertEqual(refs[0].nodeid, evgen.event.EventType)
@@ -439,7 +462,7 @@ def check_custom_event(test, ev, etype):
 def check_custom_type(test, type, base_type):
     base = opcua.Node(test.opc.iserver.isession, ua.NodeId(base_type))
     test.assertTrue(type in base.get_children())
-    nodes = type.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+    nodes = type.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
     test.assertEqual(base, nodes[0])
     properties = type.get_properties()
     test.assertIsNot(properties, None)
