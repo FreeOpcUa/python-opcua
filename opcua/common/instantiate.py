@@ -76,9 +76,6 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
         if recursive:
             parents = ua_utils.get_node_supertypes(node_type, includeitself = True)
             node = Node(server, res.AddedNodeId)
-
-
-                
             for parent in parents:
                 descs = parent.get_children_descriptions(includesubtypes=False)
                 for c_rdesc in descs:
