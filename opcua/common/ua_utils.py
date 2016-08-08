@@ -7,6 +7,7 @@ from datetime import datetime
 from enum import Enum, IntEnum
 
 from opcua import ua
+from opcua.common.uaerrors import UaError
 
 
 def val_to_string(val):
@@ -103,3 +104,57 @@ def string_to_variant(string, vtype):
     return ua.Variant(string_to_val(string, vtype), vtype)
 
 
+def get_node_subtypes(node, nodes=None):
+    if nodes is None:
+        nodes = [node]
+    for child in node.get_children(refs=ua.ObjectIds.HasSubtype):
+        nodes.append(child)
+        get_node_subtypes(child, nodes)
+    return nodes
+
+
+def get_node_supertypes(node, includeitself = False, skipbase = True):
+    """
+    return get all subtype parents of node recursive
+    :param server: used in case node is nodeid         
+    :param node: can be a ua.Node or ua.NodeId
+    :param includeitself: include also node to the list
+    :param skipbase don't include the toplevel one
+    :returns list of ua.Node, top parent first 
+    """
+    parents =[]      
+    if includeitself:
+        parents.append(node)
+    parents.extend(_get_node_supertypes(node))
+    if skipbase and len(parents) > 1:
+        parents = parents [:-1]
+        
+    return parents
+
+
+def _get_node_supertypes(node):
+    """
+    recursive implementation of get_node_derived_from_types
+    """
+    basetypes = []
+    parents = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
+    if len(parents) != 0:  
+        #TODO: Is it possible to have multiple subtypes ? If so extended support for it
+       basetypes.append(parents[0])  
+       basetypes.extend( _get_node_supertypes(parents[0]) )
+       
+    return basetypes
+
+def is_child_present(node, browsename):
+    """
+    return if a browsename is present a child from the provide node
+    :param node: node wherein to find the browsename
+    :param browsename: browsename to search
+    :returns returne True if the browsename is present else False 
+    """
+    child_descs = node.get_children_descriptions()
+    for child_desc in child_descs:
+        if child_desc.BrowseName == browsename:
+            return True
+
+    return False

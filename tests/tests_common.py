@@ -559,6 +559,17 @@ class CommonTests(object):
         self.assertEqual(prop.get_type_definition().Identifier, ua.ObjectIds.PropertyType)
         self.assertEqual(prop.get_value(), "Running")
         self.assertNotEqual(prop.nodeid, prop_t.nodeid)
+        
+        # also test if all of all of parent type is instantiated 
+        devd_t = dev_t.add_object_type(0, "MyDeviceDervived")
+        v_t = devd_t.add_variable(0, "childparam", 1.0)
+        p_t = devd_t.add_property(0, "sensorx_id", "0340")
+         
+        mydevicederived = instantiate(self.opc.nodes.objects, devd_t, bname="2:Device0002")
+        prop1 = mydevicederived.get_child(["0:sensorx_id"])
+        var1 = mydevicederived.get_child(["0:childparam"])
+        var_parent = mydevicederived.get_child(["0:sensor"])
+        prop_parent = mydevicederived.get_child(["0:sensor_id"])        
 
 
     def test_variable_with_datatype(self):

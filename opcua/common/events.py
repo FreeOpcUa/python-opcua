@@ -3,6 +3,7 @@ import copy
 from opcua import ua
 import opcua
 from opcua.common.uaerrors import UaError
+from opcua.common import ua_utils
 
 
 class Event(object):
@@ -148,7 +149,7 @@ def where_clause_from_evtype(evtypes):
     # now create a list of all subtypes we want to accept
     subtypes = []
     for evtype in evtypes:
-        subtypes += [st.nodeid for st in get_node_subtypes(evtype)]
+        subtypes += [st.nodeid for st in ua_utils.get_node_subtypes(evtype)]
     subtypes = list(set(subtypes))  # remove duplicates
     for subtypeid in subtypes:
         op = ua.LiteralOperand()
@@ -159,15 +160,6 @@ def where_clause_from_evtype(evtypes):
     cf.Elements.append(el)
 
     return cf
-
-
-def get_node_subtypes(node, nodes=None):
-    if nodes is None:
-        nodes = [node]
-    for child in node.get_children(refs=ua.ObjectIds.HasSubtype):
-        nodes.append(child)
-        get_node_subtypes(child, nodes)
-    return nodes
 
 
 def get_event_properties_from_type_node(node):
