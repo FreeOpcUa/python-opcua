@@ -152,12 +152,9 @@ def is_child_present(node, browsename):
     :param browsename: browsename to search
     :returns returne True if the browsename is present else False 
     """
-    is_present = False
-
     child_descs = node.get_children_descriptions()
     for child_desc in child_descs:
         if child_desc.BrowseName == browsename:
-            is_present = True
-            break
+            return True
 
-    return is_present
+    return False
