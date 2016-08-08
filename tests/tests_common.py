@@ -560,7 +560,6 @@ class CommonTests(object):
         self.assertEqual(prop.get_value(), "Running")
         self.assertNotEqual(prop.nodeid, prop_t.nodeid)
         
-        print("=================")
         # also test if all of all of parent type is instantiated 
         devd_t = dev_t.add_object_type(0, "MyDeviceDervived")
         v_t = devd_t.add_variable(0, "childparam", 1.0)

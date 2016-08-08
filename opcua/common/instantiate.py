@@ -5,7 +5,6 @@ Instantiate a new node and its child nodes from a node type.
 
 from opcua import Node
 from opcua import ua
-from opcua.common.uaerrors import UaError
 from opcua.common import ua_utils 
 
 
@@ -76,15 +75,15 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
         
         if recursive:
             parents = ua_utils.get_node_supertypes(node_type, includeitself = True)
+            node = Node(server, res.AddedNodeId)
+
+
+                
             for parent in parents:
                 descs = parent.get_children_descriptions(includesubtypes=False)
                 for c_rdesc in descs:
-                    #TODO: smells, is there a better way to test if a browse name is already present ?                    
                     # skip items that already exists, prefer the 'lowest' one in object hierarchy
-                    node = Node(server, res.AddedNodeId)
-                    try:
-                        node.get_child(c_rdesc.BrowseName) 
-                    except UaError as e:
+                    if not ua_utils.is_child_present(node, c_rdesc.BrowseName):                    
                         _instantiate_node(server, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
                     
         return Node(server, res.AddedNodeId)

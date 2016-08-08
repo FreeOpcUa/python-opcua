@@ -7,6 +7,7 @@ from datetime import datetime
 from enum import Enum, IntEnum
 
 from opcua import ua
+from opcua.common.uaerrors import UaError
 
 
 def val_to_string(val):
@@ -143,3 +144,19 @@ def _get_node_supertypes(node):
        basetypes.extend( _get_node_supertypes(parents[0]) )
        
     return basetypes
+
+def is_child_present(node, browsename):
+    """
+    return if a browsename is present a child from the provide node
+    :param node: node wherein to find the browsename
+    :param browsename: browsename to search
+    :returns returne True if the browsename is present else False 
+    """
+    is_present = True
+    #TODO: Is there a better way to test if a browse name is already present then with an exception?                    
+    try:
+        node.get_child(browsename) 
+    except UaError as e:
+        is_present = False
+    
+    return is_present
