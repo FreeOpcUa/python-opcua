@@ -152,11 +152,12 @@ def is_child_present(node, browsename):
     :param browsename: browsename to search
     :returns returne True if the browsename is present else False 
     """
-    is_present = True
-    #TODO: Is there a better way to test if a browse name is already present then with an exception?                    
-    try:
-        node.get_child(browsename) 
-    except UaError as e:
-        is_present = False
-    
+    is_present = False
+
+    child_descs = node.get_children_descriptions()
+    for child_desc in child_descs:
+        if child_desc.BrowseName == browsename:
+            is_present = True
+            break
+
     return is_present
