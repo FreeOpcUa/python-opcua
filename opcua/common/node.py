@@ -5,7 +5,7 @@ and browse address space
 
 from opcua import ua
 from opcua.common import events
-import opcua.common 
+import opcua.common
 
 class Node(object):
 
@@ -485,32 +485,32 @@ class Node(object):
         result = self.server.history_read(params)[0]
         return result
 
-    def add_folder(self, nodeid, bname):
-        return  opcua.common.manage_nodes.create_folder(self, nodeid, bname)
- 
-    def add_object(self, nodeid, bname, objecttype=None):
-        return opcua.common.manage_nodes.create_object(self, nodeid, bname, objecttype)
- 
-    def add_variable(self, nodeid, bname, val, varianttype=None, datatype=None):
-        return opcua.common.manage_nodes.create_variable(self, nodeid, bname, val, varianttype, datatype)
- 
-    def add_object_type(self, nodeid, bname):
-        return opcua.common.manage_nodes.create_object_type(self, nodeid, bname)
- 
-    def add_variable_type(self, nodeid, bname, datatype):
-        return opcua.common.manage_nodes.create_variable_type(self, nodeid, bname, datatype)
- 
-    def add_data_type(self, nodeid, bname, description=None):
-        return opcua.common.manage_nodes.create_data_type(self, nodeid, bname, description=None)
- 
-    def add_property(self, nodeid, bname, val, varianttype=None, datatype=None):
-        return opcua.common.manage_nodes.create_property(self, nodeid, bname, val, varianttype, datatype)
- 
-    def add_method(self, *args):
-        return opcua.common.manage_nodes.create_method(self, *args)
- 
-    def add_reference_type(self, parent, nodeid, bname):
-        return opcua.common.manage_nodes.create_reference_type(parent, nodeid, bname)
-    
-    def call_method(parent, methodid, *args):
-        return opcua.common.methods.call_method(parent, methodid, *args)
+    def add_folder(self, *args, **kwargs):
+        return opcua.common.manage_nodes.create_folder(self, *args, **kwargs)
+
+    def add_object(self, *args, **kwargs):
+        return opcua.common.manage_nodes.create_object(self, *args, **kwargs)
+
+    def add_variable(self, *args, **kwargs):
+        return opcua.common.manage_nodes.create_variable(self, *args, **kwargs)
+
+    def add_object_type(self, *args, **kwargs):
+        return opcua.common.manage_nodes.create_object_type(self, *args, **kwargs)
+
+    def add_variable_type(self, *args, **kwargs):
+        return opcua.common.manage_nodes.create_variable_type(self, *args, **kwargs)
+
+    def add_data_type(self, *args, **kwargs):
+        return opcua.common.manage_nodes.create_data_type(self, *args, **kwargs)
+
+    def add_property(self, *args, **kwargs):
+        return opcua.common.manage_nodes.create_property(self, *args, **kwargs)
+
+    def add_method(self, *args, **kwargs):
+        return opcua.common.manage_nodes.create_method(self, *args, **kwargs)
+
+    def add_reference_type(self, *args, **kwargs):
+        return opcua.common.manage_nodes.create_reference_type(self, *args, **kwargs)
+
+    def call_method(self, *args, **kwargs):
+        return opcua.common.methods.call_method(self, *args, **kwargs)

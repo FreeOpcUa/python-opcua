@@ -388,5 +388,3 @@ def _add_childs(nodes):
     for mynode in nodes[:]:
         results += mynode.get_children()
     return results
-
-
