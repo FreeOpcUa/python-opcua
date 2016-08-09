@@ -12,6 +12,7 @@ from tests_unit import TestUnit, TestMaskEnum
 from tests_history import TestHistory, TestHistorySQL, TestHistoryLimits, TestHistorySQLLimits
 from tests_history import TestHistorySQL
 from tests_crypto_connect import TestCryptoConnect
+from tests_uaerrors import TestUaErrors
 
 
 if __name__ == '__main__':
