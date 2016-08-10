@@ -17,25 +17,31 @@ class XmlImporter(object):
         self.server = server
 
     def import_xml(self, xmlpath, act_server):
+        """
+        import xml and return added nodes
+        """
         self.logger.info("Importing XML file %s", xmlpath)
         self.parser = xmlparser.XMLParser(xmlpath, act_server)
+        nodes = []
         for node in self.parser:
             if node.nodetype == 'UAObject':
-                self.add_object(node)
+                node = self.add_object(node)
             elif node.nodetype == 'UAObjectType':
-                self.add_object_type(node)
+                node = self.add_object_type(node)
             elif node.nodetype == 'UAVariable':
-                self.add_variable(node)
+                node = self.add_variable(node)
             elif node.nodetype == 'UAVariableType':
-                self.add_variable_type(node)
+                node = self.add_variable_type(node)
             elif node.nodetype == 'UAReferenceType':
-                self.add_reference(node)
+                node = self.add_reference(node)
             elif node.nodetype == 'UADataType':
-                self.add_datatype(node)
+                node = self.add_datatype(node)
             elif node.nodetype == 'UAMethod':
-                self.add_method(node)
+                node = self.add_method(node)
             else:
                 self.logger.info("Not implemented node type: %s ", node.nodetype)
+            nodes.append(node)
+        return nodes
 
     def _get_node(self, obj):
         node = ua.AddNodesItem()
@@ -72,8 +78,9 @@ class XmlImporter(object):
         attrs.DisplayName = ua.LocalizedText(obj.displayname)
         attrs.EventNotifier = obj.eventnotifier
         node.NodeAttributes = attrs
-        self.server.add_nodes([node])
+        res = self.server.add_nodes([node])
         self._add_refs(obj)
+        return res[0].AddedNodeId
 
     def add_object_type(self, obj):
         node = self._get_node(obj)
@@ -83,8 +90,9 @@ class XmlImporter(object):
         attrs.DisplayName = ua.LocalizedText(obj.displayname)
         attrs.IsAbstract = obj.abstract
         node.NodeAttributes = attrs
-        self.server.add_nodes([node])
+        res = self.server.add_nodes([node])
         self._add_refs(obj)
+        return res[0].AddedNodeId
 
     def add_variable(self, obj):
         node = self._get_node(obj)
@@ -107,8 +115,9 @@ class XmlImporter(object):
         if obj.dimensions:
             attrs.ArrayDimensions = obj.dimensions
         node.NodeAttributes = attrs
-        self.server.add_nodes([node])
+        res = self.server.add_nodes([node])
         self._add_refs(obj)
+        return res[0].AddedNodeId
 
     def _add_variable_value(self, obj):
         """
@@ -156,8 +165,9 @@ class XmlImporter(object):
         if obj.dimensions:
             attrs.ArrayDimensions = obj.dimensions
         node.NodeAttributes = attrs
-        self.server.add_nodes([node])
+        res = self.server.add_nodes([node])
         self._add_refs(obj)
+        return res[0].AddedNodeId
 
     def add_method(self, obj):
         node = self._get_node(obj)
@@ -174,8 +184,9 @@ class XmlImporter(object):
         if obj.dimensions:
             attrs.ArrayDimensions = obj.dimensions
         node.NodeAttributes = attrs
-        self.server.add_nodes([node])
+        res = self.server.add_nodes([node])
         self._add_refs(obj)
+        return res[0].AddedNodeId
 
     def add_reference(self, obj):
         node = self._get_node(obj)
@@ -190,7 +201,7 @@ class XmlImporter(object):
         if obj.symmetric:
             attrs.Symmetric = obj.symmetric
         node.NodeAttributes = attrs
-        self.server.add_nodes([node])
+        res = self.server.add_nodes([node])
         self._add_refs(obj)
 
     def add_datatype(self, obj):
@@ -202,8 +213,9 @@ class XmlImporter(object):
         if obj.abstract:
             attrs.IsAbstract = obj.abstract
         node.NodeAttributes = attrs
-        self.server.add_nodes([node])
+        res = self.server.add_nodes([node])
         self._add_refs(obj)
+        return res[0].AddedNodeId
 
     def _add_refs(self, obj):
         if not obj.refs:
