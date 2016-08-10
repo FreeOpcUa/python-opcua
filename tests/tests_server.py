@@ -480,7 +480,8 @@ class TestServerCaching(unittest.TestCase):
         tmpfile.close()
 
         # create cache file
-        server = Server(cacheFile=path)
+        server = Server()
+        server.iserver.dump_address_space(path)
 
         # modify cache content
         id = ua.NodeId(ua.ObjectIds.Server_ServerStatus_SecondsTillShutdown)

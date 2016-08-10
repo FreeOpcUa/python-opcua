@@ -400,7 +400,7 @@ class Server(object):
         import nodes defined in xml
         """
         importer = xmlimporter.XmlImporter(self.iserver.node_mgt_service)
-        importer.import_xml(path, self)
+        return importer.import_xml(path, self)
 
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.iserver.isession, nodes, recursive)
