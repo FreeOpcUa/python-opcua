@@ -10,7 +10,7 @@ from functools import partial
 
 from opcua import ua
 from opcua.common import utils
-from opcua.common.uaerrors import UaError, BadTimeout, BadNoSubscription
+from opcua.common.uaerrors import UaError, BadTimeout, BadNoSubscription, BadSessionClosed
 
 
 class UASocketClient(object):
@@ -254,8 +254,15 @@ class UaClient(object):
         request = ua.CloseSessionRequest()
         request.DeleteSubscriptions = deletesubscriptions
         data = self._uasocket.send_request(request)
-        ua.CloseSessionResponse.from_binary(data)
-        # response.ResponseHeader.ServiceResult.check() #disabled, it seems we sent wrong session Id, but where is the sessionId supposed to be sent???
+        response = ua.CloseSessionResponse.from_binary(data)
+        try:
+            response.ResponseHeader.ServiceResult.check()
+        except BadSessionClosed:
+            # Problem: closing the session with open publish requests leads to BadSessionClosed responses
+            #          we can just ignore it therefore.
+            #          Alternatively we could make sure that there are no publish requests in flight when
+            #          closing the session.
+            pass
 
     def browse(self, parameters):
         self.logger.info("browse")
