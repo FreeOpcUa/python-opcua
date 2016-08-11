@@ -25,19 +25,26 @@ except ImportError:
 class KeepAlive(Thread):
 
     """
-    Used by Client to keep session opened.
+    Used by Client to keep the session open.
     OPCUA defines timeout both for sessions and secure channel
     """
 
     def __init__(self, client, timeout):
+        """
+        :param session_timeout: Timeout to re-new the session
+            in milliseconds.
+        """
         Thread.__init__(self)
         self.logger = logging.getLogger(__name__)
-        if timeout == 0:  # means no timeout bu we do not trust such servers
-            timeout = 360000
-        self.timeout = timeout
+
         self.client = client
         self._dostop = False
         self._cond = Condition()
+        self.timeout = timeout
+
+        # some server support no timeout, but we do not trust them
+        if self.timeout == 0:
+            self.timeout = 3600000 # 1 hour
 
     def run(self):
         self.logger.debug("starting keepalive thread with period of %s milliseconds", self.timeout)
@@ -74,12 +81,14 @@ class Client(object):
 
     def __init__(self, url, timeout=4):
         """
-        used url argument to connect to server.
-        if you are unsure of url, write at least hostname and port
-        and call get_endpoints
-        timeout is the timeout to get an answer for requests to server
-        public member of this call are available to be set by API users
 
+        :param url: url of the server.
+            if you are unsure of url, write at least hostname
+            and port and call get_endpoints
+
+        :param timeout:
+            Each request sent to the server expects an answer within this
+            time. The timeout is specified in seconds.
         """
         self.logger = logging.getLogger(__name__)
         self.server_url = urlparse(url)
@@ -89,9 +98,8 @@ class Client(object):
         self.product_uri = "urn:freeopcua.github.no:client"
         self.security_policy = ua.SecurityPolicy()
         self.secure_channel_id = None
-        self.default_timeout = 3600000
-        self.secure_channel_timeout = self.default_timeout
-        self.session_timeout = self.default_timeout
+        self.secure_channel_timeout = 3600000 # 1 hour
+        self.session_timeout = 3600000 # 1 hour
         self._policy_ids = []
         self.uaclient = UaClient(timeout)
         self.user_certificate = None
