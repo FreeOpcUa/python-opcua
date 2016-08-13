@@ -551,7 +551,8 @@ class CommonTests(object):
         ctrl_t = dev_t.add_object(0, "controller")
         prop_t = ctrl_t.add_property(0, "state", "Running")
 
-        mydevice = instantiate(self.opc.nodes.objects, dev_t, bname="2:Device0001")
+        nodes = instantiate(self.opc.nodes.objects, dev_t, bname="2:Device0001")
+        mydevice = nodes[0]
 
         self.assertEqual(mydevice.get_type_definition(), dev_t.nodeid)
         obj = mydevice.get_child(["0:controller"])
@@ -565,7 +566,8 @@ class CommonTests(object):
         v_t = devd_t.add_variable(0, "childparam", 1.0)
         p_t = devd_t.add_property(0, "sensorx_id", "0340")
          
-        mydevicederived = instantiate(self.opc.nodes.objects, devd_t, bname="2:Device0002")
+        nodes = instantiate(self.opc.nodes.objects, devd_t, bname="2:Device0002")
+        mydevicederived = nodes[0] 
         prop1 = mydevicederived.get_child(["0:sensorx_id"])
         var1 = mydevicederived.get_child(["0:childparam"])
         var_parent = mydevicederived.get_child(["0:sensor"])

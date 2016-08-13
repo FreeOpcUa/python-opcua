@@ -51,7 +51,7 @@ def create_object(parent, nodeid, bname, objecttype=None):
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
     if objecttype is not None:
         objecttype = node.Node(parent.server, objecttype)
-        return instantiate(parent, objecttype, nodeid, bname)
+        return instantiate(parent, objecttype, nodeid, bname)[0]
     else:
         return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, ua.ObjectIds.BaseObjectType))
 
