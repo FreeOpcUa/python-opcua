@@ -445,7 +445,7 @@ class AddressSpace(object):
         self._datachange_callback_counter = 200
         self._handle_to_attribute_map = {}
         self._default_idx = 2
-        self._nodeid_counter = 2000
+        self._nodeid_counter = {0: 20000, 1: 2000}
 
     def __getitem__(self, nodeid):
         with self._lock:
@@ -463,11 +463,14 @@ class AddressSpace(object):
         with self._lock:
             self._nodes.__delitem__(nodeid)
 
-    def generate_nodeid(self, idx=0):
-        if not idx:
+    def generate_nodeid(self, idx=None):
+        if idx is None:
             idx = self._default_idx
-        self._nodeid_counter += 1
-        return ua.NodeId(self._nodeid_counter, idx)
+        if idx in self._nodeid_counter:
+            self._nodeid_counter[idx] += 1
+        else:
+            self._nodeid_counter[idx] = 1
+        return ua.NodeId(self._nodeid_counter[idx], idx)
 
     def keys(self):
         with self._lock:
