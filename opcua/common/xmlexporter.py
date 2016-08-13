@@ -15,6 +15,7 @@ class XmlExporter(object):
         self.logger = logging.getLogger(__name__)
         self.etree = Et.ElementTree(Et.Element('UANodeSet', node_set_attrs))
         self.server = server
+        self.aliases = {}
 
     def build_etree(self, node_list):
         """
@@ -27,16 +28,16 @@ class XmlExporter(object):
         self.logger.info('Building XML etree')
 
         # add all namespace uris to the XML etree
-        self._get_xml_namespace_uris()  # TODO not done yet
-
-        # add all required aliases to the XML etree
-        self._get_xml_aliases()  # TODO not done yet
+        self._add_namespace_uri_els()  # TODO not done yet
 
         # add all nodes in the list to the XML etree
         for node in node_list:
             self.node_to_etree(node)
 
-    def export_xml(self, xmlpath):
+        # add all required aliases to the XML etree; must be done after nodes are added
+        self._add_alias_els()
+
+    def write_xml(self, xmlpath):
         """
         Write the XML etree in the exporter object to a file
         Args:
@@ -70,21 +71,21 @@ class XmlExporter(object):
         node_class = node.get_node_class()
 
         if node_class is ua.NodeClass.Object:
-            self.add_object_xml(node)
+            self.add_etree_object(node)
         elif node_class is ua.NodeClass.ObjectType:
-            self.add_object_type_xml(node)
+            self.add_etree_object_type(node)
         elif node_class is ua.NodeClass.Variable:
-            self.add_variable_xml(node)
+            self.add_etree_variable(node)
         elif node_class is ua.NodeClass.VariableType:
-            self.add_variable_type_xml(node)
+            self.add_etree_variable_type(node)
         elif node_class is ua.NodeClass.RefernceType:
-            self.add_reference_xml(node)
+            self.add_etree_reference(node)
         elif node_class is ua.NodeClass.DataType:
-            self.add_datatype_xml(node)
+            self.add_etree_datatype(node)
         elif node_class is ua.NodeClass.Method:
-            self.add_method_xml(node)
+            self.add_etree_method(node)
         else:
-            self.logger.info("Not implemented node type: %s ", node_class)
+            self.logger.info("Exporting node class not implemented: %s ", node_class)
 
     def _get_node(self, obj):
         # TODO not sure if this is required for exporter, check on functionality
@@ -103,9 +104,9 @@ class XmlExporter(object):
         #     node.TypeDefinition = ua.NodeId.from_string(obj.typedef)
         # return node
 
-    def add_object_xml(self, obj):
+    def add_etree_object(self, obj):
         """
-        Add a UA object element to the XML tree
+        Add a UA object element to the XML etree
         """
         browsename = obj.get_browse_name().to_string()
         nodeid = obj.nodeid.to_string()
@@ -122,28 +123,36 @@ class XmlExporter(object):
         disp_el = Et.SubElement(obj_el, 'DisplayName', )
         disp_el.text = displayname
 
-        self._add_ref_sub_els(obj_el, refs)
+        self._add_ref_els(obj_el, refs)
 
-    def add_object_type_xml(self, obj):
-        pass
-
-        # ORIGINAL CODE FROM IMPORTER
-        # node = self._get_node(obj)
-        # attrs = ua.ObjectTypeAttributes()
-        # if obj.desc:
-        #     attrs.Description = ua.LocalizedText(obj.desc)
-        # attrs.DisplayName = ua.LocalizedText(obj.displayname)
-        # attrs.IsAbstract = obj.abstract
-        # node.NodeAttributes = attrs
-        # self.server.add_nodes([node])
-        # self._add_refs(obj)
-
-    def add_variable_xml(self, obj):
+    def add_etree_object_type(self, obj):
         """
-        Add a UA variable element to the XML tree
+        Add a UA object type element to the XML etree
+        """
+        browsename = obj.get_browse_name().to_string()
+        nodeid = obj.nodeid.to_string()
+
+        displayname = obj.get_display_name().Text.decode(encoding='UTF8')
+
+        refs = obj.get_references()
+
+        obj_el = Et.SubElement(self.etree.getroot(),
+                               'UAObject',
+                               BrowseName=browsename,
+                               NodeId=nodeid)
+
+        disp_el = Et.SubElement(obj_el, 'DisplayName', )
+        disp_el.text = displayname
+
+        self._add_ref_els(obj_el, refs)
+
+    def add_etree_variable(self, obj):
+        """
+        Add a UA variable element to the XML etree
         """
         browsename = obj.get_browse_name().to_string()
         datatype = o_ids.ObjectIdNames[obj.get_data_type().Identifier]
+        datatype_nodeid = obj.get_data_type().to_string()
         nodeid = obj.nodeid.to_string()
         parent = obj.get_parent().nodeid.to_string()
         acccesslevel = str(obj.get_attribute(ua.AttributeIds.AccessLevel).Value.Value)
@@ -153,7 +162,7 @@ class XmlExporter(object):
 
         value = str(obj.get_value())
 
-        refs = obj.get_references()  # []  # TODO get list of refs here
+        refs = obj.get_references()
 
         var_el = Et.SubElement(self.etree.getroot(),
                                'UAVariable',
@@ -167,123 +176,51 @@ class XmlExporter(object):
         disp_el = Et.SubElement(var_el, 'DisplayName', )
         disp_el.text = displayname
 
-        self._add_ref_sub_els(var_el, refs)
+        self._add_ref_els(var_el, refs)
 
         val_el = Et.SubElement(var_el, 'Value')
 
         valx_el = Et.SubElement(val_el, 'uax:' + datatype)
         valx_el.text = value
 
-    def add_variable_type_xml(self, obj):
+        # add any references that get used to aliases dict; this gets handled later
+        self.aliases[datatype] = datatype_nodeid
+
+    def add_etree_variable_type(self, obj):
         pass
 
-        # ORIGINAL CODE FROM IMPORTER
-        # node = self._get_node(obj)
-        # attrs = ua.VariableTypeAttributes()
-        # if obj.desc:
-        #     attrs.Description = ua.LocalizedText(obj.desc)
-        # attrs.DisplayName = ua.LocalizedText(obj.displayname)
-        # attrs.DataType = self.to_nodeid(obj.datatype)
-        # if obj.value and len(obj.value) == 1:
-        #     attrs.Value = obj.value[0]
-        # if obj.rank:
-        #     attrs.ValueRank = obj.rank
-        # if obj.abstract:
-        #     attrs.IsAbstract = obj.abstract
-        # if obj.dimensions:
-        #     attrs.ArrayDimensions = obj.dimensions
-        # node.NodeAttributes = attrs
-        # self.server.add_nodes([node])
-        # self._add_refs(obj)
-
-    def add_method_xml(self, obj):
+    def add_etree_method(self, obj):
         pass
 
-        # ORIGINAL CODE FROM IMPORTER
-        # node = self._get_node(obj)
-        # attrs = ua.MethodAttributes()
-        # if obj.desc:
-        #     attrs.Description = ua.LocalizedText(obj.desc)
-        # attrs.DisplayName = ua.LocalizedText(obj.displayname)
-        # if obj.accesslevel:
-        #     attrs.AccessLevel = obj.accesslevel
-        # if obj.useraccesslevel:
-        #     attrs.UserAccessLevel = obj.useraccesslevel
-        # if obj.minsample:
-        #     attrs.MinimumSamplingInterval = obj.minsample
-        # if obj.dimensions:
-        #     attrs.ArrayDimensions = obj.dimensions
-        # node.NodeAttributes = attrs
-        # self.server.add_nodes([node])
-        # self._add_refs(obj)
-
-    def add_reference_xml(self, obj):
-        # MAY NOT BE NEEDED
+    def add_etree_reference(self, obj):
         pass
 
-        # ORIGINAL CODE FROM IMPORTER
-        # node = self._get_node(obj)
-        # attrs = ua.ReferenceTypeAttributes()
-        # if obj.desc:
-        #     attrs.Description = ua.LocalizedText(obj.desc)
-        # attrs.DisplayName = ua.LocalizedText(obj.displayname)
-        # if obj. inversename:
-        #     attrs.InverseName = ua.LocalizedText(obj.inversename)
-        # if obj.abstract:
-        #     attrs.IsAbstract = obj.abstract
-        # if obj.symmetric:
-        #     attrs.Symmetric = obj.symmetric
-        # node.NodeAttributes = attrs
-        # self.server.add_nodes([node])
-        # self._add_refs(obj)
-
-    def add_datatype_xml(self, obj):
+    def add_etree_datatype(self, obj):
         pass
 
-        # ORIGINAL CODE FROM IMPORTER
-        # node = self._get_node(obj)
-        # attrs = ua.DataTypeAttributes()
-        # if obj.desc:
-        #     attrs.Description = ua.LocalizedText(obj.desc)
-        # attrs.DisplayName = ua.LocalizedText(obj.displayname)
-        # if obj.abstract:
-        #     attrs.IsAbstract = obj.abstract
-        # node.NodeAttributes = attrs
-        # self.server.add_nodes([node])
-        # self._add_refs(obj)
-
-    def _add_refs(self, obj):
-        # MAY NOT BE NEEDED
-        pass
-
-        # ORIGINAL CODE FROM IMPORTER
-        # if not obj.refs:
-        #     return
-        # refs = []
-        # for data in obj.refs:
-        #     ref = ua.AddReferencesItem()
-        #     ref.IsForward = True
-        #     ref.ReferenceTypeId = self.to_nodeid(data.reftype)
-        #     ref.SourceNodeId = ua.NodeId.from_string(obj.nodeid)
-        #     ref.TargetNodeClass = ua.NodeClass.DataType
-        #     ref.TargetNodeId = ua.NodeId.from_string(data.target)
-        #     refs.append(ref)
-        # self.server.add_references(refs)
-
-    def _get_xml_namespace_uris(self):
+    def _add_namespace_uri_els(self):
         # TODO name space uris should be exported
         pass
 
-    def _get_xml_aliases(self):
-        # TODO aliases need to be created at the top of the xml
-        pass
+    def _add_alias_els(self):
 
-    @staticmethod
-    def _add_ref_sub_els(parent_el, refs):
+        aliases_el = Et.Element('Aliases')
+
+        for k, v in self.aliases.items():
+            ref_el = Et.SubElement(aliases_el, 'Alias', Alias=k)
+            ref_el.text = v
+
+        self.etree.getroot().insert(0, aliases_el)
+
+    def _add_ref_els(self, parent_el, refs):
         refs_el = Et.SubElement(parent_el, 'References')
 
         for ref in refs:
             ref_name = o_ids.ObjectIdNames[ref.ReferenceTypeId.Identifier]
             ref_forward = str(ref.IsForward)
-            refx_el = Et.SubElement(refs_el, 'Reference', IsForward=ref_forward, ReferenceType=ref_name)
-            refx_el.text = ref.NodeId.to_string()
+            ref_nodeid = ref.NodeId.to_string()
+            ref_el = Et.SubElement(refs_el, 'Reference', IsForward=ref_forward, ReferenceType=ref_name)
+            ref_el.text = ref_nodeid
+
+            # add any references that gets used to aliases dict; this gets handled later
+            self.aliases[ref_name] = ref_nodeid
