@@ -485,6 +485,18 @@ class Node(object):
         result = self.server.history_read(params)[0]
         return result
 
+    def delete(self, delete_references=True):
+        """
+        Delete node from address space
+        """
+        ditem = ua.DeleteNodesItem()
+        ditem.NodeId = self.nodeid
+        ditem.DeleteTargetReferences = delete_references
+        params = ua.DeleteNodesParameters()
+        params.NodesToDelete = [ditem]
+        result = self.server.delete_nodes(params)
+        result[0].check()
+
     def add_folder(self, nodeid, bname):
         return  opcua.common.manage_nodes.create_folder(self, nodeid, bname)
  

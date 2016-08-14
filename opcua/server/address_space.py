@@ -276,7 +276,7 @@ class NodeManagementService(object):
 
     def delete_nodes(self, deletenodeitems, user=User.Admin):
         results = []
-        for item in deletenodeitems:
+        for item in deletenodeitems.NodesToDelete:
             results.append(self._delete_node(item, user))
         return results
 
