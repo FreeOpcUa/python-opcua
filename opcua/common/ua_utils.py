@@ -104,6 +104,18 @@ def string_to_variant(string, vtype):
     return ua.Variant(string_to_val(string, vtype), vtype)
 
 
+def get_node_children(node, nodes=None):
+    """
+    Get recursively all children of a node
+    """
+    if nodes is None:
+        nodes = [node]
+    for child in node.get_children():
+        nodes.append(child)
+        get_node_children(child, nodes)
+    return nodes
+
+
 def get_node_subtypes(node, nodes=None):
     if nodes is None:
         nodes = [node]

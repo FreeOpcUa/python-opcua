@@ -2,15 +2,15 @@ from opcua import ua
 from opcua import Node
 
 
-def copy_node(parent, node, nodeid=None, idx=0, recursive=True):
+def copy_node(parent, node, nodeid=None, recursive=True):
     """
     Copy a node or node tree as child of parent node
     """
-    print("Copying", node, "into ", parent, "in idx", idx)
+    print("Copying", node, "into ", parent)
     rdesc = _rdesc_from_node(parent, node)
 
     if nodeid is None:
-        nodeid = ua.NodeId(namespaceidx=idx)  # will trigger automatic node generation in namespace idx
+        nodeid = ua.NodeId(namespaceidx=node.nodeid.NamespaceIndex)
     added_nodeids = _copy_node(parent.server, parent.nodeid, rdesc, nodeid, recursive)
     return [Node(parent.server, nid) for nid in added_nodeids]
 
@@ -24,21 +24,19 @@ def _copy_node(server, parent_nodeid, rdesc, nodeid, recursive):
     addnode.TypeDefinition = rdesc.TypeDefinition
     addnode.NodeClass = rdesc.NodeClass
 
-    node_type = Node(server, rdesc.NodeId)
+    node_to_copy = Node(server, rdesc.NodeId)
     
     attrObj = getattr(ua, rdesc.NodeClass.name + "Attributes")
-    print("attrObj" is attrObj)
-    _read_and_copy_attrs(node_type, attrObj(), addnode)
+    _read_and_copy_attrs(node_to_copy, attrObj(), addnode)
     
     res = server.add_nodes([addnode])[0]
-    print("Added result", res)
 
     added_nodes = [res.AddedNodeId]
         
     if recursive:
-        descs = node_type.get_children_descriptions()
+        descs = node_to_copy.get_children_descriptions()
         for desc in descs:
-            nodes = _copy_node(server, res.AddedNodeId, desc, nodeid=ua.NodeId(namespaceidx=res.AddedNodeId.NamespaceIndex), recursive=recursive)
+            nodes = _copy_node(server, res.AddedNodeId, desc, nodeid=ua.NodeId(namespaceidx=desc.NodeId.NamespaceIndex), recursive=True)
             added_nodes.extend(nodes)
 
     return added_nodes
