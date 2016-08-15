@@ -380,7 +380,9 @@ def delete_nodes(server, nodes, recursive=False):
         it.NodeId = mynode.nodeid
         it.DeleteTargetReferences = True
         nodestodelete.append(it)
-    return server.delete_nodes(nodestodelete)
+    params = ua.DeleteNodesParameters()
+    params.NodesToDelete = nodestodelete
+    return server.delete_nodes(params)
 
 
 def _add_childs(nodes):

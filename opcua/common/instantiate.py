@@ -75,7 +75,6 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
                     nodeids = _instantiate_node(server, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
                     added_nodes.extend(nodeids)
                 
-    print("RETURNING", added_nodes)
     return added_nodes
 
 
