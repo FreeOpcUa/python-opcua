@@ -35,15 +35,7 @@ if __name__ == "__main__":
     # starting!
     server.start()
 
-    node_set_attributes = OrderedDict()
-    node_set_attributes['xmlns:xsi'] = '"http://www.w3.org/2001/XMLSchema-instance"'
-    node_set_attributes['xmlns:uax'] = 'http://opcfoundation.org/UA/2008/02/Types.xsd'
-    node_set_attributes['xmlns:s1'] = 'http://yourorganisation.org/dataobject/Types.xsd'
-    node_set_attributes['xmlns:xsd'] = 'http://www.w3.org/2001/XMLSchema'
-    node_set_attributes['xmlns'] = 'http://opcfoundation.org/UA/2011/03/UANodeSet.xsd'
-
-    exporter = XmlExporter(server, node_set_attributes)
-    exporter.build_etree(node_list)
+    exporter = XmlExporter(server)
     exporter.write_xml('ua-export.xml')
 
     server.stop()
