@@ -10,7 +10,7 @@ from functools import partial
 
 from opcua import ua
 from opcua.common import utils
-from opcua.common.uaerrors import UaError
+from opcua.common.uaerrors import UaError, BadTimeout
 
 
 class UASocketClient(object):
@@ -400,23 +400,36 @@ class UaClient(object):
             acks = []
         request = ua.PublishRequest()
         request.Parameters.SubscriptionAcknowledgements = acks
-        self._uasocket.send_request(request, self._call_publish_callback, timeout=int(9e8))  # timeout could be set to 0 but some servers to not support it
+        # timeout could be set to 0 (= no timeout) but some servers do not support it
+        self._uasocket.send_request(request, self._call_publish_callback, timeout=int(9e8)) # 250 days
 
     def _call_publish_callback(self, future):
         self.logger.info("call_publish_callback")
         data = future.result()
-        self._uasocket.check_answer(data, "ServiceFault received from server while waiting for publish response")
+
+        try:
+            self._uasocket.check_answer(data, "while waiting for publish response")
+        except BadTimeout: # Spec Part 4, 7.28
+            self.publish()
+            return
+
         try:
             response = ua.PublishResponse.from_binary(data)
             self.logger.debug(response)
         except Exception:
+            # INFO: catching the exception here might be obsolete because we already
+            #       catch BadTimeout above. However, it's not really clear what this code
+            #       does so it stays in, doesn't seem to hurt.
             self.logger.exception("Error parsing notificatipn from server")
             self.publish([]) #send publish request ot server so he does stop sending notifications
             return
-        if response.Parameters.SubscriptionId not in self._publishcallbacks:
+
+        try:
+            callback = self._publishcallbacks[response.Parameters.SubscriptionId]
+        except KeyError:
             self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
             return
-        callback = self._publishcallbacks[response.Parameters.SubscriptionId]
+
         try:
             callback(response.Parameters)
         except Exception:  # we call client code, catch everything!
