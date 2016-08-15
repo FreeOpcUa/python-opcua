@@ -36,6 +36,7 @@ if __name__ == "__main__":
     server.start()
 
     exporter = XmlExporter(server)
+    exporter.build_etree(node_list, ['http://myua.org/test/'])
     exporter.write_xml('ua-export.xml')
 
     server.stop()
