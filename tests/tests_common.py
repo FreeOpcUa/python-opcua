@@ -9,6 +9,7 @@ import opcua
 from opcua import ua
 from opcua import uamethod
 from opcua import instantiate
+from opcua import copy_node
 
 
 def add_server_methods(srv):
@@ -549,18 +550,41 @@ class CommonTests(object):
         p_t = dev_t.add_property(0, "sensor_id", "0340")
         ctrl_t = dev_t.add_object(0, "controller")
         prop_t = ctrl_t.add_property(0, "state", "Running")
+        # Create device sutype
+        devd_t = dev_t.add_object_type(0, "MyDeviceDervived")
+        v_t = devd_t.add_variable(0, "childparam", 1.0)
+        p_t = devd_t.add_property(0, "sensorx_id", "0340")
+        
 
+        nodes = copy_node(self.opc.nodes.objects, dev_t)
+        mydevice = nodes[0]
+
+        self.assertEqual(mydevice.get_node_class(), ua.NodeClass.ObjectType)
+        self.assertEqual(len(mydevice.get_children()), 4)
+        obj = mydevice.get_child(["0:controller"])
+        prop = mydevice.get_child(["0:controller", "0:state"])
+        self.assertEqual(prop.get_type_definition().Identifier, ua.ObjectIds.PropertyType)
+        self.assertEqual(prop.get_value(), "Running")
+        self.assertNotEqual(prop.nodeid, prop_t.nodeid)
 
     def test_instantiate_1(self):
-        dev_t = self.opc.nodes.base_data_type.add_object_type(0, "MyDevice")
+        # Create device type
+        dev_t = self.opc.nodes.base_object_type.add_object_type(0, "MyDevice")
         v_t = dev_t.add_variable(0, "sensor", 1.0)
         p_t = dev_t.add_property(0, "sensor_id", "0340")
         ctrl_t = dev_t.add_object(0, "controller")
         prop_t = ctrl_t.add_property(0, "state", "Running")
 
+        # Create device sutype
+        devd_t = dev_t.add_object_type(0, "MyDeviceDervived")
+        v_t = devd_t.add_variable(0, "childparam", 1.0)
+        p_t = devd_t.add_property(0, "sensorx_id", "0340")
+        
+        # instanciate device
         nodes = instantiate(self.opc.nodes.objects, dev_t, bname="2:Device0001")
         mydevice = nodes[0]
 
+        self.assertEqual(mydevice.get_node_class(), ua.NodeClass.Object)
         self.assertEqual(mydevice.get_type_definition(), dev_t.nodeid)
         obj = mydevice.get_child(["0:controller"])
         prop = mydevice.get_child(["0:controller", "0:state"])
@@ -568,11 +592,7 @@ class CommonTests(object):
         self.assertEqual(prop.get_value(), "Running")
         self.assertNotEqual(prop.nodeid, prop_t.nodeid)
         
-        # also test if all of all of parent type is instantiated 
-        devd_t = dev_t.add_object_type(0, "MyDeviceDervived")
-        v_t = devd_t.add_variable(0, "childparam", 1.0)
-        p_t = devd_t.add_property(0, "sensorx_id", "0340")
-         
+        # instanciate device subtype
         nodes = instantiate(self.opc.nodes.objects, devd_t, bname="2:Device0002")
         mydevicederived = nodes[0] 
         prop1 = mydevicederived.get_child(["0:sensorx_id"])

@@ -1,5 +1,5 @@
 from opcua import ua
-from opcua import common
+from opcua.common.node import Node
 
 
 def copy_node(parent, node, nodeid=None, recursive=True):
@@ -12,7 +12,7 @@ def copy_node(parent, node, nodeid=None, recursive=True):
     if nodeid is None:
         nodeid = ua.NodeId(namespaceidx=node.nodeid.NamespaceIndex)
     added_nodeids = _copy_node(parent.server, parent.nodeid, rdesc, nodeid, recursive)
-    return [common.Node(parent.server, nid) for nid in added_nodeids]
+    return [Node(parent.server, nid) for nid in added_nodeids]
 
 
 def _copy_node(server, parent_nodeid, rdesc, nodeid, recursive):
@@ -24,7 +24,7 @@ def _copy_node(server, parent_nodeid, rdesc, nodeid, recursive):
     addnode.TypeDefinition = rdesc.TypeDefinition
     addnode.NodeClass = rdesc.NodeClass
 
-    node_to_copy = common.Node(server, rdesc.NodeId)
+    node_to_copy = Node(server, rdesc.NodeId)
     
     attrObj = getattr(ua, rdesc.NodeClass.name + "Attributes")
     _read_and_copy_attrs(node_to_copy, attrObj(), addnode)
