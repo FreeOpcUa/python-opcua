@@ -5,6 +5,7 @@ format is the one from opc-ua specification
 import logging
 from collections import OrderedDict
 import xml.etree.ElementTree as Et
+from xml.dom import minidom
 
 from opcua import ua
 from opcua.ua import object_ids as o_ids  # FIXME needed because the reverse look up isn't part of ObjectIds Class
@@ -47,7 +48,7 @@ class XmlExporter(object):
             # add all namespace uris to the XML etree; must be done after aliases are added
             self._add_namespace_uri_els(uris)
 
-    def write_xml(self, xmlpath):
+    def write_xml(self, xmlpath, pretty=True):
         """
         Write the XML etree in the exporter object to a file
         Args:
@@ -57,10 +58,14 @@ class XmlExporter(object):
         """
         # try to write the XML etree to a file
         self.logger.info('Exporting XML file to %s', xmlpath)
-        try:
+        if pretty:
+            rough_string = Et.tostring(self.etree.getroot(), 'utf-8')
+            reparsed = minidom.parseString(rough_string)
+            pretty_string = reparsed.toprettyxml(indent="    ")
+            with open(xmlpath, "wt") as f:
+                f.write(pretty_string)
+        else:
             self.etree.write(xmlpath, short_empty_elements=False)
-        except TypeError as e:  # TODO where to find which exceptions etree.write() raises?
-            self.logger.error("Error writing XML to file: ", e)
 
     def dump_etree(self):
         """
