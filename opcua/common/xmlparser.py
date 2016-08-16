@@ -325,7 +325,7 @@ class XMLParser(object):
         for ref in el:
             if ref.attrib["ReferenceType"] == "HasTypeDefinition":
                 obj.typedef = self._get_node_id(ref.text)
-            elif "IsForward" in ref.attrib and ref.attrib["IsForward"] == "false":
+            elif "IsForward" in ref.attrib and ref.attrib["IsForward"] in ("false", "False"):
                 # if obj.parent:
                     # sys.stderr.write("Parent is already set with: "+ obj.parent + " " + ref.text + "\n")
                 obj.parent = self._get_node_id(ref.text)

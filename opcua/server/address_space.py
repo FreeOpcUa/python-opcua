@@ -470,7 +470,13 @@ class AddressSpace(object):
             self._nodeid_counter[idx] += 1
         else:
             self._nodeid_counter[idx] = 1
-        return ua.NodeId(self._nodeid_counter[idx], idx)
+        nodeid = ua.NodeId(self._nodeid_counter[idx], idx)
+        with self._lock:  # OK since reentrant lock
+            while True:
+                if nodeid in self._nodes:
+                    nodeid = self.generate_nodeid(idx)
+                else:
+                    return nodeid
 
     def keys(self):
         with self._lock:
