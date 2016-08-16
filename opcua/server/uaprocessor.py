@@ -282,7 +282,7 @@ class UaProcessor(object):
             self.logger.info("delete nodes request")
             params = ua.DeleteNodesParameters.from_binary(body)
 
-            results = self.session.delete_nodes(params.NodesToDelete)
+            results = self.session.delete_nodes(params)
 
             response = ua.DeleteNodesResponse()
             response.Results = results
