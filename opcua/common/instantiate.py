@@ -6,7 +6,7 @@ Instantiate a new node and its child nodes from a node type.
 from opcua import Node
 from opcua import ua
 from opcua.common import ua_utils
-from opcua.common.copy import _rdesc_from_node, _read_and_copy_attrs
+from opcua.common.copy_node import _rdesc_from_node, _read_and_copy_attrs
 
 
 def instantiate(parent, node_type, nodeid=None, bname=None, idx=0):

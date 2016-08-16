@@ -543,6 +543,13 @@ class CommonTests(object):
         self.assertTrue(len(endpoints) > 0)
         self.assertTrue(endpoints[0].EndpointUrl.startswith("opc.tcp://"))
 
+    def test_copy_node(self):
+        dev_t = self.opc.nodes.base_data_type.add_object_type(0, "MyDevice")
+        v_t = dev_t.add_variable(0, "sensor", 1.0)
+        p_t = dev_t.add_property(0, "sensor_id", "0340")
+        ctrl_t = dev_t.add_object(0, "controller")
+        prop_t = ctrl_t.add_property(0, "state", "Running")
+
 
     def test_instantiate_1(self):
         dev_t = self.opc.nodes.base_data_type.add_object_type(0, "MyDevice")
