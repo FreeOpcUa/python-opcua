@@ -58,6 +58,8 @@ class XmlExporter(object):
         """
         # try to write the XML etree to a file
         self.logger.info('Exporting XML file to %s', xmlpath)
+        #from IPython import embed
+        #embed()
         if pretty:
             rough_string = Et.tostring(self.etree.getroot(), 'utf-8')
             reparsed = minidom.parseString(rough_string)
@@ -93,7 +95,7 @@ class XmlExporter(object):
             self.add_etree_variable(node)
         elif node_class is ua.NodeClass.VariableType:
             self.add_etree_variable_type(node)
-        elif node_class is ua.NodeClass.RefernceType:
+        elif node_class is ua.NodeClass.ReferenceType:
             self.add_etree_reference(node)
         elif node_class is ua.NodeClass.DataType:
             self.add_etree_datatype(node)
@@ -102,86 +104,62 @@ class XmlExporter(object):
         else:
             self.logger.info("Exporting node class not implemented: %s ", node_class)
 
+    def _add_node_common(self, nodetype, obj):
+        browsename = obj.get_browse_name().to_string()
+        nodeid = obj.nodeid.to_string()
+        parent = obj.get_parent().nodeid.to_string()
+        displayname = obj.get_display_name().Text.decode(encoding='UTF8')
+
+        obj_el = Et.SubElement(self.etree.getroot(),
+                               nodetype,
+                               BrowseName=browsename,
+                               NodeId=nodeid,
+                               ParentNodeId=parent)
+        disp_el = Et.SubElement(obj_el, 'DisplayName', )
+        disp_el.text = displayname
+        return obj_el
+
     def add_etree_object(self, obj):
         """
         Add a UA object element to the XML etree
         """
-        browsename = obj.get_browse_name().to_string()
-        nodeid = obj.nodeid.to_string()
-
-        displayname = obj.get_display_name().Text.decode(encoding='UTF8')
-
-        refs = obj.get_references()
-
-        obj_el = Et.SubElement(self.etree.getroot(),
-                               'UAObject',
-                               BrowseName=browsename,
-                               NodeId=nodeid)
-
-        disp_el = Et.SubElement(obj_el, 'DisplayName', )
-        disp_el.text = displayname
-
-        self._add_ref_els(obj_el, refs)
+        obj_el = self._add_node_common("UAObject", obj)
+        self._add_ref_els(obj_el, obj)
 
     def add_etree_object_type(self, obj):
         """
         Add a UA object type element to the XML etree
         """
-        browsename = obj.get_browse_name().to_string()
-        nodeid = obj.nodeid.to_string()
-
-        displayname = obj.get_display_name().Text.decode(encoding='UTF8')
-
-        refs = obj.get_references()
-
-        obj_el = Et.SubElement(self.etree.getroot(),
-                               'UAObject',
-                               BrowseName=browsename,
-                               NodeId=nodeid)
-
-        disp_el = Et.SubElement(obj_el, 'DisplayName', )
-        disp_el.text = displayname
-
-        self._add_ref_els(obj_el, refs)
+        obj_el = self._add_node_common("UAObjectType", obj)
+        self._add_ref_els(obj_el, obj)
 
     def add_etree_variable(self, obj):
         """
         Add a UA variable element to the XML etree
         """
-        browsename = obj.get_browse_name().to_string()
+        var_el = self._add_node_common("UAVariable", obj)
+
         datatype = o_ids.ObjectIdNames[obj.get_data_type().Identifier]
         datatype_nodeid = obj.get_data_type().to_string()
-        nodeid = obj.nodeid.to_string()
-        parent = obj.get_parent().nodeid.to_string()
-        acccesslevel = str(obj.get_attribute(ua.AttributeIds.AccessLevel).Value.Value)
+        accesslevel = str(obj.get_attribute(ua.AttributeIds.AccessLevel).Value.Value)
         useraccesslevel = str(obj.get_attribute(ua.AttributeIds.UserAccessLevel).Value.Value)
         symbolicname = None  # TODO when to export this?
-
-        displayname = obj.get_display_name().Text.decode(encoding='UTF8')
-
         value = str(obj.get_value())
 
-        refs = obj.get_references()
+        var_el.attrib["DataType"] = datatype
 
-        var_el = Et.SubElement(self.etree.getroot(),
-                               'UAVariable',
-                               BrowseName=browsename,
-                               DataType=datatype,
-                               NodeId=nodeid,
-                               ParentNodeId=parent,
-                               AccessLevel=acccesslevel,
-                               UserAccessLevel=useraccesslevel)
-
-        disp_el = Et.SubElement(var_el, 'DisplayName', )
-        disp_el.text = displayname
-
-        self._add_ref_els(var_el, refs)
+        defaults = ua.VariableAttributes()
+        if accesslevel != defaults.AccessLevel:
+            print("ACCESS", accesslevel, defaults.AccessLevel)
+            var_el.attrib["AccessLevel"] = accesslevel
+        if useraccesslevel != defaults.UserAccessLevel:
+            var_el.attrib["UserAccessLevel"] = useraccesslevel
 
         val_el = Et.SubElement(var_el, 'Value')
-
         valx_el = Et.SubElement(val_el, 'uax:' + datatype)
         valx_el.text = value
 
+        self._add_ref_els(var_el, obj)
         # add any references that get used to aliases dict; this gets handled later
         self.aliases[datatype] = datatype_nodeid
 
@@ -189,50 +167,49 @@ class XmlExporter(object):
         """
         Add a UA variable type element to the XML etree
         """
-        browsename = obj.get_browse_name().to_string()
-        nodeid = obj.nodeid.to_string()
-        valuerank = None  # TODO when to export this?
 
-        displayname = obj.get_display_name().Text.decode(encoding='UTF8')
+        var_el = self._add_node_common("UAVariableType", obj)
 
-        refs = obj.get_references()
+        datatype = o_ids.ObjectIdNames[obj.get_data_type().Identifier]
+        datatype_nodeid = obj.get_data_type().to_string()
+        accesslevel = str(obj.get_attribute(ua.AttributeIds.AccessLevel).Value.Value)
+        useraccesslevel = str(obj.get_attribute(ua.AttributeIds.UserAccessLevel).Value.Value)
+        symbolicname = None  # TODO when to export this?
+        value = str(obj.get_value())
 
-        obj_el = Et.SubElement(self.etree.getroot(),
-                               'UAObject',
-                               BrowseName=browsename,
-                               NodeId=nodeid)
+        var_el.attrib["DataType"] = datatype
 
-        disp_el = Et.SubElement(obj_el, 'DisplayName', )
-        disp_el.text = displayname
+        defaults = ua.VariableAttributes()
+        if accesslevel != defaults.AccessLevel:
+            print("ACCESS", accesslevel, defaults.AccessLevel)
+            var_el.attrib["AccessLevel"] = accesslevel
+        if useraccesslevel != defaults.UserAccessLevel:
+            var_el.attrib["UserAccessLevel"] = useraccesslevel
 
-        self._add_ref_els(obj_el, refs)
+        val_el = Et.SubElement(var_el, 'Value')
+        valx_el = Et.SubElement(val_el, 'uax:' + datatype)
+        valx_el.text = value
+
+        self._add_ref_els(var_el, obj)
+        # add any references that get used to aliases dict; this gets handled later
+        self.aliases[datatype] = datatype_nodeid
 
     def add_etree_method(self, obj):
-        raise NotImplemented
+        obj_el = self._add_node_common("UAMethod", obj)
+        self._add_ref_els(obj_el, obj)
+        raise NotImplementedError
 
     def add_etree_reference(self, obj):
-        raise NotImplemented
+        obj_el = self._add_node_common("UAReference", obj)
+        self._add_ref_els(obj_el, obj)
+        raise NotImplementedError
 
     def add_etree_datatype(self, obj):
         """
         Add a UA data type element to the XML etree
         """
-        browsename = obj.get_browse_name().to_string()
-        nodeid = obj.nodeid.to_string()
-
-        displayname = obj.get_display_name().Text.decode(encoding='UTF8')
-
-        refs = obj.get_references()
-
-        obj_el = Et.SubElement(self.etree.getroot(),
-                               'UAObject',
-                               BrowseName=browsename,
-                               NodeId=nodeid)
-
-        disp_el = Et.SubElement(obj_el, 'DisplayName', )
-        disp_el.text = displayname
-
-        self._add_ref_els(obj_el, refs)
+        obj_el = self._add_node_common("UADataType", obj)
+        self._add_ref_els(obj_el, obj)
 
     def _add_namespace_uri_els(self, uris):
         nuris_el = Et.Element('NamespaceUris')
@@ -252,12 +229,13 @@ class XmlExporter(object):
 
         self.etree.getroot().insert(0, aliases_el)
 
-    def _add_ref_els(self, parent_el, refs):
+    def _add_ref_els(self, parent_el, obj):
+        refs = obj.get_references()
         refs_el = Et.SubElement(parent_el, 'References')
 
         for ref in refs:
             ref_name = o_ids.ObjectIdNames[ref.ReferenceTypeId.Identifier]
-            ref_forward = str(ref.IsForward)
+            ref_forward = str(ref.IsForward).lower()
             ref_nodeid = ref.NodeId.to_string()
             ref_el = Et.SubElement(refs_el, 'Reference', IsForward=ref_forward, ReferenceType=ref_name)
             ref_el.text = ref_nodeid
