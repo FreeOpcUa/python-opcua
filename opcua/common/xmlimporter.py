@@ -23,23 +23,24 @@ class XmlImporter(object):
         self.logger.info("Importing XML file %s", xmlpath)
         self.parser = xmlparser.XMLParser(xmlpath, act_server)
         nodes = []
-        for node in self.parser:
-            if node.nodetype == 'UAObject':
-                node = self.add_object(node)
-            elif node.nodetype == 'UAObjectType':
-                node = self.add_object_type(node)
-            elif node.nodetype == 'UAVariable':
-                node = self.add_variable(node)
-            elif node.nodetype == 'UAVariableType':
-                node = self.add_variable_type(node)
-            elif node.nodetype == 'UAReferenceType':
-                node = self.add_reference(node)
-            elif node.nodetype == 'UADataType':
-                node = self.add_datatype(node)
-            elif node.nodetype == 'UAMethod':
-                node = self.add_method(node)
+        for nodedata in self.parser:
+            if nodedata.nodetype == 'UAObject':
+                node = self.add_object(nodedata)
+            elif nodedata.nodetype == 'UAObjectType':
+                node = self.add_object_type(nodedata)
+            elif nodedata.nodetype == 'UAVariable':
+                node = self.add_variable(nodedata)
+            elif nodedata.nodetype == 'UAVariableType':
+                node = self.add_variable_type(nodedata)
+            elif nodedata.nodetype == 'UAReferenceType':
+                node = self.add_reference(nodedata)
+            elif nodedata.nodetype == 'UADataType':
+                node = self.add_datatype(nodedata)
+            elif nodedata.nodetype == 'UAMethod':
+                node = self.add_method(nodedata)
             else:
-                self.logger.info("Not implemented node type: %s ", node.nodetype)
+                self.logger.warning("Not implemented node type: %s ", nodedata.nodetype)
+                continue
             nodes.append(node)
         return nodes
 
@@ -203,6 +204,7 @@ class XmlImporter(object):
         node.NodeAttributes = attrs
         res = self.server.add_nodes([node])
         self._add_refs(obj)
+        return res[0].AddedNodeId
 
     def add_datatype(self, obj):
         node = self._get_node(obj)
