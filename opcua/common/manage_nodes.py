@@ -64,8 +64,10 @@ def create_property(parent, nodeid, bname, val, varianttype=None, datatype=None)
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
     var = ua.Variant(val, varianttype)
+    if datatype and isinstance(datatype, int):
+        datatype = ua.NodeId(0, datatype)
     if datatype and not isinstance(datatype, ua.NodeId):
-        raise RuntimeError()
+        raise RuntimeError("datatyoe argument must be a nodeid or an int refering to a nodeid")
     return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, var, datatype=datatype, isproperty=True))
 
 
@@ -77,8 +79,10 @@ def create_variable(parent, nodeid, bname, val, varianttype=None, datatype=None)
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
     var = ua.Variant(val, varianttype)
+    if datatype and isinstance(datatype, int):
+        datatype = ua.NodeId(0, datatype)
     if datatype and not isinstance(datatype, ua.NodeId):
-        raise RuntimeError()
+        raise RuntimeError("datatyoe argument must be a nodeid or an int refering to a nodeid")
 
     return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, var, datatype=datatype, isproperty=False))
 
@@ -333,10 +337,18 @@ def _create_method(parent, nodeid, qname, callback, inputs, outputs):
     results = parent.server.add_nodes([addnode])
     results[0].StatusCode.check()
     method = node.Node(parent.server, results[0].AddedNodeId)
-    if inputs:
-        create_property(method, ua.NodeId(), ua.QualifiedName("InputArguments", 0), [_vtype_to_argument(vtype) for vtype in inputs])
-    if outputs:
-        create_property(method, ua.NodeId(), ua.QualifiedName("OutputArguments", 0), [_vtype_to_argument(vtype) for vtype in outputs])
+    create_property(method,
+                    ua.NodeId(),
+                    ua.QualifiedName("InputArguments", 0),
+                    [_vtype_to_argument(vtype) for vtype in inputs],
+                    varianttype=ua.VariantType.ExtensionObject,
+                    datatype=ua.ObjectIds.Argument)
+    create_property(method,
+                    ua.NodeId(),
+                    ua.QualifiedName("OutputArguments", 0),
+                    [_vtype_to_argument(vtype) for vtype in outputs],
+                    varianttype=ua.VariantType.ExtensionObject,
+                    datatype=ua.ObjectIds.Argument)
     parent.server.add_method_callback(method.nodeid, callback)
     return results[0].AddedNodeId
 
