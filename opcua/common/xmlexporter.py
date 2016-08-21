@@ -61,6 +61,7 @@ class XmlExporter(object):
         #from IPython import embed
         #embed()
         if pretty:
+            self.etree.write(xmlpath + "-not-pretty.xml", short_empty_elements=False)
             rough_string = Et.tostring(self.etree.getroot(), 'utf-8')
             reparsed = minidom.parseString(rough_string)
             pretty_string = reparsed.toprettyxml(indent="    ")
@@ -108,7 +109,7 @@ class XmlExporter(object):
     def _add_node_common(self, nodetype, node):
         browsename = node.get_browse_name().to_string()
         nodeid = node.nodeid.to_string()
-        parent = node.get_parent().nodeid.to_string()
+        parent = node.get_parent()
         displayname = node.get_display_name().Text.decode(encoding='UTF8')
         desc = node.get_description().Text
         if desc is None:
@@ -117,8 +118,9 @@ class XmlExporter(object):
         node_el = Et.SubElement(self.etree.getroot(),
                                 nodetype,
                                 BrowseName=browsename,
-                                NodeId=nodeid,
-                                ParentNodeId=parent)
+                                NodeId=nodeid)
+        if parent is not None:
+            node_el.attrib["ParentNodeId"] = parent.nodeid.to_string()
         if desc not in (None, ""):
             node_el.attrib["Description"] = desc
         disp_el = Et.SubElement(node_el, 'DisplayName', )
@@ -142,8 +144,12 @@ class XmlExporter(object):
         self._add_ref_els(obj_el, node)
 
     def add_variable_common(self, node, el):
-        datatype = o_ids.ObjectIdNames[node.get_data_type().Identifier]
-        datatype_nodeid = node.get_data_type().to_string()
+        dtype = node.get_data_type()
+        if dtype.Identifier in o_ids.ObjectIdNames:
+            datatype = o_ids.ObjectIdNames[dtype.Identifier]
+            self.aliases[datatype] = dtype.to_string()
+        else:
+            datatype = dtype.to_string()
         rank = node.get_value_rank()
         value = str(node.get_value())
         print("VAR COMMON", node, rank, value, datatype)
@@ -153,7 +159,6 @@ class XmlExporter(object):
         val_el = Et.SubElement(el, 'Value')
         valx_el = Et.SubElement(val_el, 'uax:' + datatype)
         valx_el.text = value
-        self.aliases[datatype] = datatype_nodeid
 
     def add_etree_variable(self, node):
         """
@@ -190,12 +195,10 @@ class XmlExporter(object):
     def add_etree_method(self, obj):
         obj_el = self._add_node_common("UAMethod", obj)
         self._add_ref_els(obj_el, obj)
-        raise NotImplementedError
 
     def add_etree_reference(self, obj):
         obj_el = self._add_node_common("UAReference", obj)
         self._add_ref_els(obj_el, obj)
-        raise NotImplementedError
 
     def add_etree_datatype(self, obj):
         """
@@ -227,7 +230,10 @@ class XmlExporter(object):
         refs_el = Et.SubElement(parent_el, 'References')
 
         for ref in refs:
-            ref_name = o_ids.ObjectIdNames[ref.ReferenceTypeId.Identifier]
+            if ref.ReferenceTypeId.Identifier in o_ids.ObjectIdNames:
+                ref_name = o_ids.ObjectIdNames[ref.ReferenceTypeId.Identifier]
+            else:
+                ref_name = ref.ReferenceTypeId.to_string()
             ref_forward = str(ref.IsForward).lower()
             ref_nodeid = ref.NodeId.to_string()
             ref_el = Et.SubElement(refs_el, 'Reference', IsForward=ref_forward, ReferenceType=ref_name)

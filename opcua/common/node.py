@@ -356,10 +356,15 @@ class Node(object):
     def get_parent(self):
         """
         returns parent of the node.
+        A Node may have several parents, the first found is returned.
+        This method uses reverse references, a node might be missing such a link,
+        thus we will not find its parent.
         """
         refs = self.get_references(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse)
-
-        return Node(self.server, refs[0].NodeId)
+        if len(refs) > 0:
+            return Node(self.server, refs[0].NodeId)
+        else:
+            return None
 
     def get_child(self, path):
         """
