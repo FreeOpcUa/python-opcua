@@ -268,6 +268,8 @@ class XMLParser(object):
                 mytext = mytext.replace('\n', '').replace('\r', '')
                 # obj.value.append('b"{}"'.format(mytext))
                 obj.value = mytext
+            elif ntag in ("Guid"):
+                self._parse_value(val, obj)
             elif ntag == "ListOfExtensionObject":
                 obj.value, obj.valuetype = self._parse_list_of_extension_object(el)
             elif ntag == "ListOfLocalizedText":
