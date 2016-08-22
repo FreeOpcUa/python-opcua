@@ -151,14 +151,9 @@ class XmlExporter(object):
         else:
             datatype = dtype.to_string()
         rank = node.get_value_rank()
-        value = str(node.get_value())
-        print("VAR COMMON", node, rank, value, datatype)
-
         el.attrib["DataType"] = datatype
         el.attrib["ValueRank"] = str(rank)
-        val_el = Et.SubElement(el, 'Value')
-        valx_el = Et.SubElement(val_el, 'uax:' + datatype)
-        valx_el.text = value
+        variant_to_etree(el, node.get_data_value().Value)
 
     def add_etree_variable(self, node):
         """
@@ -241,3 +236,12 @@ class XmlExporter(object):
 
             # add any references that gets used to aliases dict; this gets handled later
             self.aliases[ref_name] = ref_nodeid
+
+
+def variant_to_etree(el, var):
+        val_el = Et.SubElement(el, 'Value')
+        valx_el = Et.SubElement(val_el, var.VariantType.name)
+        valx_el.attrib["xmnls"] = "http://opcfoundation.org/UA/2008/02/Types.xsd"
+        valx_el.text = str(var.Value)
+
+
