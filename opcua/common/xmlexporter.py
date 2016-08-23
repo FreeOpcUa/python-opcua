@@ -112,9 +112,7 @@ class XmlExporter(object):
         parent = node.get_parent()
         displayname = node.get_display_name().Text.decode(encoding='UTF8')
         desc = node.get_description().Text
-        if desc is None:
-            desc = ""
-        print("NODE COMMON", node, desc)
+        print("NODE COMMON", node)
         node_el = Et.SubElement(self.etree.getroot(),
                                 nodetype,
                                 BrowseName=browsename,
@@ -122,7 +120,7 @@ class XmlExporter(object):
         if parent is not None:
             node_el.attrib["ParentNodeId"] = parent.nodeid.to_string()
         if desc not in (None, ""):
-            node_el.attrib["Description"] = desc
+            node_el.attrib["Description"] = str(desc)
         disp_el = Et.SubElement(node_el, 'DisplayName', )
         disp_el.text = displayname
         return node_el
@@ -146,14 +144,14 @@ class XmlExporter(object):
     def add_variable_common(self, node, el):
         dtype = node.get_data_type()
         if dtype.Identifier in o_ids.ObjectIdNames:
-            datatype = o_ids.ObjectIdNames[dtype.Identifier]
-            self.aliases[datatype] = dtype.to_string()
+            dtype_name = o_ids.ObjectIdNames[dtype.Identifier]
+            self.aliases[dtype_name] = dtype.to_string()
         else:
-            datatype = dtype.to_string()
+            dtype_name = dtype.to_string()
         rank = node.get_value_rank()
-        el.attrib["DataType"] = datatype
-        el.attrib["ValueRank"] = str(rank)
-        variant_to_etree(el, node.get_data_value().Value)
+        el.attrib["DataType"] = dtype_name
+        el.attrib["ValueRank"] = str(int(rank))
+        value_to_etree(el, dtype_name, dtype, node)
 
     def add_etree_variable(self, node):
         """
@@ -238,10 +236,32 @@ class XmlExporter(object):
             self.aliases[ref_name] = ref_nodeid
 
 
-def variant_to_etree(el, var):
-        val_el = Et.SubElement(el, 'Value')
-        valx_el = Et.SubElement(val_el, var.VariantType.name)
-        valx_el.attrib["xmnls"] = "http://opcfoundation.org/UA/2008/02/Types.xsd"
-        valx_el.text = str(var.Value)
+def value_to_etree(el, dtype_name, dtype, node):
+    var = node.get_data_value().Value
+    val_el = Et.SubElement(el, 'Value')
+    _value_to_etree(val_el, dtype_name, dtype, var.Value)
 
+
+def _value_to_etree(el, dtype_name, dtype, val):
+    if isinstance(val, (list, tuple)):
+        list_el = Et.SubElement(el, "uax:ListOf" + dtype_name)
+        for nval in val:
+            _value_to_etree(list_el, dtype_name, dtype, nval)
+    else:
+        if dtype.Identifier is int and dtype.Identifier > 21:  # this is an extentionObject:
+            _extobj_to_etree(el, dtype_name, dtype)
+        else:
+            val_el = Et.SubElement(el, "uax:" + dtype_name)
+            val_el.text = str(val)
+
+
+def _extobj_to_etree(val_el, dtype_name, dtype, val):
+    obj_el = Et.SubElement(val_el, "uax:ExtensionObject")
+    type_el = Et.SubElement(obj_el, "uax:TypeId")
+    id_el = Et.SubElement(type_el, "uax:Identifier")
+    id_el.text = val.TypeId.to_string()
+    body_el = Et.SubElement(obj_el, "uax:Body")
+    struct_el = Et.SubElement(body_el, "uax:" + dtype_name)
+    # FIXME: finish
+    
 
