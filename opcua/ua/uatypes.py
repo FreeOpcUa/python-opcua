@@ -961,6 +961,12 @@ class VariantType(Enum):
 
 
 class VariantTypeCustom(object):
+    """
+    Looks like sometime we get variant with other values than those
+    defined in VariantType.
+    FIXME: We should not need this class, as far as I iunderstand the spec
+    variants can only be of VariantType
+    """
     def __init__(self, val):
         self.name = "Custom"
         self.value = val
@@ -1270,6 +1276,8 @@ def DataType_to_VariantType(int_type):
     """
     Takes a NodeId or int and return a VariantType
     This is only supported if int_type < 63 due to VariantType encoding
+    At low level we do not have access to address space thus decodig is limited
+    a better version of this method can be find in ua_utils.py
     """
     if isinstance(int_type, NodeId):
         int_type = int_type.Identifier
