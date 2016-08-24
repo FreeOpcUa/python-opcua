@@ -353,20 +353,26 @@ class Node(object):
             return None
         return references[0].NodeId
 
-    def get_current_path(self):
+    def get_path(self, max_length=20):
         """
-        Attempt to find current path of node and return it as a list of strings.
+        Attempt to find path of node from root node and return it as a list of strings.
         There might several possible paths to a node, this function will return one
         Some nodes may be missing references, so this method may
         return an empty list
+        Since address space may have circular references, a max length is specified
+
         """
-        path = []
+        path = [self.get_browse_name().to_string()]
         node = self
+        count = 0
         while True:
             refs = node.get_references(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse)
             if len(refs) > 0:
                 path.insert(0, refs[0].BrowseName.to_string())
                 node = Node(self.server, refs[0].NodeId)
+                count += 1
+                if count > max_length:
+                    return path
             else:
                 return path
 
