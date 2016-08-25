@@ -364,14 +364,12 @@ class Node(object):
         """
         path = [self.get_browse_name().to_string()]
         node = self
-        count = 0
         while True:
             refs = node.get_references(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse)
             if len(refs) > 0:
                 path.insert(0, refs[0].BrowseName.to_string())
                 node = Node(self.server, refs[0].NodeId)
-                count += 1
-                if count > max_length:
+                if len(path) >= max_length:
                     return path
             else:
                 return path

@@ -539,6 +539,16 @@ class CommonTests(object):
         self.assertEqual(p.get_parent(), o)
         self.assertEqual(p.get_type_definition().Identifier, ua.ObjectIds.PropertyType)
 
+    def test_path(self):
+        o = self.opc.nodes.objects.add_folder(1, "titif").add_object(3, "opath")
+        path = o.get_path()
+        self.assertEqual(["0:Root", "0:Objects", "1:titif", "3:opath"], path)
+        path = o.get_path(2)
+        self.assertEqual(["1:titif", "3:opath"], path)
+        self.opc.get_node("i=27")
+        path = self.opc.get_node("i=13387").get_path()
+        self.assertEqual(['0:BaseObjectType', '0:FolderType', '0:FileDirectoryType', '0:CreateDirectory'], path) # FIXME this is wrong in our server! BaseObjectType is missing an inverse reference to its parent! seems xml definition is wrong
+
     def test_get_endpoints(self):
         endpoints = self.opc.get_endpoints()
         self.assertTrue(len(endpoints) > 0)
