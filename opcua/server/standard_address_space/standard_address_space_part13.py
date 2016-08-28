@@ -6,8 +6,6 @@ It is automatically generated from opcfoundation.org schemas.
 
 from opcua import ua
 
-false = False #FIXME
-true = True #FIXME
 
 def create_standard_address_space_Part13(server):
   
@@ -20,33 +18,33 @@ def create_standard_address_space_Part13(server):
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.ObjectTypeAttributes()
     attrs.DisplayName = ua.LocalizedText("AggregateConfigurationType")
-    attrs.IsAbstract = false
+    attrs.IsAbstract = False
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
-    ref.IsForward = true
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
     ref.SourceNodeId = ua.NodeId.from_string("i=11187")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=11188")
     refs.append(ref)
     ref = ua.AddReferencesItem()
-    ref.IsForward = true
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
     ref.SourceNodeId = ua.NodeId.from_string("i=11187")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=11189")
     refs.append(ref)
     ref = ua.AddReferencesItem()
-    ref.IsForward = true
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
     ref.SourceNodeId = ua.NodeId.from_string("i=11187")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=11190")
     refs.append(ref)
     ref = ua.AddReferencesItem()
-    ref.IsForward = true
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
     ref.SourceNodeId = ua.NodeId.from_string("i=11187")
     ref.TargetNodeClass = ua.NodeClass.DataType
@@ -69,7 +67,7 @@ def create_standard_address_space_Part13(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
-    ref.IsForward = true
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=11188")
     ref.TargetNodeClass = ua.NodeClass.DataType
@@ -92,7 +90,7 @@ def create_standard_address_space_Part13(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
-    ref.IsForward = true
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=11189")
     ref.TargetNodeClass = ua.NodeClass.DataType
@@ -115,7 +113,7 @@ def create_standard_address_space_Part13(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
-    ref.IsForward = true
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=11190")
     ref.TargetNodeClass = ua.NodeClass.DataType
@@ -138,7 +136,7 @@ def create_standard_address_space_Part13(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
-    ref.IsForward = true
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=11191")
     ref.TargetNodeClass = ua.NodeClass.DataType
