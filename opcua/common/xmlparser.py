@@ -36,8 +36,8 @@ class NodeData(object):
 
         # referencetype
         self.inversename = ""
-        self.abstract = "false"
-        self.symmetric = "false"
+        self.abstract = False 
+        self.symmetric = False 
 
         # datatype
         self.definition = []
@@ -49,6 +49,15 @@ class RefStruct(object):
         self.reftype = None
         self.forward = True
         self.target = None
+
+
+class ExtObj(object):
+
+    def __init__(self):
+        self.typeid = None
+        self.objname = None
+        self.bodytype = None
+        self.body = {}
 
 
 class XMLParser(object):
@@ -194,6 +203,7 @@ class XMLParser(object):
         obj.nodetype = name
         for key, val in child.attrib.items():
             self._set_attr(key, val, obj)
+        self.logger.info("\n     Parsing node: %s %s", obj.nodeid, obj.browsename)
         obj.displayname = obj.browsename  # give a default value to display name
         for el in child:
             self._parse_tag(el, obj)
@@ -211,7 +221,9 @@ class XMLParser(object):
         elif key == "DataType":
             obj.datatype = val
         elif key == "IsAbstract":
-            obj.abstract = val
+            obj.abstract = self._to_bool(val)
+        elif key == "Executable":
+            obj.executable = self._to_bool(val)
         elif key == "EventNotifier":
             obj.eventnotifier = 1 if val == "1" else 0
         elif key == "ValueRank":
@@ -225,10 +237,15 @@ class XMLParser(object):
         elif key == "UserAccessLevel":
             obj.useraccesslevel = int(val)
         elif key == "Symmetric":
-            obj.symmetric = True if val == "true" else False
+            obj.symmetric = self._to_bool(val)
         else:
             self.logger.info("Attribute not implemented: %s:%s", key, val)
 
+    def _to_bool(self, val):
+        if val in ("False, false"):
+            return False
+        else:
+            return True
     def _parse_tag(self, el, obj):
         tag = self._retag.match(el.tag).groups()[1]
 
@@ -249,7 +266,9 @@ class XMLParser(object):
             self.logger.info("Not implemented tag: %s", el)
 
     def _parse_value(self, el, obj):
+        self.logger.info("Parsing value")
         for val in el:
+            self.logger.info("tag %s", val.tag)
             ntag = self._retag.match(val.tag).groups()[1]
             obj.valuetype = ntag
             if ntag in ("Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64"):
@@ -271,11 +290,13 @@ class XMLParser(object):
             elif ntag in ("Guid"):
                 self._parse_value(val, obj)
             elif ntag == "ListOfExtensionObject":
-                obj.value, obj.valuetype = self._parse_list_of_extension_object(el)
+                obj.valuetype = "ExtensionObject"
+                obj.value = self._parse_list_of_extension_object(el)
             elif ntag == "ListOfLocalizedText":
+                obj.valuetype = "LocalizedText"
                 obj.value = self._parse_list_of_localized_text(el)
             else:
-                self.logger.info("Value type not implemented: %s", ntag)
+                self.logger.info("Value type not implemented: '%s', %s", ntag)
 
     def _get_text(self, el):
         txt = ""
@@ -302,26 +323,28 @@ class XMLParser(object):
                also the valuetype is returned. The valuetype is  uax:ExtensionObject/*/tag()
         '''
         value = []
-        valuetype = None
         for extension_object_list in el:
             for extension_object in extension_object_list:
                 extension_object.find('Body')
                 for extension_object_part in extension_object:
+                    ext = ExtObj()
                     ntag = self._retag.match(extension_object_part.tag).groups()[1]
-                    if ntag == 'Body':
-                        data = {}
+                    if ntag == 'TypeId':
                         ntag = self._retag.match(extension_object_part.find('*').tag).groups()[1]
-                        valuetype = ntag
+                        ext.typeid = self._get_text(extension_object_part)
+                    elif ntag == 'Body':
+                        ntag = self._retag.match(extension_object_part.find('*').tag).groups()[1]
+                        ext.objname = ntag
                         for body_item in extension_object_part.findall('*/*'):
                             ntag = self._retag.match(body_item.tag).groups()[1]
 
                             child = body_item.find('*')
                             if child is not None:
-                                data[ntag] = self._get_text(child)
+                                ext.body[ntag] = self._get_text(child)
                             else:
-                                data[ntag] = self._get_text(body_item)
-                        value.append(data)
-        return value, valuetype
+                                ext.body[ntag] = self._get_text(body_item)
+                        value.append(ext)
+        return value
 
     def _parse_refs(self, el, obj):
         for ref in el:
