@@ -109,12 +109,12 @@ class HistoryDict(HistoryStorageInterface):
             return [], cont
         else:
             if start is None:
-                start = ua.DateTimeMinValue
+                start = ua.get_win_epoch()
             if end is None:
-                end = ua.DateTimeMinValue
-            if start == ua.DateTimeMinValue:
+                end = ua.get_win_epoch()
+            if start == ua.get_win_epoch():
                 results = [dv for dv in reversed(self._datachanges[node_id]) if start <= dv.ServerTimestamp]
-            elif end == ua.DateTimeMinValue:
+            elif end == ua.get_win_epoch():
                 results = [dv for dv in self._datachanges[node_id] if start <= dv.ServerTimestamp]
             elif start > end:
                 results = [dv for dv in reversed(self._datachanges[node_id]) if end <= dv.ServerTimestamp <= start]
@@ -150,12 +150,12 @@ class HistoryDict(HistoryStorageInterface):
             return [], cont
         else:
             if start is None:
-                start = ua.DateTimeMinValue
+                start = ua.get_win_epoch()
             if end is None:
-                end = ua.DateTimeMinValue
-            if start == ua.DateTimeMinValue:
+                end = ua.get_win_epoch()
+            if start == ua.get_win_epoch():
                 results = [ev for ev in reversed(self._events[source_id]) if start <= ev.Time]
-            elif end == ua.DateTimeMinValue:
+            elif end == ua.get_win_epoch():
                 results = [ev for ev in self._events[source_id] if start <= ev.Time]
             elif start > end:
                 results = [ev for ev in reversed(self._events[source_id]) if end <= ev.Time <= start]
@@ -305,14 +305,14 @@ class HistoryManager(object):
             # but they also say we can use cont point as timestamp to enable stateless
             # implementation. This is contradictory, so we assume details is
             # send correctly with continuation point
-            starttime = ua.unpack_datetime(utils.Buffer(rv.ContinuationPoint))
+            starttime = ua.ua_binary.Primitives.DateTime.unpack(utils.Buffer(rv.ContinuationPoint))
 
         dv, cont = self.storage.read_node_history(rv.NodeId,
                                                   starttime,
                                                   details.EndTime,
                                                   details.NumValuesPerNode)
         if cont:
-            cont = ua.pack_datetime(cont)
+            cont = ua.ua_binary.Primitives.DateTime.pack(cont)
         # rv.IndexRange
         # rv.DataEncoding # xml or binary, seems spec say we can ignore that one
         return dv, cont
@@ -324,7 +324,7 @@ class HistoryManager(object):
             # but they also say we can use cont point as timestamp to enable stateless
             # implementation. This is contradictory, so we assume details is
             # send correctly with continuation point
-            starttime = ua.unpack_datetime(utils.Buffer(rv.ContinuationPoint))
+            starttime = ua.ua_binary.Primitives.DateTime.unpack(utils.Buffer(rv.ContinuationPoint))
 
         evts, cont = self.storage.read_event_history(rv.NodeId,
                                                      starttime,
@@ -337,7 +337,7 @@ class HistoryManager(object):
             field_list.EventFields = ev.to_event_fields(details.Filter.SelectClauses)
             results.append(field_list)
         if cont:
-            cont = ua.pack_datetime(cont)
+            cont = ua.ua_binary.Primitives.DateTime.pack(cont)
         return results, cont
 
     def update_history(self, params):

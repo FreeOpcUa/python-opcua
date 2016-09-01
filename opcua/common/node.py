@@ -201,12 +201,12 @@ class Node(object):
 
     def set_attr_bit(self, attr, bit):
         val = self.get_attribute(attr)
-        val.Value.Value = ua.set_bit(val.Value.Value, bit)
+        val.Value.Value = ua.ua_binary.set_bit(val.Value.Value, bit)
         self.set_attribute(attr, val)
 
     def unset_attr_bit(self, attr, bit):
         val = self.get_attribute(attr)
-        val.Value.Value = ua.unset_bit(val.Value.Value, bit)
+        val.Value.Value = ua.ua_binary.unset_bit(val.Value.Value, bit)
         self.set_attribute(attr, val)
 
     def set_read_only(self):
@@ -326,7 +326,7 @@ class Node(object):
 
         desc.NodeId = self.nodeid
         params = ua.BrowseParameters()
-        params.View.Timestamp = ua.win_epoch_to_datetime(0)
+        params.View.Timestamp = ua.get_win_epoch()
         params.NodesToBrowse.append(desc)
         results = self.server.browse(params)
         return results[0].References
@@ -434,11 +434,11 @@ class Node(object):
         if starttime:
             details.StartTime = starttime
         else:
-            details.StartTime = ua.DateTimeMinValue
+            details.StartTime = ua.get_win_epoch()
         if endtime:
             details.EndTime = endtime
         else:
-            details.EndTime = ua.DateTimeMinValue
+            details.EndTime = ua.get_win_epoch()
         details.NumValuesPerNode = numvalues
         details.ReturnBounds = True
         result = self.history_read(details)
@@ -473,11 +473,11 @@ class Node(object):
         if starttime:
             details.StartTime = starttime
         else:
-            details.StartTime = ua.DateTimeMinValue
+            details.StartTime = ua.get_win_epoch()
         if endtime:
             details.EndTime = endtime
         else:
-            details.EndTime = ua.DateTimeMinValue
+            details.EndTime = ua.get_win_epoch()
         details.NumValuesPerNode = numvalues
 
         if not isinstance(evtypes, (list, tuple)):

@@ -127,7 +127,7 @@ class MonitoredItemService(object):
         ev_notify_byte = self.aspace.get_attribute_value(
             params.ItemToMonitor.NodeId, ua.AttributeIds.EventNotifier).Value.Value
 
-        if ev_notify_byte is None or not ua.test_bit(ev_notify_byte, ua.EventNotifier.SubscribeToEvents):
+        if ev_notify_byte is None or not ua.ua_binary.test_bit(ev_notify_byte, ua.EventNotifier.SubscribeToEvents):
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadServiceUnsupported)
             return result
         # result.FilterResult = ua.EventFilterResult()  # spec says we can ignore if not error

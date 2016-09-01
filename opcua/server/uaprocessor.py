@@ -141,7 +141,7 @@ class UaProcessor(object):
 
         elif typeid == ua.NodeId(ua.ObjectIds.CloseSessionRequest_Encoding_DefaultBinary):
             self.logger.info("Close session request")
-            deletesubs = ua.unpack_uatype('Boolean', body)
+            deletesubs = ua.ua_binary.Primitives.Boolean.unpack(body)
 
             self.session.close_session(deletesubs)
 

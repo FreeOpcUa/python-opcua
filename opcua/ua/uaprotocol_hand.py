@@ -5,8 +5,8 @@ from datetime import datetime
 
 from opcua.ua import uaprotocol_auto as auto
 from opcua.ua import uatypes
+from opcua.ua import ua_binary as uabin
 from opcua.ua import UaError
-from opcua.ua.uatypes import uatype_UInt32
 from opcua.common import utils
 
 logger = logging.getLogger('opcua.uaprotocol')
@@ -27,23 +27,23 @@ class Hello(uatypes.FrozenClass):
 
     def to_binary(self):
         b = []
-        b.append(uatype_UInt32.pack(self.ProtocolVersion))
-        b.append(uatype_UInt32.pack(self.ReceiveBufferSize))
-        b.append(uatype_UInt32.pack(self.SendBufferSize))
-        b.append(uatype_UInt32.pack(self.MaxMessageSize))
-        b.append(uatype_UInt32.pack(self.MaxChunkCount))
-        b.append(uatypes.pack_string(self.EndpointUrl))
+        b.append(uabin.Primitives.UInt32.pack(self.ProtocolVersion))
+        b.append(uabin.Primitives.UInt32.pack(self.ReceiveBufferSize))
+        b.append(uabin.Primitives.UInt32.pack(self.SendBufferSize))
+        b.append(uabin.Primitives.UInt32.pack(self.MaxMessageSize))
+        b.append(uabin.Primitives.UInt32.pack(self.MaxChunkCount))
+        b.append(uabin.Primitives.String.pack(self.EndpointUrl))
         return b"".join(b)
 
     @staticmethod
     def from_binary(data):
         hello = Hello()
-        hello.ProtocolVersion = uatype_UInt32.unpack(data.read(4))[0]
-        hello.ReceiveBufferSize = uatype_UInt32.unpack(data.read(4))[0]
-        hello.SendBufferSize = uatype_UInt32.unpack(data.read(4))[0]
-        hello.MaxMessageSize = uatype_UInt32.unpack(data.read(4))[0]
-        hello.MaxChunkCount = uatype_UInt32.unpack(data.read(4))[0]
-        hello.EndpointUrl = uatypes.unpack_string(data)
+        hello.ProtocolVersion = uabin.Primitives.UInt32.unpack(data)
+        hello.ReceiveBufferSize = uabin.Primitives.UInt32.unpack(data)
+        hello.SendBufferSize = uabin.Primitives.UInt32.unpack(data)
+        hello.MaxMessageSize = uabin.Primitives.UInt32.unpack(data)
+        hello.MaxChunkCount = uabin.Primitives.UInt32.unpack(data)
+        hello.EndpointUrl = uabin.Primitives.String.unpack(data)
         return hello
 
 
@@ -83,9 +83,9 @@ class Header(uatypes.FrozenClass):
         size = self.body_size + 8
         if self.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
             size += 4
-        b.append(uatype_UInt32.pack(size))
+        b.append(uabin.Primitives.UInt32.pack(size))
         if self.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
-            b.append(uatype_UInt32.pack(self.ChannelId))
+            b.append(uabin.Primitives.UInt32.pack(self.ChannelId))
         return b"".join(b)
 
     @staticmethod
@@ -95,7 +95,7 @@ class Header(uatypes.FrozenClass):
         hdr.body_size = hdr.packet_size - 8
         if hdr.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
             hdr.body_size -= 4
-            hdr.ChannelId = uatype_UInt32.unpack(data.read(4))[0]
+            hdr.ChannelId = uabin.Primitives.UInt32.unpack(data)
         return hdr
 
     @staticmethod
@@ -118,14 +118,14 @@ class ErrorMessage(uatypes.FrozenClass):
     def to_binary(self):
         b = []
         b.append(self.Error.to_binary())
-        b.append(uatypes.pack_string(self.Reason))
+        b.append(uabin.Primitives.String.pack(self.Reason))
         return b"".join(b)
 
     @staticmethod
     def from_binary(data):
         ack = ErrorMessage()
         ack.Error = uatypes.StatusCode.from_binary(data)
-        ack.Reason = uatypes.unpack_string(data)
+        ack.Reason = uabin.Primitives.String.unpack(data)
         return ack
 
     def __str__(self):
@@ -170,17 +170,17 @@ class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
 
     def to_binary(self):
         b = []
-        b.append(uatypes.pack_string(self.SecurityPolicyURI))
-        b.append(uatypes.pack_string(self.SenderCertificate))
-        b.append(uatypes.pack_string(self.ReceiverCertificateThumbPrint))
+        b.append(uabin.Primitives.String.pack(self.SecurityPolicyURI))
+        b.append(uabin.Primitives.String.pack(self.SenderCertificate))
+        b.append(uabin.Primitives.String.pack(self.ReceiverCertificateThumbPrint))
         return b"".join(b)
 
     @staticmethod
     def from_binary(data):
         hdr = AsymmetricAlgorithmHeader()
-        hdr.SecurityPolicyURI = uatypes.unpack_string(data)
-        hdr.SenderCertificate = uatypes.unpack_bytes(data)
-        hdr.ReceiverCertificateThumbPrint = uatypes.unpack_bytes(data)
+        hdr.SecurityPolicyURI = uabin.Primitives.String.unpack(data)
+        hdr.SenderCertificate = uabin.Primitives.Bytes.unpack(data)
+        hdr.ReceiverCertificateThumbPrint = uabin.Primitives.Bytes.unpack(data)
         return hdr
 
     def __str__(self):
@@ -199,11 +199,11 @@ class SymmetricAlgorithmHeader(uatypes.FrozenClass):
     @staticmethod
     def from_binary(data):
         obj = SymmetricAlgorithmHeader()
-        obj.TokenId = uatype_UInt32.unpack(data.read(4))[0]
+        obj.TokenId = uabin.Primitives.UInt32.unpack(data)
         return obj
 
     def to_binary(self):
-        return uatype_UInt32.pack(self.TokenId)
+        return uabin.Primitives.UInt32.pack(self.TokenId)
 
     @staticmethod
     def max_size():
@@ -224,14 +224,14 @@ class SequenceHeader(uatypes.FrozenClass):
     @staticmethod
     def from_binary(data):
         obj = SequenceHeader()
-        obj.SequenceNumber = uatype_UInt32.unpack(data.read(4))[0]
-        obj.RequestId = uatype_UInt32.unpack(data.read(4))[0]
+        obj.SequenceNumber = uabin.Primitives.UInt32.unpack(data)
+        obj.RequestId = uabin.Primitives.UInt32.unpack(data)
         return obj
 
     def to_binary(self):
         b = []
-        b.append(uatype_UInt32.pack(self.SequenceNumber))
-        b.append(uatype_UInt32.pack(self.RequestId))
+        b.append(uabin.Primitives.UInt32.pack(self.SequenceNumber))
+        b.append(uabin.Primitives.UInt32.pack(self.RequestId))
         return b"".join(b)
 
     @staticmethod

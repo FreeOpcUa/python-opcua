@@ -624,14 +624,14 @@ class CommonTests(object):
         # create enum type
         enums = self.opc.get_root_node().get_child(["0:Types", "0:DataTypes", "0:BaseDataType", "0:Enumeration"])
         myenum_type = enums.add_data_type(0, "MyEnum")
-        es = myenum_type.add_variable(0, "EnumStrings", ["String0", "String1", "String2"], ua.VariantType.LocalizedText) 
+        es = myenum_type.add_variable(0, "EnumStrings", [ua.LocalizedText("String0"), ua.LocalizedText("String1"), ua.LocalizedText("String2")], ua.VariantType.LocalizedText) 
         #es.set_value_rank(1)
         # instantiate
         o = self.opc.get_objects_node()
-        myvar = o.add_variable(2, "MyEnumVar", "String1", ua.VariantType.LocalizedText, datatype=myenum_type.nodeid)
+        myvar = o.add_variable(2, "MyEnumVar", ua.LocalizedText("String1"), datatype=myenum_type.nodeid)
         #myvar.set_writable(True)
         # tests
         self.assertEqual(myvar.get_data_type(), myenum_type.nodeid)
-        myvar.set_value("String2", ua.VariantType.LocalizedText)
+        myvar.set_value(ua.LocalizedText("String2"))
 
 
