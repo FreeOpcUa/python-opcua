@@ -137,11 +137,19 @@ def create_standard_address_space_%s(server):
             self.writecode(indent, 'attrs.ArrayDimensions = {}'.format(obj.dimensions))
     
     def make_ext_obj_code(self, indent, extobj):
+        print("makeing code for ", extobj.objname)
         self.writecode(indent, 'extobj = ua.{}()'.format(extobj.objname))
         for name, val in extobj.body.items():
-            val = val.strip()
-            if val not in (None, ""):
-                self.writecode(indent, 'extobj.{} = "{}"'.format(name, val))
+            if type(val) is str:
+                raise Exception("Error val should a dict", name, val)
+                #self.writecode(indent, 'extobj.{} = "{}"'.format(name, val))
+            else:
+                for k, v in val.items():
+                    if type(v) is str:
+                        self.writecode(indent, 'extobj.{} = "{}"'.format(k, v))
+                    else:
+                        for k2, v2 in v.items():
+                            self.writecode(indent, 'extobj.{}.{} = "{}"'.format(k, k2, v2))
 
     def make_variable_code(self, obj):
         indent = "   "

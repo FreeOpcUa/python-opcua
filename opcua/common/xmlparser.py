@@ -212,6 +212,7 @@ class XMLParser(object):
     def _set_attr(self, key, val, obj):
         if key == "NodeId":
             obj.nodeid = self._get_node_id(val)
+            print("PARSING", obj.nodeid)
         elif key == "BrowseName":
             obj.browsename = val
         elif key == "SymbolicName":
@@ -302,6 +303,7 @@ class XMLParser(object):
         txt = ""
         for text in el.itertext():
             txt += text
+        txt = txt.strip()
         return txt
 
     def _parse_list_of_localized_text(self, el):
@@ -325,26 +327,42 @@ class XMLParser(object):
         value = []
         for extension_object_list in el:
             for extension_object in extension_object_list:
-                extension_object.find('Body')
-                for extension_object_part in extension_object:
-                    ext = ExtObj()
-                    ntag = self._retag.match(extension_object_part.tag).groups()[1]
-                    if ntag == 'TypeId':
-                        ntag = self._retag.match(extension_object_part.find('*').tag).groups()[1]
-                        ext.typeid = self._get_text(extension_object_part)
-                    elif ntag == 'Body':
-                        ntag = self._retag.match(extension_object_part.find('*').tag).groups()[1]
-                        ext.objname = ntag
-                        for body_item in extension_object_part.findall('*/*'):
-                            ntag = self._retag.match(body_item.tag).groups()[1]
-
-                            child = body_item.find('*')
-                            if child is not None:
-                                ext.body[ntag] = self._get_text(child)
-                            else:
-                                ext.body[ntag] = self._get_text(body_item)
-                        value.append(ext)
+                ext_obj = self._parse_ext_obj(extension_object)
+                value.append(ext_obj)
         return value
+
+    def _parse_ext_obj(self, el):
+        ext = ExtObj()
+        for extension_object_part in el:
+            ntag = self._retag.match(extension_object_part.tag).groups()[1]
+            if ntag == 'TypeId':
+                ntag = self._retag.match(extension_object_part.find('*').tag).groups()[1]
+                ext.typeid = self._get_text(extension_object_part)
+            elif ntag == 'Body':
+                ext.objname = self._retag.match(extension_object_part.find('*').tag).groups()[1]
+                ext.body = self._parse_body(extension_object_part)
+                print("body", ext.body)
+            else:
+                print("Uknoen ndtag", ntag)
+        print("ext_obj", ext.objname, ext.typeid, ext.body)
+        return ext
+
+    def _parse_body(self, el):
+        body = {}
+        #ntag = self._retag.match(el.find('*').tag).groups()[1]
+        #body[ntag] = {}
+        for body_item in el:
+            otag = self._retag.match(body_item.tag).groups()[1]
+            childs = [i for i in body_item]
+            if not childs:
+                val = self._get_text(body_item)
+            elif len(childs) == 1:
+                val = self._get_text(childs[0])
+            else:
+                val = self._parse_body(body_item)
+            if val:
+                body[otag] = val
+        return body
 
     def _parse_refs(self, el, obj):
         for ref in el:
