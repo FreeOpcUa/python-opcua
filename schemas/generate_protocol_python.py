@@ -121,6 +121,13 @@ class CodeGenerator(object):
             self.write(":vartype {}: {}".format(field.name, field.uatype))
         self.write("'''")
 
+        self.write("")
+        self.write("ua_types = {")
+        for field in obj.fields:
+            self.write("    '{}': '{}',".format(field.name, field.uatype))
+        self.write("           }")
+        self.write("")
+
         self.write("def __init__(self, binary=None):")
         self.iidx += 1
         self.write("if binary is not None:")

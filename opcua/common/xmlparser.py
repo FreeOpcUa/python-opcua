@@ -8,6 +8,14 @@ import sys
 import xml.etree.ElementTree as ET
 
 
+def _to_bool(val):
+    if val in ("True", "true", "on", "On", "1"):
+        return True
+    else:
+        return False
+
+
+
 class NodeData(object):
 
     def __init__(self):
@@ -222,11 +230,11 @@ class XMLParser(object):
         elif key == "DataType":
             obj.datatype = val
         elif key == "IsAbstract":
-            obj.abstract = self._to_bool(val)
+            obj.abstract = _to_bool(val)
         elif key == "Executable":
-            obj.executable = self._to_bool(val)
+            obj.executable = _to_bool(val)
         elif key == "EventNotifier":
-            obj.eventnotifier = 1 if val == "1" else 0
+            obj.eventnotifier = int(val)
         elif key == "ValueRank":
             obj.rank = int(val)
         elif key == "ArrayDimensions":
@@ -238,15 +246,10 @@ class XMLParser(object):
         elif key == "UserAccessLevel":
             obj.useraccesslevel = int(val)
         elif key == "Symmetric":
-            obj.symmetric = self._to_bool(val)
+            obj.symmetric = _to_bool(val)
         else:
             self.logger.info("Attribute not implemented: %s:%s", key, val)
 
-    def _to_bool(self, val):
-        if val in ("False, false"):
-            return False
-        else:
-            return True
     def _parse_tag(self, el, obj):
         tag = self._retag.match(el.tag).groups()[1]
 
@@ -277,10 +280,7 @@ class XMLParser(object):
             elif ntag in ("Float", "Double"):
                 obj.value = float(val.text)
             elif ntag in ("Boolean"):
-                if val.text in ("True", "true", "1", "on", "On"):
-                    obj.value = bool(1)
-                else:
-                    obj.value = bool(0)
+                obj.value = _to_bool(val.text)
             elif ntag in ("ByteString", "String"):
                 mytext = val.text
                 if mytext is None:  # support importing null strings
@@ -291,20 +291,15 @@ class XMLParser(object):
             elif ntag in ("Guid"):
                 self._parse_value(val, obj)
             elif ntag == "ListOfExtensionObject":
-                obj.valuetype = "ExtensionObject"
                 obj.value = self._parse_list_of_extension_object(el)
             elif ntag == "ListOfLocalizedText":
-                obj.valuetype = "LocalizedText"
                 obj.value = self._parse_list_of_localized_text(el)
             else:
                 self.logger.info("Value type not implemented: '%s', %s", ntag)
 
     def _get_text(self, el):
-        txt = ""
-        for text in el.itertext():
-            txt += text
-        txt = txt.strip()
-        return txt
+        txtlist = [txt.strip() for txt in el.itertext()]
+        return "".join(txtlist)
 
     def _parse_list_of_localized_text(self, el):
         value = []
@@ -320,9 +315,7 @@ class XMLParser(object):
     def _parse_list_of_extension_object(self, el):
         '''
         Parse a uax:ListOfExtensionObject Value
-        
-        Return an array with a value of each uax:ExtensionObject/*/* (each element is convert to a netry in a dict.
-               also the valuetype is returned. The valuetype is  uax:ExtensionObject/*/tag()
+        Return an list of ExtObj
         '''
         value = []
         for extension_object_list in el:
@@ -349,15 +342,11 @@ class XMLParser(object):
 
     def _parse_body(self, el):
         body = {}
-        #ntag = self._retag.match(el.find('*').tag).groups()[1]
-        #body[ntag] = {}
         for body_item in el:
             otag = self._retag.match(body_item.tag).groups()[1]
             childs = [i for i in body_item]
             if not childs:
                 val = self._get_text(body_item)
-            elif len(childs) == 1:
-                val = self._get_text(childs[0])
             else:
                 val = self._parse_body(body_item)
             if val:

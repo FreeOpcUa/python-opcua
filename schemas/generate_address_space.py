@@ -9,6 +9,26 @@ import logging
 import xmlparser
 
 
+def _to_val(objs, attr, val):
+    from opcua import ua
+    print("got ", objs, attr, val)
+    cls = getattr(ua, objs[0])
+    for o in objs[1:]:
+        cls = getattr(ua, cls.ua_types[o])
+    if cls == ua.NodeId:
+        return "ua.NodeId.from_string('val')"
+    return ua_type_to_python(val, cls.ua_types[attr])
+
+
+def ua_type_to_python(val, uatype):
+    if uatype in ("String"):
+        return "'{}'".format(val)
+    elif uatype in ("Bytes", "Bytes", "ByteString", "ByteArray"):
+        return "b'{}'".format(val)
+    else:
+        return val
+
+
 class CodeGenerator(object):
 
     def __init__(self, input_path, output_path):
@@ -115,17 +135,19 @@ def create_standard_address_space_%s(server):
         self.writecode(indent, 'attrs.DisplayName = ua.LocalizedText("{}")'.format(obj.displayname))
         self.writecode(indent, 'attrs.DataType = {}'.format(self.to_data_type(obj.datatype)))
         if obj.value is not None:
-            if obj.valuetype == "ExtensionObject":
-                if isinstance(obj.value, (list, tuple)):
-                    self.writecode(indent, 'value = []')
-                    for ext in obj.value:
-                        self.make_ext_obj_code(indent, ext)
-                        self.writecode(indent, 'value.append(extobj)')
-                else:
-                    self.make_ext_obj_code(indent, obj.value)
-                    self.writecode(indent, 'value = extobj')
+            if obj.valuetype == "ListOfExtensionObject":
+                self.writecode(indent, 'value = []')
+                for ext in obj.value:
+                    self.make_ext_obj_code(indent, ext)
+                    self.writecode(indent, 'value.append(extobj)')
+                self.writecode(indent, 'attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)')
+            elif obj.valuetype == "ExtensionObject":
+                self.make_ext_obj_code(indent, obj.value)
+                self.writecode(indent, 'value = extobj')
                 self.writecode(indent, 'attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)')
             else:
+                if obj.valuetype.startswith("ListOf"):
+                    obj.valuetype = obj.valuetype[6:]
                 self.writecode(indent, 'attrs.Value = ua.Variant({}, ua.VariantType.{})'.format(self.to_value(obj.value), obj.valuetype))
         if obj.rank:
             self.writecode(indent, 'attrs.ValueRank = {}'.format(obj.rank))
@@ -146,10 +168,16 @@ def create_standard_address_space_%s(server):
             else:
                 for k, v in val.items():
                     if type(v) is str:
-                        self.writecode(indent, 'extobj.{} = "{}"'.format(k, v))
+                        val = _to_val([extobj.objname], k, v)
+                        self.writecode(indent, 'extobj.{} = "{}"'.format(k, val))
                     else:
+                        if k == "DataType":  #hack for strange nodeid xml format
+                            self.writecode(indent, 'extobj.{} = ua.NodeId.from_string("{}")'.format(k, v["Identifier"]))
+                        continue
+
                         for k2, v2 in v.items():
-                            self.writecode(indent, 'extobj.{}.{} = "{}"'.format(k, k2, v2))
+                            val2 = _to_val([extobj.objname, k], k2, v2)
+                            self.writecode(indent, 'extobj.{}.{} = "{}"'.format(k, k2, val2))
 
     def make_variable_code(self, obj):
         indent = "   "

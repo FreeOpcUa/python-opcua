@@ -555,6 +555,11 @@ class LocalizedText(FrozenClass):
     A string qualified with a namespace index.
     '''
 
+    ua_types = {
+        "Text": "Bytes",
+        "Locale": "Bytes"
+    }
+
     def __init__(self, text=None):
         self.Encoding = 0
         self.Text = text
