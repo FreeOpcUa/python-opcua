@@ -473,100 +473,100 @@ def create_standard_address_space_Part4(server):
     attrs.DataType = ua.NodeId.from_string("i=7594")
     value = []
     extobj = ua.EnumValueType()
-    extobj.Value = "0"
+    extobj.Value = 0
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "1"
+    extobj.Value = 1
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "2"
+    extobj.Value = 2
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "4"
+    extobj.Value = 4
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "8"
+    extobj.Value = 8
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "16"
+    extobj.Value = 16
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "32"
+    extobj.Value = 32
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "64"
+    extobj.Value = 64
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "128"
+    extobj.Value = 128
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "256"
+    extobj.Value = 256
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "512"
+    extobj.Value = 512
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "1024"
+    extobj.Value = 1024
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "2048"
+    extobj.Value = 2048
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "4096"
+    extobj.Value = 4096
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "8192"
+    extobj.Value = 8192
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "16384"
+    extobj.Value = 16384
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "32768"
+    extobj.Value = 32768
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "65536"
+    extobj.Value = 65536
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "131072"
+    extobj.Value = 131072
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "262144"
+    extobj.Value = 262144
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "524288"
+    extobj.Value = 524288
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "1048576"
+    extobj.Value = 1048576
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "2097152"
+    extobj.Value = 2097152
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "4194303"
+    extobj.Value = 4194303
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "1335396"
+    extobj.Value = 1335396
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "1335524"
+    extobj.Value = 1335524
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "1337444"
+    extobj.Value = 1337444
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "4026999"
+    extobj.Value = 4026999
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "3958902"
+    extobj.Value = 3958902
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "1466724"
+    extobj.Value = 1466724
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "1371236"
+    extobj.Value = 1371236
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "1335532"
+    extobj.Value = 1335532
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -663,73 +663,73 @@ def create_standard_address_space_Part4(server):
     attrs.DataType = ua.NodeId.from_string("i=7594")
     value = []
     extobj = ua.EnumValueType()
-    extobj.Value = "0"
+    extobj.Value = 0
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "1"
+    extobj.Value = 1
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "2"
+    extobj.Value = 2
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "4"
+    extobj.Value = 4
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "8"
+    extobj.Value = 8
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "16"
+    extobj.Value = 16
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "32"
+    extobj.Value = 32
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "64"
+    extobj.Value = 64
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "128"
+    extobj.Value = 128
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "256"
+    extobj.Value = 256
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "512"
+    extobj.Value = 512
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "1024"
+    extobj.Value = 1024
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "2048"
+    extobj.Value = 2048
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "4096"
+    extobj.Value = 4096
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "8192"
+    extobj.Value = 8192
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "16384"
+    extobj.Value = 16384
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "32768"
+    extobj.Value = 32768
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "65536"
+    extobj.Value = 65536
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "131072"
+    extobj.Value = 131072
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "262144"
+    extobj.Value = 262144
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "524288"
+    extobj.Value = 524288
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "1048576"
+    extobj.Value = 1048576
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "2097152"
+    extobj.Value = 2097152
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -1070,16 +1070,16 @@ def create_standard_address_space_Part4(server):
     attrs.DataType = ua.NodeId.from_string("i=7594")
     value = []
     extobj = ua.EnumValueType()
-    extobj.Value = "1"
+    extobj.Value = 1
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "2"
+    extobj.Value = 2
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "3"
+    extobj.Value = 3
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "4"
+    extobj.Value = 4
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -1127,16 +1127,16 @@ def create_standard_address_space_Part4(server):
     attrs.DataType = ua.NodeId.from_string("i=7594")
     value = []
     extobj = ua.EnumValueType()
-    extobj.Value = "1"
+    extobj.Value = 1
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "2"
+    extobj.Value = 2
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "3"
+    extobj.Value = 3
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "4"
+    extobj.Value = 4
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1

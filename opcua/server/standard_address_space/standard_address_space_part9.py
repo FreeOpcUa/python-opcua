@@ -905,14 +905,14 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
-    extobj.Name = "'EventId'"
+    extobj.Name = 'EventId'
+    extobj.ValueRank = -1
     extobj.DataType = ua.NodeId.from_string("i=15")
-    extobj.ValueRank = "-1"
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = "'Comment'"
+    extobj.Name = 'Comment'
+    extobj.ValueRank = -1
     extobj.DataType = ua.NodeId.from_string("i=21")
-    extobj.ValueRank = "-1"
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -974,9 +974,9 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
-    extobj.Name = "'SubscriptionId'"
+    extobj.Name = 'SubscriptionId'
+    extobj.ValueRank = -1
     extobj.DataType = ua.NodeId.from_string("i=288")
-    extobj.ValueRank = "-1"
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -1038,14 +1038,14 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
-    extobj.Name = "'SubscriptionId'"
+    extobj.Name = 'SubscriptionId'
+    extobj.ValueRank = -1
     extobj.DataType = ua.NodeId.from_string("i=288")
-    extobj.ValueRank = "-1"
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = "'MonitoredItemId'"
+    extobj.Name = 'MonitoredItemId'
+    extobj.ValueRank = -1
     extobj.DataType = ua.NodeId.from_string("i=288")
-    extobj.ValueRank = "-1"
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -1465,9 +1465,9 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
-    extobj.Name = "'SelectedResponse'"
+    extobj.Name = 'SelectedResponse'
+    extobj.ValueRank = -1
     extobj.DataType = ua.NodeId.from_string("i=6")
-    extobj.ValueRank = "-1"
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -1811,14 +1811,14 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
-    extobj.Name = "'EventId'"
+    extobj.Name = 'EventId'
+    extobj.ValueRank = -1
     extobj.DataType = ua.NodeId.from_string("i=15")
-    extobj.ValueRank = "-1"
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = "'Comment'"
+    extobj.Name = 'Comment'
+    extobj.ValueRank = -1
     extobj.DataType = ua.NodeId.from_string("i=21")
-    extobj.ValueRank = "-1"
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -1880,14 +1880,14 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
-    extobj.Name = "'EventId'"
+    extobj.Name = 'EventId'
+    extobj.ValueRank = -1
     extobj.DataType = ua.NodeId.from_string("i=15")
-    extobj.ValueRank = "-1"
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = "'Comment'"
+    extobj.Name = 'Comment'
+    extobj.ValueRank = -1
     extobj.DataType = ua.NodeId.from_string("i=21")
-    extobj.ValueRank = "-1"
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -2612,9 +2612,9 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
-    extobj.Name = "'ShelvingTime'"
+    extobj.Name = 'ShelvingTime'
+    extobj.ValueRank = -1
     extobj.DataType = ua.NodeId.from_string("i=290")
-    extobj.ValueRank = "-1"
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -3477,9 +3477,9 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
-    extobj.Name = "'ShelvingTime'"
+    extobj.Name = 'ShelvingTime'
+    extobj.ValueRank = -1
     extobj.DataType = ua.NodeId.from_string("i=290")
-    extobj.ValueRank = "-1"
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1

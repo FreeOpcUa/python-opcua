@@ -169,7 +169,7 @@ def create_standard_address_space_%s(server):
                 for k, v in val.items():
                     if type(v) is str:
                         val = _to_val([extobj.objname], k, v)
-                        self.writecode(indent, 'extobj.{} = "{}"'.format(k, val))
+                        self.writecode(indent, 'extobj.{} = {}'.format(k, val))
                     else:
                         if k == "DataType":  #hack for strange nodeid xml format
                             self.writecode(indent, 'extobj.{} = ua.NodeId.from_string("{}")'.format(k, v["Identifier"]))
@@ -177,7 +177,7 @@ def create_standard_address_space_%s(server):
 
                         for k2, v2 in v.items():
                             val2 = _to_val([extobj.objname, k], k2, v2)
-                            self.writecode(indent, 'extobj.{}.{} = "{}"'.format(k, k2, val2))
+                            self.writecode(indent, 'extobj.{}.{} = {}'.format(k, k2, val2))
 
     def make_variable_code(self, obj):
         indent = "   "

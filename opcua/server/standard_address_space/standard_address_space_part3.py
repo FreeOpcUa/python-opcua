@@ -631,13 +631,13 @@ def create_standard_address_space_Part3(server):
     attrs.DataType = ua.NodeId.from_string("i=7594")
     value = []
     extobj = ua.EnumValueType()
-    extobj.Value = "1"
+    extobj.Value = 1
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "2"
+    extobj.Value = 2
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "3"
+    extobj.Value = 3
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -974,31 +974,31 @@ def create_standard_address_space_Part3(server):
     attrs.DataType = ua.NodeId.from_string("i=7594")
     value = []
     extobj = ua.EnumValueType()
-    extobj.Value = "0"
+    extobj.Value = 0
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "1"
+    extobj.Value = 1
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "2"
+    extobj.Value = 2
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "4"
+    extobj.Value = 4
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "8"
+    extobj.Value = 8
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "16"
+    extobj.Value = 16
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "32"
+    extobj.Value = 32
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "64"
+    extobj.Value = 64
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Value = "128"
+    extobj.Value = 128
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
