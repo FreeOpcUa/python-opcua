@@ -474,163 +474,99 @@ def create_standard_address_space_Part4(server):
     value = []
     extobj = ua.EnumValueType()
     extobj.Value = "0"
-    extobj.DisplayName.Text = "None"
-    extobj.Description.Text = "No attribuites provided."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "1"
-    extobj.DisplayName.Text = "AccessLevel"
-    extobj.Description.Text = "The access level attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "2"
-    extobj.DisplayName.Text = "ArrayDimensions"
-    extobj.Description.Text = "The array dimensions attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "4"
-    extobj.DisplayName.Text = "BrowseName"
-    extobj.Description.Text = "The browse name attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "8"
-    extobj.DisplayName.Text = "ContainsNoLoops"
-    extobj.Description.Text = "The contains no loops attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "16"
-    extobj.DisplayName.Text = "DataType"
-    extobj.Description.Text = "The data type attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "32"
-    extobj.DisplayName.Text = "Description"
-    extobj.Description.Text = "The description attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "64"
-    extobj.DisplayName.Text = "DisplayName"
-    extobj.Description.Text = "The display name attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "128"
-    extobj.DisplayName.Text = "EventNotifier"
-    extobj.Description.Text = "The event notifier attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "256"
-    extobj.DisplayName.Text = "Executable"
-    extobj.Description.Text = "The executable attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "512"
-    extobj.DisplayName.Text = "Historizing"
-    extobj.Description.Text = "The historizing attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "1024"
-    extobj.DisplayName.Text = "InverseName"
-    extobj.Description.Text = "The inverse name attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "2048"
-    extobj.DisplayName.Text = "IsAbstract"
-    extobj.Description.Text = "The is abstract attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "4096"
-    extobj.DisplayName.Text = "MinimumSamplingInterval"
-    extobj.Description.Text = "The minimum sampling interval attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "8192"
-    extobj.DisplayName.Text = "NodeClass"
-    extobj.Description.Text = "The node class attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "16384"
-    extobj.DisplayName.Text = "NodeId"
-    extobj.Description.Text = "The node id attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "32768"
-    extobj.DisplayName.Text = "Symmetric"
-    extobj.Description.Text = "The symmetric attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "65536"
-    extobj.DisplayName.Text = "UserAccessLevel"
-    extobj.Description.Text = "The user access level attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "131072"
-    extobj.DisplayName.Text = "UserExecutable"
-    extobj.Description.Text = "The user executable attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "262144"
-    extobj.DisplayName.Text = "UserWriteMask"
-    extobj.Description.Text = "The user write mask attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "524288"
-    extobj.DisplayName.Text = "ValueRank"
-    extobj.Description.Text = "The value rank attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "1048576"
-    extobj.DisplayName.Text = "WriteMask"
-    extobj.Description.Text = "The write mask attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "2097152"
-    extobj.DisplayName.Text = "Value"
-    extobj.Description.Text = "The value attribute is specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "4194303"
-    extobj.DisplayName.Text = "All"
-    extobj.Description.Text = "All attributes are specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "1335396"
-    extobj.DisplayName.Text = "BaseNode"
-    extobj.Description.Text = "All base attributes are specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "1335524"
-    extobj.DisplayName.Text = "Object"
-    extobj.Description.Text = "All object attributes are specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "1337444"
-    extobj.DisplayName.Text = "ObjectTypeOrDataType"
-    extobj.Description.Text = "All object type or data type attributes are specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "4026999"
-    extobj.DisplayName.Text = "Variable"
-    extobj.Description.Text = "All variable attributes are specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "3958902"
-    extobj.DisplayName.Text = "VariableType"
-    extobj.Description.Text = "All variable type attributes are specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "1466724"
-    extobj.DisplayName.Text = "Method"
-    extobj.Description.Text = "All method attributes are specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "1371236"
-    extobj.DisplayName.Text = "ReferenceType"
-    extobj.Description.Text = "All reference type attributes are specified."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "1335532"
-    extobj.DisplayName.Text = "View"
-    extobj.Description.Text = "All view attributes are specified."
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -728,118 +664,72 @@ def create_standard_address_space_Part4(server):
     value = []
     extobj = ua.EnumValueType()
     extobj.Value = "0"
-    extobj.DisplayName.Text = "None"
-    extobj.Description.Text = "No attributes are writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "1"
-    extobj.DisplayName.Text = "AccessLevel"
-    extobj.Description.Text = "The access level attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "2"
-    extobj.DisplayName.Text = "ArrayDimensions"
-    extobj.Description.Text = "The array dimensions attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "4"
-    extobj.DisplayName.Text = "BrowseName"
-    extobj.Description.Text = "The browse name attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "8"
-    extobj.DisplayName.Text = "ContainsNoLoops"
-    extobj.Description.Text = "The contains no loops attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "16"
-    extobj.DisplayName.Text = "DataType"
-    extobj.Description.Text = "The data type attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "32"
-    extobj.DisplayName.Text = "Description"
-    extobj.Description.Text = "The description attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "64"
-    extobj.DisplayName.Text = "DisplayName"
-    extobj.Description.Text = "The display name attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "128"
-    extobj.DisplayName.Text = "EventNotifier"
-    extobj.Description.Text = "The event notifier attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "256"
-    extobj.DisplayName.Text = "Executable"
-    extobj.Description.Text = "The executable attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "512"
-    extobj.DisplayName.Text = "Historizing"
-    extobj.Description.Text = "The historizing attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "1024"
-    extobj.DisplayName.Text = "InverseName"
-    extobj.Description.Text = "The inverse name attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "2048"
-    extobj.DisplayName.Text = "IsAbstract"
-    extobj.Description.Text = "The is abstract attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "4096"
-    extobj.DisplayName.Text = "MinimumSamplingInterval"
-    extobj.Description.Text = "The minimum sampling interval attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "8192"
-    extobj.DisplayName.Text = "NodeClass"
-    extobj.Description.Text = "The node class attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "16384"
-    extobj.DisplayName.Text = "NodeId"
-    extobj.Description.Text = "The node id attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "32768"
-    extobj.DisplayName.Text = "Symmetric"
-    extobj.Description.Text = "The symmetric attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "65536"
-    extobj.DisplayName.Text = "UserAccessLevel"
-    extobj.Description.Text = "The user access level attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "131072"
-    extobj.DisplayName.Text = "UserExecutable"
-    extobj.Description.Text = "The user executable attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "262144"
-    extobj.DisplayName.Text = "UserWriteMask"
-    extobj.Description.Text = "The user write mask attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "524288"
-    extobj.DisplayName.Text = "ValueRank"
-    extobj.Description.Text = "The value rank attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "1048576"
-    extobj.DisplayName.Text = "WriteMask"
-    extobj.Description.Text = "The write mask attribute is writable."
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "2097152"
-    extobj.DisplayName.Text = "ValueForVariableType"
-    extobj.Description.Text = "The value attribute is writable."
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -1181,19 +1071,15 @@ def create_standard_address_space_Part4(server):
     value = []
     extobj = ua.EnumValueType()
     extobj.Value = "1"
-    extobj.DisplayName.Text = "Insert"
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "2"
-    extobj.DisplayName.Text = "Replace"
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "3"
-    extobj.DisplayName.Text = "Update"
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "4"
-    extobj.DisplayName.Text = "Delete"
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -1242,19 +1128,15 @@ def create_standard_address_space_Part4(server):
     value = []
     extobj = ua.EnumValueType()
     extobj.Value = "1"
-    extobj.DisplayName.Text = "Insert"
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "2"
-    extobj.DisplayName.Text = "Replace"
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "3"
-    extobj.DisplayName.Text = "Update"
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = "4"
-    extobj.DisplayName.Text = "Remove"
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
