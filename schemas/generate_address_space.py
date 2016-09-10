@@ -245,7 +245,7 @@ def save_aspace_to_disk():
     aspace.dump(path)
 
 if __name__ == "__main__":
-    for i in (3, 4, 5, 8, 9, 10, 11, 13):
+    for i in (3, 4, 5, 8, 9, 10, 11, 13, 14):
         xmlpath = "Opc.Ua.NodeSet2.Part{}.xml".format(str(i))
         cpppath = "../opcua/server/standard_address_space/standard_address_space_part{}.py".format(str(i))
         c = CodeGenerator(xmlpath, cpppath)
