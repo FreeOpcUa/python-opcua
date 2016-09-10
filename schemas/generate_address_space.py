@@ -162,22 +162,17 @@ def create_standard_address_space_%s(server):
         print("makeing code for ", extobj.objname)
         self.writecode(indent, 'extobj = ua.{}()'.format(extobj.objname))
         for name, val in extobj.body.items():
-            if type(val) is str:
-                raise Exception("Error val should a dict", name, val)
-                #self.writecode(indent, 'extobj.{} = "{}"'.format(name, val))
-            else:
-                for k, v in val.items():
-                    if type(v) is str:
-                        val = _to_val([extobj.objname], k, v)
-                        self.writecode(indent, 'extobj.{} = {}'.format(k, val))
-                    else:
-                        if k == "DataType":  #hack for strange nodeid xml format
-                            self.writecode(indent, 'extobj.{} = ua.NodeId.from_string("{}")'.format(k, v["Identifier"]))
+            for k, v in val.items():
+                if type(v) is str:
+                    val = _to_val([extobj.objname], k, v)
+                    self.writecode(indent, 'extobj.{} = {}'.format(k, val))
+                else:
+                    if k == "DataType":  #hack for strange nodeid xml format
+                        self.writecode(indent, 'extobj.{} = ua.NodeId.from_string("{}")'.format(k, v["Identifier"]))
                         continue
-
-                        for k2, v2 in v.items():
-                            val2 = _to_val([extobj.objname, k], k2, v2)
-                            self.writecode(indent, 'extobj.{}.{} = {}'.format(k, k2, val2))
+                    for k2, v2 in v.items():
+                        val2 = _to_val([extobj.objname, k], k2, v2)
+                        self.writecode(indent, 'extobj.{}.{} = {}'.format(k, k2, val2))
 
     def make_variable_code(self, obj):
         indent = "   "

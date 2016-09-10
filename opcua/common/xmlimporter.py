@@ -21,7 +21,6 @@ def ua_type_to_python(val, uatype):
 
 
 def to_python(val, obj, attname):
-    print(val, obj, attname)
     if isinstance(obj, ua.NodeId) and attname == "Identifier":
         return ua.NodeId.from_string(val)
     else:
@@ -149,7 +148,6 @@ class XmlImporter(object):
                     if type(v) is str:
                         setattr(ext, attname, to_python(v, ext, attname))
                     else:
-                        print("v is not string, it is", v, type(v))
                         for attname2, v2 in v.items():
                             obj2 = getattr(ext, attname)
                             setattr(obj2, attname2, to_python(v2, obj2, attname2))
@@ -170,31 +168,6 @@ class XmlImporter(object):
             return [getattr(ua, vtype)(v) for v in obj.value]
         else:
             return ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
-        #if obj.valuetype == 'ListOfLocalizedText':
-            #return ua.Variant([ua.LocalizedText(txt) for txt in obj.value], None)
-        #elif obj.valuetype == 'ListOfExtension':
-        #elif obj.valuetype == 'EnumValueType':
-            #values = []
-            #for ev in obj.value:
-                #enum_value = ua.EnumValueType()
-                #enum_value.DisplayName = ua.LocalizedText(ev['DisplayName'])
-                #enum_value.Description = ua.LocalizedText(ev['Description'])
-                #enum_value.Value = int(ev['Value'])
-                #values.append(enum_value)
-            #return values
-        #elif obj.valuetype == 'Argument':
-            #values = []
-            #for arg in obj.value:
-                #argument = ua.Argument()
-                #argument.Name = arg['Name']
-                #argument.Description = ua.LocalizedText(arg['Description'])
-                #argument.DataType = self.to_nodeid(arg['DataType'])
-                #argument.ValueRank = int(arg['ValueRank'])
-                #argument.ArrayDimensions = arg['ArrayDimensions']
-                #values.append(argument)
-            #return values
-
-        #return ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
 
     def add_variable_type(self, obj):
         node = self._get_node(obj)
