@@ -3,6 +3,7 @@ add node defined in XML to address space
 format is the one from opc-ua specification
 """
 import logging
+import sys
 
 
 from opcua import ua
@@ -15,7 +16,10 @@ def ua_type_to_python(val, uatype):
     elif uatype in ("String"):
         return val
     elif uatype in ("Bytes", "Bytes", "ByteString", "ByteArray"):
-        return bytes(val, 'utf8')
+        if sys.version_info.major > 2:
+            return bytes(val, 'utf8')
+        else:
+            return val
     else:
         raise Exception("uatype nopt handled", uatype, " for val ", val)
 
