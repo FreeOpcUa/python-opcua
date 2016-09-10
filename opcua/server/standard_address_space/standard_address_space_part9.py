@@ -905,14 +905,16 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
+    extobj.Description.Text = b'The identifier for the event to comment.'
+    extobj.DataType = ua.NodeId.from_string("i=15")
     extobj.Name = 'EventId'
     extobj.ValueRank = -1
-    extobj.DataType = ua.NodeId.from_string("i=15")
     value.append(extobj)
     extobj = ua.Argument()
+    extobj.Description.Text = b'The comment to add to the condition.'
+    extobj.DataType = ua.NodeId.from_string("i=21")
     extobj.Name = 'Comment'
     extobj.ValueRank = -1
-    extobj.DataType = ua.NodeId.from_string("i=21")
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -974,9 +976,10 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
+    extobj.Description.Text = b'The identifier for the suscription to refresh.'
+    extobj.DataType = ua.NodeId.from_string("i=288")
     extobj.Name = 'SubscriptionId'
     extobj.ValueRank = -1
-    extobj.DataType = ua.NodeId.from_string("i=288")
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -1038,14 +1041,16 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
+    extobj.Description.Text = b'The identifier for the suscription to refresh.'
+    extobj.DataType = ua.NodeId.from_string("i=288")
     extobj.Name = 'SubscriptionId'
     extobj.ValueRank = -1
-    extobj.DataType = ua.NodeId.from_string("i=288")
     value.append(extobj)
     extobj = ua.Argument()
+    extobj.Description.Text = b'The identifier for the monitored item to refresh.'
+    extobj.DataType = ua.NodeId.from_string("i=288")
     extobj.Name = 'MonitoredItemId'
     extobj.ValueRank = -1
-    extobj.DataType = ua.NodeId.from_string("i=288")
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -1465,9 +1470,10 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
+    extobj.Description.Text = b'The response to the dialog condition.'
+    extobj.DataType = ua.NodeId.from_string("i=6")
     extobj.Name = 'SelectedResponse'
     extobj.ValueRank = -1
-    extobj.DataType = ua.NodeId.from_string("i=6")
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -1811,14 +1817,16 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
+    extobj.Description.Text = b'The identifier for the event to comment.'
+    extobj.DataType = ua.NodeId.from_string("i=15")
     extobj.Name = 'EventId'
     extobj.ValueRank = -1
-    extobj.DataType = ua.NodeId.from_string("i=15")
     value.append(extobj)
     extobj = ua.Argument()
+    extobj.Description.Text = b'The comment to add to the condition.'
+    extobj.DataType = ua.NodeId.from_string("i=21")
     extobj.Name = 'Comment'
     extobj.ValueRank = -1
-    extobj.DataType = ua.NodeId.from_string("i=21")
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -1880,14 +1888,16 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
+    extobj.Description.Text = b'The identifier for the event to comment.'
+    extobj.DataType = ua.NodeId.from_string("i=15")
     extobj.Name = 'EventId'
     extobj.ValueRank = -1
-    extobj.DataType = ua.NodeId.from_string("i=15")
     value.append(extobj)
     extobj = ua.Argument()
+    extobj.Description.Text = b'The comment to add to the condition.'
+    extobj.DataType = ua.NodeId.from_string("i=21")
     extobj.Name = 'Comment'
     extobj.ValueRank = -1
-    extobj.DataType = ua.NodeId.from_string("i=21")
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -2612,9 +2622,10 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
+    extobj.Description.Text = b'If not 0, this parameter specifies a fixed time for which the Alarm is to be shelved.'
+    extobj.DataType = ua.NodeId.from_string("i=290")
     extobj.Name = 'ShelvingTime'
     extobj.ValueRank = -1
-    extobj.DataType = ua.NodeId.from_string("i=290")
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -3477,9 +3488,10 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = ua.NodeId.from_string("i=296")
     value = []
     extobj = ua.Argument()
+    extobj.Description.Text = b'If not 0, this parameter specifies a fixed time for which the Alarm is to be shelved.'
+    extobj.DataType = ua.NodeId.from_string("i=290")
     extobj.Name = 'ShelvingTime'
     extobj.ValueRank = -1
-    extobj.DataType = ua.NodeId.from_string("i=290")
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
