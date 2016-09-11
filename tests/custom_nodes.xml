@@ -122,7 +122,7 @@
         </Definition>
   </UADataType>
   
-  <UAVariable DataType="EnumValueType" ParentNodeId="ns=1;i=3011" ValueRank="1" NodeId="ns=1;i=6002" ArrayDimensions="3" BrowseName="EnumValues">
+  <UAVariable DataType="EnumValueType" ParentNodeId="i=120" ValueRank="1" NodeId="ns=1;i=99002" ArrayDimensions="3" BrowseName="EnumValues">
         <DisplayName>EnumValues</DisplayName>
         <References>
             <Reference ReferenceType="HasModellingRule">i=78</Reference>
@@ -176,6 +176,81 @@
             </uax:ListOfExtensionObject>
         </Value>
   </UAVariable>
+
+  <!-- Test the other xml format-->
+  <UAVariable NodeId="i=99003" BrowseName="EnumValues" ParentNodeId="i=120" DataType="i=7594" ValueRank="1">
+    <DisplayName>EnumValues</DisplayName>
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      <Reference ReferenceType="HasModellingRule">i=78</Reference>
+      <Reference ReferenceType="HasProperty" IsForward="false">i=120</Reference>
+    </References>
+    <Value>
+      <ListOfExtensionObject xmlns="http://opcfoundation.org/UA/2008/02/Types.xsd">
+        <ExtensionObject>
+          <TypeId>
+            <Identifier>i=7616</Identifier>
+          </TypeId>
+          <Body>
+            <EnumValueType>
+              <Value>1</Value>
+              <DisplayName>
+                <Locale>
+                </Locale>
+                <Text>Mandatory</Text>
+              </DisplayName>
+              <Description>
+                <Locale>
+                </Locale>
+                <Text>The BrowseName must appear in all instances of the type.</Text>
+              </Description>
+            </EnumValueType>
+          </Body>
+        </ExtensionObject>
+        <ExtensionObject>
+          <TypeId>
+            <Identifier>i=7616</Identifier>
+          </TypeId>
+          <Body>
+            <EnumValueType>
+              <Value>2</Value>
+              <DisplayName>
+                <Locale>
+                </Locale>
+                <Text>Optional</Text>
+              </DisplayName>
+              <Description>
+                <Locale>
+                </Locale>
+                <Text>The BrowseName may appear in an instance of the type.</Text>
+              </Description>
+            </EnumValueType>
+          </Body>
+        </ExtensionObject>
+        <ExtensionObject>
+          <TypeId>
+            <Identifier>i=7616</Identifier>
+          </TypeId>
+          <Body>
+            <EnumValueType>
+              <Value>3</Value>
+              <DisplayName>
+                <Locale>
+                </Locale>
+                <Text>Constraint</Text>
+              </DisplayName>
+              <Description>
+                <Locale>
+                </Locale>
+                <Text>The modelling rule defines a constraint and the BrowseName is not used in an instance of the type.</Text>
+              </Description>
+            </EnumValueType>
+          </Body>
+        </ExtensionObject>
+      </ListOfExtensionObject>
+    </Value>
+  </UAVariable>
+
 
   <!-- test data Object with Method and MethodArguments -->
   <UAObjectType NodeId="ns=1;i=1050" BrowseName="1:MyObjectType">

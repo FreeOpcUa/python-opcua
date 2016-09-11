@@ -8,7 +8,7 @@ def extensionobject_from_binary(data):
     Encoding = ord(data.read(1))
     body = None
     if Encoding & (1 << 0):
-        length = uatype_Int32.unpack(data.read(4))[0]
+        length = uabin.Primitives.Int32.unpack(data)
         if length < 1:
             body = Buffer(b"")
         else:
@@ -46,7 +46,7 @@ def extensionobject_to_binary(obj):
         Body = obj.to_binary()
     packet = []
     packet.append(TypeId.to_binary())
-    packet.append(uatype_UInt8.pack(Encoding))
+    packet.append(uabin.Primitives.UInt8.pack(Encoding))
     if Body:
-        packet.append(pack_bytes(Body))
+        packet.append(uabin.Primitives.Bytes.pack(Body))
     return b''.join(packet)

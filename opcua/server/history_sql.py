@@ -225,7 +225,7 @@ class HistorySQLite(HistoryStorageInterface):
                 self.logger.error('Historizing SQL Read Error events for node %s: %s', source_id, e)
 
             if nb_values:
-                if len(results) > nb_values:  # start > ua.DateTimeMinValue and
+                if len(results) > nb_values:  # start > ua.get_win_epoch() and
                     cont = cont_timestamps[nb_values]
 
                 results = results[:nb_values]
@@ -258,11 +258,11 @@ class HistorySQLite(HistoryStorageInterface):
     def _get_bounds(start, end, nb_values):
         order = "ASC"
 
-        if start is None or start == ua.DateTimeMinValue:
+        if start is None or start == ua.get_win_epoch():
             order = "DESC"
-            start = ua.DateTimeMinValue
+            start = ua.get_win_epoch()
 
-        if end is None or end == ua.DateTimeMinValue:
+        if end is None or end == ua.get_win_epoch():
             end = datetime.utcnow() + timedelta(days=1)
 
         if start < end:

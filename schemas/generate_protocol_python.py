@@ -3,7 +3,32 @@ import generate_model as gm
 
 IgnoredEnums = ["NodeIdType"]
 IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "LocalizedText", "ExtensionObject", "XmlElement"]
-numerics = ("Int8", "UInt8", "Sbyte", "Byte", "Char", "Boolean", "Int16", "UInt16", "Int32", "UInt32", "Float", "Int64", "UInt64", "Double")
+
+class Primitives1(object):
+    Int8 = 0
+    SByte = 0
+    Int16 = 0
+    Int32 = 0
+    Int64 = 0
+    UInt8 = 0
+    Char = 0
+    Byte = 0
+    UInt16 = 0
+    UInt32 = 0
+    UInt64 = 0
+    Boolean = 0
+    Double = 0
+    Float = 0
+
+
+class Primitives(Primitives1):
+    Null = 0
+    String = 0
+    Bytes = 0
+    ByteString = 0
+    CharArray = 0
+    DateTime = 0
+
 
 
 class CodeGenerator(object):
@@ -61,6 +86,7 @@ class CodeGenerator(object):
         self.write("from opcua.common.utils import Buffer")
         self.write("from opcua.common.uaerrors import UaError")
         self.write("from opcua.ua.uatypes import *")
+        self.write("from opcua.ua import ua_binary as uabin")
         self.write("from opcua.ua.object_ids import ObjectIds")
 
     def generate_enum_code(self, enum):
@@ -94,6 +120,13 @@ class CodeGenerator(object):
             self.write(":ivar {}:".format(field.name))
             self.write(":vartype {}: {}".format(field.name, field.uatype))
         self.write("'''")
+
+        self.write("")
+        self.write("ua_types = {")
+        for field in obj.fields:
+            self.write("    '{}': '{}',".format(field.name, field.uatype))
+        self.write("           }")
+        self.write("")
 
         self.write("def __init__(self, binary=None):")
         self.iidx += 1
@@ -161,7 +194,7 @@ class CodeGenerator(object):
                 self.write("if self.{}: ".format(field.name))
                 self.iidx += 1
             if field.length:
-                self.write("{}.append(uatype_Int32.pack(len(self.{})))".format(listname, field.name))
+                self.write("{}.append(uabin.Primitives.Int32.pack(len(self.{})))".format(listname, field.name))
                 self.write("for fieldname in self.{}:".format(field.name))
                 fname = "fieldname"
                 self.iidx += 1
@@ -199,7 +232,7 @@ class CodeGenerator(object):
         for idx, field in enumerate(obj.fields):
             self.iidx = iidx
             # if field.name == "Body" and idx <= (len(obj.fields)-1):
-            #self.write("bodylength = struct.unpack('<i', data.read(4))[0]")
+            #self.write("bodylength = struct.unpack('<i', data)[0]")
             # continue
             if field.switchfield:
                 bit = obj.bits[field.switchfield]
@@ -210,10 +243,9 @@ class CodeGenerator(object):
                 else:
                     self.write("if self.{} & (1 << {}):".format(bit.container, bit.idx))
                 self.iidx += 1
-            array = False
             if field.is_native_type():
                 if field.length:
-                    self.write("self.{} = unpack_uatype_array('{}', data)".format(field.name, field.uatype))
+                    self.write("self.{} = uabin.Primitives.{}.unpack_array(data)".format(field.name, field.uatype))
                 else:
                     self.write_unpack_uatype(field.name, field.uatype)
             elif field.uatype in self.model.enum_list:
@@ -227,7 +259,7 @@ class CodeGenerator(object):
                 else:
                     frombinary = "{}.from_binary(data)".format(field.uatype)
                 if field.length:
-                    self.write("length = uatype_Int32.unpack(data.read(4))[0]")
+                    self.write("length = uabin.Primitives.Int32.unpack(data)")
                     self.write("array = []")
                     self.write("if length != -1:")
                     self.iidx += 1
@@ -270,7 +302,7 @@ class CodeGenerator(object):
         self.iix = 0
 
     def write_unpack_enum(self, name, enum):
-        self.write("self.{} = {}(uatype_{}.unpack(data.read({}))[0])".format(name, enum.name, enum.uatype, self.get_size_from_uatype(enum.uatype)))
+        self.write("self.{} = {}(uabin.Primitives.{}.unpack(data))".format(name, enum.name, enum.uatype))
 
     def get_size_from_uatype(self, uatype):
         if uatype in ("Int8", "UInt8", "Sbyte", "Byte", "Char", "Boolean"):
@@ -285,40 +317,19 @@ class CodeGenerator(object):
             raise Exception("Cannot get size from type {}".format(uatype))
 
     def write_unpack_uatype(self, name, uatype):
-        if uatype in numerics:
-            size = self.get_size_from_uatype(uatype)
-            self.write("self.{} = uatype_{}.unpack(data.read({}))[0]".format(name, uatype, size))
-        elif uatype == "String":
-            self.write("self.{} = unpack_string(data)".format(name))
-            return
-        elif uatype in ("CharArray", "ByteString"):
-            self.write("self.{} = unpack_bytes(data)".format(name))
-            return
-        elif uatype == "DateTime":
-            self.write("self.{} = unpack_datetime(data)".format(name))
-            return
+        if hasattr(Primitives, uatype):
+            self.write("self.{} = uabin.Primitives.{}.unpack(data)".format(name, uatype))
         else:
-            self.write("self.{} = unpack_uatype('{}', data)".format(name, uatype))
-            return
+            self.write("self.{} = {}.from_binary(data))".format(name, uatype))
 
     def write_pack_enum(self, listname, name, enum):
-        self.write("{}.append(uatype_{}.pack({}.value))".format(listname, enum.uatype, name))
+        self.write("{}.append(uabin.Primitives.{}.pack({}.value))".format(listname, enum.uatype, name))
 
     def write_pack_uatype(self, listname, name, uatype):
-        if uatype in numerics:
-            self.write("{}.append(uatype_{}.pack({}))".format(listname, uatype, name))
-            return
-        elif uatype == "String":
-            self.write("{}.append(pack_string({}))".format(listname, name))
-            return
-        elif uatype in ("CharArray", "ByteString"):
-            self.write("{}.append(pack_bytes({}))".format(listname, name))
-            return
-        elif uatype == "DateTime":
-            self.write("{}.append(pack_datetime({}))".format(listname, name))
-            return
+        if hasattr(Primitives, uatype):
+            self.write("{}.append(uabin.Primitives.{}.pack({}))".format(listname, uatype, name))
         else:
-            self.write("{}.append(pack_uatype('{}', {}))".format(listname, uatype, name))
+            self.write("{}.append({}.to_binary(}))".format(listname, name))
             return
 
     def get_default_value(self, field):

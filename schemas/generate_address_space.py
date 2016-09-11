@@ -3,9 +3,30 @@ Generate address space c++ code from xml file specification
 xmlparser.py is a requirement. it is in opcua folder but to avoid importing all code, developer can link xmlparser.py in current directory
 """
 import sys
+import logging
 # sys.path.insert(0, "..")  # load local freeopcua implementation
 #from opcua import xmlparser
 import xmlparser
+
+
+def _to_val(objs, attr, val):
+    from opcua import ua
+    print("got ", objs, attr, val)
+    cls = getattr(ua, objs[0])
+    for o in objs[1:]:
+        cls = getattr(ua, cls.ua_types[o])
+    if cls == ua.NodeId:
+        return "ua.NodeId.from_string('val')"
+    return ua_type_to_python(val, cls.ua_types[attr])
+
+
+def ua_type_to_python(val, uatype):
+    if uatype in ("String"):
+        return "'{}'".format(val)
+    elif uatype in ("Bytes", "Bytes", "ByteString", "ByteArray"):
+        return "b'{}'".format(val)
+    else:
+        return val
 
 
 class CodeGenerator(object):
@@ -21,7 +42,7 @@ class CodeGenerator(object):
         sys.stderr.write("Generating Python code {} for XML file {}".format(self.output_path, self.input_path) + "\n")
         self.output_file = open(self.output_path, "w")
         self.make_header()
-        self.parser = xmlparser.XMLParser(self.input_path)
+        self.parser = xmlparser.XMLParser(self.input_path, None)
         for node in self.parser:
             if node.nodetype == 'UAObject':
                 self.make_object_code(node)
@@ -53,8 +74,6 @@ It is automatically generated from opcfoundation.org schemas.
 
 from opcua import ua
 
-false = False #FIXME
-true = True #FIXME
 
 def create_standard_address_space_%s(server):
   ''' % (self.part))
@@ -110,27 +129,59 @@ def create_standard_address_space_%s(server):
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
 
-    def make_variable_code(self, obj):
-        indent = "   "
-        self.writecode(indent)
-        self.make_node_code(obj, indent)
-        self.writecode(indent, 'attrs = ua.VariableAttributes()')
+    def make_common_variable_code(self, indent, obj):
         if obj.desc:
             self.writecode(indent, 'attrs.Description = ua.LocalizedText("{}")'.format(obj.desc))
         self.writecode(indent, 'attrs.DisplayName = ua.LocalizedText("{}")'.format(obj.displayname))
         self.writecode(indent, 'attrs.DataType = {}'.format(self.to_data_type(obj.datatype)))
-        if obj.value:
-            self.writecode(indent, 'attrs.Value = ua.Variant({}, ua.VariantType.{})'.format(self.to_value(obj.value), obj.valuetype))
+        if obj.value is not None:
+            if obj.valuetype == "ListOfExtensionObject":
+                self.writecode(indent, 'value = []')
+                for ext in obj.value:
+                    self.make_ext_obj_code(indent, ext)
+                    self.writecode(indent, 'value.append(extobj)')
+                self.writecode(indent, 'attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)')
+            elif obj.valuetype == "ExtensionObject":
+                self.make_ext_obj_code(indent, obj.value)
+                self.writecode(indent, 'value = extobj')
+                self.writecode(indent, 'attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)')
+            else:
+                if obj.valuetype.startswith("ListOf"):
+                    obj.valuetype = obj.valuetype[6:]
+                self.writecode(indent, 'attrs.Value = ua.Variant({}, ua.VariantType.{})'.format(self.to_value(obj.value), obj.valuetype))
         if obj.rank:
             self.writecode(indent, 'attrs.ValueRank = {}'.format(obj.rank))
         if obj.accesslevel:
             self.writecode(indent, 'attrs.AccessLevel = {}'.format(obj.accesslevel))
         if obj.useraccesslevel:
             self.writecode(indent, 'attrs.UserAccessLevel = {}'.format(obj.useraccesslevel))
+        if obj.dimensions:
+            self.writecode(indent, 'attrs.ArrayDimensions = {}'.format(obj.dimensions))
+    
+    def make_ext_obj_code(self, indent, extobj):
+        print("makeing code for ", extobj.objname)
+        self.writecode(indent, 'extobj = ua.{}()'.format(extobj.objname))
+        for name, val in extobj.body.items():
+            for k, v in val.items():
+                if type(v) is str:
+                    val = _to_val([extobj.objname], k, v)
+                    self.writecode(indent, 'extobj.{} = {}'.format(k, val))
+                else:
+                    if k == "DataType":  #hack for strange nodeid xml format
+                        self.writecode(indent, 'extobj.{} = ua.NodeId.from_string("{}")'.format(k, v["Identifier"]))
+                        continue
+                    for k2, v2 in v.items():
+                        val2 = _to_val([extobj.objname, k], k2, v2)
+                        self.writecode(indent, 'extobj.{}.{} = {}'.format(k, k2, val2))
+
+    def make_variable_code(self, obj):
+        indent = "   "
+        self.writecode(indent)
+        self.make_node_code(obj, indent)
+        self.writecode(indent, 'attrs = ua.VariableAttributes()')
         if obj.minsample:
             self.writecode(indent, 'attrs.MinimumSamplingInterval = {}'.format(obj.minsample))
-        if obj.dimensions:
-            self.writecode(indent, 'attrs.ArrayDimensions = '.format(obj.dimensions))
+        self.make_common_variable_code(indent, obj)
         self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
@@ -143,18 +194,9 @@ def create_standard_address_space_%s(server):
         if obj.desc:
             self.writecode(indent, 'attrs.Description = ua.LocalizedText("{}")'.format(obj.desc))
         self.writecode(indent, 'attrs.DisplayName = ua.LocalizedText("{}")'.format(obj.displayname))
-        self.writecode(indent, 'attrs.DataType = {}'.format(self.to_data_type(obj.datatype)))
-        if obj.value:
-            self.writecode(indent, 'attrs.Value = {}'.format(self.to_value(obj.value)))
-        if obj.value:
-            self.writecode(indent, 'attrs.Value = {}'.format(self.to_value(obj.value)))
-        if obj.rank:
-            self.writecode(indent, 'attrs.ValueRank = {}'.format(obj.rank))
         if obj.abstract:
             self.writecode(indent, 'attrs.IsAbstract = {}'.format(obj.abstract))
-        print(obj.dimensions)
-        if obj.dimensions:
-            self.writecode(indent, 'attrs.ArrayDimensions = {}'.format(obj.dimensions))
+        self.make_common_variable_code(indent, obj)
         self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
@@ -174,14 +216,6 @@ def create_standard_address_space_%s(server):
         if obj.desc:
             self.writecode(indent, 'attrs.Description = ua.LocalizedText("{}")'.format(obj.desc))
         self.writecode(indent, 'attrs.DisplayName = ua.LocalizedText("{}")'.format(obj.displayname))
-        if obj.accesslevel:
-            self.writecode(indent, 'attrs.AccessLevel = {}'.format(obj.accesslevel))
-        if obj.useraccesslevel:
-            self.writecode(indent, 'attrs.UserAccessLevel = {}'.format(obj.useraccesslevel))
-        if obj.minsample:
-            self.writecode(indent, 'attrs.MinimumSamplingInterval = {}'.format(obj.minsample))
-        if obj.dimensions:
-            self.writecode(indent, 'attrs.ArrayDimensions = {}'.format(obj.dimensions))
         self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
@@ -224,7 +258,7 @@ def create_standard_address_space_%s(server):
         self.writecode(indent, "refs = []")
         for ref in obj.refs:
             self.writecode(indent, 'ref = ua.AddReferencesItem()')
-            self.writecode(indent, 'ref.IsForward = true')
+            self.writecode(indent, 'ref.IsForward = True')
             self.writecode(indent, 'ref.ReferenceTypeId = {}'.format(self.to_ref_type(ref.reftype)))
             self.writecode(indent, 'ref.SourceNodeId = ua.NodeId.from_string("{}")'.format(obj.nodeid))
             self.writecode(indent, 'ref.TargetNodeClass = ua.NodeClass.DataType')
@@ -245,6 +279,7 @@ def save_aspace_to_disk():
     aspace.dump(path)
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.WARN)
     for i in (3, 4, 5, 8, 9, 10, 11, 13):
         xmlpath = "Opc.Ua.NodeSet2.Part{}.xml".format(str(i))
         cpppath = "../opcua/server/standard_address_space/standard_address_space_part{}.py".format(str(i))

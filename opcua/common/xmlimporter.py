@@ -3,10 +3,32 @@ add node defined in XML to address space
 format is the one from opc-ua specification
 """
 import logging
+import sys
 
 
 from opcua import ua
 from opcua.common import xmlparser
+
+
+def ua_type_to_python(val, uatype):
+    if uatype.startswith("Int") or uatype.startswith("UInt"):
+        return int(val)
+    elif uatype in ("String"):
+        return val
+    elif uatype in ("Bytes", "Bytes", "ByteString", "ByteArray"):
+        if sys.version_info.major > 2:
+            return bytes(val, 'utf8')
+        else:
+            return val
+    else:
+        raise Exception("uatype nopt handled", uatype, " for val ", val)
+
+
+def to_python(val, obj, attname):
+    if isinstance(obj, ua.NodeId) and attname == "Identifier":
+        return ua.NodeId.from_string(val)
+    else:
+        return ua_type_to_python(val, obj.ua_types[attname])
 
 
 class XmlImporter(object):
@@ -119,36 +141,37 @@ class XmlImporter(object):
         res = self.server.add_nodes([node])
         self._add_refs(obj)
         return res[0].AddedNodeId
+    
+    def _make_ext_obj(sefl, obj):
+        ext = getattr(ua, obj.objname)()
+        for name, val in obj.body.items():
+            if type(val) is str:
+                raise Exception("Error val should a dict", name, val)
+            else:
+                for attname, v in val.items():
+                    if type(v) is str:
+                        setattr(ext, attname, to_python(v, ext, attname))
+                    else:
+                        for attname2, v2 in v.items():
+                            obj2 = getattr(ext, attname)
+                            setattr(obj2, attname2, to_python(v2, obj2, attname2))
+        return ext
 
     def _add_variable_value(self, obj):
         """
         Returns the value for a Variable based on the objects valuetype. 
         """
-        if obj.valuetype == 'ListOfLocalizedText':
-            return ua.Variant([ua.LocalizedText(txt) for txt in obj.value], None)
-        elif obj.valuetype == 'EnumValueType':
+        if obj.valuetype == 'ListOfExtensionObject':
             values = []
-            for ev in obj.value:
-                enum_value = ua.EnumValueType()
-                enum_value.DisplayName = ua.LocalizedText(ev['DisplayName'])
-                enum_value.Description = ua.LocalizedText(ev['Description'])
-                enum_value.Value = int(ev['Value'])
-                values.append(enum_value)
+            for ext in obj.value:
+                extobj = self._make_ext_obj(ext)
+                values.append(extobj)
             return values
-        elif obj.valuetype == 'Argument':
-            values = []
-            for arg in obj.value:
-                argument = ua.Argument()
-                argument.Name = arg['Name']
-                argument.Description = ua.LocalizedText(arg['Description'])
-                argument.DataType = self.to_nodeid(arg['DataType'])
-                argument.ValueRank = int(arg['ValueRank'])
-                argument.ArrayDimensions = arg['ArrayDimensions']
-                values.append(argument)
-            return values
-
-        return ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
-
+        elif obj.valuetype.startswith("ListOf"):
+            vtype = obj.valuetype[6:]
+            return [getattr(ua, vtype)(v) for v in obj.value]
+        else:
+            return ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
 
     def add_variable_type(self, obj):
         node = self._get_node(obj)

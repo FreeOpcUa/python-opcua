@@ -2,19 +2,20 @@
 implement ua datatypes
 """
 import logging
+import struct
 from enum import Enum, IntEnum, EnumMeta
-from datetime import datetime, timedelta, tzinfo, MAXYEAR
-from calendar import timegm
+from datetime import datetime
 import sys
 import os
 import uuid
-import struct
 import re
 import itertools
 if sys.version_info.major > 2:
     unicode = str
 
+from opcua.ua import ua_binary as uabin
 from opcua.ua import status_codes
+from opcua.ua import ObjectIds
 from opcua.common.uaerrors import UaError
 from opcua.common.uaerrors import UaStatusCodeError
 from opcua.common.uaerrors import UaStringParsingError
@@ -23,245 +24,8 @@ from opcua.common.uaerrors import UaStringParsingError
 logger = logging.getLogger('opcua.uaprotocol')
 
 
-# types that will packed and unpacked directly using struct (string, bytes and datetime are handles as special cases
-UaTypes = ("Boolean", "SByte", "Byte", "Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64", "Float", "Double")
-
-
-EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
-HUNDREDS_OF_NANOSECONDS = 10000000
-FILETIME_EPOCH_AS_DATETIME = datetime(1601, 1, 1)
-
-
-class UTC(tzinfo):
-
-    """UTC"""
-
-    def utcoffset(self, dt):
-        return timedelta(0)
-
-    def tzname(self, dt):
-        return "UTC"
-
-    def dst(self, dt):
-        return timedelta(0)
-
-
-# method copied from David Buxton <david@gasmark6.com> sample code
-def datetime_to_win_epoch(dt):
-    if (dt.tzinfo is None) or (dt.tzinfo.utcoffset(dt) is None):
-        dt = dt.replace(tzinfo=UTC())
-    ft = EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
-    return ft + (dt.microsecond * 10)
-
-
-def win_epoch_to_datetime(epch):
-    try:
-        return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch // 10)
-    except OverflowError:
-        # FILETIMEs after 31 Dec 9999 can't be converted to datetime
-        logger.warning("datetime overflow: {}".format(epch))
-        return datetime(MAXYEAR, 12, 31, 23, 59, 59, 999999)
-
-
-#  minimum datetime as in ua spec, used for history
-DateTimeMinValue = datetime(1606, 1, 1, 12, 0, 0)
-
-
-def build_array_format_py2(prefix, length, fmtchar):
-    return prefix + str(length) + fmtchar
-
-
-def build_array_format_py3(prefix, length, fmtchar):
-    return prefix + str(length) + chr(fmtchar)
-
-
-if sys.version_info.major < 3:
-    build_array_format = build_array_format_py2
-else:
-    build_array_format = build_array_format_py3
-
-
-def pack_uatype_array_primitive(st, value, length):
-    if length == 1:
-        return b'\x01\x00\x00\x00' + st.pack(value[0])
-    else:
-        return struct.pack(build_array_format("<i", length, st.format[1]), length, *value)
-
-
-def pack_uatype_array(uatype, value):
-    if value is None:
-        return b'\xff\xff\xff\xff'
-    length = len(value)
-    if length == 0:
-        return b'\x00\x00\x00\x00'
-    if uatype in uatype2struct:
-        return pack_uatype_array_primitive(uatype2struct[uatype], value, length)
-    b = []
-    b.append(uatype_Int32.pack(length))
-    for val in value:
-        b.append(pack_uatype(uatype, val))
-    return b"".join(b)
-
-
-def pack_uatype(uatype, value):
-    if uatype in uatype2struct:
-        if value is None:
-            value = 0
-        return uatype2struct[uatype].pack(value)
-    elif uatype == "Null":
-        return b''
-    elif uatype == "String":
-        return pack_string(value)
-    elif uatype in ("CharArray", "ByteString", "Custom"):
-        return pack_bytes(value)
-    elif uatype == "DateTime":
-        return pack_datetime(value)
-    elif uatype == "LocalizedText":
-        if isinstance(value, LocalizedText):
-            return value.to_binary()
-        else:
-            return LocalizedText(value).to_binary()
-    elif uatype == "ExtensionObject":
-        # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
-        # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
-        # Using local import to avoid import loop
-        from opcua.ua.uaprotocol_auto import extensionobject_to_binary
-        return extensionobject_to_binary(value)
-    else:
-        return value.to_binary()
-
-uatype_Int8 = struct.Struct("<b")
-uatype_SByte = uatype_Int8
-uatype_Int16 = struct.Struct("<h")
-uatype_Int32 = struct.Struct("<i")
-uatype_Int64 = struct.Struct("<q")
-uatype_UInt8 = struct.Struct("<B")
-uatype_Char = uatype_UInt8
-uatype_Byte = uatype_UInt8
-uatype_UInt16 = struct.Struct("<H")
-uatype_UInt32 = struct.Struct("<I")
-uatype_UInt64 = struct.Struct("<Q")
-uatype_Boolean = struct.Struct("<?")
-uatype_Double = struct.Struct("<d")
-uatype_Float = struct.Struct("<f")
-
-uatype2struct = {
-    "Int8": uatype_Int8,
-    "SByte": uatype_SByte,
-    "Int16": uatype_Int16,
-    "Int32": uatype_Int32,
-    "Int64": uatype_Int64,
-    "UInt8": uatype_UInt8,
-    "Char": uatype_Char,
-    "Byte": uatype_Byte,
-    "UInt16": uatype_UInt16,
-    "UInt32": uatype_UInt32,
-    "UInt64": uatype_UInt64,
-    "Boolean": uatype_Boolean,
-    "Double": uatype_Double,
-    "Float": uatype_Float,
-}
-
-
-def unpack_uatype(uatype, data):
-    if uatype in uatype2struct:
-        st = uatype2struct[uatype]
-        return st.unpack(data.read(st.size))[0]
-    elif uatype == "String":
-        return unpack_string(data)
-    elif uatype in ("CharArray", "ByteString", "Custom"):
-        return unpack_bytes(data)
-    elif uatype == "DateTime":
-        return unpack_datetime(data)
-    elif uatype == "ExtensionObject":
-        # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
-        # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
-        # Using local import to avoid import loop
-        from opcua.ua.uaprotocol_auto import extensionobject_from_binary
-        return extensionobject_from_binary(data)
-    else:
-        glbs = globals()
-        if uatype in glbs:
-            klass = glbs[uatype]
-            if hasattr(klass, 'from_binary'):
-                return klass.from_binary(data)
-        raise UaError("can not unpack unknown uatype %s" % uatype)
-
-
-def unpack_uatype_array(uatype, data):
-    length = uatype_Int32.unpack(data.read(4))[0]
-    if length == -1:
-        return None
-    elif length == 0:
-        return []
-    elif uatype in uatype2struct:
-        st = uatype2struct[uatype]
-        if length == 1:
-            return list(st.unpack(data.read(st.size)))
-        else:
-            arrst = struct.Struct(build_array_format("<", length, st.format[1]))
-            return list(arrst.unpack(data.read(arrst.size)))
-    else:
-        result = []
-        for _ in range(0, length):
-            result.append(unpack_uatype(uatype, data))
-        return result
-
-
-def pack_datetime(value):
-    epch = datetime_to_win_epoch(value)
-    return uatype_Int64.pack(epch)
-
-
-def unpack_datetime(data):
-    epch = uatype_Int64.unpack(data.read(8))[0]
-    return win_epoch_to_datetime(epch)
-
-
-def pack_string(string):
-    if string is None:
-        return uatype_Int32.pack(-1)
-    if isinstance(string, unicode):
-        string = string.encode('utf-8')
-    length = len(string)
-    return uatype_Int32.pack(length) + string
-
-pack_bytes = pack_string
-
-
-def unpack_bytes(data):
-    length = uatype_Int32.unpack(data.read(4))[0]
-    if length == -1:
-        return None
-    return data.read(length)
-
-
-def py3_unpack_string(data):
-    b = unpack_bytes(data)
-    if b is None:
-        return b
-    return b.decode("utf-8")
-
-
-if sys.version_info.major < 3:
-    unpack_string = unpack_bytes
-else:
-    unpack_string = py3_unpack_string
-
-
-def test_bit(data, offset):
-    mask = 1 << offset
-    return data & mask
-
-
-def set_bit(data, offset):
-    mask = 1 << offset
-    return data | mask
-
-
-def unset_bit(data, offset):
-    mask = 1 << offset
-    return data & ~mask
+def get_win_epoch():
+    return uabin.win_epoch_to_datetime(0)
 
 
 class _FrozenClass(object):
@@ -334,7 +98,7 @@ class _MaskEnum(IntEnum):
 
             e.g. bits(44) yields at 2, 3, 5
         """
-        assert n >= 0 # avoid infinite recursion
+        assert n >= 0  # avoid infinite recursion
 
         pos = 0
         while n:
@@ -343,19 +107,21 @@ class _MaskEnum(IntEnum):
             n = n // 2
             pos += 1
 
+
 class AccessLevel(_MaskEnum):
     """
     Bit index to indicate what the access level is.
 
     Spec Part 3, appears multiple times, e.g. paragraph 5.6.2 Variable NodeClass
     """
-    CurrentRead    = 0
-    CurrentWrite   = 1
-    HistoryRead    = 2
-    HistoryWrite   = 3
+    CurrentRead = 0
+    CurrentWrite = 1
+    HistoryRead = 2
+    HistoryWrite = 3
     SemanticChange = 4
-    StatusWrite    = 5
+    StatusWrite = 5
     TimestampWrite = 6
+
 
 class WriteMask(_MaskEnum):
     """
@@ -363,28 +129,28 @@ class WriteMask(_MaskEnum):
 
     Spec Part 3, Paragraph 5.2.7 WriteMask
     """
-    AccessLevel             = 0
-    ArrayDimensions         = 1
-    BrowseName              = 2
-    ContainsNoLoops         = 3
-    DataType                = 4
-    Description             = 5
-    DisplayName             = 6
-    EventNotifier           = 7
-    Executable              = 8
-    Historizing             = 9
-    InverseName             = 10
-    IsAbstract              = 11
+    AccessLevel = 0
+    ArrayDimensions = 1
+    BrowseName = 2
+    ContainsNoLoops = 3
+    DataType = 4
+    Description = 5
+    DisplayName = 6
+    EventNotifier = 7
+    Executable = 8
+    Historizing = 9
+    InverseName = 10
+    IsAbstract = 11
     MinimumSamplingInterval = 12
-    NodeClass               = 13
-    NodeId                  = 14
-    Symmetric               = 15
-    UserAccessLevel         = 16
-    UserExecutable          = 17
-    UserWriteMask           = 18
-    ValueRank               = 19
-    WriteMask               = 20
-    ValueForVariableType    = 21
+    NodeClass = 13
+    NodeId = 14
+    Symmetric = 15
+    UserAccessLevel = 16
+    UserExecutable = 17
+    UserWriteMask = 18
+    ValueRank = 19
+    WriteMask = 20
+    ValueForVariableType = 21
 
 
 class EventNotifier(_MaskEnum):
@@ -395,8 +161,8 @@ class EventNotifier(_MaskEnum):
     """
     SubscribeToEvents = 0
     # Reserved        = 1
-    HistoryRead       = 2
-    HistoryWrite      = 3
+    HistoryRead = 2
+    HistoryWrite = 3
 
 
 class Guid(FrozenClass):
@@ -442,11 +208,11 @@ class StatusCode(FrozenClass):
         self._freeze = True
 
     def to_binary(self):
-        return uatype_UInt32.pack(self.value)
+        return uabin.Primitives.UInt32.pack(self.value)
 
     @staticmethod
     def from_binary(data):
-        val = uatype_UInt32.unpack(data.read(4))[0]
+        val = uabin.Primitives.UInt32.unpack(data)
         sc = StatusCode(val)
         return sc
 
@@ -641,14 +407,14 @@ class NodeId(FrozenClass):
             return struct.pack("<BHI", self.NodeIdType.value, self.NamespaceIndex, self.Identifier)
         elif self.NodeIdType == NodeIdType.String:
             return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
-                pack_string(self.Identifier)
+                uabin.Primitives.String.pack(self.Identifier)
         elif self.NodeIdType == NodeIdType.ByteString:
             return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
-                pack_bytes(self.Identifier)
+                uabin.Primitives.Bytes.pack(self.Identifier)
         else:
             return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
                 self.Identifier.to_binary()
-        #FIXME: Missing NNamespaceURI and ServerIndex
+        # FIXME: Missing NNamespaceURI and ServerIndex
 
     @staticmethod
     def from_binary(data):
@@ -663,21 +429,21 @@ class NodeId(FrozenClass):
         elif nid.NodeIdType == NodeIdType.Numeric:
             nid.NamespaceIndex, nid.Identifier = struct.unpack("<HI", data.read(6))
         elif nid.NodeIdType == NodeIdType.String:
-            nid.NamespaceIndex = uatype_UInt16.unpack(data.read(2))[0]
-            nid.Identifier = unpack_string(data)
+            nid.NamespaceIndex = uabin.Primitives.UInt16.unpack(data)
+            nid.Identifier = uabin.Primitives.String.unpack(data)
         elif nid.NodeIdType == NodeIdType.ByteString:
-            nid.NamespaceIndex = uatype_UInt16.unpack(data.read(2))[0]
-            nid.Identifier = unpack_bytes(data)
+            nid.NamespaceIndex = uabin.Primitives.UInt16.unpack(data)
+            nid.Identifier = uabin.Primitives.Bytes.unpack(data)
         elif nid.NodeIdType == NodeIdType.Guid:
-            nid.NamespaceIndex = uatype_UInt16.unpack(data.read(2))[0]
+            nid.NamespaceIndex = uabin.Primitives.UInt16.unpack(data)
             nid.Identifier = Guid.from_binary(data)
         else:
             raise UaError("Unknown NodeId encoding: " + str(nid.NodeIdType))
 
-        if test_bit(encoding, 7):
-            nid.NamespaceUri = unpack_string(data)
-        if test_bit(encoding, 6):
-            nid.ServerIndex = uatype_UInt32.unpack(data.read(4))[0]
+        if uabin.test_bit(encoding, 7):
+            nid.NamespaceUri = uabin.Primitives.String.unpack(data)
+        if uabin.test_bit(encoding, 6):
+            nid.ServerIndex = uabin.Primitives.UInt32.unpack(data)
 
         return nid
 
@@ -752,15 +518,15 @@ class QualifiedName(FrozenClass):
 
     def to_binary(self):
         packet = []
-        packet.append(uatype_UInt16.pack(self.NamespaceIndex))
-        packet.append(pack_string(self.Name))
+        packet.append(uabin.Primitives.UInt16.pack(self.NamespaceIndex))
+        packet.append(uabin.Primitives.String.pack(self.Name))
         return b''.join(packet)
 
     @staticmethod
     def from_binary(data):
         obj = QualifiedName()
-        obj.NamespaceIndex = uatype_UInt16.unpack(data.read(2))[0]
-        obj.Name = unpack_string(data)
+        obj.NamespaceIndex = uabin.Primitives.UInt16.unpack(data)
+        obj.Name = uabin.Primitives.String.unpack(data)
         return obj
 
     def __eq__(self, bname):
@@ -789,6 +555,11 @@ class LocalizedText(FrozenClass):
     A string qualified with a namespace index.
     '''
 
+    ua_types = {
+        "Text": "Bytes",
+        "Locale": "Bytes"
+    }
+
     def __init__(self, text=None):
         self.Encoding = 0
         self.Text = text
@@ -796,7 +567,7 @@ class LocalizedText(FrozenClass):
             self.Text = self.Text.encode('utf-8')
         if self.Text:
             self.Encoding |= (1 << 1)
-        self.Locale = None 
+        self.Locale = None
         self._freeze = True
 
     def to_binary(self):
@@ -805,11 +576,11 @@ class LocalizedText(FrozenClass):
             self.Encoding |= (1 << 0)
         if self.Text:
             self.Encoding |= (1 << 1)
-        packet.append(uatype_UInt8.pack(self.Encoding))
+        packet.append(uabin.Primitives.UInt8.pack(self.Encoding))
         if self.Locale:
-            packet.append(pack_bytes(self.Locale))
+            packet.append(uabin.Primitives.Bytes.pack(self.Locale))
         if self.Text:
-            packet.append(pack_bytes(self.Text))
+            packet.append(uabin.Primitives.Bytes.pack(self.Text))
         return b''.join(packet)
 
     @staticmethod
@@ -817,9 +588,9 @@ class LocalizedText(FrozenClass):
         obj = LocalizedText()
         obj.Encoding = ord(data.read(1))
         if obj.Encoding & (1 << 0):
-            obj.Locale = unpack_bytes(data)
+            obj.Locale = uabin.Primitives.Bytes.unpack(data)
         if obj.Encoding & (1 << 1):
-            obj.Text = unpack_bytes(data)
+            obj.Text = uabin.Primitives.Bytes.unpack(data)
         return obj
 
     def to_string(self):
@@ -868,18 +639,18 @@ class ExtensionObject(FrozenClass):
         if self.Body:
             self.Encoding |= (1 << 0)
         packet.append(self.TypeId.to_binary())
-        packet.append(pack_uatype('UInt8', self.Encoding))
+        packet.append(uabin.Primitives.UInt8.pack(self.Encoding))
         if self.Body:
-            packet.append(pack_uatype('ByteString', self.Body))
+            packet.append(uabin.Primitives.ByteString.pack(self.Body))
         return b''.join(packet)
 
     @staticmethod
     def from_binary(data):
         obj = ExtensionObject()
         obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = unpack_uatype('UInt8', data)
+        obj.Encoding = uabin.Primitives.UInt8.unpack(data)
         if obj.Encoding & (1 << 0):
-            obj.Body = unpack_uatype('ByteString', data)
+            obj.Body = uabin.Primitives.ByteString.unpack(data)
         return obj
 
     @staticmethod
@@ -961,6 +732,13 @@ class VariantType(Enum):
 
 
 class VariantTypeCustom(object):
+    """
+    Looks like sometime we get variant with other values than those
+    defined in VariantType.
+    FIXME: We should not need this class, as far as I iunderstand the spec
+    variants can only be of VariantType
+    """
+
     def __init__(self, val):
         self.name = "Custom"
         self.value = val
@@ -1051,15 +829,15 @@ class Variant(FrozenClass):
         encoding = self.VariantType.value & 0b111111
         if type(self.Value) in (list, tuple):
             if self.Dimensions is not None:
-                encoding = set_bit(encoding, 6)
-            encoding = set_bit(encoding, 7)
-            b.append(uatype_UInt8.pack(encoding))
-            b.append(pack_uatype_array(self.VariantType.name, flatten(self.Value)))
+                encoding = uabin.set_bit(encoding, 6)
+            encoding = uabin.set_bit(encoding, 7)
+            b.append(uabin.Primitives.UInt8.pack(encoding))
+            b.append(uabin.pack_uatype_array(self.VariantType, flatten(self.Value)))
             if self.Dimensions is not None:
-                b.append(pack_uatype_array("Int32", self.Dimensions))
+                b.append(uabin.pack_uatype_array(VariantType.Int32, self.Dimensions))
         else:
-            b.append(uatype_UInt8.pack(encoding))
-            b.append(pack_uatype(self.VariantType.name, self.Value))
+            b.append(uabin.Primitives.UInt8.pack(encoding))
+            b.append(uabin.pack_uatype(self.VariantType, self.Value))
 
         return b"".join(b)
 
@@ -1071,12 +849,12 @@ class Variant(FrozenClass):
         vtype = DataType_to_VariantType(int_type)
         if vtype == VariantType.Null:
             return Variant(None, vtype, encoding)
-        if test_bit(encoding, 7):
-            value = unpack_uatype_array(vtype.name, data)
+        if uabin.test_bit(encoding, 7):
+            value = uabin.unpack_uatype_array(vtype, data)
         else:
-            value = unpack_uatype(vtype.name, data)
-        if test_bit(encoding, 6):
-            dimensions = unpack_uatype_array("Int32", data)
+            value = uabin.unpack_uatype(vtype, data)
+        if uabin.test_bit(encoding, 6):
+            dimensions = uabin.unpack_uatype_array(VariantType.Int32, data)
             value = reshape(value, dimensions)
 
         return Variant(value, vtype, dimensions)
@@ -1136,6 +914,7 @@ class XmlElement(FrozenClass):
     '''
     An XML element encoded as an UTF-8 string.
     '''
+
     def __init__(self, binary=None):
         if binary is not None:
             self._binary_init(binary)
@@ -1145,14 +924,14 @@ class XmlElement(FrozenClass):
         self._freeze = True
 
     def to_binary(self):
-        return pack_string(self.Value)
+        return uabin.Primitives.String.pack(self.Value)
 
     @staticmethod
     def from_binary(data):
         return XmlElement(data)
 
     def _binary_init(self, data):
-        self.Value = unpack_string(data)
+        self.Value = uabin.Primitives.String.unpack(data)
 
     def __str__(self):
         return 'XmlElement(Value:' + str(self.Value) + ')'
@@ -1210,19 +989,19 @@ class DataValue(FrozenClass):
             self.Encoding |= (1 << 4)
         if self.ServerPicoseconds:
             self.Encoding |= (1 << 5)
-        packet.append(uatype_UInt8.pack(self.Encoding))
+        packet.append(uabin.Primitives.UInt8.pack(self.Encoding))
         if self.Value:
             packet.append(self.Value.to_binary())
         if self.StatusCode:
             packet.append(self.StatusCode.to_binary())
         if self.SourceTimestamp:
-            packet.append(pack_datetime(self.SourceTimestamp))  # self.SourceTimestamp.to_binary())
+            packet.append(uabin.Primitives.DateTime.pack(self.SourceTimestamp))  # self.SourceTimestamp.to_binary())
         if self.ServerTimestamp:
-            packet.append(pack_datetime(self.ServerTimestamp))  # self.ServerTimestamp.to_binary())
+            packet.append(uabin.Primitives.DateTime.pack(self.ServerTimestamp))  # self.ServerTimestamp.to_binary())
         if self.SourcePicoseconds:
-            packet.append(uatype_UInt16.pack(self.SourcePicoseconds))
+            packet.append(uabin.Primitives.UInt16.pack(self.SourcePicoseconds))
         if self.ServerPicoseconds:
-            packet.append(uatype_UInt16.pack(self.ServerPicoseconds))
+            packet.append(uabin.Primitives.UInt16.pack(self.ServerPicoseconds))
         return b''.join(packet)
 
     @staticmethod
@@ -1239,13 +1018,13 @@ class DataValue(FrozenClass):
         obj = DataValue(value, status)
         obj.Encoding = encoding
         if obj.Encoding & (1 << 2):
-            obj.SourceTimestamp = unpack_datetime(data)  # DateTime.from_binary(data)
+            obj.SourceTimestamp = uabin.Primitives.DateTime.unpack(data)  # DateTime.from_binary(data)
         if obj.Encoding & (1 << 3):
-            obj.ServerTimestamp = unpack_datetime(data)  # DateTime.from_binary(data)
+            obj.ServerTimestamp = uabin.Primitives.DateTime.unpack(data)  # DateTime.from_binary(data)
         if obj.Encoding & (1 << 4):
-            obj.SourcePicoseconds = uatype_UInt16.unpack(data.read(2))[0]
+            obj.SourcePicoseconds = uabin.Primitives.UInt16.unpack(data)
         if obj.Encoding & (1 << 5):
-            obj.ServerPicoseconds = uatype_UInt16.unpack(data.read(2))[0]
+            obj.ServerPicoseconds = uabin.Primitives.UInt16.unpack(data)
         return obj
 
     def __str__(self):
@@ -1270,6 +1049,8 @@ def DataType_to_VariantType(int_type):
     """
     Takes a NodeId or int and return a VariantType
     This is only supported if int_type < 63 due to VariantType encoding
+    At low level we do not have access to address space thus decodig is limited
+    a better version of this method can be find in ua_utils.py
     """
     if isinstance(int_type, NodeId):
         int_type = int_type.Identifier

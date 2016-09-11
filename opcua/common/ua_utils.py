@@ -125,7 +125,7 @@ def get_node_subtypes(node, nodes=None):
     return nodes
 
 
-def get_node_supertypes(node, includeitself = False, skipbase = True):
+def get_node_supertypes(node, includeitself=False, skipbase=True):
     """
     return get all subtype parents of node recursive
     :param server: used in case node is nodeid         
@@ -134,12 +134,12 @@ def get_node_supertypes(node, includeitself = False, skipbase = True):
     :param skipbase don't include the toplevel one
     :returns list of ua.Node, top parent first 
     """
-    parents =[]      
+    parents = []      
     if includeitself:
         parents.append(node)
     parents.extend(_get_node_supertypes(node))
     if skipbase and len(parents) > 1:
-        parents = parents [:-1]
+        parents = parents[:-1]
         
     return parents
 
@@ -151,11 +151,12 @@ def _get_node_supertypes(node):
     basetypes = []
     parents = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
     if len(parents) != 0:  
-        #TODO: Is it possible to have multiple subtypes ? If so extended support for it
-       basetypes.append(parents[0])  
-       basetypes.extend( _get_node_supertypes(parents[0]) )
+        # TODO: Is it possible to have multiple subtypes ? If so extended support for it
+        basetypes.append(parents[0])  
+        basetypes.extend(_get_node_supertypes(parents[0]))
        
     return basetypes
+
 
 def is_child_present(node, browsename):
     """
@@ -170,3 +171,33 @@ def is_child_present(node, browsename):
             return True
 
     return False
+
+
+def dtype_to_vtype(server, dtype_node):
+    """
+    Given a node datatype, find out the variant type to encode
+    data. This is not exactly straightforward...
+    """
+    # first check if datatype is a simple built in type
+    identifier = dtype_node.nodeid.Identifier
+    if isinstance(identifier, int) and identifier <= 22:
+        return ua.VariantType(identifier)
+    # now handle some special cases
+    parents = _get_node_supertypes(dtype_node)
+    if not parents:
+        raise ua.UaError("Datatype must be a subtype of builtin types")
+    parent = parents[0]
+    
+    if parent.nodeid.Identifier == 29:
+        # we have an enumeration, we need to llok at child to find type
+        descs = dtype_node.get_children_descriptions()
+        bnames = [d.BrowseName.Name for d in descs]
+        if "EnumStrings" in bnames:
+            return ua.VariantType.LocalizedText
+        elif "EnumValues" in bnames:
+            return ua.VariantType.ExtensionObject
+        else:
+            raise ua.UaError("Enumeration must have a child node describing its type and values")
+
+    return dtype_to_vtype(server, parents[0])
+
