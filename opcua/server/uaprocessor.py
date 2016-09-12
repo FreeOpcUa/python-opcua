@@ -360,6 +360,26 @@ class UaProcessor(object):
             self.logger.info("sending history read response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
+        elif typeid == ua.NodeId(ua.ObjectIds.RegisterNodesRequest_Encoding_DefaultBinary):
+            self.logger.info("register nodes request")
+            params = ua.RegisterNodesParameters.from_binary(body)
+            self.logger.info("Node registration not implemented")
+
+            response = ua.RegisterNodesResponse()
+            response.Parameters.RegisteredNodeIds = params.NodesToRegister
+
+            self.logger.info("sending register nodes response")
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.UnregisterNodesRequest_Encoding_DefaultBinary):
+            self.logger.info("unregister nodes request")
+            params = ua.UnregisterNodesParameters.from_binary(body)
+
+            response = ua.UnregisterNodesResponse()
+
+            self.logger.info("sending unregister nodes response")
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
         elif typeid == ua.NodeId(ua.ObjectIds.PublishRequest_Encoding_DefaultBinary):
             self.logger.info("publish request")
 
