@@ -229,7 +229,8 @@ class StatusCode(FrozenClass):
         """
         return True if status is Good.
         """
-        if uabin.test_bit(self.value, 31):
+        mask = 3 << 30
+        if mask & self.value:
             return False
         else:
             return True

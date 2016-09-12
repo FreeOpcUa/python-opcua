@@ -49,6 +49,8 @@ if __name__ == "__main__":
     else:
         if uabin.test_bit(val, 31):
             return 'Bad', 'Unknown StatusCode value: {}'.format(val)
+        elif uabin.test_bit(val, 30):
+            return 'UncertainIn', 'Unknown StatusCode value: {}'.format(val)
         else:
             return 'Good', 'Unknown StatusCode value: {}'.format(val)
 """)
