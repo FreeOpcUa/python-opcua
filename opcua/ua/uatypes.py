@@ -222,16 +222,18 @@ class StatusCode(FrozenClass):
 
         Use the is_good() method if you do not want an exception.
         """
-        if self.value != 0:
+        if not self.is_good():
             raise UaStatusCodeError(self.value)
 
     def is_good(self):
         """
         return True if status is Good.
         """
-        if self.value == 0:
+        mask = 3 << 30
+        if mask & self.value:
+            return False
+        else:
             return True
-        return False
 
     def __str__(self):
         return 'StatusCode({})'.format(self.name)
