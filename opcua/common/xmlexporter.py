@@ -142,7 +142,8 @@ class XmlExporter(object):
         """
         obj_el = self._add_node_common("UAObjectType", node)
         abstract = node.get_attribute(ua.AttributeIds.IsAbstract).Value.Value
-        obj_el.attrib["IsAbstract"] = str(abstract)
+        if abstract:
+            obj_el.attrib["IsAbstract"] = str(abstract)
         self._add_ref_els(obj_el, node)
 
     def add_variable_common(self, node, el):
@@ -185,7 +186,8 @@ class XmlExporter(object):
         self.add_variable_common(node, var_el)
 
         abstract = node.get_attribute(ua.AttributeIds.IsAbstract)
-        var_el.attrib["IsAbstract"] = abstract
+        if abstract:
+            var_el.attrib["IsAbstract"] = abstract
 
         self._add_ref_els(var_el, node)
 
