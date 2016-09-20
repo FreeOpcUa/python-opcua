@@ -234,7 +234,9 @@ class XmlExporter(object):
                 ref_name = ref.ReferenceTypeId.to_string()
             ref_forward = str(ref.IsForward).lower()
             ref_nodeid = ref.NodeId.to_string()
-            ref_el = Et.SubElement(refs_el, 'Reference', IsForward=ref_forward, ReferenceType=ref_name)
+            ref_el = Et.SubElement(refs_el, 'Reference', ReferenceType=ref_name)
+            if not ref_forward:
+                ref_el.attrib['IsForward'] = ref_forward
             ref_el.text = ref_nodeid
 
             # add any references that gets used to aliases dict; this gets handled later
