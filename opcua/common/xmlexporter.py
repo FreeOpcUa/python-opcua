@@ -106,11 +106,16 @@ class XmlExporter(object):
         else:
             self.logger.info("Exporting node class not implemented: %s ", node_class)
 
+    def _add_sub_el(self, el, name, text):
+        child_el = Et.SubElement(el, name)
+        child_el.text = text
+        return child_el
+
     def _add_node_common(self, nodetype, node):
         browsename = node.get_browse_name().to_string()
         nodeid = node.nodeid.to_string()
         parent = node.get_parent()
-        displayname = node.get_display_name().Text.decode(encoding='UTF8')
+        displayname = node.get_display_name().Text.decode('utf-8')
         desc = node.get_description().Text
         print("NODE COMMON", node)
         node_el = Et.SubElement(self.etree.getroot(),
@@ -120,9 +125,8 @@ class XmlExporter(object):
         if parent is not None:
             node_el.attrib["ParentNodeId"] = parent.nodeid.to_string()
         if desc not in (None, ""):
-            node_el.attrib["Description"] = str(desc)
-        disp_el = Et.SubElement(node_el, 'DisplayName', )
-        disp_el.text = displayname
+            self._add_sub_el(node_el, 'Description', desc.decode('utf-8'))
+        self._add_sub_el(node_el, 'DisplayName', displayname)
         return node_el
 
     def add_etree_object(self, obj):
@@ -204,8 +208,7 @@ class XmlExporter(object):
         nuris_el = Et.Element('NamespaceUris')
 
         for uri in uris:
-            uri_el = Et.SubElement(nuris_el, 'Uri')
-            uri_el.text = uri
+            self._add_sub_el(nuris_el, 'Uri', uri)
 
         self.etree.getroot().insert(0, nuris_el)
 
