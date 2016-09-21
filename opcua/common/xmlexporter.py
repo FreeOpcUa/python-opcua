@@ -124,7 +124,9 @@ class XmlExporter(object):
         node_el.attrib["NodeId"] = nodeid
         node_el.attrib["BrowseName"] = browsename
         if parent is not None:
-            node_el.attrib["ParentNodeId"] = parent.nodeid.to_string()
+            node_class = parent.get_node_class()
+            if node_class in (ua.NodeClass.Object, ua.NodeClass.Variable ,ua.NodeClass.Method):
+                node_el.attrib["ParentNodeId"] = parent.nodeid.to_string()
         self._add_sub_el(node_el, 'DisplayName', displayname)
         if desc not in (None, ""):
             self._add_sub_el(node_el, 'Description', desc.decode('utf-8'))
