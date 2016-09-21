@@ -5,7 +5,6 @@ format is the one from opc-ua specification
 import logging
 from collections import OrderedDict
 import xml.etree.ElementTree as Et
-from xml.dom import minidom
 
 from opcua import ua
 from opcua.ua import object_ids as o_ids
@@ -61,14 +60,17 @@ class XmlExporter(object):
         #from IPython import embed
         #embed()
         if pretty:
-            self.etree.write(xmlpath + "-not-pretty.xml", short_empty_elements=False)
-            rough_string = Et.tostring(self.etree.getroot(), 'utf-8')
-            reparsed = minidom.parseString(rough_string)
-            pretty_string = reparsed.toprettyxml(indent="    ")
-            with open(xmlpath, "wt") as f:
-                f.write(pretty_string)
+            indent(self.etree.getroot())
+            self.etree.write(xmlpath, 
+                             short_empty_elements=False, 
+                             encoding='utf-8', 
+                             xml_declaration=True
+                             )
         else:
-            self.etree.write(xmlpath, short_empty_elements=False)
+            self.etree.write(xmlpath, 
+                             short_empty_elements=False, 
+                             encoding='utf-8', 
+                             xml_declaration=True)
 
     def dump_etree(self):
         """
@@ -270,5 +272,24 @@ def _extobj_to_etree(val_el, dtype_name, dtype, val):
     body_el = Et.SubElement(obj_el, "uax:Body")
     struct_el = Et.SubElement(body_el, "uax:" + dtype_name)
     # FIXME: finish
-    
+   
 
+def indent(elem, level=0):
+    '''
+    copy and paste from http://effbot.org/zone/element-lib.htm#prettyprint
+    it basically walks your tree and adds spaces and newlines so the tree is
+    printed in a nice way
+    '''
+    i = "\n" + level*"  "
+    if len(elem):
+        if not elem.text or not elem.text.strip():
+            elem.text = i + "  "
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+        for elem in elem:
+            indent(elem, level+1)
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+    else:
+        if level and (not elem.tail or not elem.tail.strip()):
+            elem.tail = i
