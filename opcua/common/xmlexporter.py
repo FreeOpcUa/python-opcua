@@ -40,11 +40,11 @@ class XmlExporter(object):
         for node in node_list:
             self.node_to_etree(node)
 
-        # add all required aliases to the XML etree; must be done after nodes are added
+        # add aliases to the XML etree
         self._add_alias_els()
 
         if uris:
-            # add all namespace uris to the XML etree; must be done after aliases are added
+            # add namespace uris to the XML etree
             self._add_namespace_uri_els(uris)
 
     def write_xml(self, xmlpath, pretty=True):
@@ -145,7 +145,7 @@ class XmlExporter(object):
         obj_el = self._add_node_common("UAObjectType", node)
         abstract = node.get_attribute(ua.AttributeIds.IsAbstract).Value.Value
         if abstract:
-            obj_el.attrib["IsAbstract"] = str(abstract)
+            obj_el.attrib["IsAbstract"] = 'true'
         self._add_ref_els(obj_el, node)
 
     def add_variable_common(self, node, el):
@@ -234,15 +234,13 @@ class XmlExporter(object):
                 ref_name = o_ids.ObjectIdNames[ref.ReferenceTypeId.Identifier]
             else:
                 ref_name = ref.ReferenceTypeId.to_string()
-            ref_forward = str(ref.IsForward).lower()
-            ref_nodeid = ref.NodeId.to_string()
             ref_el = Et.SubElement(refs_el, 'Reference', ReferenceType=ref_name)
-            if not ref_forward:
-                ref_el.attrib['IsForward'] = ref_forward
-            ref_el.text = ref_nodeid
+            if not ref.IsForward:
+                ref_el.attrib['IsForward'] = 'false'
+            ref_el.text = ref.NodeId.to_string()
 
             # add any references that gets used to aliases dict; this gets handled later
-            self.aliases[ref_name] = ref_nodeid
+            self.aliases[ref_name] = ref.ReferenceTypeId.to_string()
 
 
 def value_to_etree(el, dtype_name, dtype, node):
