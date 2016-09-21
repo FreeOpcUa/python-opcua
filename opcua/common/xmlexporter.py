@@ -65,7 +65,7 @@ class XmlExporter(object):
                              short_empty_elements=False, 
                              encoding='utf-8', 
                              xml_declaration=True
-                             )
+                            )
         else:
             self.etree.write(xmlpath, 
                              short_empty_elements=False, 
@@ -120,23 +120,25 @@ class XmlExporter(object):
         displayname = node.get_display_name().Text.decode('utf-8')
         desc = node.get_description().Text
         print("NODE COMMON", node)
-        node_el = Et.SubElement(self.etree.getroot(),
-                                nodetype,
-                                BrowseName=browsename,
-                                NodeId=nodeid)
+        node_el = Et.SubElement(self.etree.getroot(), nodetype)
+        node_el.attrib["NodeId"] = nodeid
+        node_el.attrib["BrowseName"] = browsename
         if parent is not None:
             node_el.attrib["ParentNodeId"] = parent.nodeid.to_string()
+        self._add_sub_el(node_el, 'DisplayName', displayname)
         if desc not in (None, ""):
             self._add_sub_el(node_el, 'Description', desc.decode('utf-8'))
-        self._add_sub_el(node_el, 'DisplayName', displayname)
+        #FIXME: add WriteMask and UserWriteMask
         return node_el
 
-    def add_etree_object(self, obj):
+    def add_etree_object(self, node):
         """
         Add a UA object element to the XML etree
         """
-        obj_el = self._add_node_common("UAObject", obj)
-        self._add_ref_els(obj_el, obj)
+        obj_el = self._add_node_common("UAObject", node)
+        var = node.get_attribute(ua.AttributeIds.EventNotifier)
+        obj_el.attrib["EventNotifier"] = str(var.Value.Value)
+        self._add_ref_els(obj_el, node)
 
     def add_etree_object_type(self, node):
         """
@@ -158,6 +160,8 @@ class XmlExporter(object):
         rank = node.get_value_rank()
         el.attrib["DataType"] = dtype_name
         el.attrib["ValueRank"] = str(int(rank))
+        #var = node.get_attribute(ua.AttributeIds.ArrayDimensions())
+        #self._addobj_el.attrib["ArrayDimensions"] = str(var.Value.Value)
         value_to_etree(el, dtype_name, dtype, node)
 
     def add_etree_variable(self, node):
@@ -171,12 +175,18 @@ class XmlExporter(object):
         useraccesslevel = node.get_attribute(ua.AttributeIds.UserAccessLevel).Value.Value
 
         # We only write these values if they are different from defaults
-        # default must of course mange the one in manage_nodes.py
-        # and other OPC UA servers
+        # Not sure where default is defined....
         if accesslevel != ua.AccessLevel.CurrentRead.mask:
             var_el.attrib["AccessLevel"] = str(accesslevel)
         if useraccesslevel != ua.AccessLevel.CurrentRead.mask:
             var_el.attrib["UserAccessLevel"] = str(useraccesslevel)
+
+        var = node.get_attribute(ua.AttributeIds.MinimumSamplingInterval)
+        if var.Value.Value:
+            var_el.attrib["MinimumSamplingInterval"] = str(var.Value.Value)
+        var = node.get_attribute(ua.AttributeIds.Historizing)
+        if var.Value.Value:
+            var_el.attrib["Historizing"] = 'true'
         self._add_ref_els(var_el, node)
 
     def add_etree_variable_type(self, node):
@@ -184,7 +194,7 @@ class XmlExporter(object):
         Add a UA variable type element to the XML etree
         """
 
-        var_el = self._add_node_common("UAVariable", node)
+        var_el = self._add_node_common("UAVariableType", node)
         self.add_variable_common(node, var_el)
 
         abstract = node.get_attribute(ua.AttributeIds.IsAbstract)
@@ -193,9 +203,14 @@ class XmlExporter(object):
 
         self._add_ref_els(var_el, node)
 
-    def add_etree_method(self, obj):
-        obj_el = self._add_node_common("UAMethod", obj)
-        self._add_ref_els(obj_el, obj)
+    def add_etree_method(self, node):
+        obj_el = self._add_node_common("UAMethod", node)
+
+        var = node.get_attribute(ua.AttributeIds.Executable)
+        obj_el.attrib["Executable"] = str(var.Value.Value)
+        var = node.get_attribute(ua.AttributeIds.UserExecutable)
+        obj_el.attrib["UserExecutable"] = str(var.Value.Value)
+        self._add_ref_els(obj_el, node)
 
     def add_etree_reference(self, obj):
         obj_el = self._add_node_common("UAReference", obj)
@@ -239,7 +254,6 @@ class XmlExporter(object):
                 ref_el.attrib['IsForward'] = 'false'
             ref_el.text = ref.NodeId.to_string()
 
-            # add any references that gets used to aliases dict; this gets handled later
             self.aliases[ref_name] = ref.ReferenceTypeId.to_string()
 
 
@@ -256,7 +270,7 @@ def _value_to_etree(el, dtype_name, dtype, val):
             _value_to_etree(list_el, dtype_name, dtype, nval)
     else:
         if dtype.Identifier is int and dtype.Identifier > 21:  # this is an extentionObject:
-            _extobj_to_etree(el, dtype_name, dtype)
+            _extobj_to_etree(el, dtype_name, dtype, val)
         else:
             val_el = Et.SubElement(el, "uax:" + dtype_name)
             val_el.text = str(val)
