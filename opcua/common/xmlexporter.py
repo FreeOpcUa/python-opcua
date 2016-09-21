@@ -100,7 +100,7 @@ class XmlExporter(object):
         elif node_class is ua.NodeClass.VariableType:
             self.add_etree_variable_type(node)
         elif node_class is ua.NodeClass.ReferenceType:
-            self.add_etree_reference(node)
+            self.add_etree_reference_type(node)
         elif node_class is ua.NodeClass.DataType:
             self.add_etree_datatype(node)
         elif node_class is ua.NodeClass.Method:
@@ -214,8 +214,8 @@ class XmlExporter(object):
         obj_el.attrib["UserExecutable"] = str(var.Value.Value)
         self._add_ref_els(obj_el, node)
 
-    def add_etree_reference(self, obj):
-        obj_el = self._add_node_common("UAReference", obj)
+    def add_etree_reference_type(self, obj):
+        obj_el = self._add_node_common("UAReferenceType", obj)
         self._add_ref_els(obj_el, obj)
 
     def add_etree_datatype(self, obj):
