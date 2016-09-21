@@ -5,7 +5,6 @@ format is the one from opc-ua specification
 import logging
 from collections import OrderedDict
 import xml.etree.ElementTree as Et
-from xml.dom import minidom
 
 from opcua import ua
 from opcua.ua import object_ids as o_ids
@@ -41,11 +40,11 @@ class XmlExporter(object):
         for node in node_list:
             self.node_to_etree(node)
 
-        # add all required aliases to the XML etree; must be done after nodes are added
+        # add aliases to the XML etree
         self._add_alias_els()
 
         if uris:
-            # add all namespace uris to the XML etree; must be done after aliases are added
+            # add namespace uris to the XML etree
             self._add_namespace_uri_els(uris)
 
     def write_xml(self, xmlpath, pretty=True):
@@ -61,14 +60,17 @@ class XmlExporter(object):
         #from IPython import embed
         #embed()
         if pretty:
-            self.etree.write(xmlpath + "-not-pretty.xml", short_empty_elements=False)
-            rough_string = Et.tostring(self.etree.getroot(), 'utf-8')
-            reparsed = minidom.parseString(rough_string)
-            pretty_string = reparsed.toprettyxml(indent="    ")
-            with open(xmlpath, "wt") as f:
-                f.write(pretty_string)
+            indent(self.etree.getroot())
+            self.etree.write(xmlpath, 
+                             short_empty_elements=False, 
+                             encoding='utf-8', 
+                             xml_declaration=True
+                             )
         else:
-            self.etree.write(xmlpath, short_empty_elements=False)
+            self.etree.write(xmlpath, 
+                             short_empty_elements=False, 
+                             encoding='utf-8', 
+                             xml_declaration=True)
 
     def dump_etree(self):
         """
@@ -106,11 +108,16 @@ class XmlExporter(object):
         else:
             self.logger.info("Exporting node class not implemented: %s ", node_class)
 
+    def _add_sub_el(self, el, name, text):
+        child_el = Et.SubElement(el, name)
+        child_el.text = text
+        return child_el
+
     def _add_node_common(self, nodetype, node):
         browsename = node.get_browse_name().to_string()
         nodeid = node.nodeid.to_string()
         parent = node.get_parent()
-        displayname = node.get_display_name().Text.decode(encoding='UTF8')
+        displayname = node.get_display_name().Text.decode('utf-8')
         desc = node.get_description().Text
         print("NODE COMMON", node)
         node_el = Et.SubElement(self.etree.getroot(),
@@ -120,9 +127,8 @@ class XmlExporter(object):
         if parent is not None:
             node_el.attrib["ParentNodeId"] = parent.nodeid.to_string()
         if desc not in (None, ""):
-            node_el.attrib["Description"] = str(desc)
-        disp_el = Et.SubElement(node_el, 'DisplayName', )
-        disp_el.text = displayname
+            self._add_sub_el(node_el, 'Description', desc.decode('utf-8'))
+        self._add_sub_el(node_el, 'DisplayName', displayname)
         return node_el
 
     def add_etree_object(self, obj):
@@ -138,7 +144,8 @@ class XmlExporter(object):
         """
         obj_el = self._add_node_common("UAObjectType", node)
         abstract = node.get_attribute(ua.AttributeIds.IsAbstract).Value.Value
-        obj_el.attrib["IsAbstract"] = str(abstract)
+        if abstract:
+            obj_el.attrib["IsAbstract"] = 'true'
         self._add_ref_els(obj_el, node)
 
     def add_variable_common(self, node, el):
@@ -181,7 +188,8 @@ class XmlExporter(object):
         self.add_variable_common(node, var_el)
 
         abstract = node.get_attribute(ua.AttributeIds.IsAbstract)
-        var_el.attrib["IsAbstract"] = abstract
+        if abstract:
+            var_el.attrib["IsAbstract"] = abstract
 
         self._add_ref_els(var_el, node)
 
@@ -204,8 +212,7 @@ class XmlExporter(object):
         nuris_el = Et.Element('NamespaceUris')
 
         for uri in uris:
-            uri_el = Et.SubElement(nuris_el, 'Uri')
-            uri_el.text = uri
+            self._add_sub_el(nuris_el, 'Uri', uri)
 
         self.etree.getroot().insert(0, nuris_el)
 
@@ -227,13 +234,13 @@ class XmlExporter(object):
                 ref_name = o_ids.ObjectIdNames[ref.ReferenceTypeId.Identifier]
             else:
                 ref_name = ref.ReferenceTypeId.to_string()
-            ref_forward = str(ref.IsForward).lower()
-            ref_nodeid = ref.NodeId.to_string()
-            ref_el = Et.SubElement(refs_el, 'Reference', IsForward=ref_forward, ReferenceType=ref_name)
-            ref_el.text = ref_nodeid
+            ref_el = Et.SubElement(refs_el, 'Reference', ReferenceType=ref_name)
+            if not ref.IsForward:
+                ref_el.attrib['IsForward'] = 'false'
+            ref_el.text = ref.NodeId.to_string()
 
             # add any references that gets used to aliases dict; this gets handled later
-            self.aliases[ref_name] = ref_nodeid
+            self.aliases[ref_name] = ref.ReferenceTypeId.to_string()
 
 
 def value_to_etree(el, dtype_name, dtype, node):
@@ -263,5 +270,24 @@ def _extobj_to_etree(val_el, dtype_name, dtype, val):
     body_el = Et.SubElement(obj_el, "uax:Body")
     struct_el = Et.SubElement(body_el, "uax:" + dtype_name)
     # FIXME: finish
-    
+   
 
+def indent(elem, level=0):
+    '''
+    copy and paste from http://effbot.org/zone/element-lib.htm#prettyprint
+    it basically walks your tree and adds spaces and newlines so the tree is
+    printed in a nice way
+    '''
+    i = "\n" + level*"  "
+    if len(elem):
+        if not elem.text or not elem.text.strip():
+            elem.text = i + "  "
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+        for elem in elem:
+            indent(elem, level+1)
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+    else:
+        if level and (not elem.tail or not elem.tail.strip()):
+            elem.tail = i
