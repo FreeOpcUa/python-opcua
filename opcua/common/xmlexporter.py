@@ -162,7 +162,7 @@ class XmlExporter(object):
             dtype_name = dtype.to_string()
         rank = node.get_value_rank()
         if rank != -1:
-            el.attrib["ValueRank"] = str(int(rank))
+            el.attrib["ValueRank"] = str(rank)
         #var = node.get_attribute(ua.AttributeIds.ArrayDimensions())
         #self._addobj_el.attrib["ArrayDimensions"] = str(var.Value.Value)
         el.attrib["DataType"] = dtype_name
@@ -202,8 +202,8 @@ class XmlExporter(object):
         self.add_variable_common(node, var_el)
 
         abstract = node.get_attribute(ua.AttributeIds.IsAbstract)
-        if abstract:
-            var_el.attrib["IsAbstract"] = abstract
+        if abstract.Value.Value:
+            var_el.attrib["IsAbstract"] = "true" 
 
         self._add_ref_els(var_el, node)
 
