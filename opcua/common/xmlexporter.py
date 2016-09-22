@@ -209,9 +209,9 @@ class XmlExporter(object):
         obj_el = self._add_node_common("UAMethod", node)
 
         var = node.get_attribute(ua.AttributeIds.Executable)
-        obj_el.attrib["Executable"] = str(var.Value.Value)
+        obj_el.attrib["Executable"] = str(var.Value.Value).lower()
         var = node.get_attribute(ua.AttributeIds.UserExecutable)
-        obj_el.attrib["UserExecutable"] = str(var.Value.Value)
+        obj_el.attrib["UserExecutable"] = str(var.Value.Value).lower()
         self._add_ref_els(obj_el, node)
 
     def add_etree_reference_type(self, obj):
