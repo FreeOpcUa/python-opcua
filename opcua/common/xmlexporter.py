@@ -124,8 +124,8 @@ class XmlExporter(object):
         node_el.attrib["NodeId"] = nodeid
         node_el.attrib["BrowseName"] = browsename
         if parent is not None:
-            node_class = parent.get_node_class()
-            if node_class in (ua.NodeClass.Object, ua.NodeClass.Variable ,ua.NodeClass.Method):
+            node_class = node.get_node_class()
+            if node_class in (ua.NodeClass.Object, ua.NodeClass.Variable, ua.NodeClass.Method):
                 node_el.attrib["ParentNodeId"] = parent.nodeid.to_string()
         self._add_sub_el(node_el, 'DisplayName', displayname)
         if desc not in (None, ""):
@@ -139,7 +139,8 @@ class XmlExporter(object):
         """
         obj_el = self._add_node_common("UAObject", node)
         var = node.get_attribute(ua.AttributeIds.EventNotifier)
-        obj_el.attrib["EventNotifier"] = str(var.Value.Value)
+        if var.Value.Value != 0:
+            obj_el.attrib["EventNotifier"] = str(var.Value.Value)
         self._add_ref_els(obj_el, node)
 
     def add_etree_object_type(self, node):
@@ -160,10 +161,11 @@ class XmlExporter(object):
         else:
             dtype_name = dtype.to_string()
         rank = node.get_value_rank()
-        el.attrib["DataType"] = dtype_name
-        el.attrib["ValueRank"] = str(int(rank))
+        if rank != -1:
+            el.attrib["ValueRank"] = str(int(rank))
         #var = node.get_attribute(ua.AttributeIds.ArrayDimensions())
         #self._addobj_el.attrib["ArrayDimensions"] = str(var.Value.Value)
+        el.attrib["DataType"] = dtype_name
         value_to_etree(el, dtype_name, dtype, node)
 
     def add_etree_variable(self, node):
@@ -178,9 +180,9 @@ class XmlExporter(object):
 
         # We only write these values if they are different from defaults
         # Not sure where default is defined....
-        if accesslevel != ua.AccessLevel.CurrentRead.mask:
+        if accesslevel not in (0, ua.AccessLevel.CurrentRead.mask):
             var_el.attrib["AccessLevel"] = str(accesslevel)
-        if useraccesslevel != ua.AccessLevel.CurrentRead.mask:
+        if useraccesslevel not in (0, ua.AccessLevel.CurrentRead.mask):
             var_el.attrib["UserAccessLevel"] = str(useraccesslevel)
 
         var = node.get_attribute(ua.AttributeIds.MinimumSamplingInterval)
@@ -209,13 +211,18 @@ class XmlExporter(object):
         obj_el = self._add_node_common("UAMethod", node)
 
         var = node.get_attribute(ua.AttributeIds.Executable)
-        obj_el.attrib["Executable"] = str(var.Value.Value).lower()
+        if var.Value.Value is False:
+            obj_el.attrib["Executable"] = "false"
         var = node.get_attribute(ua.AttributeIds.UserExecutable)
-        obj_el.attrib["UserExecutable"] = str(var.Value.Value).lower()
+        if var.Value.Value is False:
+            obj_el.attrib["UserExecutable"] = "false"
         self._add_ref_els(obj_el, node)
 
     def add_etree_reference_type(self, obj):
         obj_el = self._add_node_common("UAReferenceType", obj)
+        var = obj.get_attribute(ua.AttributeIds.InverseName)
+        if var is not None and var.Value.Value is not None:
+            self._add_sub_el(obj_el, 'InverseName', var.Value.Value.Text.decode('utf-8'))
         self._add_ref_els(obj_el, obj)
 
     def add_etree_datatype(self, obj):
@@ -251,7 +258,8 @@ class XmlExporter(object):
                 ref_name = o_ids.ObjectIdNames[ref.ReferenceTypeId.Identifier]
             else:
                 ref_name = ref.ReferenceTypeId.to_string()
-            ref_el = Et.SubElement(refs_el, 'Reference', ReferenceType=ref_name)
+            ref_el = Et.SubElement(refs_el, 'Reference')
+            ref_el.attrib['ReferenceType'] = ref_name
             if not ref.IsForward:
                 ref_el.attrib['IsForward'] = 'false'
             ref_el.text = ref.NodeId.to_string()
@@ -261,8 +269,9 @@ class XmlExporter(object):
 
 def value_to_etree(el, dtype_name, dtype, node):
     var = node.get_data_value().Value
-    val_el = Et.SubElement(el, 'Value')
-    _value_to_etree(val_el, dtype_name, dtype, var.Value)
+    if var.Value is not None:
+        val_el = Et.SubElement(el, 'Value')
+        _value_to_etree(val_el, dtype_name, dtype, var.Value)
 
 
 def _value_to_etree(el, dtype_name, dtype, val):
