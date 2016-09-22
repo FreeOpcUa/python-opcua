@@ -55,7 +55,7 @@ class XmlImporter(object):
             elif nodedata.nodetype == 'UAVariableType':
                 node = self.add_variable_type(nodedata)
             elif nodedata.nodetype == 'UAReferenceType':
-                node = self.add_reference(nodedata)
+                node = self.add_reference_type(nodedata)
             elif nodedata.nodetype == 'UADataType':
                 node = self.add_datatype(nodedata)
             elif nodedata.nodetype == 'UAMethod':
@@ -212,7 +212,7 @@ class XmlImporter(object):
         self._add_refs(obj)
         return res[0].AddedNodeId
 
-    def add_reference(self, obj):
+    def add_reference_type(self, obj):
         node = self._get_node(obj)
         attrs = ua.ReferenceTypeAttributes()
         if obj.desc:
