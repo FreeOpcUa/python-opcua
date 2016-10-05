@@ -155,12 +155,6 @@ class XmlExporter(object):
 
     def add_variable_common(self, node, el):
         dtype = node.get_data_type()
-
-        # FIXME hack because get_data_type() has issues
-        if dtype.NamespaceIndex > 50:
-            dtype.Identifier = dtype.NamespaceIndex
-            dtype.NamespaceIndex = 0
-
         if dtype.Identifier in o_ids.ObjectIdNames:
             dtype_name = o_ids.ObjectIdNames[dtype.Identifier]
             self.aliases[dtype_name] = dtype.to_string()

@@ -65,7 +65,7 @@ def create_property(parent, nodeid, bname, val, varianttype=None, datatype=None)
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
     var = ua.Variant(val, varianttype)
     if datatype and isinstance(datatype, int):
-        datatype = ua.NodeId(0, datatype)
+        datatype = ua.NodeId(datatype)
     if datatype and not isinstance(datatype, ua.NodeId):
         raise RuntimeError("datatyoe argument must be a nodeid or an int refering to a nodeid")
     return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, var, datatype=datatype, isproperty=True))
@@ -80,7 +80,7 @@ def create_variable(parent, nodeid, bname, val, varianttype=None, datatype=None)
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
     var = ua.Variant(val, varianttype)
     if datatype and isinstance(datatype, int):
-        datatype = ua.NodeId(0, datatype)
+        datatype = ua.NodeId(datatype)
     if datatype and not isinstance(datatype, ua.NodeId):
         raise RuntimeError("datatyoe argument must be a nodeid or an int refering to a nodeid")
 
