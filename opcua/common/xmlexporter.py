@@ -130,7 +130,7 @@ class XmlExporter(object):
         self._add_sub_el(node_el, 'DisplayName', displayname)
         if desc not in (None, ""):
             self._add_sub_el(node_el, 'Description', desc.decode('utf-8'))
-        #FIXME: add WriteMask and UserWriteMask
+        # FIXME: add WriteMask and UserWriteMask
         return node_el
 
     def add_etree_object(self, node):
@@ -155,6 +155,12 @@ class XmlExporter(object):
 
     def add_variable_common(self, node, el):
         dtype = node.get_data_type()
+
+        # FIXME hack because get_data_type() has issues
+        if dtype.NamespaceIndex > 50:
+            dtype.Identifier = dtype.NamespaceIndex
+            dtype.NamespaceIndex = 0
+
         if dtype.Identifier in o_ids.ObjectIdNames:
             dtype_name = o_ids.ObjectIdNames[dtype.Identifier]
             self.aliases[dtype_name] = dtype.to_string()
@@ -276,11 +282,16 @@ def value_to_etree(el, dtype_name, dtype, node):
 
 def _value_to_etree(el, dtype_name, dtype, val):
     if isinstance(val, (list, tuple)):
-        list_el = Et.SubElement(el, "uax:ListOf" + dtype_name)
-        for nval in val:
-            _value_to_etree(list_el, dtype_name, dtype, nval)
+        if type(dtype.Identifier) is int and dtype.Identifier > 21:  # this is a list of ExtensionObjects:
+            list_el = Et.SubElement(el, "uax:ListOfExtensionObject")  # FIXME should this string be hardcoded?
+            for nval in val:
+                _extobj_to_etree(list_el, dtype_name, dtype, nval)
+        else:
+            list_el = Et.SubElement(el, "uax:ListOf" + dtype_name)
+            for nval in val:
+                _value_to_etree(list_el, dtype_name, dtype, nval)
     else:
-        if dtype.Identifier is int and dtype.Identifier > 21:  # this is an extentionObject:
+        if dtype.Identifier is int and dtype.Identifier > 21:  # this is an ExtensionObject:
             _extobj_to_etree(el, dtype_name, dtype, val)
         else:
             val_el = Et.SubElement(el, "uax:" + dtype_name)
@@ -291,18 +302,52 @@ def _extobj_to_etree(val_el, dtype_name, dtype, val):
     obj_el = Et.SubElement(val_el, "uax:ExtensionObject")
     type_el = Et.SubElement(obj_el, "uax:TypeId")
     id_el = Et.SubElement(type_el, "uax:Identifier")
-    id_el.text = val.TypeId.to_string()
+    id_el.text = "i=" + str(dtype.Identifier)  # val.TypeId.to_string()
     body_el = Et.SubElement(obj_el, "uax:Body")
-    struct_el = Et.SubElement(body_el, "uax:" + dtype_name)
+    if dtype.Identifier == 296:
+        struct_el = _extobj_argument_to_etree(body_el, dtype_name, dtype, val)
+    else:
+        # TODO implement other Extension Objects here
+        print("Exporting extension object not implemented: %s ", dtype_name)  # FIXME send to self.logger.info
+
     # FIXME: finish
+
+
+def _extobj_argument_to_etree(body_el, dtype_name, dtype, val):
+    """
+    Export structure for UA extension object Argument (i=296)
+    :param body_el: Body XML element
+    :param dtype_name: DataType name in string format
+    :param dtype: DataType as node id
+    :param val: ua.Argument extension object
+    :return: Extension Object structure XML element
+    """
+    struct_el = Et.SubElement(body_el, "uax:" + dtype_name)
+
+    ex_name_el = Et.SubElement(struct_el, "uax:Name")
+    ex_name_el.text = val.Name
+
+    ex_type_el = Et.SubElement(struct_el, "uax:DataType")
+    ex_id_el = Et.SubElement(ex_type_el, "uax:Identifier")
+    ex_id_el.text = "i=" + str(val.DataType.Identifier.Identifier)
+
+    ex_rank_el = Et.SubElement(struct_el, "uax:ValueRank")
+    ex_rank_el.text = str(val.ValueRank)
+
+    ex_dimen_el = Et.SubElement(struct_el, "uax:ArrayDimensions")
+    ex_dimen_el.text = ""  # FIXME should parse val.ArrayDimensions list
+
+    ex_desc_el = Et.SubElement(struct_el, "uax:Description")
+    ex_desc_el.text = val.Description.Text.decode('utf-8')
+    return struct_el
    
 
 def indent(elem, level=0):
-    '''
+    """
     copy and paste from http://effbot.org/zone/element-lib.htm#prettyprint
     it basically walks your tree and adds spaces and newlines so the tree is
     printed in a nice way
-    '''
+    """
     i = "\n" + level*"  "
     if len(elem):
         if not elem.text or not elem.text.strip():
