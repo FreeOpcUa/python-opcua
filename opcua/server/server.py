@@ -416,3 +416,6 @@ class Server(object):
 
     def unsubscribe_server_callback(self, event, handle):
         self.iserver.unsubscribe_server_callback(event, handle)
+
+    def link_method(self, node, callback):
+        node.server.add_method_callback(node.nodeid, callback)
