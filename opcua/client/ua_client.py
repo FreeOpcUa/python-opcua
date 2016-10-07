@@ -211,7 +211,7 @@ class UaClient(object):
         """
         connect to server socket and start receiving thread
         """
-        self._uasocket = UASocketClient(self._timeout, security_policy=self._security_policy, self._socket_timeout)
+        self._uasocket = UASocketClient(self._timeout, security_policy=self._security_policy, socket_timeout=self._socket_timeout)
         return self._uasocket.connect_socket(host, port)
 
     def disconnect_socket(self):
