@@ -4,6 +4,7 @@ from concurrent.futures import Future
 import functools
 import threading
 from socket import error as SocketError
+from socket import timeout as SocketTimeout
 
 try:
     # we prefer to use bundles asyncio version, otherwise fallback to trollius
@@ -26,6 +27,10 @@ class NotEnoughData(UaError):
 
 
 class SocketClosedException(UaError):
+    pass
+
+
+class SocketTimeoutException(UaError):
     pass
 
 
@@ -102,6 +107,8 @@ class SocketWrapper(object):
         while size > 0:
             try:
                 chunk = self.socket.recv(size)
+            except SocketTimeout as ex:
+                raise SocketTimeoutException("Server socket has timed out")
             except (OSError, SocketError) as ex:
                 raise SocketClosedException("Server socket has closed", ex)
             if not chunk:
