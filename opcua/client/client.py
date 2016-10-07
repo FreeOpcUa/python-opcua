@@ -79,7 +79,7 @@ class Client(object):
     which offers the raw OPC-UA services interface.
     """
 
-    def __init__(self, url, timeout=4):
+    def __init__(self, url, timeout=4, socket_timeout=10):
         """
 
         :param url: url of the server.
@@ -101,7 +101,7 @@ class Client(object):
         self.secure_channel_timeout = 3600000 # 1 hour
         self.session_timeout = 3600000 # 1 hour
         self._policy_ids = []
-        self.uaclient = UaClient(timeout)
+        self.uaclient = UaClient(timeout, socket_timeout)
         self.user_certificate = None
         self.user_private_key = None
         self._session_counter = 1
