@@ -58,19 +58,20 @@ class XmlExporter(object):
         # try to write the XML etree to a file
         self.logger.info('Exporting XML file to %s', xmlpath)
         #from IPython import embed
-        #embed()
+        # embed()
         if pretty:
             indent(self.etree.getroot())
-            self.etree.write(xmlpath, 
-                             short_empty_elements=False, 
-                             encoding='utf-8', 
+            self.etree.write(xmlpath,
+                             short_empty_elements=False,
+                             encoding='utf-8',
                              xml_declaration=True
-                            )
+                             )
         else:
-            self.etree.write(xmlpath, 
-                             short_empty_elements=False, 
-                             encoding='utf-8', 
-                             xml_declaration=True)
+            self.etree.write(xmlpath,
+                             short_empty_elements=False,
+                             encoding='utf-8',
+                             xml_declaration=True
+                             )
 
     def dump_etree(self):
         """
@@ -130,7 +131,7 @@ class XmlExporter(object):
         self._add_sub_el(node_el, 'DisplayName', displayname)
         if desc not in (None, ""):
             self._add_sub_el(node_el, 'Description', desc.decode('utf-8'))
-        #FIXME: add WriteMask and UserWriteMask
+        # FIXME: add WriteMask and UserWriteMask
         return node_el
 
     def add_etree_object(self, node):
@@ -203,7 +204,7 @@ class XmlExporter(object):
 
         abstract = node.get_attribute(ua.AttributeIds.IsAbstract)
         if abstract.Value.Value:
-            var_el.attrib["IsAbstract"] = "true" 
+            var_el.attrib["IsAbstract"] = "true"
 
         self._add_ref_els(var_el, node)
 
@@ -267,6 +268,28 @@ class XmlExporter(object):
             self.aliases[ref_name] = ref.ReferenceTypeId.to_string()
 
 
+def member_to_etree(el, name, dtype, val):
+    member_el = Et.SubElement(el, "uax:" + name)
+    if isinstance(val, (list, tuple)):
+        for v in val:
+            _value_to_etree(member_el, ua.ObjectIdNames[dtype.Identifier], dtype, v)
+    else:
+        _val_to_etree(member_el, dtype, val)
+
+
+def _val_to_etree(el, dtype, val):
+    if val is None:
+        val = ""
+    if dtype == ua.NodeId(ua.ObjectIds.NodeId):
+        id_el = Et.SubElement(el, "uax:Identifier")
+        id_el.text = val.to_string()
+    elif not hasattr(val, "ua_types"):
+        el.text = str(val)
+    else:
+        for name, vtype in val.ua_types.items():
+            member_to_etree(el, name, ua.NodeId(getattr(ua.ObjectIds, vtype)), getattr(val, name))
+
+
 def value_to_etree(el, dtype_name, dtype, node):
     var = node.get_data_value().Value
     if var.Value is not None:
@@ -274,28 +297,35 @@ def value_to_etree(el, dtype_name, dtype, node):
         _value_to_etree(val_el, dtype_name, dtype, var.Value)
 
 
-def _value_to_etree(el, dtype_name, dtype, val):
+def _value_to_etree(el, type_name, dtype, val):
+    if not val:
+        return
     if isinstance(val, (list, tuple)):
-        list_el = Et.SubElement(el, "uax:ListOf" + dtype_name)
-        for nval in val:
-            _value_to_etree(list_el, dtype_name, dtype, nval)
-    else:
-        if dtype.Identifier is int and dtype.Identifier > 21:  # this is an extentionObject:
-            _extobj_to_etree(el, dtype_name, dtype, val)
+        if dtype.Identifier > 21:  # this is an extentionObject:
+            elname = "uax:ListOfExtensionObject"
         else:
-            val_el = Et.SubElement(el, "uax:" + dtype_name)
-            val_el.text = str(val)
+            elname = "uax:ListOf" + type_name
+        list_el = Et.SubElement(el, elname)
+        for nval in val:
+            _value_to_etree(list_el, type_name, dtype, nval)
+    else:
+        if dtype.Identifier > 21:  # this is an extentionObject:
+            _extobj_to_etree(el, type_name, dtype, val)
+        else:
+            val_el = Et.SubElement(el, "uax:" + type_name)
+            _val_to_etree(val_el, dtype, val)
+           
 
-
-def _extobj_to_etree(val_el, dtype_name, dtype, val):
+def _extobj_to_etree(val_el, name, dtype, val):
     obj_el = Et.SubElement(val_el, "uax:ExtensionObject")
     type_el = Et.SubElement(obj_el, "uax:TypeId")
     id_el = Et.SubElement(type_el, "uax:Identifier")
-    id_el.text = val.TypeId.to_string()
+    id_el.text = dtype.to_string()
     body_el = Et.SubElement(obj_el, "uax:Body")
-    struct_el = Et.SubElement(body_el, "uax:" + dtype_name)
-    # FIXME: finish
-   
+    struct_el = Et.SubElement(body_el, "uax:" + name)
+    for name, vtype in val.ua_types.items():
+        member_to_etree(struct_el, name, ua.NodeId(getattr(ua.ObjectIds, vtype)), getattr(val, name))
+
 
 def indent(elem, level=0):
     '''
@@ -303,14 +333,14 @@ def indent(elem, level=0):
     it basically walks your tree and adds spaces and newlines so the tree is
     printed in a nice way
     '''
-    i = "\n" + level*"  "
+    i = "\n" + level * "  "
     if len(elem):
         if not elem.text or not elem.text.strip():
             elem.text = i + "  "
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
         for elem in elem:
-            indent(elem, level+1)
+            indent(elem, level + 1)
         if not elem.tail or not elem.tail.strip():
             elem.tail = i
     else:

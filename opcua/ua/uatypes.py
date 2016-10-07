@@ -1,7 +1,6 @@
 """
 implement ua datatypes
 """
-import logging
 import struct
 from enum import Enum, IntEnum, EnumMeta
 from datetime import datetime
@@ -19,9 +18,6 @@ from opcua.ua import ObjectIds
 from opcua.common.uaerrors import UaError
 from opcua.common.uaerrors import UaStatusCodeError
 from opcua.common.uaerrors import UaStringParsingError
-
-
-logger = logging.getLogger('opcua.uaprotocol')
 
 
 def get_win_epoch():
@@ -275,8 +271,9 @@ class NodeId(FrozenClass):
     :ivar ServerIndex:
     :vartype ServerIndex: Int
     """
-
+    
     def __init__(self, identifier=None, namespaceidx=0, nodeidtype=None):
+
         self.Identifier = identifier
         self.NamespaceIndex = namespaceidx
         self.NodeIdType = nodeidtype
@@ -558,8 +555,8 @@ class LocalizedText(FrozenClass):
     '''
 
     ua_types = {
-        "Text": "Bytes",
-        "Locale": "Bytes"
+        "Text": "ByteString",
+        "Locale": "ByteString"
     }
 
     def __init__(self, text=None):

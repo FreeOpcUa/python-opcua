@@ -5,7 +5,6 @@ from datetime import datetime
 from datetime import timedelta
 import math
 
-import opcua
 from opcua import ua
 from opcua import uamethod
 from opcua import instantiate

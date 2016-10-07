@@ -22,6 +22,7 @@ from opcua.client.client import Client
 from opcua.crypto import security_policies
 from opcua.common.event_objects import BaseEvent
 from opcua.common.shortcuts import Shortcuts
+from opcua.common.xmlexporter import XmlExporter
 use_crypto = True
 try:
     from opcua.crypto import uacrypto
@@ -397,10 +398,19 @@ class Server(object):
 
     def import_xml(self, path):
         """
-        import nodes defined in xml
+        Import nodes defined in xml
         """
         importer = xmlimporter.XmlImporter(self.iserver.node_mgt_service)
         return importer.import_xml(path, self)
+
+    def export_xml(self, nodes, path):
+        """
+        Export defined nodes to xml
+        """
+        exp = XmlExporter(self)
+        uris = self.get_namespace_array()[2:]
+        exp.build_etree(nodes, uris=uris)
+        return exp.write_xml(path)
 
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.iserver.isession, nodes, recursive)

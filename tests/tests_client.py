@@ -6,6 +6,7 @@ from opcua import ua
 
 from tests_subscriptions import SubscriptionTests
 from tests_common import CommonTests, add_server_methods
+from tests_xml import XmlTests 
 
 port_num1 = 48510
 

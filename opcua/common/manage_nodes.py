@@ -242,11 +242,12 @@ def _create_variable(server, parentnodeid, nodeid, qname, var, datatype=None, is
         attrs.DataType = _guess_datatype(var)
 
     attrs.Value = var
-    if isinstance(var, list) or isinstance(var, tuple):
-        attrs.ValueRank = ua.ValueRank.OneDimension
-    else:
+    if not isinstance(var.Value, (list, tuple)):
         attrs.ValueRank = ua.ValueRank.Scalar
-    #attrs.ArrayDimensions = None
+    else:
+        if var.Dimensions:
+            attrs.ValueRank = len(var.Dimensions)
+            attrs.ArrayDimensions = var.Dimensions
     attrs.WriteMask = 0
     attrs.UserWriteMask = 0
     attrs.Historizing = 0
