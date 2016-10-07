@@ -18,11 +18,12 @@ class UASocketClient(object):
     handle socket connection and send ua messages
     timeout is the timeout used while waiting for an ua answer from server
     """
-    def __init__(self, timeout=1, security_policy=ua.SecurityPolicy()):
+    def __init__(self, timeout=1, security_policy=ua.SecurityPolicy(), socket_timeout=10):
         self.logger = logging.getLogger(__name__ + ".Socket")
         self._thread = None
         self._lock = Lock()
         self.timeout = timeout
+        self.socket_timeout = socket_timeout
         self._socket = None
         self._do_stop = False
         self.authentication_token = ua.NodeId()
@@ -132,7 +133,7 @@ class UASocketClient(object):
         connect to server socket and start receiving thread
         """
         self.logger.info("opening connection")
-        sock = socket.create_connection((host, port), timeout=self.timeout)
+        sock = socket.create_connection((host, port), timeout=self.socket_timeout)
         sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)  # nodelay ncessary to avoid packing in one frame, some servers do not like it
         self._socket = utils.SocketWrapper(sock)
         self.start()
@@ -194,11 +195,12 @@ class UaClient(object):
     uaprotocol_auto.py and uaprotocol_hand.py available under opcua.ua
     """
 
-    def __init__(self, timeout=1):
+    def __init__(self, timeout=1, socket_timeout=10):
         self.logger = logging.getLogger(__name__)
         # _publishcallbacks should be accessed in recv thread only
         self._publishcallbacks = {}
         self._timeout = timeout
+        self._socket_timeout = socket_timeout
         self._uasocket = None
         self._security_policy = ua.SecurityPolicy()
 
@@ -209,7 +211,7 @@ class UaClient(object):
         """
         connect to server socket and start receiving thread
         """
-        self._uasocket = UASocketClient(self._timeout, security_policy=self._security_policy)
+        self._uasocket = UASocketClient(self._timeout, security_policy=self._security_policy, self._socket_timeout)
         return self._uasocket.connect_socket(host, port)
 
     def disconnect_socket(self):
