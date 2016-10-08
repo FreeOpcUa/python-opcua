@@ -149,12 +149,23 @@ class XmlImporter(object):
                 raise Exception("Error val should a dict", name, val)
             else:
                 for attname, v in val.items():
+                    # tow possible values:
+                    # either we get value directly 
+                    # or a dict if it s an object or a list
                     if type(v) is str:
                         setattr(ext, attname, to_python(v, ext, attname))
                     else:
-                        for attname2, v2 in v.items():
-                            obj2 = getattr(ext, attname)
-                            setattr(obj2, attname2, to_python(v2, obj2, attname2))
+                        # so we habve either an object or a list...
+                        obj2 = getattr(ext, attname)
+                        if not isinstance(obj2, ua.NodeId) and not hasattr(obj2, "ua_types"):
+                            # we probably have a list
+                            my_list = []
+                            for vtype, v2 in v.items():
+                                my_list.append(ua_type_to_python(v2, vtype))
+                            setattr(obj, attname, my_list)
+                        else:
+                            for attname2, v2 in v.items():
+                                setattr(obj2, attname2, to_python(v2, obj2, attname2))
         return ext
 
     def _add_variable_value(self, obj):
