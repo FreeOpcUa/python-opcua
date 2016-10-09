@@ -37,6 +37,10 @@ class XmlTests(object):
     def test_xml_export(self):
         o = self.opc.nodes.objects.add_object(2, "xmlexportobj")
         m = o.add_method(2, "callme", func, [ua.VariantType.Double, ua.VariantType.String], [ua.VariantType.Float])
+        v = o.add_variable(3, "myxmlvar", 6.78, ua.VariantType.Float)
+        a = o.add_variable(3, "myxmlvar", [6, 1], ua.VariantType.UInt16)
+        a2 = o.add_variable(3, "myxmlvar", [[]], ua.VariantType.ByteString)
+        print(a.get_value_rank)
         # set an arg dimension to a list to test list export
         inputs = m.get_child("InputArguments")
         val = inputs.get_value()
@@ -51,5 +55,21 @@ class XmlTests(object):
         self.opc.delete_nodes(nodes)
 
         self.opc.import_xml("export.xml")
+        
+        # now see if our nodes are here
+        val = inputs.get_value()
+        self.assertEqual(len(val), 2)
+        #self.assertEqual(val[0].ArrayDimensions, [2, 2]) # seems broken
+        self.assertEqual(v.get_value(), 6.78)
+        self.assertEqual(v.get_data_type(), ua.NodeId(ua.ObjectIds.Float))
+
+        self.assertEqual(a.get_value(), [6, 1])
+        self.assertEqual(a.get_data_type(), ua.NodeId(ua.ObjectIds.UInt16))
+        self.assertIn(a.get_value_rank(), (0, 1))
+
+        self.assertEqual(a2.get_value(), [[]])
+        self.assertEqual(a2.get_data_type(), ua.NodeId(ua.ObjectIds.ByteString))
+        self.assertIn(a2.get_value_rank(), (0, 2))
+        self.assertEqual(a2.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [1, 0]) # seems broken
 
 
