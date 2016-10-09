@@ -62,13 +62,11 @@ class XmlExporter(object):
         if pretty:
             indent(self.etree.getroot())
             self.etree.write(xmlpath,
-                             short_empty_elements=False,
                              encoding='utf-8',
                              xml_declaration=True
                              )
         else:
             self.etree.write(xmlpath,
-                             short_empty_elements=False,
                              encoding='utf-8',
                              xml_declaration=True
                              )
