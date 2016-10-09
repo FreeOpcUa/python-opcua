@@ -51,7 +51,8 @@ def create_object(parent, nodeid, bname, objecttype=None):
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
     if objecttype is not None:
         objecttype = node.Node(parent.server, objecttype)
-        return instantiate(parent, objecttype, nodeid, bname)[0]
+        nodes = instantiate(parent, objecttype, nodeid, bname)[0]
+        return nodes
     else:
         return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, ua.ObjectIds.BaseObjectType))
 
@@ -95,7 +96,7 @@ def create_variable_type(parent, nodeid, bname, datatype):
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
     if datatype and not isinstance(datatype, ua.NodeId):
-        raise RuntimeError()
+        raise RuntimeError("Data type should be nodeid, got {}".format(datatype))
     addnode = ua.AddNodesItem()
     addnode.RequestedNewNodeId = nodeid
     addnode.BrowseName = qname
@@ -109,9 +110,6 @@ def create_variable_type(parent, nodeid, bname, datatype):
     attrs.IsAbstract = False
     attrs.WriteMask = 0
     attrs.UserWriteMask = 0
-    attrs.Historizing = 0
-    attrs.AccessLevel = ua.AccessLevel.CurrentRead.mask
-    attrs.UserAccessLevel = ua.AccessLevel.CurrentRead.mask
     addnode.NodeAttributes = attrs
     results = parent.server.add_nodes([addnode])
     results[0].StatusCode.check()
