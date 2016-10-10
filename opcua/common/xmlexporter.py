@@ -281,6 +281,8 @@ def _val_to_etree(el, dtype, val):
     if dtype == ua.NodeId(ua.ObjectIds.NodeId):
         id_el = Et.SubElement(el, "uax:Identifier")
         id_el.text = val.to_string()
+    elif dtype == ua.NodeId(ua.ObjectIds.LocalizedText):
+        el.text = val.Text.decode('utf-8')
     elif not hasattr(val, "ua_types"):
         el.text = str(val)
     else:
@@ -299,7 +301,7 @@ def _value_to_etree(el, type_name, dtype, val):
     if not val:
         return
     if isinstance(val, (list, tuple)):
-        if dtype.Identifier > 21:  # this is an extentionObject:
+        if dtype.Identifier > 21:  # this is an extensionObject:
             elname = "uax:ListOfExtensionObject"
         else:
             elname = "uax:ListOf" + type_name
@@ -307,7 +309,7 @@ def _value_to_etree(el, type_name, dtype, val):
         for nval in val:
             _value_to_etree(list_el, type_name, dtype, nval)
     else:
-        if dtype.Identifier > 21:  # this is an extentionObject:
+        if dtype.Identifier > 21:  # this is an extensionObject:
             _extobj_to_etree(el, type_name, dtype, val)
         else:
             val_el = Et.SubElement(el, "uax:" + type_name)
