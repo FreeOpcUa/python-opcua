@@ -294,8 +294,10 @@ class XMLParser(object):
                 obj.value = self._parse_list_of_extension_object(el)
             elif ntag == "ListOfLocalizedText":
                 obj.value = self._parse_list_of_localized_text(el)
+            elif ntag == "ExtensionObject":
+                obj.value = self._parse_extension_object(el)
             else:
-                self.logger.info("Value type not implemented: '%s', %s", ntag)
+                self.logger.warning("Value type not implemented: '%s'", ntag)
 
     def _get_text(self, el):
         txtlist = [txt.strip() for txt in el.itertext()]
@@ -324,6 +326,10 @@ class XMLParser(object):
                 value.append(ext_obj)
         return value
 
+    def _parse_extension_object(self, el):
+        for ext_obj in el:
+            return self._parse_ext_obj(ext_obj)
+
     def _parse_ext_obj(self, el):
         ext = ExtObj()
         for extension_object_part in el:
@@ -334,14 +340,12 @@ class XMLParser(object):
             elif ntag == 'Body':
                 ext.objname = self._retag.match(extension_object_part.find('*').tag).groups()[1]
                 ext.body = self._parse_body(extension_object_part)
-                print("body", ext.body)
             else:
-                print("Uknoen ndtag", ntag)
-        print("ext_obj", ext.objname, ext.typeid, ext.body)
+                print("Uknown ndtag", ntag)
         return ext
 
     def _parse_body(self, el):
-        body = {}
+        body = []
         for body_item in el:
             otag = self._retag.match(body_item.tag).groups()[1]
             childs = [i for i in body_item]
@@ -350,7 +354,7 @@ class XMLParser(object):
             else:
                 val = self._parse_body(body_item)
             if val:
-                body[otag] = val
+                body.append((otag, val))
         return body
 
     def _parse_refs(self, el, obj):
