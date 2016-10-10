@@ -26,6 +26,7 @@ def ua_type_to_python(val, uatype):
 
 def to_python(val, obj, attname):
     if isinstance(obj, ua.NodeId) and attname == "Identifier":
+        raise RuntimeError("Error we should parse a NodeId here")
         return ua.NodeId.from_string(val)
     else:
         return ua_type_to_python(val, obj.ua_types[attname])
@@ -144,11 +145,11 @@ class XmlImporter(object):
     
     def _make_ext_obj(sefl, obj):
         ext = getattr(ua, obj.objname)()
-        for name, val in obj.body.items():
+        for name, val in obj.body:
             if type(val) is str:
                 raise Exception("Error val should a dict", name, val)
             else:
-                for attname, v in val.items():
+                for attname, v in val:
                     # tow possible values:
                     # either we get value directly 
                     # or a dict if it s an object or a list
@@ -157,15 +158,22 @@ class XmlImporter(object):
                     else:
                         # so we habve either an object or a list...
                         obj2 = getattr(ext, attname)
-                        if not isinstance(obj2, ua.NodeId) and not hasattr(obj2, "ua_types"):
+                        if isinstance(obj2, ua.NodeId):
+                            for attname2, v2 in v:
+                                if attname2 == "Identifier":
+                                    obj2 = ua.NodeId.from_string(v2)
+                                    setattr(ext, attname, obj2)
+                                    break
+                        elif not isinstance(obj2, ua.NodeId) and not hasattr(obj2, "ua_types"):
                             # we probably have a list
                             my_list = []
-                            for vtype, v2 in v.items():
+                            for vtype, v2 in v:
                                 my_list.append(ua_type_to_python(v2, vtype))
-                            setattr(obj, attname, my_list)
+                            setattr(ext, attname, my_list)
                         else:
-                            for attname2, v2 in v.items():
+                            for attname2, v2 in v:
                                 setattr(obj2, attname2, to_python(v2, obj2, attname2))
+                            setattr(ext, attname, obj2)
         return ext
 
     def _add_variable_value(self, obj):
@@ -181,6 +189,9 @@ class XmlImporter(object):
         elif obj.valuetype.startswith("ListOf"):
             vtype = obj.valuetype[6:]
             return [getattr(ua, vtype)(v) for v in obj.value]
+        elif obj.valuetype == 'ExtensionObject':
+            extobj = self._make_ext_obj(obj.value)
+            return ua.Variant(extobj, getattr(ua.VariantType, obj.valuetype))
         else:
             return ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
 

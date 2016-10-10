@@ -282,7 +282,10 @@ def _val_to_etree(el, dtype, val):
         id_el = Et.SubElement(el, "uax:Identifier")
         id_el.text = val.to_string()
     elif not hasattr(val, "ua_types"):
-        el.text = str(val)
+        if type(val) is bytes:
+            el.text = val.decode("utf-8")
+        else:
+            el.text = str(val)
     else:
         for name, vtype in val.ua_types.items():
             member_to_etree(el, name, ua.NodeId(getattr(ua.ObjectIds, vtype)), getattr(val, name))

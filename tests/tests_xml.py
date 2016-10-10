@@ -59,7 +59,7 @@ class XmlTests(object):
         # now see if our nodes are here
         val = inputs.get_value()
         self.assertEqual(len(val), 2)
-        #self.assertEqual(val[0].ArrayDimensions, [2, 2]) # seems broken
+        self.assertEqual(val[0].ArrayDimensions, [2, 2])
         self.assertEqual(v.get_value(), 6.78)
         self.assertEqual(v.get_data_type(), ua.NodeId(ua.ObjectIds.Float))
 
@@ -70,6 +70,27 @@ class XmlTests(object):
         self.assertEqual(a2.get_value(), [[]])
         self.assertEqual(a2.get_data_type(), ua.NodeId(ua.ObjectIds.ByteString))
         self.assertIn(a2.get_value_rank(), (0, 2))
-        self.assertEqual(a2.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [1, 0]) # seems broken
+        self.assertEqual(a2.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [1, 0]) 
+
+    def test_export_import_ext_obj(self):
+        arg = ua.Argument()
+        arg.DataType = ua.NodeId(ua.ObjectIds.Float)
+        arg.Description = ua.LocalizedText(b"This is a nice description")
+        arg.ArrayDimensions = [1, 2, 3]
+        arg.Name = "MyArg"
+
+        v = self.opc.nodes.objects.add_variable(2, "xmlexportobj2", arg)
+
+        nodes = [v]
+        self.opc.export_xml(nodes, "export.xml")
+        self.opc.delete_nodes(nodes)
+        self.opc.import_xml("export.xml")
+
+        arg2 = v.get_value()
+
+        self.assertEqual(arg.Name, arg2.Name)
+        self.assertEqual(arg.ArrayDimensions, arg2.ArrayDimensions)
+        self.assertEqual(arg.Description, arg2.Description)
+        self.assertEqual(arg.DataType, arg2.DataType)
 
 
