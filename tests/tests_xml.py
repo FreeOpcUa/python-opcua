@@ -35,6 +35,22 @@ class XmlTests(object):
         input_arg = o.get_data_value().Value.Value[0]
         self.assertEqual(input_arg.Name, 'Context')
 
+    def test_xml_import_additional_ns(self):
+        self.srv.register_namespace('http://placeholder.toincrease.nsindex')  # if not already shift the new namespaces
+
+        # "tests/custom_nodes.xml" isn't created with namespaces in mind, provide new test file
+        self.srv.import_xml("tests/custom_nodesns.xml")  # the ns=1 in to file now should be mapped to ns=2
+
+        ns = self.srv.get_namespace_index("http://examples.freeopcua.github.io/")
+        o = self.opc.get_objects_node()
+
+        o2 = o.get_child(["%d:MyBaseObject" % ns])
+
+        self.assertIsNotNone(o2)
+
+        v1 = o.get_child(["%d:MyBaseObject" % ns, "%d:MyVar" % ns])
+        self.assertIsNotNone(v1)
+
     def test_xml_method(self):
         o = self.opc.nodes.objects.add_object(2, "xmlexportobj")
         m = o.add_method(2, "callme", func, [ua.VariantType.Double, ua.VariantType.String], [ua.VariantType.Float])
@@ -49,8 +65,8 @@ class XmlTests(object):
         desc = b"My nce description"
         val[0].Description = ua.LocalizedText(desc)
         inputs.set_value(val)
-        
-        #get all nodes and export
+
+        # get all nodes and export
         nodes = [o, m]
         nodes.extend(m.get_children())
         self.opc.export_xml(nodes, "export.xml")
@@ -58,10 +74,11 @@ class XmlTests(object):
         self.opc.delete_nodes(nodes)
 
         self.opc.import_xml("export.xml")
-        
+
         # now see if our nodes are here
         val = inputs.get_value()
         self.assertEqual(len(val), 2)
+
         self.assertEqual(val[0].ArrayDimensions, [2, 2])
         self.assertEqual(val[0].Description.Text, desc)
         self.assertEqual(v.get_value(), 6.78)
@@ -74,7 +91,7 @@ class XmlTests(object):
         self.assertEqual(a2.get_value(), [[]])
         self.assertEqual(a2.get_data_type(), ua.NodeId(ua.ObjectIds.ByteString))
         self.assertIn(a2.get_value_rank(), (0, 2))
-        self.assertEqual(a2.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [1, 0]) 
+        self.assertEqual(a2.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [1, 0])
 
     def test_export_import_ext_obj(self):
         arg = ua.Argument()

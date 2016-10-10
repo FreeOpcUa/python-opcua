@@ -44,8 +44,8 @@ class NodeData(object):
 
         # referencetype
         self.inversename = ""
-        self.abstract = False 
-        self.symmetric = False 
+        self.abstract = False
+        self.symmetric = False
 
         # datatype
         self.definition = []
@@ -204,6 +204,18 @@ class XMLParser(object):
                 result = "ns={};i={}".format(ns_server[0], node_id)
         return result
 
+    def _parse_bname(self, bname):
+        """
+        Parse a browsename and correct the namespace index.
+        """
+        if bname.find(':') != -1:
+            browse_ns, browse_name = bname.split(':')
+            if browse_ns:
+                ns_server = self.namespaces.get(int(browse_ns), None)
+                if ns_server:
+                    return '%d:%s' % (ns_server[0], browse_name)
+        return bname
+
     def _parse_node(self, name, child):
         """
         Parse a XML node and create a NodeData object.
@@ -223,7 +235,7 @@ class XMLParser(object):
             obj.nodeid = self._get_node_id(val)
             print("PARSING", obj.nodeid)
         elif key == "BrowseName":
-            obj.browsename = val
+            obj.browsename = self._parse_bname(val)
         elif key == "SymbolicName":
             obj.symname = val
         elif key == "ParentNodeId":
