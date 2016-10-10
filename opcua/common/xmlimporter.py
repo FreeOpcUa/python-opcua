@@ -15,18 +15,22 @@ def ua_type_to_python(val, uatype):
         return int(val)
     elif uatype in ("String"):
         return val
+    elif uatype in ("LocalizedText"):
+        return ua.LocalizedText(val)
     elif uatype in ("Bytes", "Bytes", "ByteString", "ByteArray"):
         if sys.version_info.major > 2:
             return bytes(val, 'utf8')
         else:
             return val
     else:
-        raise Exception("uatype nopt handled", uatype, " for val ", val)
+        raise Exception("ua type not handled", uatype, " for val ", val)
 
 
 def to_python(val, obj, attname):
     if isinstance(obj, ua.NodeId) and attname == "Identifier":
-        return ua.NodeId.from_string(val)
+        k, v = val.split("=", 1)
+        identifier = int(v)
+        return identifier
     else:
         return ua_type_to_python(val, obj.ua_types[attname])
 
