@@ -26,7 +26,9 @@ def ua_type_to_python(val, uatype):
 
 def to_python(val, obj, attname):
     if isinstance(obj, ua.NodeId) and attname == "Identifier":
-        return ua.NodeId.from_string(val)
+        k, v = val.split("=", 1)
+        identifier = int(v)
+        return identifier
     else:
         return ua_type_to_python(val, obj.ua_types[attname])
 
