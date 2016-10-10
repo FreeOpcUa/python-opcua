@@ -336,18 +336,20 @@ def _create_method(parent, nodeid, qname, callback, inputs, outputs):
     results = parent.server.add_nodes([addnode])
     results[0].StatusCode.check()
     method = node.Node(parent.server, results[0].AddedNodeId)
-    create_property(method,
-                    ua.NodeId(),
-                    ua.QualifiedName("InputArguments", 0),
-                    [_vtype_to_argument(vtype) for vtype in inputs],
-                    varianttype=ua.VariantType.ExtensionObject,
-                    datatype=ua.ObjectIds.Argument)
-    create_property(method,
-                    ua.NodeId(),
-                    ua.QualifiedName("OutputArguments", 0),
-                    [_vtype_to_argument(vtype) for vtype in outputs],
-                    varianttype=ua.VariantType.ExtensionObject,
-                    datatype=ua.ObjectIds.Argument)
+    if inputs:
+        create_property(method,
+                        ua.NodeId(namespaceidx=method.nodeid.NamespaceIndex),
+                        ua.QualifiedName("InputArguments", 0),
+                        [_vtype_to_argument(vtype) for vtype in inputs],
+                        varianttype=ua.VariantType.ExtensionObject,
+                        datatype=ua.ObjectIds.Argument)
+    if outputs:
+        create_property(method,
+                        ua.NodeId(namespaceidx=method.nodeid.NamespaceIndex),
+                        ua.QualifiedName("OutputArguments", 0),
+                        [_vtype_to_argument(vtype) for vtype in outputs],
+                        varianttype=ua.VariantType.ExtensionObject,
+                        datatype=ua.ObjectIds.Argument)
     parent.server.add_method_callback(method.nodeid, callback)
     return results[0].AddedNodeId
 
