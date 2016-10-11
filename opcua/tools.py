@@ -11,7 +11,7 @@ except ImportError:
     import code
 
     def embed():
-        code.interact(local=dict(globals(), **locals())) 
+        code.interact(local=dict(globals(), **locals()))
 
 from opcua import ua
 from opcua import Client
@@ -236,7 +236,7 @@ def uawrite():
                         "--datatype",
                         dest="datatype",
                         default="guess",
-                        choices=["guess", 'byte', 'sbyte', 'nodeid', 'expandednodeid', 'qualifiedname', 'browsename', 'string', 'float', 'double', 'int16', 'int32', "int64", 'uint16', 'uint32', 'uint64', "bool", "string", 'datetime', 'bytestring', 'xmlelement', 'statuscode', 'localizedtext'],  
+                        choices=["guess", 'byte', 'sbyte', 'nodeid', 'expandednodeid', 'qualifiedname', 'browsename', 'string', 'float', 'double', 'int16', 'int32', "int64", 'uint16', 'uint32', 'uint64', "bool", "string", 'datetime', 'bytestring', 'xmlelement', 'statuscode', 'localizedtext'],
                         help="Data type to return")
     parser.add_argument("value",
                         help="Value to be written",
@@ -323,7 +323,7 @@ def _lsprint_long(pnode, depth, indent=""):
         print("{:30} {:25} {:25} {:10} {:30} {:25}".format("DisplayName", "NodeId", "BrowseName", "DataType", "Timestamp", "Value"))
         print("")
     for node in pnode.get_children():
-        attrs = node.get_attributes([ua.AttributeIds.DisplayName, 
+        attrs = node.get_attributes([ua.AttributeIds.DisplayName,
                                      ua.AttributeIds.BrowseName,
                                      ua.AttributeIds.NodeClass,
                                      ua.AttributeIds.WriteMask,
@@ -566,7 +566,7 @@ def uadiscover():
                         #action="store_false",
                         #help="send a GetEndpoints request to server")
     args = parse_args(parser)
-    
+
     client = Client(args.url, timeout=args.timeout)
 
     if args.network:
@@ -651,3 +651,77 @@ def uahistoryread():
     finally:
         client.disconnect()
     sys.exit(0)
+
+
+def uacall():
+    parser = argparse.ArgumentParser(description="Call method of a node")
+    add_common_args(parser)
+    parser.add_argument("-m",
+                        "--method",
+                        dest="method",
+                        type=int,
+                        default=None,
+                        help="Set method to call. If not given then (single) method of the selected node is used.")
+    parser.add_argument("-l",
+                        "--list",
+                        "--array",
+                        dest="array",
+                        default="guess",
+                        choices=["guess", "true", "false"],
+                        help="Value is an array")
+    parser.add_argument("-t",
+                        "--datatype",
+                        dest="datatype",
+                        default="guess",
+                        choices=["guess", 'byte', 'sbyte', 'nodeid', 'expandednodeid', 'qualifiedname', 'browsename', 'string', 'float', 'double', 'int16', 'int32', "int64", 'uint16', 'uint32', 'uint64', "bool", "string", 'datetime', 'bytestring', 'xmlelement', 'statuscode', 'localizedtext'],
+                        help="Data type to return")
+    parser.add_argument("value",
+                        help="Value to use for call to method, if any",
+                        nargs="?",
+                        metavar="VALUE")
+
+    args = parse_args(parser, requirenodeid=True)
+
+    client = Client(args.url, timeout=args.timeout)
+    client.set_security_string(args.security)
+    client.connect()
+    try:
+        node = get_node(client, args)
+        # val must be a tuple in order to enable method calls without arguments
+        if ( args.value is None ):
+            val = () #empty tuple
+        else:
+            val = (_val_to_variant(args.value, args),) # tuple with one element
+
+        parent = node.get_parent()
+
+        # determine method to call: Either explicitly given or automatically select the method of the selected node.
+        methods = node.get_methods()
+        method_id = None
+        #print "methods=%s" % methods
+
+        if ( args.method is None ):
+            if ( len( methods ) == 0 ):
+                raise ValueError( "No methods in selected node and no method given" )
+            elif ( len( methods ) == 1 ):
+                method_id = methods[0]
+            else:
+                raise ValueError( "Selected node has %d methods but no method given. Provide one of %s" % (methods) )
+        else:
+            for m in methods:
+                if ( m.nodeid.Identifier == args.method ):
+                    method_id = m.nodeid
+                    break
+
+        if ( method_id is None):
+            # last resort:
+            method_id = ua.NodeId( identifier=args.method )#, namespaceidx=? )#, nodeidtype=?): )
+
+        #print "method_id=%s\nval=%s" % (method_id,val)
+
+        result_variants = node.call_method( parent, method_id, *val )
+        print "resulting result_variants=%s" % result_variants
+    finally:
+        client.disconnect()
+    sys.exit(0)
+    print(args)
