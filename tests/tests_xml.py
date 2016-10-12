@@ -35,7 +35,7 @@ class XmlTests(object):
         input_arg = o.get_data_value().Value.Value[0]
         self.assertEqual(input_arg.Name, 'Context')
 
-    def test_xml_export(self):
+    def test_xml_method(self):
         o = self.opc.nodes.objects.add_object(2, "xmlexportobj")
         m = o.add_method(2, "callme", func, [ua.VariantType.Double, ua.VariantType.String], [ua.VariantType.Float])
         v = o.add_variable(3, "myxmlvar", 6.78, ua.VariantType.Float)
@@ -46,6 +46,8 @@ class XmlTests(object):
         inputs = m.get_child("InputArguments")
         val = inputs.get_value()
         val[0].ArrayDimensions = [2, 2]
+        desc = b"My nce description"
+        val[0].Description = ua.LocalizedText(desc)
         inputs.set_value(val)
         
         #get all nodes and export
@@ -61,6 +63,7 @@ class XmlTests(object):
         val = inputs.get_value()
         self.assertEqual(len(val), 2)
         self.assertEqual(val[0].ArrayDimensions, [2, 2])
+        self.assertEqual(val[0].Description.Text, desc)
         self.assertEqual(v.get_value(), 6.78)
         self.assertEqual(v.get_data_type(), ua.NodeId(ua.ObjectIds.Float))
 
