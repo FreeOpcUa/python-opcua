@@ -5,6 +5,7 @@ format is the one from opc-ua specification
 import logging
 from collections import OrderedDict
 import xml.etree.ElementTree as Et
+from copy import copy
 
 from opcua import ua
 from opcua.ua import object_ids as o_ids
@@ -28,6 +29,7 @@ class XmlExporter(object):
     def build_etree(self, node_list, uris=None):
         """
         Create an XML etree object from a list of nodes; custom namespace uris are optional
+        Namespaces used by nodes are allways exported for consistency.
         Args:
             node_list: list of Node objects for export
             uris: list of namespace uri strings
@@ -36,6 +38,8 @@ class XmlExporter(object):
         """
         self.logger.info('Building XML etree')
 
+        self._add_namespaces(node_list, uris)
+
         # add all nodes in the list to the XML etree
         for node in node_list:
             self.node_to_etree(node)
@@ -43,9 +47,37 @@ class XmlExporter(object):
         # add aliases to the XML etree
         self._add_alias_els()
 
+    def _add_namespaces(self, nodes, uris):
+        # first get a list of all indexes used by nodes
+        idxs = []
+        for node in nodes:
+            if node.nodeid.NamespaceIndex != 0 and node.nodeid.NamespaceIndex not in idxs:
+                idxs.append(node.nodeid.NamespaceIndex)
+        ns_array = self.server.get_namespace_array()
+        print("IDXS 1", idxs)
+
+        # now add index of provided uris if necessary
         if uris:
-            # add namespace uris to the XML etree
-            self._add_namespace_uri_els(uris)
+            for uri in uris:
+                if uri in ns_array:
+                    i = ns_array.index(uri)
+                    if i not in idxs:
+                        idxs.append(i)
+        print("IDXS 2", idxs)
+
+        # now create a dict of idx_in_address_space to idx_in_exported_file
+        idxs.sort()
+        self._addr_idx_to_xml_idx = {0: 0}
+        ns_to_export = []
+        for xml_idx, addr_idx in enumerate(idxs):
+            if addr_idx >= len(ns_array):
+                break
+            self._addr_idx_to_xml_idx[addr_idx] = xml_idx + 1
+            ns_to_export.append(ns_array[addr_idx])
+        print(" ADDR_TO_ XML", self._addr_idx_to_xml_idx)
+
+        # write namespaces to xml
+        self._add_namespace_uri_els(ns_to_export)
 
     def write_xml(self, xmlpath, pretty=True):
         """
@@ -112,16 +144,31 @@ class XmlExporter(object):
         child_el.text = text
         return child_el
 
+    def _node_to_string(self, nodeid):
+        if not isinstance(nodeid, ua.NodeId):
+            nodeid = nodeid.nodeid
+
+        if nodeid.NamespaceIndex in self._addr_idx_to_xml_idx:
+            nodeid = copy(nodeid)
+            nodeid.NamespaceIndex = self._addr_idx_to_xml_idx[nodeid.NamespaceIndex]
+        return nodeid.to_string()
+
+    def _bname_to_string(self, bname):
+        if bname.NamespaceIndex in self._addr_idx_to_xml_idx:
+            bname = copy(bname)
+            bname.NamespaceIndex = self._addr_idx_to_xml_idx[bname.NamespaceIndex]
+        return bname.to_string()
+
     def _add_node_common(self, nodetype, node):
-        browsename = node.get_browse_name().to_string()
-        nodeid = node.nodeid.to_string()
+        browsename = node.get_browse_name()
+        nodeid = node.nodeid
         parent = node.get_parent()
         displayname = node.get_display_name().Text.decode('utf-8')
         desc = node.get_description().Text
         print("NODE COMMON", node)
         node_el = Et.SubElement(self.etree.getroot(), nodetype)
-        node_el.attrib["NodeId"] = nodeid
-        node_el.attrib["BrowseName"] = browsename
+        node_el.attrib["NodeId"] = self._node_to_string(nodeid)
+        node_el.attrib["BrowseName"] = self._bname_to_string(browsename)
         if parent is not None:
             node_class = node.get_node_class()
             if node_class in (ua.NodeClass.Object, ua.NodeClass.Variable, ua.NodeClass.Method):
