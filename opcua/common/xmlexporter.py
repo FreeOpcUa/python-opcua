@@ -172,7 +172,7 @@ class XmlExporter(object):
         if parent is not None:
             node_class = node.get_node_class()
             if node_class in (ua.NodeClass.Object, ua.NodeClass.Variable, ua.NodeClass.Method):
-                node_el.attrib["ParentNodeId"] = parent.nodeid.to_string()
+                node_el.attrib["ParentNodeId"] = self._node_to_string(parent)
         self._add_sub_el(node_el, 'DisplayName', displayname)
         if desc not in (None, ""):
             self._add_sub_el(node_el, 'Description', desc.decode('utf-8'))
@@ -308,7 +308,7 @@ class XmlExporter(object):
             ref_el.attrib['ReferenceType'] = ref_name
             if not ref.IsForward:
                 ref_el.attrib['IsForward'] = 'false'
-            ref_el.text = ref.NodeId.to_string()
+            ref_el.text = self._node_to_string(ref.NodeId)
 
             self.aliases[ref_name] = ref.ReferenceTypeId.to_string()
 

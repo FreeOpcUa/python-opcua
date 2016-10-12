@@ -107,8 +107,9 @@ class XmlTests(object):
         o20 = self.opc.nodes.objects.add_object(20, "xmlns20")
         o200 = self.opc.nodes.objects.add_object(200, "xmlns200")
         onew = self.opc.nodes.objects.add_object(new_ns, "xmlns_new")
+        vnew = onew.add_variable(new_ns, "xmlns_new_var", 9.99)
 
-        nodes = [o, o2, o20, o200, onew]
+        nodes = [o, o2, o20, o200, onew, vnew]
         self.opc.export_xml(nodes, "export-ns.xml")
         # delete node and change index og new_ns before re-importing
         self.opc.delete_nodes(nodes)
@@ -121,9 +122,12 @@ class XmlTests(object):
 
         self.opc.import_xml("export-ns.xml")
 
-        for i in nodes[:-1]:
+        for i in nodes[:-2]:
             i.get_browse_name()
         with self.assertRaises(uaerrors.BadNodeIdUnknown):
             onew.get_browse_name()
         onew.nodeid.NamespaceIndex += 1
         onew.get_browse_name()
+        vnew2 = onew.get_children()[0]
+        self.assertEqual(vnew.nodeid.NamespaceIndex + 1, vnew2.nodeid.NamespaceIndex)
+        vnew.nodeid.NamespaceIndex += 1
