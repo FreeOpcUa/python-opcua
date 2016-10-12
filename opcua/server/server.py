@@ -408,8 +408,7 @@ class Server(object):
         Export defined nodes to xml
         """
         exp = XmlExporter(self)
-        uris = self.get_namespace_array()[2:]
-        exp.build_etree(nodes, uris=uris)
+        exp.build_etree(nodes)
         return exp.write_xml(path)
 
     def delete_nodes(self, nodes, recursive=False):

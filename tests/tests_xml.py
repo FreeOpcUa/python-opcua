@@ -1,6 +1,7 @@
 
 from opcua import ua
 from opcua import uamethod
+from opcua.common import uaerrors
 
 
 @uamethod
@@ -94,3 +95,35 @@ class XmlTests(object):
         self.assertEqual(arg.DataType, arg2.DataType)
 
 
+    def test_xml_ns(self):
+        ns_array = self.opc.get_namespace_array()
+        if len(ns_array) <= 2:
+            self.opc.register_namespace("dummy_ns")
+
+        new_ns = self.opc.register_namespace("my_new_namespace")
+
+        o = self.opc.nodes.objects.add_object(0, "xmlns0")
+        o2 = self.opc.nodes.objects.add_object(2, "xmlns2")
+        o20 = self.opc.nodes.objects.add_object(20, "xmlns20")
+        o200 = self.opc.nodes.objects.add_object(200, "xmlns200")
+        onew = self.opc.nodes.objects.add_object(new_ns, "xmlns_new")
+
+        nodes = [o, o2, o20, o200, onew]
+        self.opc.export_xml(nodes, "export-ns.xml")
+        # delete node and change index og new_ns before re-importing
+        self.opc.delete_nodes(nodes)
+        ns_node = self.opc.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
+        nss = ns_node.get_value()
+        nss.remove("my_new_namespace")
+        ns_node.set_value(nss)
+        new_ns = self.opc.register_namespace("my_new_namespace_offsett")
+        new_ns = self.opc.register_namespace("my_new_namespace")
+
+        self.opc.import_xml("export-ns.xml")
+
+        for i in nodes[:-1]:
+            i.get_browse_name()
+        with self.assertRaises(uaerrors.BadNodeIdUnknown):
+            onew.get_browse_name()
+        onew.nodeid.NamespaceIndex += 1
+        onew.get_browse_name()
