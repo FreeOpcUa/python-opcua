@@ -96,6 +96,7 @@ class XMLParser(object):
                     ns_uri = ns_element.text
                     ns_server_index = self.server.register_namespace(ns_uri)
                     self.namespaces[ns_index + 1] = (ns_server_index, ns_uri)
+                    print("namespace offset", ns_index + 1, (ns_server_index, ns_uri))
             else:
                 node = self._parse_node(name, child)
                 nodes.append(node)
