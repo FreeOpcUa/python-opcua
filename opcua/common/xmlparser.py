@@ -92,12 +92,10 @@ class XMLParser(object):
                 for el in child:
                     self.aliases[el.attrib["Alias"]] = self._get_node_id(el.text)
             elif name == 'NamespaceUris':
-                s_uris = self.server.get_namespace_array()
                 for ns_index, ns_element in enumerate(child):
                     ns_uri = ns_element.text
-                    if ns_uri not in s_uris:
-                        ns_server_index = self.server.register_namespace(ns_uri)
-                        self.namespaces[ns_index + 1] = (ns_server_index, ns_uri)
+                    ns_server_index = self.server.register_namespace(ns_uri)
+                    self.namespaces[ns_index + 1] = (ns_server_index, ns_uri)
             else:
                 node = self._parse_node(name, child)
                 nodes.append(node)
