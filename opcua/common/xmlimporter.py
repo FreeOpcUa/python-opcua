@@ -1,4 +1,4 @@
-"""
+"""G
 add node defined in XML to address space
 format is the one from opc-ua specification
 """
@@ -38,6 +38,17 @@ class XmlImporter(object):
         self.logger = logging.getLogger(__name__)
         self.parser = None
         self.server = server
+        self.namespaces = {}
+
+    def _map_namespaces(self, namespaces_uris, act_server):
+        """
+        creates a mapping between the namespaces in the xml file and in the server.
+        if not present the namespace is registered.
+        """
+        for ns_index, ns_uri in enumerate(namespaces_uris):
+            ns_server_index = act_server.register_namespace(ns_uri)
+            self.namespaces[ns_index + 1] = (ns_server_index, ns_uri)
+            self.logger.info("namespace offset", ns_index + 1, (ns_server_index, ns_uri))
 
     def import_xml(self, xmlpath, act_server):
         """
@@ -45,6 +56,9 @@ class XmlImporter(object):
         """
         self.logger.info("Importing XML file %s", xmlpath)
         self.parser = xmlparser.XMLParser(xmlpath, act_server)
+
+        self._map_namespaces(self.parser.get_used_namespaces(), act_server)
+
         nodes = []
         for nodedata in self.parser:
             if nodedata.nodetype == 'UAObject':
@@ -67,17 +81,33 @@ class XmlImporter(object):
             nodes.append(node)
         return nodes
 
+    def _get_node_id(self, value):
+        """
+        Check if the nodeid given in the xml model file must be converted
+        to a already existing namespace id based on the files namespace uri
+
+        :returns: NodeId (str)
+        """
+        result = value
+
+#         node_ns, node_id = self._split_node_id(value)
+#         if node_ns:
+#             ns_server = self.namespaces.get(int(node_ns), None)
+#             if ns_server:
+#                 result = "ns={};i={}".format(ns_server[0], node_id)
+        return result
+
     def _get_node(self, obj):
         node = ua.AddNodesItem()
-        node.RequestedNewNodeId = ua.NodeId.from_string(obj.nodeid)
-        node.BrowseName = ua.QualifiedName.from_string(obj.browsename)
+        node.RequestedNewNodeId = ua.NodeId.from_string(self._get_node_id(obj.nodeid))
+        node.BrowseName = ua.QualifiedName.from_string(obj.browsename)  # FIX: also convert
         node.NodeClass = getattr(ua.NodeClass, obj.nodetype[2:])
         if obj.parent:
             node.ParentNodeId = ua.NodeId.from_string(obj.parent)
         if obj.parentlink:
-            node.ReferenceTypeId = self.to_nodeid(obj.parentlink)
+            node.ReferenceTypeId = self.to_nodeid(self._get_node_id(obj.parentlink))
         if obj.typedef:
-            node.TypeDefinition = ua.NodeId.from_string(obj.typedef)
+            node.TypeDefinition = ua.NodeId.from_string(self._get_node_id(obj.typedef))
         return node
 
     def to_nodeid(self, nodeid):
@@ -127,7 +157,7 @@ class XmlImporter(object):
         attrs.DataType = self.to_nodeid(obj.datatype)
         # if obj.value and len(obj.value) == 1:
         if obj.value is not None:
-            attrs.Value = self._add_variable_value(obj, )
+            attrs.Value = self._add_variable_value(obj,)
         if obj.rank:
             attrs.ValueRank = obj.rank
         if obj.accesslevel:
@@ -142,7 +172,7 @@ class XmlImporter(object):
         res = self.server.add_nodes([node])
         self._add_refs(obj)
         return res[0].AddedNodeId
-    
+
     def _make_ext_obj(sefl, obj):
         ext = getattr(ua, obj.objname)()
         for name, val in obj.body:
@@ -151,7 +181,7 @@ class XmlImporter(object):
             else:
                 for attname, v in val:
                     # tow possible values:
-                    # either we get value directly 
+                    # either we get value directly
                     # or a dict if it s an object or a list
                     if type(v) is str:
                         setattr(ext, attname, to_python(v, ext, attname))

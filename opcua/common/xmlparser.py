@@ -84,6 +84,18 @@ class XMLParser(object):
         self.namespaces = {}
         self._re_nodeid = re.compile(r"^ns=(?P<ns>\d+[^;]*);i=(?P<i>\d+)")
 
+    def get_used_namespaces(self):
+        """
+        Return the used namespace uris in this import file
+        """
+        namespaces_uris = []
+        for child in self.root:
+            name = self._retag.match(child.tag).groups()[1]
+            if name == 'NamespaceUris':
+                namespaces_uris = [ns_element.text for ns_element in child]
+                break
+        return namespaces_uris
+
     def __iter__(self):
         nodes = []
         for child in self.root:
@@ -92,6 +104,7 @@ class XMLParser(object):
                 for el in child:
                     self.aliases[el.attrib["Alias"]] = self._get_node_id(el.text)
             elif name == 'NamespaceUris':
+                print(child.tag)
                 for ns_index, ns_element in enumerate(child):
                     ns_uri = ns_element.text
                     ns_server_index = self.server.register_namespace(ns_uri)
@@ -233,7 +246,6 @@ class XMLParser(object):
     def _set_attr(self, key, val, obj):
         if key == "NodeId":
             obj.nodeid = self._get_node_id(val)
-            print("PARSING", obj.nodeid)
         elif key == "BrowseName":
             obj.browsename = self._parse_bname(val)
         elif key == "SymbolicName":
