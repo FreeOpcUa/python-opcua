@@ -127,7 +127,8 @@ class XmlTests(object):
             self.opc.register_namespace("dummy_ns")
 
         new_ns = self.opc.register_namespace("my_new_namespace")
-        new_ns2 = self.opc.register_namespace("my_new_namespace2")
+        ref_ns = self.opc.register_namespace("ref_namespace")
+        bname_ns = self.opc.register_namespace("bname_namespace")
 
         o = self.opc.nodes.objects.add_object(0, "xmlns0")
         o2 = self.opc.nodes.objects.add_object(2, "xmlns2")
@@ -135,17 +136,19 @@ class XmlTests(object):
         o200 = self.opc.nodes.objects.add_object(200, "xmlns200")
         onew = self.opc.nodes.objects.add_object(new_ns, "xmlns_new")
         vnew = onew.add_variable(new_ns, "xmlns_new_var", 9.99)
-        o_no_export = self.opc.nodes.objects.add_object(new_ns2, "xmlns_new2")
+        o_no_export = self.opc.nodes.objects.add_object(ref_ns, "xmlns_new2")
         v_no_parent = o_no_export.add_variable(new_ns, "xmlns_new_var2", 9.99)
+        o_bname = onew.add_object("ns=2;i=4000", "{}:BNAME".format(bname_ns))
 
-        nodes = [o, o2, o20, o200, onew, vnew, v_no_parent]
+        nodes = [o, o2, o20, o200, onew, vnew, v_no_parent, o_bname]
         self.opc.export_xml(nodes, "export-ns.xml")
         # delete node and change index og new_ns before re-importing
         self.opc.delete_nodes(nodes)
         ns_node = self.opc.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         nss = ns_node.get_value()
         nss.remove("my_new_namespace")
-        nss.remove("my_new_namespace2")
+        nss.remove("ref_namespace")
+        nss.remove("bname_namespace")
         ns_node.set_value(nss)
         new_ns = self.opc.register_namespace("my_new_namespace_offsett")
         new_ns = self.opc.register_namespace("my_new_namespace")
@@ -163,4 +166,5 @@ class XmlTests(object):
         vnew.nodeid.NamespaceIndex += 1
         # since my_new_namesspace2 is referenced byt a node it should have been reimported
         nss = self.opc.get_namespace_array()
-        self.assertIn("my_new_namespace2", nss)
+        self.assertIn("ref_namespace", nss)
+        self.assertIn("bname_namespace2", nss)

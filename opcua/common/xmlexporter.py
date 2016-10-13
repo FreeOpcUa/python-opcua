@@ -82,12 +82,14 @@ class XmlExporter(object):
         """
         idxs = []
         for node in nodes:
-            if node.nodeid.NamespaceIndex != 0 and node.nodeid.NamespaceIndex not in idxs:
-                idxs.append(node.nodeid.NamespaceIndex)
-            # also add idx of referenced nodes
-            for ref in node.get_references():
-                if ref.NodeId.NamespaceIndex != 0 and ref.NodeId.NamespaceIndex not in idxs:
-                    idxs.append(ref.NodeId.NamespaceIndex)
+            node_idxs = [node.nodeid.NamespaceIndex]
+            node_idxs.append(node.get_browse_name().NamespaceIndex)
+            node_idxs.extend(ref.NodeId.NamespaceIndex for ref in node.get_references())
+            node_idxs = list(set(node_idxs))  # remove duplicates
+            for i in node_idxs:
+                if i != 0 and i not in idxs:
+                    idxs.append(i)
+        print("IDXS", idxs)
         return idxs
 
     def _add_idxs_from_uris(self, idxs, uris, ns_array):
