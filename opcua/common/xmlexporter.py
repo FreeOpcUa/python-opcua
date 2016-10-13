@@ -17,6 +17,7 @@ class XmlExporter(object):
         self.logger = logging.getLogger(__name__)
         self.server = server
         self.aliases = {}
+        self._addr_idx_to_xml_idx = {}
 
         node_set_attributes = OrderedDict()
         node_set_attributes['xmlns:xsi'] = 'http://www.w3.org/2001/XMLSchema-instance'
@@ -48,36 +49,54 @@ class XmlExporter(object):
         self._add_alias_els()
 
     def _add_namespaces(self, nodes, uris):
-        # first get a list of all indexes used by nodes
+        idxs = self._get_ns_idxs_of_nodes(nodes)
+
+        ns_array = self.server.get_namespace_array()
+
+        # now add index of provided uris if necessary
+        if uris:
+            self._add_idxs_from_uris(idxs, uris, ns_array)
+
+        # now create a dict of idx_in_address_space to idx_in_exported_file
+        self._addr_idx_to_xml_idx = self._make_idx_dict(idxs, ns_array) 
+        print("DICT", self._addr_idx_to_xml_idx)
+        ns_to_export = [ns_array[i] for i in self._addr_idx_to_xml_idx.keys() if i != 0]
+        print("NS_TO_EXPORT", ns_to_export)
+
+        # write namespaces to xml
+        self._add_namespace_uri_els(ns_to_export)
+
+    def _make_idx_dict(self, idxs, ns_array):
+        idxs.sort()
+        addr_idx_to_xml_idx = {0: 0}
+        for xml_idx, addr_idx in enumerate(idxs):
+            if addr_idx >= len(ns_array):
+                break
+            addr_idx_to_xml_idx[addr_idx] = xml_idx + 1
+        print(" ADDR_TO_ XML", self._addr_idx_to_xml_idx)
+        return addr_idx_to_xml_idx
+
+    def _get_ns_idxs_of_nodes(self, nodes):
+        """
+        get a list of all indexes used or references by nodes
+        """
         idxs = []
         for node in nodes:
             if node.nodeid.NamespaceIndex != 0 and node.nodeid.NamespaceIndex not in idxs:
                 idxs.append(node.nodeid.NamespaceIndex)
-        ns_array = self.server.get_namespace_array()
-        print("IDXS 1", idxs)
+            # also add idx of referenced nodes
+            for ref in node.get_references():
+                if ref.NodeId.NamespaceIndex != 0 and ref.NodeId.NamespaceIndex not in idxs:
+                    idxs.append(ref.NodeId.NamespaceIndex)
+        return idxs
 
-        # now add index of provided uris if necessary
-        if uris:
-            for uri in uris:
-                if uri in ns_array:
-                    i = ns_array.index(uri)
-                    if i not in idxs:
-                        idxs.append(i)
-        print("IDXS 2", idxs)
+    def _add_idxs_from_uris(self, idxs, uris, ns_array):
+        for uri in uris:
+            if uri in ns_array:
+                i = ns_array.index(uri)
+                if i not in idxs:
+                    idxs.append(i)
 
-        # now create a dict of idx_in_address_space to idx_in_exported_file
-        idxs.sort()
-        self._addr_idx_to_xml_idx = {0: 0}
-        ns_to_export = []
-        for xml_idx, addr_idx in enumerate(idxs):
-            if addr_idx >= len(ns_array):
-                break
-            self._addr_idx_to_xml_idx[addr_idx] = xml_idx + 1
-            ns_to_export.append(ns_array[addr_idx])
-        print(" ADDR_TO_ XML", self._addr_idx_to_xml_idx)
-
-        # write namespaces to xml
-        self._add_namespace_uri_els(ns_to_export)
 
     def write_xml(self, xmlpath, pretty=True):
         """
@@ -96,12 +115,12 @@ class XmlExporter(object):
             self.etree.write(xmlpath,
                              encoding='utf-8',
                              xml_declaration=True
-                             )
+                            )
         else:
             self.etree.write(xmlpath,
                              encoding='utf-8',
                              xml_declaration=True
-                             )
+                            )
 
     def dump_etree(self):
         """
@@ -332,7 +351,7 @@ def _val_to_etree(el, dtype, val):
         id_el = Et.SubElement(el, "uax:String")
         id_el.text = str(val)
     elif not hasattr(val, "ua_types"):
-        if type(val) is bytes:
+        if isinstance(val, bytes):
             el.text = val.decode("utf-8")
         else:
             el.text = str(val)
