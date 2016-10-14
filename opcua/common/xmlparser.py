@@ -49,6 +49,10 @@ class NodeData(object):
         # datatype
         self.definition = []
 
+    def __str__(self):
+        return "NodeData(nodeid:{})".format(self.nodeid)
+    __repr__ = __str__
+
 
 class RefStruct(object):
 
