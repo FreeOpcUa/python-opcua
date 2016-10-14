@@ -76,14 +76,10 @@ class XmlImporter(object):
         # The ordering of nodes currently only works if namespaces are
         # defined in XML.
         # Also, it is recommended not to use node ids without namespace prefix!
-
-        # FIX: _sort_nodes_by_parentid is broken needs fix before enabling
-        nodes_parsed = list(self.parser)
-        # nodes_parsed = self._sort_nodes_by_parentid(self.parser)
+        nodes_parsed = self._sort_nodes_by_parentid(self.parser)
 
         nodes = []
         for nodedata in nodes_parsed:  # self.parser:
-            print(nodedata.nodeid)
             if nodedata.nodetype == 'UAObject':
                 node = self.add_object(nodedata)
             elif nodedata.nodetype == 'UAObjectType':
@@ -376,7 +372,7 @@ class XmlImporter(object):
         # are defined in the xml file itself. Thus we assume that all other
         # references namespaces are already known to the server and should
         # not create any dependency problems (like "NodeNotFound")
-        relevant_namespaces = [str(i[0]) for i in self.namespaces.values()]
+        relevant_namespaces = [str(ns) for ns in self.namespaces.keys()]
         while len(_nodes) > 0:
             pop_nodes = []
             for node in _nodes:
@@ -384,11 +380,11 @@ class XmlImporter(object):
                 # Get the node and parent node namespace and id parts
                 node_ns, node_id = self._split_node_id(node.nodeid)
                 parent_ns, parent_id = self._split_node_id(node.parent)
-
                 # Insert nodes that
                 #   (1) have no parent / parent_ns is None (e.g. namespace 0)
                 #   (2) ns is not in list of relevant namespaces
-                if (parent_ns is None or node_ns not in relevant_namespaces or
+                if (parent_ns is None or
+                    (len(relevant_namespaces) >= 1 and node_ns not in relevant_namespaces) or
                     parent_id is None):
                     insert = 0
                 else:
@@ -396,7 +392,6 @@ class XmlImporter(object):
                     # inserted nodes
                     if node.parent in sorted_nodes_ids:
                         insert = -1
-
                 if insert == 0:
                     sorted_nodes.insert(insert, node)
                     sorted_nodes_ids.insert(insert, node.nodeid)

@@ -11,7 +11,7 @@
      <Alias Alias="MyEnumVal">ns=1;i=3011</Alias>
   </Aliases>
 
-  <UAObject NodeId="i=30001" BrowseName="MyXMLFolder"  >
+  <UAObject NodeId="ns=1;i=30001" BrowseName="1:MyXMLFolder"  >
     <Description>A custom folder.</Description>
     <References>
       <Reference ReferenceType="HasTypeDefinition">i=61</Reference>
@@ -20,40 +20,40 @@
   </UAObject>
 
 
-  <UAObject NodeId="i=30002" BrowseName="MyXMLObject">
+  <UAObject NodeId="ns=1;i=30002" BrowseName="1:MyXMLObject">
     <Description>A custom object node.</Description>
     <References>
       <Reference ReferenceType="HasTypeDefinition">i=58</Reference>
-      <Reference ReferenceType="Organizes" IsForward="false">i=30001</Reference>
+      <Reference ReferenceType="Organizes" IsForward="false">ns=1;i=30001</Reference>
     </References>
   </UAObject>
 
 
-  <UAVariable NodeId="i=30004" BrowseName="MyXMLVariable" DataType="String">
+  <UAVariable NodeId="ns=1;i=30004" BrowseName="1:MyXMLVariable" DataType="String">
     <References>
       <Reference ReferenceType="HasTypeDefinition">i=69</Reference>
-      <Reference ReferenceType="Organizes" IsForward="false">i=30002</Reference>
+      <Reference ReferenceType="Organizes" IsForward="false">ns=1;i=30002</Reference>
     </References>
     <Value>
       <String>StringValue</String>
     </Value>
   </UAVariable>
 
-  <UAVariable NodeId="i=30005" BrowseName="MyXMLProperty" DataType="UInt32">
+  <UAVariable NodeId="ns=1;i=30005" BrowseName="1:MyXMLProperty" DataType="UInt32">
     <References>
       <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
-      <Reference ReferenceType="HasProperty" IsForward="false">i=30002</Reference>
+      <Reference ReferenceType="HasProperty" IsForward="false">ns=1;i=30002</Reference>
     </References>
     <Value>
       <UInt32>76</UInt32>
     </Value>
   </UAVariable>
 
-  <UAVariable NodeId="i=30006" BrowseName="MyXMLVariableWithoutValue" DataType="String">
+  <UAVariable NodeId="ns=1;i=30006" BrowseName="1:MyXMLVariableWithoutValue" DataType="String">
     <References>
     
       <Reference ReferenceType="HasTypeDefinition">i=69</Reference>
-      <Reference ReferenceType="Organizes" IsForward="false">i=30002</Reference>
+      <Reference ReferenceType="Organizes" IsForward="false">ns=1;i=30002</Reference>
     </References>
   </UAVariable>
   
@@ -64,10 +64,10 @@
     </References>
   </UADataType>
 	
-  <UAVariable NodeId="i=30007" BrowseName="MyCustomTypeVar" DataType="MyCustomString">
+  <UAVariable NodeId="ns=1;i=30007" BrowseName="1:MyCustomTypeVar" DataType="MyCustomString">
     <References>
       <Reference ReferenceType="HasTypeDefinition">i=69</Reference>
-      <Reference ReferenceType="Organizes" IsForward="false">i=30002</Reference>
+      <Reference ReferenceType="Organizes" IsForward="false">ns=1;i=30002</Reference>
     </References>
   </UAVariable>
   

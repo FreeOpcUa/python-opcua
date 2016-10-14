@@ -13,7 +13,7 @@ class XmlTests(object):
     def test_xml_import(self):
         self.srv.import_xml("tests/custom_nodes.xml")
         o = self.opc.get_objects_node()
-        v = o.get_child(["MyXMLFolder", "MyXMLObject", "MyXMLVariable"])
+        v = o.get_child(["1:MyXMLFolder", "1:MyXMLObject", "1:MyXMLVariable"])
         val = v.get_value()
         self.assertEqual(val, "StringValue")
 
