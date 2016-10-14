@@ -13,7 +13,7 @@ from opcua.ua.uatypes import flatten, get_shape, reshape
 from opcua.server.internal_subscription import WhereClauseEvaluator
 from opcua.common.event_objects import BaseEvent
 from opcua.common.ua_utils import string_to_variant, variant_to_string, string_to_val, val_to_string
-from opcua.common.xmlparser import XMLParser
+from opcua.common.xmlimporter import XmlImporter
 from opcua.ua.uatypes import _MaskEnum
 
 
@@ -46,7 +46,7 @@ class TestUnit(unittest.TestCase):
         s_datetime = "2014-05-3"
         self.assertEqual(val_to_string(arr_string), s_arr_datetime)
         self.assertEqual(string_to_val(s_arr_datetime, ua.VariantType.String), arr_string)
-        self.assertEqual(string_to_val(s_arr_datetime, ua.VariantType.DateTime), arr_datetime )
+        self.assertEqual(string_to_val(s_arr_datetime, ua.VariantType.DateTime), arr_datetime)
 
     def test_string_to_variant_nodeid(self):
         s_arr_nodeid = "[ns=2;i=56, i=45]"
@@ -69,19 +69,19 @@ class TestUnit(unittest.TestCase):
 
     def test_string_to_variant_localized_text(self):
         string = "_This is my string"
-        #string = "_This is my nøåæ"FIXME: does not work with python2 ?!?!
+        # string = "_This is my nøåæ"FIXME: does not work with python2 ?!?!
         obj = ua.LocalizedText(string)
         self.assertEqual(string_to_val(string, ua.VariantType.LocalizedText), obj)
         self.assertEqual(val_to_string(obj), string)
 
     def test_variant_dimensions(self):
-        l = [[[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0], [3.0, 3.0, 3.0, 3.0]],[[5.0, 5.0, 5.0, 5.0], [7.0, 8.0, 9.0, 01.0], [1.0, 1.0, 1.0, 1.0]]]
+        l = [[[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0], [3.0, 3.0, 3.0, 3.0]], [[5.0, 5.0, 5.0, 5.0], [7.0, 8.0, 9.0, 01.0], [1.0, 1.0, 1.0, 1.0]]]
         v = ua.Variant(l)
         self.assertEqual(v.Dimensions, [2, 3, 4])
         v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
         self.assertEqual(v, v2)
         self.assertEqual(v.Dimensions, v2.Dimensions)
-        
+
         # very special case
         l = [[[], [], []], [[], [], []]]
         v = ua.Variant(l, ua.VariantType.UInt32)
@@ -91,13 +91,13 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(v, v2)
 
     def test_flatten(self):
-        l = [[[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]],[[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]]]
+        l = [[[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]], [[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]]]
         l2 = flatten(l)
         dims = get_shape(l)
         self.assertEqual(dims, [2, 3, 4])
         self.assertNotEqual(l, l2)
 
-        l3 = reshape(l2, (2,3,4))
+        l3 = reshape(l2, (2, 3, 4))
         self.assertEqual(l, l3)
 
 
@@ -178,7 +178,7 @@ class TestUnit(unittest.TestCase):
         self.assertNotEqual(nid, ua.NodeId.from_string("i=5; ns=10"))
         # not sure the next one is correct...
         self.assertEqual(nid, ua.NodeId.from_string("i=45; ns=10; srv=serverid"))
-        
+
         nid1 = ua.NodeId("myid.mynodeid", 7)
         self.assertEqual(nid1, ua.NodeId.from_string("ns=7; s=myid.mynodeid"))
         with self.assertRaises(ua.UaError):
@@ -298,7 +298,7 @@ class TestUnit(unittest.TestCase):
     def test_strrepr_nodeid(self):
         nid = ua.NodeId.from_string('ns=2;s=PLC1.Manufacturer;')
         self.assertEqual(nid.to_string(), 'ns=2;s=PLC1.Manufacturer')
-        #self.assertEqual(repr(nid), 'ns=2;s=PLC1.Manufacturer;')
+        # self.assertEqual(repr(nid), 'ns=2;s=PLC1.Manufacturer;')
 
     def test_qualified_name(self):
         qn = ua.QualifiedName('qname', 2)
@@ -346,10 +346,10 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(v.VariantType, v2.VariantType)
 
     def test_variant_array_dim(self):
-        v = ua.Variant([1, 2, 3, 4, 5, 6], dimensions = [2, 3])
+        v = ua.Variant([1, 2, 3, 4, 5, 6], dimensions=[2, 3])
         self.assertEqual(v.Value[1], 2)
         v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
-        self.assertEqual(reshape(v.Value, (2,3)), v2.Value)
+        self.assertEqual(reshape(v.Value, (2, 3)), v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
         self.assertEqual(v.Dimensions, v2.Dimensions)
         self.assertEqual(v2.Dimensions, [2, 3])
@@ -442,29 +442,26 @@ class TestUnit(unittest.TestCase):
 
     def test_xmlparser_get_node_id(self):
         server = None
-        xmlpath = 'tests/custom_nodes.xml'
-        parser = XMLParser(xmlpath, server)
+        importer = XmlImporter(server)
 
-        res1 = parser._get_node_id('i=1001')
+        res1 = importer._get_node_id('i=1001')
         self.assertEqual(res1, 'i=1001')
 
-        res2 = parser._get_node_id('ns=1;i=1001')
+        res2 = importer._get_node_id('ns=1;i=1001')
         self.assertEqual(res2, 'ns=1;i=1001')
 
-        parser.namespaces = {1: [3, 'http://someuri.com']}
-        res3 = parser._get_node_id('ns=1;i=1001')
+        importer.namespaces = {1: [3, 'http://someuri.com']}
+        res3 = importer._get_node_id('ns=1;i=1001')
         self.assertEqual(res3, 'ns=3;i=1001')
 
-        parser.namespaces = {1: [3, 'http://someuri.com']}
-        res4 = parser._get_node_id('ns=2;i=1001')
+        importer.namespaces = {1: [3, 'http://someuri.com']}
+        res4 = importer._get_node_id('ns=2;i=1001')
         self.assertEqual(res4, 'ns=2;i=1001')
 
     def test_xmlparser_sort_nodes_by_parentid(self):
         NodeMock = namedtuple('NodeMock', 'nodeid parent')
 
         server = None
-        # We actually dont need this. Thus we just pass the available file
-        xml_path = 'tests/custom_nodes.xml'
 
         unordered_nodes = [
             NodeMock('ns=1;i=1001', None),
@@ -481,9 +478,9 @@ class TestUnit(unittest.TestCase):
         ]
         namespaces = {'1': (1, 'http://someuri.com')}
 
-        parser = XMLParser(xml_path, server)
-        parser.namespaces = namespaces
-        res = parser._sort_nodes_by_parentid(unordered_nodes)
+        importer = XmlImporter(server)
+        importer.namespaces = namespaces
+        res = importer._sort_nodes_by_parentid(unordered_nodes)
         self.assertEqual(res, ordered_nodes)
 
 
