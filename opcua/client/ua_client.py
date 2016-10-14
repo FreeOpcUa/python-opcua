@@ -10,7 +10,7 @@ from functools import partial
 
 from opcua import ua
 from opcua.common import utils
-from opcua.common.uaerrors import UaError, BadTimeout, BadNoSubscription, BadSessionClosed
+from opcua.ua.uaerrors import UaError, BadTimeout, BadNoSubscription, BadSessionClosed
 
 
 class UASocketClient(object):

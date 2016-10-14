@@ -1,7 +1,7 @@
 
 from opcua import ua
 from opcua import uamethod
-from opcua.common import uaerrors
+from opcua.ua import uaerrors
 
 
 @uamethod

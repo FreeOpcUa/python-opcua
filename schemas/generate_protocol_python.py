@@ -84,7 +84,7 @@ class CodeGenerator(object):
         self.write("from enum import Enum, IntEnum")
         self.write("")
         self.write("from opcua.common.utils import Buffer")
-        self.write("from opcua.common.uaerrors import UaError")
+        self.write("from opcua.ua.uaerrors import UaError")
         self.write("from opcua.ua.uatypes import *")
         self.write("from opcua.ua import ua_binary as uabin")
         self.write("from opcua.ua.object_ids import ObjectIds")

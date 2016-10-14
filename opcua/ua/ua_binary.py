@@ -8,7 +8,7 @@ import logging
 from datetime import datetime, timedelta, tzinfo, MAXYEAR
 from calendar import timegm
 
-from opcua.common.uaerrors import UaError
+from opcua.ua.uaerrors import UaError
 
 
 if sys.version_info.major > 2:
