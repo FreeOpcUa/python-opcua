@@ -51,6 +51,12 @@ class XmlTests(object):
         v1 = o.get_child(["%d:MyBaseObject" % ns, "%d:MyVar" % ns])
         self.assertIsNotNone(v1)
 
+        r1 = o2.get_references(refs=ua.ObjectIds.HasComponent)[0]
+        self.assertEqual(r1.NodeId.NamespaceIndex, ns)
+
+        r3 = v1.get_references(refs=ua.ObjectIds.HasComponent)[0]
+        self.assertEqual(r3.NodeId.NamespaceIndex, ns)
+
     def test_xml_method(self):
         o = self.opc.nodes.objects.add_object(2, "xmlexportobj")
         m = o.add_method(2, "callme", func, [ua.VariantType.Double, ua.VariantType.String], [ua.VariantType.Float])
