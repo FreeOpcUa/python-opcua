@@ -75,37 +75,43 @@ class XMLParser(object):
         self.logger = logging.getLogger(__name__)
         self._retag = re.compile(r"(\{.*\})(.*)")
         self.path = xmlpath
-        self.aliases = {}
 
         self.tree = ET.parse(xmlpath)
         self.root = self.tree.getroot()
         self.it = None
 
-        self.namespaces = {}
-        self._re_nodeid = re.compile(r"^ns=(?P<ns>\d+[^;]*);i=(?P<i>\d+)")
+    def get_used_namespaces(self):
+        """
+        Return the used namespace uris in this import file
+        """
+        namespaces_uris = []
+        for child in self.root:
+            name = self._retag.match(child.tag).groups()[1]
+            if name == 'NamespaceUris':
+                namespaces_uris = [ns_element.text for ns_element in child]
+                break
+        return namespaces_uris
+
+    def get_aliases(self):
+        """
+        Return the used node aliases in this import file
+        """
+        aliases = {}
+        for child in self.root:
+            name = self._retag.match(child.tag).groups()[1]
+            if name == 'Aliases':
+                for el in child:
+                    aliases[el.attrib["Alias"]] = el.text
+                break
+        return aliases
 
     def __iter__(self):
         nodes = []
         for child in self.root:
             name = self._retag.match(child.tag).groups()[1]
-            if name == "Aliases":
-                for el in child:
-                    self.aliases[el.attrib["Alias"]] = self._get_node_id(el.text)
-            elif name == 'NamespaceUris':
-                for ns_index, ns_element in enumerate(child):
-                    ns_uri = ns_element.text
-                    ns_server_index = self.server.register_namespace(ns_uri)
-                    self.namespaces[ns_index + 1] = (ns_server_index, ns_uri)
-                    print("namespace offset", ns_index + 1, (ns_server_index, ns_uri))
-            else:
+            if name not in ["Aliases", "NamespaceUris"]:
                 node = self._parse_node(name, child)
                 nodes.append(node)
-
-        # The ordering of nodes currently only works if namespaces are
-        # defined in XML.
-        # Also, it is recommended not to use node ids without namespace prefix!
-        if self.namespaces:
-            nodes = self._sort_nodes_by_parentid(nodes)
 
         self.it = iter(nodes)
         return self
@@ -120,101 +126,6 @@ class XMLParser(object):
 
     def next(self):  # support for python2
         return self.__next__()
-
-    def _sort_nodes_by_parentid(self, nodes):
-        """
-        Sort the list of nodes according theire parent node in order to respect
-        the depency between nodes.
-
-        :param nodes: list of NodeDataObjects
-        :returns: list of sorted nodes
-        """
-        _nodes = list(nodes)
-        # list of node ids that are already sorted / inserted
-        sorted_nodes_ids = []
-        # list of sorted nodes (i.e. XML Elements)
-        sorted_nodes = []
-        # list of namespace indexes that are relevant for this import
-        # we can only respect ordering nodes for namespaces indexes that
-        # are defined in the xml file itself. Thus we assume that all other
-        # references namespaces are already known to the server and should
-        # not create any dependency problems (like "NodeNotFound")
-        relevant_namespaces = [str(i[0]) for i in self.namespaces.values()]
-        while len(_nodes) > 0:
-            pop_nodes = []
-            for node in _nodes:
-                insert = None
-                # Get the node and parent node namespace and id parts
-                node_ns, node_id = self._split_node_id(node.nodeid)
-                parent_ns, parent_id = self._split_node_id(node.parent)
-
-                # Insert nodes that
-                #   (1) have no parent / parent_ns is None (e.g. namespace 0)
-                #   (2) ns is not in list of relevant namespaces
-                if (parent_ns is None or node_ns not in relevant_namespaces or
-                    parent_id is None):
-                    insert = 0
-                else:
-                    # Check if the nodes parent is already in the list of
-                    # inserted nodes
-                    if node.parent in sorted_nodes_ids:
-                        insert = -1
-
-                if insert == 0:
-                    sorted_nodes.insert(insert, node)
-                    sorted_nodes_ids.insert(insert, node.nodeid)
-                    pop_nodes.append(node)
-                elif insert == -1:
-                    sorted_nodes.append(node)
-                    sorted_nodes_ids.append(node.nodeid)
-                    pop_nodes.append(node)
-
-            # Remove inserted nodes from the list
-            for node in pop_nodes:
-                _nodes.pop(_nodes.index(node))
-        return sorted_nodes
-
-    def _split_node_id(self, value):
-        """
-        Split the fq node id into namespace and id part.
-
-        :returns: (namespace, id)
-        """
-        if not value:
-            return (None, value)
-        r_match = self._re_nodeid.search(value)
-        if r_match:
-            return r_match.groups()
-
-        return (None, value)
-
-    def _get_node_id(self, value):
-        """
-        Check if the nodeid given in the xml model file must be converted
-        to a already existing namespace id based on the files namespace uri
-
-        :returns: NodeId (str)
-        """
-        result = value
-
-        node_ns, node_id = self._split_node_id(value)
-        if node_ns:
-            ns_server = self.namespaces.get(int(node_ns), None)
-            if ns_server:
-                result = "ns={};i={}".format(ns_server[0], node_id)
-        return result
-
-    def _parse_bname(self, bname):
-        """
-        Parse a browsename and correct the namespace index.
-        """
-        if bname.find(':') != -1:
-            browse_ns, browse_name = bname.split(':')
-            if browse_ns:
-                ns_server = self.namespaces.get(int(browse_ns), None)
-                if ns_server:
-                    return '%d:%s' % (ns_server[0], browse_name)
-        return bname
 
     def _parse_node(self, name, child):
         """
@@ -232,14 +143,13 @@ class XMLParser(object):
 
     def _set_attr(self, key, val, obj):
         if key == "NodeId":
-            obj.nodeid = self._get_node_id(val)
-            print("PARSING", obj.nodeid)
+            obj.nodeid = val
         elif key == "BrowseName":
-            obj.browsename = self._parse_bname(val)
+            obj.browsename = val
         elif key == "SymbolicName":
             obj.symname = val
         elif key == "ParentNodeId":
-            obj.parent = self._get_node_id(val)
+            obj.parent = val
         elif key == "DataType":
             obj.datatype = val
         elif key == "IsAbstract":
@@ -373,16 +283,16 @@ class XMLParser(object):
     def _parse_refs(self, el, obj):
         for ref in el:
             if ref.attrib["ReferenceType"] == "HasTypeDefinition":
-                obj.typedef = self._get_node_id(ref.text)
+                obj.typedef = ref.text
             elif "IsForward" in ref.attrib and ref.attrib["IsForward"] in ("false", "False"):
                 # if obj.parent:
                     # sys.stderr.write("Parent is already set with: "+ obj.parent + " " + ref.text + "\n")
-                obj.parent = self._get_node_id(ref.text)
+                obj.parent = ref.text
                 obj.parentlink = ref.attrib["ReferenceType"]
             else:
                 struct = RefStruct()
                 if "IsForward" in ref.attrib:
                     struct.forward = ref.attrib["IsForward"]
-                struct.target = self._get_node_id(ref.text)
+                struct.target = ref.text
                 struct.reftype = ref.attrib["ReferenceType"]
                 obj.refs.append(struct)
