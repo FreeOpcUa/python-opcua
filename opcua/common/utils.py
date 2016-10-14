@@ -12,7 +12,7 @@ except ImportError:
     import trollius as asyncio
 
 
-from opcua.common.uaerrors import UaError
+from opcua.ua.uaerrors import UaError
 
 
 class ServiceError(UaError):

@@ -2,7 +2,7 @@ import copy
 
 from opcua import ua
 import opcua
-from opcua.common.uaerrors import UaError
+from opcua.ua.uaerrors import UaError
 from opcua.common import ua_utils
 
 

@@ -1,6 +1,6 @@
 import unittest
-import opcua.common.uaerrors as uaerrors
-from opcua.common.uaerrors import UaStatusCodeError
+import opcua.ua.uaerrors as uaerrors
+from opcua.ua.uaerrors import UaStatusCodeError
 
 class TestUaErrors(unittest.TestCase):
     status_code_bad_internal = 0x80020000

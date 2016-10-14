@@ -15,9 +15,9 @@ if sys.version_info.major > 2:
 from opcua.ua import ua_binary as uabin
 from opcua.ua import status_codes
 from opcua.ua import ObjectIds
-from opcua.common.uaerrors import UaError
-from opcua.common.uaerrors import UaStatusCodeError
-from opcua.common.uaerrors import UaStringParsingError
+from opcua.ua.uaerrors import UaError
+from opcua.ua.uaerrors import UaStatusCodeError
+from opcua.ua.uaerrors import UaStringParsingError
 
 
 def get_win_epoch():

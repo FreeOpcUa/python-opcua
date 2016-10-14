@@ -7,7 +7,7 @@ from datetime import datetime
 from enum import Enum, IntEnum
 
 from opcua import ua
-from opcua.common.uaerrors import UaError
+from opcua.ua.uaerrors import UaError
 
 
 def val_to_string(val):
