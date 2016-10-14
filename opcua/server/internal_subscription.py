@@ -205,7 +205,7 @@ class MonitoredItemService(object):
                     self.isub.enqueue_datachange_event(mid, event, mdata.queue_size)
 
     def deadband_callback(self, values, flt):
-        if (values.get_old_value() is not None) or \
+        if (values.get_old_value() is None) or \
                 ((abs(values.get_current_value() - values.get_old_value())) > flt.DeadbandValue):
             return True
         else:
@@ -304,7 +304,7 @@ class InternalSubscription(object):
             self._stopev = True
         result = None
         with self._lock:
-            if self.has_published_results():  
+            if self.has_published_results():
                 # FIXME: should we pop a publish request here? or we do not care?
                 self._publish_cycles_count += 1
                 result = self._pop_publish_result()
