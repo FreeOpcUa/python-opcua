@@ -231,8 +231,9 @@ class XmlExporter(object):
         rank = node.get_value_rank()
         if rank != -1:
             el.attrib["ValueRank"] = str(rank)
-        #var = node.get_attribute(ua.AttributeIds.ArrayDimensions())
-        #self._addobj_el.attrib["ArrayDimensions"] = str(var.Value.Value)
+        dim = node.get_attribute(ua.AttributeIds.ArrayDimensions)
+        if dim.Value.Value:
+            el.attrib["ArrayDimensions"] = ",".join([str(i) for i in dim.Value.Value])
         el.attrib["DataType"] = dtype_name
         value_to_etree(el, dtype_name, dtype, node)
 

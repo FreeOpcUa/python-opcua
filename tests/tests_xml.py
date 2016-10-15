@@ -109,11 +109,11 @@ class XmlTests(object):
         self.assertEqual(a2.get_value(), [[1, 2],[3, 4]])
         self.assertEqual(a2.get_data_type(), ua.NodeId(ua.ObjectIds.UInt32))
         self.assertIn(a2.get_value_rank(), (0, 2))
-        #self.assertEqual(a2.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [2, 2])
+        self.assertEqual(a2.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [2, 2])
         #self.assertEqual(a3.get_value(), [[]])  # would require special code ...
         self.assertEqual(a3.get_data_type(), ua.NodeId(ua.ObjectIds.ByteString))
         self.assertIn(a3.get_value_rank(), (0, 2))
-        #self.assertEqual(a3.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [1, 0])
+        self.assertEqual(a3.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [1, 0])
 
     def test_xml_ext_obj(self):
         arg = ua.Argument()
