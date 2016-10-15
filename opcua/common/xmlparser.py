@@ -15,6 +15,24 @@ def _to_bool(val):
         return False
 
 
+def ua_type_to_python(val, uatype):
+    if uatype.startswith("Int") or uatype.startswith("UInt"):
+        return int(val)
+    elif uatype.tolower().startswith("bool"):
+        return _to_bool(val)
+    elif uatype in ("Double", "Float"):
+        return float(val)
+    elif uatype in ("String"):
+        return val
+    elif uatype in ("Bytes", "Bytes", "ByteString", "ByteArray"):
+        if sys.version_info.major > 2:
+            return bytes(val, 'utf8')
+        else:
+            return val
+    else:
+        raise Exception("uatype nopt handled", uatype, " for val ", val)
+
+
 class NodeData(object):
 
     def __init__(self):
@@ -221,6 +239,8 @@ class XMLParser(object):
                 obj.value = self._parse_list_of_extension_object(el)
             elif ntag == "ListOfLocalizedText":
                 obj.value = self._parse_list_of_localized_text(el)
+            elif ntag.startswith("ListOf"):
+                obj.value = self._parse_list(el)
             elif ntag == "ExtensionObject":
                 obj.value = self._parse_extension_object(el)
             else:
@@ -229,6 +249,14 @@ class XMLParser(object):
     def _get_text(self, el):
         txtlist = [txt.strip() for txt in el.itertext()]
         return "".join(txtlist)
+
+    def _parse_list(self, el):
+        value = []
+        for val_list in el:
+            for val in val_list:
+                ntag = self._retag.match(val.tag).groups()[1]
+                value.append(ua_type_to_python(val.text, ntag))
+        return value
 
     def _parse_list_of_localized_text(self, el):
         value = []
