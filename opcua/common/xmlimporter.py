@@ -7,6 +7,7 @@ import sys
 import re
 import uuid
 import dateutil.parser
+from copy import copy
 
 from opcua import ua
 from opcua.common import xmlparser
@@ -120,6 +121,7 @@ class XmlImporter(object):
         :returns: NodeId (str)
         """
         if nodeid.NamespaceIndex in self.namespaces:
+            nodeid = copy(nodeid)
             nodeid.NamespaceIndex = self.namespaces[nodeid.NamespaceIndex][0]
         return nodeid
 

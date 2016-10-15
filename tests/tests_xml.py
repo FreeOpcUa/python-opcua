@@ -76,7 +76,6 @@ class XmlTests(object):
         self.opc.export_xml(nodes, "export.xml")
 
         self.opc.delete_nodes(nodes)
-
         self.opc.import_xml("export.xml")
 
         # now see if our nodes are here
@@ -87,6 +86,8 @@ class XmlTests(object):
         self.assertEqual(val[0].Description.Text, desc)
 
     def test_xml_vars(self):
+        self.opc.register_namespace("tititi")
+        self.opc.register_namespace("whatthefuck")
         o = self.opc.nodes.objects.add_object(2, "xmlexportobj")
         v = o.add_variable(3, "myxmlvar", 6.78, ua.VariantType.Float)
         a = o.add_variable(3, "myxmlvar-array", [6, 1], ua.VariantType.UInt16)
@@ -97,7 +98,6 @@ class XmlTests(object):
         self.opc.export_xml(nodes, "export-vars.xml")
         self.opc.delete_nodes(nodes)
         self.opc.import_xml("export-vars.xml")
-
 
         self.assertEqual(v.get_value(), 6.78)
         self.assertEqual(v.get_data_type(), ua.NodeId(ua.ObjectIds.Float))
