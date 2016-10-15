@@ -63,7 +63,6 @@ class XmlTests(object):
         v = o.add_variable(3, "myxmlvar", 6.78, ua.VariantType.Float)
         a = o.add_variable(3, "myxmlvar", [6, 1], ua.VariantType.UInt16)
         a2 = o.add_variable(3, "myxmlvar", [[]], ua.VariantType.ByteString)
-        print(a.get_value_rank)
         # set an arg dimension to a list to test list export
         inputs = m.get_child("InputArguments")
         val = inputs.get_value()
@@ -138,7 +137,7 @@ class XmlTests(object):
         vnew = onew.add_variable(new_ns, "xmlns_new_var", 9.99)
         o_no_export = self.opc.nodes.objects.add_object(ref_ns, "xmlns_new2")
         v_no_parent = o_no_export.add_variable(new_ns, "xmlns_new_var2", 9.99)
-        o_bname = onew.add_object("ns=2;i=4000", "{}:BNAME".format(bname_ns))
+        o_bname = onew.add_object("ns={};i=4000".format(new_ns), "{}:BNAME".format(bname_ns))
 
         nodes = [o, o2, o20, o200, onew, vnew, v_no_parent, o_bname]
         self.opc.export_xml(nodes, "export-ns.xml")
@@ -155,16 +154,21 @@ class XmlTests(object):
 
         self.opc.import_xml("export-ns.xml")
 
-        for i in nodes[:-2]:
+        for i in [o, o2, o20, o200]:
             i.get_browse_name()
         with self.assertRaises(uaerrors.BadNodeIdUnknown):
             onew.get_browse_name()
-        onew.nodeid.NamespaceIndex += 1
-        onew.get_browse_name()
-        vnew2 = onew.get_children()[0]
-        self.assertEqual(vnew.nodeid.NamespaceIndex + 1, vnew2.nodeid.NamespaceIndex)
-        vnew.nodeid.NamespaceIndex += 1
+        
         # since my_new_namesspace2 is referenced byt a node it should have been reimported
         nss = self.opc.get_namespace_array()
         self.assertIn("ref_namespace", nss)
-        self.assertIn("bname_namespace2", nss)
+        self.assertIn("bname_namespace", nss)
+        # get index of namespaces after import
+        new_ns = self.opc.register_namespace("my_new_namespace")
+        ref_ns = self.opc.register_namespace("ref_namespace")
+        bname_ns = self.opc.register_namespace("bname_namespace")
+
+        onew.nodeid.NamespaceIndex = new_ns
+        onew.get_browse_name()
+        vnew2 = onew.get_children()[0]
+        self.assertEqual(new_ns, vnew2.nodeid.NamespaceIndex)

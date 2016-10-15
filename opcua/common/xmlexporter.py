@@ -67,6 +67,7 @@ class XmlExporter(object):
         self._add_namespace_uri_els(ns_to_export)
 
     def _make_idx_dict(self, idxs, ns_array):
+        print("MAKE", idxs, ns_array)
         idxs.sort()
         addr_idx_to_xml_idx = {0: 0}
         for xml_idx, addr_idx in enumerate(idxs):

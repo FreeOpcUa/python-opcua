@@ -73,8 +73,7 @@ class ExtObj(object):
 
 class XMLParser(object):
 
-    def __init__(self, xmlpath, server):
-        self.server = server  # POC
+    def __init__(self, xmlpath):
         self.logger = logging.getLogger(__name__)
         self._retag = re.compile(r"(\{.*\})(.*)")
         self.path = xmlpath
@@ -108,16 +107,15 @@ class XMLParser(object):
                 break
         return aliases
 
-    def __iter__(self):
+    def get_node_datas(self):
         nodes = []
         for child in self.root:
             name = self._retag.match(child.tag).groups()[1]
             if name not in ["Aliases", "NamespaceUris"]:
                 node = self._parse_node(name, child)
                 nodes.append(node)
-
-        self.it = iter(nodes)
-        return self
+        
+        return nodes
 
     def __next__(self):
         while True:

@@ -4,9 +4,12 @@ format is the one from opc-ua specification
 """
 import logging
 import sys
+<<<<<<< c539c62a62c04aeb0df7ce3225018c57b920debd
 import re
 import uuid
 import dateutil.parser
+=======
+>>>>>>> heavy cleanup of xmlimporter
 
 from opcua import ua
 from opcua.common import xmlparser
@@ -44,18 +47,20 @@ class XmlImporter(object):
         self.server = server
         self.namespaces = {}
         self.aliases = {}
-        self._re_nodeid = re.compile(r"^ns=(?P<ns>\d+[^;]*);i=(?P<i>\d+)")
 
-    def _map_namespaces(self, namespaces_uris, act_server):
+    def _map_namespaces(self, namespaces_uris):
         """
         creates a mapping between the namespaces in the xml file and in the server.
         if not present the namespace is registered.
         """
+        print("original ns", self.server.get_namespace_array())
+        print("xml ns", namespaces_uris)
         namespaces = {}
         for ns_index, ns_uri in enumerate(namespaces_uris):
-            ns_server_index = act_server.register_namespace(ns_uri)
+            ns_server_index = self.server.register_namespace(ns_uri)
             namespaces[ns_index + 1] = (ns_server_index, ns_uri)
-            self.logger.info("namespace offset", ns_index + 1, (ns_server_index, ns_uri))
+        print("new ns", self.server.get_namespace_array())
+        print(namespaces)
         return namespaces
 
     def _map_aliases(self, aliases):
@@ -64,22 +69,29 @@ class XmlImporter(object):
         """
         aliases_mapped = {}
         for alias, node_id in aliases.items():
-            aliases_mapped[alias] = self._get_node_id(node_id)
+            aliases_mapped[alias] = self._migrate_ns(self.to_nodeid(node_id))
         return aliases_mapped
 
-    def import_xml(self, xmlpath, act_server):
+    def import_xml(self, xmlpath):
         """
         import xml and return added nodes
         """
         self.logger.info("Importing XML file %s", xmlpath)
-        self.parser = xmlparser.XMLParser(xmlpath, act_server)
+        self.parser = xmlparser.XMLParser(xmlpath)
 
-        self.namespaces = self._map_namespaces(self.parser.get_used_namespaces(), act_server)
+        dnodes = self.parser.get_node_datas()
+        dnodes = self.make_objects(dnodes)
+
+        self.namespaces = self._map_namespaces(self.parser.get_used_namespaces())
         self.aliases = self._map_aliases(self.parser.get_aliases())
 
+<<<<<<< c539c62a62c04aeb0df7ce3225018c57b920debd
         # The ordering of nodes currently only works if namespaces are defined in XML.
         # Also, it is recommended not to use node ids without namespace prefix!
         nodes_parsed = self._sort_nodes_by_parentid(self.parser)
+=======
+        nodes_parsed = self._sort_nodes_by_parentid(dnodes)
+>>>>>>> heavy cleanup of xmlimporter
 
         nodes = []
         for nodedata in nodes_parsed:  # self.parser:
@@ -102,60 +114,46 @@ class XmlImporter(object):
                 continue
             nodes.append(node)
         return nodes
+    
+    def make_objects(self, node_datas):
+        new_nodes = []
+        for ndata in node_datas:
+            ndata.nodeid = ua.NodeId.from_string(ndata.nodeid)
+            ndata.browsename = ua.QualifiedName.from_string(ndata.browsename)
+            if ndata.parent:
+                ndata.parent = ua.NodeId.from_string(ndata.parent)
+            if ndata.parentlink:
+                ndata.parentlink = self.to_nodeid(ndata.parentlink)
+            if ndata.typedef:
+                ndata.typedef = self.to_nodeid(ndata.typedef)
+            new_nodes.append(ndata)
+        return new_nodes
 
-    def _split_node_id(self, value):
+    def _migrate_ns(self, nodeid):
         """
-        Split the fq node id into namespace and id part.
-
-        :returns: (namespace, id)
-        """
-        if not value:
-            return (None, value)
-        r_match = self._re_nodeid.search(value)
-        if r_match:
-            return r_match.groups()
-
-        return (None, value)
-
-    def _parse_bname(self, bname):
-        """
-        Parse a browsename and correct the namespace index.
-        """
-        if bname.find(':') != -1:
-            browse_ns, browse_name = bname.split(':')
-            if browse_ns:
-                ns_server = self.namespaces.get(int(browse_ns), None)
-                if ns_server:
-                    return '%d:%s' % (ns_server[0], browse_name)
-        return bname
-
-    def _get_node_id(self, value):
-        """
-        Check if the nodeid given in the xml model file must be converted
-        to a already existing namespace id based on the files namespace uri
+        Check if the index of nodeid or browsename  given in the xml model file
+        must be converted to a already existing namespace id based on the files
+        namespace uri
 
         :returns: NodeId (str)
         """
-        result = value
-
-        node_ns, node_id = self._split_node_id(value)
-        if node_ns:
-            ns_server = self.namespaces.get(int(node_ns), None)
-            if ns_server:
-                result = "ns={};i={}".format(ns_server[0], node_id)
-        return result
+        if nodeid.NamespaceIndex in self.namespaces:
+            print("Migrating", nodeid, " to ", end="")
+            nodeid.NamespaceIndex = self.namespaces[nodeid.NamespaceIndex][0]
+            print(nodeid)
+        return nodeid
 
     def _get_node(self, obj):
         node = ua.AddNodesItem()
-        node.RequestedNewNodeId = ua.NodeId.from_string(self._get_node_id(obj.nodeid))
-        node.BrowseName = ua.QualifiedName.from_string(self._parse_bname(obj.browsename))
+        node.RequestedNewNodeId = self._migrate_ns(obj.nodeid)
+        node.BrowseName = self._migrate_ns(obj.browsename)
         node.NodeClass = getattr(ua.NodeClass, obj.nodetype[2:])
         if obj.parent:
-            node.ParentNodeId = ua.NodeId.from_string(self._get_node_id(obj.parent))
+            node.ParentNodeId = self._migrate_ns(obj.parent)
         if obj.parentlink:
-            node.ReferenceTypeId = self.to_nodeid(self._get_node_id(obj.parentlink))
+            node.ReferenceTypeId = self._migrate_ns(obj.parentlink)
         if obj.typedef:
-            node.TypeDefinition = ua.NodeId.from_string(self._get_node_id(obj.typedef))
+            node.TypeDefinition = self._migrate_ns(obj.typedef)
         return node
 
     def to_nodeid(self, nodeid):
@@ -180,7 +178,7 @@ class XmlImporter(object):
         attrs.DisplayName = ua.LocalizedText(obj.displayname)
         attrs.EventNotifier = obj.eventnotifier
         node.NodeAttributes = attrs
-        res = self.server.add_nodes([node])
+        res = self.server.iserver.isession.add_nodes([node])
         self._add_refs(obj)
         return res[0].AddedNodeId
 
@@ -192,7 +190,7 @@ class XmlImporter(object):
         attrs.DisplayName = ua.LocalizedText(obj.displayname)
         attrs.IsAbstract = obj.abstract
         node.NodeAttributes = attrs
-        res = self.server.add_nodes([node])
+        res = self.server.iserver.isession.add_nodes([node])
         self._add_refs(obj)
         return res[0].AddedNodeId
 
@@ -217,7 +215,7 @@ class XmlImporter(object):
         if obj.dimensions:
             attrs.ArrayDimensions = obj.dimensions
         node.NodeAttributes = attrs
-        res = self.server.add_nodes([node])
+        res = self.server.iserver.isession.add_nodes([node])
         self._add_refs(obj)
         return res[0].AddedNodeId
 
@@ -293,7 +291,7 @@ class XmlImporter(object):
         if obj.dimensions:
             attrs.ArrayDimensions = obj.dimensions
         node.NodeAttributes = attrs
-        res = self.server.add_nodes([node])
+        res = self.server.iserver.isession.add_nodes([node])
         self._add_refs(obj)
         return res[0].AddedNodeId
 
@@ -312,7 +310,7 @@ class XmlImporter(object):
         if obj.dimensions:
             attrs.ArrayDimensions = obj.dimensions
         node.NodeAttributes = attrs
-        res = self.server.add_nodes([node])
+        res = self.server.iserver.isession.add_nodes([node])
         self._add_refs(obj)
         return res[0].AddedNodeId
 
@@ -329,7 +327,7 @@ class XmlImporter(object):
         if obj.symmetric:
             attrs.Symmetric = obj.symmetric
         node.NodeAttributes = attrs
-        res = self.server.add_nodes([node])
+        res = self.server.iserver.isession.add_nodes([node])
         self._add_refs(obj)
         return res[0].AddedNodeId
 
@@ -342,7 +340,7 @@ class XmlImporter(object):
         if obj.abstract:
             attrs.IsAbstract = obj.abstract
         node.NodeAttributes = attrs
-        res = self.server.add_nodes([node])
+        res = self.server.iserver.isession.add_nodes([node])
         self._add_refs(obj)
         return res[0].AddedNodeId
 
@@ -354,14 +352,14 @@ class XmlImporter(object):
             ref = ua.AddReferencesItem()
             ref.IsForward = True
             ref.ReferenceTypeId = self.to_nodeid(data.reftype)
-            ref.SourceNodeId = ua.NodeId.from_string(self._get_node_id(obj.nodeid))
+            ref.SourceNodeId = self._migrate_ns(obj.nodeid)
             ref.TargetNodeClass = ua.NodeClass.DataType
-            ref.TargetNodeId = ua.NodeId.from_string(self._get_node_id(data.target))
+            ref.TargetNodeId = self._migrate_ns(self.to_nodeid(data.target))
             refs.append(ref)
-        self.server.add_references(refs)
+        self.server.iserver.isession.add_references(refs)
 
     # FIX: wrong order of node sorting .. need to find out what is wrong
-    def _sort_nodes_by_parentid(self, nodes):
+    def _sort_nodes_by_parentid(self, ndatas):
         """
         Sort the list of nodes according their parent node in order to respect
         the dependency between nodes.
@@ -369,44 +367,39 @@ class XmlImporter(object):
         :param nodes: list of NodeDataObjects
         :returns: list of sorted nodes
         """
-        _nodes = list(nodes)
+        _ndatas = list(ndatas)
         # list of node ids that are already sorted / inserted
         sorted_nodes_ids = []
         # list of sorted nodes (i.e. XML Elements)
-        sorted_nodes = []
+        sorted_ndatas = []
+        all_node_ids = [data.nodeid for data in ndatas]
         # list of namespace indexes that are relevant for this import
         # we can only respect ordering nodes for namespaces indexes that
         # are defined in the xml file itself. Thus we assume that all other
         # references namespaces are already known to the server and should
         # not create any dependency problems (like "NodeNotFound")
         relevant_namespaces = [str(ns) for ns in self.namespaces.keys()]
-        while len(_nodes) > 0:
+        while len(_ndatas) > 0:
             pop_nodes = []
-            for node in _nodes:
-                insert = None
-                # Get the node and parent node namespace and id parts
-                node_ns, node_id = self._split_node_id(node.nodeid)
-                parent_ns, parent_id = self._split_node_id(node.parent)
+            print(_ndatas)
+            for ndata in _ndatas:
                 # Insert nodes that
                 #   (1) have no parent / parent_ns is None (e.g. namespace 0)
                 #   (2) ns is not in list of relevant namespaces
-                if (parent_ns is None or (len(relevant_namespaces) >= 1 and node_ns not in relevant_namespaces) or
-                        parent_id is None):
-                    insert = 0
+                if ndata.nodeid.NamespaceIndex not in relevant_namespaces or \
+                        ndata.parent is None or \
+                        ndata.parent not in all_node_ids:
+                    sorted_ndatas.append(ndata)
+                    sorted_nodes_ids.append(ndata.nodeid)
+                    pop_nodes.append(ndata)
                 else:
-                    # Check if the nodes parent is already in the list of inserted nodes
-                    if node.parent in sorted_nodes_ids:
-                        insert = -1
-                if insert == 0:
-                    sorted_nodes.insert(insert, node)
-                    sorted_nodes_ids.insert(insert, node.nodeid)
-                    pop_nodes.append(node)
-                elif insert == -1:
-                    sorted_nodes.append(node)
-                    sorted_nodes_ids.append(node.nodeid)
-                    pop_nodes.append(node)
-
+                    # Check if the nodes parent is already in the list of
+                    # inserted nodes
+                    if ndata.parent in sorted_nodes_ids:
+                        sorted_ndatas.append(ndata)
+                        sorted_nodes_ids.append(ndata.nodeid)
+                        pop_nodes.append(ndata)
             # Remove inserted nodes from the list
-            for node in pop_nodes:
-                _nodes.pop(_nodes.index(node))
-        return sorted_nodes
+            for ndata in pop_nodes:
+                _ndatas.pop(_ndatas.index(ndata))
+        return sorted_ndatas
