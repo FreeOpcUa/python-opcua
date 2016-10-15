@@ -59,22 +59,18 @@ class XmlExporter(object):
 
         # now create a dict of idx_in_address_space to idx_in_exported_file
         self._addr_idx_to_xml_idx = self._make_idx_dict(idxs, ns_array) 
-        print("DICT", self._addr_idx_to_xml_idx)
         ns_to_export = [ns_array[i] for i in self._addr_idx_to_xml_idx.keys() if i != 0]
-        print("NS_TO_EXPORT", ns_to_export)
 
         # write namespaces to xml
         self._add_namespace_uri_els(ns_to_export)
 
     def _make_idx_dict(self, idxs, ns_array):
-        print("MAKE", idxs, ns_array)
         idxs.sort()
         addr_idx_to_xml_idx = {0: 0}
         for xml_idx, addr_idx in enumerate(idxs):
             if addr_idx >= len(ns_array):
                 break
             addr_idx_to_xml_idx[addr_idx] = xml_idx + 1
-        print(" ADDR_TO_ XML", self._addr_idx_to_xml_idx)
         return addr_idx_to_xml_idx
 
     def _get_ns_idxs_of_nodes(self, nodes):
@@ -90,7 +86,6 @@ class XmlExporter(object):
             for i in node_idxs:
                 if i != 0 and i not in idxs:
                     idxs.append(i)
-        print("IDXS", idxs)
         return idxs
 
     def _add_idxs_from_uris(self, idxs, uris, ns_array):
@@ -142,7 +137,6 @@ class XmlExporter(object):
         Returns:
         """
         node_class = node.get_node_class()
-        print("Exporting: ", node)
 
         if node_class is ua.NodeClass.Object:
             self.add_etree_object(node)
@@ -187,7 +181,6 @@ class XmlExporter(object):
         parent = node.get_parent()
         displayname = node.get_display_name().Text.decode('utf-8')
         desc = node.get_description().Text
-        print("NODE COMMON", node)
         node_el = Et.SubElement(self.etree.getroot(), nodetype)
         node_el.attrib["NodeId"] = self._node_to_string(nodeid)
         node_el.attrib["BrowseName"] = self._bname_to_string(browsename)

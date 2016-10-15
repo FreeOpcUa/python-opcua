@@ -35,14 +35,10 @@ class XmlImporter(object):
         creates a mapping between the namespaces in the xml file and in the server.
         if not present the namespace is registered.
         """
-        print("original ns", self.server.get_namespace_array())
-        print("xml ns", namespaces_uris)
         namespaces = {}
         for ns_index, ns_uri in enumerate(namespaces_uris):
             ns_server_index = self.server.register_namespace(ns_uri)
             namespaces[ns_index + 1] = (ns_server_index, ns_uri)
-        print("new ns", self.server.get_namespace_array())
-        print(namespaces)
         return namespaces
 
     def _map_aliases(self, aliases):
@@ -94,7 +90,6 @@ class XmlImporter(object):
             else:
                 self.logger.warning("Not implemented node type: %s ", nodedata.nodetype)
                 continue
-            print("ADDED", node)
             nodes.append(node)
         return nodes
     
@@ -128,7 +123,6 @@ class XmlImporter(object):
     def _get_node(self, obj):
         node = ua.AddNodesItem()
         node.RequestedNewNodeId = self._migrate_ns(obj.nodeid)
-        print("\nADDING", node.RequestedNewNodeId, node.RequestedNewNodeId.Identifier)
         node.BrowseName = self._migrate_ns(obj.browsename)
         node.NodeClass = getattr(ua.NodeClass, obj.nodetype[2:])
         if obj.parent:
@@ -187,7 +181,6 @@ class XmlImporter(object):
             attrs.Description = ua.LocalizedText(obj.desc)
         attrs.DisplayName = ua.LocalizedText(obj.displayname)
         attrs.DataType = self.to_nodeid(obj.datatype)
-        print("VAL", obj.value)
         if obj.value is not None:
             attrs.Value = self._add_variable_value(obj,)
         if obj.rank:
@@ -243,7 +236,6 @@ class XmlImporter(object):
         """
         Returns the value for a Variable based on the objects value type.
         """
-        print("KKKKKKKKKKKKKKKKKK", obj, obj.valuetype)
         if obj.valuetype == 'ListOfExtensionObject':
             values = []
             for ext in obj.value:
@@ -375,7 +367,6 @@ class XmlImporter(object):
         relevant_namespaces = [str(ns) for ns in self.namespaces.keys()]
         while len(_ndatas) > 0:
             pop_nodes = []
-            print(_ndatas)
             for ndata in _ndatas:
                 # Insert nodes that
                 #   (1) have no parent / parent_ns is None (e.g. namespace 0)
@@ -396,5 +387,4 @@ class XmlImporter(object):
             # Remove inserted nodes from the list
             for ndata in pop_nodes:
                 _ndatas.pop(_ndatas.index(ndata))
-        print("SORTD", sorted_ndatas)
         return sorted_ndatas
