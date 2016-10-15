@@ -148,10 +148,9 @@ class XmlImporter(object):
             return ua.NodeId(getattr(ua.ObjectIds, nodeid))
         else:
             if nodeid in self.aliases:
-                nodeid = self.aliases[nodeid]
+                return self.aliases[nodeid]
             else:
-                nodeid = "i={}".format(getattr(ua.ObjectIds, nodeid))
-            return ua.NodeId.from_string(nodeid)
+                return ua.NodeId(getattr(ua.ObjectIds, nodeid))
 
     def add_object(self, obj):
         node = self._get_node(obj)

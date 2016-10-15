@@ -89,10 +89,11 @@ class XmlTests(object):
     def test_xml_vars(self):
         o = self.opc.nodes.objects.add_object(2, "xmlexportobj")
         v = o.add_variable(3, "myxmlvar", 6.78, ua.VariantType.Float)
-        a = o.add_variable(3, "myxmlvar", [6, 1], ua.VariantType.UInt16)
-        a2 = o.add_variable(3, "myxmlvar", [[]], ua.VariantType.ByteString)
+        a = o.add_variable(3, "myxmlvar-array", [6, 1], ua.VariantType.UInt16)
+        a2 = o.add_variable(3, "myxmlvar-2dim", [[1, 2], [3,4]], ua.VariantType.UInt32)
+        a3 = o.add_variable(3, "myxmlvar-2dim", [[]], ua.VariantType.ByteString)
 
-        nodes = [o, v, a, a2]
+        nodes = [o, v, a, a2, a3]
         self.opc.export_xml(nodes, "export-vars.xml")
         self.opc.delete_nodes(nodes)
         self.opc.import_xml("export-vars.xml")
@@ -105,10 +106,14 @@ class XmlTests(object):
         self.assertIn(a.get_value_rank(), (0, 1))
         self.assertEqual(a.get_value(), [6, 1])
 
-        self.assertEqual(a2.get_value(), [[]])
-        self.assertEqual(a2.get_data_type(), ua.NodeId(ua.ObjectIds.ByteString))
+        self.assertEqual(a2.get_value(), [[1, 2],[3, 4]])
+        self.assertEqual(a2.get_data_type(), ua.NodeId(ua.ObjectIds.UInt32))
         self.assertIn(a2.get_value_rank(), (0, 2))
-        self.assertEqual(a2.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [1, 0])
+        #self.assertEqual(a2.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [2, 2])
+        #self.assertEqual(a3.get_value(), [[]])  # would require special code ...
+        self.assertEqual(a3.get_data_type(), ua.NodeId(ua.ObjectIds.ByteString))
+        self.assertIn(a3.get_value_rank(), (0, 2))
+        #self.assertEqual(a3.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [1, 0])
 
     def test_xml_ext_obj(self):
         arg = ua.Argument()

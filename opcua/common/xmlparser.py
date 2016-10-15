@@ -18,7 +18,7 @@ def _to_bool(val):
 def ua_type_to_python(val, uatype):
     if uatype.startswith("Int") or uatype.startswith("UInt"):
         return int(val)
-    elif uatype.tolower().startswith("bool"):
+    elif uatype.lower().startswith("bool"):
         return _to_bool(val)
     elif uatype in ("Double", "Float"):
         return float(val)
@@ -240,7 +240,7 @@ class XMLParser(object):
             elif ntag == "ListOfLocalizedText":
                 obj.value = self._parse_list_of_localized_text(el)
             elif ntag.startswith("ListOf"):
-                obj.value = self._parse_list(el)
+                obj.value = self._parse_list(el[0])
             elif ntag == "ExtensionObject":
                 obj.value = self._parse_extension_object(el)
             else:
@@ -252,10 +252,13 @@ class XMLParser(object):
 
     def _parse_list(self, el):
         value = []
-        for val_list in el:
-            for val in val_list:
-                ntag = self._retag.match(val.tag).groups()[1]
-                value.append(ua_type_to_python(val.text, ntag))
+        for val_el in el:
+            ntag = self._retag.match(val_el.tag).groups()[1]
+            if ntag.startswith("ListOf"):
+                val = self._parse_list(val_el)
+            else:
+                val = ua_type_to_python(val_el.text, ntag)
+            value.append(val)
         return value
 
     def _parse_list_of_localized_text(self, el):
