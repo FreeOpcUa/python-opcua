@@ -38,7 +38,7 @@ class XmlImporter(object):
         namespaces = {}
         for ns_index, ns_uri in enumerate(namespaces_uris):
             ns_server_index = self.server.register_namespace(ns_uri)
-            namespaces[ns_index + 1] = (ns_server_index, ns_uri)
+            namespaces[ns_index + 1] = ns_server_index
         return namespaces
 
     def _map_aliases(self, aliases):
@@ -117,7 +117,7 @@ class XmlImporter(object):
         """
         if nodeid.NamespaceIndex in self.namespaces:
             nodeid = copy(nodeid)
-            nodeid.NamespaceIndex = self.namespaces[nodeid.NamespaceIndex][0]
+            nodeid.NamespaceIndex = self.namespaces[nodeid.NamespaceIndex]
         return nodeid
 
     def _get_node(self, obj):
@@ -364,14 +364,13 @@ class XmlImporter(object):
         # are defined in the xml file itself. Thus we assume that all other
         # references namespaces are already known to the server and should
         # not create any dependency problems (like "NodeNotFound")
-        relevant_namespaces = [str(ns) for ns in self.namespaces.keys()]
         while len(_ndatas) > 0:
             pop_nodes = []
             for ndata in _ndatas:
                 # Insert nodes that
                 #   (1) have no parent / parent_ns is None (e.g. namespace 0)
                 #   (2) ns is not in list of relevant namespaces
-                if ndata.nodeid.NamespaceIndex not in relevant_namespaces or \
+                if ndata.nodeid.NamespaceIndex not in self.namespaces or \
                         ndata.parent is None or \
                         ndata.parent not in all_node_ids:
                     sorted_ndatas.append(ndata)
