@@ -79,7 +79,7 @@ def string_to_val(string, vtype):
         val = float(string)
     elif vtype in (ua.VariantType.String, ua.VariantType.XmlElement):
         val = string
-    elif vtype in (ua.VariantType.SByte, ua.VariantType.Guid, ua.VariantType.ByteString):
+    elif vtype in (ua.VariantType.SByte, ua.VariantType.ByteString):
         val = bytes(string)
     elif vtype in (ua.VariantType.NodeId, ua.VariantType.ExpandedNodeId):
         val = ua.NodeId.from_string(string)
@@ -91,6 +91,8 @@ def string_to_val(string, vtype):
         val = ua.LocalizedText(string)
     elif vtype == ua.VariantType.StatusCode:
         val = ua.StatusCode(string)
+    elif vtype == ua.VariantType.Guid:
+        val = ua.Guid(string)
     else:
         # FIXME: Some types are probably missing!
         raise NotImplementedError

@@ -163,12 +163,35 @@ class EventNotifier(_MaskEnum):
 
 class Guid(FrozenClass):
 
-    def __init__(self):
-        self.uuid = uuid.uuid4()
+    def __init__(self, value=None):
+        if value is None or value == "":
+            # if no string is supplied, create a new UUID
+            self.uuid = uuid.uuid4()
+        else:
+            try:
+                # attempt to make a UUID with the supplied value, if hex string has errors use a default string
+                self.uuid = uuid.UUID(value)
+            except ValueError as e:
+                # TODO should notify user of error, but this module has no logger, raise UaError stops execution
+                self.uuid = uuid.UUID("00000000-0000-0000-0000-000000000000")
+
         self._freeze = True
 
     def to_binary(self):
-        return self.uuid.bytes
+        # NOTE THAT self.uuid.bytes WILL NOT WORK FOR UA BINARY PROTOCOL; BYTE ORDER IS NOT CORRECT
+        # convert python UUID 6 field format to OPC UA 4 field format
+        guid = self.uuid
+        f1 = uabin.Primitives.UInt32.pack(guid.fields[0])
+        f2 = uabin.Primitives.UInt16.pack(guid.fields[1])
+        f3 = uabin.Primitives.UInt16.pack(guid.fields[2])
+        f4a = uabin.Primitives.Byte.pack(guid.fields[3])
+        f4b = uabin.Primitives.Byte.pack(guid.fields[4])
+        f4c = bytearray(struct.unpack('8B', struct.pack('>Q', guid.fields[5]))[2:8])  # no primitive .pack available
+        f4 = f4a + f4b + f4c
+
+        # concat byte fields
+        b = f1 + f2 + f3 + f4
+        return b
 
     def __hash__(self):
         return hash(self.uuid.bytes)
@@ -184,7 +207,6 @@ class Guid(FrozenClass):
 
 
 class StatusCode(FrozenClass):
-
     """
     :ivar value:
     :vartype value: int
@@ -487,10 +509,9 @@ ExpandedNodeId = NodeId
 
 
 class QualifiedName(FrozenClass):
-
-    '''
+    """
     A string qualified with a namespace index.
-    '''
+    """
 
     def __init__(self, name=None, namespaceidx=0):
         if not isinstance(namespaceidx, int):
@@ -549,10 +570,9 @@ class QualifiedName(FrozenClass):
 
 
 class LocalizedText(FrozenClass):
-
-    '''
+    """
     A string qualified with a namespace index.
-    '''
+    """
 
     ua_types = {
         "Text": "ByteString",
@@ -614,8 +634,7 @@ class LocalizedText(FrozenClass):
 
 
 class ExtensionObject(FrozenClass):
-
-    '''
+    """
 
     Any UA object packed as an ExtensionObject
 
@@ -625,7 +644,7 @@ class ExtensionObject(FrozenClass):
     :ivar Body:
     :vartype Body: bytes
 
-    '''
+    """
 
     def __init__(self):
         self.TypeId = NodeId()
@@ -668,8 +687,7 @@ class ExtensionObject(FrozenClass):
 
 
 class VariantType(Enum):
-
-    '''
+    """
     The possible types of a variant.
 
     :ivar Null:
@@ -699,9 +717,8 @@ class VariantType(Enum):
     :ivar Variant:
     :ivar DiagnosticInfo:
 
+    """
 
-
-    '''
     Null = 0
     Boolean = 1
     SByte = 2
@@ -753,7 +770,6 @@ class VariantTypeCustom(object):
 
 
 class Variant(FrozenClass):
-
     """
     Create an OPC-UA Variant object.
     if no argument a Null Variant is created.
@@ -810,6 +826,8 @@ class Variant(FrozenClass):
             return VariantType.ByteString
         elif isinstance(val, datetime):
             return VariantType.DateTime
+        elif isinstance(val, uuid.UUID):
+            raise UaError("{} is type {}, and cannot be created; supply a UA Guid() instead of python UUID".format(val, type(val)))
         else:
             if isinstance(val, object):
                 try:
@@ -910,9 +928,9 @@ def get_shape(mylist):
 
 
 class XmlElement(FrozenClass):
-    '''
+    """
     An XML element encoded as an UTF-8 string.
-    '''
+    """
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -939,8 +957,7 @@ class XmlElement(FrozenClass):
 
 
 class DataValue(FrozenClass):
-
-    '''
+    """
     A value with an associated timestamp, and quality.
     Automatically generated from xml , copied and modified here to fix errors in xml spec
 
@@ -957,7 +974,7 @@ class DataValue(FrozenClass):
     :ivar ServerPicoseconds:
     :vartype ServerPicoseconds: int
 
-    '''
+    """
 
     def __init__(self, variant=None, status=None):
         self.Encoding = 0

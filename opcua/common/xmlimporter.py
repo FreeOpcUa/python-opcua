@@ -253,7 +253,7 @@ class XmlImporter(object):
 
     def _add_variable_value(self, obj):
         """
-        Returns the value for a Variable based on the objects valuetype. 
+        Returns the value for a Variable based on the objects value type.
         """
         if obj.valuetype == 'ListOfExtensionObject':
             values = []
@@ -267,6 +267,8 @@ class XmlImporter(object):
         elif obj.valuetype == 'ExtensionObject':
             extobj = self._make_ext_obj(obj.value)
             return ua.Variant(extobj, getattr(ua.VariantType, obj.valuetype))
+        elif obj.valuetype == 'Guid':
+            return ua.Variant(ua.Guid(obj.value), getattr(ua.VariantType, obj.valuetype))
         else:
             return ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
 
@@ -357,7 +359,7 @@ class XmlImporter(object):
     def _sort_nodes_by_parentid(self, nodes):
         """
         Sort the list of nodes according theire parent node in order to respect
-        the depency between nodes.
+        the dependency between nodes.
 
         :param nodes: list of NodeDataObjects
         :returns: list of sorted nodes
