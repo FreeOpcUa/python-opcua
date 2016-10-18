@@ -13,6 +13,8 @@ from opcua.common import xmlparser
 def ua_type_to_python(val, uatype):
     if uatype.startswith("Int") or uatype.startswith("UInt"):
         return int(val)
+    elif uatype in ("Double", "Float"):
+        return float(val)
     elif uatype in ("String"):
         return val
     elif uatype in ("Bytes", "Bytes", "ByteString", "ByteArray"):
