@@ -15,7 +15,6 @@ def _to_bool(val):
         return False
 
 
-
 class NodeData(object):
 
     def __init__(self):
@@ -70,11 +69,12 @@ class ExtObj(object):
 
 class XMLParser(object):
 
-    def __init__(self, xmlpath, server):
+    def __init__(self, xmlpath, server, enable_default_values=False):
         self.server = server  # POC
         self.logger = logging.getLogger(__name__)
         self._retag = re.compile(r"(\{.*\})(.*)")
         self.path = xmlpath
+        self.enable_default_values = enable_default_values
 
         self.tree = ET.parse(xmlpath)
         self.root = self.tree.getroot()
@@ -137,6 +137,23 @@ class XMLParser(object):
             self._set_attr(key, val, obj)
         self.logger.info("\n     Parsing node: %s %s", obj.nodeid, obj.browsename)
         obj.displayname = obj.browsename  # give a default value to display name
+
+        # set default Value based on type; avoids nodes with Value=None being converted to type Null by server
+        if self.enable_default_values:
+            if obj.datatype is not None:
+                if obj.datatype in ("Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64"):
+                    obj.valuetype = obj.datatype
+                    obj.value = 0
+                elif obj.datatype in ("Float", "Double"):
+                    obj.valuetype = obj.datatype
+                    obj.value = 0.0
+                elif obj.datatype in ("Boolean"):
+                    obj.valuetype = obj.datatype
+                    obj.value = False
+                elif obj.datatype in ("ByteString", "String"):
+                    obj.valuetype = obj.datatype
+                    obj.value = ""
+
         for el in child:
             self._parse_tag(el, obj)
         return obj
@@ -238,10 +255,10 @@ class XMLParser(object):
         return value
 
     def _parse_list_of_extension_object(self, el):
-        '''
+        """
         Parse a uax:ListOfExtensionObject Value
         Return an list of ExtObj
-        '''
+        """
         value = []
         for extension_object_list in el:
             for extension_object in extension_object_list:

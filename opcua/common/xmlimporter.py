@@ -65,12 +65,12 @@ class XmlImporter(object):
             aliases_mapped[alias] = self._get_node_id(node_id)
         return aliases_mapped
 
-    def import_xml(self, xmlpath, act_server):
+    def import_xml(self, xmlpath, act_server, enable_default_values=False):
         """
         import xml and return added nodes
         """
         self.logger.info("Importing XML file %s", xmlpath)
-        self.parser = xmlparser.XMLParser(xmlpath, act_server)
+        self.parser = xmlparser.XMLParser(xmlpath, act_server, enable_default_values)
 
         self.namespaces = self._map_namespaces(self.parser.get_used_namespaces(), act_server)
         self.aliases = self._map_aliases(self.parser.get_aliases())
