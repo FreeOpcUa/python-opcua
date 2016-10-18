@@ -4,7 +4,7 @@ parse xml file from opcua-spec
 import logging
 import re
 import sys
-
+import dateutil.parser
 import xml.etree.ElementTree as ET
 
 
@@ -211,6 +211,8 @@ class XMLParser(object):
                 mytext = mytext.replace('\n', '').replace('\r', '')
                 # obj.value.append('b"{}"'.format(mytext))
                 obj.value = mytext
+            elif ntag in ("DateTime"):
+                obj.value = dateutil.parser.parse(val.text)
             elif ntag in ("Guid"):
                 self._parse_value(val, obj)
                 obj.valuetype = obj.datatype  # FIXME hack to keep a String variant from being created
