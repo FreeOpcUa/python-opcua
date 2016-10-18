@@ -213,6 +213,7 @@ class XMLParser(object):
                 obj.value = mytext
             elif ntag in ("Guid"):
                 self._parse_value(val, obj)
+                obj.valuetype = obj.datatype  # FIXME hack to keep a String variant from being created
             elif ntag == "ListOfExtensionObject":
                 obj.value = self._parse_list_of_extension_object(el)
             elif ntag == "ListOfLocalizedText":
