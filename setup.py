@@ -7,7 +7,7 @@ if sys.version_info[0] < 3:
 else:
     install_requires = ["python-dateutil"]
 
-setup(name="freeopcua", 
+setup(name="freeopcua",
       version="0.10.17",
       description="Pure Python OPC-UA client and server library",
       author="Olivier Roulet-Dubonnet",
@@ -29,7 +29,7 @@ setup(name="freeopcua",
                    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
                    "Topic :: Software Development :: Libraries :: Python Modules",
                    ],
-      entry_points={'console_scripts': 
+      entry_points={'console_scripts':
                     [
                         'uaread = opcua.tools:uaread',
                         'uals = opcua.tools:uals',
@@ -39,7 +39,8 @@ setup(name="freeopcua",
                         'uahistoryread = opcua.tools:uahistoryread',
                         'uaclient = opcua.tools:uaclient',
                         'uaserver = opcua.tools:uaserver',
-                        'uadiscover = opcua.tools:uadiscover'
+                        'uadiscover = opcua.tools:uadiscover',
+                        'uacall = opcua.tools:uacall',
                     ]
                     }
       )
