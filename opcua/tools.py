@@ -696,7 +696,7 @@ def uacall():
         # determine method to call: Either explicitly given or automatically select the method of the selected node.
         methods = node.get_methods()
         method_id = None
-        #print "methods=%s" % methods
+        #print( "methods=%s" % (methods) )
 
         if ( args.method is None ):
             if ( len( methods ) == 0 ):
@@ -715,10 +715,10 @@ def uacall():
             # last resort:
             method_id = ua.NodeId( identifier=args.method )#, namespaceidx=? )#, nodeidtype=?): )
 
-        #print "method_id=%s\nval=%s" % (method_id,val)
+        #print( "method_id=%s\nval=%s" % (method_id,val) )
 
         result_variants = node.call_method( method_id, *val )
-        print "resulting result_variants=%s" % result_variants
+        print( "resulting result_variants=%s" % result_variants )
     finally:
         client.disconnect()
     sys.exit(0)
