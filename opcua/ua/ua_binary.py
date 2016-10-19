@@ -7,6 +7,7 @@ import struct
 import logging
 from datetime import datetime, timedelta, tzinfo, MAXYEAR
 from calendar import timegm
+import uuid
 
 from opcua.ua.uaerrors import UaError
 
@@ -160,6 +161,36 @@ class _Null(_Primitive):
         return None
 
 
+class _Guid(_Primitive):
+
+    @staticmethod
+    def pack(guid):
+        # convert python UUID 6 field format to OPC UA 4 field format
+        f1 = Primitives.UInt32.pack(guid.fields[0])
+        f2 = Primitives.UInt16.pack(guid.fields[1])
+        f3 = Primitives.UInt16.pack(guid.fields[2])
+        f4a = Primitives.Byte.pack(guid.fields[3])
+        f4b = Primitives.Byte.pack(guid.fields[4])
+        f4c = bytearray(struct.unpack('8B', struct.pack('>Q', guid.fields[5]))[2:8])  # no primitive .pack available
+        f4 = f4a+f4b+f4c
+        # concat byte fields
+        b = f1+f2+f3+f4
+
+        return b
+
+    @staticmethod
+    def unpack(data):
+        # convert OPC UA 4 field format to python UUID bytes
+        f1 = Primitives.UInt32.unpack(data).to_bytes(4, byteorder='big', signed=False)
+        f2 = Primitives.UInt16.unpack(data).to_bytes(2, byteorder='big', signed=False)
+        f3 = Primitives.UInt16.unpack(data).to_bytes(2, byteorder='big', signed=False)
+        f4 = data.read(8)
+        # concat byte fields
+        b = f1 + f2 + f3 + f4
+
+        return uuid.UUID(bytes=b)
+
+
 class _Primitive1(_Primitive):
     def __init__(self, fmt):
         self.struct = struct.Struct(fmt)
@@ -186,7 +217,6 @@ class _Primitive1(_Primitive):
         #return struct.pack(build_array_format("<i", length, self.format[1]), length, *array)
 
 
-
 class Primitives1(object):
     Int8 = _Primitive1("<b")
     SByte = Int8
@@ -211,6 +241,7 @@ class Primitives(Primitives1):
     ByteString = _Bytes()
     CharArray = _Bytes()
     DateTime = _DateTime()
+    Guid = _Guid()
 
 
 def pack_uatype_array(vtype, array):

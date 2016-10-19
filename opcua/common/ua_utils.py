@@ -5,6 +5,7 @@ Usefull method and classes not belonging anywhere and depending on opcua library
 from dateutil import parser
 from datetime import datetime
 from enum import Enum, IntEnum
+import uuid
 
 from opcua import ua
 from opcua.ua.uaerrors import UaError
@@ -79,7 +80,7 @@ def string_to_val(string, vtype):
         val = float(string)
     elif vtype in (ua.VariantType.String, ua.VariantType.XmlElement):
         val = string
-    elif vtype in (ua.VariantType.SByte, ua.VariantType.Guid, ua.VariantType.ByteString):
+    elif vtype in (ua.VariantType.SByte, ua.VariantType.ByteString):
         val = bytes(string)
     elif vtype in (ua.VariantType.NodeId, ua.VariantType.ExpandedNodeId):
         val = ua.NodeId.from_string(string)
@@ -91,6 +92,8 @@ def string_to_val(string, vtype):
         val = ua.LocalizedText(string)
     elif vtype == ua.VariantType.StatusCode:
         val = ua.StatusCode(string)
+    elif vtype == ua.VariantType.Guid:
+        val = uuid.UUID(string)
     else:
         # FIXME: Some types are probably missing!
         raise NotImplementedError
