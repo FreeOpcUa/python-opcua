@@ -273,7 +273,7 @@ class XmlImporter(object):
             return ua.Variant(extobj, getattr(ua.VariantType, obj.valuetype))
         elif obj.valuetype == 'DateTime':
             return ua.Variant(dateutil.parser.parse(obj.value), getattr(ua.VariantType, obj.valuetype))
-        elif obj.valuetpe == 'Guid':
+        elif obj.valuetype == 'Guid':
             return ua.Variant(uuid.UUID(obj.value), getattr(ua.VariantType, obj.valuetype))
         else:
             return ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))

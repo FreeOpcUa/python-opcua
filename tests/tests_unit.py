@@ -5,6 +5,7 @@ import io
 from datetime import datetime
 import unittest
 from collections import namedtuple
+import uuid
 
 from opcua import ua
 from opcua.ua import extensionobject_from_binary
@@ -128,8 +129,8 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(v, v2)
 
     def test_guid(self):
-        g = ua.Guid()
-        sc = ua.StatusCode()
+        # FIXME what tests to add here?
+        pass
 
     def test_nodeid(self):
         nid = ua.NodeId()
@@ -150,8 +151,8 @@ class TestUnit(unittest.TestCase):
         s = ua.StringNodeId(53, 0)  # should we raise an exception???
         s1 = ua.StringNodeId("53", 0)
         bs = ua.ByteStringNodeId(b"53", 0)
-        gid = ua.Guid()
-        g = ua.ByteStringNodeId(gid, 0)
+        gid = uuid.uuid4()
+        g = ua.ByteStringNodeId(str(gid), 0)
         guid = ua.GuidNodeId(gid)
         self.assertEqual(tb, fb)
         self.assertEqual(tb, n)

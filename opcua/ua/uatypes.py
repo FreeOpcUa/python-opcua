@@ -388,6 +388,9 @@ class NodeId(FrozenClass):
         elif self.NodeIdType == NodeIdType.ByteString:
             return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
                 uabin.Primitives.Bytes.pack(self.Identifier)
+        elif self.NodeIdType == NodeIdType.Guid:
+            return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
+                   uabin.Primitives.Guid.pack(self.Identifier)
         else:
             return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
                 self.Identifier.to_binary()
@@ -413,7 +416,7 @@ class NodeId(FrozenClass):
             nid.Identifier = uabin.Primitives.Bytes.unpack(data)
         elif nid.NodeIdType == NodeIdType.Guid:
             nid.NamespaceIndex = uabin.Primitives.UInt16.unpack(data)
-            nid.Identifier = uabin.Primitives.Guid.from_binary(data)
+            nid.Identifier = uabin.Primitives.Guid.unpack(data)
         else:
             raise UaError("Unknown NodeId encoding: " + str(nid.NodeIdType))
 
