@@ -129,8 +129,10 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(v, v2)
 
     def test_guid(self):
-        # FIXME what tests to add here?
-        pass
+        v = ua.Variant(uuid.uuid4(), ua.VariantType.Guid)
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        self.assertEqual(v.VariantType, v2.VariantType)
+        self.assertEqual(v, v2)
 
     def test_nodeid(self):
         nid = ua.NodeId()
