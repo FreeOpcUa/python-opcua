@@ -693,8 +693,6 @@ def uacall():
         else:
             val = (_val_to_variant(args.value, args),) # tuple with one element
 
-        parent = node.get_parent()
-
         # determine method to call: Either explicitly given or automatically select the method of the selected node.
         methods = node.get_methods()
         method_id = None
@@ -719,7 +717,7 @@ def uacall():
 
         #print "method_id=%s\nval=%s" % (method_id,val)
 
-        result_variants = node.call_method( parent, method_id, *val )
+        result_variants = node.call_method( method_id, *val )
         print "resulting result_variants=%s" % result_variants
     finally:
         client.disconnect()

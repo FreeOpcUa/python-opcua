@@ -550,5 +550,5 @@ class Node(object):
     def add_reference_type(self, parent, nodeid, bname):
         return opcua.common.manage_nodes.create_reference_type(parent, nodeid, bname)
 
-    def call_method(self, parent, methodid, *args):
-        return opcua.common.methods.call_method(parent, methodid, *args)
+    def call_method(self, methodid, *args):
+        return opcua.common.methods.call_method(self, methodid, *args)
