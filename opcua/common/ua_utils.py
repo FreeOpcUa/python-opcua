@@ -87,13 +87,21 @@ def string_to_val(string, vtype):
     elif vtype == ua.VariantType.QualifiedName:
         val = ua.QualifiedName.from_string(string)
     elif vtype == ua.VariantType.DateTime:
-        val = parser.parse(string)
+        # if no datetime string is supplied, make a default one(this is required for modeler)
+        if string is None or string == '':
+            val = parser.parse('2000-01-01 00:00:00+00:00')
+        else:
+            val = parser.parse(string)
     elif vtype == ua.VariantType.LocalizedText:
         val = ua.LocalizedText(string)
     elif vtype == ua.VariantType.StatusCode:
         val = ua.StatusCode(string)
     elif vtype == ua.VariantType.Guid:
-        val = uuid.UUID(string)
+        # if no guid string is supplied, make a random guid (this is required for modeler)
+        if string is None or string == '':
+            val = uuid.uuid4()
+        else:
+            val = uuid.UUID(string)
     else:
         # FIXME: Some types are probably missing!
         raise NotImplementedError
