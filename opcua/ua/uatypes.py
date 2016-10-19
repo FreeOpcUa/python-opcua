@@ -161,28 +161,6 @@ class EventNotifier(_MaskEnum):
     HistoryWrite = 3
 
 
-# class Guid(FrozenClass):
-#
-#     def __init__(self):
-#         self.uuid = uuid.uuid4()
-#         self._freeze = True
-#
-#     def to_binary(self):
-#         return self.uuid.bytes
-#
-#     def __hash__(self):
-#         return hash(self.uuid.bytes)
-#
-#     @staticmethod
-#     def from_binary(data):
-#         g = Guid()
-#         g.uuid = uuid.UUID(bytes=data.read(16))
-#         return g
-#
-#     def __eq__(self, other):
-#         return isinstance(other, Guid) and self.uuid == other.uuid
-
-
 class StatusCode(FrozenClass):
 
     """
@@ -435,7 +413,7 @@ class NodeId(FrozenClass):
             nid.Identifier = uabin.Primitives.Bytes.unpack(data)
         elif nid.NodeIdType == NodeIdType.Guid:
             nid.NamespaceIndex = uabin.Primitives.UInt16.unpack(data)
-            nid.Identifier = Guid.from_binary(data)
+            nid.Identifier = uabin.Primitives.Guid.from_binary(data)
         else:
             raise UaError("Unknown NodeId encoding: " + str(nid.NodeIdType))
 

@@ -5,6 +5,8 @@ format is the one from opc-ua specification
 import logging
 import sys
 import re
+import uuid
+import dateutil.parser
 
 from opcua import ua
 from opcua.common import xmlparser
@@ -269,6 +271,10 @@ class XmlImporter(object):
         elif obj.valuetype == 'ExtensionObject':
             extobj = self._make_ext_obj(obj.value)
             return ua.Variant(extobj, getattr(ua.VariantType, obj.valuetype))
+        elif obj.valuetype == 'DateTime':
+            return ua.Variant(dateutil.parser.parse(obj.value), getattr(ua.VariantType, obj.valuetype))
+        elif obj.valuetpe == 'Guid':
+            return ua.Variant(uuid.UUID(obj.value), getattr(ua.VariantType, obj.valuetype))
         else:
             return ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
 

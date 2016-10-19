@@ -4,6 +4,8 @@ parse xml file from opcua-spec
 import logging
 import re
 import sys
+import dateutil.parser
+import uuid
 
 import xml.etree.ElementTree as ET
 
@@ -211,8 +213,11 @@ class XMLParser(object):
                 mytext = mytext.replace('\n', '').replace('\r', '')
                 # obj.value.append('b"{}"'.format(mytext))
                 obj.value = mytext
+            elif ntag in ("DateTime"):
+                obj.value = val.text
             elif ntag in ("Guid"):
                 self._parse_value(val, obj)
+                obj.valuetype = obj.datatype  # override parsed string type to guid
             elif ntag == "ListOfExtensionObject":
                 obj.value = self._parse_list_of_extension_object(el)
             elif ntag == "ListOfLocalizedText":

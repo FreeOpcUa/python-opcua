@@ -166,12 +166,12 @@ class _Guid(_Primitive):
     @staticmethod
     def pack(guid):
         # convert python UUID 6 field format to OPC UA 4 field format
-        f1 = Primitives.UInt32.pack(guid.fields[0])
-        f2 = Primitives.UInt16.pack(guid.fields[1])
-        f3 = Primitives.UInt16.pack(guid.fields[2])
-        f4a = Primitives.Byte.pack(guid.fields[3])
-        f4b = Primitives.Byte.pack(guid.fields[4])
-        f4c = bytearray(struct.unpack('8B', struct.pack('>Q', guid.fields[5]))[2:8])  # no primitive .pack available
+        f1 = Primitives.UInt32.pack(guid.time_low)
+        f2 = Primitives.UInt16.pack(guid.time_mid)
+        f3 = Primitives.UInt16.pack(guid.time_hi_version)
+        f4a = Primitives.Byte.pack(guid.clock_seq_hi_variant)
+        f4b = Primitives.Byte.pack(guid.clock_seq_low)
+        f4c = guid.node.to_bytes(6, byteorder='big', signed=False)  # no primitive .pack available for 6 byte int
         f4 = f4a+f4b+f4c
         # concat byte fields
         b = f1+f2+f3+f4
