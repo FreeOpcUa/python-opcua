@@ -139,7 +139,6 @@ def get_node_subtypes(node, nodes=None):
 def get_node_supertypes(node, includeitself=False, skipbase=True):
     """
     return get all subtype parents of node recursive
-    :param server: used in case node is nodeid         
     :param node: can be a ua.Node or ua.NodeId
     :param includeitself: include also node to the list
     :param skipbase don't include the toplevel one

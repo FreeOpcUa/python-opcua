@@ -29,7 +29,7 @@ class XmlExporter(object):
     def build_etree(self, node_list, uris=None):
         """
         Create an XML etree object from a list of nodes; custom namespace uris are optional
-        Namespaces used by nodes are allways exported for consistency.
+        Namespaces used by nodes are always exported for consistency.
         Args:
             node_list: list of Node objects for export
             uris: list of namespace uri strings
@@ -89,7 +89,7 @@ class XmlExporter(object):
         """
         # try to write the XML etree to a file
         self.logger.info('Exporting XML file to %s', xmlpath)
-        #from IPython import embed
+        # from IPython import embed
         # embed()
         if pretty:
             indent(self.etree.getroot())
@@ -379,11 +379,11 @@ def _extobj_to_etree(val_el, name, dtype, val):
 
 
 def indent(elem, level=0):
-    '''
+    """
     copy and paste from http://effbot.org/zone/element-lib.htm#prettyprint
     it basically walks your tree and adds spaces and newlines so the tree is
     printed in a nice way
-    '''
+    """
     i = "\n" + level * "  "
     if len(elem):
         if not elem.text or not elem.text.strip():

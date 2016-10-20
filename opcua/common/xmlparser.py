@@ -4,8 +4,6 @@ parse xml file from opcua-spec
 import logging
 import re
 import sys
-import dateutil.parser
-import uuid
 
 import xml.etree.ElementTree as ET
 
@@ -15,7 +13,6 @@ def _to_bool(val):
         return True
     else:
         return False
-
 
 
 class NodeData(object):
@@ -243,10 +240,10 @@ class XMLParser(object):
         return value
 
     def _parse_list_of_extension_object(self, el):
-        '''
+        """
         Parse a uax:ListOfExtensionObject Value
         Return an list of ExtObj
-        '''
+        """
         value = []
         for extension_object_list in el:
             for extension_object in extension_object_list:

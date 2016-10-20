@@ -38,8 +38,9 @@ def unset_bit(data, offset):
 
 
 class UTC(tzinfo):
-
-    """UTC"""
+    """
+    UTC
+    """
 
     def utcoffset(self, dt):
         return timedelta(0)
@@ -205,7 +206,7 @@ class _Primitive1(_Primitive):
     
     #def pack_array(self, array):
         #"""
-        #Basically the same as the method in _Primitive but MAYBE a bit more efficitent....
+        #Basically the same as the method in _Primitive but MAYBE a bit more efficient....
         #"""
         #if array is None:
             #return b'\xff\xff\xff\xff'
