@@ -68,8 +68,19 @@ class ExtObj(object):
 
 
 class XMLParser(object):
+    """
+    XML Parser class which traverses an XML document to collect all information required for creating address an space
+    """
 
     def __init__(self, xmlpath, server, enable_default_values=False):
+        """
+        Constructor for XML parser
+        Args:
+            xmlpath: path to the xml document; the document must be in OPC UA defined format
+            server: the python opcua server object the nodes will be imported to
+            enable_default_values: false results in xml variable nodes with no Value element being converted to Null
+                                   true results in XML variable nodes to keep defined datatype with a default value
+        """
         self.server = server  # POC
         self.logger = logging.getLogger(__name__)
         self._retag = re.compile(r"(\{.*\})(.*)")
