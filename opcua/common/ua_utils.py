@@ -58,7 +58,8 @@ def variant_to_string(var):
 
 def string_to_val(string, vtype):
     """
-    Convert back a string to a python or python-opcua object 
+    Convert back a string to a python or python-opcua object
+    Note: no error checking is done here, supplying null strings could raise exceptions (datetime and guid)
     """
     string = string.strip()
     if string.startswith("["):
@@ -87,21 +88,13 @@ def string_to_val(string, vtype):
     elif vtype == ua.VariantType.QualifiedName:
         val = ua.QualifiedName.from_string(string)
     elif vtype == ua.VariantType.DateTime:
-        # if no datetime string is supplied, make a default one(this is required for modeler)
-        if string is None or string == '':
-            val = parser.parse('2000-01-01 00:00:00+00:00')
-        else:
-            val = parser.parse(string)
+        val = parser.parse(string)
     elif vtype == ua.VariantType.LocalizedText:
         val = ua.LocalizedText(string)
     elif vtype == ua.VariantType.StatusCode:
         val = ua.StatusCode(string)
     elif vtype == ua.VariantType.Guid:
-        # if no guid string is supplied, make a random guid (this is required for modeler)
-        if string is None or string == '':
-            val = uuid.uuid4()
-        else:
-            val = uuid.UUID(string)
+        val = uuid.UUID(string)
     else:
         # FIXME: Some types are probably missing!
         raise NotImplementedError
