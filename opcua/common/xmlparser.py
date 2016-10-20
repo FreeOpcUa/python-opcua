@@ -69,7 +69,7 @@ class ExtObj(object):
 
 class XMLParser(object):
     """
-    XML Parser class which traverses an XML document to collect all information required for creating address an space
+    XML Parser class which traverses an XML document to collect all information required for creating an address space
     """
 
     def __init__(self, xmlpath, server, enable_default_values=False):
