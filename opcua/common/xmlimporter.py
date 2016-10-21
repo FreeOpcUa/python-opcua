@@ -5,6 +5,8 @@ format is the one from opc-ua specification
 import logging
 import sys
 import re
+import uuid
+import dateutil.parser
 
 from opcua import ua
 from opcua.common import xmlparser
@@ -75,8 +77,7 @@ class XmlImporter(object):
         self.namespaces = self._map_namespaces(self.parser.get_used_namespaces(), act_server)
         self.aliases = self._map_aliases(self.parser.get_aliases())
 
-        # The ordering of nodes currently only works if namespaces are
-        # defined in XML.
+        # The ordering of nodes currently only works if namespaces are defined in XML.
         # Also, it is recommended not to use node ids without namespace prefix!
         nodes_parsed = self._sort_nodes_by_parentid(self.parser)
 
@@ -233,7 +234,7 @@ class XmlImporter(object):
                     if type(v) is str:
                         setattr(ext, attname, to_python(v, ext, attname))
                     else:
-                        # so we habve either an object or a list...
+                        # so we have either an object or a list...
                         obj2 = getattr(ext, attname)
                         if isinstance(obj2, ua.NodeId):
                             for attname2, v2 in v:
@@ -255,7 +256,7 @@ class XmlImporter(object):
 
     def _add_variable_value(self, obj):
         """
-        Returns the value for a Variable based on the objects valuetype. 
+        Returns the value for a Variable based on the objects value type.
         """
         if obj.valuetype == 'ListOfExtensionObject':
             values = []
@@ -269,6 +270,10 @@ class XmlImporter(object):
         elif obj.valuetype == 'ExtensionObject':
             extobj = self._make_ext_obj(obj.value)
             return ua.Variant(extobj, getattr(ua.VariantType, obj.valuetype))
+        elif obj.valuetype == 'DateTime':
+            return ua.Variant(dateutil.parser.parse(obj.value), getattr(ua.VariantType, obj.valuetype))
+        elif obj.valuetype == 'Guid':
+            return ua.Variant(uuid.UUID(obj.value), getattr(ua.VariantType, obj.valuetype))
         else:
             return ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
 
@@ -358,8 +363,8 @@ class XmlImporter(object):
     # FIX: wrong order of node sorting .. need to find out what is wrong
     def _sort_nodes_by_parentid(self, nodes):
         """
-        Sort the list of nodes according theire parent node in order to respect
-        the depency between nodes.
+        Sort the list of nodes according their parent node in order to respect
+        the dependency between nodes.
 
         :param nodes: list of NodeDataObjects
         :returns: list of sorted nodes
@@ -385,13 +390,11 @@ class XmlImporter(object):
                 # Insert nodes that
                 #   (1) have no parent / parent_ns is None (e.g. namespace 0)
                 #   (2) ns is not in list of relevant namespaces
-                if (parent_ns is None or
-                    (len(relevant_namespaces) >= 1 and node_ns not in relevant_namespaces) or
-                    parent_id is None):
+                if (parent_ns is None or (len(relevant_namespaces) >= 1 and node_ns not in relevant_namespaces) or
+                        parent_id is None):
                     insert = 0
                 else:
-                    # Check if the nodes parent is already in the list of
-                    # inserted nodes
+                    # Check if the nodes parent is already in the list of inserted nodes
                     if node.parent in sorted_nodes_ids:
                         insert = -1
                 if insert == 0:

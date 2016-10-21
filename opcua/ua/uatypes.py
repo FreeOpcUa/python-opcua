@@ -161,30 +161,7 @@ class EventNotifier(_MaskEnum):
     HistoryWrite = 3
 
 
-class Guid(FrozenClass):
-
-    def __init__(self):
-        self.uuid = uuid.uuid4()
-        self._freeze = True
-
-    def to_binary(self):
-        return self.uuid.bytes
-
-    def __hash__(self):
-        return hash(self.uuid.bytes)
-
-    @staticmethod
-    def from_binary(data):
-        g = Guid()
-        g.uuid = uuid.UUID(bytes=data.read(16))
-        return g
-
-    def __eq__(self, other):
-        return isinstance(other, Guid) and self.uuid == other.uuid
-
-
 class StatusCode(FrozenClass):
-
     """
     :ivar value:
     :vartype value: int
@@ -252,7 +229,6 @@ class NodeIdType(Enum):
 
 
 class NodeId(FrozenClass):
-
     """
     NodeId Object
 
@@ -410,6 +386,9 @@ class NodeId(FrozenClass):
         elif self.NodeIdType == NodeIdType.ByteString:
             return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
                 uabin.Primitives.Bytes.pack(self.Identifier)
+        elif self.NodeIdType == NodeIdType.Guid:
+            return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
+                   uabin.Primitives.Guid.pack(self.Identifier)
         else:
             return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
                 self.Identifier.to_binary()
@@ -435,7 +414,7 @@ class NodeId(FrozenClass):
             nid.Identifier = uabin.Primitives.Bytes.unpack(data)
         elif nid.NodeIdType == NodeIdType.Guid:
             nid.NamespaceIndex = uabin.Primitives.UInt16.unpack(data)
-            nid.Identifier = Guid.from_binary(data)
+            nid.Identifier = uabin.Primitives.Guid.unpack(data)
         else:
             raise UaError("Unknown NodeId encoding: " + str(nid.NodeIdType))
 
@@ -487,10 +466,9 @@ ExpandedNodeId = NodeId
 
 
 class QualifiedName(FrozenClass):
-
-    '''
+    """
     A string qualified with a namespace index.
-    '''
+    """
 
     def __init__(self, name=None, namespaceidx=0):
         if not isinstance(namespaceidx, int):
@@ -549,10 +527,9 @@ class QualifiedName(FrozenClass):
 
 
 class LocalizedText(FrozenClass):
-
-    '''
+    """
     A string qualified with a namespace index.
-    '''
+    """
 
     ua_types = {
         "Text": "ByteString",
@@ -614,18 +591,14 @@ class LocalizedText(FrozenClass):
 
 
 class ExtensionObject(FrozenClass):
-
-    '''
-
+    """
     Any UA object packed as an ExtensionObject
-
 
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar Body:
     :vartype Body: bytes
-
-    '''
+    """
 
     def __init__(self):
         self.TypeId = NodeId()
@@ -668,8 +641,7 @@ class ExtensionObject(FrozenClass):
 
 
 class VariantType(Enum):
-
-    '''
+    """
     The possible types of a variant.
 
     :ivar Null:
@@ -698,10 +670,8 @@ class VariantType(Enum):
     :ivar DataValue:
     :ivar Variant:
     :ivar DiagnosticInfo:
+    """
 
-
-
-    '''
     Null = 0
     Boolean = 1
     SByte = 2
@@ -753,7 +723,6 @@ class VariantTypeCustom(object):
 
 
 class Variant(FrozenClass):
-
     """
     Create an OPC-UA Variant object.
     if no argument a Null Variant is created.
@@ -810,6 +779,8 @@ class Variant(FrozenClass):
             return VariantType.ByteString
         elif isinstance(val, datetime):
             return VariantType.DateTime
+        elif isinstance(val, uuid.UUID):
+            return VariantType.Guid
         else:
             if isinstance(val, object):
                 try:
@@ -845,7 +816,7 @@ class Variant(FrozenClass):
         dimensions = None
         encoding = ord(data.read(1))
         int_type = encoding & 0b00111111
-        vtype = DataType_to_VariantType(int_type)
+        vtype = datatype_to_varianttype(int_type)
         if vtype == VariantType.Null:
             return Variant(None, vtype, encoding)
         if uabin.test_bit(encoding, 7):
@@ -910,9 +881,9 @@ def get_shape(mylist):
 
 
 class XmlElement(FrozenClass):
-    '''
+    """
     An XML element encoded as an UTF-8 string.
-    '''
+    """
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -939,8 +910,7 @@ class XmlElement(FrozenClass):
 
 
 class DataValue(FrozenClass):
-
-    '''
+    """
     A value with an associated timestamp, and quality.
     Automatically generated from xml , copied and modified here to fix errors in xml spec
 
@@ -956,8 +926,7 @@ class DataValue(FrozenClass):
     :vartype ServerTimestamp: datetime
     :ivar ServerPicoseconds:
     :vartype ServerPicoseconds: int
-
-    '''
+    """
 
     def __init__(self, variant=None, status=None):
         self.Encoding = 0
@@ -1044,11 +1013,11 @@ class DataValue(FrozenClass):
     __repr__ = __str__
 
 
-def DataType_to_VariantType(int_type):
+def datatype_to_varianttype(int_type):
     """
     Takes a NodeId or int and return a VariantType
     This is only supported if int_type < 63 due to VariantType encoding
-    At low level we do not have access to address space thus decodig is limited
+    At low level we do not have access to address space thus decoding is limited
     a better version of this method can be find in ua_utils.py
     """
     if isinstance(int_type, NodeId):

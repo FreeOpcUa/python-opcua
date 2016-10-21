@@ -15,7 +15,6 @@ def _to_bool(val):
         return False
 
 
-
 class NodeData(object):
 
     def __init__(self):
@@ -211,8 +210,11 @@ class XMLParser(object):
                 mytext = mytext.replace('\n', '').replace('\r', '')
                 # obj.value.append('b"{}"'.format(mytext))
                 obj.value = mytext
+            elif ntag in ("DateTime"):
+                obj.value = val.text
             elif ntag in ("Guid"):
                 self._parse_value(val, obj)
+                obj.valuetype = obj.datatype  # override parsed string type to guid
             elif ntag == "ListOfExtensionObject":
                 obj.value = self._parse_list_of_extension_object(el)
             elif ntag == "ListOfLocalizedText":
@@ -238,10 +240,10 @@ class XMLParser(object):
         return value
 
     def _parse_list_of_extension_object(self, el):
-        '''
+        """
         Parse a uax:ListOfExtensionObject Value
         Return an list of ExtObj
-        '''
+        """
         value = []
         for extension_object_list in el:
             for extension_object in extension_object_list:
