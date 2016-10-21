@@ -143,16 +143,16 @@ class XmlTests(object):
 
     def test_xml_ns(self):
         ns_array = self.opc.get_namespace_array()
-        if len(ns_array) <= 2:
+        if len(ns_array) < 3:
             self.opc.register_namespace("dummy_ns")
+        print("ARRAY", self.opc.get_namespace_array())
 
         ref_ns = self.opc.register_namespace("ref_namespace")
         new_ns = self.opc.register_namespace("my_new_namespace")
         bname_ns = self.opc.register_namespace("bname_namespace")
 
         o = self.opc.nodes.objects.add_object(0, "xmlns0")
-        o2 = self.opc.nodes.objects.add_object(2, "xmlns2")
-        o20 = self.opc.nodes.objects.add_object(20, "xmlns20")
+        o50 = self.opc.nodes.objects.add_object(50, "xmlns20")
         o200 = self.opc.nodes.objects.add_object(200, "xmlns200")
         onew = self.opc.nodes.objects.add_object(new_ns, "xmlns_new")
         vnew = onew.add_variable(new_ns, "xmlns_new_var", 9.99)
@@ -160,7 +160,7 @@ class XmlTests(object):
         v_no_parent = o_no_export.add_variable(new_ns, "xmlns_new_var_no_parent", 9.99)
         o_bname = onew.add_object("ns={};i=4000".format(new_ns), "{}:BNAME".format(bname_ns))
 
-        nodes = [o, o2, o20, o200, onew, vnew, v_no_parent, o_bname]
+        nodes = [o, o50, o200, onew, vnew, v_no_parent, o_bname]
         print("CREATED", nodes, o_no_export)
         self.opc.export_xml(nodes, "export-ns.xml")
         # delete node and change index og new_ns before re-importing
@@ -174,9 +174,11 @@ class XmlTests(object):
         new_ns = self.opc.register_namespace("my_new_namespace_offsett")
         new_ns = self.opc.register_namespace("my_new_namespace")
 
-        self.opc.import_xml("export-ns.xml")
+        new_nodes = self.opc.import_xml("export-ns.xml")
+        print("NEW NODES", new_nodes)
 
-        for i in [o, o2, o20, o200]:
+        for i in [o, o50, o200]:
+            print(i)
             i.get_browse_name()
         with self.assertRaises(uaerrors.BadNodeIdUnknown):
             onew.get_browse_name()
@@ -187,8 +189,11 @@ class XmlTests(object):
         # get index of namespaces after import
         new_ns = self.opc.register_namespace("my_new_namespace")
         bname_ns = self.opc.register_namespace("bname_namespace")
-
+        print("ARRAY 2", self.opc.get_namespace_array())
+        
+        print("NEW NS", new_ns, onew)
         onew.nodeid.NamespaceIndex = new_ns
+        print("OENE", onew)
         onew.get_browse_name()
         vnew2 = onew.get_children()[0]
         self.assertEqual(new_ns, vnew2.nodeid.NamespaceIndex)

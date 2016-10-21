@@ -59,7 +59,7 @@ class XmlExporter(object):
 
         # now create a dict of idx_in_address_space to idx_in_exported_file
         self._addr_idx_to_xml_idx = self._make_idx_dict(idxs, ns_array) 
-        ns_to_export = [ns_array[i] for i in self._addr_idx_to_xml_idx.keys() if i != 0]
+        ns_to_export = [ns_array[i] for i in sorted(list(self._addr_idx_to_xml_idx.keys())) if i != 0]
 
         # write namespaces to xml
         self._add_namespace_uri_els(ns_to_export)

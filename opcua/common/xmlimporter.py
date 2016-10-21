@@ -63,13 +63,7 @@ class XmlImporter(object):
         self.namespaces = self._map_namespaces(self.parser.get_used_namespaces())
         self.aliases = self._map_aliases(self.parser.get_aliases())
 
-<<<<<<< c539c62a62c04aeb0df7ce3225018c57b920debd
-        # The ordering of nodes currently only works if namespaces are defined in XML.
-        # Also, it is recommended not to use node ids without namespace prefix!
-        nodes_parsed = self._sort_nodes_by_parentid(self.parser)
-=======
         nodes_parsed = self._sort_nodes_by_parentid(dnodes)
->>>>>>> heavy cleanup of xmlimporter
 
         nodes = []
         for nodedata in nodes_parsed:  # self.parser:
