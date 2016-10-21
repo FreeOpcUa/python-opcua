@@ -400,8 +400,8 @@ class Server(object):
         """
         Import nodes defined in xml
         """
-        importer = xmlimporter.XmlImporter(self.iserver.node_mgt_service)
-        return importer.import_xml(path, self)
+        importer = xmlimporter.XmlImporter(self)
+        return importer.import_xml(path)
 
     def export_xml(self, nodes, path):
         """

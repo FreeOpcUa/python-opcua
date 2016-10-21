@@ -443,49 +443,6 @@ class TestUnit(unittest.TestCase):
 
         self.assertTrue(wce.eval(ev))
 
-    def test_xmlparser_get_node_id(self):
-        server = None
-        importer = XmlImporter(server)
-
-        res1 = importer._get_node_id('i=1001')
-        self.assertEqual(res1, 'i=1001')
-
-        res2 = importer._get_node_id('ns=1;i=1001')
-        self.assertEqual(res2, 'ns=1;i=1001')
-
-        importer.namespaces = {1: [3, 'http://someuri.com']}
-        res3 = importer._get_node_id('ns=1;i=1001')
-        self.assertEqual(res3, 'ns=3;i=1001')
-
-        importer.namespaces = {1: [3, 'http://someuri.com']}
-        res4 = importer._get_node_id('ns=2;i=1001')
-        self.assertEqual(res4, 'ns=2;i=1001')
-
-    def test_xmlparser_sort_nodes_by_parentid(self):
-        NodeMock = namedtuple('NodeMock', 'nodeid parent')
-
-        server = None
-
-        unordered_nodes = [
-            NodeMock('ns=1;i=1001', None),
-            NodeMock('ns=1;i=1002', 'ns=1;i=1003'),
-            NodeMock('ns=1;i=1003', 'ns=1;i=1001'),
-            NodeMock('ns=1;i=1004', 'ns=1;i=1002')
-        ]
-
-        ordered_nodes = [
-            unordered_nodes[0],
-            unordered_nodes[2],
-            unordered_nodes[1],
-            unordered_nodes[3],
-        ]
-        namespaces = {'1': (1, 'http://someuri.com')}
-
-        importer = XmlImporter(server)
-        importer.namespaces = namespaces
-        res = importer._sort_nodes_by_parentid(unordered_nodes)
-        self.assertEqual(res, ordered_nodes)
-
 
 class TestMaskEnum(unittest.TestCase):
     class MyEnum(_MaskEnum):
