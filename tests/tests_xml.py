@@ -1,3 +1,4 @@
+import uuid
 
 from opcua import ua
 from opcua import uamethod
@@ -197,3 +198,39 @@ class XmlTests(object):
         onew.get_browse_name()
         vnew2 = onew.get_children()[0]
         self.assertEqual(new_ns, vnew2.nodeid.NamespaceIndex)
+
+    def test_xml_float(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlfloat", 5.67)
+        dtype = o.get_data_type()
+        dv = o.get_data_value()
+
+        self.opc.export_xml([o], "export-float.xml")
+        self.opc.delete_nodes([o])
+        new_nodes = self.opc.import_xml("export-float.xml")
+        o2 = self.opc.get_node(new_nodes[0])
+
+        self.assertEqual(o, o2)
+        self.assertEqual(dtype, o2.get_data_type())
+        self.assertEqual(dv.Value, o2.get_data_value().Value)
+
+    def test_xml_bool(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlbool", True)
+        self._test_xml_var_type(o, "bool")
+
+    def test_xml_guid(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlguid", uuid.uuid4())
+        self._test_xml_var_type(o, "guid")
+
+    def _test_xml_var_type(self, node, typename):
+        dtype = node.get_data_type()
+        dv = node.get_data_value()
+        
+        path = "export-{}.xml".format(typename)
+        self.opc.export_xml([node], path )
+        self.opc.delete_nodes([node])
+        new_nodes = self.opc.import_xml(path)
+        node2 = self.opc.get_node(new_nodes[0])
+
+        self.assertEqual(node, node2)
+        self.assertEqual(dtype, node2.get_data_type())
+        self.assertEqual(dv.Value, node2.get_data_value().Value)
