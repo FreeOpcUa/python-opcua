@@ -287,6 +287,11 @@ class NodeId(FrozenClass):
     def __hash__(self):
         return hash(self.__key())
 
+    def __lt__(self, other):
+        if not isinstance(other, NodeId):
+            raise AttributeError("Can only compare to NodeId")
+        return self.__hash__() < other.__hash__()
+
     def is_null(self):
         if self.NamespaceIndex != 0:
             return False
