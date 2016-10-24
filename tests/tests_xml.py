@@ -99,7 +99,7 @@ class XmlTests(object):
 
     def test_xml_vars(self):
         self.opc.register_namespace("tititi")
-        self.opc.register_namespace("whatthefuck")
+        self.opc.register_namespace("whatthexxx")
         o = self.opc.nodes.objects.add_object(2, "xmlexportobj")
         v = o.add_variable(3, "myxmlvar", 6.78, ua.VariantType.Float)
         a = o.add_variable(3, "myxmlvar-array", [6, 1], ua.VariantType.UInt16)
@@ -127,29 +127,10 @@ class XmlTests(object):
         self.assertIn(a3.get_value_rank(), (0, 2))
         self.assertEqual(a3.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [1, 0])
 
-    def test_xml_ext_obj(self):
-        arg = ua.Argument()
-        arg.DataType = ua.NodeId(ua.ObjectIds.Float)
-        arg.Description = ua.LocalizedText(b"This is a nice description")
-        arg.ArrayDimensions = [1, 2, 3]
-        arg.Name = "MyArg"
-
-        v = self.opc.nodes.objects.add_variable(2, "xmlexportobj2", arg)
-
-        nodes = [v]
-        self.opc.export_xml(nodes, "export.xml")
-        self.opc.delete_nodes(nodes)
-        self.opc.import_xml("export.xml")
-
-        arg2 = v.get_value()
-
-        self.assertEqual(arg.Name, arg2.Name)
-        self.assertEqual(arg.ArrayDimensions, arg2.ArrayDimensions)
-        self.assertEqual(arg.Description, arg2.Description)
-        self.assertEqual(arg.DataType, arg2.DataType)
-
-
     def test_xml_ns(self):
+        """
+        This test is far too complicated but catches a lot of things...
+        """
         ns_array = self.opc.get_namespace_array()
         if len(ns_array) < 3:
             self.opc.register_namespace("dummy_ns")
@@ -249,7 +230,23 @@ class XmlTests(object):
         o = self.opc.nodes.objects.add_variable(2, "xmlnodeid", ua.NodeId("mytext", 1))
         self._test_xml_var_type(o, "nodeid")
 
-    def _test_xml_var_type(self, node, typename):
+    def test_xml_ext_obj(self):
+        arg = ua.Argument()
+        arg.DataType = ua.NodeId(ua.ObjectIds.Float)
+        arg.Description = ua.LocalizedText(b"Nice description")
+        arg.ArrayDimensions = [1, 2, 3]
+        arg.Name = "MyArg"
+
+        node = self.opc.nodes.objects.add_variable(2, "xmlexportobj2", arg)
+        node2 = self._test_xml_var_type(node, "ext_obj", test_equality=False)
+        arg2 = node2.get_value()
+
+        self.assertEqual(arg.Name, arg2.Name)
+        self.assertEqual(arg.ArrayDimensions, arg2.ArrayDimensions)
+        self.assertEqual(arg.Description, arg2.Description)
+        self.assertEqual(arg.DataType, arg2.DataType)
+
+    def _test_xml_var_type(self, node, typename, test_equality=True):
         dtype = node.get_data_type()
         dv = node.get_data_value()
         rank = node.get_value_rank()
@@ -264,7 +261,8 @@ class XmlTests(object):
 
         self.assertEqual(node, node2)
         self.assertEqual(dtype, node2.get_data_type())
-        self.assertEqual(dv.Value, node2.get_data_value().Value)
+        if test_equality:
+            self.assertEqual(dv.Value, node2.get_data_value().Value)
         self.assertEqual(rank, node2.get_value_rank())
         self.assertEqual(dim, node2.get_array_dimensions())
         self.assertEqual(nclass, node2.get_node_class())

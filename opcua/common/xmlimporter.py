@@ -3,8 +3,6 @@ add node defined in XML to address space
 format is the one from opc-ua specification
 """
 import logging
-import sys
-import re
 import uuid
 import dateutil.parser
 from copy import copy
@@ -253,7 +251,7 @@ class XmlImporter(object):
             return ua.Variant(uuid.UUID(obj.value), getattr(ua.VariantType, obj.valuetype))
         elif obj.valuetype == 'LocalizedText':
             ltext = ua.LocalizedText()
-            for name, val in obj.value[0][1]:
+            for name, val in obj.value:
                 if name == "Text":
                     ltext.Text = val.encode("utf-8")
                 else:
