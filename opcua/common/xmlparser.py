@@ -9,10 +9,7 @@ import xml.etree.ElementTree as ET
 
 
 def _to_bool(val):
-    if val in ("True", "true", "on", "On", "1"):
-        return True
-    else:
-        return False
+    return val in ("True", "true", "on", "On", "1")
 
 
 def ua_type_to_python(val, uatype):
@@ -22,7 +19,7 @@ def ua_type_to_python(val, uatype):
         return _to_bool(val)
     elif uatype in ("Double", "Float"):
         return float(val)
-    elif uatype in ("String"):
+    elif uatype == "String":
         return val
     elif uatype in ("Bytes", "Bytes", "ByteString", "ByteArray"):
         if sys.version_info.major > 2:
@@ -214,7 +211,7 @@ class XMLParser(object):
             obj.value = int(child_el.text)
         elif ntag in ("Float", "Double"):
             obj.value = float(child_el.text)
-        elif ntag in ("Boolean"):
+        elif ntag == "Boolean":
             obj.value = _to_bool(child_el.text)
         elif ntag in ("ByteString", "String"):
             mytext = child_el.text
@@ -222,9 +219,9 @@ class XMLParser(object):
                 mytext = ""
             mytext = mytext.replace('\n', '').replace('\r', '')
             obj.value = mytext
-        elif ntag in ("DateTime"):
+        elif ntag == "DateTime":
             obj.value = child_el.text
-        elif ntag in ("Guid"):
+        elif ntag == "Guid":
             self._parse_value(child_el, obj)
             obj.valuetype = obj.datatype  # override parsed string type to guid
         elif ntag == "LocalizedText":

@@ -306,7 +306,6 @@ class XmlExporter(object):
         aliases_el = Et.Element('Aliases')
 
         ordered_keys = list(self.aliases.keys())
-        print("KEYS", ordered_keys)
         ordered_keys.sort()
         for nodeid in ordered_keys:
             name = self.aliases[nodeid]

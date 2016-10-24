@@ -1,11 +1,12 @@
-"""G
-add node defined in XML to address space
+"""
+add nodes defined in XML to address space
 format is the one from opc-ua specification
 """
 import logging
 import uuid
-import dateutil.parser
 from copy import copy
+
+import dateutil.parser
 
 from opcua import ua
 from opcua.common import xmlparser
@@ -192,17 +193,17 @@ class XmlImporter(object):
         res[0].StatusCode.check()
         return res[0].AddedNodeId
 
-    def _make_ext_obj(sefl, obj):
+    def _make_ext_obj(self, obj):
         ext = getattr(ua, obj.objname)()
         for name, val in obj.body:
-            if type(val) is str:
+            if isinstance(val, str):
                 raise Exception("Error val should a dict", name, val)
             else:
                 for attname, v in val:
                     # tow possible values:
                     # either we get value directly
                     # or a dict if it s an object or a list
-                    if type(v) is str:
+                    if isinstance(v, str):
                         setattr(ext, attname, to_python(v, ext, attname))
                     else:
                         # so we have either an object or a list...
@@ -229,7 +230,7 @@ class XmlImporter(object):
         """
         Returns the value for a Variable based on the objects value type.
         """
-        self.logger.debug("Setting value with type %s and value %s",  obj.valuetype, obj.value)
+        self.logger.debug("Setting value with type %s and value %s", obj.valuetype, obj.value)
         if obj.valuetype == 'ListOfExtensionObject':
             values = []
             for ext in obj.value:
