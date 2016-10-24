@@ -12,14 +12,6 @@ from opcua import ua
 from opcua.common import xmlparser
 
 
-def to_python(val, obj, attname):
-    if isinstance(obj, ua.NodeId) and attname == "Identifier":
-        raise RuntimeError("Error we should parse a NodeId here")
-        return ua.NodeId.from_string(val)
-    else:
-        return xmlparser.ua_type_to_python(val, obj.ua_types[attname])
-
-
 class XmlImporter(object):
 
     def __init__(self, server):
@@ -200,31 +192,35 @@ class XmlImporter(object):
                 raise Exception("Error val should a dict", name, val)
             else:
                 for attname, v in val:
-                    # tow possible values:
-                    # either we get value directly
-                    # or a dict if it s an object or a list
-                    if isinstance(v, str):
-                        setattr(ext, attname, to_python(v, ext, attname))
-                    else:
-                        # so we have either an object or a list...
-                        obj2 = getattr(ext, attname)
-                        if isinstance(obj2, ua.NodeId):
-                            for attname2, v2 in v:
-                                if attname2 == "Identifier":
-                                    obj2 = ua.NodeId.from_string(v2)
-                                    setattr(ext, attname, obj2)
-                                    break
-                        elif not isinstance(obj2, ua.NodeId) and not hasattr(obj2, "ua_types"):
-                            # we probably have a list
-                            my_list = []
-                            for vtype, v2 in v:
-                                my_list.append(xmlparser.ua_type_to_python(v2, vtype))
-                            setattr(ext, attname, my_list)
-                        else:
-                            for attname2, v2 in v:
-                                setattr(obj2, attname2, to_python(v2, obj2, attname2))
-                            setattr(ext, attname, obj2)
+                    self._set_attr(ext, attname, v)
         return ext
+
+    def _set_attr(self, obj, attname, val):
+        # tow possible values:
+        # either we get value directly
+        # or a dict if it s an object or a list
+        if isinstance(val, str):
+            pval = xmlparser.ua_type_to_python(val, obj.ua_types[attname])
+            setattr(obj, attname, pval)
+        else:
+            # so we have either an object or a list...
+            obj2 = getattr(obj, attname)
+            if isinstance(obj2, ua.NodeId):  # NodeId representation does not follow common rules!!
+                for attname2, v2 in val:
+                    if attname2 == "Identifier":
+                        obj2 = ua.NodeId.from_string(v2)
+                        setattr(obj, attname, obj2)
+                        break
+            elif not isinstance(obj2, ua.NodeId) and not hasattr(obj2, "ua_types"):
+                # we probably have a list
+                my_list = []
+                for vtype, v2 in val:
+                    my_list.append(xmlparser.ua_type_to_python(v2, vtype))
+                setattr(obj, attname, my_list)
+            else:
+                for attname2, v2 in val:
+                    self._set_attr(obj2, attname2, v2)
+                setattr(obj, attname, obj2)
 
     def _add_variable_value(self, obj):
         """

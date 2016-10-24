@@ -85,6 +85,10 @@ class ExtObj(object):
         self.bodytype = None
         self.body = {}
 
+    def __str__(self):
+        return "ExtObj({}, {})".format(self.objname, self.body)
+    __repr__ = __str__
+
 
 class XMLParser(object):
 
