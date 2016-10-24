@@ -235,6 +235,10 @@ class XMLParser(object):
             elif ntag in ("Guid"):
                 self._parse_value(val, obj)
                 obj.valuetype = obj.datatype  # override parsed string type to guid
+            elif ntag == "LocalizedText":
+                obj.value = self._parse_body(el)
+            elif ntag == "NodeId":
+                obj.Value = self._parse_body(el)
             elif ntag == "ListOfExtensionObject":
                 obj.value = self._parse_list_of_extension_object(el)
             elif ntag == "ListOfLocalizedText":

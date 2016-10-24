@@ -118,6 +118,7 @@ class XmlImporter(object):
         node = ua.AddNodesItem()
         node.RequestedNewNodeId = self._migrate_ns(obj.nodeid)
         node.BrowseName = self._migrate_ns(obj.browsename)
+        self.logger.info("Importing xml node (%s, %s) as (%s %s)", obj.browsename, obj.nodeid, node.BrowseName, node.RequestedNewNodeId)
         node.NodeClass = getattr(ua.NodeClass, obj.nodetype[2:])
         if obj.parent:
             node.ParentNodeId = self._migrate_ns(obj.parent)
@@ -230,6 +231,7 @@ class XmlImporter(object):
         """
         Returns the value for a Variable based on the objects value type.
         """
+        self.logger.debug("Setting value with type %s and value %s",  obj.valuetype, obj.value)
         if obj.valuetype == 'ListOfExtensionObject':
             values = []
             for ext in obj.value:
@@ -249,6 +251,14 @@ class XmlImporter(object):
             return ua.Variant(dateutil.parser.parse(obj.value), getattr(ua.VariantType, obj.valuetype))
         elif obj.valuetype == 'Guid':
             return ua.Variant(uuid.UUID(obj.value), getattr(ua.VariantType, obj.valuetype))
+        elif obj.valuetype == 'LocalizedText':
+            ltext = ua.LocalizedText()
+            for name, val in obj.value[0][1]:
+                if name == "Text":
+                    ltext.Text = bytes(val, "utf-8")
+                else:
+                    self.logger.warning("While parsing localizedText value, unkown element: %s with val: %s", name, val)
+            return ua.Variant(ltext, ua.VariantType.LocalizedText)
         else:
             return ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
 
