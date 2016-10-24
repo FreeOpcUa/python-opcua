@@ -5,6 +5,7 @@ import io
 from datetime import datetime
 import unittest
 from collections import namedtuple
+import uuid
 
 from opcua import ua
 from opcua.ua import extensionobject_from_binary
@@ -128,8 +129,10 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(v, v2)
 
     def test_guid(self):
-        g = ua.Guid()
-        sc = ua.StatusCode()
+        v = ua.Variant(uuid.uuid4(), ua.VariantType.Guid)
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        self.assertEqual(v.VariantType, v2.VariantType)
+        self.assertEqual(v, v2)
 
     def test_nodeid(self):
         nid = ua.NodeId()
@@ -150,8 +153,8 @@ class TestUnit(unittest.TestCase):
         s = ua.StringNodeId(53, 0)  # should we raise an exception???
         s1 = ua.StringNodeId("53", 0)
         bs = ua.ByteStringNodeId(b"53", 0)
-        gid = ua.Guid()
-        g = ua.ByteStringNodeId(gid, 0)
+        gid = uuid.uuid4()
+        g = ua.ByteStringNodeId(str(gid), 0)
         guid = ua.GuidNodeId(gid)
         self.assertEqual(tb, fb)
         self.assertEqual(tb, n)
@@ -439,49 +442,6 @@ class TestUnit(unittest.TestCase):
         ev.property = 3
 
         self.assertTrue(wce.eval(ev))
-
-    def test_xmlparser_get_node_id(self):
-        server = None
-        importer = XmlImporter(server)
-
-        res1 = importer._get_node_id('i=1001')
-        self.assertEqual(res1, 'i=1001')
-
-        res2 = importer._get_node_id('ns=1;i=1001')
-        self.assertEqual(res2, 'ns=1;i=1001')
-
-        importer.namespaces = {1: [3, 'http://someuri.com']}
-        res3 = importer._get_node_id('ns=1;i=1001')
-        self.assertEqual(res3, 'ns=3;i=1001')
-
-        importer.namespaces = {1: [3, 'http://someuri.com']}
-        res4 = importer._get_node_id('ns=2;i=1001')
-        self.assertEqual(res4, 'ns=2;i=1001')
-
-    def test_xmlparser_sort_nodes_by_parentid(self):
-        NodeMock = namedtuple('NodeMock', 'nodeid parent')
-
-        server = None
-
-        unordered_nodes = [
-            NodeMock('ns=1;i=1001', None),
-            NodeMock('ns=1;i=1002', 'ns=1;i=1003'),
-            NodeMock('ns=1;i=1003', 'ns=1;i=1001'),
-            NodeMock('ns=1;i=1004', 'ns=1;i=1002')
-        ]
-
-        ordered_nodes = [
-            unordered_nodes[0],
-            unordered_nodes[2],
-            unordered_nodes[1],
-            unordered_nodes[3],
-        ]
-        namespaces = {'1': (1, 'http://someuri.com')}
-
-        importer = XmlImporter(server)
-        importer.namespaces = namespaces
-        res = importer._sort_nodes_by_parentid(unordered_nodes)
-        self.assertEqual(res, ordered_nodes)
 
 
 class TestMaskEnum(unittest.TestCase):

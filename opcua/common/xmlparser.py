@@ -15,6 +15,24 @@ def _to_bool(val):
         return False
 
 
+def ua_type_to_python(val, uatype):
+    if uatype.startswith("Int") or uatype.startswith("UInt"):
+        return int(val)
+    elif uatype.lower().startswith("bool"):
+        return _to_bool(val)
+    elif uatype in ("Double", "Float"):
+        return float(val)
+    elif uatype in ("String"):
+        return val
+    elif uatype in ("Bytes", "Bytes", "ByteString", "ByteArray"):
+        if sys.version_info.major > 2:
+            return bytes(val, 'utf8')
+        else:
+            return val
+    else:
+        raise Exception("uatype nopt handled", uatype, " for val ", val)
+
+
 class NodeData(object):
 
     def __init__(self):
@@ -49,6 +67,10 @@ class NodeData(object):
         # datatype
         self.definition = []
 
+    def __str__(self):
+        return "NodeData(nodeid:{})".format(self.nodeid)
+    __repr__ = __str__
+
 
 class RefStruct(object):
 
@@ -72,17 +94,15 @@ class XMLParser(object):
     XML Parser class which traverses an XML document to collect all information required for creating an address space
     """
 
-    def __init__(self, xmlpath, server, enable_default_values=False):
+    def __init__(self, xmlpath, enable_default_values=False):
         """
         Constructor for XML parser
         Args:
             xmlpath: path to the xml document; the document must be in OPC UA defined format
-            server: the python opcua server object the nodes will be imported to
             enable_default_values: false results in xml variable nodes with no Value element being converted to Null
                                    true results in XML variable nodes to keep defined datatype with a default value
         """
 
-        self.server = server  # POC
         self.logger = logging.getLogger(__name__)
         self._retag = re.compile(r"(\{.*\})(.*)")
         self.path = xmlpath
@@ -117,16 +137,15 @@ class XMLParser(object):
                 break
         return aliases
 
-    def __iter__(self):
+    def get_node_datas(self):
         nodes = []
         for child in self.root:
             name = self._retag.match(child.tag).groups()[1]
             if name not in ["Aliases", "NamespaceUris"]:
                 node = self._parse_node(name, child)
                 nodes.append(node)
-
-        self.it = iter(nodes)
-        return self
+        
+        return nodes
 
     def __next__(self):
         while True:
@@ -240,12 +259,21 @@ class XMLParser(object):
                 mytext = mytext.replace('\n', '').replace('\r', '')
                 # obj.value.append('b"{}"'.format(mytext))
                 obj.value = mytext
+            elif ntag in ("DateTime"):
+                obj.value = val.text
             elif ntag in ("Guid"):
                 self._parse_value(val, obj)
+                obj.valuetype = obj.datatype  # override parsed string type to guid
+            elif ntag == "LocalizedText":
+                obj.value = self._parse_body(el)
+            elif ntag == "NodeId":
+                obj.Value = self._parse_body(el)
             elif ntag == "ListOfExtensionObject":
                 obj.value = self._parse_list_of_extension_object(el)
             elif ntag == "ListOfLocalizedText":
                 obj.value = self._parse_list_of_localized_text(el)
+            elif ntag.startswith("ListOf"):
+                obj.value = self._parse_list(el[0])
             elif ntag == "ExtensionObject":
                 obj.value = self._parse_extension_object(el)
             else:
@@ -254,6 +282,17 @@ class XMLParser(object):
     def _get_text(self, el):
         txtlist = [txt.strip() for txt in el.itertext()]
         return "".join(txtlist)
+
+    def _parse_list(self, el):
+        value = []
+        for val_el in el:
+            ntag = self._retag.match(val_el.tag).groups()[1]
+            if ntag.startswith("ListOf"):
+                val = self._parse_list(val_el)
+            else:
+                val = ua_type_to_python(val_el.text, ntag)
+            value.append(val)
+        return value
 
     def _parse_list_of_localized_text(self, el):
         value = []

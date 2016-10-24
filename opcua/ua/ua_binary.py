@@ -7,6 +7,7 @@ import struct
 import logging
 from datetime import datetime, timedelta, tzinfo, MAXYEAR
 from calendar import timegm
+import uuid
 
 from opcua.ua.uaerrors import UaError
 
@@ -37,8 +38,9 @@ def unset_bit(data, offset):
 
 
 class UTC(tzinfo):
-
-    """UTC"""
+    """
+    UTC
+    """
 
     def utcoffset(self, dt):
         return timedelta(0)
@@ -160,6 +162,36 @@ class _Null(_Primitive):
         return None
 
 
+class _Guid(_Primitive):
+
+    @staticmethod
+    def pack(guid):
+        # convert python UUID 6 field format to OPC UA 4 field format
+        f1 = Primitives.UInt32.pack(guid.time_low)
+        f2 = Primitives.UInt16.pack(guid.time_mid)
+        f3 = Primitives.UInt16.pack(guid.time_hi_version)
+        f4a = Primitives.Byte.pack(guid.clock_seq_hi_variant)
+        f4b = Primitives.Byte.pack(guid.clock_seq_low)
+        f4c = struct.pack('>Q', guid.node)[2:8]  # no primitive .pack available for 6 byte int
+        f4 = f4a+f4b+f4c
+        # concat byte fields
+        b = f1+f2+f3+f4
+
+        return b
+
+    @staticmethod
+    def unpack(data):
+        # convert OPC UA 4 field format to python UUID bytes
+        f1 = struct.pack('>I', Primitives.UInt32.unpack(data))
+        f2 = struct.pack('>H', Primitives.UInt16.unpack(data))
+        f3 = struct.pack('>H', Primitives.UInt16.unpack(data))
+        f4 = data.read(8)
+        # concat byte fields
+        b = f1 + f2 + f3 + f4
+
+        return uuid.UUID(bytes=b)
+
+
 class _Primitive1(_Primitive):
     def __init__(self, fmt):
         self.struct = struct.Struct(fmt)
@@ -174,7 +206,7 @@ class _Primitive1(_Primitive):
     
     #def pack_array(self, array):
         #"""
-        #Basically the same as the method in _Primitive but MAYBE a bit more efficitent....
+        #Basically the same as the method in _Primitive but MAYBE a bit more efficient....
         #"""
         #if array is None:
             #return b'\xff\xff\xff\xff'
@@ -184,7 +216,6 @@ class _Primitive1(_Primitive):
         #if length == 1:
             #return b'\x01\x00\x00\x00' + self.pack(array[0])
         #return struct.pack(build_array_format("<i", length, self.format[1]), length, *array)
-
 
 
 class Primitives1(object):
@@ -211,6 +242,7 @@ class Primitives(Primitives1):
     ByteString = _Bytes()
     CharArray = _Bytes()
     DateTime = _DateTime()
+    Guid = _Guid()
 
 
 def pack_uatype_array(vtype, array):
