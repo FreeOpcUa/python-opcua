@@ -232,9 +232,6 @@ class XmlTests(object):
         o = self.opc.nodes.objects.add_variable(2, "xmlstringarray", ["mystring2", "mystring3"])
         node2 = self._test_xml_var_type(o, "stringarray")
         dv = node2.get_data_value()
-        #from IPython import embed
-        #embed()
-        #dv.Value.ArrayDimensions = [2]
 
     def test_xml_guid(self):
         o = self.opc.nodes.objects.add_variable(2, "xmlguid", uuid.uuid4())
@@ -243,6 +240,14 @@ class XmlTests(object):
     def test_xml_localizedtext(self):
         o = self.opc.nodes.objects.add_variable(2, "xmlltext", ua.LocalizedText("mytext"))
         self._test_xml_var_type(o, "localized_text")
+
+    def test_xml_localizedtext_array(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlltext_array", [ua.LocalizedText("erert"), ua.LocalizedText("erert33")])
+        self._test_xml_var_type(o, "localized_text_array")
+
+    def test_xml_nodeid(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlnodeid", ua.NodeId("mytext", 1))
+        self._test_xml_var_type(o, "nodeid")
 
     def _test_xml_var_type(self, node, typename):
         dtype = node.get_data_type()
