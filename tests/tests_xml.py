@@ -1,8 +1,15 @@
 import uuid
+import logging
 
 from opcua import ua
 from opcua import uamethod
 from opcua.ua import uaerrors
+
+
+logger = logging.getLogger("opcua.common.xmlimporter")
+logger.setLevel(logging.DEBUG)
+logger = logging.getLogger("opcua.common.xmlparser")
+logger.setLevel(logging.DEBUG)
 
 
 @uamethod
@@ -217,13 +224,32 @@ class XmlTests(object):
         o = self.opc.nodes.objects.add_variable(2, "xmlbool", True)
         self._test_xml_var_type(o, "bool")
 
+    def test_xml_string(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlstring", "mystring")
+        self._test_xml_var_type(o, "string")
+
+    def test_xml_string_array(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlstringarray", ["mystring2", "mystring3"])
+        node2 = self._test_xml_var_type(o, "stringarray")
+        dv = node2.get_data_value()
+        #from IPython import embed
+        #embed()
+        #dv.Value.ArrayDimensions = [2]
+
     def test_xml_guid(self):
         o = self.opc.nodes.objects.add_variable(2, "xmlguid", uuid.uuid4())
         self._test_xml_var_type(o, "guid")
 
+    def test_xml_localizedtext(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlltext", ua.LocalizedText("mytext"))
+        self._test_xml_var_type(o, "localized_text")
+
     def _test_xml_var_type(self, node, typename):
         dtype = node.get_data_type()
         dv = node.get_data_value()
+        rank = node.get_value_rank()
+        dim = node.get_array_dimensions()
+        nclass = node.get_node_class()
         
         path = "export-{}.xml".format(typename)
         self.opc.export_xml([node], path )
@@ -234,3 +260,7 @@ class XmlTests(object):
         self.assertEqual(node, node2)
         self.assertEqual(dtype, node2.get_data_type())
         self.assertEqual(dv.Value, node2.get_data_value().Value)
+        self.assertEqual(rank, node2.get_value_rank())
+        self.assertEqual(dim, node2.get_array_dimensions())
+        self.assertEqual(nclass, node2.get_node_class())
+        return node2
