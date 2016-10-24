@@ -98,7 +98,13 @@ class XMLParser(object):
 
         self.tree = ET.parse(xmlpath)
         self.root = self.tree.getroot()
-        self.it = None
+        # FIXME: get these namespaces from XML!!
+        self.ns = {
+            'base': "http://opcfoundation.org/UA/2011/03/UANodeSet.xsd",
+            'uax': "http://opcfoundation.org/UA/2008/02/Types.xsd",
+            'xsd': "http://www.w3.org/2001/XMLSchema",
+            'xsi': "http://www.w3.org/2001/XMLSchema-instance"
+        }
 
     def get_used_namespaces(self):
         """
@@ -134,17 +140,6 @@ class XMLParser(object):
                 nodes.append(node)
         
         return nodes
-
-    def __next__(self):
-        while True:
-            if sys.version_info[0] < 3:
-                child = self.it.next()
-            else:
-                child = self.it.__next__()
-            return child
-
-    def next(self):  # support for python2
-        return self.__next__()
 
     def _parse_node(self, name, child):
         """
@@ -212,9 +207,7 @@ class XMLParser(object):
             self.logger.info("Not implemented tag: %s", el)
 
     def _parse_value(self, el, obj):
-        self.logger.info("Parsing value")
         for val in el:
-            self.logger.info("tag %s", val.tag)
             ntag = self._retag.match(val.tag).groups()[1]
             obj.valuetype = ntag
             if ntag in ("Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64"):
@@ -236,9 +229,13 @@ class XMLParser(object):
                 self._parse_value(val, obj)
                 obj.valuetype = obj.datatype  # override parsed string type to guid
             elif ntag == "LocalizedText":
+                from IPython import embed
+                embed()
                 obj.value = self._parse_body(el)
             elif ntag == "NodeId":
-                obj.Value = self._parse_body(el)
+                id_el_list = el.findall('uax:NodeId/uax:Identifier', self.ns)
+                if id_el_list:
+                    obj.value = id_el_list[0].text 
             elif ntag == "ListOfExtensionObject":
                 obj.value = self._parse_list_of_extension_object(el)
             elif ntag == "ListOfLocalizedText":

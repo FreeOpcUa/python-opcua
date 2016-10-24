@@ -259,6 +259,8 @@ class XmlImporter(object):
                 else:
                     self.logger.warning("While parsing localizedText value, unkown element: %s with val: %s", name, val)
             return ua.Variant(ltext, ua.VariantType.LocalizedText)
+        elif obj.valuetype == 'NodeId':
+            return ua.Variant(ua.NodeId.from_string(obj.value))
         else:
             return ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
 
