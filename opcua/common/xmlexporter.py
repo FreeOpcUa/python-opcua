@@ -218,7 +218,7 @@ class XmlExporter(object):
         dtype = node.get_data_type()
         if dtype.Identifier in o_ids.ObjectIdNames:
             dtype_name = o_ids.ObjectIdNames[dtype.Identifier]
-            self.aliases[dtype_name] = dtype.to_string()
+            self.aliases[dtype] = dtype_name
         else:
             dtype_name = dtype.to_string()
         rank = node.get_value_rank()
@@ -305,9 +305,13 @@ class XmlExporter(object):
     def _add_alias_els(self):
         aliases_el = Et.Element('Aliases')
 
-        for k, v in self.aliases.items():
-            ref_el = Et.SubElement(aliases_el, 'Alias', Alias=k)
-            ref_el.text = v
+        ordered_keys = list(self.aliases.keys())
+        print("KEYS", ordered_keys)
+        ordered_keys.sort()
+        for nodeid in ordered_keys:
+            name = self.aliases[nodeid]
+            ref_el = Et.SubElement(aliases_el, 'Alias', Alias=name)
+            ref_el.text = nodeid.to_string()
 
         self.etree.getroot().insert(0, aliases_el)
 
@@ -326,7 +330,7 @@ class XmlExporter(object):
                 ref_el.attrib['IsForward'] = 'false'
             ref_el.text = self._node_to_string(ref.NodeId)
 
-            self.aliases[ref_name] = ref.ReferenceTypeId.to_string()
+            self.aliases[ref.ReferenceTypeId] = ref_name
 
 
 def member_to_etree(el, name, dtype, val):
