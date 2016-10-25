@@ -13,7 +13,7 @@ def instantiate(parent, node_type, nodeid=None, bname=None, idx=0):
     """
     instantiate a node type under a parent node.
     nodeid and browse name of new node can be specified, or just namespace index
-    If they exists children of the node type, such as components, variables and 
+    If they exists children of the node type, such as components, variables and
     properties are also instantiated
     """
     rdesc = _rdesc_from_node(parent, node_type)
@@ -23,7 +23,7 @@ def instantiate(parent, node_type, nodeid=None, bname=None, idx=0):
     if bname is None:
         bname = rdesc.BrowseName
     elif isinstance(bname, str):
-        bname = ua.QualifiedName.from_string(bname)    
+        bname = ua.QualifiedName.from_string(bname)
 
     nodeids = _instantiate_node(parent.server, parent.nodeid, rdesc, nodeid, bname)
     return [Node(parent.server, nid) for nid in nodeids]
@@ -53,7 +53,7 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
 
     elif rdesc.NodeClass in (ua.NodeClass.Variable, ua.NodeClass.VariableType):
         addnode.NodeClass = ua.NodeClass.Variable
-        _read_and_copy_attrs(node_type, ua.VariableAttributes(), addnode)            
+        _read_and_copy_attrs(node_type, ua.VariableAttributes(), addnode)
     elif rdesc.NodeClass in (ua.NodeClass.Method,):
         addnode.NodeClass = ua.NodeClass.Method
         _read_and_copy_attrs(node_type, ua.MethodAttributes(), addnode)
@@ -63,7 +63,7 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
 
     res = server.add_nodes([addnode])[0]
     added_nodes = [res.AddedNodeId]
-    
+
     if recursive:
         parents = ua_utils.get_node_supertypes(node_type, includeitself=True)
         node = Node(server, res.AddedNodeId)
@@ -71,10 +71,13 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
             descs = parent.get_children_descriptions(includesubtypes=False)
             for c_rdesc in descs:
                 # skip items that already exists, prefer the 'lowest' one in object hierarchy
-                if not ua_utils.is_child_present(node, c_rdesc.BrowseName):                    
-                    nodeids = _instantiate_node(server, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
+                if not ua_utils.is_child_present(node, c_rdesc.BrowseName):
+                    if res.AddedNodeId.NodeIdType is ua.NodeIdType.String:
+                        nodeids = _instantiate_node(server, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(identifier=res.AddedNodeId.Identifier + "." + c_rdesc.BrowseName.Name, namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
+                    else:
+                        nodeids = _instantiate_node(server, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
                     added_nodes.extend(nodeids)
-                
+
     return added_nodes
 
 
