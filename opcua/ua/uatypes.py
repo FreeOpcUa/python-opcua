@@ -9,8 +9,6 @@ import os
 import uuid
 import re
 import itertools
-if sys.version_info.major > 2:
-    unicode = str
 
 from opcua.ua import ua_binary as uabin
 from opcua.ua import status_codes
@@ -20,6 +18,8 @@ from opcua.ua.uaerrors import UaStatusCodeError
 from opcua.ua.uaerrors import UaStringParsingError
 
 
+if sys.version_info.major > 2:
+    unicode = str
 def get_win_epoch():
     return uabin.win_epoch_to_datetime(0)
 
@@ -1037,3 +1037,43 @@ def datatype_to_varianttype(int_type):
         return VariantType(int_type)
     else:
         return VariantTypeCustom(int_type)
+
+
+def get_default_value(vtype):
+    """
+    Given a variant type return default value for this type
+    """
+    if vtype == VariantType.Null:
+        return None
+    elif vtype == VariantType.Boolean:
+        return True
+    elif vtype in (VariantType.SByte, VariantType.Byte, VariantType.ByteString):
+        return b""
+    elif 4 <= vtype.value <= 11:
+        return 0
+    elif vtype == VariantType.String:
+        return None  # a string can be null
+    elif vtype == VariantType.DateTime:
+        return datetime.now()
+    elif vtype == VariantType.Guid:
+        return uuid.uuid4()
+    elif vtype == VariantType.XmlElement:
+        return None  #Not sure this is correct
+    elif vtype == VariantType.NodeId:
+        return NodeId()
+    elif vtype == VariantType.ExpandedNodeId:
+        return NodeId()
+    elif vtype == VariantType.StatusCode:
+        return StatusCode()
+    elif vtype == VariantType.QualifiedName:
+        return QualifiedName()
+    elif vtype == VariantType.LocalizedText:
+        return LocalizedText()
+    elif vtype == VariantType.ExtensionObject:
+        return ExtensionObject()
+    elif vtype == VariantType.DataValue:
+        return DataValue()
+    elif vtype == VariantType.Variant:
+        return Variant()
+
+
