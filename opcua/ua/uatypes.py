@@ -750,6 +750,11 @@ class Variant(FrozenClass):
             self.VariantType = value.VariantType
         if self.VariantType is None:
             self.VariantType = self._guess_type(self.Value)
+        if self.Value is None and self.VariantType not in (
+                VariantType.Null,
+                VariantType.String,
+                VariantType.DateTime):
+            raise UaError("Variant of type {} cannot have value None".format(self.VariantType))
         if self.Dimensions is None and type(self.Value) in (list, tuple):
             dims = get_shape(self.Value)
             if len(dims) > 1:
