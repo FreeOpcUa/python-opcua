@@ -197,9 +197,11 @@ class Subscription(object):
 
     def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):
         is_list = True
-        if not type(nodes) in (list, tuple):
-            is_list = False
+        try:
+            nodes = list(nodes)
+        except TypeError:
             nodes = [nodes]
+            is_list = False
         mirs = []
         for node in nodes:
             mir = self._make_monitored_item_request(node, attr, mfilter, queuesize)
