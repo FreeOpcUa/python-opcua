@@ -4,6 +4,7 @@ high level interface to subscriptions
 import time
 import logging
 from threading import Lock
+import collections
 
 from opcua import ua
 from opcua.common import events
@@ -197,9 +198,11 @@ class Subscription(object):
 
     def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):
         is_list = True
-        if not type(nodes) in (list, tuple):
-            is_list = False
+        if isinstance(nodes, collections.Iterable):
+            nodes = list(nodes)
+        else:
             nodes = [nodes]
+            is_list = False
         mirs = []
         for node in nodes:
             mir = self._make_monitored_item_request(node, attr, mfilter, queuesize)
