@@ -72,8 +72,10 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
             for c_rdesc in descs:
                 # skip items that already exists, prefer the 'lowest' one in object hierarchy
                 if not ua_utils.is_child_present(node, c_rdesc.BrowseName):
+                    # if root node being instantiated has a String NodeId, create the children with a String NodeId
                     if res.AddedNodeId.NodeIdType is ua.NodeIdType.String:
-                        nodeids = _instantiate_node(server, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(identifier=res.AddedNodeId.Identifier + "." + c_rdesc.BrowseName.Name, namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
+                        inst_nodeid = res.AddedNodeId.Identifier + "." + c_rdesc.BrowseName.Name
+                        nodeids = _instantiate_node(server, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(identifier=inst_nodeid, namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
                     else:
                         nodeids = _instantiate_node(server, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
                     added_nodes.extend(nodeids)
