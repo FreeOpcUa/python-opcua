@@ -208,7 +208,10 @@ class XMLParser(object):
 
     def _parse_value(self, val_el, obj):
         child_el = val_el.find(".//")  # should be only one child
-        ntag = self._retag.match(child_el.tag).groups()[1]
+        if child_el is not None:
+            ntag = self._retag.match(child_el.tag).groups()[1]
+        else:
+            ntag = "Null"
         obj.valuetype = ntag
 
         if ntag in ("Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64"):
@@ -242,6 +245,8 @@ class XMLParser(object):
             obj.value = self._parse_list(child_el)
         elif ntag == "ExtensionObject":
             obj.value = self._parse_ext_obj(child_el)
+        elif ntag == "Null":
+            obj.value = None
         else:
             self.logger.warning("Parsing value of type '%s' not implemented", ntag)
 
