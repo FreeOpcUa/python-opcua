@@ -4,6 +4,7 @@ high level interface to subscriptions
 import time
 import logging
 from threading import Lock
+import collections
 
 from opcua import ua
 from opcua.common import events
@@ -197,9 +198,9 @@ class Subscription(object):
 
     def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):
         is_list = True
-        try:
+        if isinstance(nodes, collections.Iterable):
             nodes = list(nodes)
-        except TypeError:
+        else:
             nodes = [nodes]
             is_list = False
         mirs = []
