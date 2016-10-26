@@ -74,8 +74,13 @@ def string_to_val(string, vtype):
     if vtype == ua.VariantType.Null:
         val = None
     elif vtype == ua.VariantType.Boolean:
-        val = bool(string)
-    elif 4 <= vtype.value < 9:
+        if string in ("True", "true", "on", "On", "1"):
+            val = True
+        else:
+            val = False
+    elif vtype in (ua.VariantType.Int16, ua.VariantType.Int32, ua.VariantType.Int64):
+            val = int(string)
+    elif vtype in (ua.VariantType.UInt16, ua.VariantType.UInt32, ua.VariantType.UInt64):
         val = int(string)
     elif vtype in (ua.VariantType.Float, ua.VariantType.Double):
         val = float(string)

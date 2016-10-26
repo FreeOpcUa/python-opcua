@@ -607,8 +607,29 @@ class CommonTests(object):
         prop1 = mydevicederived.get_child(["0:sensorx_id"])
         var1 = mydevicederived.get_child(["0:childparam"])
         var_parent = mydevicederived.get_child(["0:sensor"])
-        prop_parent = mydevicederived.get_child(["0:sensor_id"])        
+        prop_parent = mydevicederived.get_child(["0:sensor_id"])
 
+    def test_instantiate_string_nodeid(self):
+        # Create device type
+        dev_t = self.opc.nodes.base_object_type.add_object_type(0, "MyDevice2")
+        v_t = dev_t.add_variable(0, "sensor", 1.0)
+        p_t = dev_t.add_property(0, "sensor_id", "0340")
+        ctrl_t = dev_t.add_object(0, "controller")
+        prop_t = ctrl_t.add_property(0, "state", "Running")
+
+        # instanciate device
+        nodes = instantiate(self.opc.nodes.objects, dev_t, nodeid=ua.NodeId("InstDevice", 2, ua.NodeIdType.String), bname="2:InstDevice")
+        mydevice = nodes[0]
+
+        self.assertEqual(mydevice.get_node_class(), ua.NodeClass.Object)
+        self.assertEqual(mydevice.get_type_definition(), dev_t.nodeid)
+        obj = mydevice.get_child(["0:controller"])
+        obj_nodeid_ident = obj.nodeid.Identifier
+        prop = mydevice.get_child(["0:controller", "0:state"])
+        self.assertEqual(obj_nodeid_ident, "InstDevice.controller")
+        self.assertEqual(prop.get_type_definition().Identifier, ua.ObjectIds.PropertyType)
+        self.assertEqual(prop.get_value(), "Running")
+        self.assertNotEqual(prop.nodeid, prop_t.nodeid)
 
     def test_variable_with_datatype(self):
         v1 = self.opc.nodes.objects.add_variable(3, 'VariableEnumType1', ua.ApplicationType.ClientAndServer, datatype=ua.NodeId(ua.ObjectIds.ApplicationType))
