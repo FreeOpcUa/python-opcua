@@ -368,7 +368,7 @@ def value_to_etree(el, dtype_name, dtype, node):
 
 
 def _value_to_etree(el, type_name, dtype, val):
-    if not val:
+    if val is None:
         return
     if isinstance(val, (list, tuple)):
         if dtype.Identifier > 21:  # this is an extentionObject:
