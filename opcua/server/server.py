@@ -381,16 +381,16 @@ class Server(object):
             base_t = Node(self.iserver.isession, ua.NodeId(basetype))
 
         custom_t = base_t.add_object_type(idx, name)
-        for property in properties:
+        for prop in properties:
             datatype = None
-            if len(property) > 2:
-                datatype = property[2]
-            custom_t.add_property(idx, property[0], None, varianttype=property[1], datatype=datatype)
+            if len(prop) > 2:
+                datatype = prop[2]
+            custom_t.add_property(idx, prop[0], ua.get_default_value(prop[1]), varianttype=prop[1], datatype=datatype)
         for variable in variables:
             datatype = None
             if len(variable) > 2:
                 datatype = variable[2]
-            custom_t.add_variable(idx, variable[0], None, varianttype=variable[1], datatype=datatype)
+            custom_t.add_variable(idx, variable[0], ua.get_default_value(variable[1]), varianttype=variable[1], datatype=datatype)
         for method in methods:
             custom_t.add_method(idx, method[0], method[1], method[2], method[3])
 

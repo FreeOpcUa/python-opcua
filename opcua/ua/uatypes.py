@@ -27,8 +27,9 @@ def get_win_epoch():
 class _FrozenClass(object):
 
     """
-    make it impossible to add members to a class.
-    This is a hack since I found out that most bugs are due to misspelling a variable in protocol
+    Make it impossible to add members to a class.
+    Not pythonic at all but we found out it prevents many many
+    bugs in use of protocol structures
     """
     _freeze = False
 
@@ -37,6 +38,7 @@ class _FrozenClass(object):
             raise TypeError("Error adding member '{}' to class '{}', class is frozen, members are {}".format(
                 key, self.__class__.__name__, self.__dict__.keys()))
         object.__setattr__(self, key, value)
+
 
 if "PYOPCUA_NO_TYPO_CHECK" in os.environ:
     # typo check is cpu consuming, but it will make debug easy.
@@ -1046,11 +1048,13 @@ def get_default_value(vtype):
     if vtype == VariantType.Null:
         return None
     elif vtype == VariantType.Boolean:
-        return True
+        return False
     elif vtype in (VariantType.SByte, VariantType.Byte, VariantType.ByteString):
         return b""
-    elif 4 <= vtype.value <= 11:
+    elif 4 <= vtype.value <= 9:
         return 0
+    elif vtype in (VariantType.Float, VariantType.Double):
+        return 0.0
     elif vtype == VariantType.String:
         return None  # a string can be null
     elif vtype == VariantType.DateTime:
@@ -1075,5 +1079,7 @@ def get_default_value(vtype):
         return DataValue()
     elif vtype == VariantType.Variant:
         return Variant()
+    else:
+        raise RuntimeError("function take a uatype as argument, got:", vtype)
 
 

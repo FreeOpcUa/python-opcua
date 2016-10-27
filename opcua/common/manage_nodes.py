@@ -357,10 +357,11 @@ def _create_method(parent, nodeid, qname, callback, inputs, outputs):
 def _vtype_to_argument(vtype):
     if isinstance(vtype, ua.Argument):
         return vtype
-
     arg = ua.Argument()
-    v = ua.Variant(None, vtype)
-    arg.DataType = _guess_datatype(v)
+    if isinstance(vtype, ua.VariantType):
+        arg.DataType = ua.NodeId(vtype.value)
+    else:
+        arg.DataType = ua.NodeId(vtype)
     return arg
 
 
