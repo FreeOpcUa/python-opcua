@@ -320,7 +320,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
 
         ev = opcua.common.events.get_event_obj_from_type_node(etype)
         check_custom_event(self, ev, etype)
-        self.assertEqual(ev.PropertyNum, None)
+        self.assertEqual(ev.PropertyNum, 0)
         self.assertEqual(ev.PropertyString, None)
 
     def test_eventgenerator_customEvent(self):
@@ -330,7 +330,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         check_eventgenerator_CustomEvent(self, evgen, etype)
         check_eventgenerator_SourceServer(self, evgen)
 
-        self.assertEqual(evgen.event.PropertyNum, None)
+        self.assertEqual(evgen.event.PropertyNum, 0)
         self.assertEqual(evgen.event.PropertyString, None)
 
     def test_eventgenerator_double_customEvent(self):
@@ -343,12 +343,12 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         check_eventgenerator_SourceServer(self, evgen)
 
         # Properties from MyEvent1
-        self.assertEqual(evgen.event.PropertyNum, None)
+        self.assertEqual(evgen.event.PropertyNum, 0)
         self.assertEqual(evgen.event.PropertyString, None)
 
          # Properties from MyEvent2
-        self.assertEqual(evgen.event.PropertyBool, None)
-        self.assertEqual(evgen.event.PropertyInt, None)
+        self.assertEqual(evgen.event.PropertyBool, False)
+        self.assertEqual(evgen.event.PropertyInt, 0)
 
     def test_eventgenerator_customEvent_MyObject(self):
         objects = self.opc.get_objects_node()
@@ -359,7 +359,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         check_eventgenerator_CustomEvent(self, evgen, etype)
         check_event_generator_object(self, evgen, o)
 
-        self.assertEqual(evgen.event.PropertyNum, None)
+        self.assertEqual(evgen.event.PropertyNum, 0)
         self.assertEqual(evgen.event.PropertyString, None)
 
     def test_context_manager(self):

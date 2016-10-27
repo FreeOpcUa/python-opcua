@@ -9,8 +9,6 @@ import os
 import uuid
 import re
 import itertools
-if sys.version_info.major > 2:
-    unicode = str
 
 from opcua.ua import ua_binary as uabin
 from opcua.ua import status_codes
@@ -20,6 +18,8 @@ from opcua.ua.uaerrors import UaStatusCodeError
 from opcua.ua.uaerrors import UaStringParsingError
 
 
+if sys.version_info.major > 2:
+    unicode = str
 def get_win_epoch():
     return uabin.win_epoch_to_datetime(0)
 
@@ -27,8 +27,9 @@ def get_win_epoch():
 class _FrozenClass(object):
 
     """
-    make it impossible to add members to a class.
-    This is a hack since I found out that most bugs are due to misspelling a variable in protocol
+    Make it impossible to add members to a class.
+    Not pythonic at all but we found out it prevents many many
+    bugs in use of protocol structures
     """
     _freeze = False
 
@@ -37,6 +38,7 @@ class _FrozenClass(object):
             raise TypeError("Error adding member '{}' to class '{}', class is frozen, members are {}".format(
                 key, self.__class__.__name__, self.__dict__.keys()))
         object.__setattr__(self, key, value)
+
 
 if "PYOPCUA_NO_TYPO_CHECK" in os.environ:
     # typo check is cpu consuming, but it will make debug easy.
@@ -750,6 +752,11 @@ class Variant(FrozenClass):
             self.VariantType = value.VariantType
         if self.VariantType is None:
             self.VariantType = self._guess_type(self.Value)
+        if self.Value is None and self.VariantType not in (
+                VariantType.Null,
+                VariantType.String,
+                VariantType.DateTime):
+            raise UaError("Variant of type {} cannot have value None".format(self.VariantType))
         if self.Dimensions is None and type(self.Value) in (list, tuple):
             dims = get_shape(self.Value)
             if len(dims) > 1:
@@ -1032,3 +1039,47 @@ def datatype_to_varianttype(int_type):
         return VariantType(int_type)
     else:
         return VariantTypeCustom(int_type)
+
+
+def get_default_value(vtype):
+    """
+    Given a variant type return default value for this type
+    """
+    if vtype == VariantType.Null:
+        return None
+    elif vtype == VariantType.Boolean:
+        return False
+    elif vtype in (VariantType.SByte, VariantType.Byte, VariantType.ByteString):
+        return b""
+    elif 4 <= vtype.value <= 9:
+        return 0
+    elif vtype in (VariantType.Float, VariantType.Double):
+        return 0.0
+    elif vtype == VariantType.String:
+        return None  # a string can be null
+    elif vtype == VariantType.DateTime:
+        return datetime.now()
+    elif vtype == VariantType.Guid:
+        return uuid.uuid4()
+    elif vtype == VariantType.XmlElement:
+        return None  #Not sure this is correct
+    elif vtype == VariantType.NodeId:
+        return NodeId()
+    elif vtype == VariantType.ExpandedNodeId:
+        return NodeId()
+    elif vtype == VariantType.StatusCode:
+        return StatusCode()
+    elif vtype == VariantType.QualifiedName:
+        return QualifiedName()
+    elif vtype == VariantType.LocalizedText:
+        return LocalizedText()
+    elif vtype == VariantType.ExtensionObject:
+        return ExtensionObject()
+    elif vtype == VariantType.DataValue:
+        return DataValue()
+    elif vtype == VariantType.Variant:
+        return Variant()
+    else:
+        raise RuntimeError("function take a uatype as argument, got:", vtype)
+
+
