@@ -24,6 +24,23 @@ class TestUnit(unittest.TestCase):
     Simple unit test that do not need to setup a server or a client
     '''
 
+    def test_nodeid_ordering(self):
+        a = ua.NodeId(2000, 1)
+        b = ua.NodeId(3000, 1)
+        c = ua.NodeId(20, 0)
+        d = ua.NodeId("tititu", 1)
+        e = ua.NodeId("aaaaa", 1)
+        f = ua.NodeId("aaaaa", 2)
+        g = ua.NodeId(uuid.uuid4(), 1)
+        h = ua.TwoByteNodeId(2001)
+        i = ua.NodeId(b"lkjkl", 1)
+        j = ua.NodeId(b"aaa", 5)
+
+        mylist = [a, b, c, d, e, f, g, h, i, j]
+        mylist.sort()
+        expected = [c, h, a, b, e, d, f, g, i, j]
+        self.assertEqual(mylist, expected)
+
     def test_string_to_variant_int(self):
         s_arr_uint = "[1, 2, 3, 4]"
         arr_uint = [1, 2, 3, 4]

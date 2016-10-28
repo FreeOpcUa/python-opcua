@@ -221,7 +221,7 @@ class StatusCode(FrozenClass):
         return not self.__eq__(other)
 
 
-class NodeIdType(Enum):
+class NodeIdType(IntEnum):
     TwoByte = 0
     FourByte = 1
     Numeric = 2
@@ -271,28 +271,30 @@ class NodeId(FrozenClass):
                 self.NodeIdType = NodeIdType.String
             elif isinstance(self.Identifier, bytes):
                 self.NodeIdType = NodeIdType.ByteString
+            elif isinstance(self.Identifier, uuid.UUID):
+                self.NodeIdType = NodeIdType.Guid
             else:
                 raise UaError("NodeId: Could not guess type of NodeId, set NodeIdType")
 
-    def __key(self):
-        if self.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric):  # twobyte, fourbyte and numeric may represent the same node
-            return self.NamespaceIndex, self.Identifier
-        else:
-            return self.NodeIdType, self.NamespaceIndex, self.Identifier
+    def _key(self):
+        if self.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric): 
+            # twobyte, fourbyte and numeric may represent the same node
+            return (NodeIdType.Numeric, self.NamespaceIndex, self.Identifier)
+        return (self.NodeIdType, self.NamespaceIndex, self.Identifier)
 
     def __eq__(self, node):
-        return isinstance(node, NodeId) and self.__key() == node.__key()
+        return isinstance(node, NodeId) and self._key() == node._key()
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __hash__(self):
-        return hash(self.__key())
+        return hash(self._key())
 
     def __lt__(self, other):
         if not isinstance(other, NodeId):
             raise AttributeError("Can only compare to NodeId")
-        return self.__hash__() < other.__hash__()
+        return self._key() < other._key()
 
     def is_null(self):
         if self.NamespaceIndex != 0:
