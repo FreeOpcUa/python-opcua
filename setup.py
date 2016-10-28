@@ -8,7 +8,7 @@ else:
     install_requires = ["python-dateutil"]
 
 setup(name="freeopcua",
-      version="0.10.17",
+      version="0.90.0",
       description="Pure Python OPC-UA client and server library",
       author="Olivier Roulet-Dubonnet",
       author_email="olivier.roulet@gmail.com",
