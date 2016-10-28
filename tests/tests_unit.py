@@ -33,8 +33,8 @@ class TestUnit(unittest.TestCase):
         f = ua.NodeId("aaaaa", 2)
         g = ua.NodeId(uuid.uuid4(), 1)
         h = ua.TwoByteNodeId(2001)
-        i = ua.NodeId(b"lkjkl", 1)
-        j = ua.NodeId(b"aaa", 5)
+        i = ua.NodeId(b"lkjkl", 1, ua.NodeIdType.ByteString)
+        j = ua.NodeId(b"aaa", 5, ua.NodeIdType.ByteString)
 
         mylist = [a, b, c, d, e, f, g, h, i, j]
         mylist.sort()
