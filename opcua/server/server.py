@@ -3,6 +3,7 @@ High level interface to pure python OPC-UA server
 """
 
 import logging
+from datetime import timedelta
 try:
     from urllib.parse import urlparse
 except ImportError:
@@ -414,17 +415,19 @@ class Server(object):
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.iserver.isession, nodes, recursive)
 
-    def historize_node_data_change(self, node):
+    def historize_node_data_change(self, node, period=timedelta(days=7), count=0):
         """
         Start historizing supplied nodes; see history module
         Args:
             node: node or list of nodes that can be historized (variables/properties)
+            period: time delta to store the history; older data will be deleted from the storage
+            count: number of changes to store in the history
 
         Returns:
         """
         nodes = [node]
         for node in nodes:
-            self.iserver.enable_history_data_change(node)
+            self.iserver.enable_history_data_change(node, period, count)
 
     def dehistorize_node_data_change(self, node):
         """
@@ -438,17 +441,19 @@ class Server(object):
         for node in nodes:
             self.iserver.disable_history_data_change(node)
 
-    def historize_node_event(self, node):
+    def historize_node_event(self, node, period=timedelta(days=7), count=0):
         """
         Start historizing events from node (typically a UA object); see history module
         Args:
             node: node or list of nodes that can be historized (UA objects)
+            period: time delta to store the history; older data will be deleted from the storage
+            count: number of events to store in the history
 
         Returns:
         """
         nodes = [node]
         for node in nodes:
-            self.iserver.enable_history_event(node)
+            self.iserver.enable_history_event(node, period, count)
 
     def dehistorize_node_event(self, node):
         """
