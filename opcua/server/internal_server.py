@@ -92,7 +92,7 @@ class InternalServer(object):
         if cachefile_win:
             cachefile_win += ".dat"
 
-        if cachefile is not None and path.isfile(cachefile) or path.isfile(cachefile_win):
+        if cachefile and (path.isfile(cachefile) or path.isfile(cachefile_win)):
             # import address space from shelve
             self.aspace.load_cache(cachefile)
         else:
