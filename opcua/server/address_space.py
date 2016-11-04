@@ -493,24 +493,50 @@ class AddressSpace(object):
     def dump(self, path):
         """
         dump address space as binary to file; note that server must be stopped for this method to work
+        if caching is enabled when dumping the cache files and binary file are required to restore address space state!
         """
+        dump_cache = False
+        if hasattr(self._nodes, "cache"):
+            dump_cache = True
+
         # prepare nodes in address space for being serialized
-        for nodeid in self._nodes.keys():
+        for nodeid in list(self._nodes.keys()):
             node = self._nodes[nodeid]
 
             # if the node has a reference to a method call, remove it so the object can be serialized
             if hasattr(node, "call"):
                 self._nodes[nodeid].call = None
 
+            # if the address space is using a cache, update the shelve if the node exists in the shelve
+            if dump_cache:
+                if self._nodes.shelve_item(nodeid, self._nodes[nodeid]):
+                    del self._nodes.cache[nodeid]
+
+        # save the shelve changes to disk
+        if dump_cache:
+            self._nodes.source.sync()
+
         with open(path, 'wb') as f:
-            pickle.dump(self._nodes, f, pickle.HIGHEST_PROTOCOL)
+            # if address space is using a cache, only dump whatever is remaining in cache (user nodes)
+            # the rest is saved in the shelve files
+            if dump_cache:
+                pickle.dump(self._nodes.cache, f, pickle.HIGHEST_PROTOCOL)
+            else:
+                pickle.dump(self._nodes, f, pickle.HIGHEST_PROTOCOL)
 
     def load(self, path):
         """
         load address space from file, overwriting everything in current address space
+        if the binary was created by a server using caching you must use caching! (the binary won't have
+        standard address space because it's in the cache files)
         """
         with open(path, 'rb') as f:
-            self._nodes = pickle.load(f)
+            # if using a cache, restore the data to cache
+            if hasattr(self._nodes, "cache"):
+                self._nodes.cache = pickle.load(f)
+            # otherwise overwrite the entire address space
+            else:
+                self._nodes = pickle.load(f)
 
     def make_cache(self, path):
         """
@@ -521,6 +547,8 @@ class AddressSpace(object):
         for nodeid in self._nodes.keys():
             s[nodeid.to_string()] = self._nodes[nodeid]
         s.close()
+
+        self.load_cache(path)
 
     def load_cache(self, path):
         """
@@ -552,7 +580,7 @@ class AddressSpace(object):
 
             def __delitem__(self, key):
                 # only deleting items from the cache is allowed
-                del self.cache[key]
+                del(self.cache[key])
 
             def __iter__(self):
                 # only the cache can be iterated over
@@ -562,7 +590,17 @@ class AddressSpace(object):
                 # only returns the length of items in the cache, not unaccessed items in the shelve
                 return len(self.cache)
 
-        self._nodes = LazyLoadingDict(shelve.open(path, "r"))
+            def shelve_item(self, key, value):
+                # update the shelf with a new value
+                # must call sync on the shelve after using this method to save to disk!
+                key = key.to_string()
+                if key in self.source:
+                    self.source[key] = value
+                    return True
+                else:
+                    return False
+
+        self._nodes = LazyLoadingDict(shelve.open(path, "r+"))
 
     def get_attribute_value(self, nodeid, attr):
         with self._lock:
