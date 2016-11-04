@@ -433,9 +433,9 @@ class MethodService(object):
 class AddressSpace(object):
 
     """
-    The address space object stores all the nodes og the OPC-UA server
+    The address space object stores all the nodes of the OPC-UA server
     and helper methods.
-    The methods are threadsafe
+    The methods are thread safe
     """
 
     def __init__(self):
@@ -491,23 +491,44 @@ class AddressSpace(object):
 
     def dump(self, path):
         """
-        dump address space as binary to file
+        dump address space as binary to file; note that server must be stopped for this method to work
         """
-        s = shelve.open(path, "n", protocol = pickle.HIGHEST_PROTOCOL)
-        for nodeid in self._nodes.keys():
-            s[nodeid.to_string()] = self._nodes[nodeid]
-        s.close()
+        with open(path, 'wb') as f:
+            pickle.dump(self._nodes, f, pickle.HIGHEST_PROTOCOL)
 
     def load(self, path):
         """
-        load address space from file, overwritting everything current address space
+        load address space from file, overwriting everything in current address space
+        """
+        with open(path, 'rb') as f:
+            self._nodes = pickle.load(f)
+
+    def make_cache(self, path):
+        """
+        make a shelve to act as a cache for the address space(typically used only for the standard address space)
+        """
+        s = shelve.open(path, "n", protocol=pickle.HIGHEST_PROTOCOL)
+        for nodeid in self._nodes.keys():
+            node = self._nodes[nodeid]
+
+            # if the node has a reference to a method call, remove it so object can be serialized
+            if hasattr(node, "call"):
+                node.call = None
+
+            s[nodeid.to_string()] = node
+        s.close()
+
+    def load_cache(self, path):
+        """
+        load address space from cache
         """
         class LazyLoadingDict(collections.MutableMapping):
             def __init__(self, source):
-                self.source = source
-                self.cache = {}
+                self.source = source  # python shelve
+                self.cache = {}  # internal dict
 
             def __getitem__(self, key):
+                # try to get the item (node) from the cache, if it isn't there get it from the shelve
                 try:
                     return self.cache[key]
                 except KeyError:
