@@ -576,8 +576,7 @@ class SecureConnection(object):
         for chunk in chunks:
             self._sequence_number += 1
             if self._sequence_number >= (1 << 32):
-                logger.debug("Wrapping sequence number: %d -> 1",
-                             self._sequence_number)
+                logger.debug("Wrapping sequence number: %d -> 1", self._sequence_number)
                 self._sequence_number = 1
             chunk.SequenceHeader.SequenceNumber = self._sequence_number
         return b"".join([chunk.to_binary() for chunk in chunks])
@@ -591,9 +590,13 @@ class SecureConnection(object):
                     self.channel.SecurityToken.ChannelId))
             if chunk.SecurityHeader.TokenId != self.channel.SecurityToken.TokenId:
                 if chunk.SecurityHeader.TokenId not in self._old_tokens:
-                    raise UaError("Wrong token id {}, expected {}".format(
-                        chunk.SecurityHeader.TokenId,
-                        self.channel.SecurityToken.TokenId))
+                    logger.warning("Received a chunk with wrong token id %s, expected %s", chunk.SecurityHeader.TokenId, self.channel.SecurityToken.TokenId)
+
+                    #raise UaError("Wrong token id {}, expected {}, old tokens are {}".format(
+                        #chunk.SecurityHeader.TokenId,
+                        #self.channel.SecurityToken.TokenId,
+                        #self._old_tokens))
+
                 else:
                     # Do some cleanup, spec says we can remove old tokens when new one are used
                     idx = self._old_tokens.index(chunk.SecurityHeader.TokenId)

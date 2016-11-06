@@ -159,7 +159,9 @@ class UASocketClient(object):
         request = ua.OpenSecureChannelRequest()
         request.Parameters = params
         future = self._send_request(request, message_type=ua.MessageType.SecureOpen)
-
+        
+        # FIXME: we have a race condition here
+        # we can get a packet with the new token id before we reach to store it..
         response = ua.OpenSecureChannelResponse.from_binary(future.result(self.timeout))
         response.ResponseHeader.ServiceResult.check()
         self._connection.set_channel(response.Parameters)
