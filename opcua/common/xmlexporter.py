@@ -397,7 +397,7 @@ class XmlExporter(object):
             if dtype.NamespaceIndex == 0 and dtype.Identifier <= 21:
                 elname = "uax:ListOf" + type_name
             else:  # this is an extentionObject:
-                elname = "uax:ListOfExself.tensionObject"
+                elname = "uax:ListOfExtensionObject"
 
             list_el = Et.SubElement(el, elname)
             for nval in val:
