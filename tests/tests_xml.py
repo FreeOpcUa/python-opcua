@@ -103,7 +103,7 @@ class XmlTests(object):
         o = self.opc.nodes.objects.add_object(2, "xmlexportobj")
         v = o.add_variable(3, "myxmlvar", 6.78, ua.VariantType.Float)
         a = o.add_variable(3, "myxmlvar-array", [6, 1], ua.VariantType.UInt16)
-        a2 = o.add_variable(3, "myxmlvar-2dim", [[1, 2], [3,4]], ua.VariantType.UInt32)
+        a2 = o.add_variable(3, "myxmlvar-2dim", [[1, 2], [3, 4]], ua.VariantType.UInt32)
         a3 = o.add_variable(3, "myxmlvar-2dim", [[]], ua.VariantType.ByteString)
 
         nodes = [o, v, a, a2, a3]
@@ -113,16 +113,16 @@ class XmlTests(object):
 
         self.assertEqual(v.get_value(), 6.78)
         self.assertEqual(v.get_data_type(), ua.NodeId(ua.ObjectIds.Float))
-        
+
         self.assertEqual(a.get_data_type(), ua.NodeId(ua.ObjectIds.UInt16))
         self.assertIn(a.get_value_rank(), (0, 1))
         self.assertEqual(a.get_value(), [6, 1])
 
-        self.assertEqual(a2.get_value(), [[1, 2],[3, 4]])
+        self.assertEqual(a2.get_value(), [[1, 2], [3, 4]])
         self.assertEqual(a2.get_data_type(), ua.NodeId(ua.ObjectIds.UInt32))
         self.assertIn(a2.get_value_rank(), (0, 2))
         self.assertEqual(a2.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [2, 2])
-        #self.assertEqual(a3.get_value(), [[]])  # would require special code ...
+        # self.assertEqual(a3.get_value(), [[]])  # would require special code ...
         self.assertEqual(a3.get_data_type(), ua.NodeId(ua.ObjectIds.ByteString))
         self.assertIn(a3.get_value_rank(), (0, 2))
         self.assertEqual(a3.get_attribute(ua.AttributeIds.ArrayDimensions).Value.Value, [1, 0])
@@ -157,7 +157,7 @@ class XmlTests(object):
         ns_node = self.opc.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         nss = ns_node.get_value()
         nss.remove("my_new_namespace")
-        #nss.remove("ref_namespace")
+        # nss.remove("ref_namespace")
         nss.remove("bname_namespace")
         ns_node.set_value(nss)
         new_ns = self.opc.register_namespace("my_new_namespace_offsett")
@@ -171,7 +171,7 @@ class XmlTests(object):
             i.get_browse_name()
         with self.assertRaises(uaerrors.BadNodeIdUnknown):
             onew.get_browse_name()
-        
+
         # since my_new_namesspace2 is referenced byt a node it should have been reimported
         nss = self.opc.get_namespace_array()
         self.assertIn("bname_namespace", nss)
@@ -179,7 +179,7 @@ class XmlTests(object):
         new_ns = self.opc.register_namespace("my_new_namespace")
         bname_ns = self.opc.register_namespace("bname_namespace")
         print("ARRAY 2", self.opc.get_namespace_array())
-        
+
         print("NEW NS", new_ns, onew)
         onew.nodeid.NamespaceIndex = new_ns
         print("OENE", onew)
@@ -246,15 +246,24 @@ class XmlTests(object):
         self.assertEqual(arg.Description, arg2.Description)
         self.assertEqual(arg.DataType, arg2.DataType)
 
+    def test_xml_enum(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlenum", 0, varianttype=ua.VariantType.Int32, datatype=ua.ObjectIds.ApplicationType)
+        self._test_xml_var_type(o, "enum")
+
+    def test_xml_custom_uint32(self):
+        t = self.opc.create_custom_data_type(2, 'MyCustomUint32', ua.ObjectIds.UInt32)
+        o = self.opc.nodes.objects.add_variable(2, "xmlcustomunit32", 0, varianttype=ua.VariantType.UInt32, datatype=t.nodeid)
+        self._test_xml_var_type(o, "cuint32")
+
     def _test_xml_var_type(self, node, typename, test_equality=True):
         dtype = node.get_data_type()
         dv = node.get_data_value()
         rank = node.get_value_rank()
         dim = node.get_array_dimensions()
         nclass = node.get_node_class()
-        
+
         path = "export-{}.xml".format(typename)
-        self.opc.export_xml([node], path )
+        self.opc.export_xml([node], path)
         self.opc.delete_nodes([node])
         new_nodes = self.opc.import_xml(path)
         node2 = self.opc.get_node(new_nodes[0])
