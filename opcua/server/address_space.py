@@ -3,7 +3,6 @@ import logging
 from datetime import datetime
 import collections
 import shelve
-from itertools import chain
 try:
     import cPickle as pickle
 except:
