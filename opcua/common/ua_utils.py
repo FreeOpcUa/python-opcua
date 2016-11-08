@@ -238,3 +238,36 @@ def get_variable_basetype(server, datatype_id):
     if not dtype_supers_nodeids:
         raise ua.UaError("Datatype must be a subtype of builtin types %s" % datatype_id.nodeid)
     return dtype_supers_nodeids[0]
+
+def get_nodes_of_namespace(server, namespaces=[]):
+    """
+    Get the nodes of one or more namespaces .      
+    Args:
+        server: opc ua server to use
+        namespaces: list of string uri or int indexes of the namespace to export
+    Returns:
+        List of nodes that are part of the provided namespaces
+    """
+    ns_available = server.get_namespace_array()
+    ns_count = len(ns_available)
+
+    if not namespaces:
+        namespaces = ns_available[1:]
+
+    if type(namespaces) is not list and type(namespaces) in [str, int]:
+        namespaces = [namespaces]
+
+    namespace_indexes = []
+    for namespace in namespaces:
+        if type(namespace) is str:
+            namespace = server.get_namespace_index(namespace)
+        if namespace >= ns_count:
+            raise ua.UaError("Namespace index '%d' is invalid" % namespace)
+        namespace_indexes.append(namespace)
+
+    nodes = []
+    for nodeid in server.iserver.aspace.keys():
+        if nodeid.NamespaceIndex != 0 and  nodeid.NamespaceIndex in namespace_indexes:
+            node = server.get_node(nodeid)
+            nodes.append(node)
+    return nodes
