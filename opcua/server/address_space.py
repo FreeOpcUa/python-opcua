@@ -494,11 +494,11 @@ class AddressSpace(object):
         dump address space as binary to file; note that server must be stopped for this method to work
         """
         # prepare nodes in address space for being serialized
-        for nodeid in self._nodes.keys():
-            node = self._nodes[nodeid]
+        for nodeid, v in self._nodes.items():
+            ndata = self._nodes[nodeid]
 
             # if the node has a reference to a method call, remove it so the object can be serialized
-            if hasattr(node, "call"):
+            if ndata.call is not None:
                 self._nodes[nodeid].call = None
 
         with open(path, 'wb') as f:
@@ -511,9 +511,9 @@ class AddressSpace(object):
         with open(path, 'rb') as f:
             self._nodes = pickle.load(f)
 
-    def make_cache(self, path):
+    def make_aspace_shelf(self, path):
         """
-        make a shelve for storing nodes from the standard address space; nodes are moved to a cache
+        make a shelf for storing nodes from the standard address space; nodes are moved to a cache
         by the LazyLoadingDict class when they are accessed
         """
         s = shelve.open(path, "n", protocol=pickle.HIGHEST_PROTOCOL)
@@ -521,21 +521,21 @@ class AddressSpace(object):
             s[nodeid.to_string()] = self._nodes[nodeid]
         s.close()
 
-    def load_cache(self, path):
+    def load_lazy_dict(self, path):
         """
-        load the standard address space from the LazyLoadingDict as needed
+        load the standard address space nodes from the LazyLoadingDict as needed
         """
         class LazyLoadingDict(collections.MutableMapping):
             """
-            Special dict that only loads nodes as they are accessed. If a node is accessed it gets copied
-            to the cache dict. All user nodes are saved in the cache ONLY
+            Special dict that only loads nodes as they are accessed. If a node is accessed it gets copied from the
+            shelve to the cache dict. All user nodes are saved in the cache ONLY
             """
             def __init__(self, source):
-                self.source = source  # python shelve
+                self.source = source  # python shelf
                 self.cache = {}  # internal dict
 
             def __getitem__(self, key):
-                # try to get the item (node) from the cache, if it isn't there get it from the shelve
+                # try to get the item (node) from the cache, if it isn't there get it from the shelf
                 try:
                     return self.cache[key]
                 except KeyError:
@@ -543,7 +543,7 @@ class AddressSpace(object):
                     return node
 
             def __setitem__(self, key, value):
-                # add a new item to the cache; if this item is in the shelve it is not updated
+                # add a new item to the cache; if this item is in the shelf it is not updated
                 self.cache[key] = value
 
             def __contains__(self, key):
@@ -558,7 +558,7 @@ class AddressSpace(object):
                 return iter(self.cache.keys())
 
             def __len__(self):
-                # only returns the length of items in the cache, not unaccessed items in the shelve
+                # only returns the length of items in the cache, not unaccessed items in the shelf
                 return len(self.cache)
 
         self._nodes = LazyLoadingDict(shelve.open(path, "r"))

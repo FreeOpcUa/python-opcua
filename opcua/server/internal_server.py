@@ -47,7 +47,7 @@ class ServerDesc(object):
 
 class InternalServer(object):
 
-    def __init__(self, cachefile=None):
+    def __init__(self, shelffile=None):
         self.logger = logging.getLogger(__name__)
 
         self.server_callback_dispatcher = CallbackDispatcher()
@@ -64,7 +64,7 @@ class InternalServer(object):
         self.method_service = MethodService(self.aspace)
         self.node_mgt_service = NodeManagementService(self.aspace)
 
-        self.load_standard_address_space(cachefile)
+        self.load_standard_address_space(shelffile)
 
         self.loop = utils.ThreadLoop()
         self.asyncio_transports = []
@@ -86,15 +86,15 @@ class InternalServer(object):
         ns_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         ns_node.set_value(uries)
 
-    def load_standard_address_space(self, cachefile=None):
-        # check for a cache file, in windows the file extension is also needed for the check
-        cachefile_win = cachefile
-        if cachefile_win:
-            cachefile_win += ".dat"
+    def load_standard_address_space(self, shelffile=None):
+        # check for a python shelf file, in windows the file extension is also needed for the check
+        shelffile_win = shelffile
+        if shelffile_win:
+            shelffile_win += ".dat"
 
-        if cachefile and (path.isfile(cachefile) or path.isfile(cachefile_win)):
-            # import address space from shelve
-            self.aspace.load_cache(cachefile)
+        if shelffile and (path.isfile(shelffile) or path.isfile(shelffile_win)):
+            # import address space from shelf
+            self.aspace.load_lazy_dict(shelffile)
         else:
             # import address space from code generated from xml
             standard_address_space.fill_address_space(self.node_mgt_service)
@@ -103,8 +103,8 @@ class InternalServer(object):
             # importer.import_xml("/path/to/python-opcua/schemas/Opc.Ua.NodeSet2.xml", self)
 
             # if a cache file was supplied a shelve of the standard address space can now be built for next start up
-            if cachefile:
-                self.aspace.make_cache(cachefile)
+            if shelffile:
+                self.aspace.make_aspace_shelf(shelffile)
 
     def load_address_space(self, path):
         """
