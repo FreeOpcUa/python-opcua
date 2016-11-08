@@ -17,7 +17,6 @@ port_num1 = 48530
 port_num2 = 48530
 
 
-
 class HistoryCommon(object):
     srv = Server
     clt = Client
@@ -41,7 +40,7 @@ class HistoryCommon(object):
         o = cls.srv.get_objects_node()
         cls.values = [i for i in range(20)]
         cls.var = o.add_variable(3, "history_var", 0)
-        cls.srv.iserver.enable_history_data_change(cls.var, period=None, count=0)
+        cls.srv.historize_node_data_change(cls.var, period=None, count=0)
         for i in cls.values:
             cls.var.set_value(i)
         time.sleep(1)
@@ -156,14 +155,13 @@ class TestHistoryEvents(object):
         cls.srvevgen = cls.srv.get_event_generator()
 
         cls.srv_node = cls.srv.get_node(ua.ObjectIds.Server)
-        cls.srv.iserver.enable_history_event(cls.srv_node, period=None)
+        cls.srv.historize_node_event(cls.srv_node, period=None)
 
         for i in cls.ev_values:
             cls.srvevgen.event.Severity = cls.ev_values[i]
             cls.srvevgen.trigger(message="test message")
             time.sleep(.1)
         time.sleep(2)
-
 
     # only has end time, should return reverse order
     def test_history_ev_read_2_with_end(self):
@@ -266,7 +264,7 @@ class TestHistoryLimitsCommon(unittest.TestCase):
         self.history.save_node_value(self.id, value)
 
     def test_count_limit(self):
-        self.history.new_historized_node(self.id, period = None, count = 3)
+        self.history.new_historized_node(self.id, period=None, count=3)
         self.assertEqual(self.resultCount(), 0)
         self.addValue(5)
         self.assertEqual(self.resultCount(), 1)
@@ -280,7 +278,7 @@ class TestHistoryLimitsCommon(unittest.TestCase):
         self.assertEqual(self.resultCount(), 3)
 
     def test_period_limit(self):
-        self.history.new_historized_node(self.id, period = timedelta(hours = 3))
+        self.history.new_historized_node(self.id, period=timedelta(hours=3))
         self.assertEqual(self.resultCount(), 0)
         self.addValue(5)
         self.assertEqual(self.resultCount(), 0)
@@ -294,7 +292,7 @@ class TestHistoryLimitsCommon(unittest.TestCase):
         self.assertEqual(self.resultCount(), 3)
 
     def test_combined_limit(self):
-        self.history.new_historized_node(self.id, period = timedelta(hours = 3), count = 2)
+        self.history.new_historized_node(self.id, period=timedelta(hours=3), count=2)
         self.assertEqual(self.resultCount(), 0)
         self.addValue(5)
         self.assertEqual(self.resultCount(), 0)
@@ -311,6 +309,7 @@ class TestHistoryLimitsCommon(unittest.TestCase):
 class TestHistoryLimits(TestHistoryLimitsCommon):
     def createHistoryInstance(self):
         return HistoryDict()
+
 
 class TestHistorySQLLimits(TestHistoryLimitsCommon):
     def createHistoryInstance(self):
