@@ -9,7 +9,7 @@ from copy import copy
 
 from opcua import ua
 from opcua.ua import object_ids as o_ids
-from opcua.common.ua_utils import get_node_supertypes
+from opcua.common.ua_utils import get_node_supertypes, get_variable_basetype
 
 
 class XmlExporter(object):
@@ -231,25 +231,6 @@ class XmlExporter(object):
         el.attrib["DataType"] = dtype_name
         self.value_to_etree(el, dtype_name, dtype, node)
 
-    def _get_variable_basetype(self, datatype):
-        """
-        Looks up the base datatype of the provided datatype. 
-        The base datatype is either:
-        A primitive type (ns=0, i<=21) or a complex one (ns=0 i>21 and i<=30) like Enum and Struct.
-        
-        Args:
-            datatype: NodeId of a datype of a variable
-        Returns:
-            NodeId of datatype base or None in case base datype can not be determined
-        """
-        if datatype.NamespaceIndex == 0 and type(datatype) == ua.NumericNodeId and datatype.Identifier <= 30:
-            return datatype
-        dtype_supers_nodes = get_node_supertypes(self.server.get_node(datatype), includeitself=True, skipbase=True)
-        dtype_supers_nodeids = [node.nodeid for node in dtype_supers_nodes if node.nodeid.NamespaceIndex == 0 and  node.nodeid.Identifier <= 30]
-        if len(dtype_supers_nodeids) >= 1:
-            return dtype_supers_nodeids[0]
-        return None
-
     def add_etree_variable(self, node):
         """
         Add a UA variable element to the XML etree
@@ -391,8 +372,6 @@ class XmlExporter(object):
         if val is None:
             return
 
-        dtype_base = self._get_variable_basetype(dtype)
-
         if isinstance(val, (list, tuple)):
             if dtype.NamespaceIndex == 0 and dtype.Identifier <= 21:
                 elname = "uax:ListOf" + type_name
@@ -403,6 +382,8 @@ class XmlExporter(object):
             for nval in val:
                 self._value_to_etree(list_el, type_name, dtype, nval)
         else:
+            dtype_base = get_variable_basetype(self.server, dtype)
+
             if dtype_base == ua.NodeId(ua.ObjectIds.Enumeration):
                 dtype_base = ua.NodeId(ua.ObjectIds.Int32)
                 type_name = ua.ObjectIdNames[dtype_base.Identifier]
