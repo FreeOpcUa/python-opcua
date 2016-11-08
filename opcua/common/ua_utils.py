@@ -237,4 +237,4 @@ def get_variable_basetype(server, datatype_id):
     dtype_supers_nodeids = [node.nodeid for node in parents if node.nodeid.NamespaceIndex == 0 and  node.nodeid.Identifier <= 30]
     if not dtype_supers_nodeids:
         raise ua.UaError("Datatype must be a subtype of builtin types %s" % datatype_id.nodeid)
-
+    return dtype_supers_nodeids[0]
