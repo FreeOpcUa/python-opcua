@@ -142,13 +142,13 @@ def get_node_supertypes(node, includeitself=False, skipbase=True):
     :param skipbase don't include the toplevel one
     :returns list of ua.Node, top parent first 
     """
-    parents = []      
+    parents = []
     if includeitself:
         parents.append(node)
     parents.extend(_get_node_supertypes(node))
     if skipbase and len(parents) > 1:
         parents = parents[:-1]
-        
+
     return parents
 
 
@@ -158,11 +158,11 @@ def _get_node_supertypes(node):
     """
     basetypes = []
     parents = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
-    if len(parents) != 0:  
+    if len(parents) != 0:
         # TODO: Is it possible to have multiple subtypes ? If so extended support for it
-        basetypes.append(parents[0])  
+        basetypes.append(parents[0])
         basetypes.extend(_get_node_supertypes(parents[0]))
-       
+
     return basetypes
 
 
@@ -180,22 +180,34 @@ def is_child_present(node, browsename):
 
     return False
 
+def _get_var_basetypes(server, datatype):
+    """
+    Looks up the super datatypes of the provided datatype.
+    Special case for buildin datatypes where ns=0 and i<=30 then it return itself, no other super are returned.  
+         
+    Args:
+        datatype: NodeId of a datype of a variable
+    Returns:
+        Nodes of datatype base or an expection in case base datype can not be determined
+    """
+    # first check if datatype is a simple built in type
+    if datatype.NamespaceIndex == 0 and type(datatype) == ua.NumericNodeId and datatype.Identifier <= 30:
+        return [datatype]
+    # now handle some special cases
+    parents = get_node_supertypes(server.get_node(datatype), includeitself=True, skipbase=True)
+    return parents
 
 def dtype_to_vtype(server, dtype_node):
     """
     Given a node datatype, find out the variant type to encode
     data. This is not exactly straightforward...
     """
-    # first check if datatype is a simple built in type
-    identifier = dtype_node.nodeid.Identifier
-    if isinstance(identifier, int) and identifier <= 22:
-        return ua.VariantType(identifier)
-    # now handle some special cases
-    parents = _get_node_supertypes(dtype_node)
+    parents = _get_var_basetypes(server, dtype_node.nodeid)
     if not parents:
         raise ua.UaError("Datatype must be a subtype of builtin types")
+    # TODO: parents[0] doesn't have to be an build in type. Is this correct use ? .
     parent = parents[0]
-    
+
     if parent.nodeid.Identifier == 29:
         # we have an enumeration, we need to llok at child to find type
         descs = dtype_node.get_children_descriptions()
@@ -209,3 +221,20 @@ def dtype_to_vtype(server, dtype_node):
 
     return dtype_to_vtype(server, parents[0])
 
+def get_variable_basetype(server, datatype_id):
+    """
+    Looks up the base datatype of the provided datatype. 
+    The base datatype is either:
+    A primitive type (ns=0, i<=21) or a complex one (ns=0 i>21 and i<=30) like Enum and Struct.
+    
+    Args:
+        datatype: NodeId of a datype of a variable
+    Returns:
+        NodeId of datatype base or None in case base datype can not be determined
+    """
+    parents = _get_var_basetypes(server, datatype_id)
+
+    dtype_supers_nodeids = [node.nodeid for node in parents if node.nodeid.NamespaceIndex == 0 and  node.nodeid.Identifier <= 30]
+    if not dtype_supers_nodeids:
+        raise ua.UaError("Datatype must be a subtype of builtin types %s" % datatype_id.nodeid)
+    return dtype_supers_nodeids[0]
