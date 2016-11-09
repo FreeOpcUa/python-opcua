@@ -249,25 +249,19 @@ def get_nodes_of_namespace(server, namespaces=[]):
         List of nodes that are part of the provided namespaces
     """
     ns_available = server.get_namespace_array()
-    ns_count = len(ns_available)
 
     if not namespaces:
         namespaces = ns_available[1:]
-
-    if type(namespaces) is not list and type(namespaces) in [str, int]:
+    elif isinstance(namespaces, (str, int)):
         namespaces = [namespaces]
 
-    namespace_indexes = []
-    for namespace in namespaces:
-        if type(namespace) is str:
-            namespace = server.get_namespace_index(namespace)
-        if namespace >= ns_count:
-            raise ua.UaError("Namespace index '%d' is invalid" % namespace)
-        namespace_indexes.append(namespace)
+    # make sure all namespace are indexes (if needed convert strings to indexes)
+    namespace_indexes = [ n if isinstance(n, int) else ns_available.index(n) for n in namespaces ]
+    ns_count = len(ns_available)
+    if max(namespace_indexes) >= ns_count:
+        raise ua.UaError("Namespace index '%d' is invalid" % max(namespace_indexes))
 
-    nodes = []
-    for nodeid in server.iserver.aspace.keys():
-        if nodeid.NamespaceIndex != 0 and  nodeid.NamespaceIndex in namespace_indexes:
-            node = server.get_node(nodeid)
-            nodes.append(node)
+    # filter nodeis based on the provide namespaces and convert the nodeid to a node
+    nodes = [server.get_node(nodeid) for nodeid in server.iserver.aspace.keys()
+             if nodeid.NamespaceIndex != 0 and nodeid.NamespaceIndex in namespace_indexes]
     return nodes
