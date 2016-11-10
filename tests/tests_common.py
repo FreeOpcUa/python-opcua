@@ -9,6 +9,7 @@ from opcua import ua
 from opcua import uamethod
 from opcua import instantiate
 from opcua import copy_node
+from opcua.common import ua_utils
 
 
 def add_server_methods(srv):
@@ -653,5 +654,38 @@ class CommonTests(object):
         # tests
         self.assertEqual(myvar.get_data_type(), myenum_type.nodeid)
         myvar.set_value(ua.LocalizedText("String2"))
+
+    def test_supertypes(self):
+        nint32 = self.opc.get_node(ua.ObjectIds.Int32)
+        node = ua_utils.get_node_supertype(nint32)
+        self.assertEqual(node, self.opc.get_node(ua.ObjectIds.Integer))
+
+        nodes = ua_utils.get_node_supertypes(nint32)
+        self.assertEqual(nodes[1], self.opc.get_node(ua.ObjectIds.Number))
+        self.assertEqual(nodes[0], self.opc.get_node(ua.ObjectIds.Integer))
+
+        # test custom
+        dtype = nint32.add_data_type(0, "MyCustomDataType")
+        node = ua_utils.get_node_supertype(dtype)
+        self.assertEqual(node, nint32)
+
+        dtype2 = dtype.add_data_type(0, "MyCustomDataType2")
+        node = ua_utils.get_node_supertype(dtype2)
+        self.assertEqual(node, dtype)
+
+    def test_base_data_type(self):
+        nint32 = self.opc.get_node(ua.ObjectIds.Int32)
+        dtype = nint32.add_data_type(0, "MyCustomDataType")
+        dtype2 = dtype.add_data_type(0, "MyCustomDataType2")
+        self.assertEqual(ua_utils.get_base_data_type(dtype), nint32)
+        self.assertEqual(ua_utils.get_base_data_type(dtype2), nint32)
+
+        ext = self.opc.nodes.objects.add_variable(0, "MyExtensionObject", ua.Argument())
+        d = ext.get_data_type()
+        d = self.opc.get_node(d)
+        self.assertEqual(ua_utils.get_base_data_type(d), self.opc.get_node(ua.ObjectIds.Structure))
+        self.assertEqual(ua_utils.data_type_to_variant_type(d), ua.VariantType.ExtensionObject)
+
+
 
 
