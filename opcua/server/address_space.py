@@ -120,10 +120,11 @@ class ViewService(object):
     def _get_sub_ref(self, ref):
         res = []
         nodedata = self._aspace[ref]
-        for ref in nodedata.references:
-            if ref.ReferenceTypeId.Identifier == ua.ObjectIds.HasSubtype and ref.IsForward:
-                res.append(ref.NodeId)
-                res += self._get_sub_ref(ref.NodeId)
+        if nodedata is not None:
+            for ref in nodedata.references:
+                if ref.ReferenceTypeId.Identifier == ua.ObjectIds.HasSubtype and ref.IsForward:
+                    res.append(ref.NodeId)
+                    res += self._get_sub_ref(ref.NodeId)
         return res
 
     def _suitable_direction(self, desc, isforward):
@@ -449,7 +450,8 @@ class AddressSpace(object):
 
     def __getitem__(self, nodeid):
         with self._lock:
-            return self._nodes.__getitem__(nodeid)
+            if nodeid in self._nodes:
+                return self._nodes.__getitem__(nodeid)
 
     def __setitem__(self, nodeid, value):
         with self._lock:
