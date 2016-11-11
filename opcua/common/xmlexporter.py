@@ -9,7 +9,7 @@ from copy import copy
 
 from opcua import ua
 from opcua.ua import object_ids as o_ids
-from opcua.common.ua_utils import get_node_supertypes, get_variable_basetype
+from opcua.common.ua_utils import get_base_data_type
 
 
 class XmlExporter(object):
@@ -382,7 +382,8 @@ class XmlExporter(object):
             for nval in val:
                 self._value_to_etree(list_el, type_name, dtype, nval)
         else:
-            dtype_base = get_variable_basetype(self.server, dtype)
+            dtype_base = get_base_data_type(self.server.get_node(dtype))
+            dtype_base = dtype_base.nodeid
 
             if dtype_base == ua.NodeId(ua.ObjectIds.Enumeration):
                 dtype_base = ua.NodeId(ua.ObjectIds.Int32)
