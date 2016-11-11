@@ -4,7 +4,7 @@ import shelve
 import time
 
 from tests_common import CommonTests, add_server_methods
-from tests_xml import XmlTests 
+from tests_xml import XmlTests
 from tests_subscriptions import SubscriptionTests
 from datetime import timedelta, datetime
 from tempfile import NamedTemporaryFile
@@ -15,6 +15,7 @@ from opcua import Client
 from opcua import ua
 from opcua import uamethod
 from opcua.common.event_objects import BaseEvent, AuditEvent
+from opcua.common import ua_utils
 
 
 port_num = 48540
@@ -52,7 +53,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
             new_app_uri = "urn:freeopcua:python:server:test_discovery"
             self.srv.application_uri = new_app_uri
             self.srv.register_to_discovery(self.discovery.endpoint.geturl(), 0)
-            time.sleep(0.1) # let server register registration
+            time.sleep(0.1)  # let server register registration
             new_servers = client.find_servers()
             self.assertEqual(len(new_servers) - len(servers) , 1)
             self.assertFalse(new_app_uri in [s.ApplicationUri for s in servers])
@@ -71,7 +72,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
             new_app_uri2 = "urn:freeopcua:python:test_discovery2"
             self.srv.application_uri = new_app_uri2
             self.srv.register_to_discovery(self.discovery.endpoint.geturl(), period=0)
-            time.sleep(0.1) # let server register registration
+            time.sleep(0.1)  # let server register registration
             new_servers = client.find_servers()
             self.assertEqual(len(new_servers) - len(servers) , 2)
             self.assertFalse(new_app_uri1 in [s.ApplicationUri for s in servers])
@@ -103,8 +104,8 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         print("SERVERS 2", servers)
         self.assertEqual(len(servers), 2)
     """
-    #def test_register_server2(self):
-        #servers = self.opc.register_server()
+    # def test_register_server2(self):
+        # servers = self.opc.register_server()
 
     def test_register_namespace(self):
         uri = 'http://mycustom.Namespace.com'
@@ -299,9 +300,9 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         methods = node_type.get_methods()
         self.assertTrue(node_type.get_child("2:MyMethod") in methods)
 
-    #def test_create_custom_refrence_type_ObjectId(self):
-        #type = self.opc.create_custom_reference_type(2, 'MyEvent', ua.ObjectIds.Base, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
-        #check_custom_type(self, type, ua.ObjectIds.BaseObjectType)
+    # def test_create_custom_refrence_type_ObjectId(self):
+        # type = self.opc.create_custom_reference_type(2, 'MyEvent', ua.ObjectIds.Base, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+        # check_custom_type(self, type, ua.ObjectIds.BaseObjectType)
 
     def test_create_custom_variable_type_ObjectId(self):
         type = self.opc.create_custom_variable_type(2, 'MyVariableType', ua.ObjectIds.BaseVariableType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
@@ -372,7 +373,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         # create server and replace instance methods with dummy methods
         server = Server()
         server.start = increment_state.__get__(server)
-        server.stop  = increment_state.__get__(server)
+        server.stop = increment_state.__get__(server)
 
         assert state[0] == 0
         with server:
@@ -380,6 +381,60 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
             self.assertEqual(state[0], 1)
         # test if server stopped
         self.assertEqual(state[0], 2)
+
+    def test_get_node_by_ns(self):
+
+        def get_ns_of_nodes(nodes):
+            ns_list = set()
+            for node in nodes:
+                ns_list.add(node.nodeid.NamespaceIndex)
+            return ns_list
+
+        # incase other testss created nodes  in unregistered namespace
+        _idx_d = self.opc.register_namespace('dummy1')
+        _idx_d = self.opc.register_namespace('dummy2')
+        _idx_d = self.opc.register_namespace('dummy3')
+
+        # create the test namespaces and vars
+        idx_a = self.opc.register_namespace('a')
+        idx_b = self.opc.register_namespace('b')
+        idx_c = self.opc.register_namespace('c')
+        o = self.opc.get_objects_node()
+        _myvar2 = o.add_variable(idx_a, "MyBoolVar2", True)
+        _myvar3 = o.add_variable(idx_b, "MyBoolVar3", True)
+        _myvar4 = o.add_variable(idx_c, "MyBoolVar4", True)
+
+        # the tests
+        nodes = ua_utils.get_nodes_of_namespace(self.opc, namespaces=[idx_a, idx_b, idx_c])
+        self.assertEqual(len(nodes), 3)
+        self.assertEqual(get_ns_of_nodes(nodes), set([idx_a, idx_b, idx_c]))
+
+        nodes = ua_utils.get_nodes_of_namespace(self.opc, namespaces=[idx_a])
+        self.assertEqual(len(nodes), 1)
+        self.assertEqual(get_ns_of_nodes(nodes), set([idx_a]))
+
+        nodes = ua_utils.get_nodes_of_namespace(self.opc, namespaces=[idx_b])
+        self.assertEqual(len(nodes), 1)
+        self.assertEqual(get_ns_of_nodes(nodes), set([idx_b]))
+
+        nodes = ua_utils.get_nodes_of_namespace(self.opc, namespaces=['a'])
+        self.assertEqual(len(nodes), 1)
+        self.assertEqual(get_ns_of_nodes(nodes), set([idx_a]))
+
+        nodes = ua_utils.get_nodes_of_namespace(self.opc, namespaces=['a', 'c'])
+        self.assertEqual(len(nodes), 2)
+        self.assertEqual(get_ns_of_nodes(nodes), set([idx_a, idx_c]))
+
+        nodes = ua_utils.get_nodes_of_namespace(self.opc, namespaces='b')
+        self.assertEqual(len(nodes), 1)
+        self.assertEqual(get_ns_of_nodes(nodes), set([idx_b]))
+
+        nodes = ua_utils.get_nodes_of_namespace(self.opc, namespaces=idx_b)
+        self.assertEqual(len(nodes), 1)
+        self.assertEqual(get_ns_of_nodes(nodes), set([idx_b]))
+
+        self.assertRaises(ua.UaError, ua_utils.get_nodes_of_namespace, self.opc, namespaces=idx_c + 1)
+        self.assertRaises(ValueError, ua_utils.get_nodes_of_namespace, self.opc, namespaces='non_existing_ns')
 
 def check_eventgenerator_SourceServer(test, evgen):
     server = test.opc.get_server_node()

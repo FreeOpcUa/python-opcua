@@ -10,7 +10,7 @@ except ImportError:
 
 
 from opcua import ua
-#from opcua.binary_server import BinaryServer
+# from opcua.binary_server import BinaryServer
 from opcua.server.binary_server_asyncio import BinaryServer
 from opcua.server.internal_server import InternalServer
 from opcua.server.event_generator import EventGenerator
@@ -23,6 +23,7 @@ from opcua.crypto import security_policies
 from opcua.common.event_objects import BaseEvent
 from opcua.common.shortcuts import Shortcuts
 from opcua.common.xmlexporter import XmlExporter
+from opcua.common.ua_utils import get_nodes_of_namespace
 use_crypto = True
 try:
     from opcua.crypto import uacrypto
@@ -366,8 +367,8 @@ class Server(object):
     def create_custom_object_type(self, idx, name, basetype=ua.ObjectIds.BaseObjectType, properties=[], variables=[], methods=[]):
         return self._create_custom_type(idx, name, basetype, properties, variables, methods)
 
-    #def create_custom_reference_type(self, idx, name, basetype=ua.ObjectIds.BaseReferenceType, properties=[]):
-        #return self._create_custom_type(idx, name, basetype, properties)
+    # def create_custom_reference_type(self, idx, name, basetype=ua.ObjectIds.BaseReferenceType, properties=[]):
+        # return self._create_custom_type(idx, name, basetype, properties)
 
     def create_custom_variable_type(self, idx, name, basetype=ua.ObjectIds.BaseVariableType, properties=[], variables=[], methods=[]):
         return self._create_custom_type(idx, name, basetype, properties, variables, methods)
@@ -410,6 +411,20 @@ class Server(object):
         exp = XmlExporter(self)
         exp.build_etree(nodes)
         return exp.write_xml(path)
+
+    def export_xml_by_ns(self, path, namespaces=[]):
+        """
+        Export nodes of one or more namespaces to an XML file.  
+        Namespaces used by nodes are always exported for consistency.
+        Args:
+            server: opc ua server to use
+            path: name of the xml file to write
+            namespaces: list of string uris or int indexes of the namespace to export, if not provide all ns are used except 0
+    
+        Returns:
+        """
+        nodes = get_nodes_of_namespace(self, namespaces)
+        self.export_xml(nodes, path)
 
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.iserver.isession, nodes, recursive)
