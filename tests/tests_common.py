@@ -6,6 +6,7 @@ from datetime import timedelta
 import math
 
 from opcua import ua
+from opcua import Node
 from opcua import uamethod
 from opcua import instantiate
 from opcua import copy_node
@@ -539,15 +540,27 @@ class CommonTests(object):
         self.assertEqual(p.get_parent(), o)
         self.assertEqual(p.get_type_definition().Identifier, ua.ObjectIds.PropertyType)
 
-    def test_path(self):
+    def test_path_string(self):
         o = self.opc.nodes.objects.add_folder(1, "titif").add_object(3, "opath")
-        path = o.get_path()
+        path = o.get_path_as_string()
         self.assertEqual(["0:Root", "0:Objects", "1:titif", "3:opath"], path)
-        path = o.get_path(2)
+        path = o.get_path_as_string(2)
         self.assertEqual(["1:titif", "3:opath"], path)
-        self.opc.get_node("i=27")
-        path = self.opc.get_node("i=13387").get_path()
-        self.assertEqual(['0:BaseObjectType', '0:FolderType', '0:FileDirectoryType', '0:CreateDirectory'], path) # FIXME this is wrong in our server! BaseObjectType is missing an inverse reference to its parent! seems xml definition is wrong
+        path = self.opc.get_node("i=13387").get_path_as_string()
+        # FIXME this is wrong in our server! BaseObjectType is missing an inverse reference to its parent! seems xml definition is wrong
+        self.assertEqual(['0:BaseObjectType', '0:FolderType', '0:FileDirectoryType', '0:CreateDirectory'], path) 
+
+    def test_path(self):
+        of = self.opc.nodes.objects.add_folder(1, "titif")
+        op = of.add_object(3, "opath")
+        path = op.get_path()
+        self.assertEqual([self.opc.nodes.root, self.opc.nodes.objects, of, op], path)
+        path = op.get_path(2)
+        self.assertEqual([of, op], path)
+        target = self.opc.get_node("i=13387")
+        path = target.get_path()
+        # FIXME this is wrong in our server! BaseObjectType is missing an inverse reference to its parent! seems xml definition is wrong
+        self.assertEqual([self.opc.nodes.base_object_type, self.opc.nodes.folder_type, self.opc.get_node(ua.ObjectIds.FileDirectoryType), target], path)  
 
     def test_get_endpoints(self):
         endpoints = self.opc.get_endpoints()
