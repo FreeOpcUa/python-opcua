@@ -251,9 +251,6 @@ def get_nodes_of_namespace(server, namespaces=[]):
 
     # make sure all namespace are indexes (if needed convert strings to indexes)
     namespace_indexes = [n if isinstance(n, int) else ns_available.index(n) for n in namespaces]
-    ns_count = len(ns_available)
-    if max(namespace_indexes) >= ns_count:
-        raise ua.UaError("Namespace index '%d' is invalid" % max(namespace_indexes))
 
     # filter nodeis based on the provide namespaces and convert the nodeid to a node
     nodes = [server.get_node(nodeid) for nodeid in server.iserver.aspace.keys()

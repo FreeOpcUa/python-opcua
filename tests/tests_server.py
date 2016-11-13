@@ -433,7 +433,6 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         self.assertEqual(len(nodes), 1)
         self.assertEqual(get_ns_of_nodes(nodes), set([idx_b]))
 
-        self.assertRaises(ua.UaError, ua_utils.get_nodes_of_namespace, self.opc, namespaces=idx_c + 1)
         self.assertRaises(ValueError, ua_utils.get_nodes_of_namespace, self.opc, namespaces='non_existing_ns')
 
 def check_eventgenerator_SourceServer(test, evgen):
