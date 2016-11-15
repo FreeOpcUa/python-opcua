@@ -136,7 +136,7 @@ class XMLParser(object):
         nodes = []
         for child in self.root:
             tag = self._retag.match(child.tag).groups()[1]
-            if tag not in ["Aliases", "NamespaceUris", "Extensions"]:  # these XML tags don't contain nodes
+            if tag not in ["Aliases", "NamespaceUris", "Extensions", "Models"]:  # these XML tags don't contain nodes
                 node = self._parse_node(tag, child)
                 nodes.append(node)
         return nodes
