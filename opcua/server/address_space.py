@@ -491,12 +491,11 @@ class AddressSpace(object):
 
     def dump(self, path):
         """
-        dump address space as binary to file; note that server must be stopped for this method to work
+        Dump address space as binary to file; note that server must be stopped for this method to work
+        DO NOT DUMP AN ADDRESS SPACE WHICH IS USING A SHELF (load_aspace_shelf), ONLY CACHED NODES WILL GET DUMPED!
         """
         # prepare nodes in address space for being serialized
-        for nodeid, v in self._nodes.items():
-            ndata = self._nodes[nodeid]
-
+        for nodeid, ndata in self._nodes.items():
             # if the node has a reference to a method call, remove it so the object can be serialized
             if ndata.call is not None:
                 self._nodes[nodeid].call = None
@@ -506,29 +505,37 @@ class AddressSpace(object):
 
     def load(self, path):
         """
-        load address space from file, overwriting everything in current address space
+        Load address space from a binary file, overwriting everything in the current address space
         """
         with open(path, 'rb') as f:
             self._nodes = pickle.load(f)
 
     def make_aspace_shelf(self, path):
         """
-        make a shelf for storing nodes from the standard address space; nodes are moved to a cache
-        by the LazyLoadingDict class when they are accessed
+        Make a shelf for containing the nodes from the standard address space; this is typically only done on first
+        start of the server. Subsequent server starts will load the shelf, nodes are then moved to a cache
+        by the LazyLoadingDict class when they are accessed. Saving data back to the shelf
+        is currently NOT supported, it is only used for the default OPC UA standard address space
+
+        Note: Intended for slow devices, such as Raspberry Pi, to greatly improve start up time
         """
         s = shelve.open(path, "n", protocol=pickle.HIGHEST_PROTOCOL)
-        for nodeid in self._nodes.keys():
-            s[nodeid.to_string()] = self._nodes[nodeid]
+        for nodeid, ndata in self._nodes.keys():
+            s[nodeid.to_string()] = ndata
         s.close()
 
-    def load_lazy_dict(self, path):
+    def load_aspace_shelf(self, path):
         """
-        load the standard address space nodes from the LazyLoadingDict as needed
+        Load the standard address space nodes from a python shelve via LazyLoadingDict as needed.
+        The dump() method can no longer be used if the address space is being loaded from a shelf
+
+        Note: Intended for slow devices, such as Raspberry Pi, to greatly improve start up time
         """
         class LazyLoadingDict(collections.MutableMapping):
             """
             Special dict that only loads nodes as they are accessed. If a node is accessed it gets copied from the
-            shelve to the cache dict. All user nodes are saved in the cache ONLY
+            shelve to the cache dict. All user nodes are saved in the cache ONLY. Saving data back to the shelf
+            is currently NOT supported
             """
             def __init__(self, source):
                 self.source = source  # python shelf

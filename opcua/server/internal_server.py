@@ -94,7 +94,7 @@ class InternalServer(object):
 
         if shelffile and (path.isfile(shelffile) or path.isfile(shelffile_win)):
             # import address space from shelf
-            self.aspace.load_lazy_dict(shelffile)
+            self.aspace.load_aspace_shelf(shelffile)
         else:
             # import address space from code generated from xml
             standard_address_space.fill_address_space(self.node_mgt_service)
