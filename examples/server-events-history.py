@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
     # enable history for server events; must be called after start since it uses subscription
     server_node = server.get_node(ua.ObjectIds.Server)
-    server.iserver.enable_history_event(server_node, period=None)
+    server.historize_node_event(server_node, period=None)
 
     try:
         count = 0

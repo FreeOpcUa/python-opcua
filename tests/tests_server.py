@@ -511,8 +511,7 @@ class TestServerCaching(unittest.TestCase):
         tmpfile.close()
 
         # create cache file
-        server = Server()
-        server.iserver.dump_address_space(path)
+        server = Server(shelffile=path)
 
         # modify cache content
         id = ua.NodeId(ua.ObjectIds.Server_ServerStatus_SecondsTillShutdown)
@@ -521,7 +520,7 @@ class TestServerCaching(unittest.TestCase):
         s.close()
 
         # ensure that we are actually loading from the cache
-        server = Server(cacheFile=path)
+        server = Server(shelffile=path)
         self.assertEqual(server.get_node(id).get_value(), 123)
 
         os.remove(path)
