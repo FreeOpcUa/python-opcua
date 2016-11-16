@@ -140,7 +140,7 @@ class UASocketClient(object):
     def disconnect_socket(self):
         self.logger.info("stop request")
         self._do_stop = True
-        self._socket.socket.shutdown(socket.SHUT_WR)
+        self._socket.socket.shutdown(socket.SHUT_RDWR)
         self._socket.socket.close()
 
     def send_hello(self, url):
