@@ -17,6 +17,7 @@ def instantiate(parent, node_type, nodeid=None, bname=None, idx=0):
     properties are also instantiated
     """
     rdesc = _rdesc_from_node(parent, node_type)
+    rdesc.TypeDefinition = node_type.nodeid
 
     if nodeid is None:
         nodeid = ua.NodeId(namespaceidx=idx)  # will trigger automatic node generation in namespace idx

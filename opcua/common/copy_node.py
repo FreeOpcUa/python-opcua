@@ -55,9 +55,10 @@ def _rdesc_from_node(parent, node):
         rdesc.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
     else:
         rdesc.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
-    rdesc.TypeDefinition = node.nodeid
+    typedef = node.get_type_definition()
+    if typedef:
+        rdesc.TypeDefinition = typedef
     return rdesc
-
 
 
 def _read_and_copy_attrs(node_type, struct, addnode):
