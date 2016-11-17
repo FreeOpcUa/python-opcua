@@ -60,7 +60,8 @@ def uamethod(func):
             parent = args[0]
             args = args[1:]
             result = func(self, parent, *[arg.Value for arg in args])
-
+        if isinstance(result, (list, tuple)):
+            return to_variant(*result)
         return to_variant(result)
     return wrapper
 
@@ -70,5 +71,3 @@ def to_variant(*args):
     for arg in args:
         uaargs.append(ua.Variant(arg))
     return uaargs
-
-
