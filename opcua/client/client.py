@@ -476,6 +476,11 @@ class Client(object):
         Do not do expensive/slow or network operation from these methods
         since they are called directly from receiving thread. This is a design choice,
         start another thread if you need to do such a thing.
+        lifetime_count sets how many periods the server will wait for a publish request
+        from the client.
+        max_keep_alive_count sets how many periods the server will wait before sending
+        an empty publish response to the client, if no monitored item has changed. 
+        max_keep_alive_count should always be smaller then lifetime_count (approx 1/3).
         """
         params = ua.CreateSubscriptionParameters()
         params.RequestedPublishingInterval = period
