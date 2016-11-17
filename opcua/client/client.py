@@ -465,7 +465,7 @@ class Client(object):
         """
         return Node(self.uaclient, nodeid)
 
-    def create_subscription(self, period, handler):
+    def create_subscription(self, period, handler, lifetime_count=10000, max_keep_alive_count=3000):
         """
         Create a subscription.
         returns a Subscription object which allow
@@ -479,8 +479,8 @@ class Client(object):
         """
         params = ua.CreateSubscriptionParameters()
         params.RequestedPublishingInterval = period
-        params.RequestedLifetimeCount = 3000
-        params.RequestedMaxKeepAliveCount = 10000
+        params.RequestedLifetimeCount = lifetime_count
+        params.RequestedMaxKeepAliveCount = max_keep_alive_count
         params.MaxNotificationsPerPublish = 10000
         params.PublishingEnabled = True
         params.Priority = 0
