@@ -465,27 +465,28 @@ class Client(object):
         """
         return Node(self.uaclient, nodeid)
 
-    def create_subscription(self, period, handler, lifetime_count=10000, max_keep_alive_count=3000):
+    def create_subscription(self, period, handler):
         """
         Create a subscription.
         returns a Subscription object which allow
         to subscribe to events or data on server
         handler argument is a class with data_change and/or event methods.
+        period argument is either a publishing interval in seconds or a 
+        CreateSubscriptionParameters instance. The second option should be used,
+        if the opcua-server has problems with the default options.
         These methods will be called when notfication from server are received.
         See example-client.py.
         Do not do expensive/slow or network operation from these methods
         since they are called directly from receiving thread. This is a design choice,
-        start another thread if you need to do such a thing.
-        lifetime_count sets how many periods the server will wait for a publish request
-        from the client.
-        max_keep_alive_count sets how many periods the server will wait before sending
-        an empty publish response to the client, if no monitored item has changed. 
-        max_keep_alive_count should always be smaller then lifetime_count (approx 1/3).
+        start another thread if you need to do such a thing.  
         """
+        
+        if isinstance(period, ua.CreateSubscriptionParameters):
+             return Subscription(self.uaclient, period, handler)
         params = ua.CreateSubscriptionParameters()
         params.RequestedPublishingInterval = period
-        params.RequestedLifetimeCount = lifetime_count
-        params.RequestedMaxKeepAliveCount = max_keep_alive_count
+        params.RequestedLifetimeCount = 10000
+        params.RequestedMaxKeepAliveCount = 3000
         params.MaxNotificationsPerPublish = 10000
         params.PublishingEnabled = True
         params.Priority = 0
