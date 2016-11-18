@@ -471,16 +471,22 @@ class Client(object):
         returns a Subscription object which allow
         to subscribe to events or data on server
         handler argument is a class with data_change and/or event methods.
+        period argument is either a publishing interval in seconds or a 
+        CreateSubscriptionParameters instance. The second option should be used,
+        if the opcua-server has problems with the default options.
         These methods will be called when notfication from server are received.
         See example-client.py.
         Do not do expensive/slow or network operation from these methods
         since they are called directly from receiving thread. This is a design choice,
-        start another thread if you need to do such a thing.
+        start another thread if you need to do such a thing.  
         """
+        
+        if isinstance(period, ua.CreateSubscriptionParameters):
+             return Subscription(self.uaclient, period, handler)
         params = ua.CreateSubscriptionParameters()
         params.RequestedPublishingInterval = period
-        params.RequestedLifetimeCount = 3000
-        params.RequestedMaxKeepAliveCount = 10000
+        params.RequestedLifetimeCount = 10000
+        params.RequestedMaxKeepAliveCount = 3000
         params.MaxNotificationsPerPublish = 10000
         params.PublishingEnabled = True
         params.Priority = 0
