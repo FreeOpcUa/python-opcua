@@ -12,7 +12,7 @@ import itertools
 
 from opcua.ua import ua_binary as uabin
 from opcua.ua import status_codes
-from opcua.ua import ObjectIds, ObjectIdNames
+from opcua.ua import ObjectIds
 from opcua.ua.uaerrors import UaError
 from opcua.ua.uaerrors import UaStatusCodeError
 from opcua.ua.uaerrors import UaStringParsingError
@@ -1082,10 +1082,3 @@ def get_default_value(vtype):
         return Variant()
     else:
         raise RuntimeError("function take a uatype as argument, got:", vtype)
-
-
-def register_extension_object(object_factory):
-    from opcua.ua.uaprotocol_auto import ExtensionClasses
-    setattr(ObjectIds, "{}_Encoding_DefaultBinary".format(object_factory.__name__), object_factory.DEFAULT_BINARY)
-    ObjectIdNames[object_factory.DEFAULT_BINARY] = object_factory.__name__
-    ExtensionClasses[object_factory.DEFAULT_BINARY] = object_factory
