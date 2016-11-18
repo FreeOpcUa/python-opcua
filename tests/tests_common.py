@@ -703,6 +703,7 @@ class CommonTests(object):
         self.assertEqual(len(response), 2)
         self.assertEqual(type(response[0]), ua.Variant)
 
+    # TODO: Fix the test
     # def test_decode_custom_object(self):
     #     register_extension_object(KeyValuePair)
     #
