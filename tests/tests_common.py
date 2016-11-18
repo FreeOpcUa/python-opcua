@@ -7,7 +7,7 @@ from opcua import ua
 from opcua import uamethod
 from opcua import instantiate
 from opcua import copy_node
-from opcua.ua.uatypes import register_extension_object
+from opcua.ua.uautils import register_extension_object
 
 from opcua.ua import ua_binary as uabin
 from opcua.common import ua_utils
