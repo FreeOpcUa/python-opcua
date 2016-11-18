@@ -15,6 +15,8 @@ except ImportError:
 
 @uamethod
 def say_complex_hello(parent, complex_variable, complex_variable_list):
+    # The uamethod decorator will take care of converting the data for us. We only work with python objects inside it
+    # For it to work, you need to register your DataType like in common.py
     print("say_complex_hello called: {}, {}".format(complex_variable, complex_variable_list))
     complex_error = ErrorKeyValue("0", "foo", [KeyValuePair("key", "value"), KeyValuePair("hello", "world")])
     complex_error_list = ErrorKeyValue("1", "bar", [KeyValuePair("key", "value")])
@@ -28,18 +30,16 @@ class HellowerServer(object):
 
         self.server.import_xml(model_filepath)
 
+        # Those need to be done after importing the xml file or it will be overwritten
         self.server.set_endpoint(endpoint)
         self.server.set_server_name(name)
 
         objects = self.server.get_objects_node()
-        serial_manager = objects.get_child("0:Hellower")
+        hellower = objects.get_child("0:Hellower")
 
-        for child in serial_manager.get_children():
-            print(dir(child))
-            print("Got a child: {}".format(child.get_browse_name()))
-        get_serial_node = serial_manager.get_child("0:SayComplexHello")
+        say_hello_node = hellower.get_child("0:SayComplexHello")
 
-        self.server.link_method(get_serial_node, say_complex_hello)
+        self.server.link_method(say_hello_node, say_complex_hello)
 
     def __enter__(self):
         self.server.start()

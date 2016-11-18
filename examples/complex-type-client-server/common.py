@@ -5,6 +5,7 @@ from opcua.ua.uautils import register_extension_object
 
 
 class KeyValuePair(object):
+    # The DEFAULT_BINARY is the NodeId of the custom type
     DEFAULT_BINARY = 20001
 
     def __init__(self, key, value, namespace_id=0):
@@ -16,6 +17,7 @@ class KeyValuePair(object):
         return "KeyValuePair(key={}, value={})".format(self.key, self.value)
 
     def to_binary(self):
+        # We need to define to_binary. It will be used when serializing the object
         packet = []
         packet.append(uabin.Primitives.UInt16.pack(self.NamespaceIndex))
         packet.append(uabin.Primitives.String.pack(self.key))
@@ -24,6 +26,7 @@ class KeyValuePair(object):
 
     @staticmethod
     def from_binary(data):
+        # This is how we deserialize the object
         namespace_index = uabin.Primitives.UInt16.unpack(data)
         key = uabin.Primitives.String.unpack(data)
         value = uabin.Primitives.String.unpack(data)
@@ -48,6 +51,9 @@ class ErrorKeyValue(object):
         packet.append(uabin.Primitives.UInt16.pack(self.NamespaceIndex))
         packet.append(uabin.Primitives.String.pack(self.code))
         packet.append(uabin.Primitives.String.pack(self.description))
+
+        # When we want to serialize a list, we need to transform the objects to a Variant and then manually call
+        # to_binary() to serialize them
         for i in to_variant(self.extensions):
             packet.append(i.to_binary())
 
@@ -58,9 +64,12 @@ class ErrorKeyValue(object):
         namespace_index = uabin.Primitives.UInt16.unpack(data)
         code = uabin.Primitives.String.unpack(data)
         description = uabin.Primitives.String.unpack(data)
+
+        # When descerialising, you'll get a Variant object back. This is how get the object's value back
         extensions = Variant.from_binary(data)
         extensions = [ext for ext in extensions.Value]
         return ErrorKeyValue(code, description, extensions, namespace_index)
 
+# For each custom type defined, we need to register it so the script know how to serialize / deserialise them
 register_extension_object(KeyValuePair)
 register_extension_object(ErrorKeyValue)
