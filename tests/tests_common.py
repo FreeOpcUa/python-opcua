@@ -1,5 +1,6 @@
 # encoding: utf-8
 from concurrent.futures import Future, TimeoutError
+import io
 import time
 from datetime import datetime
 from datetime import timedelta
@@ -9,6 +10,9 @@ from opcua import ua
 from opcua import uamethod
 from opcua import instantiate
 from opcua import copy_node
+from opcua.ua.uatypes import register_extension_object
+
+from opcua.ua import ua_binary as uabin
 
 
 def add_server_methods(srv):
@@ -654,4 +658,86 @@ class CommonTests(object):
         self.assertEqual(myvar.get_data_type(), myenum_type.nodeid)
         myvar.set_value(ua.LocalizedText("String2"))
 
+    def test_ua_method_unique(self):
+        def unique_response(parent):
+            return 42
 
+        decorated_unique_response = uamethod(unique_response)
+        response = decorated_unique_response(ua.NodeId("ServerMethod", 2))
+
+        self.assertEqual(len(response), 1)
+        self.assertEqual(type(response[0]), ua.Variant)
+
+    def test_ua_method_multiple(self):
+        def unique_response(parent):
+            return 42, 49
+
+        decorated_unique_response = uamethod(unique_response)
+        response = decorated_unique_response(ua.NodeId("ServerMethod", 2))
+
+        self.assertEqual(len(response), 2)
+        self.assertEqual(type(response[0]), ua.Variant)
+
+    def test_ua_method_complex(self):
+        register_extension_object(KeyValuePair)
+
+        def unique_response(parent):
+            return KeyValuePair("Key", "Value")
+
+        decorated_unique_response = uamethod(unique_response)
+        response = decorated_unique_response(ua.NodeId("ServerMethod", 2))
+
+        self.assertEqual(len(response), 1)
+        self.assertEqual(type(response[0]), ua.Variant)
+
+    def test_ua_method_complex_multiple(self):
+        register_extension_object(KeyValuePair)
+
+        def unique_response(parent):
+            return [KeyValuePair("Key", "Value"),
+                    KeyValuePair("Hello", "World")]
+
+        decorated_unique_response = uamethod(unique_response)
+        response = decorated_unique_response(ua.NodeId("ServerMethod", 2))
+
+        self.assertEqual(len(response), 2)
+        self.assertEqual(type(response[0]), ua.Variant)
+
+    # def test_decode_custom_object(self):
+    #     register_extension_object(KeyValuePair)
+    #
+    #     def unique_response(parent):
+    #         return KeyValuePair("Key", "Value")
+    #
+    #     decorated_unique_response = uamethod(unique_response)
+    #     response = decorated_unique_response(ua.NodeId("ServerMethod", 2))
+    #
+    #     self.assertEqual(len(response), 1)
+    #     self.assertEqual(type(response[0]), ua.Variant)
+    #
+    #     key_value = uabin.unpack_uatype_array(response[0].VariantType, io.BytesIO(response[0].to_binary()))
+    #     self.assertEqual(key_value.key, "Key")
+    #     self.assertEqual(key_value.value, "Value")
+
+
+class KeyValuePair(object):
+    DEFAULT_BINARY = 20001
+
+    def __init__(self, key, value, namespace_id=0):
+        self.key = key
+        self.value = value
+        self.NamespaceIndex = namespace_id
+
+    def to_binary(self):
+        packet = []
+        packet.append(uabin.Primitives.UInt16.pack(self.NamespaceIndex))
+        packet.append(uabin.Primitives.String.pack(self.key))
+        packet.append(uabin.Primitives.String.pack(self.value))
+        return b''.join(packet)
+
+    @staticmethod
+    def from_binary(data):
+        namespace_index = uabin.Primitives.UInt16.unpack(data)
+        key = uabin.Primitives.String.unpack(data)
+        value = uabin.Primitives.String.unpack(data)
+        return KeyValuePair(key, value, namespace_index)
