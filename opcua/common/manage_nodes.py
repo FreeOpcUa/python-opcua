@@ -185,7 +185,7 @@ def _create_object(server, parentnodeid, nodeid, qname, objecttype):
     addnode.NodeClass = ua.NodeClass.Object
     if isinstance(objecttype, int):
         addnode.TypeDefinition = ua.NodeId(objecttype)
-    elif isinstance(objecttype, ua.NodeId):
+    else:
         addnode.TypeDefinition = objecttype
     attrs = ua.ObjectAttributes()
     attrs.EventNotifier = 0

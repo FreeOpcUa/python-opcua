@@ -353,7 +353,7 @@ class Node(object):
             return None
         return references[0].NodeId
 
-    def get_path(self, max_length=20):
+    def get_path_as_string(self, max_length=20):
         """
         Attempt to find path of node from root node and return it as a list of strings.
         There might several possible paths to a node, this function will return one
@@ -362,14 +362,42 @@ class Node(object):
         Since address space may have circular references, a max length is specified
 
         """
-        path = [self.get_browse_name().to_string()]
+        path = self._get_path(max_length)
+        path = [ref.BrowseName.to_string() for ref in path]
+        path.append(self.get_browse_name().to_string())
+        return path
+
+    def get_path(self, max_length=20):
+        """
+        Attempt to find path of node from root node and return it as a list of Nodes.
+        There might several possible paths to a node, this function will return one
+        Some nodes may be missing references, so this method may
+        return an empty list
+        Since address space may have circular references, a max length is specified
+
+        """
+        path = self._get_path(max_length)
+        path = [Node(self.server, ref.NodeId) for ref in path]
+        path.append(self)
+        return path
+
+    def _get_path(self, max_length=20):
+        """
+        Attempt to find path of node from root node and return it as a list of Nodes.
+        There might several possible paths to a node, this function will return one
+        Some nodes may be missing references, so this method may
+        return an empty list
+        Since address space may have circular references, a max length is specified
+
+        """
+        path = []
         node = self
         while True:
             refs = node.get_references(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse)
             if len(refs) > 0:
-                path.insert(0, refs[0].BrowseName.to_string())
+                path.insert(0, refs[0])
                 node = Node(self.server, refs[0].NodeId)
-                if len(path) >= max_length:
+                if len(path) >= (max_length -1):
                     return path
             else:
                 return path

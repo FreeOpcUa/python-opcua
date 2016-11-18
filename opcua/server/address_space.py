@@ -120,10 +120,11 @@ class ViewService(object):
     def _get_sub_ref(self, ref):
         res = []
         nodedata = self._aspace[ref]
-        for ref in nodedata.references:
-            if ref.ReferenceTypeId.Identifier == ua.ObjectIds.HasSubtype and ref.IsForward:
-                res.append(ref.NodeId)
-                res += self._get_sub_ref(ref.NodeId)
+        if nodedata is not None:
+            for ref in nodedata.references:
+                if ref.ReferenceTypeId.Identifier == ua.ObjectIds.HasSubtype and ref.IsForward:
+                    res.append(ref.NodeId)
+                    res += self._get_sub_ref(ref.NodeId)
         return res
 
     def _suitable_direction(self, desc, isforward):
@@ -433,9 +434,9 @@ class MethodService(object):
 class AddressSpace(object):
 
     """
-    The address space object stores all the nodes og the OPC-UA server
+    The address space object stores all the nodes of the OPC-UA server
     and helper methods.
-    The methods are threadsafe
+    The methods are thread safe
     """
 
     def __init__(self):
@@ -449,7 +450,8 @@ class AddressSpace(object):
 
     def __getitem__(self, nodeid):
         with self._lock:
-            return self._nodes.__getitem__(nodeid)
+            if nodeid in self._nodes:
+                return self._nodes.__getitem__(nodeid)
 
     def __setitem__(self, nodeid, value):
         with self._lock:
@@ -491,23 +493,58 @@ class AddressSpace(object):
 
     def dump(self, path):
         """
-        dump address space as binary to file
+        Dump address space as binary to file; note that server must be stopped for this method to work
+        DO NOT DUMP AN ADDRESS SPACE WHICH IS USING A SHELF (load_aspace_shelf), ONLY CACHED NODES WILL GET DUMPED!
         """
-        s = shelve.open(path, "n", protocol = pickle.HIGHEST_PROTOCOL)
-        for nodeid in self._nodes.keys():
-            s[nodeid.to_string()] = self._nodes[nodeid]
-        s.close()
+        # prepare nodes in address space for being serialized
+        for nodeid, ndata in self._nodes.items():
+            # if the node has a reference to a method call, remove it so the object can be serialized
+            if ndata.call is not None:
+                self._nodes[nodeid].call = None
+
+        with open(path, 'wb') as f:
+            pickle.dump(self._nodes, f, pickle.HIGHEST_PROTOCOL)
 
     def load(self, path):
         """
-        load address space from file, overwritting everything current address space
+        Load address space from a binary file, overwriting everything in the current address space
+        """
+        with open(path, 'rb') as f:
+            self._nodes = pickle.load(f)
+
+    def make_aspace_shelf(self, path):
+        """
+        Make a shelf for containing the nodes from the standard address space; this is typically only done on first
+        start of the server. Subsequent server starts will load the shelf, nodes are then moved to a cache
+        by the LazyLoadingDict class when they are accessed. Saving data back to the shelf
+        is currently NOT supported, it is only used for the default OPC UA standard address space
+
+        Note: Intended for slow devices, such as Raspberry Pi, to greatly improve start up time
+        """
+        s = shelve.open(path, "n", protocol=pickle.HIGHEST_PROTOCOL)
+        for nodeid, ndata in self._nodes.keys():
+            s[nodeid.to_string()] = ndata
+        s.close()
+
+    def load_aspace_shelf(self, path):
+        """
+        Load the standard address space nodes from a python shelve via LazyLoadingDict as needed.
+        The dump() method can no longer be used if the address space is being loaded from a shelf
+
+        Note: Intended for slow devices, such as Raspberry Pi, to greatly improve start up time
         """
         class LazyLoadingDict(collections.MutableMapping):
+            """
+            Special dict that only loads nodes as they are accessed. If a node is accessed it gets copied from the
+            shelve to the cache dict. All user nodes are saved in the cache ONLY. Saving data back to the shelf
+            is currently NOT supported
+            """
             def __init__(self, source):
-                self.source = source
-                self.cache = {}
+                self.source = source  # python shelf
+                self.cache = {}  # internal dict
 
             def __getitem__(self, key):
+                # try to get the item (node) from the cache, if it isn't there get it from the shelf
                 try:
                     return self.cache[key]
                 except KeyError:
@@ -515,19 +552,23 @@ class AddressSpace(object):
                     return node
 
             def __setitem__(self, key, value):
+                # add a new item to the cache; if this item is in the shelf it is not updated
                 self.cache[key] = value
 
             def __contains__(self, key):
                 return key in self.cache or key.to_string() in self.source
 
             def __delitem__(self, key):
-                raise NotImplementedError
+                # only deleting items from the cache is allowed
+                del self.cache[key]
 
             def __iter__(self):
-                raise NotImplementedError
+                # only the cache can be iterated over
+                return iter(self.cache.keys())
 
             def __len__(self):
-                raise NotImplementedError
+                # only returns the length of items in the cache, not unaccessed items in the shelf
+                return len(self.cache)
 
         self._nodes = LazyLoadingDict(shelve.open(path, "r"))
 

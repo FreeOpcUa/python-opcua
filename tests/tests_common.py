@@ -1,7 +1,4 @@
 # encoding: utf-8
-from concurrent.futures import Future, TimeoutError
-import io
-import time
 from datetime import datetime
 from datetime import timedelta
 import math
@@ -13,6 +10,7 @@ from opcua import copy_node
 from opcua.ua.uatypes import register_extension_object
 
 from opcua.ua import ua_binary as uabin
+from opcua.common import ua_utils
 
 
 def add_server_methods(srv):
@@ -542,15 +540,27 @@ class CommonTests(object):
         self.assertEqual(p.get_parent(), o)
         self.assertEqual(p.get_type_definition().Identifier, ua.ObjectIds.PropertyType)
 
-    def test_path(self):
+    def test_path_string(self):
         o = self.opc.nodes.objects.add_folder(1, "titif").add_object(3, "opath")
-        path = o.get_path()
+        path = o.get_path_as_string()
         self.assertEqual(["0:Root", "0:Objects", "1:titif", "3:opath"], path)
-        path = o.get_path(2)
+        path = o.get_path_as_string(2)
         self.assertEqual(["1:titif", "3:opath"], path)
-        self.opc.get_node("i=27")
-        path = self.opc.get_node("i=13387").get_path()
-        self.assertEqual(['0:BaseObjectType', '0:FolderType', '0:FileDirectoryType', '0:CreateDirectory'], path) # FIXME this is wrong in our server! BaseObjectType is missing an inverse reference to its parent! seems xml definition is wrong
+        path = self.opc.get_node("i=13387").get_path_as_string()
+        # FIXME this is wrong in our server! BaseObjectType is missing an inverse reference to its parent! seems xml definition is wrong
+        self.assertEqual(['0:BaseObjectType', '0:FolderType', '0:FileDirectoryType', '0:CreateDirectory'], path)
+
+    def test_path(self):
+        of = self.opc.nodes.objects.add_folder(1, "titif")
+        op = of.add_object(3, "opath")
+        path = op.get_path()
+        self.assertEqual([self.opc.nodes.root, self.opc.nodes.objects, of, op], path)
+        path = op.get_path(2)
+        self.assertEqual([of, op], path)
+        target = self.opc.get_node("i=13387")
+        path = target.get_path()
+        # FIXME this is wrong in our server! BaseObjectType is missing an inverse reference to its parent! seems xml definition is wrong
+        self.assertEqual([self.opc.nodes.base_object_type, self.opc.nodes.folder_type, self.opc.get_node(ua.ObjectIds.FileDirectoryType), target], path)
 
     def test_get_endpoints(self):
         endpoints = self.opc.get_endpoints()
@@ -657,6 +667,37 @@ class CommonTests(object):
         # tests
         self.assertEqual(myvar.get_data_type(), myenum_type.nodeid)
         myvar.set_value(ua.LocalizedText("String2"))
+
+    def test_supertypes(self):
+        nint32 = self.opc.get_node(ua.ObjectIds.Int32)
+        node = ua_utils.get_node_supertype(nint32)
+        self.assertEqual(node, self.opc.get_node(ua.ObjectIds.Integer))
+
+        nodes = ua_utils.get_node_supertypes(nint32)
+        self.assertEqual(nodes[1], self.opc.get_node(ua.ObjectIds.Number))
+        self.assertEqual(nodes[0], self.opc.get_node(ua.ObjectIds.Integer))
+
+        # test custom
+        dtype = nint32.add_data_type(0, "MyCustomDataType")
+        node = ua_utils.get_node_supertype(dtype)
+        self.assertEqual(node, nint32)
+
+        dtype2 = dtype.add_data_type(0, "MyCustomDataType2")
+        node = ua_utils.get_node_supertype(dtype2)
+        self.assertEqual(node, dtype)
+
+    def test_base_data_type(self):
+        nint32 = self.opc.get_node(ua.ObjectIds.Int32)
+        dtype = nint32.add_data_type(0, "MyCustomDataType")
+        dtype2 = dtype.add_data_type(0, "MyCustomDataType2")
+        self.assertEqual(ua_utils.get_base_data_type(dtype), nint32)
+        self.assertEqual(ua_utils.get_base_data_type(dtype2), nint32)
+
+        ext = self.opc.nodes.objects.add_variable(0, "MyExtensionObject", ua.Argument())
+        d = ext.get_data_type()
+        d = self.opc.get_node(d)
+        self.assertEqual(ua_utils.get_base_data_type(d), self.opc.get_node(ua.ObjectIds.Structure))
+        self.assertEqual(ua_utils.data_type_to_variant_type(d), ua.VariantType.ExtensionObject)
 
     def test_ua_method_unique(self):
         def unique_response(parent):

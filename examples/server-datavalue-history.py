@@ -26,14 +26,14 @@ if __name__ == "__main__":
     myvar = myobj.add_variable(idx, "MyVariable", ua.Variant(0, ua.VariantType.Double))
     myvar.set_writable()  # Set MyVariable to be writable by clients
 
-    # Configure server to use sqlite as history database (default is a simple in memory dict)
+    # Configure server to use sqlite as history database (default is a simple memory dict)
     server.iserver.history_manager.set_storage(HistorySQLite("my_datavalue_history.sql"))
 
     # starting!
     server.start()
 
     # enable data change history for this particular node, must be called after start since it uses subscription
-    server.iserver.enable_history_data_change(myvar, period=None, count=100)
+    server.historize_node_data_change(myvar, period=None, count=100)
 
     try:
         count = 0

@@ -3,6 +3,7 @@ High level interface to pure python OPC-UA server
 """
 
 import logging
+from datetime import timedelta
 try:
     from urllib.parse import urlparse
 except ImportError:
@@ -10,7 +11,7 @@ except ImportError:
 
 
 from opcua import ua
-#from opcua.binary_server import BinaryServer
+# from opcua.binary_server import BinaryServer
 from opcua.server.binary_server_asyncio import BinaryServer
 from opcua.server.internal_server import InternalServer
 from opcua.server.event_generator import EventGenerator
@@ -23,6 +24,7 @@ from opcua.crypto import security_policies
 from opcua.common.event_objects import BaseEvent
 from opcua.common.shortcuts import Shortcuts
 from opcua.common.xmlexporter import XmlExporter
+from opcua.common.ua_utils import get_nodes_of_namespace
 use_crypto = True
 try:
     from opcua.crypto import uacrypto
@@ -54,7 +56,7 @@ class Server(object):
     If the parameter is defined, the address space will be loaded from the
     cache file or the file will be created if it does not exist yet.
     As a result the first startup will be even slower due to the cache file
-    generation but all further startups will be significantly faster.
+    generation but all further start ups will be significantly faster.
 
     :ivar application_uri:
     :vartype application_uri: uri
@@ -62,7 +64,7 @@ class Server(object):
     :vartype product_uri: uri
     :ivar name:
     :vartype name: string
-    :ivar default_timeout: timout in milliseconds for sessions and secure channel
+    :ivar default_timeout: timeout in milliseconds for sessions and secure channel
     :vartype default_timeout: int
     :ivar iserver: internal server object
     :vartype default_timeout: InternalServer
@@ -73,7 +75,7 @@ class Server(object):
 
     """
 
-    def __init__(self, cacheFile=None, iserver=None):
+    def __init__(self, shelffile=None, iserver=None):
         self.logger = logging.getLogger(__name__)
         self.endpoint = urlparse("opc.tcp://0.0.0.0:4840/freeopcua/server/")
         self.application_uri = "urn:freeopcua:python:server"
@@ -84,7 +86,7 @@ class Server(object):
         if iserver is not None:
             self.iserver = iserver
         else:
-            self.iserver = InternalServer(cacheFile)
+            self.iserver = InternalServer(shelffile)
         self.bserver = None
         self._discovery_clients = {}
         self._discovery_period = 60
@@ -133,7 +135,7 @@ class Server(object):
 
     def find_servers(self, uris=None):
         """
-        find_servers. mainly implemented for simmetry with client
+        find_servers. mainly implemented for symmetry with client
         """
         if uris is None:
             uris = []
@@ -149,7 +151,7 @@ class Server(object):
         re-register every period seconds
         if period is 0 registration is not automatically renewed
         """
-        # FIXME: habe a period per discovery
+        # FIXME: have a period per discovery
         if url in self._discovery_clients:
             self._discovery_clients[url].disconnect()
         self._discovery_clients[url] = Client(url)
@@ -366,8 +368,8 @@ class Server(object):
     def create_custom_object_type(self, idx, name, basetype=ua.ObjectIds.BaseObjectType, properties=[], variables=[], methods=[]):
         return self._create_custom_type(idx, name, basetype, properties, variables, methods)
 
-    #def create_custom_reference_type(self, idx, name, basetype=ua.ObjectIds.BaseReferenceType, properties=[]):
-        #return self._create_custom_type(idx, name, basetype, properties)
+    # def create_custom_reference_type(self, idx, name, basetype=ua.ObjectIds.BaseReferenceType, properties=[]):
+        # return self._create_custom_type(idx, name, basetype, properties)
 
     def create_custom_variable_type(self, idx, name, basetype=ua.ObjectIds.BaseVariableType, properties=[], variables=[], methods=[]):
         return self._create_custom_type(idx, name, basetype, properties, variables, methods)
@@ -411,14 +413,74 @@ class Server(object):
         exp.build_etree(nodes)
         return exp.write_xml(path)
 
+    def export_xml_by_ns(self, path, namespaces=[]):
+        """
+        Export nodes of one or more namespaces to an XML file.  
+        Namespaces used by nodes are always exported for consistency.
+        Args:
+            server: opc ua server to use
+            path: name of the xml file to write
+            namespaces: list of string uris or int indexes of the namespace to export, if not provide all ns are used except 0
+    
+        Returns:
+        """
+        nodes = get_nodes_of_namespace(self, namespaces)
+        self.export_xml(nodes, path)
+
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.iserver.isession, nodes, recursive)
 
-    def historize_node(self, node):
-        self.iserver.enable_history(node)
+    def historize_node_data_change(self, node, period=timedelta(days=7), count=0):
+        """
+        Start historizing supplied nodes; see history module
+        Args:
+            node: node or list of nodes that can be historized (variables/properties)
+            period: time delta to store the history; older data will be deleted from the storage
+            count: number of changes to store in the history
 
-    def dehistorize_node(self, node):
-        self.iserver.disable_history(node)
+        Returns:
+        """
+        nodes = [node]
+        for node in nodes:
+            self.iserver.enable_history_data_change(node, period, count)
+
+    def dehistorize_node_data_change(self, node):
+        """
+        Stop historizing supplied nodes; see history module
+        Args:
+            node: node or list of nodes that can be historized (UA variables/properties)
+
+        Returns:
+        """
+        nodes = [node]
+        for node in nodes:
+            self.iserver.disable_history_data_change(node)
+
+    def historize_node_event(self, node, period=timedelta(days=7), count=0):
+        """
+        Start historizing events from node (typically a UA object); see history module
+        Args:
+            node: node or list of nodes that can be historized (UA objects)
+            period: time delta to store the history; older data will be deleted from the storage
+            count: number of events to store in the history
+
+        Returns:
+        """
+        nodes = [node]
+        for node in nodes:
+            self.iserver.enable_history_event(node, period, count)
+
+    def dehistorize_node_event(self, node):
+        """
+        Stop historizing events from node (typically a UA object); see history module
+        Args:
+           node: node or list of nodes that can be historized (UA objects)
+
+        Returns:
+        """
+        nodes = [node]
+        for node in nodes:
+            self.iserver.disable_history_event(node)
 
     def subscribe_server_callback(self, event, handle):
         self.iserver.subscribe_server_callback(event, handle)
@@ -427,4 +489,13 @@ class Server(object):
         self.iserver.unsubscribe_server_callback(event, handle)
 
     def link_method(self, node, callback):
+        """
+        Link a python function to a UA method in the address space; required when a UA method has been imported
+        to the address space via XML; the python executable must be linked manually
+        Args:
+            node: UA method node
+            callback: python function that the UA method will call
+
+        Returns:
+        """
         self.iserver.isession.add_method_callback(node.nodeid, callback)
