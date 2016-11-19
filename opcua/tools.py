@@ -704,7 +704,7 @@ def uacall():
             elif ( len( methods ) == 1 ):
                 method_id = methods[0]
             else:
-                raise ValueError( "Selected node has %d methods but no method given. Provide one of %s" % (methods) )
+                raise ValueError( "Selected node has {0:d} methods but no method given. Provide one of {1!s}".format(*(methods)) )
         else:
             for m in methods:
                 if ( m.nodeid.Identifier == args.method ):
@@ -718,7 +718,7 @@ def uacall():
         #print( "method_id=%s\nval=%s" % (method_id,val) )
 
         result_variants = node.call_method( method_id, *val )
-        print( "resulting result_variants=%s" % result_variants )
+        print( "resulting result_variants={0!s}".format(result_variants) )
     finally:
         client.disconnect()
     sys.exit(0)

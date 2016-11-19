@@ -28,7 +28,7 @@ class TestCryptoConnect(unittest.TestCase):
     def setUpClass(self):
         # start our own server
         self.srv_crypto = Server()
-        self.uri_crypto = 'opc.tcp://localhost:%d' % port_num1
+        self.uri_crypto = 'opc.tcp://localhost:{0:d}'.format(port_num1)
         self.srv_crypto.set_endpoint(self.uri_crypto)
         # load server certificate and private key. This enables endpoints
         # with signing and encryption.
@@ -38,7 +38,7 @@ class TestCryptoConnect(unittest.TestCase):
 
         # start a server without crypto
         self.srv_no_crypto = Server()
-        self.uri_no_crypto = 'opc.tcp://localhost:%d' % port_num2
+        self.uri_no_crypto = 'opc.tcp://localhost:{0:d}'.format(port_num2)
         self.srv_no_crypto.set_endpoint(self.uri_no_crypto)
         self.srv_no_crypto.start()
 

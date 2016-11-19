@@ -15,7 +15,7 @@ class TestCmdLines(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.srv = Server()
-        self.srv_url = 'opc.tcp://localhost:%d' % port_num
+        self.srv_url = 'opc.tcp://localhost:{0:d}'.format(port_num)
         self.srv.set_endpoint(self.srv_url)
         objects = self.srv.get_objects_node()
         obj = objects.add_object(4, "directory")
