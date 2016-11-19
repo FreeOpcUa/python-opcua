@@ -33,7 +33,7 @@ class Bit(object):
         self.length = 1
 
     def __str__(self):
-        return "(Bit: {}, container:{}, idx:{})".format(self.name, self.container, self.idx)
+        return "(Bit: {0}, container:{1}, idx:{2})".format(self.name, self.container, self.idx)
     __repr__ = __str__
 
 class Struct(object):
@@ -56,7 +56,7 @@ class Struct(object):
         raise Exception("field not found: " + name)
 
     def __str__(self):
-        return "Struct {}:{}".format(self.name, self.basetype)
+        return "Struct {0}:{1}".format(self.name, self.basetype)
 
     __repr__ = __str__
 
@@ -72,7 +72,7 @@ class Field(object):
         self.bitlength = 1
 
     def __str__(self):
-        return "Field {}({})".format(self.name, self.uatype)
+        return "Field {0}({1})".format(self.name, self.uatype)
 
     __repr__ = __str__
 
@@ -121,7 +121,7 @@ class Field(object):
         else:
             ty = "OpcUa::" + self.uatype
         if self.length:
-            ty = "std::vector<{}>".format(ty)
+            ty = "std::vector<{0}>".format(ty)
         return ty
 
 class Enum(object):
@@ -132,7 +132,7 @@ class Enum(object):
         self.doc = ""
 
     def get_ctype(self):
-        return "uint{}_t".format(self.uatype)
+        return "uint{0}_t".format(self.uatype)
 
 class EnumValue(object):
     def __init__(self):
@@ -187,13 +187,13 @@ def reorder_structs(model):
                     if not s2.waitingfor:
                         newstructs.append(s2)
     if len(model.structs) != len(newstructs):
-        print("Error while reordering structs, some structs could not be reinserted, had {} structs, we now have {} structs".format(len(model.structs), len(newstructs)))
+        print("Error while reordering structs, some structs could not be reinserted, had {0} structs, we now have {1} structs".format(len(model.structs), len(newstructs)))
         s1 = set(model.structs)
         s2 = set(newstructs)
         rest = s1 -s2
         print("Variant" in types)
         for s in s1-s2:
-            print("{} is waiting for: {}".format(s, s.waitingfor))
+            print("{0} is waiting for: {1}".format(s, s.waitingfor))
         #print(s1 -s2)
         #print(waiting)
     model.structs = newstructs

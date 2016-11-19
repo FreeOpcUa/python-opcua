@@ -103,7 +103,7 @@ class Header(uatypes.FrozenClass):
         return struct.calcsize("<3scII")
 
     def __str__(self):
-        return "Header(type:{}, chunk_type:{}, body_size:{}, channel:{})".format(
+        return "Header(type:{0}, chunk_type:{1}, body_size:{2}, channel:{3})".format(
             self.MessageType, self.ChunkType, self.body_size, self.ChannelId)
     __repr__ = __str__
 
@@ -129,7 +129,7 @@ class ErrorMessage(uatypes.FrozenClass):
         return ack
 
     def __str__(self):
-        return "MessageAbort(error:{}, reason:{})".format(self.Error, self.Reason)
+        return "MessageAbort(error:{0}, reason:{1})".format(self.Error, self.Reason)
     __repr__ = __str__
 
 
@@ -184,7 +184,7 @@ class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
         return hdr
 
     def __str__(self):
-        return "{}(SecurityPolicy:{}, certificatesize:{}, receiverCertificatesize:{} )".format(
+        return "{0}(SecurityPolicy:{1}, certificatesize:{2}, receiverCertificatesize:{3} )".format(
             self.__class__.__name__, self.SecurityPolicyURI, len(self.SenderCertificate),
             len(self.ReceiverCertificateThumbPrint))
     __repr__ = __str__
@@ -210,7 +210,7 @@ class SymmetricAlgorithmHeader(uatypes.FrozenClass):
         return struct.calcsize("<I")
 
     def __str__(self):
-        return "{}(TokenId:{} )".format(self.__class__.__name__, self.TokenId)
+        return "{0}(TokenId:{1} )".format(self.__class__.__name__, self.TokenId)
     __repr__ = __str__
 
 
@@ -239,7 +239,7 @@ class SequenceHeader(uatypes.FrozenClass):
         return struct.calcsize("<II")
 
     def __str__(self):
-        return "{}(SequenceNumber:{}, RequestId:{} )".format(
+        return "{0}(SequenceNumber:{1}, RequestId:{2} )".format(
             self.__class__.__name__, self.SequenceNumber, self.RequestId)
     __repr__ = __str__
 
@@ -357,7 +357,7 @@ class MessageChunk(uatypes.FrozenClass):
         elif msg_type == MessageType.SecureOpen:
             self.SecurityHeader = AsymmetricAlgorithmHeader()
         else:
-            raise UaError("Unsupported message type: {}".format(msg_type))
+            raise UaError("Unsupported message type: {0}".format(msg_type))
         self.SequenceHeader = SequenceHeader()
         self.Body = body
         self._security_policy = security_policy
@@ -379,7 +379,7 @@ class MessageChunk(uatypes.FrozenClass):
             security_header = AsymmetricAlgorithmHeader.from_binary(data)
             crypto = security_policy.asymmetric_cryptography
         else:
-            raise UaError("Unsupported message type: {}".format(header.MessageType))
+            raise UaError("Unsupported message type: {0}".format(header.MessageType))
         obj = MessageChunk(crypto)
         obj.MessageHeader = header
         obj.SecurityHeader = security_header
@@ -455,7 +455,7 @@ class MessageChunk(uatypes.FrozenClass):
         return chunks
 
     def __str__(self):
-        return "{}({}, {}, {}, {} bytes)".format(self.__class__.__name__,
+        return "{0}({1}, {2}, {3}, {4} bytes)".format(self.__class__.__name__,
                                                  self.MessageHeader, self.SequenceHeader,
                                                  self.SecurityHeader, len(self.Body))
     __repr__ = __str__
@@ -545,7 +545,7 @@ class SecureConnection(object):
                 return
         if self._security_policy.URI != uri or (mode is not None and
                                                 self._security_policy.Mode != mode):
-            raise UaError("No matching policy: {}, {}".format(uri, mode))
+            raise UaError("No matching policy: {0}, {1}".format(uri, mode))
 
     def tcp_to_binary(self, message_type, message):
         """
@@ -582,10 +582,10 @@ class SecureConnection(object):
         return b"".join([chunk.to_binary() for chunk in chunks])
 
     def _check_incoming_chunk(self, chunk):
-        assert isinstance(chunk, MessageChunk), "Expected chunk, got: {}".format(chunk)
+        assert isinstance(chunk, MessageChunk), "Expected chunk, got: {0}".format(chunk)
         if chunk.MessageHeader.MessageType != MessageType.SecureOpen:
             if chunk.MessageHeader.ChannelId != self.channel.SecurityToken.ChannelId:
-                raise UaError("Wrong channel id {}, expected {}".format(
+                raise UaError("Wrong channel id {0}, expected {1}".format(
                     chunk.MessageHeader.ChannelId,
                     self.channel.SecurityToken.ChannelId))
             if chunk.SecurityHeader.TokenId != self.channel.SecurityToken.TokenId:
@@ -604,7 +604,7 @@ class SecureConnection(object):
                         self._old_tokens = self._old_tokens[idx:]
         if self._incoming_parts:
             if self._incoming_parts[0].SequenceHeader.RequestId != chunk.SequenceHeader.RequestId:
-                raise UaError("Wrong request id {}, expected {}".format(
+                raise UaError("Wrong request id {0}, expected {1}".format(
                     chunk.SequenceHeader.RequestId,
                     self._incoming_parts[0].SequenceHeader.RequestId))
 
@@ -619,7 +619,7 @@ class SecureConnection(object):
                                  self._peer_sequence_number, num)
                 else:
                     raise UaError(
-                        "Wrong sequence {} -> {} (server bug or replay attack)"
+                        "Wrong sequence {0} -> {1} (server bug or replay attack)"
                         .format(self._peer_sequence_number, num))
         self._peer_sequence_number = num
 
@@ -653,7 +653,7 @@ class SecureConnection(object):
             logger.warning("Received an error: %s", msg)
             return msg
         else:
-            raise UaError("Unsupported message type {}".format(header.MessageType))
+            raise UaError("Unsupported message type {0}".format(header.MessageType))
 
     def receive_from_socket(self, socket):
         """
@@ -666,7 +666,7 @@ class SecureConnection(object):
         logger.info("received header: %s", header)
         body = socket.read(header.body_size)
         if len(body) != header.body_size:
-            raise UaError("{} bytes expected, {} available".format(header.body_size, len(body)))
+            raise UaError("{0} bytes expected, {1} available".format(header.body_size, len(body)))
         return self.receive_from_header_and_body(header, utils.Buffer(body))
 
     def _receive(self, msg):
@@ -686,7 +686,7 @@ class SecureConnection(object):
             self._incoming_parts = []
             return message
         else:
-            raise UaError("Unsupported chunk type: {}".format(msg))
+            raise UaError("Unsupported chunk type: {0}".format(msg))
 
 
 # FIXES for missing switchfield in NodeAttributes classes

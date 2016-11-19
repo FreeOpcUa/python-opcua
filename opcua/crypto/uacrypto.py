@@ -157,7 +157,7 @@ def p_sha1(secret, seed, sizes=()):
 
 
 def x509_name_to_string(name):
-    parts = ["{}={}".format(attr.oid._name, attr.value) for attr in name]
+    parts = ["{0}={1}".format(attr.oid._name, attr.value) for attr in name]
     return ', '.join(parts)
 
 
@@ -168,9 +168,9 @@ def x509_to_string(cert):
     if cert.subject == cert.issuer:
         issuer = ' (self-signed)'
     else:
-        issuer = ', issuer: {}'.format(x509_name_to_string(cert.issuer))
+        issuer = ', issuer: {0}'.format(x509_name_to_string(cert.issuer))
     # TODO: show more information
-    return "{}{}, {} - {}".format(x509_name_to_string(cert.subject), issuer, cert.not_valid_before, cert.not_valid_after)
+    return "{0}{1}, {2} - {3}".format(x509_name_to_string(cert.subject), issuer, cert.not_valid_before, cert.not_valid_after)
 
 
 if __name__ == "__main__":

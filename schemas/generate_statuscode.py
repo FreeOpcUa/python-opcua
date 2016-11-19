@@ -30,7 +30,7 @@ if __name__ == "__main__":
     outputfile.write("class StatusCodes(object):\n")
     for name, val, doc in codes:
         doc = doc.strip()
-        outputfile.write("    {} = {}\n".format(name, val))
+        outputfile.write("    {0} = {1}\n".format(name, val))
     outputfile.write("\n")
     outputfile.write("\n")
 
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     for name, val, doc in codes:
         doc = doc.strip()
         doc = doc.replace("'", '"')
-        outputfile.write("    {}: ('{}', '{}'),\n".format(val, name, doc))
+        outputfile.write("    {0}: ('{1}', '{2}'),\n".format(val, name, doc))
     outputfile.write("}\n")
     outputfile.write("\n")
     outputfile.write("\n")

@@ -28,7 +28,7 @@ def _parse_nodeid_qname(*args):
     except ua.UaError:
         raise
     except Exception as ex:
-        raise TypeError("This method takes either a namespace index and a string as argument or a nodeid and a qualifiedname. Received arguments {} and got exception {}".format(args, ex))
+        raise TypeError("This method takes either a namespace index and a string as argument or a nodeid and a qualifiedname. Received arguments {0} and got exception {1}".format(args, ex))
 
 
 def create_folder(parent, nodeid, bname):
@@ -96,7 +96,7 @@ def create_variable_type(parent, nodeid, bname, datatype):
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
     if datatype and not isinstance(datatype, ua.NodeId):
-        raise RuntimeError("Data type should be nodeid, got {}".format(datatype))
+        raise RuntimeError("Data type should be nodeid, got {0}".format(datatype))
     addnode = ua.AddNodesItem()
     addnode.RequestedNewNodeId = nodeid
     addnode.BrowseName = qname

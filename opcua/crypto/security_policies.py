@@ -18,7 +18,7 @@ def require_cryptography(obj):
     Call this function in constructors.
     """
     if not CRYPTOGRAPHY_AVAILABLE:
-        raise UaError("Can't use {}, cryptography module is not installed".format(obj.__class__.__name__))
+        raise UaError("Can't use {0}, cryptography module is not installed".format(obj.__class__.__name__))
 
 
 class Signer(object):
@@ -453,4 +453,4 @@ def encrypt_asymmetric(pubkey, data, policy_uri):
                     cls.AsymmetricEncryptionURI)
     if not policy_uri or policy_uri == POLICY_NONE_URI:
         return (data, '')
-    raise UaError("Unsupported security policy `{}`".format(policy_uri))
+    raise UaError("Unsupported security policy `{0}`".format(policy_uri))

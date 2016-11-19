@@ -35,7 +35,7 @@ class _FrozenClass(object):
 
     def __setattr__(self, key, value):
         if self._freeze and not hasattr(self, key):
-            raise TypeError("Error adding member '{}' to class '{}', class is frozen, members are {}".format(
+            raise TypeError("Error adding member '{0}' to class '{1}', class is frozen, members are {2}".format(
                 key, self.__class__.__name__, self.__dict__.keys()))
         object.__setattr__(self, key, value)
 
@@ -211,7 +211,7 @@ class StatusCode(FrozenClass):
             return True
 
     def __str__(self):
-        return 'StatusCode({})'.format(self.name)
+        return 'StatusCode({0})'.format(self.name)
     __repr__ = __str__
 
     def __eq__(self, other):
@@ -313,7 +313,7 @@ class NodeId(FrozenClass):
         try:
             return NodeId._from_string(string)
         except ValueError as ex:
-            raise UaStringParsingError("Error parsing string {}".format(string), ex)
+            raise UaStringParsingError("Error parsing string {0}".format(string), ex)
 
     @staticmethod
     def _from_string(string):
@@ -357,7 +357,7 @@ class NodeId(FrozenClass):
     def to_string(self):
         string = ""
         if self.NamespaceIndex != 0:
-            string += "ns={};".format(self.NamespaceIndex)
+            string += "ns={0};".format(self.NamespaceIndex)
         ntype = None
         if self.NodeIdType == NodeIdType.Numeric:
             ntype = "i"
@@ -371,15 +371,15 @@ class NodeId(FrozenClass):
             ntype = "g"
         elif self.NodeIdType == NodeIdType.ByteString:
             ntype = "b"
-        string += "{}={}".format(ntype, self.Identifier)
+        string += "{0}={1}".format(ntype, self.Identifier)
         if self.ServerIndex:
             string = "srv=" + str(self.ServerIndex) + string
         if self.NamespaceUri:
-            string += "nsu={}".format(self.NamespaceUri)
+            string += "nsu={0}".format(self.NamespaceUri)
         return string
 
     def __str__(self):
-        return "{}NodeId({})".format(self.NodeIdType.name, self.to_string())
+        return "{0}NodeId({1})".format(self.NodeIdType.name, self.to_string())
     __repr__ = __str__
 
     def to_binary(self):
@@ -487,7 +487,7 @@ class QualifiedName(FrozenClass):
         self._freeze = True
 
     def to_string(self):
-        return "{}:{}".format(self.NamespaceIndex, self.Name)
+        return "{0}:{1}".format(self.NamespaceIndex, self.Name)
 
     @staticmethod
     def from_string(string):
@@ -496,7 +496,7 @@ class QualifiedName(FrozenClass):
                 idx, name = string.split(":", 1)
                 idx = int(idx)
             except (TypeError, ValueError) as ex:
-                raise UaStringParsingError("Error parsing string {}".format(string), ex)
+                raise UaStringParsingError("Error parsing string {0}".format(string), ex)
         else:
             idx = 0
             name = string
@@ -523,14 +523,14 @@ class QualifiedName(FrozenClass):
 
     def __lt__(self, other):
         if not isinstance(other, QualifiedName):
-            raise TypeError("Cannot compare QualifiedName and {}".format(other))
+            raise TypeError("Cannot compare QualifiedName and {0}".format(other))
         if self.NamespaceIndex == other.NamespaceIndex:
             return self.Name < other.Name
         else:
             return self.NamespaceIndex < other.NamespaceIndex
 
     def __str__(self):
-        return 'QualifiedName({}:{})'.format(self.NamespaceIndex, self.Name)
+        return 'QualifiedName({0}:{1})'.format(self.NamespaceIndex, self.Name)
 
     __repr__ = __str__
 
@@ -637,7 +637,7 @@ class ExtensionObject(FrozenClass):
     @staticmethod
     def from_object(obj):
         ext = ExtensionObject()
-        oid = getattr(ObjectIds, "{}_Encoding_DefaultBinary".format(obj.__class__.__name__))
+        oid = getattr(ObjectIds, "{0}_Encoding_DefaultBinary".format(obj.__class__.__name__))
         ext.TypeId = FourByteNodeId(oid)
         ext.Body = obj.to_binary()
         return ext
@@ -721,10 +721,10 @@ class VariantTypeCustom(object):
         self.name = "Custom"
         self.value = val
         if self.value > 0b00111111:
-            raise UaError("Cannot create VariantType. VariantType must be {} > x > {}, received {}".format(0b111111, 25, val))
+            raise UaError("Cannot create VariantType. VariantType must be {0} > x > {1}, received {2}".format(0b111111, 25, val))
 
     def __str__(self):
-        return "VariantType.Custom:{}".format(self.value)
+        return "VariantType.Custom:{0}".format(self.value)
     __repr__ = __str__
 
     def __eq__(self, other):
@@ -758,7 +758,7 @@ class Variant(FrozenClass):
                 VariantType.Null,
                 VariantType.String,
                 VariantType.DateTime):
-            raise UaError("Variant of type {} cannot have value None".format(self.VariantType))
+            raise UaError("Variant of type {0} cannot have value None".format(self.VariantType))
         if self.Dimensions is None and type(self.Value) in (list, tuple):
             dims = get_shape(self.Value)
             if len(dims) > 1:
@@ -777,7 +777,7 @@ class Variant(FrozenClass):
             error_val = val
         while isinstance(val, (list, tuple)):
             if len(val) == 0:
-                raise UaError("could not guess UA type of variable {}".format(error_val))
+                raise UaError("could not guess UA type of variable {0}".format(error_val))
             val = val[0]
         if val is None:
             return VariantType.Null
@@ -802,10 +802,10 @@ class Variant(FrozenClass):
                 except AttributeError:
                     return VariantType.ExtensionObject
             else:
-                raise UaError("Could not guess UA type of {} with type {}, specify UA type".format(val, type(val)))
+                raise UaError("Could not guess UA type of {0} with type {1}, specify UA type".format(val, type(val)))
 
     def __str__(self):
-        return "Variant(val:{!s},type:{})".format(self.Value, self.VariantType)
+        return "Variant(val:{0!s},type:{1})".format(self.Value, self.VariantType)
     __repr__ = __str__
 
     def to_binary(self):
@@ -1010,17 +1010,17 @@ class DataValue(FrozenClass):
         return obj
 
     def __str__(self):
-        s = 'DataValue(Value:{}'.format(self.Value)
+        s = 'DataValue(Value:{0}'.format(self.Value)
         if self.StatusCode is not None:
-            s += ', StatusCode:{}'.format(self.StatusCode)
+            s += ', StatusCode:{0}'.format(self.StatusCode)
         if self.SourceTimestamp is not None:
-            s += ', SourceTimestamp:{}'.format(self.SourceTimestamp)
+            s += ', SourceTimestamp:{0}'.format(self.SourceTimestamp)
         if self.ServerTimestamp is not None:
-            s += ', ServerTimestamp:{}'.format(self.ServerTimestamp)
+            s += ', ServerTimestamp:{0}'.format(self.ServerTimestamp)
         if self.SourcePicoseconds is not None:
-            s += ', SourcePicoseconds:{}'.format(self.SourcePicoseconds)
+            s += ', SourcePicoseconds:{0}'.format(self.SourcePicoseconds)
         if self.ServerPicoseconds is not None:
-            s += ', ServerPicoseconds:{}'.format(self.ServerPicoseconds)
+            s += ', ServerPicoseconds:{0}'.format(self.ServerPicoseconds)
         s += ')'
         return s
 

@@ -20,7 +20,7 @@ class AttributeValue(object):
         self.datachange_callbacks = {}
 
     def __str__(self):
-        return "AttributeValue({})".format(self.value)
+        return "AttributeValue({0})".format(self.value)
     __repr__ = __str__
 
 
@@ -33,7 +33,7 @@ class NodeData(object):
         self.call = None
 
     def __str__(self):
-        return "NodeData(id:{}, attrs:{}, refs:{})".format(self.nodeid, self.attributes, self.references)
+        return "NodeData(id:{0}, attrs:{1}, refs:{2})".format(self.nodeid, self.attributes, self.references)
     __repr__ = __str__
 
 

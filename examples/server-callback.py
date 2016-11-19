@@ -26,7 +26,7 @@ def create_monitored_items(event, dispatcher):
     for idx in range(len(event.response_params)) :
         if (event.response_params[idx].StatusCode.is_good()) :
             nodeId = event.request_params.ItemsToCreate[idx].ItemToMonitor.NodeId
-            print("Node {} was created".format(nodeId))     
+            print("Node {0} was created".format(nodeId))     
          
     
 def modify_monitored_items(event, dispatcher):

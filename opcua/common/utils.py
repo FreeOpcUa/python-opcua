@@ -45,7 +45,7 @@ class Buffer(object):
         self._size = size
 
     def __str__(self):
-        return "Buffer(size:{}, data:{})".format(
+        return "Buffer(size:{0}, data:{1})".format(
             self._size,
             self._data[self._cur_pos:self._cur_pos + self._size])
     __repr__ = __str__
@@ -58,7 +58,7 @@ class Buffer(object):
         read and pop number of bytes for buffer
         """
         if size > self._size:
-            raise NotEnoughData("Not enough data left in buffer, request for {}, we have {}".format(size, self))
+            raise NotEnoughData("Not enough data left in buffer, request for {0}, we have {1}".format(size, self))
         # self.logger.debug("Request for %s bytes, from %s", size, self)
         self._size -= size
         pos = self._cur_pos
@@ -80,7 +80,7 @@ class Buffer(object):
         skip size bytes in buffer
         """
         if size > self._size:
-            raise NotEnoughData("Not enough data left in buffer, request for {}, we have {}".format(size, self))
+            raise NotEnoughData("Not enough data left in buffer, request for {0}, we have {1}".format(size, self))
         self._size -= size
         self._cur_pos += size
 

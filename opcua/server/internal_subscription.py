@@ -263,7 +263,7 @@ class InternalSubscription(object):
         self._stopev = False
 
     def __str__(self):
-        return "Subscription(id:{})".format(self.data.SubscriptionId)
+        return "Subscription(id:{0})".format(self.data.SubscriptionId)
 
     def start(self):
         self.logger.debug("starting subscription %s", self.data.SubscriptionId)

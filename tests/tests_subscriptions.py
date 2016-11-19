@@ -274,7 +274,7 @@ class SubscriptionTests(object):
             elif node == v2:
                 self.assertEqual(startv2, val)
             else:
-                self.fail("Error node {} is neither {} nor {}".format(node, v1, v2))
+                self.fail("Error node {0} is neither {1} nor {2}".format(node, v1, v2))
 
         sub.delete()
 

@@ -269,7 +269,7 @@ def pack_uatype(vtype, value):
         try:
             return value.to_binary()
         except AttributeError:
-            raise UaError("{} could not be packed with value {}".format(vtype, value))
+            raise UaError("{0} could not be packed with value {1}".format(vtype, value))
 
 
 def unpack_uatype(vtype, data):

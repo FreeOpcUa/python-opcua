@@ -265,7 +265,7 @@ class InternalSession(object):
         self._lock = Lock()
 
     def __str__(self):
-        return "InternalSession(name:{}, user:{}, id:{}, auth_token:{})".format(
+        return "InternalSession(name:{0}, user:{1}, id:{2}, auth_token:{3})".format(
             self.name, self.user, self.session_id, self.authentication_token)
 
     def get_endpoints(self, params=None, sockname=None):
