@@ -359,19 +359,35 @@ class Server(object):
             etype = BaseEvent()
         return EventGenerator(self.iserver.isession, etype, source)
 
-    def create_custom_data_type(self, idx, name, basetype=ua.ObjectIds.BaseDataType, properties=[]):
+    def create_custom_data_type(self, idx, name, basetype=ua.ObjectIds.BaseDataType, properties=None):
+        if properties is None:
+            properties = []
         return self._create_custom_type(idx, name, basetype, properties, [], [])
 
-    def create_custom_event_type(self, idx, name, basetype=ua.ObjectIds.BaseEventType, properties=[]):
+    def create_custom_event_type(self, idx, name, basetype=ua.ObjectIds.BaseEventType, properties=None):
+        if properties is None:
+            properties = []
         return self._create_custom_type(idx, name, basetype, properties, [], [])
 
-    def create_custom_object_type(self, idx, name, basetype=ua.ObjectIds.BaseObjectType, properties=[], variables=[], methods=[]):
+    def create_custom_object_type(self, idx, name, basetype=ua.ObjectIds.BaseObjectType, properties=None, variables=None, methods=None):
+        if properties is None:
+            properties = []
+        if variables is None:
+            variables = []
+        if methods is None:
+            methods = []
         return self._create_custom_type(idx, name, basetype, properties, variables, methods)
 
     # def create_custom_reference_type(self, idx, name, basetype=ua.ObjectIds.BaseReferenceType, properties=[]):
         # return self._create_custom_type(idx, name, basetype, properties)
 
-    def create_custom_variable_type(self, idx, name, basetype=ua.ObjectIds.BaseVariableType, properties=[], variables=[], methods=[]):
+    def create_custom_variable_type(self, idx, name, basetype=ua.ObjectIds.BaseVariableType, properties=None, variables=None, methods=None):
+        if properties is None:
+            properties = []
+        if variables is None:
+            variables = []
+        if methods is None:
+            methods = []
         return self._create_custom_type(idx, name, basetype, properties, variables, methods)
 
     def _create_custom_type(self, idx, name, basetype, properties, variables, methods):
@@ -413,7 +429,7 @@ class Server(object):
         exp.build_etree(nodes)
         return exp.write_xml(path)
 
-    def export_xml_by_ns(self, path, namespaces=[]):
+    def export_xml_by_ns(self, path, namespaces=None):
         """
         Export nodes of one or more namespaces to an XML file.  
         Namespaces used by nodes are always exported for consistency.
@@ -424,6 +440,8 @@ class Server(object):
     
         Returns:
         """
+        if namespaces is None:
+            namespaces = []
         nodes = get_nodes_of_namespace(self, namespaces)
         self.export_xml(nodes, path)
 
