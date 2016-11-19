@@ -73,5 +73,5 @@ def _read_and_copy_attrs(node_type, struct, addnode):
             else:
                 setattr(struct, name, results[idx].Value.Value)
         else:
-            print("Instantiate: while copying attributes from node type %s, attribute %s, statuscode is %s" % (node_type, name, results[idx].StatusCode))            
+            print("Instantiate: while copying attributes from node type {0!s}, attribute {1!s}, statuscode is {2!s}".format(node_type, name, results[idx].StatusCode))            
     addnode.NodeAttributes = struct

@@ -230,7 +230,7 @@ def get_base_data_type(datatype):
         if base.nodeid.NamespaceIndex == 0 and isinstance(base.nodeid.Identifier, int) and base.nodeid.Identifier <= 30:
             return base
         base = get_node_supertype(base)
-    raise ua.UaError("Datatype must be a subtype of builtin types %s" % datatype)
+    raise ua.UaError("Datatype must be a subtype of builtin types {0!s}".format(datatype))
 
 
 def get_nodes_of_namespace(server, namespaces=None):

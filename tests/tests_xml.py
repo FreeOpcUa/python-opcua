@@ -56,11 +56,11 @@ class XmlTests(object):
         ns = self.srv.get_namespace_index("http://examples.freeopcua.github.io/")
         o = self.opc.get_objects_node()
 
-        o2 = o.get_child(["%d:MyBaseObject" % ns])
+        o2 = o.get_child(["{0:d}:MyBaseObject".format(ns)])
 
         self.assertIsNotNone(o2)
 
-        v1 = o.get_child(["%d:MyBaseObject" % ns, "%d:MyVar" % ns])
+        v1 = o.get_child(["{0:d}:MyBaseObject".format(ns), "{0:d}:MyVar".format(ns)])
         self.assertIsNotNone(v1)
 
         r1 = o2.get_references(refs=ua.ObjectIds.HasComponent)[0]
