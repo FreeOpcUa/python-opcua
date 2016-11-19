@@ -11,16 +11,16 @@ class TestUaErrors(unittest.TestCase):
         self.indirect = UaStatusCodeError(self.status_code_bad_internal)
         self.unknown = UaStatusCodeError(self.status_code_unknown)
 
-    def testSubclassSelection(self):
+    def test_subclass_selection(self):
         self.assertIs(type(self.direct), uaerrors.BadInternalError)
         self.assertIs(type(self.indirect), uaerrors.BadInternalError)
         self.assertIs(type(self.unknown), UaStatusCodeError)
 
-    def testCode(self):
+    def test_code(self):
         self.assertEqual(self.direct.code, self.status_code_bad_internal)
         self.assertEqual(self.indirect.code, self.status_code_bad_internal)
         self.assertEqual(self.unknown.code, self.status_code_unknown)
 
-    def testStringRepr(self):
+    def test_string_repr(self):
         self.assertIn("BadInternal", str(self.direct))
         self.assertIn("BadInternal", str(self.indirect))

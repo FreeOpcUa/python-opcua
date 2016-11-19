@@ -29,21 +29,21 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
     Tests that can only be run on server side must be defined here
     '''
     @classmethod
-    def setUpClass(self):
-        self.srv = Server()
-        self.srv.set_endpoint('opc.tcp://localhost:%d' % port_num)
-        add_server_methods(self.srv)
-        self.srv.start()
-        self.opc = self.srv
-        self.discovery = Server()
-        self.discovery.set_application_uri("urn:freeopcua:python:discovery")
-        self.discovery.set_endpoint('opc.tcp://localhost:%d' % port_discovery)
-        self.discovery.start()
+    def setUpClass(cls):
+        cls.srv = Server()
+        cls.srv.set_endpoint('opc.tcp://localhost:%d' % port_num)
+        add_server_methods(cls.srv)
+        cls.srv.start()
+        cls.opc = cls.srv
+        cls.discovery = Server()
+        cls.discovery.set_application_uri("urn:freeopcua:python:discovery")
+        cls.discovery.set_endpoint('opc.tcp://localhost:%d' % port_discovery)
+        cls.discovery.start()
 
     @classmethod
-    def tearDownClass(self):
-        self.srv.stop()
-        self.discovery.stop()
+    def tearDownClass(cls):
+        cls.srv.stop()
+        cls.discovery.stop()
 
     def test_discovery(self):
         client = Client(self.discovery.endpoint.geturl())

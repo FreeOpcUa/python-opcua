@@ -19,32 +19,30 @@ class TestClient(unittest.TestCase, CommonTests, SubscriptionTests):
     Tests that can only be run on client side must be defined  in this class
     '''
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         # start our own server
-        self.srv = Server()
-        self.srv.set_endpoint('opc.tcp://localhost:%d' % port_num1)
-        add_server_methods(self.srv)
-        self.srv.start()
+        cls.srv = Server()
+        cls.srv.set_endpoint('opc.tcp://localhost:%d' % port_num1)
+        add_server_methods(cls.srv)
+        cls.srv.start()
 
         # start admin client
         # long timeout since travis (automated testing) can be really slow
-        self.clt = Client('opc.tcp://admin@localhost:%d' % port_num1, timeout=10)
-        self.clt.connect()
-        self.opc = self.clt
+        cls.clt = Client('opc.tcp://admin@localhost:%d' % port_num1, timeout=10)
+        cls.clt.connect()
+        cls.opc = cls.clt
 
         # start anonymous client
-        self.ro_clt = Client('opc.tcp://localhost:%d' % port_num1)
-        self.ro_clt.connect()
-
-
+        cls.ro_clt = Client('opc.tcp://localhost:%d' % port_num1)
+        cls.ro_clt.connect()
 
     @classmethod
-    def tearDownClass(self):
+    def tearDownClass(cls):
         #stop our clients
-        self.ro_clt.disconnect()
-        self.clt.disconnect()
+        cls.ro_clt.disconnect()
+        cls.clt.disconnect()
         # stop the server 
-        self.srv.stop()
+        cls.srv.stop()
 
     def test_service_fault(self):
         request = ua.ReadRequest()

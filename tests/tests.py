@@ -10,7 +10,6 @@ from tests_server import TestServer, TestServerCaching
 from tests_client import TestClient
 from tests_unit import TestUnit, TestMaskEnum
 from tests_history import TestHistory, TestHistorySQL, TestHistoryLimits, TestHistorySQLLimits
-from tests_history import TestHistorySQL
 from tests_crypto_connect import TestCryptoConnect
 from tests_uaerrors import TestUaErrors
 

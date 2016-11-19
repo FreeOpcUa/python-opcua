@@ -13,16 +13,16 @@ class TestCmdLines(unittest.TestCase):
     Test command lines
     '''
     @classmethod
-    def setUpClass(self):
-        self.srv = Server()
-        self.srv_url = 'opc.tcp://localhost:%d' % port_num
-        self.srv.set_endpoint(self.srv_url)
-        objects = self.srv.get_objects_node()
+    def setUpClass(cls):
+        cls.srv = Server()
+        cls.srv_url = 'opc.tcp://localhost:%d' % port_num
+        cls.srv.set_endpoint(cls.srv_url)
+        objects = cls.srv.get_objects_node()
         obj = objects.add_object(4, "directory")
         var = obj.add_variable(4, "variable", 1.999)
         var2 = obj.add_variable(4, "variable2", 1.777)
         var2.set_writable()
-        self.srv.start()
+        cls.srv.start()
 
     def test_uals(self):
         s = subprocess.check_output(["python", "tools/uals", "--url", self.srv_url])
@@ -49,7 +49,7 @@ class TestCmdLines(unittest.TestCase):
         self.assertIn(b"urn:freeopcua:python:server", s)
 
     @classmethod
-    def tearDownClass(self):
-        self.srv.stop()
+    def tearDownClass(cls):
+        cls.srv.stop()
 
 

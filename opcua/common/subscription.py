@@ -300,7 +300,7 @@ class Subscription(object):
             if self._monitoreditems_map[monitored_item_index].server_handle == handle:
                 item_to_change = self._monitoreditems_map[monitored_item_index]
                 break
-        if mod_filter_val == None:
+        if mod_filter_val is None:
             mod_filter = None
         elif mod_filter_val < 0:
             mod_filter = item_to_change.mfilter
