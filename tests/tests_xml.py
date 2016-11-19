@@ -147,7 +147,7 @@ class XmlTests(object):
         vnew = onew.add_variable(new_ns, "xmlns_new_var", 9.99)
         o_no_export = self.opc.nodes.objects.add_object(ref_ns, "xmlns_parent")
         v_no_parent = o_no_export.add_variable(new_ns, "xmlns_new_var_no_parent", 9.99)
-        o_bname = onew.add_object("ns={};i=4000".format(new_ns), "{}:BNAME".format(bname_ns))
+        o_bname = onew.add_object("ns={0};i=4000".format(new_ns), "{0}:BNAME".format(bname_ns))
 
         nodes = [o, o50, o200, onew, vnew, v_no_parent, o_bname]
         print("CREATED", nodes, o_no_export)
@@ -266,7 +266,7 @@ class XmlTests(object):
         dim = node.get_array_dimensions()
         nclass = node.get_node_class()
 
-        path = "export-{}.xml".format(typename)
+        path = "export-{0}.xml".format(typename)
         self.opc.export_xml([node], path)
         self.opc.delete_nodes([node])
         new_nodes = self.opc.import_xml(path)

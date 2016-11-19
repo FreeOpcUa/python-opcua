@@ -116,7 +116,7 @@ class UASocketClient(object):
         with self._lock:
             future = self._callbackmap.pop(request_id, None)
             if future is None:
-                raise ua.UaError("No future object found for request: {}, callbacks in list are {}".format(request_id, self._callbackmap.keys()))
+                raise ua.UaError("No future object found for request: {0}, callbacks in list are {1}".format(request_id, self._callbackmap.keys()))
         future.set_result(body)
 
     def _create_request_header(self, timeout=1000):

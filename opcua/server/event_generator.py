@@ -75,7 +75,7 @@ class EventGenerator(object):
         # result.StatusCode.check()
 
     def __str__(self):
-        return "EventGenerator(Type:{}, Source:{}, Time:{}, Message: {})".format(self.event.EventType,
+        return "EventGenerator(Type:{0}, Source:{1}, Time:{2}, Message: {3})".format(self.event.EventType,
                                                                                  self.event.SourceNode,
                                                                                  self.event.Time,
                                                                                  self.event.Message)

@@ -63,7 +63,7 @@ class DataChangeNotif(object):
         self.subscription_data = subscription_data
 
     def __str__(self):
-        return "DataChangeNotification({}, {})".format(self.subscription_data, self.monitored_item)
+        return "DataChangeNotification({0}, {1})".format(self.subscription_data, self.monitored_item)
     __repr__ = __str__
 
 

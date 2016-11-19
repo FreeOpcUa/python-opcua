@@ -66,7 +66,7 @@ def _require_nodeid(parser, args):
     # check that a nodeid has been given explicitly, a bit hackish...
     if args.nodeid == "i=84" and args.path == "":
         parser.print_usage()
-        print("{}: error: A NodeId or BrowsePath is required".format(parser.prog))
+        print("{0}: error: A NodeId or BrowsePath is required".format(parser.prog))
         sys.exit(1)
 
 
@@ -280,7 +280,7 @@ def uals():
     client.connect()
     try:
         node = get_node(client, args)
-        print("Browsing node {} at {}\n".format(node, args.url))
+        print("Browsing node {0} at {1}\n".format(node, args.url))
         if args.long_format == 0:
             _lsprint_0(node, args.depth - 1)
         elif args.long_format == 1:
@@ -295,32 +295,32 @@ def uals():
 
 def _lsprint_0(node, depth, indent=""):
     if not indent:
-        print("{:30} {:25}".format("DisplayName", "NodeId"))
+        print("{0:30} {1:25}".format("DisplayName", "NodeId"))
         print("")
     for desc in node.get_children_descriptions():
-        print("{}{:30} {:25}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string()))
+        print("{0}{1:30} {2:25}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string()))
         if depth:
             _lsprint_0(Node(node.server, desc.NodeId), depth - 1, indent + "  ")
 
 
 def _lsprint_1(node, depth, indent=""):
     if not indent:
-        print("{:30} {:25} {:25} {:25}".format("DisplayName", "NodeId", "BrowseName", "Value"))
+        print("{0:30} {1:25} {2:25} {3:25}".format("DisplayName", "NodeId", "BrowseName", "Value"))
         print("")
 
     for desc in node.get_children_descriptions():
         if desc.NodeClass == ua.NodeClass.Variable:
             val = Node(node.server, desc.NodeId).get_value()
-            print("{}{:30} {!s:25} {!s:25}, {!s:3}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string(), desc.BrowseName.to_string(), val))
+            print("{0}{1:30} {2!s:25} {3!s:25}, {4!s:3}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string(), desc.BrowseName.to_string(), val))
         else:
-            print("{}{:30} {!s:25} {!s:25}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string(), desc.BrowseName.to_string()))
+            print("{0}{1:30} {2!s:25} {3!s:25}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string(), desc.BrowseName.to_string()))
         if depth:
             _lsprint_1(Node(node.server, desc.NodeId), depth - 1, indent + "  ")
 
 
 def _lsprint_long(pnode, depth, indent=""):
     if not indent:
-        print("{:30} {:25} {:25} {:10} {:30} {:25}".format("DisplayName", "NodeId", "BrowseName", "DataType", "Timestamp", "Value"))
+        print("{0:30} {1:25} {2:25} {3:10} {4:30} {5:25}".format("DisplayName", "NodeId", "BrowseName", "DataType", "Timestamp", "Value"))
         print("")
     for node in pnode.get_children():
         attrs = node.get_attributes([ua.AttributeIds.DisplayName,
@@ -333,9 +333,9 @@ def _lsprint_long(pnode, depth, indent=""):
         name, bname, nclass, mask, umask, dtype, val = [attr.Value.Value for attr in attrs]
         update = attrs[-1].ServerTimestamp
         if nclass == ua.NodeClass.Variable:
-            print("{}{:30} {:25} {:25} {:10} {!s:30} {!s:25}".format(indent, name.to_string(), node.nodeid.to_string(), bname.to_string(), dtype.to_string(), update, val))
+            print("{0}{1:30} {2:25} {3:25} {4:10} {5!s:30} {6!s:25}".format(indent, name.to_string(), node.nodeid.to_string(), bname.to_string(), dtype.to_string(), update, val))
         else:
-            print("{}{:30} {:25} {:25}".format(indent, name.to_string(), bname.to_string(), node.nodeid.to_string()))
+            print("{0}{1:30} {2:25} {3:25}".format(indent, name.to_string(), bname.to_string(), node.nodeid.to_string()))
         if depth:
             _lsprint_long(node, depth - 1, indent + "  ")
 
@@ -411,7 +411,7 @@ def cert_to_string(der):
     try:
         from opcua.crypto import uacrypto
     except ImportError:
-        return "{} bytes".format(len(der))
+        return "{0} bytes".format(len(der))
     cert = uacrypto.x509_from_der(der)
     return uacrypto.x509_to_string(cert)
 
@@ -570,24 +570,24 @@ def uadiscover():
     client = Client(args.url, timeout=args.timeout)
 
     if args.network:
-        print("Performing discovery at {}\n".format(args.url))
+        print("Performing discovery at {0}\n".format(args.url))
         for i, server in enumerate(client.connect_and_find_servers_on_network(), start=1):
-            print('Server {}:'.format(i))
+            print('Server {0}:'.format(i))
             #for (n, v) in application_to_strings(server):
                 #print('  {}: {}'.format(n, v))
             print('')
 
-    print("Performing discovery at {}\n".format(args.url))
+    print("Performing discovery at {0}\n".format(args.url))
     for i, server in enumerate(client.connect_and_find_servers(), start=1):
-        print('Server {}:'.format(i))
+        print('Server {0}:'.format(i))
         for (n, v) in application_to_strings(server):
-            print('  {}: {}'.format(n, v))
+            print('  {0}: {1}'.format(n, v))
         print('')
 
     for i, ep in enumerate(client.connect_and_get_server_endpoints(), start=1):
-        print('Endpoint {}:'.format(i))
+        print('Endpoint {0}:'.format(i))
         for (n, v) in endpoint_to_strings(ep):
-            print('  {}: {}'.format(n, v))
+            print('  {0}: {1}'.format(n, v))
         print('')
 
     sys.exit(0)
@@ -595,9 +595,9 @@ def uadiscover():
 
 def print_history(o):
     if isinstance(o, ua.HistoryData):
-        print("{:30} {:10} {}".format('Source timestamp', 'Status', 'Value'))
+        print("{0:30} {1:10} {2}".format('Source timestamp', 'Status', 'Value'))
         for d in o.DataValues:
-            print("{:30} {:10} {}".format(str(d.SourceTimestamp), d.StatusCode.name, d.Value))
+            print("{0:30} {1:10} {2}".format(str(d.SourceTimestamp), d.StatusCode.name, d.Value))
 
 
 def str_to_datetime(s, default=None):
@@ -641,7 +641,7 @@ def uahistoryread():
         node = get_node(client, args)
         starttime = str_to_datetime(args.starttime, datetime.utcnow() - timedelta(days=1))
         endtime = str_to_datetime(args.endtime, datetime.utcnow())
-        print("Reading raw history of node {} at {}; start at {}, end at {}\n".format(node, args.url, starttime, endtime))
+        print("Reading raw history of node {0} at {1}; start at {2}, end at {3}\n".format(node, args.url, starttime, endtime))
         if args.events:
             evs = node.read_event_history(starttime, endtime, numvalues=args.limit)
             for ev in evs:

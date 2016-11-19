@@ -7,9 +7,9 @@ def bump_version():
         s = f.read()
     m = re.search(r'version="(.*)\.(.*)\.(.*)",', s)
     v1, v2, v3 = m.groups()
-    oldv = "{}.{}.{}".format(v1, v2, v3)
-    newv = "{}.{}.{}".format(v1, v2, str(int(v3) + 1))
-    print("Current version is: {}, write new version, ctrl-c to exit".format(oldv))
+    oldv = "{0}.{1}.{2}".format(v1, v2, v3)
+    newv = "{0}.{1}.{2}".format(v1, v2, str(int(v3) + 1))
+    print("Current version is: {0}, write new version, ctrl-c to exit".format(oldv))
     ans = input(newv)
     if ans:
         newv = ans
@@ -25,7 +25,7 @@ def release():
     if ans in ("", "y", "yes"):
         os.system("git add setup.py")
         os.system("git commit -m 'new release'")
-        os.system("git tag {}".format(v))
+        os.system("git tag {0}".format(v))
         ans = input("change committed, push to server?(Y/n)")
         if ans in ("", "y", "yes"):
             os.system("git push")

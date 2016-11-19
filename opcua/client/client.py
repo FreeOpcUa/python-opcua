@@ -125,7 +125,7 @@ class Client(object):
                     ep.SecurityMode == security_mode and
                     ep.SecurityPolicyUri == policy_uri):
                 return ep
-        raise ua.UaError("No matching endpoints: {}, {}".format(
+        raise ua.UaError("No matching endpoints: {0}, {1}".format(
                          security_mode, policy_uri))
 
     def set_security_string(self, string):
@@ -142,7 +142,7 @@ class Client(object):
             return
         parts = string.split(',')
         if len(parts) < 4:
-            raise ua.UaError('Wrong format: `{}`, expected at least 4 comma-separated values'.format(string))
+            raise ua.UaError('Wrong format: `{0}`, expected at least 4 comma-separated values'.format(string))
         policy_class = getattr(security_policies, 'SecurityPolicy' + parts[0])
         mode = getattr(ua.MessageSecurityMode, parts[1])
         return self.set_security(policy_class, parts[2], parts[3],

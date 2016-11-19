@@ -213,7 +213,7 @@ class HistoryManager(object):
         if not self._sub:
             self._sub = self._create_subscription(SubHandler(self.storage))
         if node in self._handlers:
-            raise ua.UaError("Node {} is already historized".format(node))
+            raise ua.UaError("Node {0} is already historized".format(node))
         self.storage.new_historized_node(node.nodeid, period, count)
         handler = self._sub.subscribe_data_change(node)
         self._handlers[node] = handler
@@ -234,7 +234,7 @@ class HistoryManager(object):
         if not self._sub:
             self._sub = self._create_subscription(SubHandler(self.storage))
         if source in self._handlers:
-            raise ua.UaError("Events from {} are already historized".format(source))
+            raise ua.UaError("Events from {0} are already historized".format(source))
 
         # get list of all event types that the source node generates; change this to only historize specific events
         event_types = source.get_referenced_nodes(ua.ObjectIds.GeneratesEvent)

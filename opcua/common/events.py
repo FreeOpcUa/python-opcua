@@ -28,7 +28,7 @@ class Event(object):
         self.internal_properties = list(self.__dict__.keys())[:] + ["internal_properties"]
 
     def __str__(self):
-        return "{}({})".format(
+        return "{0}({1})".format(
             self.__class__.__name__, 
             [str(k) + ":" + str(v) for k, v in self.__dict__.items() if k not in self.internal_properties])
     __repr__ = __str__
