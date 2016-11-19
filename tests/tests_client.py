@@ -22,18 +22,18 @@ class TestClient(unittest.TestCase, CommonTests, SubscriptionTests):
     def setUpClass(cls):
         # start our own server
         cls.srv = Server()
-        cls.srv.set_endpoint('opc.tcp://localhost:%d' % port_num1)
+        cls.srv.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_num1))
         add_server_methods(cls.srv)
         cls.srv.start()
 
         # start admin client
         # long timeout since travis (automated testing) can be really slow
-        cls.clt = Client('opc.tcp://admin@localhost:%d' % port_num1, timeout=10)
+        cls.clt = Client('opc.tcp://admin@localhost:{0:d}'.format(port_num1), timeout=10)
         cls.clt.connect()
         cls.opc = cls.clt
 
         # start anonymous client
-        cls.ro_clt = Client('opc.tcp://localhost:%d' % port_num1)
+        cls.ro_clt = Client('opc.tcp://localhost:{0:d}'.format(port_num1))
         cls.ro_clt.connect()
 
     @classmethod

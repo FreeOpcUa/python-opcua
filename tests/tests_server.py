@@ -31,13 +31,13 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
     @classmethod
     def setUpClass(cls):
         cls.srv = Server()
-        cls.srv.set_endpoint('opc.tcp://localhost:%d' % port_num)
+        cls.srv.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_num))
         add_server_methods(cls.srv)
         cls.srv.start()
         cls.opc = cls.srv
         cls.discovery = Server()
         cls.discovery.set_application_uri("urn:freeopcua:python:discovery")
-        cls.discovery.set_endpoint('opc.tcp://localhost:%d' % port_discovery)
+        cls.discovery.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_discovery))
         cls.discovery.start()
 
     @classmethod

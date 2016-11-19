@@ -24,10 +24,10 @@ class HistoryCommon(object):
     @classmethod
     def start_server_and_client(cls):
         cls.srv = Server()
-        cls.srv.set_endpoint('opc.tcp://localhost:%d' % port_num1)
+        cls.srv.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_num1))
         cls.srv.start()
 
-        cls.clt = Client('opc.tcp://localhost:%d' % port_num1)
+        cls.clt = Client('opc.tcp://localhost:{0:d}'.format(port_num1))
         cls.clt.connect()
 
     @classmethod

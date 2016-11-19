@@ -75,8 +75,8 @@ It is automatically generated from opcfoundation.org schemas.
 from opcua import ua
 
 
-def create_standard_address_space_%s(server):
-  ''' % (self.part))
+def create_standard_address_space_{0!s}(server):
+  '''.format((self.part)))
 
     def make_node_code(self, obj, indent):
         self.writecode(indent, 'node = ua.AddNodesItem()')
