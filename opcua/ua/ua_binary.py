@@ -290,7 +290,7 @@ def unpack_uatype(vtype, data):
             klass = getattr(uatypes, vtype.name)
             return klass.from_binary(data)
         else:
-            raise UaError("can not unpack unknown vtype %s" % vtype)
+            raise UaError("can not unpack unknown vtype {0!s}".format(vtype))
 
 
 def unpack_uatype_array(vtype, data):
