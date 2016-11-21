@@ -1,7 +1,7 @@
 from opcua.common.methods import to_variant
 from opcua.ua import ua_binary as uabin
 from opcua.ua.uatypes import Variant
-from opcua.ua.uautils import register_extension_object
+from opcua.common.ua_utils import register_extension_object
 
 
 class KeyValuePair(object):

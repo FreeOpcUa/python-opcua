@@ -7,10 +7,12 @@ from opcua import ua
 from opcua import uamethod
 from opcua import instantiate
 from opcua import copy_node
-from opcua.ua.uautils import register_extension_object
+from opcua.common.ua_utils import register_extension_object
 
 from opcua.ua import ua_binary as uabin
 from opcua.common import ua_utils
+
+import io
 
 
 def add_server_methods(srv):
@@ -720,10 +722,10 @@ class CommonTests(object):
         self.assertEqual(type(response[0]), ua.Variant)
 
     def test_ua_method_complex(self):
-        register_extension_object(KeyValuePair)
+        register_extension_object(MyCustomClass)
 
         def unique_response(parent):
-            return KeyValuePair("Key", "Value")
+            return MyCustomClass("Key", "Value")
 
         decorated_unique_response = uamethod(unique_response)
         response = decorated_unique_response(ua.NodeId("ServerMethod", 2))
@@ -732,11 +734,11 @@ class CommonTests(object):
         self.assertEqual(type(response[0]), ua.Variant)
 
     def test_ua_method_complex_multiple(self):
-        register_extension_object(KeyValuePair)
+        register_extension_object(MyCustomClass)
 
         def unique_response(parent):
-            return [KeyValuePair("Key", "Value"),
-                    KeyValuePair("Hello", "World")]
+            return [MyCustomClass("Key", "Value"),
+                    MyCustomClass("Hello", "World")]
 
         decorated_unique_response = uamethod(unique_response)
         response = decorated_unique_response(ua.NodeId("ServerMethod", 2))
@@ -745,24 +747,24 @@ class CommonTests(object):
         self.assertEqual(type(response[0]), ua.Variant)
 
     # TODO: Fix the test
-    # def test_decode_custom_object(self):
-    #     register_extension_object(KeyValuePair)
-    #
-    #     def unique_response(parent):
-    #         return KeyValuePair("Key", "Value")
-    #
-    #     decorated_unique_response = uamethod(unique_response)
-    #     response = decorated_unique_response(ua.NodeId("ServerMethod", 2))
-    #
-    #     self.assertEqual(len(response), 1)
-    #     self.assertEqual(type(response[0]), ua.Variant)
-    #
-    #     key_value = uabin.unpack_uatype_array(response[0].VariantType, io.BytesIO(response[0].to_binary()))
-    #     self.assertEqual(key_value.key, "Key")
-    #     self.assertEqual(key_value.value, "Value")
+    def test_decode_custom_object(self):
+        register_extension_object(MyCustomClass)
+
+        def unique_response(parent):
+            return MyCustomClass("Key", "Value")
+
+        decorated_unique_response = uamethod(unique_response)
+        response = decorated_unique_response(ua.NodeId("ServerMethod", 2))
+
+        self.assertEqual(len(response), 1)
+        self.assertEqual(type(response[0]), ua.Variant)
+
+        key_value = uabin.unpack_uatype_array(response[0].VariantType, io.BytesIO(response[0].to_binary()))
+        self.assertEqual(key_value.key, "Key")
+        self.assertEqual(key_value.value, "Value")
 
 
-class KeyValuePair(object):
+class MyCustomClass(object):
     DEFAULT_BINARY = 20001
 
     def __init__(self, key, value, namespace_id=0):
@@ -782,4 +784,4 @@ class KeyValuePair(object):
         namespace_index = uabin.Primitives.UInt16.unpack(data)
         key = uabin.Primitives.String.unpack(data)
         value = uabin.Primitives.String.unpack(data)
-        return KeyValuePair(key, value, namespace_index)
+        return MyCustomClass(key, value, namespace_index)

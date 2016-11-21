@@ -629,6 +629,7 @@ class ExtensionObject(FrozenClass):
     def from_binary(data):
         obj = ExtensionObject()
         obj.TypeId = NodeId.from_binary(data)
+        obj.Encoding = uabin.Primitives.UInt8.unpack(data)
         if obj.Encoding & (1 << 0):
             obj.Body = uabin.Primitives.ByteString.unpack(data)
         return obj
