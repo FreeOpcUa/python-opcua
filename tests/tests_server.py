@@ -5,9 +5,10 @@ import time
 
 from tests_common import CommonTests, add_server_methods
 from tests_xml import XmlTests
-from tests_subscriptions import SubscriptionTests
+from tests_subscriptions import SubscriptionTests, MySubHandler
 from datetime import timedelta, datetime
 from tempfile import NamedTemporaryFile
+from concurrent.futures import TimeoutError
 
 import opcua
 from opcua import Server
@@ -435,6 +436,31 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
 
         self.assertRaises(ValueError, ua_utils.get_nodes_of_namespace, self.opc, namespaces='non_existing_ns')
 
+    def test_silent_events(self):
+        myhandler = MySubHandler()
+        o = self.opc.get_objects_node()
+
+        v1 = o.add_variable(3, 'SubscriptionVariableSE', 0)
+        sub = self.opc.create_subscription(100, myhandler)
+
+        handle1 = sub.subscribe_data_change(v1)
+
+        myhandler.reset()
+        v1.set_value(5)
+        node, val, data = myhandler.future.result(timeout=10)
+        self.assertEqual(val, 5)
+
+        myhandler.reset()
+
+        # TODO: this feels not good. Maybe added set_silent_events to a higher class ?
+        self.opc.iserver.isession.set_silent_events(True)
+        v1.set_value(6)
+        self.assertRaises(TimeoutError, myhandler.future.result, timeout=0.010)
+
+        sub.unsubscribe(handle1)
+        sub.delete()
+
+
 def check_eventgenerator_SourceServer(test, evgen):
     server = test.opc.get_server_node()
     test.assertEqual(evgen.event.SourceName, server.get_browse_name().Name)
@@ -505,7 +531,7 @@ def check_custom_type(test, type, base_type):
 
 class TestServerCaching(unittest.TestCase):
     def runTest(self):
-        return # FIXME broken
+        return  # FIXME broken
         tmpfile = NamedTemporaryFile()
         path = tmpfile.name
         tmpfile.close()

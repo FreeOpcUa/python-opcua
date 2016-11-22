@@ -50,7 +50,7 @@ class AttributeService(object):
             res.append(self._aspace.get_attribute_value(readvalue.NodeId, readvalue.AttributeId))
         return res
 
-    def write(self, params, user=User.Admin):
+    def write(self, params, user=User.Admin, silentevents=False):
         self.logger.debug("write %s as user %s", params, user)
         res = []
         for writevalue in params.NodesToWrite:
@@ -63,7 +63,7 @@ class AttributeService(object):
                 if not ua.ua_binary.test_bit(al.Value.Value, ua.AccessLevel.CurrentWrite) or not ua.ua_binary.test_bit(ual.Value.Value, ua.AccessLevel.CurrentWrite):
                     res.append(ua.StatusCode(ua.StatusCodes.BadUserAccessDenied))
                     continue
-            res.append(self._aspace.set_attribute_value(writevalue.NodeId, writevalue.AttributeId, writevalue.Value))
+            res.append(self._aspace.set_attribute_value(writevalue.NodeId, writevalue.AttributeId, writevalue.Value, silentevents))
         return res
 
 
@@ -589,7 +589,7 @@ class AddressSpace(object):
                 return attval.value_callback()
             return attval.value
 
-    def set_attribute_value(self, nodeid, attr, value):
+    def set_attribute_value(self, nodeid, attr, value, silentevents):
         with self._lock:
             self.logger.debug("set attr val: %s %s %s", nodeid, attr, value)
             if nodeid not in self._nodes:
@@ -606,7 +606,7 @@ class AddressSpace(object):
             old = attval.value
             attval.value = value
             cbs = []
-            if old.Value != value.Value:  # only send call callback when a value change has happend
+            if silentevents == False and old.Value != value.Value:  # only send call callback when a value change has happend
                 cbs = list(attval.datachange_callbacks.items())
 
         for k, v in cbs:

@@ -263,6 +263,8 @@ class InternalSession(object):
         self.subscriptions = []
         self.logger.info("Created internal session %s", self.name)
         self._lock = Lock()
+        self._silent_events = False
+
 
     def __str__(self):
         return "InternalSession(name:{0}, user:{1}, id:{2}, auth_token:{3})".format(
@@ -321,7 +323,7 @@ class InternalSession(object):
             # If session is internal we need to store a copy og object, not a reference,
             # otherwise users may change it and we will not generate expected events
             params.NodesToWrite = [deepcopy(ntw) for ntw in params.NodesToWrite]
-        return self.iserver.attribute_service.write(params, self.user)
+        return self.iserver.attribute_service.write(params, self.user, self._silent_events and not self.external)
 
     def browse(self, params):
         return self.iserver.view_service.browse(params)
@@ -385,3 +387,9 @@ class InternalSession(object):
         if acks is None:
             acks = []
         return self.subscription_service.publish(acks)
+
+    def set_silent_events(self, silent):
+        """
+        Disable variables change events in case of an internal call
+        """
+        self._silent_events = silent
