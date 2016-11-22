@@ -388,8 +388,8 @@ class InternalSession(object):
             acks = []
         return self.subscription_service.publish(acks)
 
-    def set_silent_events(self, silent):
+    def disable_data_change_notification(self, disable):
         """
         Disable variables change events in case of an internal call
         """
-        self._silent_events = silent
+        self._silent_events = disable

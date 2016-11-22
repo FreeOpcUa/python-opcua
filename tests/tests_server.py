@@ -452,13 +452,13 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
 
         myhandler.reset()
 
-        # TODO: this feels not good. Maybe added set_silent_events to a higher class ?
-        self.opc.iserver.isession.set_silent_events(True)
+        self.opc.disable_data_change_notification(True)
         v1.set_value(6)
         self.assertRaises(TimeoutError, myhandler.future.result, timeout=0.010)
 
         sub.unsubscribe(handle1)
         sub.delete()
+        self.opc.disable_data_change_notification(False)
 
 
 def check_eventgenerator_SourceServer(test, evgen):

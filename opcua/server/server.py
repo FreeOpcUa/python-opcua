@@ -517,3 +517,9 @@ class Server(object):
         Returns:
         """
         self.iserver.isession.add_method_callback(node.nodeid, callback)
+
+    def disable_data_change_notification(self, disable):
+        """
+        Disable variables change events in case of an internal call
+        """
+        self.iserver.isession.disable_data_change_notification(disable)
