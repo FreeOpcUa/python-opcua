@@ -2,6 +2,7 @@
 parse xml file from opcua-spec
 """
 import logging
+import datetime
 import re
 import sys
 
@@ -21,13 +22,24 @@ def ua_type_to_python(val, uatype):
         return float(val)
     elif uatype == "String":
         return val
-    elif uatype in ("Bytes", "Bytes", "ByteString", "ByteArray"):
+    elif uatype in ("SByte", "Byte", "Bytes", "ByteString", "ByteArray"):
         if sys.version_info.major > 2:
             return bytes(val, 'utf8')
         else:
             return val
+    elif uatype in ("DateTime"):
+        # Format specified in Part6 Mappings: 5.3.1.6 DateTime
+        try:
+            # Zulu datetime
+            return datetime.datetime.strptime(val, "%Y-%m-%dT%XZ")
+        except ValueError:
+            try:
+                # Timezone offset.
+                return datetime.datetime.strptime(val, "%Y-%m-%dT%X%Z")
+            except ValueError:
+                raise Exception("DateTime object does not meet specifications's format: ", val)
     else:
-        raise Exception("uatype nopt handled", uatype, " for val ", val)
+        raise Exception("Uatype not handled", uatype, " for val ", val)
 
 
 class NodeData(object):
