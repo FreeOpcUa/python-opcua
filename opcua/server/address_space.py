@@ -197,7 +197,7 @@ class NodeManagementService(object):
             nodedata = NodeData(item.RequestedNewNodeId)
 
         if nodedata.nodeid in self._aspace:
-            self.logger.warning("AddNodesItem: node already exists")
+            self.logger.warning("AddNodesItem: Requested NodeId %s already exists", nodedata.nodeid)
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdExists)
             return result
 
@@ -286,7 +286,7 @@ class NodeManagementService(object):
             return ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
 
         if item.NodeId not in self._aspace:
-            self.logger.warning("DeleteNodesItem: node does not exists")
+            self.logger.warning("DeleteNodesItem: NodeId %s does not exists", item.NodeId)
             return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
 
         if item.DeleteTargetReferences:
