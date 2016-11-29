@@ -8,38 +8,21 @@ import sys
 
 import xml.etree.ElementTree as ET
 
+from opcua.common import ua_utils
+from opcua import ua
+
+
+def ua_type_to_python(val, uatype_as_str):
+    """
+    Converts a string value to a python value according to ua_utils.
+    """
+    return ua_utils.string_to_val(val, getattr(ua.VariantType, uatype_as_str))
 
 def _to_bool(val):
-    return val in ("True", "true", "on", "On", "1")
-
-
-def ua_type_to_python(val, uatype):
-    if uatype.startswith("Int") or uatype.startswith("UInt"):
-        return int(val)
-    elif uatype.lower().startswith("bool"):
-        return _to_bool(val)
-    elif uatype in ("Double", "Float"):
-        return float(val)
-    elif uatype == "String":
-        return val
-    elif uatype in ("SByte", "Byte", "Bytes", "ByteString", "ByteArray"):
-        if sys.version_info.major > 2:
-            return bytes(val, 'utf8')
-        else:
-            return val
-    elif uatype in ("DateTime"):
-        # Format specified in Part6 Mappings: 5.3.1.6 DateTime
-        try:
-            # Zulu datetime
-            return datetime.datetime.strptime(val, "%Y-%m-%dT%XZ")
-        except ValueError:
-            try:
-                # Timezone offset.
-                return datetime.datetime.strptime(val, "%Y-%m-%dT%X%Z")
-            except ValueError:
-                raise Exception("DateTime object does not meet specifications's format: ", val)
-    else:
-        raise Exception("Uatype not handled", uatype, " for val ", val)
+    """
+    Easy access to boolean conversion.
+    """
+    return ua_type_to_python(val, "Boolean")
 
 
 class NodeData(object):
@@ -209,7 +192,7 @@ class XMLParser(object):
         elif tag == "References":
             self._parse_refs(el, obj)
         elif tag == "Value":
-            self._parse_value(el, obj)
+            self._parse_contained_value(el, obj)
         elif tag == "InverseName":
             obj.inversename = el.text
         elif tag == "Definition":
@@ -218,64 +201,75 @@ class XMLParser(object):
         else:
             self.logger.info("Not implemented tag: %s", el)
 
+    def _parse_contained_value(self, el, obj):
+        """
+        Parse the child of el as a constant.
+        """
+        val_el = el.find(".//")  # should be only one child
+        self._parse_value(val_el, obj)
+
     def _parse_value(self, val_el, obj):
-        child_el = val_el.find(".//")  # should be only one child
-        if child_el is not None:
-            ntag = self._retag.match(child_el.tag).groups()[1]
+        """
+        Parse the node val_el as a constant.
+        """
+        if val_el is not None:
+            ntag = self._retag.match(val_el.tag).groups()[1]
         else:
             ntag = "Null"
-        obj.valuetype = ntag
 
-        if ntag in ("Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64"):
-            obj.value = int(child_el.text)
-        elif ntag in ("Float", "Double"):
-            obj.value = float(child_el.text)
-        elif ntag == "Boolean":
-            obj.value = _to_bool(child_el.text)
+        obj.valuetype = ntag
+        if ntag == "Null":
+            obj.value = None
+        elif ntag in (
+                "SByte", "Byte",
+                "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64",
+                "Float", "Double",
+                "Boolean",
+                "DateTime" #FIXME Check format in a specific elif?
+        ):
+            # Elementary types have their parsing directly relying on ua_type_to_python.
+            obj.value = ua_type_to_python(val_el.text, ntag)
         elif ntag in ("ByteString", "String"):
-            mytext = child_el.text
-            if mytext is None:  # support importing null strings
+            mytext = ua_type_to_python(val_el.text, ntag)
+            if mytext is None:
+                # Support importing null strings.
                 mytext = ""
             mytext = mytext.replace('\n', '').replace('\r', '')
             obj.value = mytext
-        elif ntag == "DateTime":
-            obj.value = child_el.text
         elif ntag == "Guid":
-            self._parse_value(child_el, obj)
-            obj.valuetype = obj.datatype  # override parsed string type to guid
-        elif ntag == "LocalizedText":
-            obj.value = self._parse_body(child_el)
+            self._parse_contained_value(val_el, obj)
+            obj.valuetype = obj.datatype # Override parsed string type to guid.
         elif ntag == "NodeId":
-            id_el = child_el.find("uax:Identifier", self.ns)
+            id_el = val_el.find("uax:Identifier", self.ns)
             if id_el is not None:
                 obj.value = id_el.text
-        elif ntag == "ListOfExtensionObject":
-            obj.value = self._parse_list_of_extension_object(child_el)
+        elif ntag == "LocalizedText":
+            obj.value = self._parse_body(val_el)
         elif ntag == "ListOfLocalizedText":
-            obj.value = self._parse_list_of_localized_text(child_el)
+            obj.value = self._parse_list_of_localized_text(val_el)
+        elif ntag == "ListOfExtensionObject":
+            obj.value = self._parse_list_of_extension_object(val_el)
         elif ntag.startswith("ListOf"):
-            obj.value = self._parse_list(child_el)
+            # Default case for "ListOf" types.
+            # Should stay after particular cases (e.g.: "ListOfLocalizedText").
+            obj.value = []
+            for val_el in val_el:
+                tmp = NodeData()
+                self._parse_value(val_el, tmp)
+                # FIXME Do some checks on parsed element?
+                obj.value.append(tmp.value)
         elif ntag == "ExtensionObject":
-            obj.value = self._parse_ext_obj(child_el)
-        elif ntag == "Null":
-            obj.value = None
+            obj.value = self._parse_ext_obj(val_el)
         else:
+            # Missing according to string_to_val: XmlElement, ExpandedNodeId,
+            # QualifiedName, StatusCode.
+            # Missing according to ua.VariantType (also missing in string_to_val):
+            # DataValue, Variant, DiagnosticInfo.
             self.logger.warning("Parsing value of type '%s' not implemented", ntag)
 
     def _get_text(self, el):
         txtlist = [txt.strip() for txt in el.itertext()]
         return "".join(txtlist)
-
-    def _parse_list(self, el):
-        value = []
-        for val_el in el:
-            ntag = self._retag.match(val_el.tag).groups()[1]
-            if ntag.startswith("ListOf"):
-                val = self._parse_list(val_el)
-            else:
-                val = ua_type_to_python(val_el.text, ntag)
-            value.append(val)
-        return value
 
     def _parse_list_of_localized_text(self, el):
         value = []
