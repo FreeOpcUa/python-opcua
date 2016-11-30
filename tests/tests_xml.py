@@ -1,4 +1,5 @@
 import uuid
+import datetime, pytz
 import logging
 
 from opcua import ua
@@ -218,6 +219,30 @@ class XmlTests(object):
         o = self.opc.nodes.objects.add_variable(2, "xmlguid", uuid.uuid4())
         self._test_xml_var_type(o, "guid")
 
+    def test_xml_guid_array(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlguid", [uuid.uuid4(), uuid.uuid4()])
+        self._test_xml_var_type(o, "guid_array")
+
+    def test_xml_datetime(self):
+        o = self.opc.nodes.objects.add_variable(3, "myxmlvar-dt", datetime.datetime.now(), ua.VariantType.DateTime)
+        self._test_xml_var_type(o, "datetime")
+
+    def test_xml_datetime_array(self):
+        o = self.opc.nodes.objects.add_variable(3, "myxmlvar-array", [
+            datetime.datetime.now(),
+            datetime.datetime.utcnow(),
+            datetime.datetime.now(pytz.timezone("Asia/Tokyo"))
+        ], ua.VariantType.DateTime)
+        self._test_xml_var_type(o, "datetime_array")
+
+    #def test_xml_qualifiedname(self):
+    #    o = self.opc.nodes.objects.add_variable(2, "xmlltext", ua.QualifiedName("mytext", 5))
+    #    self._test_xml_var_type(o, "qualified_name")
+
+    #def test_xml_qualifiedname_array(self):
+    #    o = self.opc.nodes.objects.add_variable(2, "xmlltext_array", [ua.QualifiedName("erert", 5), ua.QualifiedName("erert33", 6)])
+    #    self._test_xml_var_type(o, "qualified_name_array")
+
     def test_xml_localizedtext(self):
         o = self.opc.nodes.objects.add_variable(2, "xmlltext", ua.LocalizedText("mytext"))
         self._test_xml_var_type(o, "localized_text")
@@ -245,6 +270,31 @@ class XmlTests(object):
         self.assertEqual(arg.ArrayDimensions, arg2.ArrayDimensions)
         self.assertEqual(arg.Description, arg2.Description)
         self.assertEqual(arg.DataType, arg2.DataType)
+
+    def test_xml_ext_obj_array(self):
+        arg = ua.Argument()
+        arg.DataType = ua.NodeId(ua.ObjectIds.Float)
+        arg.Description = ua.LocalizedText(b"Nice description")
+        arg.ArrayDimensions = [1, 2, 3]
+        arg.Name = "MyArg"
+
+        arg2 = ua.Argument()
+        arg2.DataType = ua.NodeId(ua.ObjectIds.Int32)
+        arg2.Description = ua.LocalizedText(b"Nice description2")
+        arg2.ArrayDimensions = [4, 5, 6]
+        arg2.Name = "MyArg2"
+
+        args = [arg, arg2]
+
+        node = self.opc.nodes.objects.add_variable(2, "xmlexportobj2", args)
+        node2 = self._test_xml_var_type(node, "ext_obj_array", test_equality=False)
+        readArgs = node2.get_value()
+
+        for i,arg in enumerate(readArgs):
+            self.assertEqual(args[i].Name, readArgs[i].Name)
+            self.assertEqual(args[i].ArrayDimensions, readArgs[i].ArrayDimensions)
+            self.assertEqual(args[i].Description, readArgs[i].Description)
+            self.assertEqual(args[i].DataType, readArgs[i].DataType)
 
     def test_xml_enum(self):
         o = self.opc.nodes.objects.add_variable(2, "xmlenum", 0, varianttype=ua.VariantType.Int32, datatype=ua.ObjectIds.ApplicationType)

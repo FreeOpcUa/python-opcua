@@ -2,7 +2,8 @@
 parse xml file from opcua-spec
 """
 import logging
-import datetime
+from pytz import utc
+import uuid
 import re
 import sys
 
@@ -220,15 +221,14 @@ class XMLParser(object):
         obj.valuetype = ntag
         if ntag == "Null":
             obj.value = None
-        elif ntag in (
-                "SByte", "Byte",
-                "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64",
-                "Float", "Double",
-                "Boolean",
-                "DateTime" #FIXME Check format in a specific elif?
-        ):
+        elif hasattr(ua.ua_binary.Primitives1, ntag):
             # Elementary types have their parsing directly relying on ua_type_to_python.
             obj.value = ua_type_to_python(val_el.text, ntag)
+        elif ntag == "DateTime":
+            obj.value = ua_type_to_python(val_el.text, ntag)
+            # According to specs, DateTime should be either UTC or with a timezone.
+            if obj.value.tzinfo is None or obj.value.tzinfo.utcoffset(obj.value) is None:
+                utc.localize(obj.value) # FIXME Forcing to UTC if unaware, maybe should raise?
         elif ntag in ("ByteString", "String"):
             mytext = ua_type_to_python(val_el.text, ntag)
             if mytext is None:
@@ -238,11 +238,14 @@ class XMLParser(object):
             obj.value = mytext
         elif ntag == "Guid":
             self._parse_contained_value(val_el, obj)
-            obj.valuetype = obj.datatype # Override parsed string type to guid.
+            # Override parsed string type to guid.
+            obj.valuetype = ntag
         elif ntag == "NodeId":
             id_el = val_el.find("uax:Identifier", self.ns)
             if id_el is not None:
                 obj.value = id_el.text
+        elif ntag == "ExtensionObject":
+            obj.value = self._parse_ext_obj(val_el)
         elif ntag == "LocalizedText":
             obj.value = self._parse_body(val_el)
         elif ntag == "ListOfLocalizedText":
@@ -256,10 +259,7 @@ class XMLParser(object):
             for val_el in val_el:
                 tmp = NodeData()
                 self._parse_value(val_el, tmp)
-                # FIXME Do some checks on parsed element?
                 obj.value.append(tmp.value)
-        elif ntag == "ExtensionObject":
-            obj.value = self._parse_ext_obj(val_el)
         else:
             # Missing according to string_to_val: XmlElement, ExpandedNodeId,
             # QualifiedName, StatusCode.
@@ -272,6 +272,7 @@ class XMLParser(object):
         return "".join(txtlist)
 
     def _parse_list_of_localized_text(self, el):
+        # FIXME Why not calling parse_body as for LocalizedText without list?
         value = []
         for localized_text in el:
             ntag = self._retag.match(localized_text.tag).groups()[1]
