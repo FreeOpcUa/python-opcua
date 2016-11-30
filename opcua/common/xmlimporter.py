@@ -233,6 +233,10 @@ class XmlImporter(object):
                 extobj = self._make_ext_obj(ext)
                 values.append(extobj)
             return values
+        elif obj.valuetype == 'ListOfGuid':
+            return ua.Variant([
+                uuid.UUID(guid) for guid in obj.value
+            ], getattr(ua.VariantType, obj.valuetype[6:]))
         elif obj.valuetype.startswith("ListOf"):
             vtype = obj.valuetype[6:]
             if hasattr(ua.ua_binary.Primitives, vtype):
@@ -242,8 +246,6 @@ class XmlImporter(object):
         elif obj.valuetype == 'ExtensionObject':
             extobj = self._make_ext_obj(obj.value)
             return ua.Variant(extobj, getattr(ua.VariantType, obj.valuetype))
-        elif obj.valuetype == 'DateTime':
-            return ua.Variant(dateutil.parser.parse(obj.value), getattr(ua.VariantType, obj.valuetype))
         elif obj.valuetype == 'Guid':
             return ua.Variant(uuid.UUID(obj.value), getattr(ua.VariantType, obj.valuetype))
         elif obj.valuetype == 'LocalizedText':
