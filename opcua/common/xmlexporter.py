@@ -236,6 +236,7 @@ class XmlExporter(object):
         Add a UA variable element to the XML etree
         """
         var_el = self._add_node_common("UAVariable", node)
+        self._add_ref_els(var_el, node)
         self.add_variable_common(node, var_el)
 
         accesslevel = node.get_attribute(ua.AttributeIds.AccessLevel).Value.Value
@@ -254,7 +255,6 @@ class XmlExporter(object):
         var = node.get_attribute(ua.AttributeIds.Historizing)
         if var.Value.Value:
             var_el.attrib["Historizing"] = 'true'
-        self._add_ref_els(var_el, node)
 
     def add_etree_variable_type(self, node):
         """
@@ -313,7 +313,8 @@ class XmlExporter(object):
             ref_el = Et.SubElement(aliases_el, 'Alias', Alias=name)
             ref_el.text = nodeid.to_string()
 
-        self.etree.getroot().insert(0, aliases_el)
+        # insert behind the namespace element
+        self.etree.getroot().insert(1, aliases_el)
 
     def _add_ref_els(self, parent_el, obj):
         refs = obj.get_references()
@@ -351,6 +352,8 @@ class XmlExporter(object):
         elif dtype == ua.NodeId(ua.ObjectIds.Guid):
             id_el = Et.SubElement(el, "uax:String")
             id_el.text = str(val)
+        elif dtype == ua.NodeId(ua.ObjectIds.Boolean):
+            el.text = 'true' if val else 'false'
         elif not hasattr(val, "ua_types"):
             if isinstance(val, bytes):
                 el.text = val.decode("utf-8")
@@ -392,7 +395,7 @@ class XmlExporter(object):
             if dtype_base.NamespaceIndex == 0 and dtype_base.Identifier <= 21:
                 type_name = ua.ObjectIdNames[dtype_base.Identifier]
                 val_el = Et.SubElement(el, "uax:" + type_name)
-                self._val_to_etree(val_el, dtype, val)
+                self._val_to_etree(val_el, dtype_base, val)
             else:
                 self._extobj_to_etree(el, type_name, dtype, val)
 
@@ -404,8 +407,20 @@ class XmlExporter(object):
         id_el.text = dtype.to_string()
         body_el = Et.SubElement(obj_el, "uax:Body")
         struct_el = Et.SubElement(body_el, "uax:" + name)
-        for name, vtype in val.ua_types.items():
-            self.member_to_etree(struct_el, name, ua.NodeId(getattr(ua.ObjectIds, vtype)), getattr(val, name))
+        items_keys = val.ua_types.keys()
+        skip_empty = False
+        if dtype == ua.NodeId(ua.ObjectIds.Argument):
+            skip_empty = True
+            items_keys = [name for name in ['Name',
+                                            'DataType',
+                                            'ValueRank',
+                                            'ArrayDimensions',
+                                            'Description'] if name in items_keys ]
+
+        for name in items_keys:
+            vtype = val.ua_types[name]
+            if skip_empty and getattr(val, name):
+                self.member_to_etree(struct_el, name, ua.NodeId(getattr(ua.ObjectIds, vtype)), getattr(val, name))
 
 
     def indent(self, elem, level=0):
