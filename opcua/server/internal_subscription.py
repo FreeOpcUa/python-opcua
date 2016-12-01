@@ -205,8 +205,14 @@ class MonitoredItemService(object):
                     self.isub.enqueue_datachange_event(mid, event, mdata.queue_size)
 
     def deadband_callback(self, values, flt):
-        if (values.get_old_value() is None) or \
+        ua.DeadbandType.None_
+        if flt.DeadbandType == ua.DeadbandType.None_ or values.get_old_value() is None:
+            return True
+        elif flt.DeadbandType == ua.DeadbandType.Absolute and \
                 ((abs(values.get_current_value() - values.get_old_value())) > flt.DeadbandValue):
+            return True
+        elif flt.DeadbandType == ua.DeadbandType.Percent:
+            self.logger.warn("DeadbandType Percent is not implemented !")
             return True
         else:
             return False
