@@ -10,6 +10,7 @@ from opcua.ua.uaerrors import UaError
 from opcua.ua.uatypes import *
 from opcua.ua import ua_binary as uabin
 from opcua.ua.object_ids import ObjectIds
+from opcua.ua.uatypes import AccessLevel
 
 
 class NamingRuleType(IntEnum):
@@ -4369,8 +4370,8 @@ class VariableAttributes(FrozenClass):
         self.DataType = NodeId()
         self.ValueRank = 0
         self.ArrayDimensions = []
-        self.AccessLevel = 0
-        self.UserAccessLevel = 0
+        self.AccessLevel = AccessLevel.CurrentRead.mask
+        self.UserAccessLevel = AccessLevel.CurrentRead.mask
         self.MinimumSamplingInterval = 0
         self.Historizing = True
         self._freeze = True
