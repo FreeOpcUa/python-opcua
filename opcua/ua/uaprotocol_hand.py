@@ -8,6 +8,7 @@ from opcua.ua import uatypes
 from opcua.ua import ua_binary as uabin
 from opcua.ua import UaError
 from opcua.common import utils
+from opcua.ua.uatypes import AccessLevel
 
 logger = logging.getLogger('opcua.uaprotocol')
 
@@ -713,6 +714,8 @@ class VariableAttributes(auto.VariableAttributes):
         auto.VariableAttributes.__init__(self)
         self.SpecifiedAttributes = ana.DisplayName | ana.Description | ana.WriteMask | ana.UserWriteMask | ana.Value | ana.DataType | ana.ValueRank | ana.ArrayDimensions | ana.AccessLevel | ana.UserAccessLevel | ana.MinimumSamplingInterval | ana.Historizing
         self.Historizing = False
+        self.AccessLevel = AccessLevel.CurrentRead.mask
+        self.UserAccessLevel = AccessLevel.CurrentRead.mask
 
 
 class VariableTypeAttributes(auto.VariableTypeAttributes):
