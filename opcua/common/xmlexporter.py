@@ -407,20 +407,8 @@ class XmlExporter(object):
         id_el.text = dtype.to_string()
         body_el = Et.SubElement(obj_el, "uax:Body")
         struct_el = Et.SubElement(body_el, "uax:" + name)
-        items_keys = val.ua_types.keys()
-        skip_empty = False
-        if dtype == ua.NodeId(ua.ObjectIds.Argument):
-            skip_empty = True
-            items_keys = [name for name in ['Name',
-                                            'DataType',
-                                            'ValueRank',
-                                            'ArrayDimensions',
-                                            'Description'] if name in items_keys ]
-
-        for name in items_keys:
-            vtype = val.ua_types[name]
-            if skip_empty and getattr(val, name):
-                self.member_to_etree(struct_el, name, ua.NodeId(getattr(ua.ObjectIds, vtype)), getattr(val, name))
+        for name, vtype in val.ua_types.items():
+            self.member_to_etree(struct_el, name, ua.NodeId(getattr(ua.ObjectIds, vtype)), getattr(val, name))
 
 
     def indent(self, elem, level=0):
