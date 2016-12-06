@@ -213,7 +213,7 @@ class XMLParser(object):
         """
         Parse the node val_el as a constant.
         """
-        if val_el is not None:
+        if val_el is not None and val_el.text is not None:
             ntag = self._retag.match(val_el.tag).groups()[1]
         else:
             ntag = "Null"

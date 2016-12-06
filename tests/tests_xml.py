@@ -309,6 +309,54 @@ class XmlTests(object):
         o = self.opc.nodes.objects.add_variable(2, "xmlcustomunit32", 0, varianttype=ua.VariantType.UInt32, datatype=t.nodeid)
         self._test_xml_var_type(o, "cuint32")
 
+    def test_xml_var_nillable(self):
+        xml = """
+        <UANodeSet xmlns="http://opcfoundation.org/UA/2011/03/UANodeSet.xsd" xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <NamespaceUris>    
+          </NamespaceUris>
+          <Aliases>
+            <Alias Alias="Boolean">i=1</Alias>
+            <Alias Alias="String">i=12</Alias>
+            <Alias Alias="HasTypeDefinition">i=40</Alias>
+            <Alias Alias="HasComponent">i=47</Alias>
+          </Aliases>
+          <UAVariable BrowseName="2:xmlstring" DataType="String" NodeId="ns=2;s=test_xml.string.nillabel" ParentNodeId="i=85">
+            <DisplayName>xmlstring</DisplayName>
+            <Description>xmlstring</Description>
+            <References>
+              <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+              <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+            </References>
+            <Value>
+                <uax:String></uax:String>
+            </Value>    
+          </UAVariable>
+          
+         <UAVariable BrowseName="2:xmlbool" DataType="Boolean" NodeId="ns=2;s=test_xml.bool.nillabel" ParentNodeId="i=85">
+            <DisplayName>xmlbool</DisplayName>
+            <Description>xmlbool</Description>
+            <References>
+              <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+              <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+            </References>
+            <Value>
+              <uax:Boolean></uax:Boolean>
+            </Value>
+          </UAVariable>  
+          
+        </UANodeSet>
+        """
+
+        fp = open('import-nillable.xml', 'w')
+        fp.write(xml)
+        fp.close()
+        # TODO: when the xml parser also support loading from string, remove write to file
+        _new_nodes = self.opc.import_xml('import-nillable.xml')
+        var_string = self.opc.get_node(ua.NodeId('test_xml.string.nillabel', 2))
+        var_bool = self.opc.get_node(ua.NodeId('test_xml.bool.nillabel', 2))
+        self.assertEqual(var_string.get_value(), None)
+        self.assertEqual(var_bool.get_value(), None)
+
     def _test_xml_var_type(self, node, typename, test_equality=True):
         dtype = node.get_data_type()
         dv = node.get_data_value()
