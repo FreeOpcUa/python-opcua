@@ -1,4 +1,5 @@
 import sys
+sys.path.insert(0, "..")
 import logging
 
 try:
@@ -42,8 +43,8 @@ if __name__ == "__main__":
 
     # Creating a custom event: Approach 2
     custom_etype = server.nodes.base_event_type.add_object_type(2, 'MySecondEvent')
-    custom_etype.add_property(2, 'MyIntProperty', ua.Variant(None, ua.VariantType.Int32))
-    custom_etype.add_property(2, 'MyBoolProperty', ua.Variant(None, ua.VariantType.Boolean))
+    custom_etype.add_property(2, 'MyIntProperty', ua.Variant(0, ua.VariantType.Int32))
+    custom_etype.add_property(2, 'MyBoolProperty', ua.Variant(True, ua.VariantType.Boolean))
 
     mysecondevgen = server.get_event_generator(custom_etype, myobj)
 
