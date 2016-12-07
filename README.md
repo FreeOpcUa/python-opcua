@@ -39,6 +39,7 @@ A set of command line tools also available: https://github.com/FreeOpcUa/python-
 
     tools/uaserver --populate --certificate cert.pem --private_key pk.pem
 
+How to generate certificate: https://github.com/FreeOpcUa/python-opcua/tree/master/examples/generate_certificate.sh
 
 Client: what works:
 * connection to server, opening channel, session
@@ -55,7 +56,7 @@ Client: what works:
 * communication encryption
 * removing nodes
 
-Tested servers: freeopcua C++, freeopcua Python, prosys, kepware, beckoff
+Tested servers: freeopcua C++, freeopcua Python, prosys, kepware, beckoff, winCC, ..
 
 Client: what is not implemented yet
 * localized text feature
