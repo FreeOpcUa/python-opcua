@@ -14,6 +14,17 @@ from opcua.common.ua_utils import get_base_data_type
 
 class XmlExporter(object):
 
+    ''' If it is required that for _extobj_to_etree members to the value should be written in a certain
+        order it can be added to the dictionary below.    
+    '''
+    extobj_ordered_elements = {
+        ua.NodeId(ua.ObjectIds.Argument) : ['Name',
+                                            'DataType',
+                                            'ValueRank',
+                                            'ArrayDimensions',
+                                            'Description']
+        }
+
     def __init__(self, server):
         self.logger = logging.getLogger(__name__)
         self.server = server
@@ -407,9 +418,20 @@ class XmlExporter(object):
         id_el.text = dtype.to_string()
         body_el = Et.SubElement(obj_el, "uax:Body")
         struct_el = Et.SubElement(body_el, "uax:" + name)
-        for name, vtype in val.ua_types.items():
-            self.member_to_etree(struct_el, name, ua.NodeId(getattr(ua.ObjectIds, vtype)), getattr(val, name))
+        for name in self._get_member_order(dtype, val):
+            self.member_to_etree(struct_el, name, ua.NodeId(getattr(ua.ObjectIds, val.ua_types[name])), getattr(val, name))
 
+    def _get_member_order(self, dtype, val):
+        '''
+        If an dtype has an entry in XmlExporter.extobj_ordered_elements return the export order of the elements 
+        else return the unordered members.
+        '''
+        if dtype not in XmlExporter.extobj_ordered_elements.keys():
+            return val.ua_types.keys()
+        else:
+            member_keys = [name for name in XmlExporter.extobj_ordered_elements[dtype] if name in val.ua_types.keys() and getattr(val, name) is not None ]
+
+        return member_keys
 
     def indent(self, elem, level=0):
         """
