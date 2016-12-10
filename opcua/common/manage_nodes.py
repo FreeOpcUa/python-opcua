@@ -95,25 +95,11 @@ def create_variable_type(parent, nodeid, bname, datatype):
     or idx, name and data type
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
+    if datatype and isinstance(datatype, int):
+        datatype = ua.NodeId(datatype, 0)
     if datatype and not isinstance(datatype, ua.NodeId):
-        raise RuntimeError("Data type should be nodeid, got {0}".format(datatype))
-    addnode = ua.AddNodesItem()
-    addnode.RequestedNewNodeId = nodeid
-    addnode.BrowseName = qname
-    addnode.NodeClass = ua.NodeClass.Variable
-    addnode.ParentNodeId = parent.nodeid
-    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
-    attrs = ua.VariableTypeAttributes()
-    attrs.Description = ua.LocalizedText(qname.Name)
-    attrs.DisplayName = ua.LocalizedText(qname.Name)
-    attrs.DataType = datatype
-    attrs.IsAbstract = False
-    attrs.WriteMask = 0
-    attrs.UserWriteMask = 0
-    addnode.NodeAttributes = attrs
-    results = parent.server.add_nodes([addnode])
-    results[0].StatusCode.check()
-    return results[0].AddedNodeId
+        raise RuntimeError("Data type argument must be a nodeid or an int refering to a nodeid, received: {}".format(datatype))
+    return node.Node(parent.server, _create_variable_type(parent.server, parent.nodeid, nodeid, qname, datatype))
 
 
 def create_reference_type(parent, nodeid, bname):
@@ -138,7 +124,7 @@ def create_reference_type(parent, nodeid, bname):
     addnode.NodeAttributes = attrs
     results = parent.server.add_nodes([addnode])
     results[0].StatusCode.check()
-    return results[0].AddedNodeId
+    return node.Node(parent.server, results[0].AddedNodeId)
 
 
 def create_object_type(parent, nodeid, bname):
@@ -269,6 +255,7 @@ def _create_variable_type(server, parentnodeid, nodeid, qname, datatype, value=N
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
     attrs.DataType = datatype
+    attrs.IsAbstract = False
     if value:
         attrs.Value = value
         if isinstance(value, (list, tuple)):
@@ -278,9 +265,6 @@ def _create_variable_type(server, parentnodeid, nodeid, qname, datatype, value=N
     #attrs.ArrayDimensions = None
     attrs.WriteMask = 0
     attrs.UserWriteMask = 0
-    attrs.Historizing = 0
-    attrs.AccessLevel = ua.AccessLevel.CurrentRead.mask
-    attrs.UserAccessLevel = ua.AccessLevel.CurrentRead.mask
     addnode.NodeAttributes = attrs
     results = server.add_nodes([addnode])
     results[0].StatusCode.check()
