@@ -224,7 +224,7 @@ class XmlTests(object):
         self._test_xml_var_type(o, "guid_array")
 
     def test_xml_datetime(self):
-        o = self.opc.nodes.objects.add_variable(3, "myxmlvar-dt", datetime.datetime.now(), ua.VariantType.DateTime)
+        o = self.opc.nodes.objects.add_variable(3, "myxmlvar-dt", datetime.datetime.utcnow(), ua.VariantType.DateTime)
         self._test_xml_var_type(o, "datetime")
 
     def test_xml_datetime_array(self):
