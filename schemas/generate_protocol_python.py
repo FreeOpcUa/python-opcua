@@ -343,7 +343,7 @@ class CodeGenerator(object):
         elif field.uatype in ("Boolean"):
             return "True"
         elif field.uatype in ("DateTime"):
-            return "datetime.now()"
+            return "datetime.utcnow()"
         elif field.uatype in ("Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Double", "Float", "Byte"):
             return 0
         elif field.uatype in ("ExtensionObject"):
