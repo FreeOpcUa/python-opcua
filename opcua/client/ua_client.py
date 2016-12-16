@@ -276,6 +276,16 @@ class UaClient(object):
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
+    def browse_next(self, parameters):
+        self.logger.info("browse next")
+        request = ua.BrowseNextParameters()
+        request.Parameters = parameters
+        data = self._uasocket.send_request(request)
+        response = ua.BrowseNextResponse.from_binary(data)
+        self.logger.debug(response)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
+
     def read(self, parameters):
         self.logger.info("read")
         request = ua.ReadRequest()
