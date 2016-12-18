@@ -414,12 +414,12 @@ class Server(object):
 
         return custom_t
 
-    def import_xml(self, path):
+    def import_xml(self, path, enable_default_values=False):
         """
         Import nodes defined in xml
         """
         importer = xmlimporter.XmlImporter(self)
-        return importer.import_xml(path)
+        return importer.import_xml(path, enable_default_values)
 
     def export_xml(self, nodes, path):
         """
