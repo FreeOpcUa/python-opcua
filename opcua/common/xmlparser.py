@@ -87,11 +87,23 @@ class ExtObj(object):
 
 
 class XMLParser(object):
+    """
+    XML Parser class which traverses an XML document to collect all information required for creating an address space
+    """
 
-    def __init__(self, xmlpath):
+    def __init__(self, xmlpath, enable_default_values=False):
+        """
+        Constructor for XML parser
+        Args:
+            xmlpath: path to the xml document; the document must be in OPC UA defined format
+            enable_default_values: false results in xml variable nodes with no Value element being converted to Null
+                                   true results in XML variable nodes to keep defined datatype with a default value
+        """
+
         self.logger = logging.getLogger(__name__)
         self._retag = re.compile(r"(\{.*\})(.*)")
         self.path = xmlpath
+        self.enable_default_values = enable_default_values
 
         self.tree = ET.parse(xmlpath)
         self.root = self.tree.getroot()
@@ -147,6 +159,23 @@ class XMLParser(object):
             self._set_attr(key, val, obj)
         self.logger.info("Parsing node: %s %s", obj.nodeid, obj.browsename)
         obj.displayname = obj.browsename  # give a default value to display name
+
+        # set default Value based on type; avoids nodes with Value=None being converted to type Null by server
+        if self.enable_default_values:
+            if obj.datatype is not None:
+                if obj.datatype in ("Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Int64", "UInt64"):
+                    obj.valuetype = obj.datatype
+                    obj.value = 0
+                elif obj.datatype in ("Float", "Double"):
+                    obj.valuetype = obj.datatype
+                    obj.value = 0.0
+                elif obj.datatype in ("Boolean"):
+                    obj.valuetype = obj.datatype
+                    obj.value = False
+                elif obj.datatype in ("ByteString", "String"):
+                    obj.valuetype = obj.datatype
+                    obj.value = ""
+
         for el in child:
             self._parse_attr(el, obj)
         return obj
