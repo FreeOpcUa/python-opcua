@@ -1,5 +1,3 @@
-# temporary hack
-import generate_model as gm
 
 IgnoredEnums = ["NodeIdType"]
 IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "LocalizedText", "ExtensionObject", "XmlElement"]
@@ -351,15 +349,8 @@ class CodeGenerator(object):
         else:
             return field.uatype + "()"
 
-
-def fix_names(model):
-    for s in model.enums:
-        for f in s.values:
-            if f.name == "None":
-                f.name = "None_"
-
-
 if __name__ == "__main__":
+    import generate_model as gm
     xmlpath = "Opc.Ua.Types.bsd"
     protocolpath = "../opcua/ua/uaprotocol_auto.py"
     p = gm.Parser(xmlpath)
@@ -369,6 +360,6 @@ if __name__ == "__main__":
     gm.remove_duplicates(model)
     gm.remove_vector_length(model)
     gm.split_requests(model)
-    fix_names(model)
+    gm.fix_names(model)
     c = CodeGenerator(model, protocolpath)
     c.run()
