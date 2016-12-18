@@ -498,6 +498,12 @@ def add_basetype_members(model):
             struct.fields.insert(idx, field)
 
 
+def fix_names(model):
+    for s in model.enums:
+        for f in s.values:
+            if f.name == "None":
+                f.name = "None_"
+
 
 
 
