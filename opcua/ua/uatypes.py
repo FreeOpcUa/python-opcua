@@ -1063,7 +1063,9 @@ def get_default_value(vtype):
         return None
     elif vtype == VariantType.Boolean:
         return False
-    elif vtype in (VariantType.SByte, VariantType.Byte, VariantType.ByteString):
+    elif vtype in (VariantType.SByte, VariantType.Byte):
+        return 0
+    elif vtype == VariantType.ByteString:
         return b""
     elif 4 <= vtype.value <= 9:
         return 0
