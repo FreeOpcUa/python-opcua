@@ -230,12 +230,12 @@ class XMLParser(object):
             if obj.value.tzinfo is None or obj.value.tzinfo.utcoffset(obj.value) is None:
                 utc.localize(obj.value) # FIXME Forcing to UTC if unaware, maybe should raise?
         elif ntag in ("ByteString", "String"):
-            mytext = ua_type_to_python(val_el.text, ntag)
+            mytext = val_el.text
             if mytext is None:
                 # Support importing null strings.
                 mytext = ""
             mytext = mytext.replace('\n', '').replace('\r', '')
-            obj.value = mytext
+            obj.value = ua_type_to_python(mytext, ntag)
         elif ntag == "Guid":
             self._parse_contained_value(val_el, obj)
             # Override parsed string type to guid.
