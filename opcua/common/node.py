@@ -334,6 +334,7 @@ class Node(object):
         params = ua.BrowseParameters()
         params.View.Timestamp = ua.get_win_epoch()
         params.NodesToBrowse.append(desc)
+        #params.RequestedMaxReferencesPerNode = 3  # for testing
         results = self.server.browse(params)
 
         references = self._browse_next(results)
@@ -343,10 +344,10 @@ class Node(object):
         references = results[0].References
         while results[0].ContinuationPoint:
             params = ua.BrowseNextParameters()
-            params.ContinuationPoints = results.ContinuationPoint
+            params.ContinuationPoints = [results[0].ContinuationPoint]
             params.ReleaseContinuationPoints = False
-            results = self.server.browse(params)
-            references.extend(results[0].ContinuationPoint)
+            results = self.server.browse_next(params)
+            references.extend(results[0].References)
         return references
 
     def get_referenced_nodes(self, refs=ua.ObjectIds.References, direction=ua.BrowseDirection.Both, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
