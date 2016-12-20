@@ -308,12 +308,6 @@ class Node(object):
     def get_children_descriptions(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
         return self.get_references(refs, ua.BrowseDirection.Forward, nodeclassmask, includesubtypes)
 
-    def get_encoding_refs(self):
-        return self.get_referenced_nodes(ua.ObjectIds.HasEncoding, ua.BrowseDirection.Forward)
-
-    def get_description_refs(self):
-        return self.get_referenced_nodes(ua.ObjectIds.HasDescription, ua.BrowseDirection.Forward)
-
     def get_references(self, refs=ua.ObjectIds.References, direction=ua.BrowseDirection.Both, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
         """
         returns references of the node based on specific filter defined with:
@@ -334,7 +328,7 @@ class Node(object):
         params = ua.BrowseParameters()
         params.View.Timestamp = ua.get_win_epoch()
         params.NodesToBrowse.append(desc)
-        #params.RequestedMaxReferencesPerNode = 3  # for testing
+        params.RequestedMaxReferencesPerNode = 0
         results = self.server.browse(params)
 
         references = self._browse_next(results)
