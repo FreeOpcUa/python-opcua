@@ -278,13 +278,13 @@ class UaClient(object):
 
     def browse_next(self, parameters):
         self.logger.info("browse next")
-        request = ua.BrowseNextParameters()
+        request = ua.BrowseNextRequest()
         request.Parameters = parameters
         data = self._uasocket.send_request(request)
         response = ua.BrowseNextResponse.from_binary(data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
-        return response.Results
+        return response.Parameters.Results
 
     def read(self, parameters):
         self.logger.info("read")
