@@ -243,6 +243,14 @@ class XmlTests(object):
     #    o = self.opc.nodes.objects.add_variable(2, "xmlltext_array", [ua.QualifiedName("erert", 5), ua.QualifiedName("erert33", 6)])
     #    self._test_xml_var_type(o, "qualified_name_array")
 
+    def test_xml_bytestring(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlltext", "mytext", ua.VariantType.ByteString)
+        self._test_xml_var_type(o, "bytestring")
+
+    def test_xml_bytestring_array(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlltext_array", ["mytext", "errsadf"], ua.VariantType.ByteString)
+        self._test_xml_var_type(o, "bytestring_array")
+
     def test_xml_localizedtext(self):
         o = self.opc.nodes.objects.add_variable(2, "xmlltext", ua.LocalizedText("mytext"))
         self._test_xml_var_type(o, "localized_text")
