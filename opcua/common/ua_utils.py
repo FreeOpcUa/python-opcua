@@ -258,3 +258,14 @@ def get_nodes_of_namespace(server, namespaces=None):
     nodes = [server.get_node(nodeid) for nodeid in server.iserver.aspace.keys()
              if nodeid.NamespaceIndex != 0 and nodeid.NamespaceIndex in namespace_indexes]
     return nodes
+
+
+def get_default_value(uatype):
+    if isinstance(uatype, ua.VariantType):
+        return ua.get_default_values(uatype)
+    elif hasattr(ua.VariantType, uatype):
+        return ua.get_default_value(getattr(ua.VariantType, uatype))
+    else:
+        return getattr(ua, uatype)()
+
+
