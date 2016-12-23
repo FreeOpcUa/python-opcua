@@ -4,24 +4,22 @@ We only support a subset of features but should be enough
 for custom structures
 """
 
-from lxml import etree
 from lxml import objectify
-
 
 
 from opcua.ua.ua_binary import Primitives
 
 
 def get_default_value(uatype):
-    if uatype in ("String"):
+    if uatype == "String":
         return "None" 
     elif uatype == "Guid":
         return "uuid.uuid4()" 
     elif uatype in ("ByteString", "CharArray", "Char"):
         return None 
-    elif uatype in ("Boolean"):
+    elif uatype == "Boolean":
         return "True"
-    elif uatype in ("DateTime"):
+    elif uatype == "DateTime":
         return "datetime.utcnow()"
     elif uatype in ("Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Double", "Float", "Byte", "SByte"):
         return 0
@@ -100,7 +98,7 @@ class {0}(object):
             packet.append(ua.ua_binary.Primitives.Int32.pack(len(self.{0})))
             for element in self.{0}:
                 packet.append(element.to_binary())
-'''.format(field.name, field.uatype)
+'''.format(field.name)
                 else:
                     self.code += "        packet.append(self.{}.to_binary())\n".format(field.name)
         self.code += '        return b"".join(packet)'
@@ -119,6 +117,7 @@ class StructGenerator(object):
         self.path = path
         self.output = output
         self.model = []
+        self._file = None
 
     def _make_model(self):
         obj = objectify.parse(self.path)
