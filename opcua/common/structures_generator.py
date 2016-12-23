@@ -7,7 +7,6 @@ for custom structures
 from lxml import etree
 from lxml import objectify
 
-from IPython import embed
 
 
 from opcua.ua.ua_binary import Primitives
@@ -120,13 +119,6 @@ class StructGenerator(object):
         self.path = path
         self.output = output
         self.model = []
-
-    def generate(self):
-        parser = etree.XMLParser(remove_blank_text=True, ns_clean=True)
-        root = etree.parse(self.path, parser)
-        embed()
-        for child in root.iter():
-            embed()
 
     def _make_model(self):
         obj = objectify.parse(self.path)
