@@ -2,10 +2,9 @@ from setuptools import setup, find_packages
 
 import sys
 
+install_requires = ["python-dateutil", "pytz", "lxml"]
 if sys.version_info[0] < 3:
-    install_requires = ["python-dateutil", "enum34", "trollius", "futures", "pytz"]
-else:
-    install_requires = ["python-dateutil", "pytz"]
+    install_requires.extend(["enum34", "trollius", "futures"])
 
 setup(name="freeopcua",
       version="0.90.2",
