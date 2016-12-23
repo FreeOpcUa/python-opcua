@@ -911,12 +911,12 @@ class XmlElement(FrozenClass):
     An XML element encoded as an UTF-8 string.
     """
 
-    def __init__(self, binary=None):
+    def __init__(self, value=None, binary=None):
         if binary is not None:
             self._binary_init(binary)
             self._freeze = True
             return
-        self.Value = []
+        self.Value = value
         self._freeze = True
 
     def to_binary(self):
@@ -924,7 +924,7 @@ class XmlElement(FrozenClass):
 
     @staticmethod
     def from_binary(data):
-        return XmlElement(data)
+        return XmlElement(binary=data)
 
     def _binary_init(self, data):
         self.Value = uabin.Primitives.String.unpack(data)
