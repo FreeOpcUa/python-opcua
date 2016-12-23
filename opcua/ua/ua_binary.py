@@ -91,6 +91,7 @@ class _Primitive(object):
         length = len(array)
         b = [self.pack(val) for val in array]
         b.insert(0, Primitives.Int32.pack(length))
+        return b"".join(b)
 
     def unpack_array(self, data):
         length = Primitives.Int32.unpack(data)

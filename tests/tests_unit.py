@@ -70,7 +70,7 @@ class TestUnit(unittest.TestCase):
         #self.GuidValue = uuid.uudib"14"
         v.ByteStringValue = b"fifteen"
         v.XmlElementValue = ua.XmlElement("<toto>titi</toto>")
-        v.NodeIdValue = ua.NodeId("ns=4;i=9999")
+        v.NodeIdValue = ua.NodeId.from_string("ns=4;i=9999")
         #self.ExpandedNodeIdValue =
         #self.QualifiedNameValue =
         #self.LocalizedTextValue =
@@ -86,6 +86,54 @@ class TestUnit(unittest.TestCase):
         data = v.to_binary()
         v2 = s.ScalarValueDataType.from_binary(ua.utils.Buffer(data))
         self.assertEqual(v.NodeIdValue, v2.NodeIdValue)
+
+    def test_custom_structs_array(self):
+        xmlpath = "tests/example.bsd"
+        c = StructGenerator(xmlpath, "structures.py")
+        c.run()
+        import structures as s
+
+        # test with default values
+        v = s.ArrayValueDataType()
+        data = v.to_binary()
+        v2 = s.ArrayValueDataType.from_binary(ua.utils.Buffer(data))
+
+
+        # set some values
+        v = s.ArrayValueDataType()
+        v.SbyteValue = [1]
+        v.ByteValue = [2]
+        v.Int16Value = [3]
+        v.UInt16Value = [4]
+        v.Int32Value = [5]
+        v.UInt32Value = [6]
+        v.Int64Value = [7]
+        v.UInt64Value = [8]
+        v.FloatValue = [9.0]
+        v.DoubleValue = [10.0]
+        v.StringValue = ["elleven"]
+        v.DateTimeValue = [datetime.utcnow()]
+        #self.GuidValue = uuid.uudib"14"
+        v.ByteStringValue = [b"fifteen", b"sixteen"]
+        v.XmlElementValue = [ua.XmlElement("<toto>titi</toto>")]
+        v.NodeIdValue = [ua.NodeId.from_string("ns=4;i=9999"), ua.NodeId.from_string("i=6")]
+        #self.ExpandedNodeIdValue =
+        #self.QualifiedNameValue =
+        #self.LocalizedTextValue =
+        #self.StatusCodeValue =
+        #self.VariantValue =
+        #self.EnumerationValue =
+        #self.StructureValue =
+        #self.Number =
+        #self.Integer =
+        #self.UInteger =
+
+
+        data = v.to_binary()
+        v2 = s.ArrayValueDataType.from_binary(ua.utils.Buffer(data))
+        self.assertEqual(v.NodeIdValue, v2.NodeIdValue)
+        print(v2.NodeIdValue)
+
 
     def test_nodeid_ordering(self):
         a = ua.NodeId(2000, 1)
