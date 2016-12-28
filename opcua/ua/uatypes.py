@@ -742,24 +742,34 @@ class Variant(FrozenClass):
     :vartype Value: Any supported type
     :ivar VariantType:
     :vartype VariantType: VariantType
+    :ivar Dimension:
+    :vartype Dimensions: The length of each dimensions. Usually guessed from value.
+    :ivar is_array:
+    :vartype is_array: If the variant is an array. Usually guessed from value.
     """
 
-    def __init__(self, value=None, varianttype=None, dimensions=None):
+    def __init__(self, value=None, varianttype=None, dimensions=None, is_array=None):
         self.Value = value
         self.VariantType = varianttype
         self.Dimensions = dimensions
+        self.is_array = is_array
+        if self.is_array is None:
+            if isinstance(value, (list, tuple)):
+                self.is_array = True
+            else:
+                self.is_array = False
         self._freeze = True
         if isinstance(value, Variant):
             self.Value = value.Value
             self.VariantType = value.VariantType
         if self.VariantType is None:
             self.VariantType = self._guess_type(self.Value)
-        if self.Value is None and self.VariantType not in (
+        if self.Value is None and not self.is_array and self.VariantType not in (
                 VariantType.Null,
                 VariantType.String,
                 VariantType.DateTime):
-            raise UaError("Variant of type {0} cannot have value None".format(self.VariantType))
-        if self.Dimensions is None and type(self.Value) in (list, tuple):
+            raise UaError("Non array Variant of type {0} cannot have value None".format(self.VariantType))
+        if self.Dimensions is None and isinstance(self.Value, (list, tuple)):
             dims = get_shape(self.Value)
             if len(dims) > 1:
                 self.Dimensions = dims
@@ -828,6 +838,7 @@ class Variant(FrozenClass):
     @staticmethod
     def from_binary(data):
         dimensions = None
+        array = False
         encoding = ord(data.read(1))
         int_type = encoding & 0b00111111
         vtype = datatype_to_varianttype(int_type)
@@ -835,13 +846,13 @@ class Variant(FrozenClass):
             return Variant(None, vtype, encoding)
         if uabin.test_bit(encoding, 7):
             value = uabin.unpack_uatype_array(vtype, data)
+            array = True
         else:
             value = uabin.unpack_uatype(vtype, data)
         if uabin.test_bit(encoding, 6):
             dimensions = uabin.unpack_uatype_array(VariantType.Int32, data)
             value = reshape(value, dimensions)
-
-        return Variant(value, vtype, dimensions)
+        return Variant(value, vtype, dimensions, is_array=array)
 
 
 def reshape(flat, dims):
