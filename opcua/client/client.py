@@ -16,6 +16,7 @@ from opcua.common.subscription import Subscription
 from opcua.common import utils
 from opcua.crypto import security_policies
 from opcua.common.shortcuts import Shortcuts
+from opcua.common.structures_generator import StructGenerator
 use_crypto = True
 try:
     from opcua.crypto import uacrypto
@@ -550,4 +551,21 @@ class Client(object):
         ns_node.set_value(uries)
         return len(uries) - 1
 
+    def import_structures(self, nodes=None):
+        """
+        Download xml from given variable node defining custom structures.
+        If no node is given, attemps to import variables from
+        """
+        if not nodes:
+            nodes = []
+            opc_bin = self.nodes.base_data_type.get_child("0:OPC Binary")
+            for desc in opc_bin.get_children_descriptions():
+                if desc.BrowseName != ua.QualifiedName("opc.Ua"):
+                    nodes.append(self.get_node(desc.NodeId))
 
+        for node in nodes:
+            xml = node.get_value()
+            gen = StructGenerator(xml, name)
+
+
+            
