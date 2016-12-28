@@ -821,10 +821,11 @@ class Variant(FrozenClass):
     def to_binary(self):
         b = []
         encoding = self.VariantType.value & 0b111111
-        if type(self.Value) in (list, tuple):
+        if self.is_array or type(self.Value) in (list, tuple):
+            self.is_array = True
+            encoding = uabin.set_bit(encoding, 7)
             if self.Dimensions is not None:
                 encoding = uabin.set_bit(encoding, 6)
-            encoding = uabin.set_bit(encoding, 7)
             b.append(uabin.Primitives.UInt8.pack(encoding))
             b.append(uabin.pack_uatype_array(self.VariantType, flatten(self.Value)))
             if self.Dimensions is not None:
@@ -842,8 +843,6 @@ class Variant(FrozenClass):
         encoding = ord(data.read(1))
         int_type = encoding & 0b00111111
         vtype = datatype_to_varianttype(int_type)
-        if vtype == VariantType.Null:
-            return Variant(None, vtype, encoding)
         if uabin.test_bit(encoding, 7):
             value = uabin.unpack_uatype_array(vtype, data)
             array = True
@@ -886,7 +885,9 @@ def flatten_and_get_shape(mylist):
 
 
 def flatten(mylist):
-    if len(mylist) == 0:
+    if mylist is None:
+        return None
+    elif len(mylist) == 0:
         return mylist
     while isinstance(mylist[0], (list, tuple)):
         mylist = [item for sublist in mylist for item in sublist]
