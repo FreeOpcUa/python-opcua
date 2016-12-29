@@ -334,7 +334,8 @@ def _create_method(parent, nodeid, qname, callback, inputs, outputs):
                         [_vtype_to_argument(vtype) for vtype in outputs],
                         varianttype=ua.VariantType.ExtensionObject,
                         datatype=ua.ObjectIds.Argument)
-    parent.server.add_method_callback(method.nodeid, callback)
+    if hasattr(parent.server, "add_method_callback"):
+        parent.server.add_method_callback(method.nodeid, callback)
     return results[0].AddedNodeId
 
 
