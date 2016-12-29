@@ -77,7 +77,7 @@ class XmlImporter(object):
                 continue
             nodes.append(node)
         return nodes
-    
+
     def make_objects(self, node_datas):
         new_nodes = []
         for ndata in node_datas:
@@ -173,8 +173,12 @@ class XmlImporter(object):
             attrs.ValueRank = obj.rank
         if obj.accesslevel:
             attrs.AccessLevel = obj.accesslevel
+        else:
+            attrs.AccessLevel = ua.AccessLevel.CurrentRead.mask
         if obj.useraccesslevel:
             attrs.UserAccessLevel = obj.useraccesslevel
+        else:
+            attrs.UserAccessLevel = ua.AccessLevel.CurrentRead.mask
         if obj.minsample:
             attrs.MinimumSamplingInterval = obj.minsample
         if obj.dimensions:

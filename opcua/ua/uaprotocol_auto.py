@@ -10,6 +10,7 @@ from opcua.ua.uaerrors import UaError
 from opcua.ua.uatypes import *
 from opcua.ua import ua_binary as uabin
 from opcua.ua.object_ids import ObjectIds
+from opcua.ua.uatypes import AccessLevel
 
 
 class NamingRuleType(IntEnum):
@@ -773,19 +774,19 @@ class DiagnosticInfo(FrozenClass):
         if self.InnerStatusCode: self.Encoding |= (1 << 5)
         if self.InnerDiagnosticInfo: self.Encoding |= (1 << 6)
         packet.append(uabin.Primitives.UInt8.pack(self.Encoding))
-        if self.SymbolicId: 
+        if self.SymbolicId:
             packet.append(uabin.Primitives.Int32.pack(self.SymbolicId))
-        if self.NamespaceURI: 
+        if self.NamespaceURI:
             packet.append(uabin.Primitives.Int32.pack(self.NamespaceURI))
-        if self.Locale: 
+        if self.Locale:
             packet.append(uabin.Primitives.Int32.pack(self.Locale))
-        if self.LocalizedText: 
+        if self.LocalizedText:
             packet.append(uabin.Primitives.Int32.pack(self.LocalizedText))
-        if self.AdditionalInfo: 
+        if self.AdditionalInfo:
             packet.append(uabin.Primitives.CharArray.pack(self.AdditionalInfo))
-        if self.InnerStatusCode: 
+        if self.InnerStatusCode:
             packet.append(self.InnerStatusCode.to_binary())
-        if self.InnerDiagnosticInfo: 
+        if self.InnerDiagnosticInfo:
             packet.append(self.InnerDiagnosticInfo.to_binary())
         return b''.join(packet)
 
@@ -1102,7 +1103,7 @@ class Union(FrozenClass):
         pass
 
     def __str__(self):
-        return 'Union(' +  + ')'
+        return 'Union(' + +')'
 
     __repr__ = __str__
 
@@ -2404,7 +2405,7 @@ class DiscoveryConfiguration(FrozenClass):
         pass
 
     def __str__(self):
-        return 'DiscoveryConfiguration(' +  + ')'
+        return 'DiscoveryConfiguration(' + +')'
 
     __repr__ = __str__
 
@@ -4369,8 +4370,8 @@ class VariableAttributes(FrozenClass):
         self.DataType = NodeId()
         self.ValueRank = 0
         self.ArrayDimensions = []
-        self.AccessLevel = 0
-        self.UserAccessLevel = 0
+        self.AccessLevel = AccessLevel.CurrentRead.mask
+        self.UserAccessLevel = AccessLevel.CurrentRead.mask
         self.MinimumSamplingInterval = 0
         self.Historizing = True
         self._freeze = True
@@ -9098,7 +9099,7 @@ class HistoryReadDetails(FrozenClass):
         pass
 
     def __str__(self):
-        return 'HistoryReadDetails(' +  + ')'
+        return 'HistoryReadDetails(' + +')'
 
     __repr__ = __str__
 
@@ -10853,7 +10854,7 @@ class MonitoringFilter(FrozenClass):
         pass
 
     def __str__(self):
-        return 'MonitoringFilter(' +  + ')'
+        return 'MonitoringFilter(' + +')'
 
     __repr__ = __str__
 
@@ -11105,7 +11106,7 @@ class MonitoringFilterResult(FrozenClass):
         pass
 
     def __str__(self):
-        return 'MonitoringFilterResult(' +  + ')'
+        return 'MonitoringFilterResult(' + +')'
 
     __repr__ = __str__
 
@@ -13213,7 +13214,7 @@ class NotificationData(FrozenClass):
         pass
 
     def __str__(self):
-        return 'NotificationData(' +  + ')'
+        return 'NotificationData(' + +')'
 
     __repr__ = __str__
 
