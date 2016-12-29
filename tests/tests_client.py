@@ -11,7 +11,7 @@ from tests_xml import XmlTests
 port_num1 = 48510
 
 
-class TestClient(unittest.TestCase, CommonTests, SubscriptionTests):
+class TestClient(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
 
     '''
     Run common tests on client side

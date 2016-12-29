@@ -8,6 +8,8 @@ except ImportError:  # support for python2
 
 from opcua import ua
 from opcua.client.ua_client import UaClient
+from opcua.common.xmlimporter import XmlImporter
+from opcua.common.xmlexporter import XmlExporter
 from opcua.common.node import Node
 from opcua.common.manage_nodes import delete_nodes
 from opcua.common.subscription import Subscription
@@ -502,4 +504,33 @@ class Client(object):
 
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.uaclient, nodes, recursive)
-            
+
+    def import_xml(self, path):
+        """
+        Import nodes defined in xml
+        """
+        importer = XmlImporter(self)
+        return importer.import_xml(path)
+
+    def export_xml(self, nodes, path):
+        """
+        Export defined nodes to xml
+        """
+        exp = XmlExporter(self)
+        exp.build_etree(nodes)
+        return exp.write_xml(path)
+
+    def register_namespace(self, uri):
+        """
+        Register a new namespace. Nodes should in custom namespace, not 0.
+        This method is mainly implemented for symetry with server
+        """
+        ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
+        uries = ns_node.get_value()
+        if uri in uries:
+            return uries.index(uri)
+        uries.append(uri)
+        ns_node.set_value(uries)
+        return len(uries) - 1
+
+

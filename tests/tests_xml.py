@@ -24,7 +24,7 @@ class XmlTests(object):
     assertEqual = dir
 
     def test_xml_import(self):
-        self.srv.import_xml("tests/custom_nodes.xml")
+        self.opc.import_xml("tests/custom_nodes.xml")
         o = self.opc.get_objects_node()
         v = o.get_child(["1:MyXMLFolder", "1:MyXMLObject", "1:MyXMLVariable"])
         val = v.get_value()
@@ -52,9 +52,9 @@ class XmlTests(object):
         self.srv.register_namespace('http://placeholder.toincrease.nsindex')  # if not already shift the new namespaces
 
         # "tests/custom_nodes.xml" isn't created with namespaces in mind, provide new test file
-        self.srv.import_xml("tests/custom_nodesns.xml")  # the ns=1 in to file now should be mapped to ns=2
+        self.opc.import_xml("tests/custom_nodesns.xml")  # the ns=1 in to file now should be mapped to ns=2
 
-        ns = self.srv.get_namespace_index("http://examples.freeopcua.github.io/")
+        ns = self.opc.get_namespace_index("http://examples.freeopcua.github.io/")
         o = self.opc.get_objects_node()
 
         o2 = o.get_child(["{0:d}:MyBaseObject".format(ns)])
@@ -102,7 +102,7 @@ class XmlTests(object):
         self.opc.register_namespace("tititi")
         self.opc.register_namespace("whatthexxx")
         o = self.opc.nodes.objects.add_object(2, "xmlexportobj")
-        v = o.add_variable(3, "myxmlvar", 6.78, ua.VariantType.Float)
+        v = o.add_variable(3, "myxmlvar", 6.78, ua.VariantType.Double)
         a = o.add_variable(3, "myxmlvar-array", [6, 1], ua.VariantType.UInt16)
         a2 = o.add_variable(3, "myxmlvar-2dim", [[1, 2], [3, 4]], ua.VariantType.UInt32)
         a3 = o.add_variable(3, "myxmlvar-2dim", [[]], ua.VariantType.ByteString)
@@ -113,7 +113,7 @@ class XmlTests(object):
         self.opc.import_xml("export-vars.xml")
 
         self.assertEqual(v.get_value(), 6.78)
-        self.assertEqual(v.get_data_type(), ua.NodeId(ua.ObjectIds.Float))
+        self.assertEqual(v.get_data_type(), ua.NodeId(ua.ObjectIds.Double))
 
         self.assertEqual(a.get_data_type(), ua.NodeId(ua.ObjectIds.UInt16))
         self.assertIn(a.get_value_rank(), (0, 1))
@@ -135,7 +135,6 @@ class XmlTests(object):
         ns_array = self.opc.get_namespace_array()
         if len(ns_array) < 3:
             self.opc.register_namespace("dummy_ns")
-        print("ARRAY", self.opc.get_namespace_array())
 
         ref_ns = self.opc.register_namespace("ref_namespace")
         new_ns = self.opc.register_namespace("my_new_namespace")
@@ -151,7 +150,6 @@ class XmlTests(object):
         o_bname = onew.add_object("ns={0};i=4000".format(new_ns), "{0}:BNAME".format(bname_ns))
 
         nodes = [o, o50, o200, onew, vnew, v_no_parent, o_bname]
-        print("CREATED", nodes, o_no_export)
         self.opc.export_xml(nodes, "export-ns.xml")
         # delete node and change index og new_ns before re-importing
         self.opc.delete_nodes(nodes)
@@ -165,10 +163,8 @@ class XmlTests(object):
         new_ns = self.opc.register_namespace("my_new_namespace")
 
         new_nodes = self.opc.import_xml("export-ns.xml")
-        print("NEW NODES", new_nodes)
 
         for i in [o, o50, o200]:
-            print(i)
             i.get_browse_name()
         with self.assertRaises(uaerrors.BadNodeIdUnknown):
             onew.get_browse_name()
@@ -179,11 +175,8 @@ class XmlTests(object):
         # get index of namespaces after import
         new_ns = self.opc.register_namespace("my_new_namespace")
         bname_ns = self.opc.register_namespace("bname_namespace")
-        print("ARRAY 2", self.opc.get_namespace_array())
 
-        print("NEW NS", new_ns, onew)
         onew.nodeid.NamespaceIndex = new_ns
-        print("OENE", onew)
         onew.get_browse_name()
         vnew2 = onew.get_children()[0]
         self.assertEqual(new_ns, vnew2.nodeid.NamespaceIndex)
@@ -313,7 +306,8 @@ class XmlTests(object):
         self._test_xml_var_type(o, "enumvalues")
 
     def test_xml_custom_uint32(self):
-        t = self.opc.create_custom_data_type(2, 'MyCustomUint32', ua.ObjectIds.UInt32)
+        #t = self.opc.nodes. create_custom_data_type(2, 'MyCustomUint32', ua.ObjectIds.UInt32)
+        t = self.opc.get_node(ua.ObjectIds.UInt32).add_data_type(2, 'MyCustomUint32')
         o = self.opc.nodes.objects.add_variable(2, "xmlcustomunit32", 0, varianttype=ua.VariantType.UInt32, datatype=t.nodeid)
         self._test_xml_var_type(o, "cuint32")
 

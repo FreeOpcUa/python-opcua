@@ -504,6 +504,16 @@ class UaClient(object):
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
+    def add_references(self, refs):
+        self.logger.info("add_references")
+        request = ua.AddReferencesRequest()
+        request.Parameters.ReferencesToAdd = refs
+        data = self._uasocket.send_request(request)
+        response = ua.AddReferencesResponse.from_binary(data)
+        self.logger.debug(response)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
+
     def delete_nodes(self, params):
         self.logger.info("delete_nodes")
         request = ua.DeleteNodesRequest()

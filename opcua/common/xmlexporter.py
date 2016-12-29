@@ -235,7 +235,7 @@ class XmlExporter(object):
             dtype_name = dtype.to_string()
         rank = node.get_value_rank()
         if rank != -1:
-            el.attrib["ValueRank"] = str(rank)
+            el.attrib["ValueRank"] = str(int(rank))
         dim = node.get_attribute(ua.AttributeIds.ArrayDimensions)
         if dim.Value.Value:
             el.attrib["ArrayDimensions"] = ",".join([str(i) for i in dim.Value.Value])

@@ -6,8 +6,7 @@ import logging
 import uuid
 from copy import copy
 
-import dateutil.parser
-
+import opcua
 from opcua import ua
 from opcua.common import xmlparser
 
@@ -77,6 +76,18 @@ class XmlImporter(object):
                 continue
             nodes.append(node)
         return nodes
+
+    def _add_node(self, node):
+        if isinstance(self.server, opcua.server.server.Server):
+            return self.server.iserver.isession.add_nodes([node])
+        else:
+            return self.server.uaclient.add_nodes([node])
+
+    def _add_references(self, refs):
+        if isinstance(self.server, opcua.server.server.Server):
+            return self.server.iserver.isession.add_references(refs)
+        else:
+            return self.server.uaclient.add_references(refs)
     
     def make_objects(self, node_datas):
         new_nodes = []
@@ -142,7 +153,7 @@ class XmlImporter(object):
         attrs.DisplayName = ua.LocalizedText(obj.displayname)
         attrs.EventNotifier = obj.eventnotifier
         node.NodeAttributes = attrs
-        res = self.server.iserver.isession.add_nodes([node])
+        res = self._add_node(node)
         self._add_refs(obj)
         res[0].StatusCode.check()
         return res[0].AddedNodeId
@@ -155,7 +166,7 @@ class XmlImporter(object):
         attrs.DisplayName = ua.LocalizedText(obj.displayname)
         attrs.IsAbstract = obj.abstract
         node.NodeAttributes = attrs
-        res = self.server.iserver.isession.add_nodes([node])
+        res = self._add_node(node)
         self._add_refs(obj)
         res[0].StatusCode.check()
         return res[0].AddedNodeId
@@ -180,7 +191,7 @@ class XmlImporter(object):
         if obj.dimensions:
             attrs.ArrayDimensions = obj.dimensions
         node.NodeAttributes = attrs
-        res = self.server.iserver.isession.add_nodes([node])
+        res = self._add_node(node)
         self._add_refs(obj)
         res[0].StatusCode.check()
         return res[0].AddedNodeId
@@ -232,7 +243,7 @@ class XmlImporter(object):
             for ext in obj.value:
                 extobj = self._make_ext_obj(ext)
                 values.append(extobj)
-            return values
+            return ua.Variant(values, ua.VariantType.ExtensionObject)
         elif obj.valuetype == 'ListOfGuid':
             return ua.Variant([
                 uuid.UUID(guid) for guid in obj.value
@@ -242,7 +253,7 @@ class XmlImporter(object):
             if hasattr(ua.ua_binary.Primitives, vtype):
                 return ua.Variant(obj.value, getattr(ua.VariantType, vtype))
             else:
-                return [getattr(ua, vtype)(v) for v in obj.value]
+                return ua.Variant([getattr(ua, vtype)(v) for v in obj.value])
         elif obj.valuetype == 'ExtensionObject':
             extobj = self._make_ext_obj(obj.value)
             return ua.Variant(extobj, getattr(ua.VariantType, obj.valuetype))
@@ -277,7 +288,7 @@ class XmlImporter(object):
         if obj.dimensions:
             attrs.ArrayDimensions = obj.dimensions
         node.NodeAttributes = attrs
-        res = self.server.iserver.isession.add_nodes([node])
+        res = self._add_node(node)
         self._add_refs(obj)
         res[0].StatusCode.check()
         return res[0].AddedNodeId
@@ -297,7 +308,7 @@ class XmlImporter(object):
         if obj.dimensions:
             attrs.ArrayDimensions = obj.dimensions
         node.NodeAttributes = attrs
-        res = self.server.iserver.isession.add_nodes([node])
+        res = self._add_node(node)
         self._add_refs(obj)
         res[0].StatusCode.check()
         return res[0].AddedNodeId
@@ -315,7 +326,7 @@ class XmlImporter(object):
         if obj.symmetric:
             attrs.Symmetric = obj.symmetric
         node.NodeAttributes = attrs
-        res = self.server.iserver.isession.add_nodes([node])
+        res = self._add_node(node)
         self._add_refs(obj)
         res[0].StatusCode.check()
         return res[0].AddedNodeId
@@ -329,7 +340,7 @@ class XmlImporter(object):
         if obj.abstract:
             attrs.IsAbstract = obj.abstract
         node.NodeAttributes = attrs
-        res = self.server.iserver.isession.add_nodes([node])
+        res = self._add_node(node)
         self._add_refs(obj)
         res[0].StatusCode.check()
         return res[0].AddedNodeId
@@ -346,7 +357,7 @@ class XmlImporter(object):
             ref.TargetNodeClass = ua.NodeClass.DataType
             ref.TargetNodeId = self._migrate_ns(self.to_nodeid(data.target))
             refs.append(ref)
-        self.server.iserver.isession.add_references(refs)
+        self._add_references(refs)
 
     def _sort_nodes_by_parentid(self, ndatas):
         """
