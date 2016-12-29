@@ -5293,6 +5293,49 @@ class AddReferencesItem(FrozenClass):
     __repr__ = __str__
 
 
+class AddReferencesParameters(FrozenClass):
+    '''
+    :ivar ReferencesToAdd:
+    :vartype ReferencesToAdd: AddReferencesItem
+    '''
+
+    ua_types = {
+        'ReferencesToAdd': 'AddReferencesItem',
+               }
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            self._freeze = True
+            return
+        self.ReferencesToAdd = []
+        self._freeze = True
+
+    def to_binary(self):
+        packet = []
+        packet.append(uabin.Primitives.Int32.pack(len(self.ReferencesToAdd)))
+        for fieldname in self.ReferencesToAdd:
+            packet.append(fieldname.to_binary())
+        return b''.join(packet)
+
+    @staticmethod
+    def from_binary(data):
+        return AddReferencesParameters(data)
+
+    def _binary_init(self, data):
+        length = uabin.Primitives.Int32.unpack(data)
+        array = []
+        if length != -1:
+            for _ in range(0, length):
+                array.append(AddReferencesItem.from_binary(data))
+        self.ReferencesToAdd = array
+
+    def __str__(self):
+        return 'AddReferencesParameters(' + 'ReferencesToAdd:' + str(self.ReferencesToAdd) + ')'
+
+    __repr__ = __str__
+
+
 class AddReferencesRequest(FrozenClass):
     '''
     Adds one or more references to the server address space.
@@ -5301,14 +5344,14 @@ class AddReferencesRequest(FrozenClass):
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
-    :ivar ReferencesToAdd:
-    :vartype ReferencesToAdd: AddReferencesItem
+    :ivar Parameters:
+    :vartype Parameters: AddReferencesParameters
     '''
 
     ua_types = {
         'TypeId': 'NodeId',
         'RequestHeader': 'RequestHeader',
-        'ReferencesToAdd': 'AddReferencesItem',
+        'Parameters': 'AddReferencesParameters',
                }
 
     def __init__(self, binary=None):
@@ -5318,16 +5361,14 @@ class AddReferencesRequest(FrozenClass):
             return
         self.TypeId = FourByteNodeId(ObjectIds.AddReferencesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
-        self.ReferencesToAdd = []
+        self.Parameters = AddReferencesParameters()
         self._freeze = True
 
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.ReferencesToAdd)))
-        for fieldname in self.ReferencesToAdd:
-            packet.append(fieldname.to_binary())
+        packet.append(self.Parameters.to_binary())
         return b''.join(packet)
 
     @staticmethod
@@ -5337,17 +5378,12 @@ class AddReferencesRequest(FrozenClass):
     def _binary_init(self, data):
         self.TypeId = NodeId.from_binary(data)
         self.RequestHeader = RequestHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(AddReferencesItem.from_binary(data))
-        self.ReferencesToAdd = array
+        self.Parameters = AddReferencesParameters.from_binary(data)
 
     def __str__(self):
         return 'AddReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'ReferencesToAdd:' + str(self.ReferencesToAdd) + ')'
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
