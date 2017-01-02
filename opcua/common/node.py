@@ -75,7 +75,7 @@ class Node(object):
         may not be convertible to VariantType
         """
         result = self.get_attribute(ua.AttributeIds.DataType)
-        return ua.datatype_to_varianttype(result.Value.Value)
+        return opcua.common.ua_utils.data_type_to_variant_type(Node(self.server, result.Value.Value))
 
     def get_access_level(self):
         """
