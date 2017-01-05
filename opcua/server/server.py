@@ -17,13 +17,13 @@ from opcua.server.internal_server import InternalServer
 from opcua.server.event_generator import EventGenerator
 from opcua.common.node import Node
 from opcua.common.subscription import Subscription
-from opcua.common import xmlimporter
 from opcua.common.manage_nodes import delete_nodes
 from opcua.client.client import Client
 from opcua.crypto import security_policies
 from opcua.common.event_objects import BaseEvent
 from opcua.common.shortcuts import Shortcuts
 from opcua.common.xmlexporter import XmlExporter
+from opcua.common.xmlimporter import XmlImporter
 from opcua.common.ua_utils import get_nodes_of_namespace
 use_crypto = True
 try:
@@ -418,7 +418,7 @@ class Server(object):
         """
         Import nodes defined in xml
         """
-        importer = xmlimporter.XmlImporter(self)
+        importer = XmlImporter(self)
         return importer.import_xml(path)
 
     def export_xml(self, nodes, path):

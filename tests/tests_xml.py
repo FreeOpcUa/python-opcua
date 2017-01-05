@@ -1,4 +1,5 @@
 import uuid
+import datetime, pytz
 import logging
 
 from opcua import ua
@@ -23,7 +24,7 @@ class XmlTests(object):
     assertEqual = dir
 
     def test_xml_import(self):
-        self.srv.import_xml("tests/custom_nodes.xml")
+        self.opc.import_xml("tests/custom_nodes.xml")
         o = self.opc.get_objects_node()
         v = o.get_child(["1:MyXMLFolder", "1:MyXMLObject", "1:MyXMLVariable"])
         val = v.get_value()
@@ -51,9 +52,9 @@ class XmlTests(object):
         self.srv.register_namespace('http://placeholder.toincrease.nsindex')  # if not already shift the new namespaces
 
         # "tests/custom_nodes.xml" isn't created with namespaces in mind, provide new test file
-        self.srv.import_xml("tests/custom_nodesns.xml")  # the ns=1 in to file now should be mapped to ns=2
+        self.opc.import_xml("tests/custom_nodesns.xml")  # the ns=1 in to file now should be mapped to ns=2
 
-        ns = self.srv.get_namespace_index("http://examples.freeopcua.github.io/")
+        ns = self.opc.get_namespace_index("http://examples.freeopcua.github.io/")
         o = self.opc.get_objects_node()
 
         o2 = o.get_child(["{0:d}:MyBaseObject".format(ns)])
@@ -101,7 +102,7 @@ class XmlTests(object):
         self.opc.register_namespace("tititi")
         self.opc.register_namespace("whatthexxx")
         o = self.opc.nodes.objects.add_object(2, "xmlexportobj")
-        v = o.add_variable(3, "myxmlvar", 6.78, ua.VariantType.Float)
+        v = o.add_variable(3, "myxmlvar", 6.78, ua.VariantType.Double)
         a = o.add_variable(3, "myxmlvar-array", [6, 1], ua.VariantType.UInt16)
         a2 = o.add_variable(3, "myxmlvar-2dim", [[1, 2], [3, 4]], ua.VariantType.UInt32)
         a3 = o.add_variable(3, "myxmlvar-2dim", [[]], ua.VariantType.ByteString)
@@ -112,7 +113,7 @@ class XmlTests(object):
         self.opc.import_xml("export-vars.xml")
 
         self.assertEqual(v.get_value(), 6.78)
-        self.assertEqual(v.get_data_type(), ua.NodeId(ua.ObjectIds.Float))
+        self.assertEqual(v.get_data_type(), ua.NodeId(ua.ObjectIds.Double))
 
         self.assertEqual(a.get_data_type(), ua.NodeId(ua.ObjectIds.UInt16))
         self.assertIn(a.get_value_rank(), (0, 1))
@@ -134,7 +135,6 @@ class XmlTests(object):
         ns_array = self.opc.get_namespace_array()
         if len(ns_array) < 3:
             self.opc.register_namespace("dummy_ns")
-        print("ARRAY", self.opc.get_namespace_array())
 
         ref_ns = self.opc.register_namespace("ref_namespace")
         new_ns = self.opc.register_namespace("my_new_namespace")
@@ -150,7 +150,6 @@ class XmlTests(object):
         o_bname = onew.add_object("ns={0};i=4000".format(new_ns), "{0}:BNAME".format(bname_ns))
 
         nodes = [o, o50, o200, onew, vnew, v_no_parent, o_bname]
-        print("CREATED", nodes, o_no_export)
         self.opc.export_xml(nodes, "export-ns.xml")
         # delete node and change index og new_ns before re-importing
         self.opc.delete_nodes(nodes)
@@ -164,10 +163,8 @@ class XmlTests(object):
         new_ns = self.opc.register_namespace("my_new_namespace")
 
         new_nodes = self.opc.import_xml("export-ns.xml")
-        print("NEW NODES", new_nodes)
 
         for i in [o, o50, o200]:
-            print(i)
             i.get_browse_name()
         with self.assertRaises(uaerrors.BadNodeIdUnknown):
             onew.get_browse_name()
@@ -178,11 +175,8 @@ class XmlTests(object):
         # get index of namespaces after import
         new_ns = self.opc.register_namespace("my_new_namespace")
         bname_ns = self.opc.register_namespace("bname_namespace")
-        print("ARRAY 2", self.opc.get_namespace_array())
 
-        print("NEW NS", new_ns, onew)
         onew.nodeid.NamespaceIndex = new_ns
-        print("OENE", onew)
         onew.get_browse_name()
         vnew2 = onew.get_children()[0]
         self.assertEqual(new_ns, vnew2.nodeid.NamespaceIndex)
@@ -218,6 +212,38 @@ class XmlTests(object):
         o = self.opc.nodes.objects.add_variable(2, "xmlguid", uuid.uuid4())
         self._test_xml_var_type(o, "guid")
 
+    def test_xml_guid_array(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlguid", [uuid.uuid4(), uuid.uuid4()])
+        self._test_xml_var_type(o, "guid_array")
+
+    def test_xml_datetime(self):
+        o = self.opc.nodes.objects.add_variable(3, "myxmlvar-dt", datetime.datetime.utcnow(), ua.VariantType.DateTime)
+        self._test_xml_var_type(o, "datetime")
+
+    def test_xml_datetime_array(self):
+        o = self.opc.nodes.objects.add_variable(3, "myxmlvar-array", [
+            datetime.datetime.now(),
+            datetime.datetime.utcnow(),
+            datetime.datetime.now(pytz.timezone("Asia/Tokyo"))
+        ], ua.VariantType.DateTime)
+        self._test_xml_var_type(o, "datetime_array")
+
+    #def test_xml_qualifiedname(self):
+    #    o = self.opc.nodes.objects.add_variable(2, "xmlltext", ua.QualifiedName("mytext", 5))
+    #    self._test_xml_var_type(o, "qualified_name")
+
+    #def test_xml_qualifiedname_array(self):
+    #    o = self.opc.nodes.objects.add_variable(2, "xmlltext_array", [ua.QualifiedName("erert", 5), ua.QualifiedName("erert33", 6)])
+    #    self._test_xml_var_type(o, "qualified_name_array")
+
+    def test_xml_bytestring(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlltext", "mytext".encode("utf8"), ua.VariantType.ByteString)
+        self._test_xml_var_type(o, "bytestring")
+
+    def test_xml_bytestring_array(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlltext_array", ["mytext".encode("utf8"), "errsadf".encode("utf8")], ua.VariantType.ByteString)
+        self._test_xml_var_type(o, "bytestring_array")
+
     def test_xml_localizedtext(self):
         o = self.opc.nodes.objects.add_variable(2, "xmlltext", ua.LocalizedText("mytext"))
         self._test_xml_var_type(o, "localized_text")
@@ -246,6 +272,31 @@ class XmlTests(object):
         self.assertEqual(arg.Description, arg2.Description)
         self.assertEqual(arg.DataType, arg2.DataType)
 
+    def test_xml_ext_obj_array(self):
+        arg = ua.Argument()
+        arg.DataType = ua.NodeId(ua.ObjectIds.Float)
+        arg.Description = ua.LocalizedText(b"Nice description")
+        arg.ArrayDimensions = [1, 2, 3]
+        arg.Name = "MyArg"
+
+        arg2 = ua.Argument()
+        arg2.DataType = ua.NodeId(ua.ObjectIds.Int32)
+        arg2.Description = ua.LocalizedText(b"Nice description2")
+        arg2.ArrayDimensions = [4, 5, 6]
+        arg2.Name = "MyArg2"
+
+        args = [arg, arg2]
+
+        node = self.opc.nodes.objects.add_variable(2, "xmlexportobj2", args)
+        node2 = self._test_xml_var_type(node, "ext_obj_array", test_equality=False)
+        readArgs = node2.get_value()
+
+        for i,arg in enumerate(readArgs):
+            self.assertEqual(args[i].Name, readArgs[i].Name)
+            self.assertEqual(args[i].ArrayDimensions, readArgs[i].ArrayDimensions)
+            self.assertEqual(args[i].Description, readArgs[i].Description)
+            self.assertEqual(args[i].DataType, readArgs[i].DataType)
+
     def test_xml_enum(self):
         o = self.opc.nodes.objects.add_variable(2, "xmlenum", 0, varianttype=ua.VariantType.Int32, datatype=ua.ObjectIds.ApplicationType)
         self._test_xml_var_type(o, "enum")
@@ -255,9 +306,58 @@ class XmlTests(object):
         self._test_xml_var_type(o, "enumvalues")
 
     def test_xml_custom_uint32(self):
-        t = self.opc.create_custom_data_type(2, 'MyCustomUint32', ua.ObjectIds.UInt32)
+        #t = self.opc.nodes. create_custom_data_type(2, 'MyCustomUint32', ua.ObjectIds.UInt32)
+        t = self.opc.get_node(ua.ObjectIds.UInt32).add_data_type(2, 'MyCustomUint32')
         o = self.opc.nodes.objects.add_variable(2, "xmlcustomunit32", 0, varianttype=ua.VariantType.UInt32, datatype=t.nodeid)
         self._test_xml_var_type(o, "cuint32")
+
+    def test_xml_var_nillable(self):
+        xml = """
+        <UANodeSet xmlns="http://opcfoundation.org/UA/2011/03/UANodeSet.xsd" xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <NamespaceUris>    
+          </NamespaceUris>
+          <Aliases>
+            <Alias Alias="Boolean">i=1</Alias>
+            <Alias Alias="String">i=12</Alias>
+            <Alias Alias="HasTypeDefinition">i=40</Alias>
+            <Alias Alias="HasComponent">i=47</Alias>
+          </Aliases>
+          <UAVariable BrowseName="2:xmlstring" DataType="String" NodeId="ns=2;s=test_xml.string.nillabel" ParentNodeId="i=85">
+            <DisplayName>xmlstring</DisplayName>
+            <Description>xmlstring</Description>
+            <References>
+              <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+              <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+            </References>
+            <Value>
+                <uax:String></uax:String>
+            </Value>    
+          </UAVariable>
+          
+         <UAVariable BrowseName="2:xmlbool" DataType="Boolean" NodeId="ns=2;s=test_xml.bool.nillabel" ParentNodeId="i=85">
+            <DisplayName>xmlbool</DisplayName>
+            <Description>xmlbool</Description>
+            <References>
+              <Reference IsForward="false" ReferenceType="HasComponent">i=85</Reference>
+              <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+            </References>
+            <Value>
+              <uax:Boolean></uax:Boolean>
+            </Value>
+          </UAVariable>  
+          
+        </UANodeSet>
+        """
+
+        fp = open('import-nillable.xml', 'w')
+        fp.write(xml)
+        fp.close()
+        # TODO: when the xml parser also support loading from string, remove write to file
+        _new_nodes = self.opc.import_xml('import-nillable.xml')
+        var_string = self.opc.get_node(ua.NodeId('test_xml.string.nillabel', 2))
+        var_bool = self.opc.get_node(ua.NodeId('test_xml.bool.nillabel', 2))
+        self.assertEqual(var_string.get_value(), None)
+        self.assertEqual(var_bool.get_value(), None)
 
     def _test_xml_var_type(self, node, typename, test_equality=True):
         dtype = node.get_data_type()

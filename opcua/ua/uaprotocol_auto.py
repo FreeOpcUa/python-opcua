@@ -1268,7 +1268,7 @@ class RequestHeader(FrozenClass):
             self._freeze = True
             return
         self.AuthenticationToken = NodeId()
-        self.Timestamp = datetime.now()
+        self.Timestamp = datetime.utcnow()
         self.RequestHandle = 0
         self.ReturnDiagnostics = 0
         self.AuditEntryId = None
@@ -1344,7 +1344,7 @@ class ResponseHeader(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.Timestamp = datetime.now()
+        self.Timestamp = datetime.utcnow()
         self.RequestHandle = 0
         self.ServiceResult = StatusCode()
         self.ServiceDiagnostics = DiagnosticInfo()
@@ -1776,7 +1776,7 @@ class FindServersOnNetworkResult(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.LastCounterResetTime = datetime.now()
+        self.LastCounterResetTime = datetime.utcnow()
         self.Servers = []
         self._freeze = True
 
@@ -2655,7 +2655,7 @@ class ChannelSecurityToken(FrozenClass):
             return
         self.ChannelId = 0
         self.TokenId = 0
-        self.CreatedAt = datetime.now()
+        self.CreatedAt = datetime.utcnow()
         self.RevisedLifetime = 0
         self._freeze = True
 
@@ -5293,6 +5293,49 @@ class AddReferencesItem(FrozenClass):
     __repr__ = __str__
 
 
+class AddReferencesParameters(FrozenClass):
+    '''
+    :ivar ReferencesToAdd:
+    :vartype ReferencesToAdd: AddReferencesItem
+    '''
+
+    ua_types = {
+        'ReferencesToAdd': 'AddReferencesItem',
+               }
+
+    def __init__(self, binary=None):
+        if binary is not None:
+            self._binary_init(binary)
+            self._freeze = True
+            return
+        self.ReferencesToAdd = []
+        self._freeze = True
+
+    def to_binary(self):
+        packet = []
+        packet.append(uabin.Primitives.Int32.pack(len(self.ReferencesToAdd)))
+        for fieldname in self.ReferencesToAdd:
+            packet.append(fieldname.to_binary())
+        return b''.join(packet)
+
+    @staticmethod
+    def from_binary(data):
+        return AddReferencesParameters(data)
+
+    def _binary_init(self, data):
+        length = uabin.Primitives.Int32.unpack(data)
+        array = []
+        if length != -1:
+            for _ in range(0, length):
+                array.append(AddReferencesItem.from_binary(data))
+        self.ReferencesToAdd = array
+
+    def __str__(self):
+        return 'AddReferencesParameters(' + 'ReferencesToAdd:' + str(self.ReferencesToAdd) + ')'
+
+    __repr__ = __str__
+
+
 class AddReferencesRequest(FrozenClass):
     '''
     Adds one or more references to the server address space.
@@ -5301,14 +5344,14 @@ class AddReferencesRequest(FrozenClass):
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
-    :ivar ReferencesToAdd:
-    :vartype ReferencesToAdd: AddReferencesItem
+    :ivar Parameters:
+    :vartype Parameters: AddReferencesParameters
     '''
 
     ua_types = {
         'TypeId': 'NodeId',
         'RequestHeader': 'RequestHeader',
-        'ReferencesToAdd': 'AddReferencesItem',
+        'Parameters': 'AddReferencesParameters',
                }
 
     def __init__(self, binary=None):
@@ -5318,16 +5361,14 @@ class AddReferencesRequest(FrozenClass):
             return
         self.TypeId = FourByteNodeId(ObjectIds.AddReferencesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
-        self.ReferencesToAdd = []
+        self.Parameters = AddReferencesParameters()
         self._freeze = True
 
     def to_binary(self):
         packet = []
         packet.append(self.TypeId.to_binary())
         packet.append(self.RequestHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.ReferencesToAdd)))
-        for fieldname in self.ReferencesToAdd:
-            packet.append(fieldname.to_binary())
+        packet.append(self.Parameters.to_binary())
         return b''.join(packet)
 
     @staticmethod
@@ -5337,17 +5378,12 @@ class AddReferencesRequest(FrozenClass):
     def _binary_init(self, data):
         self.TypeId = NodeId.from_binary(data)
         self.RequestHeader = RequestHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(AddReferencesItem.from_binary(data))
-        self.ReferencesToAdd = array
+        self.Parameters = AddReferencesParameters.from_binary(data)
 
     def __str__(self):
         return 'AddReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'ReferencesToAdd:' + str(self.ReferencesToAdd) + ')'
+               'Parameters:' + str(self.Parameters) + ')'
 
     __repr__ = __str__
 
@@ -5932,7 +5968,7 @@ class ViewDescription(FrozenClass):
             self._freeze = True
             return
         self.ViewId = NodeId()
-        self.Timestamp = datetime.now()
+        self.Timestamp = datetime.utcnow()
         self.ViewVersion = 0
         self._freeze = True
 
@@ -7429,7 +7465,7 @@ class SupportedProfile(FrozenClass):
         self.OrganizationUri = None
         self.ProfileId = None
         self.ComplianceTool = None
-        self.ComplianceDate = datetime.now()
+        self.ComplianceDate = datetime.utcnow()
         self.ComplianceLevel = ComplianceLevel(0)
         self.UnsupportedUnitIds = []
         self._freeze = True
@@ -7517,9 +7553,9 @@ class SoftwareCertificate(FrozenClass):
         self.VendorProductCertificate = None
         self.SoftwareVersion = None
         self.BuildNumber = None
-        self.BuildDate = datetime.now()
+        self.BuildDate = datetime.utcnow()
         self.IssuedBy = None
-        self.IssueDate = datetime.now()
+        self.IssueDate = datetime.utcnow()
         self.SupportedProfiles = []
         self._freeze = True
 
@@ -9128,8 +9164,8 @@ class ReadEventDetails(FrozenClass):
             self._freeze = True
             return
         self.NumValuesPerNode = 0
-        self.StartTime = datetime.now()
-        self.EndTime = datetime.now()
+        self.StartTime = datetime.utcnow()
+        self.EndTime = datetime.utcnow()
         self.Filter = EventFilter()
         self._freeze = True
 
@@ -9188,8 +9224,8 @@ class ReadRawModifiedDetails(FrozenClass):
             self._freeze = True
             return
         self.IsReadModified = True
-        self.StartTime = datetime.now()
-        self.EndTime = datetime.now()
+        self.StartTime = datetime.utcnow()
+        self.EndTime = datetime.utcnow()
         self.NumValuesPerNode = 0
         self.ReturnBounds = True
         self._freeze = True
@@ -9251,8 +9287,8 @@ class ReadProcessedDetails(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.StartTime = datetime.now()
-        self.EndTime = datetime.now()
+        self.StartTime = datetime.utcnow()
+        self.EndTime = datetime.utcnow()
         self.ProcessingInterval = 0
         self.AggregateType = []
         self.AggregateConfiguration = AggregateConfiguration()
@@ -9404,7 +9440,7 @@ class ModificationInfo(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.ModificationTime = datetime.now()
+        self.ModificationTime = datetime.utcnow()
         self.UpdateType = HistoryUpdateType(0)
         self.UserName = None
         self._freeze = True
@@ -10179,8 +10215,8 @@ class DeleteRawModifiedDetails(FrozenClass):
             return
         self.NodeId = NodeId()
         self.IsDeleteModified = True
-        self.StartTime = datetime.now()
-        self.EndTime = datetime.now()
+        self.StartTime = datetime.utcnow()
+        self.EndTime = datetime.utcnow()
         self._freeze = True
 
     def to_binary(self):
@@ -11046,7 +11082,7 @@ class AggregateFilter(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.StartTime = datetime.now()
+        self.StartTime = datetime.utcnow()
         self.AggregateType = NodeId()
         self.ProcessingInterval = 0
         self.AggregateConfiguration = AggregateConfiguration()
@@ -11195,7 +11231,7 @@ class AggregateFilterResult(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.RevisedStartTime = datetime.now()
+        self.RevisedStartTime = datetime.utcnow()
         self.RevisedProcessingInterval = 0
         self.RevisedAggregateConfiguration = AggregateConfiguration()
         self._freeze = True
@@ -13152,7 +13188,7 @@ class NotificationMessage(FrozenClass):
             self._freeze = True
             return
         self.SequenceNumber = 0
-        self.PublishTime = datetime.now()
+        self.PublishTime = datetime.utcnow()
         self.NotificationData = []
         self._freeze = True
 
@@ -14354,7 +14390,7 @@ class BuildInfo(FrozenClass):
         self.ProductName = None
         self.SoftwareVersion = None
         self.BuildNumber = None
-        self.BuildDate = datetime.now()
+        self.BuildDate = datetime.utcnow()
         self._freeze = True
 
     def to_binary(self):
@@ -14728,8 +14764,8 @@ class ServerStatusDataType(FrozenClass):
             self._binary_init(binary)
             self._freeze = True
             return
-        self.StartTime = datetime.now()
-        self.CurrentTime = datetime.now()
+        self.StartTime = datetime.utcnow()
+        self.CurrentTime = datetime.utcnow()
         self.State = ServerState(0)
         self.BuildInfo = BuildInfo()
         self.SecondsTillShutdown = 0
@@ -14918,8 +14954,8 @@ class SessionDiagnosticsDataType(FrozenClass):
         self.LocaleIds = []
         self.ActualSessionTimeout = 0
         self.MaxResponseMessageSize = 0
-        self.ClientConnectionTime = datetime.now()
-        self.ClientLastContactTime = datetime.now()
+        self.ClientConnectionTime = datetime.utcnow()
+        self.ClientLastContactTime = datetime.utcnow()
         self.CurrentSubscriptionsCount = 0
         self.CurrentMonitoredItemsCount = 0
         self.CurrentPublishRequestsInQueue = 0
@@ -15959,13 +15995,13 @@ class ProgramDiagnosticDataType(FrozenClass):
             return
         self.CreateSessionId = NodeId()
         self.CreateClientName = None
-        self.InvocationCreationTime = datetime.now()
-        self.LastTransitionTime = datetime.now()
+        self.InvocationCreationTime = datetime.utcnow()
+        self.LastTransitionTime = datetime.utcnow()
         self.LastMethodCall = None
         self.LastMethodSessionId = NodeId()
         self.LastMethodInputArguments = []
         self.LastMethodOutputArguments = []
-        self.LastMethodCallTime = datetime.now()
+        self.LastMethodCallTime = datetime.utcnow()
         self.LastMethodReturnStatus = StatusResult()
         self._freeze = True
 
@@ -16051,7 +16087,7 @@ class Annotation(FrozenClass):
             return
         self.Message = None
         self.UserName = None
-        self.AnnotationTime = datetime.now()
+        self.AnnotationTime = datetime.utcnow()
         self._freeze = True
 
     def to_binary(self):

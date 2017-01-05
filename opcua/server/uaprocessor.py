@@ -290,6 +290,18 @@ class UaProcessor(object):
             self.logger.info("sending delete node response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
+        elif typeid == ua.NodeId(ua.ObjectIds.AddReferencesRequest_Encoding_DefaultBinary):
+            self.logger.info("add references request")
+            params = ua.AddReferencesParameters.from_binary(body)
+
+            results = self.session.add_references(params.ReferencesToAdd)
+
+            response = ua.AddReferencesResponse()
+            response.Results = results
+
+            self.logger.info("sending add references response")
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
         elif typeid == ua.NodeId(ua.ObjectIds.CreateSubscriptionRequest_Encoding_DefaultBinary):
             self.logger.info("create subscription request")
             params = ua.CreateSubscriptionParameters.from_binary(body)

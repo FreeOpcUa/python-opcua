@@ -3,12 +3,12 @@ from setuptools import setup, find_packages
 import sys
 
 if sys.version_info[0] < 3:
-    install_requires = ["python-dateutil", "enum34", "trollius", "futures"]
+    install_requires = ["python-dateutil", "enum34", "trollius", "futures", "pytz"]
 else:
-    install_requires = ["python-dateutil"]
+    install_requires = ["python-dateutil", "pytz"]
 
 setup(name="freeopcua",
-      version="0.90.0",
+      version="0.90.1",
       description="Pure Python OPC-UA client and server library",
       author="Olivier Roulet-Dubonnet",
       author_email="olivier.roulet@gmail.com",

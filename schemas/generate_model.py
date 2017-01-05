@@ -14,7 +14,7 @@ IgnoredEnums = []#["IdType", "NodeIdType"]
 #we want to implement som struct by hand, to make better interface or simply because they are too complicated
 IgnoredStructs = []#["NodeId", "ExpandedNodeId", "Variant", "QualifiedName", "DataValue", "LocalizedText"]#, "ExtensionObject"]
 #by default we split requests and respons in header and parameters, but some are so simple we do not split them
-NoSplitStruct = ["GetEndpointsResponse", "CloseSessionRequest", "AddNodesResponse", "DeleteNodesResponse", "BrowseResponse", "HistoryReadResponse", "HistoryUpdateResponse", "RegisterServerResponse", "CloseSecureChannelRequest", "CloseSecureChannelResponse", "CloseSessionRequest", "CloseSessionResponse", "UnregisterNodesResponse", "MonitoredItemModifyRequest", "MonitoredItemsCreateRequest", "ReadResponse", "WriteResponse", "TranslateBrowsePathsToNodeIdsResponse", "DeleteSubscriptionsResponse", "DeleteMonitoredItemsResponse", "CreateMonitoredItemsResponse", "ServiceFault", "AddReferencesRequest", "AddReferencesResponse", "ModifyMonitoredItemsResponse", "RepublishResponse", "CallResponse", "FindServersResponse", "RegisterServerRequest", "RegisterServer2Response"]
+NoSplitStruct = ["GetEndpointsResponse", "CloseSessionRequest", "AddNodesResponse", "DeleteNodesResponse", "BrowseResponse", "HistoryReadResponse", "HistoryUpdateResponse", "RegisterServerResponse", "CloseSecureChannelRequest", "CloseSecureChannelResponse", "CloseSessionRequest", "CloseSessionResponse", "UnregisterNodesResponse", "MonitoredItemModifyRequest", "MonitoredItemsCreateRequest", "ReadResponse", "WriteResponse", "TranslateBrowsePathsToNodeIdsResponse", "DeleteSubscriptionsResponse", "DeleteMonitoredItemsResponse", "CreateMonitoredItemsResponse", "ServiceFault", "AddReferencesResponse", "ModifyMonitoredItemsResponse", "RepublishResponse", "CallResponse", "FindServersResponse", "RegisterServerRequest", "RegisterServer2Response"]
 #structs that end with Request or Response but are not
 NotRequest = ["MonitoredItemCreateRequest", "MonitoredItemModifyRequest", "CallMethodRequest"]
 OverrideTypes = {}#AttributeId": "AttributeID",  "ResultMask": "BrowseResultMask", "NodeClassMask": "NodeClass", "AccessLevel": "VariableAccessLevel", "UserAccessLevel": "VariableAccessLevel", "NotificationData": "NotificationData"}
@@ -497,6 +497,12 @@ def add_basetype_members(model):
                 field.sourcetype = base.name
             struct.fields.insert(idx, field)
 
+
+def fix_names(model):
+    for s in model.enums:
+        for f in s.values:
+            if f.name == "None":
+                f.name = "None_"
 
 
 

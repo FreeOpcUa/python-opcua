@@ -276,6 +276,16 @@ class UaClient(object):
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
+    def browse_next(self, parameters):
+        self.logger.info("browse next")
+        request = ua.BrowseNextRequest()
+        request.Parameters = parameters
+        data = self._uasocket.send_request(request)
+        response = ua.BrowseNextResponse.from_binary(data)
+        self.logger.debug(response)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Parameters.Results
+
     def read(self, parameters):
         self.logger.info("read")
         request = ua.ReadRequest()
@@ -490,6 +500,16 @@ class UaClient(object):
         request.Parameters.NodesToAdd = nodestoadd
         data = self._uasocket.send_request(request)
         response = ua.AddNodesResponse.from_binary(data)
+        self.logger.debug(response)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
+
+    def add_references(self, refs):
+        self.logger.info("add_references")
+        request = ua.AddReferencesRequest()
+        request.Parameters.ReferencesToAdd = refs
+        data = self._uasocket.send_request(request)
+        response = ua.AddReferencesResponse.from_binary(data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results

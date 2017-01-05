@@ -24,6 +24,19 @@ class TestUnit(unittest.TestCase):
     Simple unit test that do not need to setup a server or a client
     '''
 
+    def test_variant_array_none(self):
+        v = ua.Variant(None, varianttype=ua.VariantType.Int32, is_array=True)
+        data = v.to_binary()
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(data))
+        self.assertEqual(v, v2)
+        self.assertTrue(v2.is_array)
+
+        v = ua.Variant(None, varianttype=ua.VariantType.Null, is_array=True)
+        data = v.to_binary()
+        v2 = ua.Variant.from_binary(ua.utils.Buffer(data))
+        self.assertEqual(v, v2)
+        self.assertTrue(v2.is_array)
+
     def test_nodeid_ordering(self):
         a = ua.NodeId(2000, 1)
         b = ua.NodeId(3000, 1)

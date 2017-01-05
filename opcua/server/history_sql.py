@@ -182,7 +182,7 @@ class HistorySQLite(HistoryStorageInterface):
 
             if period:
                 # after the insert, if a period was specified delete all records older than period
-                date_limit = datetime.now() - period
+                date_limit = datetime.utcnow() - period
 
                 try:
                     _c_sub.execute('DELETE FROM "{tn}" WHERE Time < ?'.format(tn=table),
