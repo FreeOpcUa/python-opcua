@@ -57,25 +57,32 @@ class XmlImporter(object):
 
         nodes = []
         for nodedata in nodes_parsed:  # self.parser:
-            if nodedata.nodetype == 'UAObject':
-                node = self.add_object(nodedata)
-            elif nodedata.nodetype == 'UAObjectType':
-                node = self.add_object_type(nodedata)
-            elif nodedata.nodetype == 'UAVariable':
-                node = self.add_variable(nodedata)
-            elif nodedata.nodetype == 'UAVariableType':
-                node = self.add_variable_type(nodedata)
-            elif nodedata.nodetype == 'UAReferenceType':
-                node = self.add_reference_type(nodedata)
-            elif nodedata.nodetype == 'UADataType':
-                node = self.add_datatype(nodedata)
-            elif nodedata.nodetype == 'UAMethod':
-                node = self.add_method(nodedata)
-            else:
-                self.logger.warning("Not implemented node type: %s ", nodedata.nodetype)
-                continue
+            try:
+                node = self._add_node_data(nodedata)
+            except Exception:
+                self.logger.warning("failure adding node %s", nodedata)
+                raise
             nodes.append(node)
         return nodes
+
+    def _add_node_data(self, nodedata):
+        if nodedata.nodetype == 'UAObject':
+            node = self.add_object(nodedata)
+        elif nodedata.nodetype == 'UAObjectType':
+            node = self.add_object_type(nodedata)
+        elif nodedata.nodetype == 'UAVariable':
+            node = self.add_variable(nodedata)
+        elif nodedata.nodetype == 'UAVariableType':
+            node = self.add_variable_type(nodedata)
+        elif nodedata.nodetype == 'UAReferenceType':
+            node = self.add_reference_type(nodedata)
+        elif nodedata.nodetype == 'UADataType':
+            node = self.add_datatype(nodedata)
+        elif nodedata.nodetype == 'UAMethod':
+            node = self.add_method(nodedata)
+        else:
+            self.logger.warning("Not implemented node type: %s ", nodedata.nodetype)
+        return node
 
     def _add_node(self, node):
         if isinstance(self.server, opcua.server.server.Server):
