@@ -16,6 +16,7 @@ from opcua.ua import ObjectIds
 from opcua.ua.uaerrors import UaError
 from opcua.ua.uaerrors import UaStatusCodeError
 from opcua.ua.uaerrors import UaStringParsingError
+from opcua.common.utils import Buffer
 
 
 if sys.version_info.major > 2:
@@ -1099,3 +1100,62 @@ def get_default_value(vtype):
         raise RuntimeError("function take a uatype as argument, got:", vtype)
 
 
+# These dictionnaries are used to register extensions classes for automatic
+# decoding and encoding
+extension_object_classes = {}
+extension_object_ids = {}
+
+
+def extensionobject_from_binary(data):
+    """
+    Convert binary-coded ExtensionObject to a Python object.
+    Returns an object, or None if TypeId is zero
+    """
+    TypeId = NodeId.from_binary(data)
+    Encoding = ord(data.read(1))
+    body = None
+    if Encoding & (1 << 0):
+        length = uabin.Primitives.Int32.unpack(data)
+        if length < 1:
+            body = Buffer(b"")
+        else:
+            body = data.copy(length)
+            data.skip(length)
+    if TypeId.Identifier == 0:
+        return None
+    elif TypeId in extension_object_classes:
+        klass = extension_object_classes[TypeId]
+        if body is None:
+            raise UaError("parsing ExtensionObject {0} without data".format(klass.__name__))
+        return klass.from_binary(body)
+    else:
+        e = ExtensionObject()
+        e.TypeId = TypeId
+        e.Encoding = Encoding
+        if body is not None:
+            e.Body = body.read(len(body))
+        return e
+
+
+def extensionobject_to_binary(obj):
+    """
+    Convert Python object to binary-coded ExtensionObject.
+    If obj is None, convert to empty ExtensionObject (TypeId = 0, no Body).
+    Returns a binary string
+    """
+    if isinstance(obj, ExtensionObject):
+        return obj.to_binary()
+    if obj is None:
+        TypeId = NodeId()
+        Encoding = 0
+        Body = None
+    else:
+        TypeId = extension_object_ids[obj.__class__.__name__]
+        Encoding = 0x01
+        Body = obj.to_binary()
+    packet = []
+    packet.append(TypeId.to_binary())
+    packet.append(uabin.Primitives.UInt8.pack(Encoding))
+    if Body:
+        packet.append(uabin.Primitives.Bytes.pack(Body))
+    return b''.join(packet)

@@ -54,19 +54,15 @@ class CodeGenerator(object):
         self.iidx = 0
         self.write("")
         self.write("")
-        self.write("ExtensionClasses = {")
         for struct in self.model.structs:
             if struct.name in IgnoredStructs:
                 continue
             if struct.name.endswith("Node") or struct.name.endswith("NodeId"):
                 continue
             if "ExtensionObject" in struct.parents:
-                self.write("    ObjectIds.{0}_Encoding_DefaultBinary: {0},".format(struct.name))
-        self.write("}")
-        self.write("")
-        with open('uaprotocol_auto_add.py') as f:
-            for line in f:
-                self.write(line.rstrip())
+                self.write("nid = NodeId(ObjectIds.{0}_Encoding_DefaultBinary)".format(struct.name))
+                self.write("extension_object_classes[nid] = {0}".format(struct.name))
+                self.write("extension_object_ids['{0}'] = nid".format(struct.name))
 
     def write(self, line):
         if line:
@@ -79,10 +75,9 @@ class CodeGenerator(object):
         self.write("'''")
         self.write("")
         self.write("from datetime import datetime")
-        self.write("from enum import Enum, IntEnum")
+        self.write("from enum import IntEnum")
         self.write("")
-        self.write("from opcua.common.utils import Buffer")
-        self.write("from opcua.ua.uaerrors import UaError")
+        #self.write("from opcua.ua.uaerrors import UaError")
         self.write("from opcua.ua.uatypes import *")
         self.write("from opcua.ua import ua_binary as uabin")
         self.write("from opcua.ua.object_ids import ObjectIds")

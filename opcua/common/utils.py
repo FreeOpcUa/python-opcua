@@ -1,3 +1,8 @@
+"""
+Helper function and classes that do not rely on opcua library.
+Helper function and classes depending on ua object are in ua_utils.py
+"""
+
 import logging
 import os
 from concurrent.futures import Future
@@ -6,7 +11,6 @@ import threading
 from socket import error as SocketError
 
 try:
-    # we prefer to use bundles asyncio version, otherwise fallback to trollius
     import asyncio
 except ImportError:
     import trollius as asyncio
