@@ -38,14 +38,21 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(v, v2)
         self.assertTrue(v2.is_array)
 
+    def test_structs_save_and_import(self):
+        xmlpath = "tests/example.bsd"
+        c = StructGenerator()
+        c.make_model_from_file(xmlpath)
+        struct_dict = c.save_and_import("structures.py")
+        for k, v in struct_dict.items():
+            a = v()
+            self.assertEqual(k, a.__class__.__name__)
+
     def test_custom_structs(self):
         xmlpath = "tests/example.bsd"
-        c = StructGenerator(xmlpath, "structures.py")
-        c.run()
+        c = StructGenerator()
+        c.make_model_from_file(xmlpath)
+        c.save_to_file("structures.py")
         import structures as s
-        #from IPython import embed
-        #import sys
-        #embed()
 
         # test with default values
         v = s.ScalarValueDataType()
@@ -89,8 +96,9 @@ class TestUnit(unittest.TestCase):
 
     def test_custom_structs_array(self):
         xmlpath = "tests/example.bsd"
-        c = StructGenerator(xmlpath, "structures.py")
-        c.run()
+        c = StructGenerator()
+        c.make_model_from_file(xmlpath)
+        c.save_to_file("structures.py")
         import structures as s
 
         # test with default values

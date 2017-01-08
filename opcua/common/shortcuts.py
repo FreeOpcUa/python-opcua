@@ -24,3 +24,4 @@ class Shortcuts(object):
         self.variable_types = Node(server, ObjectIds.VariableTypesFolder)
         self.object_types = Node(server, ObjectIds.ObjectTypesFolder)
         self.namespace_array = Node(server, ObjectIds.Server_NamespaceArray)
+        self.opc_binary = Node(server, ObjectIds.OPCBinarySchema_TypeSystem)

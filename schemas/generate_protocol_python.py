@@ -60,7 +60,7 @@ class CodeGenerator(object):
             if struct.name.endswith("Node") or struct.name.endswith("NodeId"):
                 continue
             if "ExtensionObject" in struct.parents:
-                self.write("nid = NodeId(ObjectIds.{0}_Encoding_DefaultBinary)".format(struct.name))
+                self.write("nid = FourByteNodeId(ObjectIds.{0}_Encoding_DefaultBinary)".format(struct.name))
                 self.write("extension_object_classes[nid] = {0}".format(struct.name))
                 self.write("extension_object_ids['{0}'] = nid".format(struct.name))
 
