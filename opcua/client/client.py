@@ -557,7 +557,7 @@ class Client(object):
         If no no node is given, attemps to import variables from all nodes under
         "0:OPC Binary"
         the code is generated and imported on the fly. If you know the structures
-        are not going to be modified it is safer to copy the generated files
+        are not going to be modified it might be interresting to copy the generated files
         and include them in you code
         """
         if nodes is None:
@@ -566,22 +566,29 @@ class Client(object):
                 if desc.BrowseName != ua.QualifiedName("Opc.Ua"):
                     nodes.append(self.get_node(desc.NodeId))
         self.logger.info("Importing structures from nodes: %s", nodes)
-
+        
+        structs_dict = {}
         for node in nodes:
             xml = node.get_value()
             xml = xml.decode("utf-8")
-            #with open("titi.xml", "w") as f:
-                #f.write(xml)
             name = "structures_" + node.get_browse_name().Name
             gen = StructGenerator()
             gen.make_model_from_string(xml)
-            structs_dict = gen.save_and_import(name + ".py")
-            # register classes
-            for desc in node.get_children_descriptions():
-                if desc.BrowseName.Name in structs_dict:
-                    self.logger.info("registring new structure: %: %s", desc.NodeId, desc.BrowseName.Name)
-                    ua.extension_object_classes[desc.NodeId] = structs_dict[desc.BrowseName.Name]
-                    ua.extension_object_ids[desc.BrowseName.Name] = desc.NodeId
+            gen.save_and_import(name + ".py", append_to=structs_dict)
+
+        # register classes
+        for desc in self.nodes.base_structure_type.get_children_descriptions():
+            # FIXME: maybe we should look recursively at children
+            # FIXME: we should get enoding and description but this is too 
+            # expensive. we take a shorcut and assume that browsename of struct 
+            # is the same as the name of the data type structure
+            if desc.BrowseName.Name in structs_dict:
+                struct_node = self.get_node(desc.NodeId)
+                refs = struct_node.get_references(ua.ObjectIds.HasEncoding, ua.BrowseDirection.Forward)
+                for ref in refs:
+                    if "Binary" in ref.BrowseName.Name:
+                        ua.register_extension_object(desc.BrowseName.Name, ref.NodeId, structs_dict[desc.BrowseName.Name])
+
 
 
 

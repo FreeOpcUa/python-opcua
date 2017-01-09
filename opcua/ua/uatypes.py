@@ -1,8 +1,10 @@
 """
 implement ua datatypes
 """
+
+import logging
 import struct
-from enum import Enum, IntEnum, EnumMeta
+from enum import Enum, IntEnum
 from datetime import datetime
 import sys
 import os
@@ -17,6 +19,9 @@ from opcua.ua.uaerrors import UaError
 from opcua.ua.uaerrors import UaStatusCodeError
 from opcua.ua.uaerrors import UaStringParsingError
 from opcua.common.utils import Buffer
+
+
+logger = logging.getLogger(__name__)
 
 
 if sys.version_info.major > 2:
@@ -1106,12 +1111,20 @@ extension_object_classes = {}
 extension_object_ids = {}
 
 
+def register_extension_object(name, nodeid, class_type):
+    """
+    """
+    logger.warning("registring new extension object: %s %s %s", name, nodeid, class_type)
+    extension_object_classes[nodeid] = class_type
+    extension_object_ids[name] = nodeid
+
+
 def extensionobject_from_binary(data):
     """
     Convert binary-coded ExtensionObject to a Python object.
     Returns an object, or None if TypeId is zero
     """
-    TypeId = NodeId.from_binary(data)
+    typeid = NodeId.from_binary(data)
     Encoding = ord(data.read(1))
     body = None
     if Encoding & (1 << 0):
@@ -1121,16 +1134,16 @@ def extensionobject_from_binary(data):
         else:
             body = data.copy(length)
             data.skip(length)
-    if TypeId.Identifier == 0:
+    if typeid.Identifier == 0:
         return None
-    elif TypeId in extension_object_classes:
-        klass = extension_object_classes[TypeId]
+    elif typeid in extension_object_classes:
+        klass = extension_object_classes[typeid]
         if body is None:
             raise UaError("parsing ExtensionObject {0} without data".format(klass.__name__))
         return klass.from_binary(body)
     else:
         e = ExtensionObject()
-        e.TypeId = TypeId
+        e.TypeId = typeid
         e.Encoding = Encoding
         if body is not None:
             e.Body = body.read(len(body))

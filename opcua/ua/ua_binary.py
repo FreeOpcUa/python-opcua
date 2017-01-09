@@ -264,7 +264,7 @@ def pack_uatype(vtype, value):
         # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
         # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
         # Using local import to avoid import loop
-        from opcua.ua.uaprotocol_auto import extensionobject_to_binary
+        from opcua.ua import extensionobject_to_binary
         return extensionobject_to_binary(value)
     else:
         try:
@@ -283,7 +283,7 @@ def unpack_uatype(vtype, data):
         # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
         # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
         # Using local import to avoid import loop
-        from opcua.ua.uaprotocol_auto import extensionobject_from_binary
+        from opcua.ua import extensionobject_from_binary
         return extensionobject_from_binary(data)
     else:
         from opcua.ua import uatypes

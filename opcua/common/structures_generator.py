@@ -166,13 +166,23 @@ class StructGenerator(object):
             _file.write(struct.get_code())
         _file.close()
 
-    def save_and_import(self, path):
+    def save_and_import(self, path, append_to=None):
+        """
+        save the new structures to a python file which be used later
+        import the result and return resulting classes in a dict
+        if append_to is a dict, the classes are added to the dict
+        """
         self.save_to_file(path)
         name = os.path.basename(path)
         name = os.path.splitext(name)[0]
         mymodule = importlib.import_module(name)
-        mydict = {struct.name: getattr(mymodule, struct.name) for struct in self.model}
-        return mydict
+        if append_to is None:
+            result = {}
+        else:
+            result = append_to
+        for struct in self.model:
+            result[struct.name] = getattr(mymodule, struct.name)
+        return result
 
     def get_structures(self):
         ld = {}
