@@ -615,6 +615,12 @@ class ExtensionObject(FrozenClass):
     :vartype Body: bytes
     """
 
+    ua_types = {
+        "TypeId": "NodeId",
+        "Encoding": "Byte",
+        "Body": "ByteString"
+    }
+
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
@@ -624,7 +630,7 @@ class ExtensionObject(FrozenClass):
     def to_binary(self):
         packet = []
         if self.Body:
-            self.Encoding |= (1 << 0)
+            self.Encoding = 0x01
         packet.append(self.TypeId.to_binary())
         packet.append(uabin.Primitives.UInt8.pack(self.Encoding))
         if self.Body:
