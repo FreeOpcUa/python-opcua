@@ -47,12 +47,11 @@ class XmlImporter(object):
         self.logger.info("Importing XML file %s", xmlpath)
         self.parser = xmlparser.XMLParser(xmlpath)
 
-        dnodes = self.parser.get_node_datas()
-        dnodes = self.make_objects(dnodes)
-
         self.namespaces = self._map_namespaces(self.parser.get_used_namespaces())
         self.aliases = self._map_aliases(self.parser.get_aliases())
-
+        
+        dnodes = self.parser.get_node_datas()
+        dnodes = self.make_objects(dnodes)
         nodes_parsed = self._sort_nodes_by_parentid(dnodes)
 
         nodes = []
