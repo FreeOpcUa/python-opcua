@@ -85,17 +85,16 @@ class UaProcessor(object):
 
             elif header.MessageType == ua.MessageType.SecureMessage:
                 return self.process_message(msg.SecurityHeader(), msg.SequenceHeader(), msg.body())
-
         elif isinstance(msg, ua.Hello):
             ack = ua.Acknowledge()
             ack.ReceiveBufferSize = msg.ReceiveBufferSize
             ack.SendBufferSize = msg.SendBufferSize
             data = self._connection.tcp_to_binary(ua.MessageType.Acknowledge, ack)
             self.socket.write(data)
-
         elif isinstance(msg, ua.ErrorMessage):
             self.logger.warning("Received an error message type")
-
+        elif msg is None:
+            pass  # msg is a ChunkType.Intermediate of an ua.MessageType.SecureMessage
         else:
             self.logger.warning("Unsupported message type: %s", header.MessageType)
             raise utils.ServiceError(ua.StatusCodes.BadTcpMessageTypeInvalid)
@@ -131,7 +130,7 @@ class UaProcessor(object):
                 data = params.ClientNonce
             else:
                 data = self._connection._security_policy.server_certificate + params.ClientNonce
-            response.Parameters.ServerSignature.Signature =\
+            response.Parameters.ServerSignature.Signature = \
                 self._connection._security_policy.asymmetric_cryptography.signature(data)
 
             response.Parameters.ServerSignature.Algorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
