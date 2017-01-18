@@ -91,10 +91,11 @@ class UaProcessor(object):
             ack.SendBufferSize = msg.SendBufferSize
             data = self._connection.tcp_to_binary(ua.MessageType.Acknowledge, ack)
             self.socket.write(data)
-
         elif isinstance(msg, ua.ErrorMessage):
             self.logger.warning("Received an error message type")
-        elif msg is not None:  # ua.MessageType.SecureMessage and ChunkType.Intermediate
+        elif msg is None:
+            pass  # msg is a ChunkType.Intermediate of an ua.MessageType.SecureMessage
+        else:
             self.logger.warning("Unsupported message type: %s", header.MessageType)
             raise utils.ServiceError(ua.StatusCodes.BadTcpMessageTypeInvalid)
         return True
