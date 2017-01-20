@@ -115,7 +115,10 @@ class SocketWrapper(object):
 
 
 def create_nonce(size=32):
+    if size == 0:
+        size = 32
     return os.urandom(size)
+
 
 
 class ThreadLoop(threading.Thread):
