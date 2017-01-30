@@ -252,7 +252,7 @@ class NodeManagementService(object):
         desc.NodeId = nodedata.nodeid
         desc.NodeClass = item.NodeClass
         desc.BrowseName = item.BrowseName
-        desc.DisplayName = ua.LocalizedText(item.BrowseName.Name)
+        desc.DisplayName = item.NodeAttributes.DisplayName
         desc.TypeDefinition = item.TypeDefinition
         desc.IsForward = True
         self._aspace[item.ParentNodeId].references.append(desc)
