@@ -1,12 +1,16 @@
+import logging
+
 from opcua import ua
 from opcua.common.node import Node
+
+
+logger = logging.getLogger(__name__)
 
 
 def copy_node(parent, node, nodeid=None, recursive=True):
     """
     Copy a node or node tree as child of parent node
     """
-    print("Copying", node, "into ", parent)
     rdesc = _rdesc_from_node(parent, node)
 
     if nodeid is None:
@@ -73,5 +77,5 @@ def _read_and_copy_attrs(node_type, struct, addnode):
             else:
                 setattr(struct, name, results[idx].Value.Value)
         else:
-            print("Instantiate: while copying attributes from node type {0!s}, attribute {1!s}, statuscode is {2!s}".format(node_type, name, results[idx].StatusCode))            
+            logger.warning("Instantiate: while copying attributes from node type {0!s}, attribute {1!s}, statuscode is {2!s}".format(node_type, name, results[idx].StatusCode))            
     addnode.NodeAttributes = struct

@@ -2,6 +2,8 @@
 Instantiate a new node and its child nodes from a node type.
 """
 
+import logging
+
 
 from opcua import Node
 from opcua import ua
@@ -9,7 +11,10 @@ from opcua.common import ua_utils
 from opcua.common.copy_node import _rdesc_from_node, _read_and_copy_attrs
 
 
-def instantiate(parent, node_type, nodeid=None, bname=None, idx=0):
+logger = logging.getLogger(__name__)
+
+
+def instantiate(parent, node_type, nodeid=None, bname=None, dname=None, idx=0):
     """
     instantiate a node type under a parent node.
     nodeid and browse name of new node can be specified, or just namespace index
@@ -26,11 +31,11 @@ def instantiate(parent, node_type, nodeid=None, bname=None, idx=0):
     elif isinstance(bname, str):
         bname = ua.QualifiedName.from_string(bname)
 
-    nodeids = _instantiate_node(parent.server, parent.nodeid, rdesc, nodeid, bname)
+    nodeids = _instantiate_node(parent.server, parent.nodeid, rdesc, nodeid, bname, dname=dname)
     return [Node(parent.server, nid) for nid in nodeids]
 
 
-def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
+def _instantiate_node(server, parentid, rdesc, nodeid, bname, dname=None, recursive=True):
     """
     instantiate a node type under parent
     """
@@ -59,8 +64,10 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, recursive=True):
         addnode.NodeClass = ua.NodeClass.Method
         _read_and_copy_attrs(node_type, ua.MethodAttributes(), addnode)
     else:
-        print("Instantiate: Node class not supported: ", rdesc.NodeClass)
+        logger.warning("Instantiate: Node class not supported: %s", rdesc.NodeClass)
         return
+    if dname is not None:
+        addnode.NodeAttributes.DisplayName = dname
 
     res = server.add_nodes([addnode])[0]
     added_nodes = [res.AddedNodeId]
