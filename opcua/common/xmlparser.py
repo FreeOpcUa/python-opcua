@@ -304,7 +304,7 @@ class XMLParser(object):
                 ext.objname = self._retag.match(extension_object_part.find('*').tag).groups()[1]
                 ext.body = self._parse_body(extension_object_part)
             else:
-                print("Uknown ndtag", ntag)
+                self.logger.warning("Unknown ntag", ntag)
         return ext
 
     def _parse_body(self, el):
