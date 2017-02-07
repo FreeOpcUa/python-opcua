@@ -94,6 +94,9 @@ class Client(object):
         """
         self.logger = logging.getLogger(__name__)
         self.server_url = urlparse(url)
+        #take initial username and password from the url
+        self._username = self.server_url.username
+        self._password = self.server_url.password
         self.name = "Pure Python Client"
         self.description = self.name
         self.application_uri = "urn:freeopcua:client"
@@ -129,6 +132,20 @@ class Client(object):
                 return ep
         raise ua.UaError("No matching endpoints: {0}, {1}".format(
                          security_mode, policy_uri))
+
+    def set_user(self, username):
+        """
+        Set user name for the connection.
+        initial user from the URL will be overwritten
+        """
+        self._username = username
+
+    def set_password(self, pwd):
+        """
+        Set user password for the connection.
+        initial password from the URL will be overwritten
+        """
+        self._password = pwd
 
     def set_security_string(self, string):
         """
@@ -226,7 +243,7 @@ class Client(object):
         self.send_hello()
         self.open_secure_channel()
         self.create_session()
-        self.activate_session(username=self.server_url.username, password=self.server_url.password, certificate=self.user_certificate)
+        self.activate_session(username=self._username, password=self._password, certificate=self.user_certificate)
 
     def disconnect(self):
         """
@@ -423,13 +440,13 @@ class Client(object):
             # see specs part 4, 7.36.3: if the token is NOT encrypted,
             # then the password only contains UTF-8 encoded password
             # and EncryptionAlgorithm is null
-            if self.server_url.password:
+            if self._password:
                 self.logger.warning("Sending plain-text password")
                 params.UserIdentityToken.Password = password
             params.UserIdentityToken.EncryptionAlgorithm = ''
-        elif self.server_url.password:
+        elif self._password:
             data, uri = self._encrypt_password(password, policy_uri)
-            params.UserIdentityToken.Password = data 
+            params.UserIdentityToken.Password = data
             params.UserIdentityToken.EncryptionAlgorithm = uri
         params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.UserName, b"username_basic256")
 
@@ -473,16 +490,16 @@ class Client(object):
         returns a Subscription object which allow
         to subscribe to events or data on server
         handler argument is a class with data_change and/or event methods.
-        period argument is either a publishing interval in seconds or a 
+        period argument is either a publishing interval in seconds or a
         CreateSubscriptionParameters instance. The second option should be used,
         if the opcua-server has problems with the default options.
         These methods will be called when notfication from server are received.
         See example-client.py.
         Do not do expensive/slow or network operation from these methods
         since they are called directly from receiving thread. This is a design choice,
-        start another thread if you need to do such a thing.  
+        start another thread if you need to do such a thing.
         """
-        
+
         if isinstance(period, ua.CreateSubscriptionParameters):
              return Subscription(self.uaclient, period, handler)
         params = ua.CreateSubscriptionParameters()
