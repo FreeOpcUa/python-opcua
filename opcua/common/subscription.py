@@ -312,7 +312,7 @@ class Subscription(object):
         modif_item = ua.MonitoredItemModifyRequest()
         modif_item.MonitoredItemId = handle
         modif_item.RequestedParameters = self._modify_monitored_item_request(new_queuesize, new_samp_time,
-                                                                             mod_filter)
+                                                                             mod_filter, item_to_change.client_handle)
         params = ua.ModifyMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
         params.ItemsToModify.append(modif_item)
@@ -320,10 +320,10 @@ class Subscription(object):
         item_to_change.mfilter = results[0].FilterResult
         return results
 
-    def _modify_monitored_item_request(self, new_queuesize, new_samp_time, mod_filter):
+    def _modify_monitored_item_request(self, new_queuesize, new_samp_time, mod_filter, client_handle):
         req_params = ua.MonitoringParameters()
         with self._lock:
-            req_params.ClientHandle = self._client_handle
+            req_params.ClientHandle = client_handle
         req_params.QueueSize = new_queuesize
         req_params.Filter = mod_filter
         req_params.SamplingInterval = new_samp_time
