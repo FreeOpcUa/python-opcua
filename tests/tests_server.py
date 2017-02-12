@@ -14,7 +14,7 @@ from opcua import Server
 from opcua import Client
 from opcua import ua
 from opcua import uamethod
-from opcua.common.event_objects import BaseEvent, AuditEvent
+from opcua.common.event_objects import BaseEvent, AuditEvent, AuditChannelEvent, AuditSecurityEvent, AuditOpenSecureChannelEvent
 from opcua.common import ua_utils
 
 
@@ -192,6 +192,23 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         self.assertEqual(ev.ServerId, None)
         self.assertEqual(ev.ClientAuditEntryId, None)
         self.assertEqual(ev.ClientUserId, None)
+        
+    def test_get_event_from_type_node_MultiInhereted_AuditOpenSecureChannelEvent(self):
+        ev = opcua.common.events.get_event_obj_from_type_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.AuditOpenSecureChannelEventType)))
+        self.assertIsNot(ev, None)
+        self.assertIsInstance(ev, BaseEvent)
+        self.assertIsInstance(ev, AuditEvent)
+        self.assertIsInstance(ev, AuditSecurityEvent)
+        self.assertIsInstance(ev, AuditChannelEvent)
+        self.assertIsInstance(ev, AuditOpenSecureChannelEvent)
+        self.assertEqual(ev.EventType, ua.NodeId(ua.ObjectIds.AuditOpenSecureChannelEventType))
+        self.assertEqual(ev.Severity, 1),
+        self.assertEqual(ev.ClientCertificate, None)
+        self.assertEqual(ev.ClientCertificateThumbprint, None)
+        self.assertEqual(ev.RequestType, None)
+        self.assertEqual(ev.SecurityPolicyUri, None)
+        self.assertEqual(ev.SecurityMode, None)
+        self.assertEqual(ev.RequestedLifetime, None)
 
     def test_eventgenerator_default(self):
         evgen = self.opc.get_event_generator()
@@ -268,6 +285,26 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         self.assertEqual(ev.ServerId, None)
         self.assertEqual(ev.ClientAuditEntryId, None)
         self.assertEqual(ev.ClientUserId, None)
+        
+    def test_eventgenerator_MultiInheritedEvent(self):
+        evgen = self.opc.get_event_generator(ua.ObjectIds.AuditOpenSecureChannelEventType)
+        check_eventgenerator_SourceServer(self, evgen)
+
+        ev = evgen.event
+        self.assertIsNot(ev, None)  # we did not receive event
+        self.assertIsInstance(ev, BaseEvent)
+        self.assertIsInstance(ev, AuditEvent)
+        self.assertIsInstance(ev, AuditSecurityEvent)
+        self.assertIsInstance(ev, AuditChannelEvent)
+        self.assertIsInstance(ev, AuditOpenSecureChannelEvent)
+        self.assertEqual(ev.EventType, ua.NodeId(ua.ObjectIds.AuditOpenSecureChannelEventType))
+        self.assertEqual(ev.Severity, 1),
+        self.assertEqual(ev.ClientCertificate, None)
+        self.assertEqual(ev.ClientCertificateThumbprint, None)
+        self.assertEqual(ev.RequestType, None)
+        self.assertEqual(ev.SecurityPolicyUri, None)
+        self.assertEqual(ev.SecurityMode, None)
+        self.assertEqual(ev.RequestedLifetime, None)
 
     # For the custom events all posibilites are tested. For other custom types only one test case is done since they are using the same code
     def test_create_custom_data_type_ObjectId(self):
