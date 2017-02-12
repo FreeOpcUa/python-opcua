@@ -86,10 +86,10 @@ class XmlTests(object):
         # get all nodes and export
         nodes = [o, m]
         nodes.extend(m.get_children())
-        self.opc.export_xml(nodes, "export.xml")
+        self.opc.export_xml(nodes, "tmp_test_export.xml")
 
         self.opc.delete_nodes(nodes)
-        self.opc.import_xml("export.xml")
+        self.opc.import_xml("tmp_test_export.xml")
 
         # now see if our nodes are here
         val = inputs.get_value()
@@ -108,9 +108,9 @@ class XmlTests(object):
         a3 = o.add_variable(3, "myxmlvar-2dim", [[]], ua.VariantType.ByteString)
 
         nodes = [o, v, a, a2, a3]
-        self.opc.export_xml(nodes, "export-vars.xml")
+        self.opc.export_xml(nodes, "tmp_test_export-vars.xml")
         self.opc.delete_nodes(nodes)
-        self.opc.import_xml("export-vars.xml")
+        self.opc.import_xml("tmp_test_export-vars.xml")
 
         self.assertEqual(v.get_value(), 6.78)
         self.assertEqual(v.get_data_type(), ua.NodeId(ua.ObjectIds.Double))
@@ -150,7 +150,7 @@ class XmlTests(object):
         o_bname = onew.add_object("ns={0};i=4000".format(new_ns), "{0}:BNAME".format(bname_ns))
 
         nodes = [o, o50, o200, onew, vnew, v_no_parent, o_bname]
-        self.opc.export_xml(nodes, "export-ns.xml")
+        self.opc.export_xml(nodes, "tmp_test_export-ns.xml")
         # delete node and change index og new_ns before re-importing
         self.opc.delete_nodes(nodes)
         ns_node = self.opc.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
@@ -162,7 +162,7 @@ class XmlTests(object):
         new_ns = self.opc.register_namespace("my_new_namespace_offsett")
         new_ns = self.opc.register_namespace("my_new_namespace")
 
-        new_nodes = self.opc.import_xml("export-ns.xml")
+        new_nodes = self.opc.import_xml("tmp_test_export-ns.xml")
 
         for i in [o, o50, o200]:
             i.get_browse_name()
@@ -186,9 +186,9 @@ class XmlTests(object):
         dtype = o.get_data_type()
         dv = o.get_data_value()
 
-        self.opc.export_xml([o], "export-float.xml")
+        self.opc.export_xml([o], "tmp_test_export-float.xml")
         self.opc.delete_nodes([o])
-        new_nodes = self.opc.import_xml("export-float.xml")
+        new_nodes = self.opc.import_xml("tmp_test_export-float.xml")
         o2 = self.opc.get_node(new_nodes[0])
 
         self.assertEqual(o, o2)
@@ -349,11 +349,11 @@ class XmlTests(object):
         </UANodeSet>
         """
 
-        fp = open('import-nillable.xml', 'w')
+        fp = open('tmp_test_import-nillable.xml', 'w')
         fp.write(xml)
         fp.close()
         # TODO: when the xml parser also support loading from string, remove write to file
-        _new_nodes = self.opc.import_xml('import-nillable.xml')
+        _new_nodes = self.opc.import_xml('tmp_test_import-nillable.xml')
         var_string = self.opc.get_node(ua.NodeId('test_xml.string.nillabel', 2))
         var_bool = self.opc.get_node(ua.NodeId('test_xml.bool.nillabel', 2))
         self.assertEqual(var_string.get_value(), None)
@@ -366,7 +366,7 @@ class XmlTests(object):
         dim = node.get_array_dimensions()
         nclass = node.get_node_class()
 
-        path = "export-{0}.xml".format(typename)
+        path = "tmp_test_export-{0}.xml".format(typename)
         self.opc.export_xml([node], path)
         self.opc.delete_nodes([node])
         new_nodes = self.opc.import_xml(path)
