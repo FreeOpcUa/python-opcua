@@ -20,8 +20,8 @@ A simple GUI client is available: https://github.com/FreeOpcUa/opcua-client-gui
 
 Examples: https://github.com/FreeOpcUa/python-opcua/tree/master/examples
 
-Minimal client example: https://github.com/FreeOpcUa/python-opcua/tree/master/examples/minimal-client.py
-Minimal server example: https://github.com/FreeOpcUa/python-opcua/tree/master/examples/minimal-server.py
+Minimal client example: https://github.com/FreeOpcUa/python-opcua/blob/master/examples/client-minimal.py
+Minimal server example: https://github.com/FreeOpcUa/python-opcua/blob/master/examples/server-minimal.py
 
 
 Contents:
