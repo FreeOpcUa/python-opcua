@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     # Creating a custom event: Approach 1
     # The custom event object automatically will have members from its parent (BaseEventType)
-    etype = server.create_custom_event_type(2, 'MyFirstEvent', ua.ObjectIds.BaseEventType, [('MyNumericProperty', ua.VariantType.Float), ('MyStringProperty', ua.VariantType.String)])
+    etype = server.create_custom_event_type(idx, 'MyFirstEvent', ua.ObjectIds.BaseEventType, [('MyNumericProperty', ua.VariantType.Float), ('MyStringProperty', ua.VariantType.String)])
 
     myevgen = server.get_event_generator(etype, myobj)
 
@@ -57,15 +57,15 @@ if __name__ == "__main__":
         count = 0
         while True:
             time.sleep(5)
-            myevgen.event.Message = "MyFirstEvent " + str(count)
+            myevgen.event.Message = ua.LocalizedText("MyFirstEvent %d" % count)
             myevgen.event.Severity = count
             myevgen.event.MyNumericProperty = count
             myevgen.event.MyStringProperty = "Property " + str(count)
             myevgen.trigger()
-            mysecondevgen.trigger(message="MySecondEvent " + str(count))
+            mysecondevgen.trigger(message="MySecondEvent %d" % count)
             count += 1
 
         embed()
     finally:
-        #close connection, remove subcsriptions, etc
+        # close connection, remove subcsriptions, etc
         server.stop()
