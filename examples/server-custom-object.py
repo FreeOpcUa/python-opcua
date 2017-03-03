@@ -38,7 +38,7 @@ if __name__ == "__main__":
     object_type_to_derive_from = server.get_root_node().get_child(["0:Types", 
                                                                    "0:ObjectTypes", 
                                                                    "0:BaseObjectType"])
-    mycustomobj_type = types.add_object_type(idx, "MyCustomObject")
+    mycustomobj_type = types.add_object_type(idx, "MyCustomObjectType")
     mycustomobj_type.add_variable(0, "var_should_be_there_after_instantiate", 1.0) # demonstrates instantiate
     
     myobj = objects.add_object(idx, "MyCustomObjectA", mycustomobj_type.nodeid)
@@ -55,9 +55,9 @@ if __name__ == "__main__":
     # 1) Use node ID
     # 2) Or Full path
     # 3) Or As child from parent
-    myobject1_type_nodeid = ua.NodeId.from_string('ns=1;i=1002')
-    myobject2_type_nodeid = server.get_root_node().get_child(["0:Types", "0:ObjectTypes", "0:BaseObjectType", "1:MyObjectType"]).nodeid
-    myobject3_type_nodeid = server.get_node(ua.ObjectIds.BaseObjectType).get_child(["1:MyObjectType"]).nodeid
+    myobject1_type_nodeid = ua.NodeId.from_string('ns=%d;i=2' % idx)
+    myobject2_type_nodeid = server.get_root_node().get_child(["0:Types", "0:ObjectTypes", "0:BaseObjectType", "%d:MyCustomObjectType" % idx]).nodeid
+    myobject3_type_nodeid = server.get_node(ua.ObjectIds.BaseObjectType).get_child(["%d:MyCustomObjectType" % idx]).nodeid
 
 
     # populating our address space    
