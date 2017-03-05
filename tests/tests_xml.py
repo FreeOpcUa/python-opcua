@@ -380,3 +380,17 @@ class XmlTests(object):
         self.assertEqual(dim, node2.get_array_dimensions())
         self.assertEqual(nclass, node2.get_node_class())
         return node2
+
+    def test_xml_byte(self):
+        o = self.opc.nodes.objects.add_variable(2, "byte", 255, ua.VariantType.Byte)
+        dtype = o.get_data_type()
+        dv = o.get_data_value()
+
+        self.opc.export_xml([o], "export-byte.xml")
+        self.opc.delete_nodes([o])
+        new_nodes = self.opc.import_xml("export-byte.xml")
+        o2 = self.opc.get_node(new_nodes[0])
+
+        self.assertEqual(o, o2)
+        self.assertEqual(dtype, o2.get_data_type())
+        self.assertEqual(dv.Value, o2.get_data_value().Value)
