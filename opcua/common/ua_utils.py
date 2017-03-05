@@ -78,15 +78,15 @@ def string_to_val(string, vtype):
             val = True
         else:
             val = False
-    elif vtype in (ua.VariantType.Int16, ua.VariantType.Int32, ua.VariantType.Int64):
+    elif vtype in (ua.VariantType.SByte, ua.VariantType.Int16, ua.VariantType.Int32, ua.VariantType.Int64):
         val = int(string)
-    elif vtype in (ua.VariantType.UInt16, ua.VariantType.UInt32, ua.VariantType.UInt64):
+    elif vtype in (ua.VariantType.Byte, ua.VariantType.UInt16, ua.VariantType.UInt32, ua.VariantType.UInt64):
         val = int(string)
     elif vtype in (ua.VariantType.Float, ua.VariantType.Double):
         val = float(string)
     elif vtype in (ua.VariantType.String, ua.VariantType.XmlElement):
         val = string
-    elif vtype in (ua.VariantType.Byte, ua.VariantType.SByte, ua.VariantType.ByteString):
+    elif vtype == ua.VariantType.ByteString:
         val = string.encode("utf-8")
     elif vtype in (ua.VariantType.NodeId, ua.VariantType.ExpandedNodeId):
         val = ua.NodeId.from_string(string)
