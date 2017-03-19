@@ -16,6 +16,7 @@ from opcua.common.event_objects import BaseEvent
 from opcua.common.ua_utils import string_to_variant, variant_to_string, string_to_val, val_to_string
 from opcua.common.xmlimporter import XmlImporter
 from opcua.ua.uatypes import _MaskEnum
+from opcua.common.structures_generator import StructGenerator
 
 
 class TestUnit(unittest.TestCase):
@@ -36,6 +37,111 @@ class TestUnit(unittest.TestCase):
         v2 = ua.Variant.from_binary(ua.utils.Buffer(data))
         self.assertEqual(v, v2)
         self.assertTrue(v2.is_array)
+
+    def test_structs_save_and_import(self):
+        xmlpath = "tests/example.bsd"
+        c = StructGenerator()
+        c.make_model_from_file(xmlpath)
+        struct_dict = c.save_and_import("structures.py")
+        for k, v in struct_dict.items():
+            a = v()
+            self.assertEqual(k, a.__class__.__name__)
+
+    def test_custom_structs(self):
+        xmlpath = "tests/example.bsd"
+        c = StructGenerator()
+        c.make_model_from_file(xmlpath)
+        c.save_to_file("structures.py")
+        import structures as s
+
+        # test with default values
+        v = s.ScalarValueDataType()
+        data = v.to_binary()
+        v2 = s.ScalarValueDataType.from_binary(ua.utils.Buffer(data))
+
+
+        # set some values
+        v = s.ScalarValueDataType()
+        v.SbyteValue = 1
+        v.ByteValue = 2
+        v.Int16Value = 3
+        v.UInt16Value = 4
+        v.Int32Value = 5
+        v.UInt32Value = 6
+        v.Int64Value = 7
+        v.UInt64Value = 8
+        v.FloatValue = 9.0
+        v.DoubleValue = 10.0
+        v.StringValue = "elleven"
+        v.DateTimeValue = datetime.utcnow()
+        #self.GuidValue = uuid.uudib"14"
+        v.ByteStringValue = b"fifteen"
+        v.XmlElementValue = ua.XmlElement("<toto>titi</toto>")
+        v.NodeIdValue = ua.NodeId.from_string("ns=4;i=9999")
+        #self.ExpandedNodeIdValue =
+        #self.QualifiedNameValue =
+        #self.LocalizedTextValue =
+        #self.StatusCodeValue =
+        #self.VariantValue =
+        #self.EnumerationValue =
+        #self.StructureValue =
+        #self.Number =
+        #self.Integer =
+        #self.UInteger =
+
+
+        data = v.to_binary()
+        v2 = s.ScalarValueDataType.from_binary(ua.utils.Buffer(data))
+        self.assertEqual(v.NodeIdValue, v2.NodeIdValue)
+
+    def test_custom_structs_array(self):
+        xmlpath = "tests/example.bsd"
+        c = StructGenerator()
+        c.make_model_from_file(xmlpath)
+        c.save_to_file("structures.py")
+        import structures as s
+
+        # test with default values
+        v = s.ArrayValueDataType()
+        data = v.to_binary()
+        v2 = s.ArrayValueDataType.from_binary(ua.utils.Buffer(data))
+
+
+        # set some values
+        v = s.ArrayValueDataType()
+        v.SbyteValue = [1]
+        v.ByteValue = [2]
+        v.Int16Value = [3]
+        v.UInt16Value = [4]
+        v.Int32Value = [5]
+        v.UInt32Value = [6]
+        v.Int64Value = [7]
+        v.UInt64Value = [8]
+        v.FloatValue = [9.0]
+        v.DoubleValue = [10.0]
+        v.StringValue = ["elleven"]
+        v.DateTimeValue = [datetime.utcnow()]
+        #self.GuidValue = uuid.uudib"14"
+        v.ByteStringValue = [b"fifteen", b"sixteen"]
+        v.XmlElementValue = [ua.XmlElement("<toto>titi</toto>")]
+        v.NodeIdValue = [ua.NodeId.from_string("ns=4;i=9999"), ua.NodeId.from_string("i=6")]
+        #self.ExpandedNodeIdValue =
+        #self.QualifiedNameValue =
+        #self.LocalizedTextValue =
+        #self.StatusCodeValue =
+        #self.VariantValue =
+        #self.EnumerationValue =
+        #self.StructureValue =
+        #self.Number =
+        #self.Integer =
+        #self.UInteger =
+
+
+        data = v.to_binary()
+        v2 = s.ArrayValueDataType.from_binary(ua.utils.Buffer(data))
+        self.assertEqual(v.NodeIdValue, v2.NodeIdValue)
+        print(v2.NodeIdValue)
+
 
     def test_nodeid_ordering(self):
         a = ua.NodeId(2000, 1)

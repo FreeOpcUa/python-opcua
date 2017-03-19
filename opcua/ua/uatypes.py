@@ -1,8 +1,10 @@
 """
 implement ua datatypes
 """
+
+import logging
 import struct
-from enum import Enum, IntEnum, EnumMeta
+from enum import Enum, IntEnum
 from datetime import datetime
 import sys
 import os
@@ -16,6 +18,10 @@ from opcua.ua import ObjectIds
 from opcua.ua.uaerrors import UaError
 from opcua.ua.uaerrors import UaStatusCodeError
 from opcua.ua.uaerrors import UaStringParsingError
+from opcua.common.utils import Buffer
+
+
+logger = logging.getLogger(__name__)
 
 
 if sys.version_info.major > 2:
@@ -609,6 +615,12 @@ class ExtensionObject(FrozenClass):
     :vartype Body: bytes
     """
 
+    ua_types = {
+        "TypeId": "NodeId",
+        "Encoding": "Byte",
+        "Body": "ByteString"
+    }
+
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
@@ -618,7 +630,7 @@ class ExtensionObject(FrozenClass):
     def to_binary(self):
         packet = []
         if self.Body:
-            self.Encoding |= (1 << 0)
+            self.Encoding = 0x01
         packet.append(self.TypeId.to_binary())
         packet.append(uabin.Primitives.UInt8.pack(self.Encoding))
         if self.Body:
@@ -911,12 +923,12 @@ class XmlElement(FrozenClass):
     An XML element encoded as an UTF-8 string.
     """
 
-    def __init__(self, binary=None):
+    def __init__(self, value=None, binary=None):
         if binary is not None:
             self._binary_init(binary)
             self._freeze = True
             return
-        self.Value = []
+        self.Value = value
         self._freeze = True
 
     def to_binary(self):
@@ -924,7 +936,7 @@ class XmlElement(FrozenClass):
 
     @staticmethod
     def from_binary(data):
-        return XmlElement(data)
+        return XmlElement(binary=data)
 
     def _binary_init(self, data):
         self.Value = uabin.Primitives.String.unpack(data)
@@ -1063,7 +1075,9 @@ def get_default_value(vtype):
         return None
     elif vtype == VariantType.Boolean:
         return False
-    elif vtype in (VariantType.SByte, VariantType.Byte, VariantType.ByteString):
+    elif vtype in (VariantType.SByte, VariantType.Byte):
+        return 0
+    elif vtype == VariantType.ByteString:
         return b""
     elif 4 <= vtype.value <= 9:
         return 0
@@ -1097,3 +1111,70 @@ def get_default_value(vtype):
         raise RuntimeError("function take a uatype as argument, got:", vtype)
 
 
+# These dictionnaries are used to register extensions classes for automatic
+# decoding and encoding
+extension_object_classes = {}
+extension_object_ids = {}
+
+
+def register_extension_object(name, nodeid, class_type):
+    """
+    """
+    logger.warning("registring new extension object: %s %s %s", name, nodeid, class_type)
+    extension_object_classes[nodeid] = class_type
+    extension_object_ids[name] = nodeid
+
+
+def extensionobject_from_binary(data):
+    """
+    Convert binary-coded ExtensionObject to a Python object.
+    Returns an object, or None if TypeId is zero
+    """
+    typeid = NodeId.from_binary(data)
+    Encoding = ord(data.read(1))
+    body = None
+    if Encoding & (1 << 0):
+        length = uabin.Primitives.Int32.unpack(data)
+        if length < 1:
+            body = Buffer(b"")
+        else:
+            body = data.copy(length)
+            data.skip(length)
+    if typeid.Identifier == 0:
+        return None
+    elif typeid in extension_object_classes:
+        klass = extension_object_classes[typeid]
+        if body is None:
+            raise UaError("parsing ExtensionObject {0} without data".format(klass.__name__))
+        return klass.from_binary(body)
+    else:
+        e = ExtensionObject()
+        e.TypeId = typeid
+        e.Encoding = Encoding
+        if body is not None:
+            e.Body = body.read(len(body))
+        return e
+
+
+def extensionobject_to_binary(obj):
+    """
+    Convert Python object to binary-coded ExtensionObject.
+    If obj is None, convert to empty ExtensionObject (TypeId = 0, no Body).
+    Returns a binary string
+    """
+    if isinstance(obj, ExtensionObject):
+        return obj.to_binary()
+    if obj is None:
+        TypeId = NodeId()
+        Encoding = 0
+        Body = None
+    else:
+        TypeId = extension_object_ids[obj.__class__.__name__]
+        Encoding = 0x01
+        Body = obj.to_binary()
+    packet = []
+    packet.append(TypeId.to_binary())
+    packet.append(uabin.Primitives.UInt8.pack(Encoding))
+    if Body:
+        packet.append(uabin.Primitives.Bytes.pack(Body))
+    return b''.join(packet)
