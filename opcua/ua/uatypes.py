@@ -1095,5 +1095,3 @@ def get_default_value(vtype):
         return Variant()
     else:
         raise RuntimeError("function take a uatype as argument, got:", vtype)
-
-

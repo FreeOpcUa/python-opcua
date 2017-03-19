@@ -1,16 +1,18 @@
 # encoding: utf-8
-from concurrent.futures import Future, TimeoutError
-import time
 from datetime import datetime
 from datetime import timedelta
 import math
 
 from opcua import ua
-from opcua import Node
 from opcua import uamethod
 from opcua import instantiate
 from opcua import copy_node
+from opcua.common.ua_utils import register_extension_object
+
+from opcua.ua import ua_binary as uabin
 from opcua.common import ua_utils
+
+import io
 
 
 def add_server_methods(srv):
@@ -548,7 +550,7 @@ class CommonTests(object):
         self.assertEqual(["1:titif", "3:opath"], path)
         path = self.opc.get_node("i=13387").get_path_as_string()
         # FIXME this is wrong in our server! BaseObjectType is missing an inverse reference to its parent! seems xml definition is wrong
-        self.assertEqual(['0:BaseObjectType', '0:FolderType', '0:FileDirectoryType', '0:CreateDirectory'], path) 
+        self.assertEqual(['0:BaseObjectType', '0:FolderType', '0:FileDirectoryType', '0:CreateDirectory'], path)
 
     def test_path(self):
         of = self.opc.nodes.objects.add_folder(1, "titif")
@@ -560,7 +562,7 @@ class CommonTests(object):
         target = self.opc.get_node("i=13387")
         path = target.get_path()
         # FIXME this is wrong in our server! BaseObjectType is missing an inverse reference to its parent! seems xml definition is wrong
-        self.assertEqual([self.opc.nodes.base_object_type, self.opc.nodes.folder_type, self.opc.get_node(ua.ObjectIds.FileDirectoryType), target], path)  
+        self.assertEqual([self.opc.nodes.base_object_type, self.opc.nodes.folder_type, self.opc.get_node(ua.ObjectIds.FileDirectoryType), target], path)
 
     def test_get_endpoints(self):
         endpoints = self.opc.get_endpoints()
@@ -699,6 +701,87 @@ class CommonTests(object):
         self.assertEqual(ua_utils.get_base_data_type(d), self.opc.get_node(ua.ObjectIds.Structure))
         self.assertEqual(ua_utils.data_type_to_variant_type(d), ua.VariantType.ExtensionObject)
 
+    def test_ua_method_unique(self):
+        def unique_response(parent):
+            return 42
+
+        decorated_unique_response = uamethod(unique_response)
+        response = decorated_unique_response(ua.NodeId("ServerMethod", 2))
+
+        self.assertEqual(len(response), 1)
+        self.assertEqual(type(response[0]), ua.Variant)
+
+    def test_ua_method_multiple(self):
+        def unique_response(parent):
+            return 42, 49
+
+        decorated_unique_response = uamethod(unique_response)
+        response = decorated_unique_response(ua.NodeId("ServerMethod", 2))
+
+        self.assertEqual(len(response), 2)
+        self.assertEqual(type(response[0]), ua.Variant)
+
+    def test_ua_method_complex(self):
+        register_extension_object(MyCustomClass)
+
+        def unique_response(parent):
+            return MyCustomClass("Key", "Value")
+
+        decorated_unique_response = uamethod(unique_response)
+        response = decorated_unique_response(ua.NodeId("ServerMethod", 2))
+
+        self.assertEqual(len(response), 1)
+        self.assertEqual(type(response[0]), ua.Variant)
+
+    def test_ua_method_complex_multiple(self):
+        register_extension_object(MyCustomClass)
+
+        def unique_response(parent):
+            return [MyCustomClass("Key", "Value"),
+                    MyCustomClass("Hello", "World")]
+
+        decorated_unique_response = uamethod(unique_response)
+        response = decorated_unique_response(ua.NodeId("ServerMethod", 2))
+
+        self.assertEqual(len(response), 2)
+        self.assertEqual(type(response[0]), ua.Variant)
+
+    # TODO: Fix the test
+    def test_decode_custom_object(self):
+        register_extension_object(MyCustomClass)
+
+        def unique_response(parent):
+            return MyCustomClass("Key", "Value")
+
+        decorated_unique_response = uamethod(unique_response)
+        response = decorated_unique_response(ua.NodeId("ServerMethod", 2))
+
+        self.assertEqual(len(response), 1)
+        self.assertEqual(type(response[0]), ua.Variant)
+
+        key_value = uabin.unpack_uatype_array(response[0].VariantType, io.BytesIO(response[0].to_binary()))
+        self.assertEqual(key_value.key, "Key")
+        self.assertEqual(key_value.value, "Value")
 
 
+class MyCustomClass(object):
+    DEFAULT_BINARY = 20001
 
+    def __init__(self, key, value, namespace_id=0):
+        self.key = key
+        self.value = value
+        self.NamespaceIndex = namespace_id
+
+    def to_binary(self):
+        packet = []
+        packet.append(uabin.Primitives.UInt16.pack(self.NamespaceIndex))
+        packet.append(uabin.Primitives.String.pack(self.key))
+        packet.append(uabin.Primitives.String.pack(self.value))
+        return b''.join(packet)
+
+    @staticmethod
+    def from_binary(data):
+        namespace_index = uabin.Primitives.UInt16.unpack(data)
+        key = uabin.Primitives.String.unpack(data)
+        value = uabin.Primitives.String.unpack(data)
+        return MyCustomClass(key, value, namespace_index)

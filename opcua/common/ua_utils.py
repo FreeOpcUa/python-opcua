@@ -9,6 +9,8 @@ import uuid
 
 from opcua import ua
 from opcua.ua.uaerrors import UaError
+from opcua.ua import ObjectIds, ObjectIdNames
+from opcua.ua.uaprotocol_auto import ExtensionClasses
 
 
 def val_to_string(val):
@@ -258,3 +260,9 @@ def get_nodes_of_namespace(server, namespaces=None):
     nodes = [server.get_node(nodeid) for nodeid in server.iserver.aspace.keys()
              if nodeid.NamespaceIndex != 0 and nodeid.NamespaceIndex in namespace_indexes]
     return nodes
+
+
+def register_extension_object(object_factory):
+    setattr(ObjectIds, "{}_Encoding_DefaultBinary".format(object_factory.__name__), object_factory.DEFAULT_BINARY)
+    ObjectIdNames[object_factory.DEFAULT_BINARY] = object_factory.__name__
+    ExtensionClasses[object_factory.DEFAULT_BINARY] = object_factory
