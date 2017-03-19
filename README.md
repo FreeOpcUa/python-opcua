@@ -82,6 +82,7 @@ Server: what works:
 Tested clients: freeopcua C++, freeopcua Python, uaexpert, prosys, quickopc
 
 Server: what is not implemented
+* more high level solution to create custom structures
 * session restore
 * alarms
 * XML protocol
