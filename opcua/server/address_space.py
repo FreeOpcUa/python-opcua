@@ -522,7 +522,7 @@ class AddressSpace(object):
         Note: Intended for slow devices, such as Raspberry Pi, to greatly improve start up time
         """
         s = shelve.open(path, "n", protocol=pickle.HIGHEST_PROTOCOL)
-        for nodeid, ndata in self._nodes.keys():
+        for nodeid, ndata in self._nodes.items():
             s[nodeid.to_string()] = ndata
         s.close()
 
