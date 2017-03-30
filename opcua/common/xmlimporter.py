@@ -216,7 +216,7 @@ class XmlImporter(object):
         # tow possible values:
         # either we get value directly
         # or a dict if it s an object or a list
-        if isinstance(val, str):
+        if isinstance(val, str) or isinstance(val, unicode):
             pval = xmlparser.ua_type_to_python(val, obj.ua_types[attname])
             setattr(obj, attname, pval)
         else:
