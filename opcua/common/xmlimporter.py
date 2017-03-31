@@ -10,6 +10,10 @@ import opcua
 from opcua import ua
 from opcua.common import xmlparser
 
+import sys
+
+if sys.version_info.major > 2:
+    unicode = str
 
 class XmlImporter(object):
 
@@ -216,7 +220,7 @@ class XmlImporter(object):
         # tow possible values:
         # either we get value directly
         # or a dict if it s an object or a list
-        if isinstance(val, str) or isinstance(val, unicode):
+        if isinstance(val, (str, unicode)):
             pval = xmlparser.ua_type_to_python(val, obj.ua_types[attname])
             setattr(obj, attname, pval)
         else:
