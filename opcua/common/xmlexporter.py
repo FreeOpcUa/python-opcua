@@ -294,10 +294,10 @@ class XmlExporter(object):
 
     def add_etree_reference_type(self, obj):
         obj_el = self._add_node_common("UAReferenceType", obj)
-        var = obj.get_attribute(ua.AttributeIds.InverseName)
-        if var is not None and var.Value.Value is not None:
-            self._add_sub_el(obj_el, 'InverseName', var.Value.Value.Text.decode('utf-8'))
         self._add_ref_els(obj_el, obj)
+        var = obj.get_attribute(ua.AttributeIds.InverseName)
+        if var is not None and var.Value.Value is not None and var.Value.Value.Text is not None:
+            self._add_sub_el(obj_el, 'InverseName', var.Value.Value.Text.decode('utf-8'))
 
     def add_etree_datatype(self, obj):
         """
