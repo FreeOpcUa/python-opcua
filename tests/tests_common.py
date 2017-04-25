@@ -699,6 +699,22 @@ class CommonTests(object):
         self.assertEqual(ua_utils.get_base_data_type(d), self.opc.get_node(ua.ObjectIds.Structure))
         self.assertEqual(ua_utils.data_type_to_variant_type(d), ua.VariantType.ExtensionObject)
 
-
+    def test_data_type_to_variant_type(self):
+        test_data = {
+            ua.ObjectIds.Boolean: ua.VariantType.Boolean,
+            ua.ObjectIds.Byte: ua.VariantType.Byte,
+            ua.ObjectIds.String: ua.VariantType.String,
+            ua.ObjectIds.Int32: ua.VariantType.Int32,
+            ua.ObjectIds.UInt32: ua.VariantType.UInt32,
+            ua.ObjectIds.NodeId: ua.VariantType.NodeId,
+            ua.ObjectIds.LocalizedText: ua.VariantType.LocalizedText,
+            ua.ObjectIds.Structure: ua.VariantType.ExtensionObject,
+            ua.ObjectIds.EnumValueType: ua.VariantType.ExtensionObject,
+            ua.ObjectIds.Enumeration: ua.VariantType.Int32,  # enumeration
+            ua.ObjectIds.AttributeWriteMask: ua.VariantType.Int32,  # enumeration
+            ua.ObjectIds.AxisScaleEnumeration: ua.VariantType.Int32  # enumeration
+            }
+        for dt, vdt in test_data.items():
+            self.assertEqual(ua_utils.data_type_to_variant_type(self.opc.get_node(ua.NodeId(dt))), vdt)
 
 
