@@ -717,4 +717,7 @@ class CommonTests(object):
         for dt, vdt in test_data.items():
             self.assertEqual(ua_utils.data_type_to_variant_type(self.opc.get_node(ua.NodeId(dt))), vdt)
 
-
+    def test_variant_intenum(self):
+        ase = ua.AxisScaleEnumeration(ua.AxisScaleEnumeration.Linear)  # Just pick an existing IntEnum class
+        vAse = ua.Variant(ase)
+        self.assertEqual(vAse.VariantType, ua.VariantType.Int32)
