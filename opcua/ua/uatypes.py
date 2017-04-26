@@ -807,6 +807,8 @@ class Variant(FrozenClass):
             return VariantType.Boolean
         elif isinstance(val, float):
             return VariantType.Double
+        elif isinstance(val, IntEnum):
+            return VariantType.Int32
         elif isinstance(val, int):
             return VariantType.Int64
         elif type(val) in (str, unicode):
