@@ -42,8 +42,8 @@ class CodeGenerator(object):
         sys.stderr.write("Generating Python code {0} for XML file {1}".format(self.output_path, self.input_path) + "\n")
         self.output_file = open(self.output_path, "w")
         self.make_header()
-        self.parser = xmlparser.XMLParser(self.input_path, None)
-        for node in self.parser:
+        self.parser = xmlparser.XMLParser(self.input_path)
+        for node in self.parser.get_node_datas():
             if node.nodetype == 'UAObject':
                 self.make_object_code(node)
             elif node.nodetype == 'UAObjectType':
@@ -100,7 +100,7 @@ def create_standard_address_space_{0!s}(server):
 
     def to_ref_type(self, nodeid):
         if not "=" in nodeid:
-            nodeid = self.parser.aliases[nodeid]
+            nodeid = self.parser.get_aliases()[nodeid]
         return 'ua.NodeId.from_string("{0}")'.format(nodeid)
 
     def make_object_code(self, obj):
@@ -161,16 +161,16 @@ def create_standard_address_space_{0!s}(server):
     def make_ext_obj_code(self, indent, extobj):
         print("makeing code for ", extobj.objname)
         self.writecode(indent, 'extobj = ua.{0}()'.format(extobj.objname))
-        for name, val in extobj.body.items():
-            for k, v in val.items():
+        for name, val in extobj.body:
+            for k, v in val:
                 if type(v) is str:
                     val = _to_val([extobj.objname], k, v)
                     self.writecode(indent, 'extobj.{0} = {1}'.format(k, val))
                 else:
                     if k == "DataType":  #hack for strange nodeid xml format
-                        self.writecode(indent, 'extobj.{0} = ua.NodeId.from_string("{1}")'.format(k, v["Identifier"]))
+                        self.writecode(indent, 'extobj.{0} = ua.NodeId.from_string("{1}")'.format(k, v[0][1]))
                         continue
-                    for k2, v2 in v.items():
+                    for k2, v2 in v:
                         val2 = _to_val([extobj.objname, k], k2, v2)
                         self.writecode(indent, 'extobj.{0}.{1} = {2}'.format(k, k2, val2))
 
