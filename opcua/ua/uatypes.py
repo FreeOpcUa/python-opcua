@@ -936,6 +936,9 @@ class XmlElement(FrozenClass):
     def to_binary(self):
         return uabin.Primitives.String.pack(self.Value)
 
+    def __eq__(self, other):
+        return isinstance(other, XmlElement) and self.Value == other.Value
+
     @staticmethod
     def from_binary(data):
         return XmlElement(binary=data)

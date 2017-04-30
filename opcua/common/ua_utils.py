@@ -33,6 +33,8 @@ def val_to_string(val):
         val = val.name
     elif isinstance(val, ua.DataValue):
         val = variant_to_string(val.Value)
+    elif isinstance(val, ua.XmlElement):
+        val = val.Value
     elif isinstance(val, str):
         pass
     elif isinstance(val, bytes):
@@ -84,7 +86,9 @@ def string_to_val(string, vtype):
         val = int(string)
     elif vtype in (ua.VariantType.Float, ua.VariantType.Double):
         val = float(string)
-    elif vtype in (ua.VariantType.String, ua.VariantType.XmlElement):
+    elif vtype == ua.VariantType.XmlElement:
+        val = ua.XmlElement(string)
+    elif vtype == ua.VariantType.String:
         val = string
     elif vtype == ua.VariantType.ByteString:
         val = string.encode("utf-8")

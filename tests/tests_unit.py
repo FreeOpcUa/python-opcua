@@ -211,6 +211,17 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(string_to_val(string, ua.VariantType.LocalizedText), obj)
         self.assertEqual(val_to_string(obj), string)
 
+    def test_string_to_val_xml_element(self):
+        string = "<p> titi toto </p>"
+        obj = ua.XmlElement(string)
+
+        self.assertEqual(string_to_val(string, ua.VariantType.XmlElement), obj)
+        self.assertEqual(val_to_string(obj), string)
+
+        b = obj.to_binary()
+        obj2 = obj.from_binary(ua.utils.Buffer(b))
+        self.assertEqual(obj, obj2)
+
     def test_variant_dimensions(self):
         l = [[[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0], [3.0, 3.0, 3.0, 3.0]], [[5.0, 5.0, 5.0, 5.0], [7.0, 8.0, 9.0, 01.0], [1.0, 1.0, 1.0, 1.0]]]
         v = ua.Variant(l)
