@@ -106,6 +106,6 @@ class TestClient(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
             The client only 'sees' an TimeoutError
         '''
         nenumstrings = self.opc.get_node(ua.ObjectIds.AxisScaleEnumeration_EnumStrings)
-        with self.assertNotRaises(TimeoutError):
+        with self.assertNotRaises(Exception):
             value = ua.Variant(nenumstrings.get_value())
 
