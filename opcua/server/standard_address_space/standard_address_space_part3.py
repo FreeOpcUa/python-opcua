@@ -39,7 +39,7 @@ def create_standard_address_space_Part3(server):
     node.BrowseName = ua.QualifiedName.from_string("BaseDataType")
     node.NodeClass = ua.NodeClass.DataType
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that can have any valid DataType.'")
+    attrs.Description = ua.LocalizedText("Describes a value that can have any valid DataType.")
     attrs.DisplayName = ua.LocalizedText("BaseDataType")
     attrs.IsAbstract = True
     node.NodeAttributes = attrs
@@ -52,7 +52,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=24")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that can have any numeric DataType.'")
+    attrs.Description = ua.LocalizedText("Describes a value that can have any numeric DataType.")
     attrs.DisplayName = ua.LocalizedText("Number")
     attrs.IsAbstract = True
     node.NodeAttributes = attrs
@@ -65,7 +65,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=26")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that can have any integer DataType.'")
+    attrs.Description = ua.LocalizedText("Describes a value that can have any integer DataType.")
     attrs.DisplayName = ua.LocalizedText("Integer")
     attrs.IsAbstract = True
     node.NodeAttributes = attrs
@@ -78,7 +78,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=26")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that can have any unsigned integer DataType.'")
+    attrs.Description = ua.LocalizedText("Describes a value that can have any unsigned integer DataType.")
     attrs.DisplayName = ua.LocalizedText("UInteger")
     attrs.IsAbstract = True
     node.NodeAttributes = attrs
@@ -91,7 +91,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=24")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is an enumerated DataType.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is an enumerated DataType.")
     attrs.DisplayName = ua.LocalizedText("Enumeration")
     attrs.IsAbstract = True
     node.NodeAttributes = attrs
@@ -104,7 +104,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=24")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is either TRUE or FALSE.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is either TRUE or FALSE.")
     attrs.DisplayName = ua.LocalizedText("Boolean")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -116,7 +116,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=27")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is an integer between -128 and 127.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is an integer between -128 and 127.")
     attrs.DisplayName = ua.LocalizedText("SByte")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -128,7 +128,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=28")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is an integer between 0 and 255.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is an integer between 0 and 255.")
     attrs.DisplayName = ua.LocalizedText("Byte")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -140,7 +140,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=27")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is an integer between ?32,768 and 32,767.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is an integer between ?32,768 and 32,767.")
     attrs.DisplayName = ua.LocalizedText("Int16")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -152,7 +152,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=28")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is an integer between 0 and 65535.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is an integer between 0 and 65535.")
     attrs.DisplayName = ua.LocalizedText("UInt16")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -164,7 +164,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=27")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is an integer between ?2,147,483,648  and 2,147,483,647.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is an integer between ?2,147,483,648  and 2,147,483,647.")
     attrs.DisplayName = ua.LocalizedText("Int32")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -176,7 +176,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=28")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is an integer between 0 and 4,294,967,295.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is an integer between 0 and 4,294,967,295.")
     attrs.DisplayName = ua.LocalizedText("UInt32")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -188,7 +188,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=27")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is an integer between ?9,223,372,036,854,775,808 and 9,223,372,036,854,775,807.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is an integer between ?9,223,372,036,854,775,808 and 9,223,372,036,854,775,807.")
     attrs.DisplayName = ua.LocalizedText("Int64")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -200,7 +200,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=28")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is an integer between 0 and 18,446,744,073,709,551,615.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is an integer between 0 and 18,446,744,073,709,551,615.")
     attrs.DisplayName = ua.LocalizedText("UInt64")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -212,7 +212,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=26")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is an IEEE 754-1985 single precision floating point number.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is an IEEE 754-1985 single precision floating point number.")
     attrs.DisplayName = ua.LocalizedText("Float")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -224,7 +224,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=26")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is an IEEE 754-1985 double precision floating point number.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is an IEEE 754-1985 double precision floating point number.")
     attrs.DisplayName = ua.LocalizedText("Double")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -236,7 +236,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=24")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is a sequence of printable Unicode characters.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is a sequence of printable Unicode characters.")
     attrs.DisplayName = ua.LocalizedText("String")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -248,7 +248,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=24")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is a Gregorian calender date and time.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is a Gregorian calender date and time.")
     attrs.DisplayName = ua.LocalizedText("DateTime")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -260,7 +260,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=24")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is a 128-bit globally unique identifier.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is a 128-bit globally unique identifier.")
     attrs.DisplayName = ua.LocalizedText("Guid")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -272,7 +272,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=24")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is a sequence of bytes.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is a sequence of bytes.")
     attrs.DisplayName = ua.LocalizedText("ByteString")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -284,7 +284,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=24")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is an XML element.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is an XML element.")
     attrs.DisplayName = ua.LocalizedText("XmlElement")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -296,7 +296,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=24")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is an identifier for a node within a Server address space.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is an identifier for a node within a Server address space.")
     attrs.DisplayName = ua.LocalizedText("NodeId")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -308,7 +308,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=24")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is a name qualified by a namespace.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is a name qualified by a namespace.")
     attrs.DisplayName = ua.LocalizedText("QualifiedName")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -320,7 +320,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=24")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is human readable Unicode text with a locale identifier.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is human readable Unicode text with a locale identifier.")
     attrs.DisplayName = ua.LocalizedText("LocalizedText")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -332,7 +332,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=24")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is any type of structure that can be described with a data encoding.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is any type of structure that can be described with a data encoding.")
     attrs.DisplayName = ua.LocalizedText("Structure")
     attrs.IsAbstract = True
     node.NodeAttributes = attrs
@@ -345,7 +345,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=15")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that is an image encoded as a string of bytes.'")
+    attrs.Description = ua.LocalizedText("Describes a value that is an image encoded as a string of bytes.")
     attrs.DisplayName = ua.LocalizedText("Image")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -357,7 +357,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=26")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a 128-bit decimal value.'")
+    attrs.Description = ua.LocalizedText("Describes a 128-bit decimal value.")
     attrs.DisplayName = ua.LocalizedText("Decimal128")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -605,7 +605,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=29")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'Describes a value that specifies the significance of the BrowseName for an instance declaration.'")
+    attrs.Description = ua.LocalizedText("Describes a value that specifies the significance of the BrowseName for an instance declaration.")
     attrs.DisplayName = ua.LocalizedText("NamingRuleType")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -631,19 +631,19 @@ def create_standard_address_space_Part3(server):
     attrs.DataType = ua.NodeId.from_string("i=7594")
     value = []
     extobj = ua.EnumValueType()
-    extobj.Description.Text = b'The BrowseName must appear in all instances of the type.'
-    extobj.DisplayName.Text = b'Mandatory'
     extobj.Value = 1
+    extobj.DisplayName.Text = b'Mandatory'
+    extobj.Description.Text = b'The BrowseName must appear in all instances of the type.'
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Description.Text = b'The BrowseName may appear in an instance of the type.'
-    extobj.DisplayName.Text = b'Optional'
     extobj.Value = 2
+    extobj.DisplayName.Text = b'Optional'
+    extobj.Description.Text = b'The BrowseName may appear in an instance of the type.'
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Description.Text = b'The modelling rule defines a constraint and the BrowseName is not used in an instance of the type.'
-    extobj.DisplayName.Text = b'Constraint'
     extobj.Value = 3
+    extobj.DisplayName.Text = b'Constraint'
+    extobj.Description.Text = b'The modelling rule defines a constraint and the BrowseName is not used in an instance of the type.'
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -861,7 +861,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=30")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'An image encoded in BMP format.'")
+    attrs.Description = ua.LocalizedText("An image encoded in BMP format.")
     attrs.DisplayName = ua.LocalizedText("ImageBMP")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -873,7 +873,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=30")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'An image encoded in GIF format.'")
+    attrs.Description = ua.LocalizedText("An image encoded in GIF format.")
     attrs.DisplayName = ua.LocalizedText("ImageGIF")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -885,7 +885,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=30")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'An image encoded in JPEG format.'")
+    attrs.Description = ua.LocalizedText("An image encoded in JPEG format.")
     attrs.DisplayName = ua.LocalizedText("ImageJPG")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -897,7 +897,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=30")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'An image encoded in PNG format.'")
+    attrs.Description = ua.LocalizedText("An image encoded in PNG format.")
     attrs.DisplayName = ua.LocalizedText("ImagePNG")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -909,7 +909,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=29")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'The type of identifier used in a node id.'")
+    attrs.Description = ua.LocalizedText("The type of identifier used in a node id.")
     attrs.DisplayName = ua.LocalizedText("IdType")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -933,7 +933,7 @@ def create_standard_address_space_Part3(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = ua.LocalizedText("EnumStrings")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant(['Numeric', 'String', 'Guid', 'Opaque'], ua.VariantType.LocalizedText)
+    attrs.Value = [ua.LocalizedText("Numeric"),ua.LocalizedText("String"),ua.LocalizedText("Guid"),ua.LocalizedText("Opaque")]
     attrs.ValueRank = 1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -954,7 +954,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=29")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'A mask specifying the class of the node.'")
+    attrs.Description = ua.LocalizedText("A mask specifying the class of the node.")
     attrs.DisplayName = ua.LocalizedText("NodeClass")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -980,49 +980,49 @@ def create_standard_address_space_Part3(server):
     attrs.DataType = ua.NodeId.from_string("i=7594")
     value = []
     extobj = ua.EnumValueType()
-    extobj.Description.Text = b'No classes are selected.'
-    extobj.DisplayName.Text = b'Unspecified'
     extobj.Value = 0
+    extobj.DisplayName.Text = b'Unspecified'
+    extobj.Description.Text = b'No classes are selected.'
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Description.Text = b'The node is an object.'
-    extobj.DisplayName.Text = b'Object'
     extobj.Value = 1
+    extobj.DisplayName.Text = b'Object'
+    extobj.Description.Text = b'The node is an object.'
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Description.Text = b'The node is a variable.'
-    extobj.DisplayName.Text = b'Variable'
     extobj.Value = 2
+    extobj.DisplayName.Text = b'Variable'
+    extobj.Description.Text = b'The node is a variable.'
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Description.Text = b'The node is a method.'
-    extobj.DisplayName.Text = b'Method'
     extobj.Value = 4
+    extobj.DisplayName.Text = b'Method'
+    extobj.Description.Text = b'The node is a method.'
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Description.Text = b'The node is an object type.'
-    extobj.DisplayName.Text = b'ObjectType'
     extobj.Value = 8
+    extobj.DisplayName.Text = b'ObjectType'
+    extobj.Description.Text = b'The node is an object type.'
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Description.Text = b'The node is an variable type.'
-    extobj.DisplayName.Text = b'VariableType'
     extobj.Value = 16
+    extobj.DisplayName.Text = b'VariableType'
+    extobj.Description.Text = b'The node is an variable type.'
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Description.Text = b'The node is a reference type.'
-    extobj.DisplayName.Text = b'ReferenceType'
     extobj.Value = 32
+    extobj.DisplayName.Text = b'ReferenceType'
+    extobj.Description.Text = b'The node is a reference type.'
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Description.Text = b'The node is a data type.'
-    extobj.DisplayName.Text = b'DataType'
     extobj.Value = 64
+    extobj.DisplayName.Text = b'DataType'
+    extobj.Description.Text = b'The node is a data type.'
     value.append(extobj)
     extobj = ua.EnumValueType()
-    extobj.Description.Text = b'The node is a view.'
-    extobj.DisplayName.Text = b'View'
     extobj.Value = 128
+    extobj.DisplayName.Text = b'View'
+    extobj.Description.Text = b'The node is a view.'
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -1045,7 +1045,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=22")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'An argument for a method.'")
+    attrs.Description = ua.LocalizedText("An argument for a method.")
     attrs.DisplayName = ua.LocalizedText("Argument")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1057,7 +1057,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=22")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'A mapping between a value of an enumerated type and a name and description.'")
+    attrs.Description = ua.LocalizedText("A mapping between a value of an enumerated type and a name and description.")
     attrs.DisplayName = ua.LocalizedText("EnumValueType")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1069,7 +1069,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=22")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'This abstract Structured DataType is the base DataType for all DataTypes representing a bit mask.'")
+    attrs.Description = ua.LocalizedText("This abstract Structured DataType is the base DataType for all DataTypes representing a bit mask.")
     attrs.DisplayName = ua.LocalizedText("OptionSet")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1081,7 +1081,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=22")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'This abstract DataType is the base DataType for all union DataTypes.'")
+    attrs.Description = ua.LocalizedText("This abstract DataType is the base DataType for all union DataTypes.")
     attrs.DisplayName = ua.LocalizedText("Union")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1093,7 +1093,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=12")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'A string normalized based on the rules in the unicode specification.'")
+    attrs.Description = ua.LocalizedText("A string normalized based on the rules in the unicode specification.")
     attrs.DisplayName = ua.LocalizedText("NormalizedString")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1105,7 +1105,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=12")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'An arbitraty numeric value.'")
+    attrs.Description = ua.LocalizedText("An arbitraty numeric value.")
     attrs.DisplayName = ua.LocalizedText("DecimalString")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1117,7 +1117,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=12")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'A period of time formatted as defined in ISO 8601-2000.'")
+    attrs.Description = ua.LocalizedText("A period of time formatted as defined in ISO 8601-2000.")
     attrs.DisplayName = ua.LocalizedText("DurationString")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1129,7 +1129,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=12")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'A time formatted as defined in ISO 8601-2000.'")
+    attrs.Description = ua.LocalizedText("A time formatted as defined in ISO 8601-2000.")
     attrs.DisplayName = ua.LocalizedText("TimeString")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1141,7 +1141,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=12")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'A date formatted as defined in ISO 8601-2000.'")
+    attrs.Description = ua.LocalizedText("A date formatted as defined in ISO 8601-2000.")
     attrs.DisplayName = ua.LocalizedText("DateString")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1153,7 +1153,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=11")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'A period of time measured in milliseconds.'")
+    attrs.Description = ua.LocalizedText("A period of time measured in milliseconds.")
     attrs.DisplayName = ua.LocalizedText("Duration")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1165,7 +1165,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=13")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'A date/time value specified in Universal Coordinated Time (UTC).'")
+    attrs.Description = ua.LocalizedText("A date/time value specified in Universal Coordinated Time (UTC).")
     attrs.DisplayName = ua.LocalizedText("UtcTime")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1177,7 +1177,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=12")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("b'An identifier for a user locale.'")
+    attrs.Description = ua.LocalizedText("An identifier for a user locale.")
     attrs.DisplayName = ua.LocalizedText("LocaleId")
     node.NodeAttributes = attrs
     server.add_nodes([node])

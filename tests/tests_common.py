@@ -4,6 +4,7 @@ import time
 from datetime import datetime
 from datetime import timedelta
 import math
+from contextlib import contextmanager
 
 from opcua import ua
 from opcua import Node
@@ -47,6 +48,13 @@ class CommonTests(object):
     opc = None
     assertEqual = lambda x, y: True
     assertIn = lambda x, y: True
+
+    @contextmanager
+    def assertNotRaises(self, exc_type):
+        try:
+            yield None
+        except exc_type:
+            raise self.failureException('{} raised'.format(exc_type.__name__))
 
     def test_find_servers(self):
         servers = self.opc.find_servers()
@@ -721,3 +729,21 @@ class CommonTests(object):
         ase = ua.AxisScaleEnumeration(ua.AxisScaleEnumeration.Linear)  # Just pick an existing IntEnum class
         vAse = ua.Variant(ase)
         self.assertEqual(vAse.VariantType, ua.VariantType.Int32)
+
+    def test_variant_listoflocalizedtext(self):
+        '''
+        Implementation regarding LocalizedText[] in a Variant was changed without detection in test.
+        This test makes it is tested. 
+        '''
+        v = ua.Variant(['Linear', 'Log', 'Ln'], ua.VariantType.LocalizedText)
+        with self.assertRaises(ua.UaError):
+            v.to_binary()
+
+        v = ua.Variant([ua.LocalizedText('Linear'), ua.LocalizedText('Log'), ua.LocalizedText('Ln')], ua.VariantType.LocalizedText)
+        with self.assertNotRaises(ua.UaError):
+            v.to_binary()
+
+
+
+
+
