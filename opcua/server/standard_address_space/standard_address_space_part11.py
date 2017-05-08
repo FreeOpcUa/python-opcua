@@ -2076,7 +2076,7 @@ def create_standard_address_space_Part11(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = ua.LocalizedText("EnumStrings")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant(['AbsoluteValue', 'PercentOfValue', 'PercentOfRange', 'PercentOfEURange', 'Unknown'], ua.VariantType.LocalizedText)
+    attrs.Value = [ua.LocalizedText("AbsoluteValue"),ua.LocalizedText("PercentOfValue"),ua.LocalizedText("PercentOfRange"),ua.LocalizedText("PercentOfEURange"),ua.LocalizedText("Unknown")]
     attrs.ValueRank = 1
     node.NodeAttributes = attrs
     server.add_nodes([node])

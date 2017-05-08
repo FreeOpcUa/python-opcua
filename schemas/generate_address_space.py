@@ -145,6 +145,9 @@ def create_standard_address_space_{0!s}(server):
                 self.make_ext_obj_code(indent, obj.value)
                 self.writecode(indent, 'value = extobj')
                 self.writecode(indent, 'attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)')
+            elif obj.valuetype == "ListOfLocalizedText":
+                value = ['ua.LocalizedText({0})'.format(self.to_value(text)) for text in obj.value]
+                self.writecode(indent, 'attrs.Value = [{}]'.format(','.join(value)))
             else:
                 if obj.valuetype.startswith("ListOf"):
                     obj.valuetype = obj.valuetype[6:]
