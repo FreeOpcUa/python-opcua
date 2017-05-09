@@ -11,8 +11,10 @@ from opcua import ua, Server
 
 # The advantage of this is that the software can be designed in a tool like UA Modeler. Then with minimal setup, a
 # python program will import the XML and mirror all the objects in the software design. After this mirroring is achieved
-# the user can focus on programming in python knowing that all all data from UA clients with reach the python object,
+# the user can focus on programming in python knowing that all all data from UA clients will reach the python object,
 # and all data that needs to be output to the server can be published from the python object.
+#
+# Be aware that subscription calls are asynchronous.
 
 
 class SubHandler(object):
@@ -35,7 +37,7 @@ class UaObject(object):
     """
     Python object which mirrors an OPC UA object
     Child UA variables/properties are auto subscribed to to synchronize python with UA server
-    Python can write to children via publish method, which will trigger an update for UA clients
+    Python can write to children via write method, which will trigger an update for UA clients
     """
     def __init__(self, opcua_server, ua_node):
         self.opcua_server = opcua_server
@@ -56,8 +58,8 @@ class UaObject(object):
         sub = opcua_server.create_subscription(500, handler)
         handle = sub.subscribe_data_change(sub_children)
 
-    def publish(self, attr=None):
-        # if a specific attr isn't passed to publish, update all OPC UA children
+    def write(self, attr=None):
+        # if a specific attr isn't passed to write, write all OPC UA children
         if attr is None:
             for k, node in self.nodes.items():
                 node_class = node.get_node_class()
@@ -125,21 +127,21 @@ if __name__ == "__main__":
             # from an OPC UA client write a value to this node to see it show up in the python object
             print('Python mirror of MyClientWrite is: ' + str(my_python_obj.MyClientWrite))
 
-            # publish a single attr
+            # write a single attr to OPC UA
             my_python_obj.MyVariable = 12.3
-            my_python_obj.MyProperty = 55  # this value will not be visible to clients because it is never published
-            my_python_obj.publish('MyVariable')
+            my_python_obj.MyProperty = 55  # this value will not be visible to clients because write is not called
+            my_python_obj.write('MyVariable')
 
             time.sleep(3)
 
-            # publish all attr of the object
+            # write all attr of the object to OPC UA
             my_python_obj.MyVariable = 98.1
             my_python_obj.MyProperty = 99
-            my_python_obj.publish()
+            my_python_obj.write()
 
             time.sleep(3)
 
-            # write directly to the UA node of the object
+            # write directly to the OPC UA node of the object
             dv = ua.DataValue(ua.Variant(5.5, ua.VariantType.Double))
             my_python_obj.nodes['MyVariable'].set_value(dv)
             dv = ua.DataValue(ua.Variant(4, ua.VariantType.UInt64))
