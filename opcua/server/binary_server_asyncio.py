@@ -109,5 +109,6 @@ class BinaryServer(object):
         self.logger.info("Closing asyncio socket server")
         for transport in self.iserver.asyncio_transports:
             transport.close()
-        self.loop.call_soon(self._server.close)
-        self.loop.run_coro_and_wait(self._server.wait_closed())
+        if self._server:
+            self.loop.call_soon(self._server.close)
+            self.loop.run_coro_and_wait(self._server.wait_closed())
