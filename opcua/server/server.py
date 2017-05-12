@@ -276,7 +276,7 @@ class Server(object):
             self.bserver = BinaryServer(self.iserver, self.endpoint.hostname, self.endpoint.port)
             self.bserver.set_policies(self._policies)
             self.bserver.start()
-        except Exception, exp:
+        except Exception as exp:
             self.iserver.stop()
             raise exp        
         

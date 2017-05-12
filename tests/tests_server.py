@@ -567,11 +567,11 @@ class TestServerStartError(unittest.TestCase):
     def test_port_in_use(self):
 
         server1 = Server()
-        server1.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_num))
+        server1.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_num + 1))
         server1.start()
 
         server2 = Server()
-        server2.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_num))
+        server2.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_num + 1))
         try:
             server2.start()
         except Exception:
