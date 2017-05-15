@@ -561,3 +561,22 @@ class TestServerCaching(unittest.TestCase):
         self.assertEqual(server.get_node(id).get_value(), 123)
 
         os.remove(path)
+        
+class TestServerStartError(unittest.TestCase):
+    
+    def test_port_in_use(self):
+
+        server1 = Server()
+        server1.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_num + 1))
+        server1.start()
+
+        server2 = Server()
+        server2.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_num + 1))
+        try:
+            server2.start()
+        except Exception:
+            pass
+        
+        server1.stop()
+        server2.stop()
+

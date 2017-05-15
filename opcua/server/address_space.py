@@ -634,8 +634,9 @@ class AddressSpace(object):
 
     def delete_datachange_callback(self, handle):
         with self._lock:
-            nodeid, attr = self._handle_to_attribute_map.pop(handle)
-            self._nodes[nodeid].attributes[attr].datachange_callbacks.pop(handle)
+            if handle in self._handle_to_attribute_map:
+                nodeid, attr = self._handle_to_attribute_map.pop(handle)
+                self._nodes[nodeid].attributes[attr].datachange_callbacks.pop(handle)
 
     def add_method_callback(self, methodid, callback):
         with self._lock:
