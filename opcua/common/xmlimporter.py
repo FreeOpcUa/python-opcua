@@ -53,7 +53,7 @@ class XmlImporter(object):
 
         self.namespaces = self._map_namespaces(self.parser.get_used_namespaces())
         self.aliases = self._map_aliases(self.parser.get_aliases())
-        
+
         dnodes = self.parser.get_node_datas()
         dnodes = self.make_objects(dnodes)
         nodes_parsed = self._sort_nodes_by_parentid(dnodes)
@@ -98,7 +98,7 @@ class XmlImporter(object):
             return self.server.iserver.isession.add_references(refs)
         else:
             return self.server.uaclient.add_references(refs)
-    
+
     def make_objects(self, node_datas):
         new_nodes = []
         for ndata in node_datas:
@@ -206,8 +206,21 @@ class XmlImporter(object):
         res[0].StatusCode.check()
         return res[0].AddedNodeId
 
+    def _get_ext_class(self, name):
+        if hasattr(ua, name):
+            return  getattr(ua, name)
+        elif name in self.aliases.keys():
+            nodeid = self.aliases[name]
+            class_type = ua.uatypes.get_extensionobject_class_type(nodeid)
+            if class_type:
+                return class_type
+            else:
+                raise Exception("Error no extension class registered ", name, nodeid)
+        else:
+            raise Exception("Error no alias found for extension class", name)
+
     def _make_ext_obj(self, obj):
-        ext = getattr(ua, obj.objname)()
+        ext = self._get_ext_class(obj.objname)()
         for name, val in obj.body:
             if isinstance(val, str):
                 raise Exception("Error val should a dict", name, val)

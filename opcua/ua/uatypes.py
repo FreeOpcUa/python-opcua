@@ -283,7 +283,7 @@ class NodeId(FrozenClass):
                 raise UaError("NodeId: Could not guess type of NodeId, set NodeIdType")
 
     def _key(self):
-        if self.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric): 
+        if self.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric):
             # twobyte, fourbyte and numeric may represent the same node
             return (NodeIdType.Numeric, self.NamespaceIndex, self.Identifier)
         return (self.NodeIdType, self.NamespaceIndex, self.Identifier)
@@ -1129,6 +1129,14 @@ def register_extension_object(name, nodeid, class_type):
     extension_object_classes[nodeid] = class_type
     extension_object_ids[name] = nodeid
 
+def get_extensionobject_class_type(typeid):
+    """
+    Returns the registered class type for typid of an extension object
+    """
+    if typeid in extension_object_classes:
+        return extension_object_classes[typeid]
+    else:
+        return None
 
 def extensionobject_from_binary(data):
     """
