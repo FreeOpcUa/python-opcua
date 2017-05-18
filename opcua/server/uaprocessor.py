@@ -75,7 +75,9 @@ class UaProcessor(object):
 
     def process(self, header, body):
         msg = self._connection.receive_from_header_and_body(header, body)
-        if isinstance(msg, ua.Message):
+        if msg is None:
+            pass    # received intermediate chunk
+        elif isinstance(msg, ua.Message):
             if header.MessageType == ua.MessageType.SecureOpen:
                 self.open_secure_channel(msg.SecurityHeader(), msg.SequenceHeader(), msg.body())
 
