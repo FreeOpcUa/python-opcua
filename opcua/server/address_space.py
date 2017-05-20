@@ -353,14 +353,14 @@ class NodeManagementService(object):
 
         for rdesc in self._aspace[item.SourceNodeId].references:
             if rdesc.NodeId is item.TargetNodeId:
-                if rdesc.RefrenceTypeId != item.RefrenceTypeId:
+                if rdesc.ReferenceTypeId != item.ReferenceTypeId:
                     return ua.StatusCode(ua.StatusCodes.BadReferenceTypeIdInvalid)
                 if rdesc.IsForward == item.IsForward or item.DeleteBidirectional:
                     self._aspace[item.SourceNodeId].references.remove(rdesc)
 
         for rdesc in self._aspace[item.TargetNodeId].references:
             if rdesc.NodeId is item.SourceNodeId:
-                if rdesc.RefrenceTypeId != item.RefrenceTypeId:
+                if rdesc.ReferenceTypeId != item.ReferenceTypeId:
                     return ua.StatusCode(ua.StatusCodes.BadReferenceTypeIdInvalid)
                 if rdesc.IsForward == item.IsForward or item.DeleteBidirectional:
                     self._aspace[item.SourceNodeId].references.remove(rdesc)
