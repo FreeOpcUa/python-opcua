@@ -76,6 +76,7 @@ class InternalServer(object):
         self.isession = InternalSession(self, self.aspace, self.subscription_service, "Internal", user=User.Admin)
 
         self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
+        self._address_space_fixes()
         self.setup_nodes()
 
     def setup_nodes(self):
@@ -106,6 +107,20 @@ class InternalServer(object):
             if shelffile:
                 self.aspace.make_aspace_shelf(shelffile)
 
+    def _address_space_fixes(self):
+        """
+        Looks like the xml definition of address space has some error. This is a good place to fix them
+        """
+
+        it = ua.AddReferencesItem()
+        it.SourceNodeId = ua.NodeId(ua.ObjectIds.BaseObjectType)
+        it.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
+        it.IsForward = False
+        it.TargetNodeId = ua.NodeId(ua.ObjectIds.ObjectTypesFolder)
+        it.TargetNodeClass = ua.NodeClass.Object
+
+        results = self.isession.add_references([it])
+ 
     def load_address_space(self, path):
         """
         Load address space from path
