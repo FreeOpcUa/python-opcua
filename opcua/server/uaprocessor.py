@@ -301,6 +301,19 @@ class UaProcessor(object):
             self.logger.info("sending add references response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
+        elif typeid == ua.NodeId(ua.ObjectIds.DeleteReferencesRequest_Encoding_DefaultBinary):
+            self.logger.info("delete references request")
+            params = ua.DeleteReferencesParameters.from_binary(body)
+
+            results = self.session.delete_references(params.ReferencesToDelete)
+
+            response = ua.DeleteReferencesResponse()
+            response.Parameters.Results = results
+
+            self.logger.info("sending delete references response")
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+
         elif typeid == ua.NodeId(ua.ObjectIds.CreateSubscriptionRequest_Encoding_DefaultBinary):
             self.logger.info("create subscription request")
             params = ua.CreateSubscriptionParameters.from_binary(body)
