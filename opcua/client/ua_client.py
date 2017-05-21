@@ -514,6 +514,17 @@ class UaClient(object):
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
+    def delete_references(self, refs):
+        self.logger.info("delete")
+        request = ua.DeleteReferencesRequest()
+        request.Parameters.ReferencesToDelete = refs
+        data = self._uasocket.send_request(request)
+        response = ua.DeleteReferencesResponse.from_binary(data)
+        self.logger.debug(response)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Parameters.Results
+
+
     def delete_nodes(self, params):
         self.logger.info("delete_nodes")
         request = ua.DeleteNodesRequest()
