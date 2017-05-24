@@ -32,7 +32,7 @@ class KeepAlive(Thread):
     OPCUA defines timeout both for sessions and secure channel
     """
 
-    def __init__(self, client, timeout):
+    def __init__(self, client, timeout, polling_interval=0):
         """
         :param session_timeout: Timeout to re-new the session
             in milliseconds.
@@ -48,17 +48,26 @@ class KeepAlive(Thread):
         # some server support no timeout, but we do not trust them
         if self.timeout == 0:
             self.timeout = 3600000 # 1 hour
+        if polling_interval <= 0:
+            polling_interval = self.timeout
+        self.polling_interval = min(self.timeout, polling_interval)
+        self.renew = int(self.timeout/self.polling_interval)        # is always >= 1
+        self.runs = 0
 
     def run(self):
         self.logger.debug("starting keepalive thread with period of %s milliseconds", self.timeout)
         server_state = self.client.get_node(ua.FourByteNodeId(ua.ObjectIds.Server_ServerStatus_State))
         while not self._dostop:
             with self._cond:
-                self._cond.wait(self.timeout / 1000)
+                self._cond.wait(self.polling_interval / 1000)
             if self._dostop:
                 break
-            self.logger.debug("renewing channel")
-            self.client.open_secure_channel(renew=True)
+            self.runs += 1
+            if self.runs == self.renew:
+                self.logger.debug("renewing channel")
+                self.client.open_secure_channel(renew=True)
+                self.runs = 0
+            self.logger.debug("polling server state")
             val = server_state.get_value()
             self.logger.debug("server state is: %s ", val)
         self.logger.debug("keepalive thread has stopped")
@@ -82,7 +91,7 @@ class Client(object):
     which offers the raw OPC-UA services interface.
     """
 
-    def __init__(self, url, timeout=4):
+    def __init__(self, url, timeout=4, polling_interval=0):
         """
 
         :param url: url of the server.
@@ -111,6 +120,7 @@ class Client(object):
         self.user_certificate = None
         self.user_private_key = None
         self._session_counter = 1
+        self.polling_interval = polling_interval
         self.keepalive = None
         self.nodes = Shortcuts(self.uaclient)
 
@@ -369,7 +379,7 @@ class Client(object):
         ep = Client.find_endpoint(response.ServerEndpoints, self.security_policy.Mode, self.security_policy.URI)
         self._policy_ids = ep.UserIdentityTokens
         self.session_timeout = response.RevisedSessionTimeout
-        self.keepalive = KeepAlive(self, min(self.session_timeout, self.secure_channel_timeout) * 0.7)  # 0.7 is from spec
+        self.keepalive = KeepAlive(self, min(self.session_timeout, self.secure_channel_timeout) * 0.7, self.polling_interval)  # 0.7 is from spec
         self.keepalive.start()
         return response
 
