@@ -251,9 +251,11 @@ class Client(object):
         High level method
         Close session, secure channel and socket
         """
-        self.close_session()
-        self.close_secure_channel()
-        self.disconnect_socket()
+        try:
+            self.close_session()
+            self.close_secure_channel()
+        finally:
+            self.disconnect_socket()
 
     def connect_socket(self):
         """
