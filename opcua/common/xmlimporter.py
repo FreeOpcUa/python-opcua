@@ -242,7 +242,10 @@ class XmlImporter(object):
             if isinstance(obj2, ua.NodeId):  # NodeId representation does not follow common rules!!
                 for attname2, v2 in val:
                     if attname2 == "Identifier":
-                        obj2 = ua.NodeId.from_string(v2)
+                        if hasattr(ua.ObjectIds, v2):
+                            obj2 = ua.NodeId(getattr(ua.ObjectIds, v2))
+                        else:
+                            obj2 = ua.NodeId.from_string(v2)
                         setattr(obj, attname, obj2)
                         break
             elif not isinstance(obj2, ua.NodeId) and not hasattr(obj2, "ua_types"):
