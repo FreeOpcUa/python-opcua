@@ -493,7 +493,7 @@ class Client(object):
         returns a Subscription object which allow
         to subscribe to events or data on server
         handler argument is a class with data_change and/or event methods.
-        period argument is either a publishing interval in seconds or a
+        period argument is either a publishing interval in milliseconds or a
         CreateSubscriptionParameters instance. The second option should be used,
         if the opcua-server has problems with the default options.
         These methods will be called when notfication from server are received.
