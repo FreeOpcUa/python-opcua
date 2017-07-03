@@ -6,7 +6,7 @@ install_requires = ["python-dateutil", "pytz", "lxml"]
 if sys.version_info[0] < 3:
     install_requires.extend(["enum34", "trollius", "futures"])
 
-setup(name="freeopcua",
+setup(name="opcua",
       version="0.90.3",
       description="Pure Python OPC-UA client and server library",
       author="Olivier Roulet-Dubonnet",
