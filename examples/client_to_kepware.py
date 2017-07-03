@@ -3,7 +3,6 @@ sys.path.insert(0, "..")
 import logging
 
 from opcua import Client
-from opcua import uaprotocol as ua
 
 
 class SubHandler(object):
@@ -42,14 +41,15 @@ if __name__ == "__main__":
 
         handler = SubHandler()
         sub = client.create_subscription(500, handler)
-        handle = sub.subscribe_data_change(tag1)
-        handle = sub.subscribe_data_change(tag2)
+        handle1 = sub.subscribe_data_change(tag1)
+        handle2 = sub.subscribe_data_change(tag2)
 
         from IPython import embed
         embed()
 
         
-        sub.unsubscribe(handle)
+        sub.unsubscribe(handle1)
+        sub.unsubscribe(handle2)
         sub.delete()
     finally:
         client.disconnect()
