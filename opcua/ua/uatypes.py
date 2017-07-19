@@ -835,7 +835,7 @@ class Variant(FrozenClass):
     def to_binary(self):
         b = []
         encoding = self.VariantType.value & 0b111111
-        if self.is_array or type(self.Value) in (list, tuple):
+        if self.is_array or isinstance(self.Value, (list, tuple)):
             self.is_array = True
             encoding = uabin.set_bit(encoding, 7)
             if self.Dimensions is not None:
