@@ -251,7 +251,7 @@ class HistorySQLite(HistoryStorageInterface):
 
         ev_fields = []
         for field in set(ev_aggregate_fields):
-            ev_fields.append(field.get_display_name().Text.decode(encoding='utf-8'))
+            ev_fields.append(field.get_display_name().Text)
         return ev_fields
 
     @staticmethod

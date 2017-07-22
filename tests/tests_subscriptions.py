@@ -351,7 +351,7 @@ class SubscriptionTests(object):
         handle = sub.subscribe_events()
 
         tid = datetime.utcnow()
-        msg = b"this is my msg "
+        msg = "this is my msg "
         evgen.trigger(tid, msg)
 
         ev = myhandler.future.result()
@@ -377,7 +377,7 @@ class SubscriptionTests(object):
         handle = sub.subscribe_events(o)
 
         tid = datetime.utcnow()
-        msg = b"this is my msg "
+        msg = "this is my msg "
         evgen.trigger(tid, msg)
 
         ev = myhandler.future.result(10)
@@ -403,7 +403,7 @@ class SubscriptionTests(object):
         handle = sub.subscribe_events()
 
         tid = datetime.utcnow()
-        msg = b"this is my msg "
+        msg = "this is my msg "
         evgen.trigger(tid, msg)
 
         with self.assertRaises(TimeoutError):  # we should not receive event
@@ -428,7 +428,7 @@ class SubscriptionTests(object):
         serverity = 500
         evgen.event.Severity = serverity
         tid = datetime.utcnow()
-        msg = b"this is my msg "
+        msg = "this is my msg "
         evgen.trigger(tid, msg)
 
         ev = myhandler.future.result(10)
@@ -461,7 +461,7 @@ class SubscriptionTests(object):
         evgen.event.PropertyNum = propertynum
         evgen.event.PropertyString = propertystring
         tid = datetime.utcnow()
-        msg = b"this is my msg "
+        msg = "this is my msg "
         evgen.trigger(tid, msg)
 
         ev = myhandler.future.result(10)

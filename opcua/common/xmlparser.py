@@ -6,6 +6,7 @@ from pytz import utc
 import uuid
 import re
 import sys
+import base64
 
 import xml.etree.ElementTree as ET
 
@@ -229,13 +230,20 @@ class XMLParser(object):
             # According to specs, DateTime should be either UTC or with a timezone.
             if obj.value.tzinfo is None or obj.value.tzinfo.utcoffset(obj.value) is None:
                 utc.localize(obj.value) # FIXME Forcing to UTC if unaware, maybe should raise?
-        elif ntag in ("ByteString", "String"):
+        elif ntag == "ByteString":
+            if val_el.text is None:
+                mytext = b""
+            else:
+                mytext = bytes(val_el.text, "utf-8")
+                mytext = base64.b64decode(mytext)
+            obj.value = mytext
+        elif ntag == "String":
             mytext = val_el.text
             if mytext is None:
                 # Support importing null strings.
                 mytext = ""
-            mytext = mytext.replace('\n', '').replace('\r', '')
-            obj.value = ua_type_to_python(mytext, ntag)
+            #mytext = mytext.replace('\n', '').replace('\r', '')
+            obj.value = mytext
         elif ntag == "Guid":
             self._parse_contained_value(val_el, obj)
             # Override parsed string type to guid.

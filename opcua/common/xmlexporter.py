@@ -6,6 +6,7 @@ import logging
 from collections import OrderedDict
 import xml.etree.ElementTree as Et
 from copy import copy
+import base64
 
 from opcua import ua
 from opcua.ua import object_ids as o_ids
@@ -191,7 +192,7 @@ class XmlExporter(object):
         browsename = node.get_browse_name()
         nodeid = node.nodeid
         parent = node.get_parent()
-        displayname = node.get_display_name().Text.decode('utf-8')
+        displayname = node.get_display_name().Text
         desc = node.get_description().Text
         node_el = Et.SubElement(self.etree.getroot(), nodetype)
         node_el.attrib["NodeId"] = self._node_to_string(nodeid)
@@ -202,7 +203,7 @@ class XmlExporter(object):
                 node_el.attrib["ParentNodeId"] = self._node_to_string(parent)
         self._add_sub_el(node_el, 'DisplayName', displayname)
         if desc not in (None, ""):
-            self._add_sub_el(node_el, 'Description', desc.decode('utf-8'))
+            self._add_sub_el(node_el, 'Description', desc)
         # FIXME: add WriteMask and UserWriteMask
         return node_el
 
@@ -297,7 +298,7 @@ class XmlExporter(object):
         self._add_ref_els(obj_el, obj)
         var = obj.get_attribute(ua.AttributeIds.InverseName)
         if var is not None and var.Value.Value is not None and var.Value.Value.Text is not None:
-            self._add_sub_el(obj_el, 'InverseName', var.Value.Value.Text.decode('utf-8'))
+            self._add_sub_el(obj_el, 'InverseName', var.Value.Value.Text)
 
     def add_etree_datatype(self, obj):
         """
@@ -355,8 +356,6 @@ class XmlExporter(object):
 
 
     def _val_to_etree(self, el, dtype, val):
-        if val is None:
-            val = ""
         if dtype == ua.NodeId(ua.ObjectIds.NodeId):
             id_el = Et.SubElement(el, "uax:Identifier")
             id_el.text = val.to_string()
@@ -365,11 +364,18 @@ class XmlExporter(object):
             id_el.text = str(val)
         elif dtype == ua.NodeId(ua.ObjectIds.Boolean):
             el.text = 'true' if val else 'false'
+        elif dtype == ua.NodeId(ua.ObjectIds.ByteString):
+            if val is None:
+                val = b""
+            data = base64.b64encode(val)
+            el.text = data.decode("utf-8")
         elif not hasattr(val, "ua_types"):
             if isinstance(val, bytes):
+                # FIXME: should we also encode this (localized text I guess) using base64??
                 el.text = val.decode("utf-8")
             else:
-                el.text = str(val)
+                if val is not None:
+                    el.text = str(val)
         else:
             for name, vtype in val.ua_types.items():
                 self.member_to_etree(el, name, ua.NodeId(getattr(ua.ObjectIds, vtype)), getattr(val, name))
