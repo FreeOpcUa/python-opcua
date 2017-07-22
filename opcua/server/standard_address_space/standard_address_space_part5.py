@@ -22239,7 +22239,7 @@ def create_standard_address_space_Part5(server):
     node.ParentNodeId = ua.NodeId.from_string("i=9")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("A mask of 32 bits that can be updated individually by using the top 32 bits as a mask.")
+    attrs.Description = ua.LocalizedText("b'A mask of 32 bits that can be updated individually by using the top 32 bits as a mask.'")
     attrs.DisplayName = ua.LocalizedText("BitFieldMaskDataType")
     node.NodeAttributes = attrs
     server.add_nodes([node])
