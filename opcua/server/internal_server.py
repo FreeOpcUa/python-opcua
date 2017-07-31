@@ -3,10 +3,9 @@ Internal server implementing opcu-ua interface.
 Can be used on server side or to implement binary/https opc-ua servers
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from copy import copy, deepcopy
-from datetime import timedelta
-from os import path
+import os
 import logging
 from threading import Lock
 from enum import Enum
@@ -30,7 +29,7 @@ from opcua.server.address_space import MethodService
 from opcua.server.subscription_service import SubscriptionService
 from opcua.server.standard_address_space import standard_address_space
 from opcua.server.users import User
-from opcua.common import xmlimporter
+#from opcua.common import xmlimporter
 
 
 class SessionState(Enum):
@@ -88,12 +87,7 @@ class InternalServer(object):
         ns_node.set_value(uries)
 
     def load_standard_address_space(self, shelffile=None):
-        # check for a python shelf file, in windows the file extension is also needed for the check
-        shelffile_win = shelffile
-        if shelffile_win:
-            shelffile_win += ".dat"
-
-        if shelffile and (path.isfile(shelffile) or path.isfile(shelffile_win)):
+        if shelffile is not None and os.path.isfile(shelffile):
             # import address space from shelf
             self.aspace.load_aspace_shelf(shelffile)
         else:
