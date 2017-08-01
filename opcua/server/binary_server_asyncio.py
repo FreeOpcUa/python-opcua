@@ -25,6 +25,7 @@ class BinaryServer(object):
         self.loop = internal_server.loop
         self._server = None
         self._policies = []
+        self.clients = []
 
     def set_policies(self, policies):
         self._policies = policies
@@ -44,6 +45,11 @@ class BinaryServer(object):
             loop = self.loop
             logger = self.logger
             policies = self._policies
+            clients = self.clients
+
+            def __str__(self):
+                return "OPCUAProtocol({}, {})".format(self.peername, self.processor.session)
+            __repr__ = __str__
 
             def connection_made(self, transport):
                 self.peername = transport.get_extra_info('peername')
@@ -53,12 +59,15 @@ class BinaryServer(object):
                 self.processor.set_policies(self.policies)
                 self.data = b""
                 self.iserver.asyncio_transports.append(transport)
+                self.clients.append(self)
 
             def connection_lost(self, ex):
                 self.logger.info('Lost connection from %s, %s', self.peername, ex)
                 self.transport.close()
                 self.iserver.asyncio_transports.remove(self.transport)
                 self.processor.close()
+                if self in self.clients:
+                    self.clients.remove(self)
 
             def data_received(self, data):
                 logger.debug("received %s bytes from socket", len(data))
