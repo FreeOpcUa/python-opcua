@@ -38,7 +38,7 @@ def val_to_string(val):
     elif isinstance(val, str):
         pass
     elif isinstance(val, bytes):
-        val = str(val)
+        val = val.decode("utf-8")
     elif isinstance(val, datetime):
         val = val.isoformat()
     elif isinstance(val, (int, float)):
@@ -91,7 +91,7 @@ def string_to_val(string, vtype):
     elif vtype == ua.VariantType.String:
         val = string
     elif vtype == ua.VariantType.ByteString:
-        val = string.encode("utf-8")
+        val = bytes(string, "utf-8")
     elif vtype in (ua.VariantType.NodeId, ua.VariantType.ExpandedNodeId):
         val = ua.NodeId.from_string(string)
     elif vtype == ua.VariantType.QualifiedName:
