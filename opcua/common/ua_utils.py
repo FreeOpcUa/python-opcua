@@ -91,7 +91,7 @@ def string_to_val(string, vtype):
     elif vtype == ua.VariantType.String:
         val = string
     elif vtype == ua.VariantType.ByteString:
-        val = bytes(string, "utf-8")
+        val = string.encode()
     elif vtype in (ua.VariantType.NodeId, ua.VariantType.ExpandedNodeId):
         val = ua.NodeId.from_string(string)
     elif vtype == ua.VariantType.QualifiedName:
