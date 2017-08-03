@@ -1130,6 +1130,7 @@ def register_extension_object(name, nodeid, class_type):
     extension_object_classes[nodeid] = class_type
     extension_object_ids[name] = nodeid
     # FIXME: Next line is not exactly a Python best practices, so feel free to propose something else
+    # add new extensions objects to ua modules to automate decoding
     import opcua.ua
     setattr(opcua.ua, name, class_type)
 
