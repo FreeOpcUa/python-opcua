@@ -33,10 +33,12 @@ def val_to_string(val):
         val = val.name
     elif isinstance(val, ua.DataValue):
         val = variant_to_string(val.Value)
+    elif isinstance(val, ua.XmlElement):
+        val = val.Value
     elif isinstance(val, str):
         pass
     elif isinstance(val, bytes):
-        val = str(val)
+        val = val.decode("utf-8")
     elif isinstance(val, datetime):
         val = val.isoformat()
     elif isinstance(val, (int, float)):
@@ -84,10 +86,12 @@ def string_to_val(string, vtype):
         val = int(string)
     elif vtype in (ua.VariantType.Float, ua.VariantType.Double):
         val = float(string)
-    elif vtype in (ua.VariantType.String, ua.VariantType.XmlElement):
+    elif vtype == ua.VariantType.XmlElement:
+        val = ua.XmlElement(string)
+    elif vtype == ua.VariantType.String:
         val = string
     elif vtype == ua.VariantType.ByteString:
-        val = string.encode("utf-8")
+        val = string.encode()
     elif vtype in (ua.VariantType.NodeId, ua.VariantType.ExpandedNodeId):
         val = ua.NodeId.from_string(string)
     elif vtype == ua.VariantType.QualifiedName:
@@ -203,16 +207,8 @@ def data_type_to_variant_type(dtype_node):
     if base.nodeid.Identifier != 29:
         return ua.VariantType(base.nodeid.Identifier)
     else:
-        # we have an enumeration, we need to look at child to find type
-        descs = dtype_node.get_children_descriptions()
-        bnames = [d.BrowseName.Name for d in descs]
-        if "EnumStrings" in bnames:
-            return ua.VariantType.LocalizedText
-        elif "EnumValues" in bnames:
-            return ua.VariantType.ExtensionObject
-        else:
-            raise ua.UaError("Enumeration must have a child node describing its type and values")
-
+        # we have an enumeration, value is a Int32
+        return ua.VariantType.Int32
 
 def get_base_data_type(datatype):
     """

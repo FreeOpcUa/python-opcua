@@ -4,6 +4,7 @@ import time
 from datetime import datetime
 from datetime import timedelta
 import math
+from contextlib import contextmanager
 
 from opcua import ua
 from opcua import Node
@@ -47,6 +48,13 @@ class CommonTests(object):
     opc = None
     assertEqual = lambda x, y: True
     assertIn = lambda x, y: True
+
+    @contextmanager
+    def assertNotRaises(self, exc_type):
+        try:
+            yield None
+        except exc_type:
+            raise self.failureException('{} raised'.format(exc_type.__name__))
 
     def test_find_servers(self):
         servers = self.opc.find_servers()
@@ -542,13 +550,10 @@ class CommonTests(object):
 
     def test_path_string(self):
         o = self.opc.nodes.objects.add_folder(1, "titif").add_object(3, "opath")
-        path = o.get_path_as_string()
+        path = o.get_path(as_string=True)
         self.assertEqual(["0:Root", "0:Objects", "1:titif", "3:opath"], path)
-        path = o.get_path_as_string(2)
+        path = o.get_path(2, as_string=True)
         self.assertEqual(["1:titif", "3:opath"], path)
-        path = self.opc.get_node("i=13387").get_path_as_string()
-        # FIXME this is wrong in our server! BaseObjectType is missing an inverse reference to its parent! seems xml definition is wrong
-        self.assertEqual(['0:BaseObjectType', '0:FolderType', '0:FileDirectoryType', '0:CreateDirectory'], path) 
 
     def test_path(self):
         of = self.opc.nodes.objects.add_folder(1, "titif")
@@ -559,8 +564,7 @@ class CommonTests(object):
         self.assertEqual([of, op], path)
         target = self.opc.get_node("i=13387")
         path = target.get_path()
-        # FIXME this is wrong in our server! BaseObjectType is missing an inverse reference to its parent! seems xml definition is wrong
-        self.assertEqual([self.opc.nodes.base_object_type, self.opc.nodes.folder_type, self.opc.get_node(ua.ObjectIds.FileDirectoryType), target], path)  
+        self.assertEqual([self.opc.nodes.root, self.opc.nodes.types, self.opc.nodes.object_types, self.opc.nodes.base_object_type, self.opc.nodes.folder_type, self.opc.get_node(ua.ObjectIds.FileDirectoryType), target], path)  
 
     def test_get_endpoints(self):
         endpoints = self.opc.get_endpoints()
@@ -698,6 +702,43 @@ class CommonTests(object):
         d = self.opc.get_node(d)
         self.assertEqual(ua_utils.get_base_data_type(d), self.opc.get_node(ua.ObjectIds.Structure))
         self.assertEqual(ua_utils.data_type_to_variant_type(d), ua.VariantType.ExtensionObject)
+
+    def test_data_type_to_variant_type(self):
+        test_data = {
+            ua.ObjectIds.Boolean: ua.VariantType.Boolean,
+            ua.ObjectIds.Byte: ua.VariantType.Byte,
+            ua.ObjectIds.String: ua.VariantType.String,
+            ua.ObjectIds.Int32: ua.VariantType.Int32,
+            ua.ObjectIds.UInt32: ua.VariantType.UInt32,
+            ua.ObjectIds.NodeId: ua.VariantType.NodeId,
+            ua.ObjectIds.LocalizedText: ua.VariantType.LocalizedText,
+            ua.ObjectIds.Structure: ua.VariantType.ExtensionObject,
+            ua.ObjectIds.EnumValueType: ua.VariantType.ExtensionObject,
+            ua.ObjectIds.Enumeration: ua.VariantType.Int32,  # enumeration
+            ua.ObjectIds.AttributeWriteMask: ua.VariantType.Int32,  # enumeration
+            ua.ObjectIds.AxisScaleEnumeration: ua.VariantType.Int32  # enumeration
+            }
+        for dt, vdt in test_data.items():
+            self.assertEqual(ua_utils.data_type_to_variant_type(self.opc.get_node(ua.NodeId(dt))), vdt)
+
+    def test_variant_intenum(self):
+        ase = ua.AxisScaleEnumeration(ua.AxisScaleEnumeration.Linear)  # Just pick an existing IntEnum class
+        vAse = ua.Variant(ase)
+        self.assertEqual(vAse.VariantType, ua.VariantType.Int32)
+
+    def test_variant_listoflocalizedtext(self):
+        '''
+        Implementation regarding LocalizedText[] in a Variant was changed without detection in test.
+        This test makes it is tested. 
+        '''
+        v = ua.Variant(['Linear', 'Log', 'Ln'], ua.VariantType.LocalizedText)
+        with self.assertRaises(ua.UaError):
+            v.to_binary()
+
+        v = ua.Variant([ua.LocalizedText('Linear'), ua.LocalizedText('Log'), ua.LocalizedText('Ln')], ua.VariantType.LocalizedText)
+        with self.assertNotRaises(ua.UaError):
+            v.to_binary()
+
 
 
 

@@ -14,7 +14,7 @@ def call_method(parent, methodid, *args):
     which may be of different types
     returns a list of variants which are output of the method
     """
-    if isinstance(methodid, str):
+    if isinstance(methodid, (str, ua.uatypes.QualifiedName)):
         methodid = parent.get_child(methodid).nodeid
     elif isinstance(methodid, node.Node):
         methodid = methodid.nodeid

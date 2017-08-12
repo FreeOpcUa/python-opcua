@@ -149,8 +149,16 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
 
     def test_historize_events(self):
         srv_node = self.srv.get_node(ua.ObjectIds.Server)
+        self.assertEqual(
+            srv_node.get_event_notifier(),
+            {ua.EventNotifier.SubscribeToEvents}
+        )
         srvevgen = self.srv.get_event_generator()
         self.srv.iserver.enable_history_event(srv_node, period=None)
+        self.assertEqual(
+            srv_node.get_event_notifier(),
+            {ua.EventNotifier.SubscribeToEvents, ua.EventNotifier.HistoryRead}
+        )
         srvevgen.trigger(message="Message")
         self.srv.iserver.disable_history_event(srv_node)
 
@@ -476,11 +484,7 @@ def check_eventgenerator_SourceServer(test, evgen):
     server = test.opc.get_server_node()
     test.assertEqual(evgen.event.SourceName, server.get_browse_name().Name)
     test.assertEqual(evgen.event.SourceNode, ua.NodeId(ua.ObjectIds.Server))
-
-    test.assertEqual(
-        server.get_event_notifier(),
-        {ua.EventNotifier.SubscribeToEvents, ua.EventNotifier.HistoryRead}
-    )
+    test.assertEqual(server.get_event_notifier(), {ua.EventNotifier.SubscribeToEvents})
 
     refs = server.get_referenced_nodes(ua.ObjectIds.GeneratesEvent, ua.BrowseDirection.Forward, ua.NodeClass.ObjectType, False)
     test.assertGreaterEqual(len(refs), 1)
@@ -489,11 +493,7 @@ def check_eventgenerator_SourceServer(test, evgen):
 def check_event_generator_object(test, evgen, obj):
     test.assertEqual(evgen.event.SourceName, obj.get_browse_name().Name)
     test.assertEqual(evgen.event.SourceNode, obj.nodeid)
-
-    test.assertEqual(
-        obj.get_event_notifier(),
-        {ua.EventNotifier.SubscribeToEvents, ua.EventNotifier.HistoryRead}
-    )
+    test.assertEqual(obj.get_event_notifier(), {ua.EventNotifier.SubscribeToEvents})
 
     refs = obj.get_referenced_nodes(ua.ObjectIds.GeneratesEvent, ua.BrowseDirection.Forward, ua.NodeClass.ObjectType, False)
     test.assertEqual(len(refs), 1)
@@ -561,3 +561,22 @@ class TestServerCaching(unittest.TestCase):
         self.assertEqual(server.get_node(id).get_value(), 123)
 
         os.remove(path)
+        
+class TestServerStartError(unittest.TestCase):
+    
+    def test_port_in_use(self):
+
+        server1 = Server()
+        server1.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_num + 1))
+        server1.start()
+
+        server2 = Server()
+        server2.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_num + 1))
+        try:
+            server2.start()
+        except Exception:
+            pass
+        
+        server1.stop()
+        server2.stop()
+

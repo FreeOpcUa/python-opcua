@@ -108,6 +108,10 @@ class ViewService(object):
     def _suitable_reftype(self, ref1, ref2, subtypes):
         """
         """
+        if ref1 == ua.NodeId(ua.ObjectIds.Null):
+            # If ReferenceTypeId is not specified in the BrowseDescription,
+            # all References are returned and includeSubtypes is ignored.
+            return True
         if not subtypes and ref2.Identifier == ua.ObjectIds.HasSubtype:
             return False
         if ref1.Identifier == ref2.Identifier:
@@ -353,14 +357,14 @@ class NodeManagementService(object):
 
         for rdesc in self._aspace[item.SourceNodeId].references:
             if rdesc.NodeId is item.TargetNodeId:
-                if rdesc.RefrenceTypeId != item.RefrenceTypeId:
+                if rdesc.ReferenceTypeId != item.ReferenceTypeId:
                     return ua.StatusCode(ua.StatusCodes.BadReferenceTypeIdInvalid)
                 if rdesc.IsForward == item.IsForward or item.DeleteBidirectional:
                     self._aspace[item.SourceNodeId].references.remove(rdesc)
 
         for rdesc in self._aspace[item.TargetNodeId].references:
             if rdesc.NodeId is item.SourceNodeId:
-                if rdesc.RefrenceTypeId != item.RefrenceTypeId:
+                if rdesc.ReferenceTypeId != item.ReferenceTypeId:
                     return ua.StatusCode(ua.StatusCodes.BadReferenceTypeIdInvalid)
                 if rdesc.IsForward == item.IsForward or item.DeleteBidirectional:
                     self._aspace[item.SourceNodeId].references.remove(rdesc)
@@ -634,8 +638,9 @@ class AddressSpace(object):
 
     def delete_datachange_callback(self, handle):
         with self._lock:
-            nodeid, attr = self._handle_to_attribute_map.pop(handle)
-            self._nodes[nodeid].attributes[attr].datachange_callbacks.pop(handle)
+            if handle in self._handle_to_attribute_map:
+                nodeid, attr = self._handle_to_attribute_map.pop(handle)
+                self._nodes[nodeid].attributes[attr].datachange_callbacks.pop(handle)
 
     def add_method_callback(self, methodid, callback):
         with self._lock:

@@ -283,7 +283,7 @@ class NodeId(FrozenClass):
                 raise UaError("NodeId: Could not guess type of NodeId, set NodeIdType")
 
     def _key(self):
-        if self.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric): 
+        if self.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric):
             # twobyte, fourbyte and numeric may represent the same node
             return (NodeIdType.Numeric, self.NamespaceIndex, self.Identifier)
         return (self.NodeIdType, self.NamespaceIndex, self.Identifier)
@@ -807,6 +807,8 @@ class Variant(FrozenClass):
             return VariantType.Boolean
         elif isinstance(val, float):
             return VariantType.Double
+        elif isinstance(val, IntEnum):
+            return VariantType.Int32
         elif isinstance(val, int):
             return VariantType.Int64
         elif type(val) in (str, unicode):
@@ -833,7 +835,7 @@ class Variant(FrozenClass):
     def to_binary(self):
         b = []
         encoding = self.VariantType.value & 0b111111
-        if self.is_array or type(self.Value) in (list, tuple):
+        if self.is_array or isinstance(self.Value, (list, tuple)):
             self.is_array = True
             encoding = uabin.set_bit(encoding, 7)
             if self.Dimensions is not None:
@@ -933,6 +935,9 @@ class XmlElement(FrozenClass):
 
     def to_binary(self):
         return uabin.Primitives.String.pack(self.Value)
+
+    def __eq__(self, other):
+        return isinstance(other, XmlElement) and self.Value == other.Value
 
     @staticmethod
     def from_binary(data):
@@ -1124,6 +1129,14 @@ def register_extension_object(name, nodeid, class_type):
     extension_object_classes[nodeid] = class_type
     extension_object_ids[name] = nodeid
 
+def get_extensionobject_class_type(typeid):
+    """
+    Returns the registered class type for typid of an extension object
+    """
+    if typeid in extension_object_classes:
+        return extension_object_classes[typeid]
+    else:
+        return None
 
 def extensionobject_from_binary(data):
     """

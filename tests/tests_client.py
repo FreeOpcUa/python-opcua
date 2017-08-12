@@ -6,7 +6,7 @@ from opcua import ua
 
 from tests_subscriptions import SubscriptionTests
 from tests_common import CommonTests, add_server_methods
-from tests_xml import XmlTests 
+from tests_xml import XmlTests
 
 port_num1 = 48510
 
@@ -99,3 +99,13 @@ class TestClient(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
             self.assertEqual(state[0], 1)
         # test if client disconnected
         self.assertEqual(state[0], 2)
+
+    def test_enumstrings_getvalue(self):
+        ''' The real exception is server side, but is detected by using a client.
+            Alldue the server trace is also visible on the console.
+            The client only 'sees' an TimeoutError
+        '''
+        nenumstrings = self.opc.get_node(ua.ObjectIds.AxisScaleEnumeration_EnumStrings)
+        with self.assertNotRaises(Exception):
+            value = ua.Variant(nenumstrings.get_value())
+

@@ -63,8 +63,12 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, dname=None, recurs
     elif rdesc.NodeClass in (ua.NodeClass.Method,):
         addnode.NodeClass = ua.NodeClass.Method
         _read_and_copy_attrs(node_type, ua.MethodAttributes(), addnode)
+    elif rdesc.NodeClass in (ua.NodeClass.DataType,):
+        addnode.NodeClass = ua.NodeClass.DataType
+        _read_and_copy_attrs(node_type, ua.DataTypeAttributes(), addnode)
     else:
-        logger.warning("Instantiate: Node class not supported: %s", rdesc.NodeClass)
+        logger.error("Instantiate: Node class not supported: %s", rdesc.NodeClass)
+        raise RuntimeError("Instantiate: Node class not supported")
         return
     if dname is not None:
         addnode.NodeAttributes.DisplayName = dname

@@ -272,9 +272,14 @@ class Server(object):
         """
         self._setup_server_nodes()
         self.iserver.start()
-        self.bserver = BinaryServer(self.iserver, self.endpoint.hostname, self.endpoint.port)
-        self.bserver.set_policies(self._policies)
-        self.bserver.start()
+        try:
+            self.bserver = BinaryServer(self.iserver, self.endpoint.hostname, self.endpoint.port)
+            self.bserver.set_policies(self._policies)
+            self.bserver.start()
+        except Exception as exp:
+            self.iserver.stop()
+            raise exp        
+        
 
     def stop(self):
         """

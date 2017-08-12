@@ -10,6 +10,10 @@ import opcua
 from opcua import ua
 from opcua.common import xmlparser
 
+import sys
+
+if sys.version_info.major > 2:
+    unicode = str
 
 class XmlImporter(object):
 
@@ -49,7 +53,7 @@ class XmlImporter(object):
 
         self.namespaces = self._map_namespaces(self.parser.get_used_namespaces())
         self.aliases = self._map_aliases(self.parser.get_aliases())
-        
+
         dnodes = self.parser.get_node_datas()
         dnodes = self.make_objects(dnodes)
         nodes_parsed = self._sort_nodes_by_parentid(dnodes)
@@ -94,7 +98,7 @@ class XmlImporter(object):
             return self.server.iserver.isession.add_references(refs)
         else:
             return self.server.uaclient.add_references(refs)
-    
+
     def make_objects(self, node_datas):
         new_nodes = []
         for ndata in node_datas:
@@ -202,8 +206,21 @@ class XmlImporter(object):
         res[0].StatusCode.check()
         return res[0].AddedNodeId
 
+    def _get_ext_class(self, name):
+        if hasattr(ua, name):
+            return  getattr(ua, name)
+        elif name in self.aliases.keys():
+            nodeid = self.aliases[name]
+            class_type = ua.uatypes.get_extensionobject_class_type(nodeid)
+            if class_type:
+                return class_type
+            else:
+                raise Exception("Error no extension class registered ", name, nodeid)
+        else:
+            raise Exception("Error no alias found for extension class", name)
+
     def _make_ext_obj(self, obj):
-        ext = getattr(ua, obj.objname)()
+        ext = self._get_ext_class(obj.objname)()
         for name, val in obj.body:
             if isinstance(val, str):
                 raise Exception("Error val should a dict", name, val)
@@ -216,7 +233,7 @@ class XmlImporter(object):
         # tow possible values:
         # either we get value directly
         # or a dict if it s an object or a list
-        if isinstance(val, str):
+        if isinstance(val, (str, unicode)):
             pval = xmlparser.ua_type_to_python(val, obj.ua_types[attname])
             setattr(obj, attname, pval)
         else:
@@ -225,7 +242,10 @@ class XmlImporter(object):
             if isinstance(obj2, ua.NodeId):  # NodeId representation does not follow common rules!!
                 for attname2, v2 in val:
                     if attname2 == "Identifier":
-                        obj2 = ua.NodeId.from_string(v2)
+                        if hasattr(ua.ObjectIds, v2):
+                            obj2 = ua.NodeId(getattr(ua.ObjectIds, v2))
+                        else:
+                            obj2 = ua.NodeId.from_string(v2)
                         setattr(obj, attname, obj2)
                         break
             elif not isinstance(obj2, ua.NodeId) and not hasattr(obj2, "ua_types"):

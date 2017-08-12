@@ -3,10 +3,9 @@ Internal server implementing opcu-ua interface.
 Can be used on server side or to implement binary/https opc-ua servers
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from copy import copy, deepcopy
-from datetime import timedelta
-from os import path
+import os
 import logging
 from threading import Lock
 from enum import Enum
@@ -30,7 +29,7 @@ from opcua.server.address_space import MethodService
 from opcua.server.subscription_service import SubscriptionService
 from opcua.server.standard_address_space import standard_address_space
 from opcua.server.users import User
-from opcua.common import xmlimporter
+#from opcua.common import xmlimporter
 
 
 class SessionState(Enum):
@@ -76,6 +75,7 @@ class InternalServer(object):
         self.isession = InternalSession(self, self.aspace, self.subscription_service, "Internal", user=User.Admin)
 
         self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
+        self._address_space_fixes()
         self.setup_nodes()
 
     def setup_nodes(self):
@@ -87,12 +87,7 @@ class InternalServer(object):
         ns_node.set_value(uries)
 
     def load_standard_address_space(self, shelffile=None):
-        # check for a python shelf file, in windows the file extension is also needed for the check
-        shelffile_win = shelffile
-        if shelffile_win:
-            shelffile_win += ".dat"
-
-        if shelffile and (path.isfile(shelffile) or path.isfile(shelffile_win)):
+        if shelffile is not None and os.path.isfile(shelffile):
             # import address space from shelf
             self.aspace.load_aspace_shelf(shelffile)
         else:
@@ -106,6 +101,20 @@ class InternalServer(object):
             if shelffile:
                 self.aspace.make_aspace_shelf(shelffile)
 
+    def _address_space_fixes(self):
+        """
+        Looks like the xml definition of address space has some error. This is a good place to fix them
+        """
+
+        it = ua.AddReferencesItem()
+        it.SourceNodeId = ua.NodeId(ua.ObjectIds.BaseObjectType)
+        it.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
+        it.IsForward = False
+        it.TargetNodeId = ua.NodeId(ua.ObjectIds.ObjectTypesFolder)
+        it.TargetNodeClass = ua.NodeClass.Object
+
+        results = self.isession.add_references([it])
+ 
     def load_address_space(self, path):
         """
         Load address space from path
@@ -217,7 +226,7 @@ class InternalServer(object):
             raise ua.UaError("Node does not generate events", event_notifier)
 
         if ua.EventNotifier.HistoryRead not in event_notifier:
-            event_notifier.append(ua.EventNotifier.HistoryRead)
+            event_notifier.add(ua.EventNotifier.HistoryRead)
             source.set_event_notifier(event_notifier)
 
         self.history_manager.historize_event(source, period, count)
