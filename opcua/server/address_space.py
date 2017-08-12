@@ -108,6 +108,10 @@ class ViewService(object):
     def _suitable_reftype(self, ref1, ref2, subtypes):
         """
         """
+        if ref1 == ua.NodeId(ua.ObjectIds.Null):
+            # If ReferenceTypeId is not specified in the BrowseDescription,
+            # all References are returned and includeSubtypes is ignored.
+            return True
         if not subtypes and ref2.Identifier == ua.ObjectIds.HasSubtype:
             return False
         if ref1.Identifier == ref2.Identifier:
