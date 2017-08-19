@@ -117,7 +117,8 @@ class CodeGenerator(object):
         self.write("")
         self.write("ua_types = {")
         for field in obj.fields:
-            self.write("    '{}': '{}',".format(field.name, field.uatype))
+            prefix = "ListOf" if field.length else ""
+            self.write("    '{}': '{}',".format(field.name, prefix + field.uatype))
         self.write("           }")
         self.write("")
 

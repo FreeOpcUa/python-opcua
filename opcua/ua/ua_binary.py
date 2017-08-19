@@ -10,6 +10,7 @@ from calendar import timegm
 import uuid
 
 from opcua.ua.uaerrors import UaError
+from opcua.ua.uatypes import UaError
 
 
 if sys.version_info.major > 2:
@@ -304,5 +305,99 @@ def unpack_uatype_array(vtype, data):
             return None
         else:
             return [unpack_uatype(vtype, data) for _ in range(length)]
+
+
+"""
+def to_binary(obj):
+    if isintance(obj, NodeId):
+        return nodeid_to_binary(obj)
+    elif hasattr(val, "ua_types"):
+        return to_binary(val)
+    else:
+        raise ValueError("Do not know how to convert {} to binary: {}".format(type(obj), obj))
+"""
+
+
+def struct_to_binary(obj):
+    packet = []
+    for name, uatype in obj.ua_types:
+        val = getattr(obj, name)
+        if uatype.startswith("ListOf"):
+            packet.append(list_to_binary(val, uatype)
+        else:
+            packet.append(to_binary(val, uatype)
+        return b''.join(packet)
+
+
+def to_binary(val, uatype):
+    if hasattr(Primitives, uatype):
+        st = getattr(Primitives, vtype.name)
+        return st.unpack_array(data)
+    elif hasattr(val, "ua_types"):
+        return struct_to_binary(val)
+    elif uatype == "NodeId":
+        return nodeid_to_binary(val)
+    elif uatype == "Variant":
+        return variant_to_binary(val)
+
+
+def list_to_binary(val, uatype):
+    if val is None:
+        return Primitives.Int32.pack(-1)
+    else:
+    pack = []
+        pack.append(Primitives.Int32.pack(len(val)))
+        for el in val:
+            pack.append(to_binary(el, uatype)
+        return b''.join(pack)
+
+def variant_to_binary(var):
+    b = []
+    encoding = var.VariantType.value & 0b111111
+    if var.is_array or isinstance(var.Value, (list, tuple)):
+        var.is_array = True
+        encoding = set_bit(encoding, 7)
+        if var.Dimensions is not None:
+            encoding = set_bit(encoding, 6)
+        b.append(Primitives.UInt8.pack(encoding))
+        b.append(pack_uatype_array(var.VariantType, flatten(var.Value)))
+        if var.Dimensions is not None:
+            b.append(pack_uatype_array(VariantType.Int32, var.Dimensions))
+    else:
+        b.append(Primitives.UInt8.pack(encoding))
+        b.append(pack_uatype(var.VariantType, var.Value))
+
+    return b"".join(b)
+
+
+def variant_from_binary(data)
+    dimensions = None
+    array = False
+    encoding = ord(data.read(1))
+    int_type = encoding & 0b00111111
+    vtype = ua.datatype_to_varianttype(int_type)
+    if test_bit(encoding, 7):
+        value = unpack_uatype_array(vtype, data)
+        array = True
+    else:
+        value = unpack_uatype(vtype, data)
+    if test_bit(encoding, 6):
+        dimensions = unpack_uatype_array(VariantType.Int32, data)
+        value = reshape(value, dimensions)
+    return ua.Variant(value, vtype, dimensions, is_array=array)
+
+
+def reshape(flat, dims):
+    subdims = dims[1:]
+    subsize = 1
+    for i in subdims:
+        if i == 0:
+            i = 1
+        subsize *= i
+    while dims[0] * subsize > len(flat):
+        flat.append([])
+    if not subdims or subdims == [0]:
+        return flat
+    return [reshape(flat[i: i + subsize], subdims) for i in range(0, len(flat), subsize)]
 
 

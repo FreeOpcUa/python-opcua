@@ -851,10 +851,10 @@ class TrustListDataType(FrozenClass):
 
     ua_types = {
         'SpecifiedLists': 'UInt32',
-        'TrustedCertificates': 'ByteString',
-        'TrustedCrls': 'ByteString',
-        'IssuerCertificates': 'ByteString',
-        'IssuerCrls': 'ByteString',
+        'TrustedCertificates': 'ListOfByteString',
+        'TrustedCrls': 'ListOfByteString',
+        'IssuerCertificates': 'ListOfByteString',
+        'IssuerCrls': 'ListOfByteString',
                }
 
     def __init__(self, binary=None):
@@ -927,7 +927,7 @@ class Argument(FrozenClass):
         'Name': 'String',
         'DataType': 'NodeId',
         'ValueRank': 'Int32',
-        'ArrayDimensions': 'UInt32',
+        'ArrayDimensions': 'ListOfUInt32',
         'Description': 'LocalizedText',
                }
 
@@ -1175,7 +1175,7 @@ class ApplicationDescription(FrozenClass):
         'ApplicationType': 'ApplicationType',
         'GatewayServerUri': 'String',
         'DiscoveryProfileUri': 'String',
-        'DiscoveryUrls': 'String',
+        'DiscoveryUrls': 'ListOfString',
                }
 
     def __init__(self, binary=None):
@@ -1333,7 +1333,7 @@ class ResponseHeader(FrozenClass):
         'RequestHandle': 'UInt32',
         'ServiceResult': 'StatusCode',
         'ServiceDiagnostics': 'DiagnosticInfo',
-        'StringTable': 'String',
+        'StringTable': 'ListOfString',
         'AdditionalHeader': 'ExtensionObject',
                }
 
@@ -1442,8 +1442,8 @@ class FindServersParameters(FrozenClass):
 
     ua_types = {
         'EndpointUrl': 'String',
-        'LocaleIds': 'String',
-        'ServerUris': 'String',
+        'LocaleIds': 'ListOfString',
+        'ServerUris': 'ListOfString',
                }
 
     def __init__(self, binary=None):
@@ -1551,7 +1551,7 @@ class FindServersResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Servers': 'ApplicationDescription',
+        'Servers': 'ListOfApplicationDescription',
                }
 
     def __init__(self, binary=None):
@@ -1611,7 +1611,7 @@ class ServerOnNetwork(FrozenClass):
         'RecordId': 'UInt32',
         'ServerName': 'String',
         'DiscoveryUrl': 'String',
-        'ServerCapabilities': 'String',
+        'ServerCapabilities': 'ListOfString',
                }
 
     def __init__(self, binary=None):
@@ -1667,7 +1667,7 @@ class FindServersOnNetworkParameters(FrozenClass):
     ua_types = {
         'StartingRecordId': 'UInt32',
         'MaxRecordsToReturn': 'UInt32',
-        'ServerCapabilityFilter': 'String',
+        'ServerCapabilityFilter': 'ListOfString',
                }
 
     def __init__(self, binary=None):
@@ -1766,7 +1766,7 @@ class FindServersOnNetworkResult(FrozenClass):
 
     ua_types = {
         'LastCounterResetTime': 'DateTime',
-        'Servers': 'ServerOnNetwork',
+        'Servers': 'ListOfServerOnNetwork',
                }
 
     def __init__(self, binary=None):
@@ -1950,7 +1950,7 @@ class EndpointDescription(FrozenClass):
         'ServerCertificate': 'ByteString',
         'SecurityMode': 'MessageSecurityMode',
         'SecurityPolicyUri': 'String',
-        'UserIdentityTokens': 'UserTokenPolicy',
+        'UserIdentityTokens': 'ListOfUserTokenPolicy',
         'TransportProfileUri': 'String',
         'SecurityLevel': 'Byte',
                }
@@ -2028,8 +2028,8 @@ class GetEndpointsParameters(FrozenClass):
 
     ua_types = {
         'EndpointUrl': 'String',
-        'LocaleIds': 'String',
-        'ProfileUris': 'String',
+        'LocaleIds': 'ListOfString',
+        'ProfileUris': 'ListOfString',
                }
 
     def __init__(self, binary=None):
@@ -2137,7 +2137,7 @@ class GetEndpointsResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Endpoints': 'EndpointDescription',
+        'Endpoints': 'ListOfEndpointDescription',
                }
 
     def __init__(self, binary=None):
@@ -2206,10 +2206,10 @@ class RegisteredServer(FrozenClass):
     ua_types = {
         'ServerUri': 'String',
         'ProductUri': 'String',
-        'ServerNames': 'LocalizedText',
+        'ServerNames': 'ListOfLocalizedText',
         'ServerType': 'ApplicationType',
         'GatewayServerUri': 'String',
-        'DiscoveryUrls': 'String',
+        'DiscoveryUrls': 'ListOfString',
         'SemaphoreFilePath': 'String',
         'IsOnline': 'Boolean',
                }
@@ -2419,7 +2419,7 @@ class MdnsDiscoveryConfiguration(FrozenClass):
 
     ua_types = {
         'MdnsServerName': 'String',
-        'ServerCapabilities': 'String',
+        'ServerCapabilities': 'ListOfString',
                }
 
     def __init__(self, binary=None):
@@ -2464,7 +2464,7 @@ class RegisterServer2Parameters(FrozenClass):
 
     ua_types = {
         'Server': 'RegisteredServer',
-        'DiscoveryConfiguration': 'ExtensionObject',
+        'DiscoveryConfiguration': 'ListOfExtensionObject',
                }
 
     def __init__(self, binary=None):
@@ -2569,8 +2569,8 @@ class RegisterServer2Response(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'ConfigurationResults': 'StatusCode',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'ConfigurationResults': 'ListOfStatusCode',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -3247,8 +3247,8 @@ class CreateSessionResult(FrozenClass):
         'RevisedSessionTimeout': 'Double',
         'ServerNonce': 'ByteString',
         'ServerCertificate': 'ByteString',
-        'ServerEndpoints': 'EndpointDescription',
-        'ServerSoftwareCertificates': 'SignedSoftwareCertificate',
+        'ServerEndpoints': 'ListOfEndpointDescription',
+        'ServerSoftwareCertificates': 'ListOfSignedSoftwareCertificate',
         'ServerSignature': 'SignatureData',
         'MaxRequestMessageSize': 'UInt32',
                }
@@ -3668,8 +3668,8 @@ class ActivateSessionParameters(FrozenClass):
 
     ua_types = {
         'ClientSignature': 'SignatureData',
-        'ClientSoftwareCertificates': 'SignedSoftwareCertificate',
-        'LocaleIds': 'String',
+        'ClientSoftwareCertificates': 'ListOfSignedSoftwareCertificate',
+        'LocaleIds': 'ListOfString',
         'UserIdentityToken': 'ExtensionObject',
         'UserTokenSignature': 'SignatureData',
                }
@@ -3789,8 +3789,8 @@ class ActivateSessionResult(FrozenClass):
 
     ua_types = {
         'ServerNonce': 'ByteString',
-        'Results': 'StatusCode',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfStatusCode',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -4346,7 +4346,7 @@ class VariableAttributes(FrozenClass):
         'Value': 'Variant',
         'DataType': 'NodeId',
         'ValueRank': 'Int32',
-        'ArrayDimensions': 'UInt32',
+        'ArrayDimensions': 'ListOfUInt32',
         'AccessLevel': 'Byte',
         'UserAccessLevel': 'Byte',
         'MinimumSamplingInterval': 'Double',
@@ -4617,7 +4617,7 @@ class VariableTypeAttributes(FrozenClass):
         'Value': 'Variant',
         'DataType': 'NodeId',
         'ValueRank': 'Int32',
-        'ArrayDimensions': 'UInt32',
+        'ArrayDimensions': 'ListOfUInt32',
         'IsAbstract': 'Boolean',
                }
 
@@ -5057,7 +5057,7 @@ class AddNodesParameters(FrozenClass):
     '''
 
     ua_types = {
-        'NodesToAdd': 'AddNodesItem',
+        'NodesToAdd': 'ListOfAddNodesItem',
                }
 
     def __init__(self, binary=None):
@@ -5162,8 +5162,8 @@ class AddNodesResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Results': 'AddNodesResult',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfAddNodesResult',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -5298,7 +5298,7 @@ class AddReferencesParameters(FrozenClass):
     '''
 
     ua_types = {
-        'ReferencesToAdd': 'AddReferencesItem',
+        'ReferencesToAdd': 'ListOfAddReferencesItem',
                }
 
     def __init__(self, binary=None):
@@ -5403,8 +5403,8 @@ class AddReferencesResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Results': 'StatusCode',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfStatusCode',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -5511,7 +5511,7 @@ class DeleteNodesParameters(FrozenClass):
     '''
 
     ua_types = {
-        'NodesToDelete': 'DeleteNodesItem',
+        'NodesToDelete': 'ListOfDeleteNodesItem',
                }
 
     def __init__(self, binary=None):
@@ -5616,8 +5616,8 @@ class DeleteNodesResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Results': 'StatusCode',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfStatusCode',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -5745,7 +5745,7 @@ class DeleteReferencesParameters(FrozenClass):
     '''
 
     ua_types = {
-        'ReferencesToDelete': 'DeleteReferencesItem',
+        'ReferencesToDelete': 'ListOfDeleteReferencesItem',
                }
 
     def __init__(self, binary=None):
@@ -5842,8 +5842,8 @@ class DeleteReferencesResult(FrozenClass):
     '''
 
     ua_types = {
-        'Results': 'StatusCode',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfStatusCode',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -6162,7 +6162,7 @@ class BrowseResult(FrozenClass):
     ua_types = {
         'StatusCode': 'StatusCode',
         'ContinuationPoint': 'ByteString',
-        'References': 'ReferenceDescription',
+        'References': 'ListOfReferenceDescription',
                }
 
     def __init__(self, binary=None):
@@ -6219,7 +6219,7 @@ class BrowseParameters(FrozenClass):
     ua_types = {
         'View': 'ViewDescription',
         'RequestedMaxReferencesPerNode': 'UInt32',
-        'NodesToBrowse': 'BrowseDescription',
+        'NodesToBrowse': 'ListOfBrowseDescription',
                }
 
     def __init__(self, binary=None):
@@ -6332,8 +6332,8 @@ class BrowseResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Results': 'BrowseResult',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfBrowseResult',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -6398,7 +6398,7 @@ class BrowseNextParameters(FrozenClass):
 
     ua_types = {
         'ReleaseContinuationPoints': 'Boolean',
-        'ContinuationPoints': 'ByteString',
+        'ContinuationPoints': 'ListOfByteString',
                }
 
     def __init__(self, binary=None):
@@ -6494,8 +6494,8 @@ class BrowseNextResult(FrozenClass):
     '''
 
     ua_types = {
-        'Results': 'BrowseResult',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfBrowseResult',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -6662,7 +6662,7 @@ class RelativePath(FrozenClass):
     '''
 
     ua_types = {
-        'Elements': 'RelativePathElement',
+        'Elements': 'ListOfRelativePathElement',
                }
 
     def __init__(self, binary=None):
@@ -6800,7 +6800,7 @@ class BrowsePathResult(FrozenClass):
 
     ua_types = {
         'StatusCode': 'StatusCode',
-        'Targets': 'BrowsePathTarget',
+        'Targets': 'ListOfBrowsePathTarget',
                }
 
     def __init__(self, binary=None):
@@ -6847,7 +6847,7 @@ class TranslateBrowsePathsToNodeIdsParameters(FrozenClass):
     '''
 
     ua_types = {
-        'BrowsePaths': 'BrowsePath',
+        'BrowsePaths': 'ListOfBrowsePath',
                }
 
     def __init__(self, binary=None):
@@ -6952,8 +6952,8 @@ class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Results': 'BrowsePathResult',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfBrowsePathResult',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -7015,7 +7015,7 @@ class RegisterNodesParameters(FrozenClass):
     '''
 
     ua_types = {
-        'NodesToRegister': 'NodeId',
+        'NodesToRegister': 'ListOfNodeId',
                }
 
     def __init__(self, binary=None):
@@ -7110,7 +7110,7 @@ class RegisterNodesResult(FrozenClass):
     '''
 
     ua_types = {
-        'RegisteredNodeIds': 'NodeId',
+        'RegisteredNodeIds': 'ListOfNodeId',
                }
 
     def __init__(self, binary=None):
@@ -7205,7 +7205,7 @@ class UnregisterNodesParameters(FrozenClass):
     '''
 
     ua_types = {
-        'NodesToUnregister': 'NodeId',
+        'NodesToUnregister': 'ListOfNodeId',
                }
 
     def __init__(self, binary=None):
@@ -7452,7 +7452,7 @@ class SupportedProfile(FrozenClass):
         'ComplianceTool': 'String',
         'ComplianceDate': 'DateTime',
         'ComplianceLevel': 'ComplianceLevel',
-        'UnsupportedUnitIds': 'String',
+        'UnsupportedUnitIds': 'ListOfString',
                }
 
     def __init__(self, binary=None):
@@ -7537,7 +7537,7 @@ class SoftwareCertificate(FrozenClass):
         'BuildDate': 'DateTime',
         'IssuedBy': 'String',
         'IssueDate': 'DateTime',
-        'SupportedProfiles': 'SupportedProfile',
+        'SupportedProfiles': 'ListOfSupportedProfile',
                }
 
     def __init__(self, binary=None):
@@ -7672,7 +7672,7 @@ class NodeTypeDescription(FrozenClass):
     ua_types = {
         'TypeDefinitionNode': 'ExpandedNodeId',
         'IncludeSubTypes': 'Boolean',
-        'DataToReturn': 'QueryDataDescription',
+        'DataToReturn': 'ListOfQueryDataDescription',
                }
 
     def __init__(self, binary=None):
@@ -7729,7 +7729,7 @@ class QueryDataSet(FrozenClass):
     ua_types = {
         'NodeId': 'ExpandedNodeId',
         'TypeDefinitionNode': 'ExpandedNodeId',
-        'Values': 'Variant',
+        'Values': 'ListOfVariant',
                }
 
     def __init__(self, binary=None):
@@ -7789,7 +7789,7 @@ class NodeReference(FrozenClass):
         'NodeId': 'NodeId',
         'ReferenceTypeId': 'NodeId',
         'IsForward': 'Boolean',
-        'ReferencedNodeIds': 'NodeId',
+        'ReferencedNodeIds': 'ListOfNodeId',
                }
 
     def __init__(self, binary=None):
@@ -7847,7 +7847,7 @@ class ContentFilterElement(FrozenClass):
 
     ua_types = {
         'FilterOperator': 'FilterOperator',
-        'FilterOperands': 'ExtensionObject',
+        'FilterOperands': 'ListOfExtensionObject',
                }
 
     def __init__(self, binary=None):
@@ -7894,7 +7894,7 @@ class ContentFilter(FrozenClass):
     '''
 
     ua_types = {
-        'Elements': 'ContentFilterElement',
+        'Elements': 'ListOfContentFilterElement',
                }
 
     def __init__(self, binary=None):
@@ -8080,7 +8080,7 @@ class SimpleAttributeOperand(FrozenClass):
 
     ua_types = {
         'TypeDefinitionId': 'NodeId',
-        'BrowsePath': 'QualifiedName',
+        'BrowsePath': 'ListOfQualifiedName',
         'AttributeId': 'UInt32',
         'IndexRange': 'String',
                }
@@ -8142,8 +8142,8 @@ class ContentFilterElementResult(FrozenClass):
 
     ua_types = {
         'StatusCode': 'StatusCode',
-        'OperandStatusCodes': 'StatusCode',
-        'OperandDiagnosticInfos': 'DiagnosticInfo',
+        'OperandStatusCodes': 'ListOfStatusCode',
+        'OperandDiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -8203,8 +8203,8 @@ class ContentFilterResult(FrozenClass):
     '''
 
     ua_types = {
-        'ElementResults': 'ContentFilterElementResult',
-        'ElementDiagnosticInfos': 'DiagnosticInfo',
+        'ElementResults': 'ListOfContentFilterElementResult',
+        'ElementDiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -8263,8 +8263,8 @@ class ParsingResult(FrozenClass):
 
     ua_types = {
         'StatusCode': 'StatusCode',
-        'DataStatusCodes': 'StatusCode',
-        'DataDiagnosticInfos': 'DiagnosticInfo',
+        'DataStatusCodes': 'ListOfStatusCode',
+        'DataDiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -8331,7 +8331,7 @@ class QueryFirstParameters(FrozenClass):
 
     ua_types = {
         'View': 'ViewDescription',
-        'NodeTypes': 'NodeTypeDescription',
+        'NodeTypes': 'ListOfNodeTypeDescription',
         'Filter': 'ContentFilter',
         'MaxDataSetsToReturn': 'UInt32',
         'MaxReferencesToReturn': 'UInt32',
@@ -8451,10 +8451,10 @@ class QueryFirstResult(FrozenClass):
     '''
 
     ua_types = {
-        'QueryDataSets': 'QueryDataSet',
+        'QueryDataSets': 'ListOfQueryDataSet',
         'ContinuationPoint': 'ByteString',
-        'ParsingResults': 'ParsingResult',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'ParsingResults': 'ListOfParsingResult',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
         'FilterResult': 'ContentFilterResult',
                }
 
@@ -8673,7 +8673,7 @@ class QueryNextResult(FrozenClass):
     '''
 
     ua_types = {
-        'QueryDataSets': 'QueryDataSet',
+        'QueryDataSets': 'ListOfQueryDataSet',
         'RevisedContinuationPoint': 'ByteString',
                }
 
@@ -8834,7 +8834,7 @@ class ReadParameters(FrozenClass):
     ua_types = {
         'MaxAge': 'Double',
         'TimestampsToReturn': 'TimestampsToReturn',
-        'NodesToRead': 'ReadValueId',
+        'NodesToRead': 'ListOfReadValueId',
                }
 
     def __init__(self, binary=None):
@@ -8943,8 +8943,8 @@ class ReadResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Results': 'DataValue',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfDataValue',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -9276,7 +9276,7 @@ class ReadProcessedDetails(FrozenClass):
         'StartTime': 'DateTime',
         'EndTime': 'DateTime',
         'ProcessingInterval': 'Double',
-        'AggregateType': 'NodeId',
+        'AggregateType': 'ListOfNodeId',
         'AggregateConfiguration': 'AggregateConfiguration',
                }
 
@@ -9338,7 +9338,7 @@ class ReadAtTimeDetails(FrozenClass):
     '''
 
     ua_types = {
-        'ReqTimes': 'DateTime',
+        'ReqTimes': 'ListOfDateTime',
         'UseSimpleBounds': 'Boolean',
                }
 
@@ -9381,7 +9381,7 @@ class HistoryData(FrozenClass):
     '''
 
     ua_types = {
-        'DataValues': 'DataValue',
+        'DataValues': 'ListOfDataValue',
                }
 
     def __init__(self, binary=None):
@@ -9476,8 +9476,8 @@ class HistoryModifiedData(FrozenClass):
     '''
 
     ua_types = {
-        'DataValues': 'DataValue',
-        'ModificationInfos': 'ModificationInfo',
+        'DataValues': 'ListOfDataValue',
+        'ModificationInfos': 'ListOfModificationInfo',
                }
 
     def __init__(self, binary=None):
@@ -9531,7 +9531,7 @@ class HistoryEvent(FrozenClass):
     '''
 
     ua_types = {
-        'Events': 'HistoryEventFieldList',
+        'Events': 'ListOfHistoryEventFieldList',
                }
 
     def __init__(self, binary=None):
@@ -9583,7 +9583,7 @@ class HistoryReadParameters(FrozenClass):
         'HistoryReadDetails': 'ExtensionObject',
         'TimestampsToReturn': 'TimestampsToReturn',
         'ReleaseContinuationPoints': 'Boolean',
-        'NodesToRead': 'HistoryReadValueId',
+        'NodesToRead': 'ListOfHistoryReadValueId',
                }
 
     def __init__(self, binary=None):
@@ -9696,8 +9696,8 @@ class HistoryReadResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Results': 'HistoryReadResult',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfHistoryReadResult',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -9816,7 +9816,7 @@ class WriteParameters(FrozenClass):
     '''
 
     ua_types = {
-        'NodesToWrite': 'WriteValue',
+        'NodesToWrite': 'ListOfWriteValue',
                }
 
     def __init__(self, binary=None):
@@ -9917,8 +9917,8 @@ class WriteResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Results': 'StatusCode',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfStatusCode',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -10022,7 +10022,7 @@ class UpdateDataDetails(FrozenClass):
     ua_types = {
         'NodeId': 'NodeId',
         'PerformInsertReplace': 'PerformUpdateType',
-        'UpdateValues': 'DataValue',
+        'UpdateValues': 'ListOfDataValue',
                }
 
     def __init__(self, binary=None):
@@ -10079,7 +10079,7 @@ class UpdateStructureDataDetails(FrozenClass):
     ua_types = {
         'NodeId': 'NodeId',
         'PerformInsertReplace': 'PerformUpdateType',
-        'UpdateValues': 'DataValue',
+        'UpdateValues': 'ListOfDataValue',
                }
 
     def __init__(self, binary=None):
@@ -10139,7 +10139,7 @@ class UpdateEventDetails(FrozenClass):
         'NodeId': 'NodeId',
         'PerformInsertReplace': 'PerformUpdateType',
         'Filter': 'EventFilter',
-        'EventData': 'HistoryEventFieldList',
+        'EventData': 'ListOfHistoryEventFieldList',
                }
 
     def __init__(self, binary=None):
@@ -10254,7 +10254,7 @@ class DeleteAtTimeDetails(FrozenClass):
 
     ua_types = {
         'NodeId': 'NodeId',
-        'ReqTimes': 'DateTime',
+        'ReqTimes': 'ListOfDateTime',
                }
 
     def __init__(self, binary=None):
@@ -10299,7 +10299,7 @@ class DeleteEventDetails(FrozenClass):
 
     ua_types = {
         'NodeId': 'NodeId',
-        'EventIds': 'ByteString',
+        'EventIds': 'ListOfByteString',
                }
 
     def __init__(self, binary=None):
@@ -10346,8 +10346,8 @@ class HistoryUpdateResult(FrozenClass):
 
     ua_types = {
         'StatusCode': 'StatusCode',
-        'OperationResults': 'StatusCode',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'OperationResults': 'ListOfStatusCode',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -10405,7 +10405,7 @@ class HistoryUpdateParameters(FrozenClass):
     '''
 
     ua_types = {
-        'HistoryUpdateDetails': 'ExtensionObject',
+        'HistoryUpdateDetails': 'ListOfExtensionObject',
                }
 
     def __init__(self, binary=None):
@@ -10506,8 +10506,8 @@ class HistoryUpdateResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Results': 'HistoryUpdateResult',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfHistoryUpdateResult',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -10575,7 +10575,7 @@ class CallMethodRequest(FrozenClass):
     ua_types = {
         'ObjectId': 'NodeId',
         'MethodId': 'NodeId',
-        'InputArguments': 'Variant',
+        'InputArguments': 'ListOfVariant',
                }
 
     def __init__(self, binary=None):
@@ -10633,9 +10633,9 @@ class CallMethodResult(FrozenClass):
 
     ua_types = {
         'StatusCode': 'StatusCode',
-        'InputArgumentResults': 'StatusCode',
-        'InputArgumentDiagnosticInfos': 'DiagnosticInfo',
-        'OutputArguments': 'Variant',
+        'InputArgumentResults': 'ListOfStatusCode',
+        'InputArgumentDiagnosticInfos': 'ListOfDiagnosticInfo',
+        'OutputArguments': 'ListOfVariant',
                }
 
     def __init__(self, binary=None):
@@ -10704,7 +10704,7 @@ class CallParameters(FrozenClass):
     '''
 
     ua_types = {
-        'MethodsToCall': 'CallMethodRequest',
+        'MethodsToCall': 'ListOfCallMethodRequest',
                }
 
     def __init__(self, binary=None):
@@ -10805,8 +10805,8 @@ class CallResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Results': 'CallMethodResult',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfCallMethodResult',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -10951,7 +10951,7 @@ class EventFilter(FrozenClass):
     '''
 
     ua_types = {
-        'SelectClauses': 'SimpleAttributeOperand',
+        'SelectClauses': 'ListOfSimpleAttributeOperand',
         'WhereClause': 'ContentFilter',
                }
 
@@ -11155,8 +11155,8 @@ class EventFilterResult(FrozenClass):
     '''
 
     ua_types = {
-        'SelectClauseResults': 'StatusCode',
-        'SelectClauseDiagnosticInfos': 'DiagnosticInfo',
+        'SelectClauseResults': 'ListOfStatusCode',
+        'SelectClauseDiagnosticInfos': 'ListOfDiagnosticInfo',
         'WhereClauseResult': 'ContentFilterResult',
                }
 
@@ -11449,7 +11449,7 @@ class CreateMonitoredItemsParameters(FrozenClass):
     ua_types = {
         'SubscriptionId': 'UInt32',
         'TimestampsToReturn': 'TimestampsToReturn',
-        'ItemsToCreate': 'MonitoredItemCreateRequest',
+        'ItemsToCreate': 'ListOfMonitoredItemCreateRequest',
                }
 
     def __init__(self, binary=None):
@@ -11558,8 +11558,8 @@ class CreateMonitoredItemsResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Results': 'MonitoredItemCreateResult',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfMonitoredItemCreateResult',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -11727,7 +11727,7 @@ class ModifyMonitoredItemsParameters(FrozenClass):
     ua_types = {
         'SubscriptionId': 'UInt32',
         'TimestampsToReturn': 'TimestampsToReturn',
-        'ItemsToModify': 'MonitoredItemModifyRequest',
+        'ItemsToModify': 'ListOfMonitoredItemModifyRequest',
                }
 
     def __init__(self, binary=None):
@@ -11836,8 +11836,8 @@ class ModifyMonitoredItemsResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Results': 'MonitoredItemModifyResult',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfMonitoredItemModifyResult',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -11905,7 +11905,7 @@ class SetMonitoringModeParameters(FrozenClass):
     ua_types = {
         'SubscriptionId': 'UInt32',
         'MonitoringMode': 'MonitoringMode',
-        'MonitoredItemIds': 'UInt32',
+        'MonitoredItemIds': 'ListOfUInt32',
                }
 
     def __init__(self, binary=None):
@@ -12003,8 +12003,8 @@ class SetMonitoringModeResult(FrozenClass):
     '''
 
     ua_types = {
-        'Results': 'StatusCode',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfStatusCode',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -12116,8 +12116,8 @@ class SetTriggeringParameters(FrozenClass):
     ua_types = {
         'SubscriptionId': 'UInt32',
         'TriggeringItemId': 'UInt32',
-        'LinksToAdd': 'UInt32',
-        'LinksToRemove': 'UInt32',
+        'LinksToAdd': 'ListOfUInt32',
+        'LinksToRemove': 'ListOfUInt32',
                }
 
     def __init__(self, binary=None):
@@ -12225,10 +12225,10 @@ class SetTriggeringResult(FrozenClass):
     '''
 
     ua_types = {
-        'AddResults': 'StatusCode',
-        'AddDiagnosticInfos': 'DiagnosticInfo',
-        'RemoveResults': 'StatusCode',
-        'RemoveDiagnosticInfos': 'DiagnosticInfo',
+        'AddResults': 'ListOfStatusCode',
+        'AddDiagnosticInfos': 'ListOfDiagnosticInfo',
+        'RemoveResults': 'ListOfStatusCode',
+        'RemoveDiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -12357,7 +12357,7 @@ class DeleteMonitoredItemsParameters(FrozenClass):
 
     ua_types = {
         'SubscriptionId': 'UInt32',
-        'MonitoredItemIds': 'UInt32',
+        'MonitoredItemIds': 'ListOfUInt32',
                }
 
     def __init__(self, binary=None):
@@ -12457,8 +12457,8 @@ class DeleteMonitoredItemsResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Results': 'StatusCode',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfStatusCode',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -12972,7 +12972,7 @@ class SetPublishingModeParameters(FrozenClass):
 
     ua_types = {
         'PublishingEnabled': 'Boolean',
-        'SubscriptionIds': 'UInt32',
+        'SubscriptionIds': 'ListOfUInt32',
                }
 
     def __init__(self, binary=None):
@@ -13066,8 +13066,8 @@ class SetPublishingModeResult(FrozenClass):
     '''
 
     ua_types = {
-        'Results': 'StatusCode',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfStatusCode',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -13177,7 +13177,7 @@ class NotificationMessage(FrozenClass):
     ua_types = {
         'SequenceNumber': 'UInt32',
         'PublishTime': 'DateTime',
-        'NotificationData': 'ExtensionObject',
+        'NotificationData': 'ListOfExtensionObject',
                }
 
     def __init__(self, binary=None):
@@ -13261,8 +13261,8 @@ class DataChangeNotification(FrozenClass):
     '''
 
     ua_types = {
-        'MonitoredItems': 'MonitoredItemNotification',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'MonitoredItems': 'ListOfMonitoredItemNotification',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -13359,7 +13359,7 @@ class EventNotificationList(FrozenClass):
     '''
 
     ua_types = {
-        'Events': 'EventFieldList',
+        'Events': 'ListOfEventFieldList',
                }
 
     def __init__(self, binary=None):
@@ -13405,7 +13405,7 @@ class EventFieldList(FrozenClass):
 
     ua_types = {
         'ClientHandle': 'UInt32',
-        'EventFields': 'Variant',
+        'EventFields': 'ListOfVariant',
                }
 
     def __init__(self, binary=None):
@@ -13452,7 +13452,7 @@ class HistoryEventFieldList(FrozenClass):
     '''
 
     ua_types = {
-        'EventFields': 'Variant',
+        'EventFields': 'ListOfVariant',
                }
 
     def __init__(self, binary=None):
@@ -13581,7 +13581,7 @@ class PublishParameters(FrozenClass):
     '''
 
     ua_types = {
-        'SubscriptionAcknowledgements': 'SubscriptionAcknowledgement',
+        'SubscriptionAcknowledgements': 'ListOfSubscriptionAcknowledgement',
                }
 
     def __init__(self, binary=None):
@@ -13685,11 +13685,11 @@ class PublishResult(FrozenClass):
 
     ua_types = {
         'SubscriptionId': 'UInt32',
-        'AvailableSequenceNumbers': 'UInt32',
+        'AvailableSequenceNumbers': 'ListOfUInt32',
         'MoreNotifications': 'Boolean',
         'NotificationMessage': 'NotificationMessage',
-        'Results': 'StatusCode',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfStatusCode',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -13957,7 +13957,7 @@ class TransferResult(FrozenClass):
 
     ua_types = {
         'StatusCode': 'StatusCode',
-        'AvailableSequenceNumbers': 'UInt32',
+        'AvailableSequenceNumbers': 'ListOfUInt32',
                }
 
     def __init__(self, binary=None):
@@ -14001,7 +14001,7 @@ class TransferSubscriptionsParameters(FrozenClass):
     '''
 
     ua_types = {
-        'SubscriptionIds': 'UInt32',
+        'SubscriptionIds': 'ListOfUInt32',
         'SendInitialValues': 'Boolean',
                }
 
@@ -14096,8 +14096,8 @@ class TransferSubscriptionsResult(FrozenClass):
     '''
 
     ua_types = {
-        'Results': 'TransferResult',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfTransferResult',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -14201,7 +14201,7 @@ class DeleteSubscriptionsParameters(FrozenClass):
     '''
 
     ua_types = {
-        'SubscriptionIds': 'UInt32',
+        'SubscriptionIds': 'ListOfUInt32',
                }
 
     def __init__(self, binary=None):
@@ -14297,8 +14297,8 @@ class DeleteSubscriptionsResponse(FrozenClass):
     ua_types = {
         'TypeId': 'NodeId',
         'ResponseHeader': 'ResponseHeader',
-        'Results': 'StatusCode',
-        'DiagnosticInfos': 'DiagnosticInfo',
+        'Results': 'ListOfStatusCode',
+        'DiagnosticInfos': 'ListOfDiagnosticInfo',
                }
 
     def __init__(self, binary=None):
@@ -14481,7 +14481,7 @@ class EndpointUrlListDataType(FrozenClass):
     '''
 
     ua_types = {
-        'EndpointUrlList': 'String',
+        'EndpointUrlList': 'ListOfString',
                }
 
     def __init__(self, binary=None):
@@ -14522,7 +14522,7 @@ class NetworkGroupDataType(FrozenClass):
 
     ua_types = {
         'ServerUri': 'String',
-        'NetworkPaths': 'EndpointUrlListDataType',
+        'NetworkPaths': 'ListOfEndpointUrlListDataType',
                }
 
     def __init__(self, binary=None):
@@ -14899,7 +14899,7 @@ class SessionDiagnosticsDataType(FrozenClass):
         'ClientDescription': 'ApplicationDescription',
         'ServerUri': 'String',
         'EndpointUrl': 'String',
-        'LocaleIds': 'String',
+        'LocaleIds': 'ListOfString',
         'ActualSessionTimeout': 'Double',
         'MaxResponseMessageSize': 'UInt32',
         'ClientConnectionTime': 'DateTime',
@@ -15160,7 +15160,7 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
     ua_types = {
         'SessionId': 'NodeId',
         'ClientUserIdOfSession': 'String',
-        'ClientUserIdHistory': 'String',
+        'ClientUserIdHistory': 'ListOfString',
         'AuthenticationMechanism': 'String',
         'Encoding': 'String',
         'TransportProtocol': 'String',
@@ -15859,7 +15859,7 @@ class AxisInformation(FrozenClass):
         'EURange': 'Range',
         'Title': 'LocalizedText',
         'AxisScaleType': 'AxisScaleEnumeration',
-        'AxisSteps': 'Double',
+        'AxisSteps': 'ListOfDouble',
                }
 
     def __init__(self, binary=None):
@@ -15980,8 +15980,8 @@ class ProgramDiagnosticDataType(FrozenClass):
         'LastTransitionTime': 'DateTime',
         'LastMethodCall': 'String',
         'LastMethodSessionId': 'NodeId',
-        'LastMethodInputArguments': 'Argument',
-        'LastMethodOutputArguments': 'Argument',
+        'LastMethodInputArguments': 'ListOfArgument',
+        'LastMethodOutputArguments': 'ListOfArgument',
         'LastMethodCallTime': 'DateTime',
         'LastMethodReturnStatus': 'StatusResult',
                }
