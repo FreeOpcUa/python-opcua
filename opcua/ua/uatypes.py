@@ -178,6 +178,7 @@ class StatusCode(FrozenClass):
     :ivar doc:
     :vartype doc: string
     """
+    ua_types = ["value", "UInt32"]
 
     def __init__(self, value=0):
         if isinstance(value, str):
@@ -832,56 +833,6 @@ class Variant(FrozenClass):
         return "Variant(val:{0!s},type:{1})".format(self.Value, self.VariantType)
     __repr__ = __str__
 
-    def to_binary(self):
-        b = []
-        encoding = self.VariantType.value & 0b111111
-        if self.is_array or isinstance(self.Value, (list, tuple)):
-            self.is_array = True
-            encoding = uabin.set_bit(encoding, 7)
-            if self.Dimensions is not None:
-                encoding = uabin.set_bit(encoding, 6)
-            b.append(uabin.Primitives.UInt8.pack(encoding))
-            b.append(uabin.pack_uatype_array(self.VariantType, flatten(self.Value)))
-            if self.Dimensions is not None:
-                b.append(uabin.pack_uatype_array(VariantType.Int32, self.Dimensions))
-        else:
-            b.append(uabin.Primitives.UInt8.pack(encoding))
-            b.append(uabin.pack_uatype(self.VariantType, self.Value))
-
-        return b"".join(b)
-
-    @staticmethod
-    def from_binary(data):
-        dimensions = None
-        array = False
-        encoding = ord(data.read(1))
-        int_type = encoding & 0b00111111
-        vtype = datatype_to_varianttype(int_type)
-        if uabin.test_bit(encoding, 7):
-            value = uabin.unpack_uatype_array(vtype, data)
-            array = True
-        else:
-            value = uabin.unpack_uatype(vtype, data)
-        if uabin.test_bit(encoding, 6):
-            dimensions = uabin.unpack_uatype_array(VariantType.Int32, data)
-            value = reshape(value, dimensions)
-        return Variant(value, vtype, dimensions, is_array=array)
-
-
-def reshape(flat, dims):
-    subdims = dims[1:]
-    subsize = 1
-    for i in subdims:
-        if i == 0:
-            i = 1
-        subsize *= i
-    while dims[0] * subsize > len(flat):
-        flat.append([])
-    if not subdims or subdims == [0]:
-        return flat
-    return [reshape(flat[i: i + subsize], subdims) for i in range(0, len(flat), subsize)]
-
-
 def _split_list(l, n):
     n = max(1, n)
     return [l[i:i + n] for i in range(0, len(l), n)]
@@ -970,6 +921,8 @@ class DataValue(FrozenClass):
     :ivar ServerPicoseconds:
     :vartype ServerPicoseconds: int
     """
+
+    ua_types = []
 
     def __init__(self, variant=None, status=None):
         self.Encoding = 0
