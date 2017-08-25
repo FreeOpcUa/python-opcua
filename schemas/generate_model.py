@@ -36,6 +36,7 @@ class Bit(object):
         return "(Bit: {0}, container:{1}, idx:{2})".format(self.name, self.container, self.idx)
     __repr__ = __str__
 
+
 class Struct(object):
     def __init__(self):
         self.name = None
