@@ -115,11 +115,23 @@ class CodeGenerator(object):
         self.write("'''")
 
         self.write("")
-        self.write("ua_types = {")
+        switch_written = False
+        for field in obj.fields:
+            if field.switchfield is not None:
+                if not switch_written:
+                    self.write("ua_switches = {")
+                    switch_written = True
+
+                bit = obj.bits[field.switchfield]
+                self.write("    '{}': ('{}', {}),".format(field.name, bit.container, bit.idx))
+            #if field.switchvalue is not None: Not sure we need to handle that one
+        if switch_written:
+            self.write("           }")
+        self.write("ua_types = (")
         for field in obj.fields:
             prefix = "ListOf" if field.length else ""
-            self.write("    '{}': '{}',".format(field.name, prefix + field.uatype))
-        self.write("           }")
+            self.write("    ('{}', '{}'),".format(field.name, prefix + field.uatype))
+        self.write("           )")
         self.write("")
 
         self.write("def __init__(self, binary=None):")

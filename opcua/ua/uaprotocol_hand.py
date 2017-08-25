@@ -17,6 +17,15 @@ OPC_TCP_SCHEME = 'opc.tcp'
 
 class Hello(uatypes.FrozenClass):
 
+    ua_types = (
+        ('ProtocolVersion', 'UInt32'),
+        ('ReceiveBufferSize', 'UInt32'),
+        ('SendBufferSize', 'UInt32'),
+        ('MaxMessageSize', 'UInt32'),
+        ('MaxChunkCount', 'UInt32'),
+        ('EndpointUrl', 'String'),
+               )
+
     def __init__(self):
         self.ProtocolVersion = 0
         self.ReceiveBufferSize = 65536
@@ -110,6 +119,11 @@ class Header(uatypes.FrozenClass):
 
 
 class ErrorMessage(uatypes.FrozenClass):
+
+    ua_types = (
+        ('Error', 'StatusCode'),
+        ('Reason', 'String'),
+               )
 
     def __init__(self):
         self.Error = uatypes.StatusCode()

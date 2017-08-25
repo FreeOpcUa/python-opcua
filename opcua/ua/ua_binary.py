@@ -320,19 +320,29 @@ def to_binary(obj):
 
 def struct_to_binary(obj):
     packet = []
+    has_switch = hasattr(obj, "ua_switches")
+    if has_switch:
+        for name, switch in obj.ua_switches:
+            member = getattr(name, obj)
+            container, idx = switch
+            if name is not None:
+                container |= (idx << 0)
     for name, uatype in obj.ua_types:
         val = getattr(obj, name)
         if uatype.startswith("ListOf"):
-            packet.append(list_to_binary(val, uatype)
+            packet.append(list_to_binary(val, uatype))
         else:
-            packet.append(to_binary(val, uatype)
-        return b''.join(packet)
+            if has_switch and val is None and name in obj.ua_switches:
+                    pass
+            else:
+                packet.append(to_binary(val, uatype))
+    return b''.join(packet)
 
 
 def to_binary(val, uatype):
     if hasattr(Primitives, uatype):
-        st = getattr(Primitives, vtype.name)
-        return st.unpack_array(data)
+        st = getattr(Primitives, uatype)
+        return st.pack(val)
     elif hasattr(val, "ua_types"):
         return struct_to_binary(val)
     elif uatype == "NodeId":
@@ -345,11 +355,12 @@ def list_to_binary(val, uatype):
     if val is None:
         return Primitives.Int32.pack(-1)
     else:
-    pack = []
+        pack = []
         pack.append(Primitives.Int32.pack(len(val)))
         for el in val:
-            pack.append(to_binary(el, uatype)
+            pack.append(to_binary(el, uatype))
         return b''.join(pack)
+
 
 def variant_to_binary(var):
     b = []
@@ -370,7 +381,7 @@ def variant_to_binary(var):
     return b"".join(b)
 
 
-def variant_from_binary(data)
+def variant_from_binary(data):
     dimensions = None
     array = False
     encoding = ord(data.read(1))
@@ -401,3 +412,56 @@ def reshape(flat, dims):
     return [reshape(flat[i: i + subsize], subdims) for i in range(0, len(flat), subsize)]
 
 
+def extensionobject_from_binary(data):
+    """
+    Convert binary-coded ExtensionObject to a Python object.
+    Returns an object, or None if TypeId is zero
+    """
+    typeid = NodeId.from_binary(data)
+    Encoding = ord(data.read(1))
+    body = None
+    if Encoding & (1 << 0):
+        length = uabin.Primitives.Int32.unpack(data)
+        if length < 1:
+            body = Buffer(b"")
+        else:
+            body = data.copy(length)
+            data.skip(length)
+    if typeid.Identifier == 0:
+        return None
+    elif typeid in extension_object_classes:
+        klass = extension_object_classes[typeid]
+        if body is None:
+            raise UaError("parsing ExtensionObject {0} without data".format(klass.__name__))
+        return klass.from_binary(body)
+    else:
+        e = ExtensionObject()
+        e.TypeId = typeid
+        e.Encoding = Encoding
+        if body is not None:
+            e.Body = body.read(len(body))
+        return e
+
+
+def extensionobject_to_binary(obj):
+    """
+    Convert Python object to binary-coded ExtensionObject.
+    If obj is None, convert to empty ExtensionObject (TypeId = 0, no Body).
+    Returns a binary string
+    """
+    if isinstance(obj, ExtensionObject):
+        return obj.to_binary()
+    if obj is None:
+        TypeId = NodeId()
+        Encoding = 0
+        Body = None
+    else:
+        TypeId = extension_object_ids[obj.__class__.__name__]
+        Encoding = 0x01
+        Body = obj.to_binary()
+    packet = []
+    packet.append(TypeId.to_binary())
+    packet.append(uabin.Primitives.UInt8.pack(Encoding))
+    if Body:
+        packet.append(uabin.Primitives.Bytes.pack(Body))
+    return b''.join(packet)

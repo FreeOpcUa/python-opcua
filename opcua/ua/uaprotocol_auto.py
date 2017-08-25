@@ -735,16 +735,25 @@ class DiagnosticInfo(FrozenClass):
     :vartype InnerDiagnosticInfo: DiagnosticInfo
     '''
 
-    ua_types = {
-        'Encoding': 'UInt8',
-        'SymbolicId': 'Int32',
-        'NamespaceURI': 'Int32',
-        'Locale': 'Int32',
-        'LocalizedText': 'Int32',
-        'AdditionalInfo': 'CharArray',
-        'InnerStatusCode': 'StatusCode',
-        'InnerDiagnosticInfo': 'DiagnosticInfo',
+    ua_switches = {
+        'SymbolicId': ('Encoding', 0),
+        'NamespaceURI': ('Encoding', 1),
+        'Locale': ('Encoding', 2),
+        'LocalizedText': ('Encoding', 3),
+        'AdditionalInfo': ('Encoding', 4),
+        'InnerStatusCode': ('Encoding', 5),
+        'InnerDiagnosticInfo': ('Encoding', 6),
                }
+    ua_types = (
+        ('Encoding', 'UInt8'),
+        ('SymbolicId', 'Int32'),
+        ('NamespaceURI', 'Int32'),
+        ('Locale', 'Int32'),
+        ('LocalizedText', 'Int32'),
+        ('AdditionalInfo', 'CharArray'),
+        ('InnerStatusCode', 'StatusCode'),
+        ('InnerDiagnosticInfo', 'DiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -849,13 +858,13 @@ class TrustListDataType(FrozenClass):
     :vartype IssuerCrls: ByteString
     '''
 
-    ua_types = {
-        'SpecifiedLists': 'UInt32',
-        'TrustedCertificates': 'ListOfByteString',
-        'TrustedCrls': 'ListOfByteString',
-        'IssuerCertificates': 'ListOfByteString',
-        'IssuerCrls': 'ListOfByteString',
-               }
+    ua_types = (
+        ('SpecifiedLists', 'UInt32'),
+        ('TrustedCertificates', 'ListOfByteString'),
+        ('TrustedCrls', 'ListOfByteString'),
+        ('IssuerCertificates', 'ListOfByteString'),
+        ('IssuerCrls', 'ListOfByteString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -923,13 +932,13 @@ class Argument(FrozenClass):
     :vartype Description: LocalizedText
     '''
 
-    ua_types = {
-        'Name': 'String',
-        'DataType': 'NodeId',
-        'ValueRank': 'Int32',
-        'ArrayDimensions': 'ListOfUInt32',
-        'Description': 'LocalizedText',
-               }
+    ua_types = (
+        ('Name', 'String'),
+        ('DataType', 'NodeId'),
+        ('ValueRank', 'Int32'),
+        ('ArrayDimensions', 'ListOfUInt32'),
+        ('Description', 'LocalizedText'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -987,11 +996,11 @@ class EnumValueType(FrozenClass):
     :vartype Description: LocalizedText
     '''
 
-    ua_types = {
-        'Value': 'Int64',
-        'DisplayName': 'LocalizedText',
-        'Description': 'LocalizedText',
-               }
+    ua_types = (
+        ('Value', 'Int64'),
+        ('DisplayName', 'LocalizedText'),
+        ('Description', 'LocalizedText'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1037,10 +1046,10 @@ class OptionSet(FrozenClass):
     :vartype ValidBits: ByteString
     '''
 
-    ua_types = {
-        'Value': 'ByteString',
-        'ValidBits': 'ByteString',
-               }
+    ua_types = (
+        ('Value', 'ByteString'),
+        ('ValidBits', 'ByteString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1078,8 +1087,8 @@ class Union(FrozenClass):
 
     '''
 
-    ua_types = {
-               }
+    ua_types = (
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1113,10 +1122,10 @@ class TimeZoneDataType(FrozenClass):
     :vartype DaylightSavingInOffset: Boolean
     '''
 
-    ua_types = {
-        'Offset': 'Int16',
-        'DaylightSavingInOffset': 'Boolean',
-               }
+    ua_types = (
+        ('Offset', 'Int16'),
+        ('DaylightSavingInOffset', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1168,15 +1177,15 @@ class ApplicationDescription(FrozenClass):
     :vartype DiscoveryUrls: String
     '''
 
-    ua_types = {
-        'ApplicationUri': 'String',
-        'ProductUri': 'String',
-        'ApplicationName': 'LocalizedText',
-        'ApplicationType': 'ApplicationType',
-        'GatewayServerUri': 'String',
-        'DiscoveryProfileUri': 'String',
-        'DiscoveryUrls': 'ListOfString',
-               }
+    ua_types = (
+        ('ApplicationUri', 'String'),
+        ('ProductUri', 'String'),
+        ('ApplicationName', 'LocalizedText'),
+        ('ApplicationType', 'ApplicationType'),
+        ('GatewayServerUri', 'String'),
+        ('DiscoveryProfileUri', 'String'),
+        ('DiscoveryUrls', 'ListOfString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1250,15 +1259,15 @@ class RequestHeader(FrozenClass):
     :vartype AdditionalHeader: ExtensionObject
     '''
 
-    ua_types = {
-        'AuthenticationToken': 'NodeId',
-        'Timestamp': 'DateTime',
-        'RequestHandle': 'UInt32',
-        'ReturnDiagnostics': 'UInt32',
-        'AuditEntryId': 'String',
-        'TimeoutHint': 'UInt32',
-        'AdditionalHeader': 'ExtensionObject',
-               }
+    ua_types = (
+        ('AuthenticationToken', 'NodeId'),
+        ('Timestamp', 'DateTime'),
+        ('RequestHandle', 'UInt32'),
+        ('ReturnDiagnostics', 'UInt32'),
+        ('AuditEntryId', 'String'),
+        ('TimeoutHint', 'UInt32'),
+        ('AdditionalHeader', 'ExtensionObject'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1328,14 +1337,14 @@ class ResponseHeader(FrozenClass):
     :vartype AdditionalHeader: ExtensionObject
     '''
 
-    ua_types = {
-        'Timestamp': 'DateTime',
-        'RequestHandle': 'UInt32',
-        'ServiceResult': 'StatusCode',
-        'ServiceDiagnostics': 'DiagnosticInfo',
-        'StringTable': 'ListOfString',
-        'AdditionalHeader': 'ExtensionObject',
-               }
+    ua_types = (
+        ('Timestamp', 'DateTime'),
+        ('RequestHandle', 'UInt32'),
+        ('ServiceResult', 'StatusCode'),
+        ('ServiceDiagnostics', 'DiagnosticInfo'),
+        ('StringTable', 'ListOfString'),
+        ('AdditionalHeader', 'ExtensionObject'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1395,10 +1404,10 @@ class ServiceFault(FrozenClass):
     :vartype ResponseHeader: ResponseHeader
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1440,11 +1449,11 @@ class FindServersParameters(FrozenClass):
     :vartype ServerUris: String
     '''
 
-    ua_types = {
-        'EndpointUrl': 'String',
-        'LocaleIds': 'ListOfString',
-        'ServerUris': 'ListOfString',
-               }
+    ua_types = (
+        ('EndpointUrl', 'String'),
+        ('LocaleIds', 'ListOfString'),
+        ('ServerUris', 'ListOfString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1496,11 +1505,11 @@ class FindServersRequest(FrozenClass):
     :vartype Parameters: FindServersParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'FindServersParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'FindServersParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1548,11 +1557,11 @@ class FindServersResponse(FrozenClass):
     :vartype Servers: ApplicationDescription
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Servers': 'ListOfApplicationDescription',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Servers', 'ListOfApplicationDescription'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1607,12 +1616,12 @@ class ServerOnNetwork(FrozenClass):
     :vartype ServerCapabilities: String
     '''
 
-    ua_types = {
-        'RecordId': 'UInt32',
-        'ServerName': 'String',
-        'DiscoveryUrl': 'String',
-        'ServerCapabilities': 'ListOfString',
-               }
+    ua_types = (
+        ('RecordId', 'UInt32'),
+        ('ServerName', 'String'),
+        ('DiscoveryUrl', 'String'),
+        ('ServerCapabilities', 'ListOfString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1664,11 +1673,11 @@ class FindServersOnNetworkParameters(FrozenClass):
     :vartype ServerCapabilityFilter: String
     '''
 
-    ua_types = {
-        'StartingRecordId': 'UInt32',
-        'MaxRecordsToReturn': 'UInt32',
-        'ServerCapabilityFilter': 'ListOfString',
-               }
+    ua_types = (
+        ('StartingRecordId', 'UInt32'),
+        ('MaxRecordsToReturn', 'UInt32'),
+        ('ServerCapabilityFilter', 'ListOfString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1716,11 +1725,11 @@ class FindServersOnNetworkRequest(FrozenClass):
     :vartype Parameters: FindServersOnNetworkParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'FindServersOnNetworkParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'FindServersOnNetworkParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1764,10 +1773,10 @@ class FindServersOnNetworkResult(FrozenClass):
     :vartype Servers: ServerOnNetwork
     '''
 
-    ua_types = {
-        'LastCounterResetTime': 'DateTime',
-        'Servers': 'ListOfServerOnNetwork',
-               }
+    ua_types = (
+        ('LastCounterResetTime', 'DateTime'),
+        ('Servers', 'ListOfServerOnNetwork'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1816,11 +1825,11 @@ class FindServersOnNetworkResponse(FrozenClass):
     :vartype Parameters: FindServersOnNetworkResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'FindServersOnNetworkResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'FindServersOnNetworkResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1872,13 +1881,13 @@ class UserTokenPolicy(FrozenClass):
     :vartype SecurityPolicyUri: String
     '''
 
-    ua_types = {
-        'PolicyId': 'String',
-        'TokenType': 'UserTokenType',
-        'IssuedTokenType': 'String',
-        'IssuerEndpointUrl': 'String',
-        'SecurityPolicyUri': 'String',
-               }
+    ua_types = (
+        ('PolicyId', 'String'),
+        ('TokenType', 'UserTokenType'),
+        ('IssuedTokenType', 'String'),
+        ('IssuerEndpointUrl', 'String'),
+        ('SecurityPolicyUri', 'String'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -1944,16 +1953,16 @@ class EndpointDescription(FrozenClass):
     :vartype SecurityLevel: Byte
     '''
 
-    ua_types = {
-        'EndpointUrl': 'String',
-        'Server': 'ApplicationDescription',
-        'ServerCertificate': 'ByteString',
-        'SecurityMode': 'MessageSecurityMode',
-        'SecurityPolicyUri': 'String',
-        'UserIdentityTokens': 'ListOfUserTokenPolicy',
-        'TransportProfileUri': 'String',
-        'SecurityLevel': 'Byte',
-               }
+    ua_types = (
+        ('EndpointUrl', 'String'),
+        ('Server', 'ApplicationDescription'),
+        ('ServerCertificate', 'ByteString'),
+        ('SecurityMode', 'MessageSecurityMode'),
+        ('SecurityPolicyUri', 'String'),
+        ('UserIdentityTokens', 'ListOfUserTokenPolicy'),
+        ('TransportProfileUri', 'String'),
+        ('SecurityLevel', 'Byte'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2026,11 +2035,11 @@ class GetEndpointsParameters(FrozenClass):
     :vartype ProfileUris: String
     '''
 
-    ua_types = {
-        'EndpointUrl': 'String',
-        'LocaleIds': 'ListOfString',
-        'ProfileUris': 'ListOfString',
-               }
+    ua_types = (
+        ('EndpointUrl', 'String'),
+        ('LocaleIds', 'ListOfString'),
+        ('ProfileUris', 'ListOfString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2082,11 +2091,11 @@ class GetEndpointsRequest(FrozenClass):
     :vartype Parameters: GetEndpointsParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'GetEndpointsParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'GetEndpointsParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2134,11 +2143,11 @@ class GetEndpointsResponse(FrozenClass):
     :vartype Endpoints: EndpointDescription
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Endpoints': 'ListOfEndpointDescription',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Endpoints', 'ListOfEndpointDescription'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2203,16 +2212,16 @@ class RegisteredServer(FrozenClass):
     :vartype IsOnline: Boolean
     '''
 
-    ua_types = {
-        'ServerUri': 'String',
-        'ProductUri': 'String',
-        'ServerNames': 'ListOfLocalizedText',
-        'ServerType': 'ApplicationType',
-        'GatewayServerUri': 'String',
-        'DiscoveryUrls': 'ListOfString',
-        'SemaphoreFilePath': 'String',
-        'IsOnline': 'Boolean',
-               }
+    ua_types = (
+        ('ServerUri', 'String'),
+        ('ProductUri', 'String'),
+        ('ServerNames', 'ListOfLocalizedText'),
+        ('ServerType', 'ApplicationType'),
+        ('GatewayServerUri', 'String'),
+        ('DiscoveryUrls', 'ListOfString'),
+        ('SemaphoreFilePath', 'String'),
+        ('IsOnline', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2289,11 +2298,11 @@ class RegisterServerRequest(FrozenClass):
     :vartype Server: RegisteredServer
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Server': 'RegisteredServer',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Server', 'RegisteredServer'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2339,10 +2348,10 @@ class RegisterServerResponse(FrozenClass):
     :vartype ResponseHeader: ResponseHeader
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2380,8 +2389,8 @@ class DiscoveryConfiguration(FrozenClass):
 
     '''
 
-    ua_types = {
-               }
+    ua_types = (
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2417,10 +2426,10 @@ class MdnsDiscoveryConfiguration(FrozenClass):
     :vartype ServerCapabilities: String
     '''
 
-    ua_types = {
-        'MdnsServerName': 'String',
-        'ServerCapabilities': 'ListOfString',
-               }
+    ua_types = (
+        ('MdnsServerName', 'String'),
+        ('ServerCapabilities', 'ListOfString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2462,10 +2471,10 @@ class RegisterServer2Parameters(FrozenClass):
     :vartype DiscoveryConfiguration: ExtensionObject
     '''
 
-    ua_types = {
-        'Server': 'RegisteredServer',
-        'DiscoveryConfiguration': 'ListOfExtensionObject',
-               }
+    ua_types = (
+        ('Server', 'RegisteredServer'),
+        ('DiscoveryConfiguration', 'ListOfExtensionObject'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2514,11 +2523,11 @@ class RegisterServer2Request(FrozenClass):
     :vartype Parameters: RegisterServer2Parameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'RegisterServer2Parameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'RegisterServer2Parameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2566,12 +2575,12 @@ class RegisterServer2Response(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'ConfigurationResults': 'ListOfStatusCode',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('ConfigurationResults', 'ListOfStatusCode'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2639,12 +2648,12 @@ class ChannelSecurityToken(FrozenClass):
     :vartype RevisedLifetime: UInt32
     '''
 
-    ua_types = {
-        'ChannelId': 'UInt32',
-        'TokenId': 'UInt32',
-        'CreatedAt': 'DateTime',
-        'RevisedLifetime': 'UInt32',
-               }
+    ua_types = (
+        ('ChannelId', 'UInt32'),
+        ('TokenId', 'UInt32'),
+        ('CreatedAt', 'DateTime'),
+        ('RevisedLifetime', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2698,13 +2707,13 @@ class OpenSecureChannelParameters(FrozenClass):
     :vartype RequestedLifetime: UInt32
     '''
 
-    ua_types = {
-        'ClientProtocolVersion': 'UInt32',
-        'RequestType': 'SecurityTokenRequestType',
-        'SecurityMode': 'MessageSecurityMode',
-        'ClientNonce': 'ByteString',
-        'RequestedLifetime': 'UInt32',
-               }
+    ua_types = (
+        ('ClientProtocolVersion', 'UInt32'),
+        ('RequestType', 'SecurityTokenRequestType'),
+        ('SecurityMode', 'MessageSecurityMode'),
+        ('ClientNonce', 'ByteString'),
+        ('RequestedLifetime', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2760,11 +2769,11 @@ class OpenSecureChannelRequest(FrozenClass):
     :vartype Parameters: OpenSecureChannelParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'OpenSecureChannelParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'OpenSecureChannelParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2810,11 +2819,11 @@ class OpenSecureChannelResult(FrozenClass):
     :vartype ServerNonce: ByteString
     '''
 
-    ua_types = {
-        'ServerProtocolVersion': 'UInt32',
-        'SecurityToken': 'ChannelSecurityToken',
-        'ServerNonce': 'ByteString',
-               }
+    ua_types = (
+        ('ServerProtocolVersion', 'UInt32'),
+        ('SecurityToken', 'ChannelSecurityToken'),
+        ('ServerNonce', 'ByteString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2862,11 +2871,11 @@ class OpenSecureChannelResponse(FrozenClass):
     :vartype Parameters: OpenSecureChannelResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'OpenSecureChannelResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'OpenSecureChannelResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2912,10 +2921,10 @@ class CloseSecureChannelRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -2957,10 +2966,10 @@ class CloseSecureChannelResponse(FrozenClass):
     :vartype ResponseHeader: ResponseHeader
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3002,10 +3011,10 @@ class SignedSoftwareCertificate(FrozenClass):
     :vartype Signature: ByteString
     '''
 
-    ua_types = {
-        'CertificateData': 'ByteString',
-        'Signature': 'ByteString',
-               }
+    ua_types = (
+        ('CertificateData', 'ByteString'),
+        ('Signature', 'ByteString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3047,10 +3056,10 @@ class SignatureData(FrozenClass):
     :vartype Signature: ByteString
     '''
 
-    ua_types = {
-        'Algorithm': 'String',
-        'Signature': 'ByteString',
-               }
+    ua_types = (
+        ('Algorithm', 'String'),
+        ('Signature', 'ByteString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3102,16 +3111,16 @@ class CreateSessionParameters(FrozenClass):
     :vartype MaxResponseMessageSize: UInt32
     '''
 
-    ua_types = {
-        'ClientDescription': 'ApplicationDescription',
-        'ServerUri': 'String',
-        'EndpointUrl': 'String',
-        'SessionName': 'String',
-        'ClientNonce': 'ByteString',
-        'ClientCertificate': 'ByteString',
-        'RequestedSessionTimeout': 'Double',
-        'MaxResponseMessageSize': 'UInt32',
-               }
+    ua_types = (
+        ('ClientDescription', 'ApplicationDescription'),
+        ('ServerUri', 'String'),
+        ('EndpointUrl', 'String'),
+        ('SessionName', 'String'),
+        ('ClientNonce', 'ByteString'),
+        ('ClientCertificate', 'ByteString'),
+        ('RequestedSessionTimeout', 'Double'),
+        ('MaxResponseMessageSize', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3179,11 +3188,11 @@ class CreateSessionRequest(FrozenClass):
     :vartype Parameters: CreateSessionParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'CreateSessionParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'CreateSessionParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3241,17 +3250,17 @@ class CreateSessionResult(FrozenClass):
     :vartype MaxRequestMessageSize: UInt32
     '''
 
-    ua_types = {
-        'SessionId': 'NodeId',
-        'AuthenticationToken': 'NodeId',
-        'RevisedSessionTimeout': 'Double',
-        'ServerNonce': 'ByteString',
-        'ServerCertificate': 'ByteString',
-        'ServerEndpoints': 'ListOfEndpointDescription',
-        'ServerSoftwareCertificates': 'ListOfSignedSoftwareCertificate',
-        'ServerSignature': 'SignatureData',
-        'MaxRequestMessageSize': 'UInt32',
-               }
+    ua_types = (
+        ('SessionId', 'NodeId'),
+        ('AuthenticationToken', 'NodeId'),
+        ('RevisedSessionTimeout', 'Double'),
+        ('ServerNonce', 'ByteString'),
+        ('ServerCertificate', 'ByteString'),
+        ('ServerEndpoints', 'ListOfEndpointDescription'),
+        ('ServerSoftwareCertificates', 'ListOfSignedSoftwareCertificate'),
+        ('ServerSignature', 'SignatureData'),
+        ('MaxRequestMessageSize', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3337,11 +3346,11 @@ class CreateSessionResponse(FrozenClass):
     :vartype Parameters: CreateSessionResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'CreateSessionResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'CreateSessionResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3385,9 +3394,9 @@ class UserIdentityToken(FrozenClass):
     :vartype PolicyId: String
     '''
 
-    ua_types = {
-        'PolicyId': 'String',
-               }
+    ua_types = (
+        ('PolicyId', 'String'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3423,9 +3432,9 @@ class AnonymousIdentityToken(FrozenClass):
     :vartype PolicyId: String
     '''
 
-    ua_types = {
-        'PolicyId': 'String',
-               }
+    ua_types = (
+        ('PolicyId', 'String'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3467,12 +3476,12 @@ class UserNameIdentityToken(FrozenClass):
     :vartype EncryptionAlgorithm: String
     '''
 
-    ua_types = {
-        'PolicyId': 'String',
-        'UserName': 'String',
-        'Password': 'ByteString',
-        'EncryptionAlgorithm': 'String',
-               }
+    ua_types = (
+        ('PolicyId', 'String'),
+        ('UserName', 'String'),
+        ('Password', 'ByteString'),
+        ('EncryptionAlgorithm', 'String'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3522,10 +3531,10 @@ class X509IdentityToken(FrozenClass):
     :vartype CertificateData: ByteString
     '''
 
-    ua_types = {
-        'PolicyId': 'String',
-        'CertificateData': 'ByteString',
-               }
+    ua_types = (
+        ('PolicyId', 'String'),
+        ('CertificateData', 'ByteString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3565,10 +3574,10 @@ class KerberosIdentityToken(FrozenClass):
     :vartype TicketData: ByteString
     '''
 
-    ua_types = {
-        'PolicyId': 'String',
-        'TicketData': 'ByteString',
-               }
+    ua_types = (
+        ('PolicyId', 'String'),
+        ('TicketData', 'ByteString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3612,11 +3621,11 @@ class IssuedIdentityToken(FrozenClass):
     :vartype EncryptionAlgorithm: String
     '''
 
-    ua_types = {
-        'PolicyId': 'String',
-        'TokenData': 'ByteString',
-        'EncryptionAlgorithm': 'String',
-               }
+    ua_types = (
+        ('PolicyId', 'String'),
+        ('TokenData', 'ByteString'),
+        ('EncryptionAlgorithm', 'String'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3666,13 +3675,13 @@ class ActivateSessionParameters(FrozenClass):
     :vartype UserTokenSignature: SignatureData
     '''
 
-    ua_types = {
-        'ClientSignature': 'SignatureData',
-        'ClientSoftwareCertificates': 'ListOfSignedSoftwareCertificate',
-        'LocaleIds': 'ListOfString',
-        'UserIdentityToken': 'ExtensionObject',
-        'UserTokenSignature': 'SignatureData',
-               }
+    ua_types = (
+        ('ClientSignature', 'SignatureData'),
+        ('ClientSoftwareCertificates', 'ListOfSignedSoftwareCertificate'),
+        ('LocaleIds', 'ListOfString'),
+        ('UserIdentityToken', 'ExtensionObject'),
+        ('UserTokenSignature', 'SignatureData'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3737,11 +3746,11 @@ class ActivateSessionRequest(FrozenClass):
     :vartype Parameters: ActivateSessionParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'ActivateSessionParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'ActivateSessionParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3787,11 +3796,11 @@ class ActivateSessionResult(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'ServerNonce': 'ByteString',
-        'Results': 'ListOfStatusCode',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('ServerNonce', 'ByteString'),
+        ('Results', 'ListOfStatusCode'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3853,11 +3862,11 @@ class ActivateSessionResponse(FrozenClass):
     :vartype Parameters: ActivateSessionResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'ActivateSessionResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'ActivateSessionResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3905,11 +3914,11 @@ class CloseSessionRequest(FrozenClass):
     :vartype DeleteSubscriptions: Boolean
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'DeleteSubscriptions': 'Boolean',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('DeleteSubscriptions', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3955,10 +3964,10 @@ class CloseSessionResponse(FrozenClass):
     :vartype ResponseHeader: ResponseHeader
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -3996,9 +4005,9 @@ class CancelParameters(FrozenClass):
     :vartype RequestHandle: UInt32
     '''
 
-    ua_types = {
-        'RequestHandle': 'UInt32',
-               }
+    ua_types = (
+        ('RequestHandle', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -4038,11 +4047,11 @@ class CancelRequest(FrozenClass):
     :vartype Parameters: CancelParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'CancelParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'CancelParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -4084,9 +4093,9 @@ class CancelResult(FrozenClass):
     :vartype CancelCount: UInt32
     '''
 
-    ua_types = {
-        'CancelCount': 'UInt32',
-               }
+    ua_types = (
+        ('CancelCount', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -4126,11 +4135,11 @@ class CancelResponse(FrozenClass):
     :vartype Parameters: CancelResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'CancelResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'CancelResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -4182,13 +4191,13 @@ class NodeAttributes(FrozenClass):
     :vartype UserWriteMask: UInt32
     '''
 
-    ua_types = {
-        'SpecifiedAttributes': 'UInt32',
-        'DisplayName': 'LocalizedText',
-        'Description': 'LocalizedText',
-        'WriteMask': 'UInt32',
-        'UserWriteMask': 'UInt32',
-               }
+    ua_types = (
+        ('SpecifiedAttributes', 'UInt32'),
+        ('DisplayName', 'LocalizedText'),
+        ('Description', 'LocalizedText'),
+        ('WriteMask', 'UInt32'),
+        ('UserWriteMask', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -4250,14 +4259,14 @@ class ObjectAttributes(FrozenClass):
     :vartype EventNotifier: Byte
     '''
 
-    ua_types = {
-        'SpecifiedAttributes': 'UInt32',
-        'DisplayName': 'LocalizedText',
-        'Description': 'LocalizedText',
-        'WriteMask': 'UInt32',
-        'UserWriteMask': 'UInt32',
-        'EventNotifier': 'Byte',
-               }
+    ua_types = (
+        ('SpecifiedAttributes', 'UInt32'),
+        ('DisplayName', 'LocalizedText'),
+        ('Description', 'LocalizedText'),
+        ('WriteMask', 'UInt32'),
+        ('UserWriteMask', 'UInt32'),
+        ('EventNotifier', 'Byte'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -4337,21 +4346,21 @@ class VariableAttributes(FrozenClass):
     :vartype Historizing: Boolean
     '''
 
-    ua_types = {
-        'SpecifiedAttributes': 'UInt32',
-        'DisplayName': 'LocalizedText',
-        'Description': 'LocalizedText',
-        'WriteMask': 'UInt32',
-        'UserWriteMask': 'UInt32',
-        'Value': 'Variant',
-        'DataType': 'NodeId',
-        'ValueRank': 'Int32',
-        'ArrayDimensions': 'ListOfUInt32',
-        'AccessLevel': 'Byte',
-        'UserAccessLevel': 'Byte',
-        'MinimumSamplingInterval': 'Double',
-        'Historizing': 'Boolean',
-               }
+    ua_types = (
+        ('SpecifiedAttributes', 'UInt32'),
+        ('DisplayName', 'LocalizedText'),
+        ('Description', 'LocalizedText'),
+        ('WriteMask', 'UInt32'),
+        ('UserWriteMask', 'UInt32'),
+        ('Value', 'Variant'),
+        ('DataType', 'NodeId'),
+        ('ValueRank', 'Int32'),
+        ('ArrayDimensions', 'ListOfUInt32'),
+        ('AccessLevel', 'Byte'),
+        ('UserAccessLevel', 'Byte'),
+        ('MinimumSamplingInterval', 'Double'),
+        ('Historizing', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -4449,15 +4458,15 @@ class MethodAttributes(FrozenClass):
     :vartype UserExecutable: Boolean
     '''
 
-    ua_types = {
-        'SpecifiedAttributes': 'UInt32',
-        'DisplayName': 'LocalizedText',
-        'Description': 'LocalizedText',
-        'WriteMask': 'UInt32',
-        'UserWriteMask': 'UInt32',
-        'Executable': 'Boolean',
-        'UserExecutable': 'Boolean',
-               }
+    ua_types = (
+        ('SpecifiedAttributes', 'UInt32'),
+        ('DisplayName', 'LocalizedText'),
+        ('Description', 'LocalizedText'),
+        ('WriteMask', 'UInt32'),
+        ('UserWriteMask', 'UInt32'),
+        ('Executable', 'Boolean'),
+        ('UserExecutable', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -4527,14 +4536,14 @@ class ObjectTypeAttributes(FrozenClass):
     :vartype IsAbstract: Boolean
     '''
 
-    ua_types = {
-        'SpecifiedAttributes': 'UInt32',
-        'DisplayName': 'LocalizedText',
-        'Description': 'LocalizedText',
-        'WriteMask': 'UInt32',
-        'UserWriteMask': 'UInt32',
-        'IsAbstract': 'Boolean',
-               }
+    ua_types = (
+        ('SpecifiedAttributes', 'UInt32'),
+        ('DisplayName', 'LocalizedText'),
+        ('Description', 'LocalizedText'),
+        ('WriteMask', 'UInt32'),
+        ('UserWriteMask', 'UInt32'),
+        ('IsAbstract', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -4608,18 +4617,18 @@ class VariableTypeAttributes(FrozenClass):
     :vartype IsAbstract: Boolean
     '''
 
-    ua_types = {
-        'SpecifiedAttributes': 'UInt32',
-        'DisplayName': 'LocalizedText',
-        'Description': 'LocalizedText',
-        'WriteMask': 'UInt32',
-        'UserWriteMask': 'UInt32',
-        'Value': 'Variant',
-        'DataType': 'NodeId',
-        'ValueRank': 'Int32',
-        'ArrayDimensions': 'ListOfUInt32',
-        'IsAbstract': 'Boolean',
-               }
+    ua_types = (
+        ('SpecifiedAttributes', 'UInt32'),
+        ('DisplayName', 'LocalizedText'),
+        ('Description', 'LocalizedText'),
+        ('WriteMask', 'UInt32'),
+        ('UserWriteMask', 'UInt32'),
+        ('Value', 'Variant'),
+        ('DataType', 'NodeId'),
+        ('ValueRank', 'Int32'),
+        ('ArrayDimensions', 'ListOfUInt32'),
+        ('IsAbstract', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -4707,16 +4716,16 @@ class ReferenceTypeAttributes(FrozenClass):
     :vartype InverseName: LocalizedText
     '''
 
-    ua_types = {
-        'SpecifiedAttributes': 'UInt32',
-        'DisplayName': 'LocalizedText',
-        'Description': 'LocalizedText',
-        'WriteMask': 'UInt32',
-        'UserWriteMask': 'UInt32',
-        'IsAbstract': 'Boolean',
-        'Symmetric': 'Boolean',
-        'InverseName': 'LocalizedText',
-               }
+    ua_types = (
+        ('SpecifiedAttributes', 'UInt32'),
+        ('DisplayName', 'LocalizedText'),
+        ('Description', 'LocalizedText'),
+        ('WriteMask', 'UInt32'),
+        ('UserWriteMask', 'UInt32'),
+        ('IsAbstract', 'Boolean'),
+        ('Symmetric', 'Boolean'),
+        ('InverseName', 'LocalizedText'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -4790,14 +4799,14 @@ class DataTypeAttributes(FrozenClass):
     :vartype IsAbstract: Boolean
     '''
 
-    ua_types = {
-        'SpecifiedAttributes': 'UInt32',
-        'DisplayName': 'LocalizedText',
-        'Description': 'LocalizedText',
-        'WriteMask': 'UInt32',
-        'UserWriteMask': 'UInt32',
-        'IsAbstract': 'Boolean',
-               }
+    ua_types = (
+        ('SpecifiedAttributes', 'UInt32'),
+        ('DisplayName', 'LocalizedText'),
+        ('Description', 'LocalizedText'),
+        ('WriteMask', 'UInt32'),
+        ('UserWriteMask', 'UInt32'),
+        ('IsAbstract', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -4865,15 +4874,15 @@ class ViewAttributes(FrozenClass):
     :vartype EventNotifier: Byte
     '''
 
-    ua_types = {
-        'SpecifiedAttributes': 'UInt32',
-        'DisplayName': 'LocalizedText',
-        'Description': 'LocalizedText',
-        'WriteMask': 'UInt32',
-        'UserWriteMask': 'UInt32',
-        'ContainsNoLoops': 'Boolean',
-        'EventNotifier': 'Byte',
-               }
+    ua_types = (
+        ('SpecifiedAttributes', 'UInt32'),
+        ('DisplayName', 'LocalizedText'),
+        ('Description', 'LocalizedText'),
+        ('WriteMask', 'UInt32'),
+        ('UserWriteMask', 'UInt32'),
+        ('ContainsNoLoops', 'Boolean'),
+        ('EventNotifier', 'Byte'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -4945,15 +4954,15 @@ class AddNodesItem(FrozenClass):
     :vartype TypeDefinition: ExpandedNodeId
     '''
 
-    ua_types = {
-        'ParentNodeId': 'ExpandedNodeId',
-        'ReferenceTypeId': 'NodeId',
-        'RequestedNewNodeId': 'ExpandedNodeId',
-        'BrowseName': 'QualifiedName',
-        'NodeClass': 'NodeClass',
-        'NodeAttributes': 'ExtensionObject',
-        'TypeDefinition': 'ExpandedNodeId',
-               }
+    ua_types = (
+        ('ParentNodeId', 'ExpandedNodeId'),
+        ('ReferenceTypeId', 'NodeId'),
+        ('RequestedNewNodeId', 'ExpandedNodeId'),
+        ('BrowseName', 'QualifiedName'),
+        ('NodeClass', 'NodeClass'),
+        ('NodeAttributes', 'ExtensionObject'),
+        ('TypeDefinition', 'ExpandedNodeId'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5015,10 +5024,10 @@ class AddNodesResult(FrozenClass):
     :vartype AddedNodeId: NodeId
     '''
 
-    ua_types = {
-        'StatusCode': 'StatusCode',
-        'AddedNodeId': 'NodeId',
-               }
+    ua_types = (
+        ('StatusCode', 'StatusCode'),
+        ('AddedNodeId', 'NodeId'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5056,9 +5065,9 @@ class AddNodesParameters(FrozenClass):
     :vartype NodesToAdd: AddNodesItem
     '''
 
-    ua_types = {
-        'NodesToAdd': 'ListOfAddNodesItem',
-               }
+    ua_types = (
+        ('NodesToAdd', 'ListOfAddNodesItem'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5105,11 +5114,11 @@ class AddNodesRequest(FrozenClass):
     :vartype Parameters: AddNodesParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'AddNodesParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'AddNodesParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5159,12 +5168,12 @@ class AddNodesResponse(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Results': 'ListOfAddNodesResult',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Results', 'ListOfAddNodesResult'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5236,14 +5245,14 @@ class AddReferencesItem(FrozenClass):
     :vartype TargetNodeClass: NodeClass
     '''
 
-    ua_types = {
-        'SourceNodeId': 'NodeId',
-        'ReferenceTypeId': 'NodeId',
-        'IsForward': 'Boolean',
-        'TargetServerUri': 'String',
-        'TargetNodeId': 'ExpandedNodeId',
-        'TargetNodeClass': 'NodeClass',
-               }
+    ua_types = (
+        ('SourceNodeId', 'NodeId'),
+        ('ReferenceTypeId', 'NodeId'),
+        ('IsForward', 'Boolean'),
+        ('TargetServerUri', 'String'),
+        ('TargetNodeId', 'ExpandedNodeId'),
+        ('TargetNodeClass', 'NodeClass'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5297,9 +5306,9 @@ class AddReferencesParameters(FrozenClass):
     :vartype ReferencesToAdd: AddReferencesItem
     '''
 
-    ua_types = {
-        'ReferencesToAdd': 'ListOfAddReferencesItem',
-               }
+    ua_types = (
+        ('ReferencesToAdd', 'ListOfAddReferencesItem'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5346,11 +5355,11 @@ class AddReferencesRequest(FrozenClass):
     :vartype Parameters: AddReferencesParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'AddReferencesParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'AddReferencesParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5400,12 +5409,12 @@ class AddReferencesResponse(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Results': 'ListOfStatusCode',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Results', 'ListOfStatusCode'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5469,10 +5478,10 @@ class DeleteNodesItem(FrozenClass):
     :vartype DeleteTargetReferences: Boolean
     '''
 
-    ua_types = {
-        'NodeId': 'NodeId',
-        'DeleteTargetReferences': 'Boolean',
-               }
+    ua_types = (
+        ('NodeId', 'NodeId'),
+        ('DeleteTargetReferences', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5510,9 +5519,9 @@ class DeleteNodesParameters(FrozenClass):
     :vartype NodesToDelete: DeleteNodesItem
     '''
 
-    ua_types = {
-        'NodesToDelete': 'ListOfDeleteNodesItem',
-               }
+    ua_types = (
+        ('NodesToDelete', 'ListOfDeleteNodesItem'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5559,11 +5568,11 @@ class DeleteNodesRequest(FrozenClass):
     :vartype Parameters: DeleteNodesParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'DeleteNodesParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'DeleteNodesParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5613,12 +5622,12 @@ class DeleteNodesResponse(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Results': 'ListOfStatusCode',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Results', 'ListOfStatusCode'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5688,13 +5697,13 @@ class DeleteReferencesItem(FrozenClass):
     :vartype DeleteBidirectional: Boolean
     '''
 
-    ua_types = {
-        'SourceNodeId': 'NodeId',
-        'ReferenceTypeId': 'NodeId',
-        'IsForward': 'Boolean',
-        'TargetNodeId': 'ExpandedNodeId',
-        'DeleteBidirectional': 'Boolean',
-               }
+    ua_types = (
+        ('SourceNodeId', 'NodeId'),
+        ('ReferenceTypeId', 'NodeId'),
+        ('IsForward', 'Boolean'),
+        ('TargetNodeId', 'ExpandedNodeId'),
+        ('DeleteBidirectional', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5744,9 +5753,9 @@ class DeleteReferencesParameters(FrozenClass):
     :vartype ReferencesToDelete: DeleteReferencesItem
     '''
 
-    ua_types = {
-        'ReferencesToDelete': 'ListOfDeleteReferencesItem',
-               }
+    ua_types = (
+        ('ReferencesToDelete', 'ListOfDeleteReferencesItem'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5793,11 +5802,11 @@ class DeleteReferencesRequest(FrozenClass):
     :vartype Parameters: DeleteReferencesParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'DeleteReferencesParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'DeleteReferencesParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5841,10 +5850,10 @@ class DeleteReferencesResult(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'Results': 'ListOfStatusCode',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('Results', 'ListOfStatusCode'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5902,11 +5911,11 @@ class DeleteReferencesResponse(FrozenClass):
     :vartype Parameters: DeleteReferencesResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'DeleteReferencesResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'DeleteReferencesResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -5954,11 +5963,11 @@ class ViewDescription(FrozenClass):
     :vartype ViewVersion: UInt32
     '''
 
-    ua_types = {
-        'ViewId': 'NodeId',
-        'Timestamp': 'DateTime',
-        'ViewVersion': 'UInt32',
-               }
+    ua_types = (
+        ('ViewId', 'NodeId'),
+        ('Timestamp', 'DateTime'),
+        ('ViewVersion', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6012,14 +6021,14 @@ class BrowseDescription(FrozenClass):
     :vartype ResultMask: UInt32
     '''
 
-    ua_types = {
-        'NodeId': 'NodeId',
-        'BrowseDirection': 'BrowseDirection',
-        'ReferenceTypeId': 'NodeId',
-        'IncludeSubtypes': 'Boolean',
-        'NodeClassMask': 'UInt32',
-        'ResultMask': 'UInt32',
-               }
+    ua_types = (
+        ('NodeId', 'NodeId'),
+        ('BrowseDirection', 'BrowseDirection'),
+        ('ReferenceTypeId', 'NodeId'),
+        ('IncludeSubtypes', 'Boolean'),
+        ('NodeClassMask', 'UInt32'),
+        ('ResultMask', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6087,15 +6096,15 @@ class ReferenceDescription(FrozenClass):
     :vartype TypeDefinition: ExpandedNodeId
     '''
 
-    ua_types = {
-        'ReferenceTypeId': 'NodeId',
-        'IsForward': 'Boolean',
-        'NodeId': 'ExpandedNodeId',
-        'BrowseName': 'QualifiedName',
-        'DisplayName': 'LocalizedText',
-        'NodeClass': 'NodeClass',
-        'TypeDefinition': 'ExpandedNodeId',
-               }
+    ua_types = (
+        ('ReferenceTypeId', 'NodeId'),
+        ('IsForward', 'Boolean'),
+        ('NodeId', 'ExpandedNodeId'),
+        ('BrowseName', 'QualifiedName'),
+        ('DisplayName', 'LocalizedText'),
+        ('NodeClass', 'NodeClass'),
+        ('TypeDefinition', 'ExpandedNodeId'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6159,11 +6168,11 @@ class BrowseResult(FrozenClass):
     :vartype References: ReferenceDescription
     '''
 
-    ua_types = {
-        'StatusCode': 'StatusCode',
-        'ContinuationPoint': 'ByteString',
-        'References': 'ListOfReferenceDescription',
-               }
+    ua_types = (
+        ('StatusCode', 'StatusCode'),
+        ('ContinuationPoint', 'ByteString'),
+        ('References', 'ListOfReferenceDescription'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6216,11 +6225,11 @@ class BrowseParameters(FrozenClass):
     :vartype NodesToBrowse: BrowseDescription
     '''
 
-    ua_types = {
-        'View': 'ViewDescription',
-        'RequestedMaxReferencesPerNode': 'UInt32',
-        'NodesToBrowse': 'ListOfBrowseDescription',
-               }
+    ua_types = (
+        ('View', 'ViewDescription'),
+        ('RequestedMaxReferencesPerNode', 'UInt32'),
+        ('NodesToBrowse', 'ListOfBrowseDescription'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6275,11 +6284,11 @@ class BrowseRequest(FrozenClass):
     :vartype Parameters: BrowseParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'BrowseParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'BrowseParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6329,12 +6338,12 @@ class BrowseResponse(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Results': 'ListOfBrowseResult',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Results', 'ListOfBrowseResult'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6396,10 +6405,10 @@ class BrowseNextParameters(FrozenClass):
     :vartype ContinuationPoints: ByteString
     '''
 
-    ua_types = {
-        'ReleaseContinuationPoints': 'Boolean',
-        'ContinuationPoints': 'ListOfByteString',
-               }
+    ua_types = (
+        ('ReleaseContinuationPoints', 'Boolean'),
+        ('ContinuationPoints', 'ListOfByteString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6445,11 +6454,11 @@ class BrowseNextRequest(FrozenClass):
     :vartype Parameters: BrowseNextParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'BrowseNextParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'BrowseNextParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6493,10 +6502,10 @@ class BrowseNextResult(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'Results': 'ListOfBrowseResult',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('Results', 'ListOfBrowseResult'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6554,11 +6563,11 @@ class BrowseNextResponse(FrozenClass):
     :vartype Parameters: BrowseNextResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'BrowseNextResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'BrowseNextResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6608,12 +6617,12 @@ class RelativePathElement(FrozenClass):
     :vartype TargetName: QualifiedName
     '''
 
-    ua_types = {
-        'ReferenceTypeId': 'NodeId',
-        'IsInverse': 'Boolean',
-        'IncludeSubtypes': 'Boolean',
-        'TargetName': 'QualifiedName',
-               }
+    ua_types = (
+        ('ReferenceTypeId', 'NodeId'),
+        ('IsInverse', 'Boolean'),
+        ('IncludeSubtypes', 'Boolean'),
+        ('TargetName', 'QualifiedName'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6661,9 +6670,9 @@ class RelativePath(FrozenClass):
     :vartype Elements: RelativePathElement
     '''
 
-    ua_types = {
-        'Elements': 'ListOfRelativePathElement',
-               }
+    ua_types = (
+        ('Elements', 'ListOfRelativePathElement'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6708,10 +6717,10 @@ class BrowsePath(FrozenClass):
     :vartype RelativePath: RelativePath
     '''
 
-    ua_types = {
-        'StartingNode': 'NodeId',
-        'RelativePath': 'RelativePath',
-               }
+    ua_types = (
+        ('StartingNode', 'NodeId'),
+        ('RelativePath', 'RelativePath'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6753,10 +6762,10 @@ class BrowsePathTarget(FrozenClass):
     :vartype RemainingPathIndex: UInt32
     '''
 
-    ua_types = {
-        'TargetId': 'ExpandedNodeId',
-        'RemainingPathIndex': 'UInt32',
-               }
+    ua_types = (
+        ('TargetId', 'ExpandedNodeId'),
+        ('RemainingPathIndex', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6798,10 +6807,10 @@ class BrowsePathResult(FrozenClass):
     :vartype Targets: BrowsePathTarget
     '''
 
-    ua_types = {
-        'StatusCode': 'StatusCode',
-        'Targets': 'ListOfBrowsePathTarget',
-               }
+    ua_types = (
+        ('StatusCode', 'StatusCode'),
+        ('Targets', 'ListOfBrowsePathTarget'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6846,9 +6855,9 @@ class TranslateBrowsePathsToNodeIdsParameters(FrozenClass):
     :vartype BrowsePaths: BrowsePath
     '''
 
-    ua_types = {
-        'BrowsePaths': 'ListOfBrowsePath',
-               }
+    ua_types = (
+        ('BrowsePaths', 'ListOfBrowsePath'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6895,11 +6904,11 @@ class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
     :vartype Parameters: TranslateBrowsePathsToNodeIdsParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'TranslateBrowsePathsToNodeIdsParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'TranslateBrowsePathsToNodeIdsParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -6949,12 +6958,12 @@ class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Results': 'ListOfBrowsePathResult',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Results', 'ListOfBrowsePathResult'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7014,9 +7023,9 @@ class RegisterNodesParameters(FrozenClass):
     :vartype NodesToRegister: NodeId
     '''
 
-    ua_types = {
-        'NodesToRegister': 'ListOfNodeId',
-               }
+    ua_types = (
+        ('NodesToRegister', 'ListOfNodeId'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7063,11 +7072,11 @@ class RegisterNodesRequest(FrozenClass):
     :vartype Parameters: RegisterNodesParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'RegisterNodesParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'RegisterNodesParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7109,9 +7118,9 @@ class RegisterNodesResult(FrozenClass):
     :vartype RegisteredNodeIds: NodeId
     '''
 
-    ua_types = {
-        'RegisteredNodeIds': 'ListOfNodeId',
-               }
+    ua_types = (
+        ('RegisteredNodeIds', 'ListOfNodeId'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7158,11 +7167,11 @@ class RegisterNodesResponse(FrozenClass):
     :vartype Parameters: RegisterNodesResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'RegisterNodesResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'RegisterNodesResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7204,9 +7213,9 @@ class UnregisterNodesParameters(FrozenClass):
     :vartype NodesToUnregister: NodeId
     '''
 
-    ua_types = {
-        'NodesToUnregister': 'ListOfNodeId',
-               }
+    ua_types = (
+        ('NodesToUnregister', 'ListOfNodeId'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7253,11 +7262,11 @@ class UnregisterNodesRequest(FrozenClass):
     :vartype Parameters: UnregisterNodesParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'UnregisterNodesParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'UnregisterNodesParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7303,10 +7312,10 @@ class UnregisterNodesResponse(FrozenClass):
     :vartype ResponseHeader: ResponseHeader
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7360,17 +7369,17 @@ class EndpointConfiguration(FrozenClass):
     :vartype SecurityTokenLifetime: Int32
     '''
 
-    ua_types = {
-        'OperationTimeout': 'Int32',
-        'UseBinaryEncoding': 'Boolean',
-        'MaxStringLength': 'Int32',
-        'MaxByteStringLength': 'Int32',
-        'MaxArrayLength': 'Int32',
-        'MaxMessageSize': 'Int32',
-        'MaxBufferSize': 'Int32',
-        'ChannelLifetime': 'Int32',
-        'SecurityTokenLifetime': 'Int32',
-               }
+    ua_types = (
+        ('OperationTimeout', 'Int32'),
+        ('UseBinaryEncoding', 'Boolean'),
+        ('MaxStringLength', 'Int32'),
+        ('MaxByteStringLength', 'Int32'),
+        ('MaxArrayLength', 'Int32'),
+        ('MaxMessageSize', 'Int32'),
+        ('MaxBufferSize', 'Int32'),
+        ('ChannelLifetime', 'Int32'),
+        ('SecurityTokenLifetime', 'Int32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7446,14 +7455,14 @@ class SupportedProfile(FrozenClass):
     :vartype UnsupportedUnitIds: String
     '''
 
-    ua_types = {
-        'OrganizationUri': 'String',
-        'ProfileId': 'String',
-        'ComplianceTool': 'String',
-        'ComplianceDate': 'DateTime',
-        'ComplianceLevel': 'ComplianceLevel',
-        'UnsupportedUnitIds': 'ListOfString',
-               }
+    ua_types = (
+        ('OrganizationUri', 'String'),
+        ('ProfileId', 'String'),
+        ('ComplianceTool', 'String'),
+        ('ComplianceDate', 'DateTime'),
+        ('ComplianceLevel', 'ComplianceLevel'),
+        ('UnsupportedUnitIds', 'ListOfString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7527,18 +7536,18 @@ class SoftwareCertificate(FrozenClass):
     :vartype SupportedProfiles: SupportedProfile
     '''
 
-    ua_types = {
-        'ProductName': 'String',
-        'ProductUri': 'String',
-        'VendorName': 'String',
-        'VendorProductCertificate': 'ByteString',
-        'SoftwareVersion': 'String',
-        'BuildNumber': 'String',
-        'BuildDate': 'DateTime',
-        'IssuedBy': 'String',
-        'IssueDate': 'DateTime',
-        'SupportedProfiles': 'ListOfSupportedProfile',
-               }
+    ua_types = (
+        ('ProductName', 'String'),
+        ('ProductUri', 'String'),
+        ('VendorName', 'String'),
+        ('VendorProductCertificate', 'ByteString'),
+        ('SoftwareVersion', 'String'),
+        ('BuildNumber', 'String'),
+        ('BuildDate', 'DateTime'),
+        ('IssuedBy', 'String'),
+        ('IssueDate', 'DateTime'),
+        ('SupportedProfiles', 'ListOfSupportedProfile'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7619,11 +7628,11 @@ class QueryDataDescription(FrozenClass):
     :vartype IndexRange: String
     '''
 
-    ua_types = {
-        'RelativePath': 'RelativePath',
-        'AttributeId': 'UInt32',
-        'IndexRange': 'String',
-               }
+    ua_types = (
+        ('RelativePath', 'RelativePath'),
+        ('AttributeId', 'UInt32'),
+        ('IndexRange', 'String'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7669,11 +7678,11 @@ class NodeTypeDescription(FrozenClass):
     :vartype DataToReturn: QueryDataDescription
     '''
 
-    ua_types = {
-        'TypeDefinitionNode': 'ExpandedNodeId',
-        'IncludeSubTypes': 'Boolean',
-        'DataToReturn': 'ListOfQueryDataDescription',
-               }
+    ua_types = (
+        ('TypeDefinitionNode', 'ExpandedNodeId'),
+        ('IncludeSubTypes', 'Boolean'),
+        ('DataToReturn', 'ListOfQueryDataDescription'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7726,11 +7735,11 @@ class QueryDataSet(FrozenClass):
     :vartype Values: Variant
     '''
 
-    ua_types = {
-        'NodeId': 'ExpandedNodeId',
-        'TypeDefinitionNode': 'ExpandedNodeId',
-        'Values': 'ListOfVariant',
-               }
+    ua_types = (
+        ('NodeId', 'ExpandedNodeId'),
+        ('TypeDefinitionNode', 'ExpandedNodeId'),
+        ('Values', 'ListOfVariant'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7785,12 +7794,12 @@ class NodeReference(FrozenClass):
     :vartype ReferencedNodeIds: NodeId
     '''
 
-    ua_types = {
-        'NodeId': 'NodeId',
-        'ReferenceTypeId': 'NodeId',
-        'IsForward': 'Boolean',
-        'ReferencedNodeIds': 'ListOfNodeId',
-               }
+    ua_types = (
+        ('NodeId', 'NodeId'),
+        ('ReferenceTypeId', 'NodeId'),
+        ('IsForward', 'Boolean'),
+        ('ReferencedNodeIds', 'ListOfNodeId'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7845,10 +7854,10 @@ class ContentFilterElement(FrozenClass):
     :vartype FilterOperands: ExtensionObject
     '''
 
-    ua_types = {
-        'FilterOperator': 'FilterOperator',
-        'FilterOperands': 'ListOfExtensionObject',
-               }
+    ua_types = (
+        ('FilterOperator', 'FilterOperator'),
+        ('FilterOperands', 'ListOfExtensionObject'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7893,9 +7902,9 @@ class ContentFilter(FrozenClass):
     :vartype Elements: ContentFilterElement
     '''
 
-    ua_types = {
-        'Elements': 'ListOfContentFilterElement',
-               }
+    ua_types = (
+        ('Elements', 'ListOfContentFilterElement'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7936,9 +7945,9 @@ class ElementOperand(FrozenClass):
     :vartype Index: UInt32
     '''
 
-    ua_types = {
-        'Index': 'UInt32',
-               }
+    ua_types = (
+        ('Index', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -7972,9 +7981,9 @@ class LiteralOperand(FrozenClass):
     :vartype Value: Variant
     '''
 
-    ua_types = {
-        'Value': 'Variant',
-               }
+    ua_types = (
+        ('Value', 'Variant'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8016,13 +8025,13 @@ class AttributeOperand(FrozenClass):
     :vartype IndexRange: String
     '''
 
-    ua_types = {
-        'NodeId': 'NodeId',
-        'Alias': 'String',
-        'BrowsePath': 'RelativePath',
-        'AttributeId': 'UInt32',
-        'IndexRange': 'String',
-               }
+    ua_types = (
+        ('NodeId', 'NodeId'),
+        ('Alias', 'String'),
+        ('BrowsePath', 'RelativePath'),
+        ('AttributeId', 'UInt32'),
+        ('IndexRange', 'String'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8078,12 +8087,12 @@ class SimpleAttributeOperand(FrozenClass):
     :vartype IndexRange: String
     '''
 
-    ua_types = {
-        'TypeDefinitionId': 'NodeId',
-        'BrowsePath': 'ListOfQualifiedName',
-        'AttributeId': 'UInt32',
-        'IndexRange': 'String',
-               }
+    ua_types = (
+        ('TypeDefinitionId', 'NodeId'),
+        ('BrowsePath', 'ListOfQualifiedName'),
+        ('AttributeId', 'UInt32'),
+        ('IndexRange', 'String'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8140,11 +8149,11 @@ class ContentFilterElementResult(FrozenClass):
     :vartype OperandDiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'StatusCode': 'StatusCode',
-        'OperandStatusCodes': 'ListOfStatusCode',
-        'OperandDiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('StatusCode', 'StatusCode'),
+        ('OperandStatusCodes', 'ListOfStatusCode'),
+        ('OperandDiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8202,10 +8211,10 @@ class ContentFilterResult(FrozenClass):
     :vartype ElementDiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'ElementResults': 'ListOfContentFilterElementResult',
-        'ElementDiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('ElementResults', 'ListOfContentFilterElementResult'),
+        ('ElementDiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8261,11 +8270,11 @@ class ParsingResult(FrozenClass):
     :vartype DataDiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'StatusCode': 'StatusCode',
-        'DataStatusCodes': 'ListOfStatusCode',
-        'DataDiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('StatusCode', 'StatusCode'),
+        ('DataStatusCodes', 'ListOfStatusCode'),
+        ('DataDiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8329,13 +8338,13 @@ class QueryFirstParameters(FrozenClass):
     :vartype MaxReferencesToReturn: UInt32
     '''
 
-    ua_types = {
-        'View': 'ViewDescription',
-        'NodeTypes': 'ListOfNodeTypeDescription',
-        'Filter': 'ContentFilter',
-        'MaxDataSetsToReturn': 'UInt32',
-        'MaxReferencesToReturn': 'UInt32',
-               }
+    ua_types = (
+        ('View', 'ViewDescription'),
+        ('NodeTypes', 'ListOfNodeTypeDescription'),
+        ('Filter', 'ContentFilter'),
+        ('MaxDataSetsToReturn', 'UInt32'),
+        ('MaxReferencesToReturn', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8396,11 +8405,11 @@ class QueryFirstRequest(FrozenClass):
     :vartype Parameters: QueryFirstParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'QueryFirstParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'QueryFirstParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8450,13 +8459,13 @@ class QueryFirstResult(FrozenClass):
     :vartype FilterResult: ContentFilterResult
     '''
 
-    ua_types = {
-        'QueryDataSets': 'ListOfQueryDataSet',
-        'ContinuationPoint': 'ByteString',
-        'ParsingResults': 'ListOfParsingResult',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-        'FilterResult': 'ContentFilterResult',
-               }
+    ua_types = (
+        ('QueryDataSets', 'ListOfQueryDataSet'),
+        ('ContinuationPoint', 'ByteString'),
+        ('ParsingResults', 'ListOfParsingResult'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+        ('FilterResult', 'ContentFilterResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8531,11 +8540,11 @@ class QueryFirstResponse(FrozenClass):
     :vartype Parameters: QueryFirstResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'QueryFirstResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'QueryFirstResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8579,10 +8588,10 @@ class QueryNextParameters(FrozenClass):
     :vartype ContinuationPoint: ByteString
     '''
 
-    ua_types = {
-        'ReleaseContinuationPoint': 'Boolean',
-        'ContinuationPoint': 'ByteString',
-               }
+    ua_types = (
+        ('ReleaseContinuationPoint', 'Boolean'),
+        ('ContinuationPoint', 'ByteString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8624,11 +8633,11 @@ class QueryNextRequest(FrozenClass):
     :vartype Parameters: QueryNextParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'QueryNextParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'QueryNextParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8672,10 +8681,10 @@ class QueryNextResult(FrozenClass):
     :vartype RevisedContinuationPoint: ByteString
     '''
 
-    ua_types = {
-        'QueryDataSets': 'ListOfQueryDataSet',
-        'RevisedContinuationPoint': 'ByteString',
-               }
+    ua_types = (
+        ('QueryDataSets', 'ListOfQueryDataSet'),
+        ('RevisedContinuationPoint', 'ByteString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8724,11 +8733,11 @@ class QueryNextResponse(FrozenClass):
     :vartype Parameters: QueryNextResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'QueryNextResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'QueryNextResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8776,12 +8785,12 @@ class ReadValueId(FrozenClass):
     :vartype DataEncoding: QualifiedName
     '''
 
-    ua_types = {
-        'NodeId': 'NodeId',
-        'AttributeId': 'UInt32',
-        'IndexRange': 'String',
-        'DataEncoding': 'QualifiedName',
-               }
+    ua_types = (
+        ('NodeId', 'NodeId'),
+        ('AttributeId', 'UInt32'),
+        ('IndexRange', 'String'),
+        ('DataEncoding', 'QualifiedName'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8831,11 +8840,11 @@ class ReadParameters(FrozenClass):
     :vartype NodesToRead: ReadValueId
     '''
 
-    ua_types = {
-        'MaxAge': 'Double',
-        'TimestampsToReturn': 'TimestampsToReturn',
-        'NodesToRead': 'ListOfReadValueId',
-               }
+    ua_types = (
+        ('MaxAge', 'Double'),
+        ('TimestampsToReturn', 'TimestampsToReturn'),
+        ('NodesToRead', 'ListOfReadValueId'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8888,11 +8897,11 @@ class ReadRequest(FrozenClass):
     :vartype Parameters: ReadParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'ReadParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'ReadParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -8940,12 +8949,12 @@ class ReadResponse(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Results': 'ListOfDataValue',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Results', 'ListOfDataValue'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9011,12 +9020,12 @@ class HistoryReadValueId(FrozenClass):
     :vartype ContinuationPoint: ByteString
     '''
 
-    ua_types = {
-        'NodeId': 'NodeId',
-        'IndexRange': 'String',
-        'DataEncoding': 'QualifiedName',
-        'ContinuationPoint': 'ByteString',
-               }
+    ua_types = (
+        ('NodeId', 'NodeId'),
+        ('IndexRange', 'String'),
+        ('DataEncoding', 'QualifiedName'),
+        ('ContinuationPoint', 'ByteString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9066,11 +9075,11 @@ class HistoryReadResult(FrozenClass):
     :vartype HistoryData: ExtensionObject
     '''
 
-    ua_types = {
-        'StatusCode': 'StatusCode',
-        'ContinuationPoint': 'ByteString',
-        'HistoryData': 'ExtensionObject',
-               }
+    ua_types = (
+        ('StatusCode', 'StatusCode'),
+        ('ContinuationPoint', 'ByteString'),
+        ('HistoryData', 'ExtensionObject'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9110,8 +9119,8 @@ class HistoryReadDetails(FrozenClass):
     '''
     '''
 
-    ua_types = {
-               }
+    ua_types = (
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9149,12 +9158,12 @@ class ReadEventDetails(FrozenClass):
     :vartype Filter: EventFilter
     '''
 
-    ua_types = {
-        'NumValuesPerNode': 'UInt32',
-        'StartTime': 'DateTime',
-        'EndTime': 'DateTime',
-        'Filter': 'EventFilter',
-               }
+    ua_types = (
+        ('NumValuesPerNode', 'UInt32'),
+        ('StartTime', 'DateTime'),
+        ('EndTime', 'DateTime'),
+        ('Filter', 'EventFilter'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9208,13 +9217,13 @@ class ReadRawModifiedDetails(FrozenClass):
     :vartype ReturnBounds: Boolean
     '''
 
-    ua_types = {
-        'IsReadModified': 'Boolean',
-        'StartTime': 'DateTime',
-        'EndTime': 'DateTime',
-        'NumValuesPerNode': 'UInt32',
-        'ReturnBounds': 'Boolean',
-               }
+    ua_types = (
+        ('IsReadModified', 'Boolean'),
+        ('StartTime', 'DateTime'),
+        ('EndTime', 'DateTime'),
+        ('NumValuesPerNode', 'UInt32'),
+        ('ReturnBounds', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9272,13 +9281,13 @@ class ReadProcessedDetails(FrozenClass):
     :vartype AggregateConfiguration: AggregateConfiguration
     '''
 
-    ua_types = {
-        'StartTime': 'DateTime',
-        'EndTime': 'DateTime',
-        'ProcessingInterval': 'Double',
-        'AggregateType': 'ListOfNodeId',
-        'AggregateConfiguration': 'AggregateConfiguration',
-               }
+    ua_types = (
+        ('StartTime', 'DateTime'),
+        ('EndTime', 'DateTime'),
+        ('ProcessingInterval', 'Double'),
+        ('AggregateType', 'ListOfNodeId'),
+        ('AggregateConfiguration', 'AggregateConfiguration'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9337,10 +9346,10 @@ class ReadAtTimeDetails(FrozenClass):
     :vartype UseSimpleBounds: Boolean
     '''
 
-    ua_types = {
-        'ReqTimes': 'ListOfDateTime',
-        'UseSimpleBounds': 'Boolean',
-               }
+    ua_types = (
+        ('ReqTimes', 'ListOfDateTime'),
+        ('UseSimpleBounds', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9380,9 +9389,9 @@ class HistoryData(FrozenClass):
     :vartype DataValues: DataValue
     '''
 
-    ua_types = {
-        'DataValues': 'ListOfDataValue',
-               }
+    ua_types = (
+        ('DataValues', 'ListOfDataValue'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9427,11 +9436,11 @@ class ModificationInfo(FrozenClass):
     :vartype UserName: String
     '''
 
-    ua_types = {
-        'ModificationTime': 'DateTime',
-        'UpdateType': 'HistoryUpdateType',
-        'UserName': 'String',
-               }
+    ua_types = (
+        ('ModificationTime', 'DateTime'),
+        ('UpdateType', 'HistoryUpdateType'),
+        ('UserName', 'String'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9475,10 +9484,10 @@ class HistoryModifiedData(FrozenClass):
     :vartype ModificationInfos: ModificationInfo
     '''
 
-    ua_types = {
-        'DataValues': 'ListOfDataValue',
-        'ModificationInfos': 'ListOfModificationInfo',
-               }
+    ua_types = (
+        ('DataValues', 'ListOfDataValue'),
+        ('ModificationInfos', 'ListOfModificationInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9530,9 +9539,9 @@ class HistoryEvent(FrozenClass):
     :vartype Events: HistoryEventFieldList
     '''
 
-    ua_types = {
-        'Events': 'ListOfHistoryEventFieldList',
-               }
+    ua_types = (
+        ('Events', 'ListOfHistoryEventFieldList'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9579,12 +9588,12 @@ class HistoryReadParameters(FrozenClass):
     :vartype NodesToRead: HistoryReadValueId
     '''
 
-    ua_types = {
-        'HistoryReadDetails': 'ExtensionObject',
-        'TimestampsToReturn': 'TimestampsToReturn',
-        'ReleaseContinuationPoints': 'Boolean',
-        'NodesToRead': 'ListOfHistoryReadValueId',
-               }
+    ua_types = (
+        ('HistoryReadDetails', 'ExtensionObject'),
+        ('TimestampsToReturn', 'TimestampsToReturn'),
+        ('ReleaseContinuationPoints', 'Boolean'),
+        ('NodesToRead', 'ListOfHistoryReadValueId'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9641,11 +9650,11 @@ class HistoryReadRequest(FrozenClass):
     :vartype Parameters: HistoryReadParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'HistoryReadParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'HistoryReadParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9693,12 +9702,12 @@ class HistoryReadResponse(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Results': 'ListOfHistoryReadResult',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Results', 'ListOfHistoryReadResult'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9764,12 +9773,12 @@ class WriteValue(FrozenClass):
     :vartype Value: DataValue
     '''
 
-    ua_types = {
-        'NodeId': 'NodeId',
-        'AttributeId': 'UInt32',
-        'IndexRange': 'String',
-        'Value': 'DataValue',
-               }
+    ua_types = (
+        ('NodeId', 'NodeId'),
+        ('AttributeId', 'UInt32'),
+        ('IndexRange', 'String'),
+        ('Value', 'DataValue'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9815,9 +9824,9 @@ class WriteParameters(FrozenClass):
     :vartype NodesToWrite: WriteValue
     '''
 
-    ua_types = {
-        'NodesToWrite': 'ListOfWriteValue',
-               }
+    ua_types = (
+        ('NodesToWrite', 'ListOfWriteValue'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9862,11 +9871,11 @@ class WriteRequest(FrozenClass):
     :vartype Parameters: WriteParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'WriteParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'WriteParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9914,12 +9923,12 @@ class WriteResponse(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Results': 'ListOfStatusCode',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Results', 'ListOfStatusCode'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -9979,9 +9988,9 @@ class HistoryUpdateDetails(FrozenClass):
     :vartype NodeId: NodeId
     '''
 
-    ua_types = {
-        'NodeId': 'NodeId',
-               }
+    ua_types = (
+        ('NodeId', 'NodeId'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10019,11 +10028,11 @@ class UpdateDataDetails(FrozenClass):
     :vartype UpdateValues: DataValue
     '''
 
-    ua_types = {
-        'NodeId': 'NodeId',
-        'PerformInsertReplace': 'PerformUpdateType',
-        'UpdateValues': 'ListOfDataValue',
-               }
+    ua_types = (
+        ('NodeId', 'NodeId'),
+        ('PerformInsertReplace', 'PerformUpdateType'),
+        ('UpdateValues', 'ListOfDataValue'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10076,11 +10085,11 @@ class UpdateStructureDataDetails(FrozenClass):
     :vartype UpdateValues: DataValue
     '''
 
-    ua_types = {
-        'NodeId': 'NodeId',
-        'PerformInsertReplace': 'PerformUpdateType',
-        'UpdateValues': 'ListOfDataValue',
-               }
+    ua_types = (
+        ('NodeId', 'NodeId'),
+        ('PerformInsertReplace', 'PerformUpdateType'),
+        ('UpdateValues', 'ListOfDataValue'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10135,12 +10144,12 @@ class UpdateEventDetails(FrozenClass):
     :vartype EventData: HistoryEventFieldList
     '''
 
-    ua_types = {
-        'NodeId': 'NodeId',
-        'PerformInsertReplace': 'PerformUpdateType',
-        'Filter': 'EventFilter',
-        'EventData': 'ListOfHistoryEventFieldList',
-               }
+    ua_types = (
+        ('NodeId', 'NodeId'),
+        ('PerformInsertReplace', 'PerformUpdateType'),
+        ('Filter', 'EventFilter'),
+        ('EventData', 'ListOfHistoryEventFieldList'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10199,12 +10208,12 @@ class DeleteRawModifiedDetails(FrozenClass):
     :vartype EndTime: DateTime
     '''
 
-    ua_types = {
-        'NodeId': 'NodeId',
-        'IsDeleteModified': 'Boolean',
-        'StartTime': 'DateTime',
-        'EndTime': 'DateTime',
-               }
+    ua_types = (
+        ('NodeId', 'NodeId'),
+        ('IsDeleteModified', 'Boolean'),
+        ('StartTime', 'DateTime'),
+        ('EndTime', 'DateTime'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10252,10 +10261,10 @@ class DeleteAtTimeDetails(FrozenClass):
     :vartype ReqTimes: DateTime
     '''
 
-    ua_types = {
-        'NodeId': 'NodeId',
-        'ReqTimes': 'ListOfDateTime',
-               }
+    ua_types = (
+        ('NodeId', 'NodeId'),
+        ('ReqTimes', 'ListOfDateTime'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10297,10 +10306,10 @@ class DeleteEventDetails(FrozenClass):
     :vartype EventIds: ByteString
     '''
 
-    ua_types = {
-        'NodeId': 'NodeId',
-        'EventIds': 'ListOfByteString',
-               }
+    ua_types = (
+        ('NodeId', 'NodeId'),
+        ('EventIds', 'ListOfByteString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10344,11 +10353,11 @@ class HistoryUpdateResult(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'StatusCode': 'StatusCode',
-        'OperationResults': 'ListOfStatusCode',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('StatusCode', 'StatusCode'),
+        ('OperationResults', 'ListOfStatusCode'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10404,9 +10413,9 @@ class HistoryUpdateParameters(FrozenClass):
     :vartype HistoryUpdateDetails: ExtensionObject
     '''
 
-    ua_types = {
-        'HistoryUpdateDetails': 'ListOfExtensionObject',
-               }
+    ua_types = (
+        ('HistoryUpdateDetails', 'ListOfExtensionObject'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10451,11 +10460,11 @@ class HistoryUpdateRequest(FrozenClass):
     :vartype Parameters: HistoryUpdateParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'HistoryUpdateParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'HistoryUpdateParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10503,12 +10512,12 @@ class HistoryUpdateResponse(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Results': 'ListOfHistoryUpdateResult',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Results', 'ListOfHistoryUpdateResult'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10572,11 +10581,11 @@ class CallMethodRequest(FrozenClass):
     :vartype InputArguments: Variant
     '''
 
-    ua_types = {
-        'ObjectId': 'NodeId',
-        'MethodId': 'NodeId',
-        'InputArguments': 'ListOfVariant',
-               }
+    ua_types = (
+        ('ObjectId', 'NodeId'),
+        ('MethodId', 'NodeId'),
+        ('InputArguments', 'ListOfVariant'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10631,12 +10640,12 @@ class CallMethodResult(FrozenClass):
     :vartype OutputArguments: Variant
     '''
 
-    ua_types = {
-        'StatusCode': 'StatusCode',
-        'InputArgumentResults': 'ListOfStatusCode',
-        'InputArgumentDiagnosticInfos': 'ListOfDiagnosticInfo',
-        'OutputArguments': 'ListOfVariant',
-               }
+    ua_types = (
+        ('StatusCode', 'StatusCode'),
+        ('InputArgumentResults', 'ListOfStatusCode'),
+        ('InputArgumentDiagnosticInfos', 'ListOfDiagnosticInfo'),
+        ('OutputArguments', 'ListOfVariant'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10703,9 +10712,9 @@ class CallParameters(FrozenClass):
     :vartype MethodsToCall: CallMethodRequest
     '''
 
-    ua_types = {
-        'MethodsToCall': 'ListOfCallMethodRequest',
-               }
+    ua_types = (
+        ('MethodsToCall', 'ListOfCallMethodRequest'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10750,11 +10759,11 @@ class CallRequest(FrozenClass):
     :vartype Parameters: CallParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'CallParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'CallParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10802,12 +10811,12 @@ class CallResponse(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Results': 'ListOfCallMethodResult',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Results', 'ListOfCallMethodResult'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10865,8 +10874,8 @@ class MonitoringFilter(FrozenClass):
     '''
     '''
 
-    ua_types = {
-               }
+    ua_types = (
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10902,11 +10911,11 @@ class DataChangeFilter(FrozenClass):
     :vartype DeadbandValue: Double
     '''
 
-    ua_types = {
-        'Trigger': 'DataChangeTrigger',
-        'DeadbandType': 'UInt32',
-        'DeadbandValue': 'Double',
-               }
+    ua_types = (
+        ('Trigger', 'DataChangeTrigger'),
+        ('DeadbandType', 'UInt32'),
+        ('DeadbandValue', 'Double'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -10950,10 +10959,10 @@ class EventFilter(FrozenClass):
     :vartype WhereClause: ContentFilter
     '''
 
-    ua_types = {
-        'SelectClauses': 'ListOfSimpleAttributeOperand',
-        'WhereClause': 'ContentFilter',
-               }
+    ua_types = (
+        ('SelectClauses', 'ListOfSimpleAttributeOperand'),
+        ('WhereClause', 'ContentFilter'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11006,13 +11015,13 @@ class AggregateConfiguration(FrozenClass):
     :vartype UseSlopedExtrapolation: Boolean
     '''
 
-    ua_types = {
-        'UseServerCapabilitiesDefaults': 'Boolean',
-        'TreatUncertainAsBad': 'Boolean',
-        'PercentDataBad': 'Byte',
-        'PercentDataGood': 'Byte',
-        'UseSlopedExtrapolation': 'Boolean',
-               }
+    ua_types = (
+        ('UseServerCapabilitiesDefaults', 'Boolean'),
+        ('TreatUncertainAsBad', 'Boolean'),
+        ('PercentDataBad', 'Byte'),
+        ('PercentDataGood', 'Byte'),
+        ('UseSlopedExtrapolation', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11068,12 +11077,12 @@ class AggregateFilter(FrozenClass):
     :vartype AggregateConfiguration: AggregateConfiguration
     '''
 
-    ua_types = {
-        'StartTime': 'DateTime',
-        'AggregateType': 'NodeId',
-        'ProcessingInterval': 'Double',
-        'AggregateConfiguration': 'AggregateConfiguration',
-               }
+    ua_types = (
+        ('StartTime', 'DateTime'),
+        ('AggregateType', 'NodeId'),
+        ('ProcessingInterval', 'Double'),
+        ('AggregateConfiguration', 'AggregateConfiguration'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11117,8 +11126,8 @@ class MonitoringFilterResult(FrozenClass):
     '''
     '''
 
-    ua_types = {
-               }
+    ua_types = (
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11154,11 +11163,11 @@ class EventFilterResult(FrozenClass):
     :vartype WhereClauseResult: ContentFilterResult
     '''
 
-    ua_types = {
-        'SelectClauseResults': 'ListOfStatusCode',
-        'SelectClauseDiagnosticInfos': 'ListOfDiagnosticInfo',
-        'WhereClauseResult': 'ContentFilterResult',
-               }
+    ua_types = (
+        ('SelectClauseResults', 'ListOfStatusCode'),
+        ('SelectClauseDiagnosticInfos', 'ListOfDiagnosticInfo'),
+        ('WhereClauseResult', 'ContentFilterResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11218,11 +11227,11 @@ class AggregateFilterResult(FrozenClass):
     :vartype RevisedAggregateConfiguration: AggregateConfiguration
     '''
 
-    ua_types = {
-        'RevisedStartTime': 'DateTime',
-        'RevisedProcessingInterval': 'Double',
-        'RevisedAggregateConfiguration': 'AggregateConfiguration',
-               }
+    ua_types = (
+        ('RevisedStartTime', 'DateTime'),
+        ('RevisedProcessingInterval', 'Double'),
+        ('RevisedAggregateConfiguration', 'AggregateConfiguration'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11272,13 +11281,13 @@ class MonitoringParameters(FrozenClass):
     :vartype DiscardOldest: Boolean
     '''
 
-    ua_types = {
-        'ClientHandle': 'UInt32',
-        'SamplingInterval': 'Double',
-        'Filter': 'ExtensionObject',
-        'QueueSize': 'UInt32',
-        'DiscardOldest': 'Boolean',
-               }
+    ua_types = (
+        ('ClientHandle', 'UInt32'),
+        ('SamplingInterval', 'Double'),
+        ('Filter', 'ExtensionObject'),
+        ('QueueSize', 'UInt32'),
+        ('DiscardOldest', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11332,11 +11341,11 @@ class MonitoredItemCreateRequest(FrozenClass):
     :vartype RequestedParameters: MonitoringParameters
     '''
 
-    ua_types = {
-        'ItemToMonitor': 'ReadValueId',
-        'MonitoringMode': 'MonitoringMode',
-        'RequestedParameters': 'MonitoringParameters',
-               }
+    ua_types = (
+        ('ItemToMonitor', 'ReadValueId'),
+        ('MonitoringMode', 'MonitoringMode'),
+        ('RequestedParameters', 'MonitoringParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11386,13 +11395,13 @@ class MonitoredItemCreateResult(FrozenClass):
     :vartype FilterResult: ExtensionObject
     '''
 
-    ua_types = {
-        'StatusCode': 'StatusCode',
-        'MonitoredItemId': 'UInt32',
-        'RevisedSamplingInterval': 'Double',
-        'RevisedQueueSize': 'UInt32',
-        'FilterResult': 'ExtensionObject',
-               }
+    ua_types = (
+        ('StatusCode', 'StatusCode'),
+        ('MonitoredItemId', 'UInt32'),
+        ('RevisedSamplingInterval', 'Double'),
+        ('RevisedQueueSize', 'UInt32'),
+        ('FilterResult', 'ExtensionObject'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11446,11 +11455,11 @@ class CreateMonitoredItemsParameters(FrozenClass):
     :vartype ItemsToCreate: MonitoredItemCreateRequest
     '''
 
-    ua_types = {
-        'SubscriptionId': 'UInt32',
-        'TimestampsToReturn': 'TimestampsToReturn',
-        'ItemsToCreate': 'ListOfMonitoredItemCreateRequest',
-               }
+    ua_types = (
+        ('SubscriptionId', 'UInt32'),
+        ('TimestampsToReturn', 'TimestampsToReturn'),
+        ('ItemsToCreate', 'ListOfMonitoredItemCreateRequest'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11503,11 +11512,11 @@ class CreateMonitoredItemsRequest(FrozenClass):
     :vartype Parameters: CreateMonitoredItemsParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'CreateMonitoredItemsParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'CreateMonitoredItemsParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11555,12 +11564,12 @@ class CreateMonitoredItemsResponse(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Results': 'ListOfMonitoredItemCreateResult',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Results', 'ListOfMonitoredItemCreateResult'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11622,10 +11631,10 @@ class MonitoredItemModifyRequest(FrozenClass):
     :vartype RequestedParameters: MonitoringParameters
     '''
 
-    ua_types = {
-        'MonitoredItemId': 'UInt32',
-        'RequestedParameters': 'MonitoringParameters',
-               }
+    ua_types = (
+        ('MonitoredItemId', 'UInt32'),
+        ('RequestedParameters', 'MonitoringParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11669,12 +11678,12 @@ class MonitoredItemModifyResult(FrozenClass):
     :vartype FilterResult: ExtensionObject
     '''
 
-    ua_types = {
-        'StatusCode': 'StatusCode',
-        'RevisedSamplingInterval': 'Double',
-        'RevisedQueueSize': 'UInt32',
-        'FilterResult': 'ExtensionObject',
-               }
+    ua_types = (
+        ('StatusCode', 'StatusCode'),
+        ('RevisedSamplingInterval', 'Double'),
+        ('RevisedQueueSize', 'UInt32'),
+        ('FilterResult', 'ExtensionObject'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11724,11 +11733,11 @@ class ModifyMonitoredItemsParameters(FrozenClass):
     :vartype ItemsToModify: MonitoredItemModifyRequest
     '''
 
-    ua_types = {
-        'SubscriptionId': 'UInt32',
-        'TimestampsToReturn': 'TimestampsToReturn',
-        'ItemsToModify': 'ListOfMonitoredItemModifyRequest',
-               }
+    ua_types = (
+        ('SubscriptionId', 'UInt32'),
+        ('TimestampsToReturn', 'TimestampsToReturn'),
+        ('ItemsToModify', 'ListOfMonitoredItemModifyRequest'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11781,11 +11790,11 @@ class ModifyMonitoredItemsRequest(FrozenClass):
     :vartype Parameters: ModifyMonitoredItemsParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'ModifyMonitoredItemsParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'ModifyMonitoredItemsParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11833,12 +11842,12 @@ class ModifyMonitoredItemsResponse(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Results': 'ListOfMonitoredItemModifyResult',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Results', 'ListOfMonitoredItemModifyResult'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11902,11 +11911,11 @@ class SetMonitoringModeParameters(FrozenClass):
     :vartype MonitoredItemIds: UInt32
     '''
 
-    ua_types = {
-        'SubscriptionId': 'UInt32',
-        'MonitoringMode': 'MonitoringMode',
-        'MonitoredItemIds': 'ListOfUInt32',
-               }
+    ua_types = (
+        ('SubscriptionId', 'UInt32'),
+        ('MonitoringMode', 'MonitoringMode'),
+        ('MonitoredItemIds', 'ListOfUInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -11954,11 +11963,11 @@ class SetMonitoringModeRequest(FrozenClass):
     :vartype Parameters: SetMonitoringModeParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'SetMonitoringModeParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'SetMonitoringModeParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12002,10 +12011,10 @@ class SetMonitoringModeResult(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'Results': 'ListOfStatusCode',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('Results', 'ListOfStatusCode'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12061,11 +12070,11 @@ class SetMonitoringModeResponse(FrozenClass):
     :vartype Parameters: SetMonitoringModeResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'SetMonitoringModeResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'SetMonitoringModeResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12113,12 +12122,12 @@ class SetTriggeringParameters(FrozenClass):
     :vartype LinksToRemove: UInt32
     '''
 
-    ua_types = {
-        'SubscriptionId': 'UInt32',
-        'TriggeringItemId': 'UInt32',
-        'LinksToAdd': 'ListOfUInt32',
-        'LinksToRemove': 'ListOfUInt32',
-               }
+    ua_types = (
+        ('SubscriptionId', 'UInt32'),
+        ('TriggeringItemId', 'UInt32'),
+        ('LinksToAdd', 'ListOfUInt32'),
+        ('LinksToRemove', 'ListOfUInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12172,11 +12181,11 @@ class SetTriggeringRequest(FrozenClass):
     :vartype Parameters: SetTriggeringParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'SetTriggeringParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'SetTriggeringParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12224,12 +12233,12 @@ class SetTriggeringResult(FrozenClass):
     :vartype RemoveDiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'AddResults': 'ListOfStatusCode',
-        'AddDiagnosticInfos': 'ListOfDiagnosticInfo',
-        'RemoveResults': 'ListOfStatusCode',
-        'RemoveDiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('AddResults', 'ListOfStatusCode'),
+        ('AddDiagnosticInfos', 'ListOfDiagnosticInfo'),
+        ('RemoveResults', 'ListOfStatusCode'),
+        ('RemoveDiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12307,11 +12316,11 @@ class SetTriggeringResponse(FrozenClass):
     :vartype Parameters: SetTriggeringResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'SetTriggeringResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'SetTriggeringResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12355,10 +12364,10 @@ class DeleteMonitoredItemsParameters(FrozenClass):
     :vartype MonitoredItemIds: UInt32
     '''
 
-    ua_types = {
-        'SubscriptionId': 'UInt32',
-        'MonitoredItemIds': 'ListOfUInt32',
-               }
+    ua_types = (
+        ('SubscriptionId', 'UInt32'),
+        ('MonitoredItemIds', 'ListOfUInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12402,11 +12411,11 @@ class DeleteMonitoredItemsRequest(FrozenClass):
     :vartype Parameters: DeleteMonitoredItemsParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'DeleteMonitoredItemsParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'DeleteMonitoredItemsParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12454,12 +12463,12 @@ class DeleteMonitoredItemsResponse(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Results': 'ListOfStatusCode',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Results', 'ListOfStatusCode'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12529,14 +12538,14 @@ class CreateSubscriptionParameters(FrozenClass):
     :vartype Priority: Byte
     '''
 
-    ua_types = {
-        'RequestedPublishingInterval': 'Double',
-        'RequestedLifetimeCount': 'UInt32',
-        'RequestedMaxKeepAliveCount': 'UInt32',
-        'MaxNotificationsPerPublish': 'UInt32',
-        'PublishingEnabled': 'Boolean',
-        'Priority': 'Byte',
-               }
+    ua_types = (
+        ('RequestedPublishingInterval', 'Double'),
+        ('RequestedLifetimeCount', 'UInt32'),
+        ('RequestedMaxKeepAliveCount', 'UInt32'),
+        ('MaxNotificationsPerPublish', 'UInt32'),
+        ('PublishingEnabled', 'Boolean'),
+        ('Priority', 'Byte'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12594,11 +12603,11 @@ class CreateSubscriptionRequest(FrozenClass):
     :vartype Parameters: CreateSubscriptionParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'CreateSubscriptionParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'CreateSubscriptionParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12646,12 +12655,12 @@ class CreateSubscriptionResult(FrozenClass):
     :vartype RevisedMaxKeepAliveCount: UInt32
     '''
 
-    ua_types = {
-        'SubscriptionId': 'UInt32',
-        'RevisedPublishingInterval': 'Double',
-        'RevisedLifetimeCount': 'UInt32',
-        'RevisedMaxKeepAliveCount': 'UInt32',
-               }
+    ua_types = (
+        ('SubscriptionId', 'UInt32'),
+        ('RevisedPublishingInterval', 'Double'),
+        ('RevisedLifetimeCount', 'UInt32'),
+        ('RevisedMaxKeepAliveCount', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12701,11 +12710,11 @@ class CreateSubscriptionResponse(FrozenClass):
     :vartype Parameters: CreateSubscriptionResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'CreateSubscriptionResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'CreateSubscriptionResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12757,14 +12766,14 @@ class ModifySubscriptionParameters(FrozenClass):
     :vartype Priority: Byte
     '''
 
-    ua_types = {
-        'SubscriptionId': 'UInt32',
-        'RequestedPublishingInterval': 'Double',
-        'RequestedLifetimeCount': 'UInt32',
-        'RequestedMaxKeepAliveCount': 'UInt32',
-        'MaxNotificationsPerPublish': 'UInt32',
-        'Priority': 'Byte',
-               }
+    ua_types = (
+        ('SubscriptionId', 'UInt32'),
+        ('RequestedPublishingInterval', 'Double'),
+        ('RequestedLifetimeCount', 'UInt32'),
+        ('RequestedMaxKeepAliveCount', 'UInt32'),
+        ('MaxNotificationsPerPublish', 'UInt32'),
+        ('Priority', 'Byte'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12822,11 +12831,11 @@ class ModifySubscriptionRequest(FrozenClass):
     :vartype Parameters: ModifySubscriptionParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'ModifySubscriptionParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'ModifySubscriptionParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12872,11 +12881,11 @@ class ModifySubscriptionResult(FrozenClass):
     :vartype RevisedMaxKeepAliveCount: UInt32
     '''
 
-    ua_types = {
-        'RevisedPublishingInterval': 'Double',
-        'RevisedLifetimeCount': 'UInt32',
-        'RevisedMaxKeepAliveCount': 'UInt32',
-               }
+    ua_types = (
+        ('RevisedPublishingInterval', 'Double'),
+        ('RevisedLifetimeCount', 'UInt32'),
+        ('RevisedMaxKeepAliveCount', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12922,11 +12931,11 @@ class ModifySubscriptionResponse(FrozenClass):
     :vartype Parameters: ModifySubscriptionResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'ModifySubscriptionResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'ModifySubscriptionResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -12970,10 +12979,10 @@ class SetPublishingModeParameters(FrozenClass):
     :vartype SubscriptionIds: UInt32
     '''
 
-    ua_types = {
-        'PublishingEnabled': 'Boolean',
-        'SubscriptionIds': 'ListOfUInt32',
-               }
+    ua_types = (
+        ('PublishingEnabled', 'Boolean'),
+        ('SubscriptionIds', 'ListOfUInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13017,11 +13026,11 @@ class SetPublishingModeRequest(FrozenClass):
     :vartype Parameters: SetPublishingModeParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'SetPublishingModeParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'SetPublishingModeParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13065,10 +13074,10 @@ class SetPublishingModeResult(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'Results': 'ListOfStatusCode',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('Results', 'ListOfStatusCode'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13124,11 +13133,11 @@ class SetPublishingModeResponse(FrozenClass):
     :vartype Parameters: SetPublishingModeResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'SetPublishingModeResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'SetPublishingModeResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13174,11 +13183,11 @@ class NotificationMessage(FrozenClass):
     :vartype NotificationData: ExtensionObject
     '''
 
-    ua_types = {
-        'SequenceNumber': 'UInt32',
-        'PublishTime': 'DateTime',
-        'NotificationData': 'ListOfExtensionObject',
-               }
+    ua_types = (
+        ('SequenceNumber', 'UInt32'),
+        ('PublishTime', 'DateTime'),
+        ('NotificationData', 'ListOfExtensionObject'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13225,8 +13234,8 @@ class NotificationData(FrozenClass):
     '''
     '''
 
-    ua_types = {
-               }
+    ua_types = (
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13260,10 +13269,10 @@ class DataChangeNotification(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'MonitoredItems': 'ListOfMonitoredItemNotification',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('MonitoredItems', 'ListOfMonitoredItemNotification'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13317,10 +13326,10 @@ class MonitoredItemNotification(FrozenClass):
     :vartype Value: DataValue
     '''
 
-    ua_types = {
-        'ClientHandle': 'UInt32',
-        'Value': 'DataValue',
-               }
+    ua_types = (
+        ('ClientHandle', 'UInt32'),
+        ('Value', 'DataValue'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13358,9 +13367,9 @@ class EventNotificationList(FrozenClass):
     :vartype Events: EventFieldList
     '''
 
-    ua_types = {
-        'Events': 'ListOfEventFieldList',
-               }
+    ua_types = (
+        ('Events', 'ListOfEventFieldList'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13403,10 +13412,10 @@ class EventFieldList(FrozenClass):
     :vartype EventFields: Variant
     '''
 
-    ua_types = {
-        'ClientHandle': 'UInt32',
-        'EventFields': 'ListOfVariant',
-               }
+    ua_types = (
+        ('ClientHandle', 'UInt32'),
+        ('EventFields', 'ListOfVariant'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13451,9 +13460,9 @@ class HistoryEventFieldList(FrozenClass):
     :vartype EventFields: Variant
     '''
 
-    ua_types = {
-        'EventFields': 'ListOfVariant',
-               }
+    ua_types = (
+        ('EventFields', 'ListOfVariant'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13496,10 +13505,10 @@ class StatusChangeNotification(FrozenClass):
     :vartype DiagnosticInfo: DiagnosticInfo
     '''
 
-    ua_types = {
-        'Status': 'StatusCode',
-        'DiagnosticInfo': 'DiagnosticInfo',
-               }
+    ua_types = (
+        ('Status', 'StatusCode'),
+        ('DiagnosticInfo', 'DiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13539,10 +13548,10 @@ class SubscriptionAcknowledgement(FrozenClass):
     :vartype SequenceNumber: UInt32
     '''
 
-    ua_types = {
-        'SubscriptionId': 'UInt32',
-        'SequenceNumber': 'UInt32',
-               }
+    ua_types = (
+        ('SubscriptionId', 'UInt32'),
+        ('SequenceNumber', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13580,9 +13589,9 @@ class PublishParameters(FrozenClass):
     :vartype SubscriptionAcknowledgements: SubscriptionAcknowledgement
     '''
 
-    ua_types = {
-        'SubscriptionAcknowledgements': 'ListOfSubscriptionAcknowledgement',
-               }
+    ua_types = (
+        ('SubscriptionAcknowledgements', 'ListOfSubscriptionAcknowledgement'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13627,11 +13636,11 @@ class PublishRequest(FrozenClass):
     :vartype Parameters: PublishParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'PublishParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'PublishParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13683,14 +13692,14 @@ class PublishResult(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'SubscriptionId': 'UInt32',
-        'AvailableSequenceNumbers': 'ListOfUInt32',
-        'MoreNotifications': 'Boolean',
-        'NotificationMessage': 'NotificationMessage',
-        'Results': 'ListOfStatusCode',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('SubscriptionId', 'UInt32'),
+        ('AvailableSequenceNumbers', 'ListOfUInt32'),
+        ('MoreNotifications', 'Boolean'),
+        ('NotificationMessage', 'NotificationMessage'),
+        ('Results', 'ListOfStatusCode'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13764,11 +13773,11 @@ class PublishResponse(FrozenClass):
     :vartype Parameters: PublishResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'PublishResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'PublishResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13812,10 +13821,10 @@ class RepublishParameters(FrozenClass):
     :vartype RetransmitSequenceNumber: UInt32
     '''
 
-    ua_types = {
-        'SubscriptionId': 'UInt32',
-        'RetransmitSequenceNumber': 'UInt32',
-               }
+    ua_types = (
+        ('SubscriptionId', 'UInt32'),
+        ('RetransmitSequenceNumber', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13857,11 +13866,11 @@ class RepublishRequest(FrozenClass):
     :vartype Parameters: RepublishParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'RepublishParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'RepublishParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13907,11 +13916,11 @@ class RepublishResponse(FrozenClass):
     :vartype NotificationMessage: NotificationMessage
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'NotificationMessage': 'NotificationMessage',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('NotificationMessage', 'NotificationMessage'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -13955,10 +13964,10 @@ class TransferResult(FrozenClass):
     :vartype AvailableSequenceNumbers: UInt32
     '''
 
-    ua_types = {
-        'StatusCode': 'StatusCode',
-        'AvailableSequenceNumbers': 'ListOfUInt32',
-               }
+    ua_types = (
+        ('StatusCode', 'StatusCode'),
+        ('AvailableSequenceNumbers', 'ListOfUInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14000,10 +14009,10 @@ class TransferSubscriptionsParameters(FrozenClass):
     :vartype SendInitialValues: Boolean
     '''
 
-    ua_types = {
-        'SubscriptionIds': 'ListOfUInt32',
-        'SendInitialValues': 'Boolean',
-               }
+    ua_types = (
+        ('SubscriptionIds', 'ListOfUInt32'),
+        ('SendInitialValues', 'Boolean'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14047,11 +14056,11 @@ class TransferSubscriptionsRequest(FrozenClass):
     :vartype Parameters: TransferSubscriptionsParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'TransferSubscriptionsParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'TransferSubscriptionsParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14095,10 +14104,10 @@ class TransferSubscriptionsResult(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'Results': 'ListOfTransferResult',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('Results', 'ListOfTransferResult'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14154,11 +14163,11 @@ class TransferSubscriptionsResponse(FrozenClass):
     :vartype Parameters: TransferSubscriptionsResult
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Parameters': 'TransferSubscriptionsResult',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Parameters', 'TransferSubscriptionsResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14200,9 +14209,9 @@ class DeleteSubscriptionsParameters(FrozenClass):
     :vartype SubscriptionIds: UInt32
     '''
 
-    ua_types = {
-        'SubscriptionIds': 'ListOfUInt32',
-               }
+    ua_types = (
+        ('SubscriptionIds', 'ListOfUInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14242,11 +14251,11 @@ class DeleteSubscriptionsRequest(FrozenClass):
     :vartype Parameters: DeleteSubscriptionsParameters
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'RequestHeader': 'RequestHeader',
-        'Parameters': 'DeleteSubscriptionsParameters',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('RequestHeader', 'RequestHeader'),
+        ('Parameters', 'DeleteSubscriptionsParameters'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14294,12 +14303,12 @@ class DeleteSubscriptionsResponse(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     '''
 
-    ua_types = {
-        'TypeId': 'NodeId',
-        'ResponseHeader': 'ResponseHeader',
-        'Results': 'ListOfStatusCode',
-        'DiagnosticInfos': 'ListOfDiagnosticInfo',
-               }
+    ua_types = (
+        ('TypeId', 'NodeId'),
+        ('ResponseHeader', 'ResponseHeader'),
+        ('Results', 'ListOfStatusCode'),
+        ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14369,14 +14378,14 @@ class BuildInfo(FrozenClass):
     :vartype BuildDate: DateTime
     '''
 
-    ua_types = {
-        'ProductUri': 'String',
-        'ManufacturerName': 'String',
-        'ProductName': 'String',
-        'SoftwareVersion': 'String',
-        'BuildNumber': 'String',
-        'BuildDate': 'DateTime',
-               }
+    ua_types = (
+        ('ProductUri', 'String'),
+        ('ManufacturerName', 'String'),
+        ('ProductName', 'String'),
+        ('SoftwareVersion', 'String'),
+        ('BuildNumber', 'String'),
+        ('BuildDate', 'DateTime'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14434,11 +14443,11 @@ class RedundantServerDataType(FrozenClass):
     :vartype ServerState: ServerState
     '''
 
-    ua_types = {
-        'ServerId': 'String',
-        'ServiceLevel': 'Byte',
-        'ServerState': 'ServerState',
-               }
+    ua_types = (
+        ('ServerId', 'String'),
+        ('ServiceLevel', 'Byte'),
+        ('ServerState', 'ServerState'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14480,9 +14489,9 @@ class EndpointUrlListDataType(FrozenClass):
     :vartype EndpointUrlList: String
     '''
 
-    ua_types = {
-        'EndpointUrlList': 'ListOfString',
-               }
+    ua_types = (
+        ('EndpointUrlList', 'ListOfString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14520,10 +14529,10 @@ class NetworkGroupDataType(FrozenClass):
     :vartype NetworkPaths: EndpointUrlListDataType
     '''
 
-    ua_types = {
-        'ServerUri': 'String',
-        'NetworkPaths': 'ListOfEndpointUrlListDataType',
-               }
+    ua_types = (
+        ('ServerUri', 'String'),
+        ('NetworkPaths', 'ListOfEndpointUrlListDataType'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14574,12 +14583,12 @@ class SamplingIntervalDiagnosticsDataType(FrozenClass):
     :vartype DisabledMonitoredItemCount: UInt32
     '''
 
-    ua_types = {
-        'SamplingInterval': 'Double',
-        'MonitoredItemCount': 'UInt32',
-        'MaxMonitoredItemCount': 'UInt32',
-        'DisabledMonitoredItemCount': 'UInt32',
-               }
+    ua_types = (
+        ('SamplingInterval', 'Double'),
+        ('MonitoredItemCount', 'UInt32'),
+        ('MaxMonitoredItemCount', 'UInt32'),
+        ('DisabledMonitoredItemCount', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14647,20 +14656,20 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
     :vartype RejectedRequestsCount: UInt32
     '''
 
-    ua_types = {
-        'ServerViewCount': 'UInt32',
-        'CurrentSessionCount': 'UInt32',
-        'CumulatedSessionCount': 'UInt32',
-        'SecurityRejectedSessionCount': 'UInt32',
-        'RejectedSessionCount': 'UInt32',
-        'SessionTimeoutCount': 'UInt32',
-        'SessionAbortCount': 'UInt32',
-        'CurrentSubscriptionCount': 'UInt32',
-        'CumulatedSubscriptionCount': 'UInt32',
-        'PublishingIntervalCount': 'UInt32',
-        'SecurityRejectedRequestsCount': 'UInt32',
-        'RejectedRequestsCount': 'UInt32',
-               }
+    ua_types = (
+        ('ServerViewCount', 'UInt32'),
+        ('CurrentSessionCount', 'UInt32'),
+        ('CumulatedSessionCount', 'UInt32'),
+        ('SecurityRejectedSessionCount', 'UInt32'),
+        ('RejectedSessionCount', 'UInt32'),
+        ('SessionTimeoutCount', 'UInt32'),
+        ('SessionAbortCount', 'UInt32'),
+        ('CurrentSubscriptionCount', 'UInt32'),
+        ('CumulatedSubscriptionCount', 'UInt32'),
+        ('PublishingIntervalCount', 'UInt32'),
+        ('SecurityRejectedRequestsCount', 'UInt32'),
+        ('RejectedRequestsCount', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14748,14 +14757,14 @@ class ServerStatusDataType(FrozenClass):
     :vartype ShutdownReason: LocalizedText
     '''
 
-    ua_types = {
-        'StartTime': 'DateTime',
-        'CurrentTime': 'DateTime',
-        'State': 'ServerState',
-        'BuildInfo': 'BuildInfo',
-        'SecondsTillShutdown': 'UInt32',
-        'ShutdownReason': 'LocalizedText',
-               }
+    ua_types = (
+        ('StartTime', 'DateTime'),
+        ('CurrentTime', 'DateTime'),
+        ('State', 'ServerState'),
+        ('BuildInfo', 'BuildInfo'),
+        ('SecondsTillShutdown', 'UInt32'),
+        ('ShutdownReason', 'LocalizedText'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -14893,51 +14902,51 @@ class SessionDiagnosticsDataType(FrozenClass):
     :vartype UnregisterNodesCount: ServiceCounterDataType
     '''
 
-    ua_types = {
-        'SessionId': 'NodeId',
-        'SessionName': 'String',
-        'ClientDescription': 'ApplicationDescription',
-        'ServerUri': 'String',
-        'EndpointUrl': 'String',
-        'LocaleIds': 'ListOfString',
-        'ActualSessionTimeout': 'Double',
-        'MaxResponseMessageSize': 'UInt32',
-        'ClientConnectionTime': 'DateTime',
-        'ClientLastContactTime': 'DateTime',
-        'CurrentSubscriptionsCount': 'UInt32',
-        'CurrentMonitoredItemsCount': 'UInt32',
-        'CurrentPublishRequestsInQueue': 'UInt32',
-        'TotalRequestCount': 'ServiceCounterDataType',
-        'UnauthorizedRequestCount': 'UInt32',
-        'ReadCount': 'ServiceCounterDataType',
-        'HistoryReadCount': 'ServiceCounterDataType',
-        'WriteCount': 'ServiceCounterDataType',
-        'HistoryUpdateCount': 'ServiceCounterDataType',
-        'CallCount': 'ServiceCounterDataType',
-        'CreateMonitoredItemsCount': 'ServiceCounterDataType',
-        'ModifyMonitoredItemsCount': 'ServiceCounterDataType',
-        'SetMonitoringModeCount': 'ServiceCounterDataType',
-        'SetTriggeringCount': 'ServiceCounterDataType',
-        'DeleteMonitoredItemsCount': 'ServiceCounterDataType',
-        'CreateSubscriptionCount': 'ServiceCounterDataType',
-        'ModifySubscriptionCount': 'ServiceCounterDataType',
-        'SetPublishingModeCount': 'ServiceCounterDataType',
-        'PublishCount': 'ServiceCounterDataType',
-        'RepublishCount': 'ServiceCounterDataType',
-        'TransferSubscriptionsCount': 'ServiceCounterDataType',
-        'DeleteSubscriptionsCount': 'ServiceCounterDataType',
-        'AddNodesCount': 'ServiceCounterDataType',
-        'AddReferencesCount': 'ServiceCounterDataType',
-        'DeleteNodesCount': 'ServiceCounterDataType',
-        'DeleteReferencesCount': 'ServiceCounterDataType',
-        'BrowseCount': 'ServiceCounterDataType',
-        'BrowseNextCount': 'ServiceCounterDataType',
-        'TranslateBrowsePathsToNodeIdsCount': 'ServiceCounterDataType',
-        'QueryFirstCount': 'ServiceCounterDataType',
-        'QueryNextCount': 'ServiceCounterDataType',
-        'RegisterNodesCount': 'ServiceCounterDataType',
-        'UnregisterNodesCount': 'ServiceCounterDataType',
-               }
+    ua_types = (
+        ('SessionId', 'NodeId'),
+        ('SessionName', 'String'),
+        ('ClientDescription', 'ApplicationDescription'),
+        ('ServerUri', 'String'),
+        ('EndpointUrl', 'String'),
+        ('LocaleIds', 'ListOfString'),
+        ('ActualSessionTimeout', 'Double'),
+        ('MaxResponseMessageSize', 'UInt32'),
+        ('ClientConnectionTime', 'DateTime'),
+        ('ClientLastContactTime', 'DateTime'),
+        ('CurrentSubscriptionsCount', 'UInt32'),
+        ('CurrentMonitoredItemsCount', 'UInt32'),
+        ('CurrentPublishRequestsInQueue', 'UInt32'),
+        ('TotalRequestCount', 'ServiceCounterDataType'),
+        ('UnauthorizedRequestCount', 'UInt32'),
+        ('ReadCount', 'ServiceCounterDataType'),
+        ('HistoryReadCount', 'ServiceCounterDataType'),
+        ('WriteCount', 'ServiceCounterDataType'),
+        ('HistoryUpdateCount', 'ServiceCounterDataType'),
+        ('CallCount', 'ServiceCounterDataType'),
+        ('CreateMonitoredItemsCount', 'ServiceCounterDataType'),
+        ('ModifyMonitoredItemsCount', 'ServiceCounterDataType'),
+        ('SetMonitoringModeCount', 'ServiceCounterDataType'),
+        ('SetTriggeringCount', 'ServiceCounterDataType'),
+        ('DeleteMonitoredItemsCount', 'ServiceCounterDataType'),
+        ('CreateSubscriptionCount', 'ServiceCounterDataType'),
+        ('ModifySubscriptionCount', 'ServiceCounterDataType'),
+        ('SetPublishingModeCount', 'ServiceCounterDataType'),
+        ('PublishCount', 'ServiceCounterDataType'),
+        ('RepublishCount', 'ServiceCounterDataType'),
+        ('TransferSubscriptionsCount', 'ServiceCounterDataType'),
+        ('DeleteSubscriptionsCount', 'ServiceCounterDataType'),
+        ('AddNodesCount', 'ServiceCounterDataType'),
+        ('AddReferencesCount', 'ServiceCounterDataType'),
+        ('DeleteNodesCount', 'ServiceCounterDataType'),
+        ('DeleteReferencesCount', 'ServiceCounterDataType'),
+        ('BrowseCount', 'ServiceCounterDataType'),
+        ('BrowseNextCount', 'ServiceCounterDataType'),
+        ('TranslateBrowsePathsToNodeIdsCount', 'ServiceCounterDataType'),
+        ('QueryFirstCount', 'ServiceCounterDataType'),
+        ('QueryNextCount', 'ServiceCounterDataType'),
+        ('RegisterNodesCount', 'ServiceCounterDataType'),
+        ('UnregisterNodesCount', 'ServiceCounterDataType'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -15157,17 +15166,17 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
     :vartype ClientCertificate: ByteString
     '''
 
-    ua_types = {
-        'SessionId': 'NodeId',
-        'ClientUserIdOfSession': 'String',
-        'ClientUserIdHistory': 'ListOfString',
-        'AuthenticationMechanism': 'String',
-        'Encoding': 'String',
-        'TransportProtocol': 'String',
-        'SecurityMode': 'MessageSecurityMode',
-        'SecurityPolicyUri': 'String',
-        'ClientCertificate': 'ByteString',
-               }
+    ua_types = (
+        ('SessionId', 'NodeId'),
+        ('ClientUserIdOfSession', 'String'),
+        ('ClientUserIdHistory', 'ListOfString'),
+        ('AuthenticationMechanism', 'String'),
+        ('Encoding', 'String'),
+        ('TransportProtocol', 'String'),
+        ('SecurityMode', 'MessageSecurityMode'),
+        ('SecurityPolicyUri', 'String'),
+        ('ClientCertificate', 'ByteString'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -15237,10 +15246,10 @@ class ServiceCounterDataType(FrozenClass):
     :vartype ErrorCount: UInt32
     '''
 
-    ua_types = {
-        'TotalCount': 'UInt32',
-        'ErrorCount': 'UInt32',
-               }
+    ua_types = (
+        ('TotalCount', 'UInt32'),
+        ('ErrorCount', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -15280,10 +15289,10 @@ class StatusResult(FrozenClass):
     :vartype DiagnosticInfo: DiagnosticInfo
     '''
 
-    ua_types = {
-        'StatusCode': 'StatusCode',
-        'DiagnosticInfo': 'DiagnosticInfo',
-               }
+    ua_types = (
+        ('StatusCode', 'StatusCode'),
+        ('DiagnosticInfo', 'DiagnosticInfo'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -15381,39 +15390,39 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
     :vartype EventQueueOverFlowCount: UInt32
     '''
 
-    ua_types = {
-        'SessionId': 'NodeId',
-        'SubscriptionId': 'UInt32',
-        'Priority': 'Byte',
-        'PublishingInterval': 'Double',
-        'MaxKeepAliveCount': 'UInt32',
-        'MaxLifetimeCount': 'UInt32',
-        'MaxNotificationsPerPublish': 'UInt32',
-        'PublishingEnabled': 'Boolean',
-        'ModifyCount': 'UInt32',
-        'EnableCount': 'UInt32',
-        'DisableCount': 'UInt32',
-        'RepublishRequestCount': 'UInt32',
-        'RepublishMessageRequestCount': 'UInt32',
-        'RepublishMessageCount': 'UInt32',
-        'TransferRequestCount': 'UInt32',
-        'TransferredToAltClientCount': 'UInt32',
-        'TransferredToSameClientCount': 'UInt32',
-        'PublishRequestCount': 'UInt32',
-        'DataChangeNotificationsCount': 'UInt32',
-        'EventNotificationsCount': 'UInt32',
-        'NotificationsCount': 'UInt32',
-        'LatePublishRequestCount': 'UInt32',
-        'CurrentKeepAliveCount': 'UInt32',
-        'CurrentLifetimeCount': 'UInt32',
-        'UnacknowledgedMessageCount': 'UInt32',
-        'DiscardedMessageCount': 'UInt32',
-        'MonitoredItemCount': 'UInt32',
-        'DisabledMonitoredItemCount': 'UInt32',
-        'MonitoringQueueOverflowCount': 'UInt32',
-        'NextSequenceNumber': 'UInt32',
-        'EventQueueOverFlowCount': 'UInt32',
-               }
+    ua_types = (
+        ('SessionId', 'NodeId'),
+        ('SubscriptionId', 'UInt32'),
+        ('Priority', 'Byte'),
+        ('PublishingInterval', 'Double'),
+        ('MaxKeepAliveCount', 'UInt32'),
+        ('MaxLifetimeCount', 'UInt32'),
+        ('MaxNotificationsPerPublish', 'UInt32'),
+        ('PublishingEnabled', 'Boolean'),
+        ('ModifyCount', 'UInt32'),
+        ('EnableCount', 'UInt32'),
+        ('DisableCount', 'UInt32'),
+        ('RepublishRequestCount', 'UInt32'),
+        ('RepublishMessageRequestCount', 'UInt32'),
+        ('RepublishMessageCount', 'UInt32'),
+        ('TransferRequestCount', 'UInt32'),
+        ('TransferredToAltClientCount', 'UInt32'),
+        ('TransferredToSameClientCount', 'UInt32'),
+        ('PublishRequestCount', 'UInt32'),
+        ('DataChangeNotificationsCount', 'UInt32'),
+        ('EventNotificationsCount', 'UInt32'),
+        ('NotificationsCount', 'UInt32'),
+        ('LatePublishRequestCount', 'UInt32'),
+        ('CurrentKeepAliveCount', 'UInt32'),
+        ('CurrentLifetimeCount', 'UInt32'),
+        ('UnacknowledgedMessageCount', 'UInt32'),
+        ('DiscardedMessageCount', 'UInt32'),
+        ('MonitoredItemCount', 'UInt32'),
+        ('DisabledMonitoredItemCount', 'UInt32'),
+        ('MonitoringQueueOverflowCount', 'UInt32'),
+        ('NextSequenceNumber', 'UInt32'),
+        ('EventQueueOverFlowCount', 'UInt32'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -15571,11 +15580,11 @@ class ModelChangeStructureDataType(FrozenClass):
     :vartype Verb: Byte
     '''
 
-    ua_types = {
-        'Affected': 'NodeId',
-        'AffectedType': 'NodeId',
-        'Verb': 'Byte',
-               }
+    ua_types = (
+        ('Affected', 'NodeId'),
+        ('AffectedType', 'NodeId'),
+        ('Verb', 'Byte'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -15619,10 +15628,10 @@ class SemanticChangeStructureDataType(FrozenClass):
     :vartype AffectedType: NodeId
     '''
 
-    ua_types = {
-        'Affected': 'NodeId',
-        'AffectedType': 'NodeId',
-               }
+    ua_types = (
+        ('Affected', 'NodeId'),
+        ('AffectedType', 'NodeId'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -15662,10 +15671,10 @@ class Range(FrozenClass):
     :vartype High: Double
     '''
 
-    ua_types = {
-        'Low': 'Double',
-        'High': 'Double',
-               }
+    ua_types = (
+        ('Low', 'Double'),
+        ('High', 'Double'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -15709,12 +15718,12 @@ class EUInformation(FrozenClass):
     :vartype Description: LocalizedText
     '''
 
-    ua_types = {
-        'NamespaceUri': 'String',
-        'UnitId': 'Int32',
-        'DisplayName': 'LocalizedText',
-        'Description': 'LocalizedText',
-               }
+    ua_types = (
+        ('NamespaceUri', 'String'),
+        ('UnitId', 'Int32'),
+        ('DisplayName', 'LocalizedText'),
+        ('Description', 'LocalizedText'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -15762,10 +15771,10 @@ class ComplexNumberType(FrozenClass):
     :vartype Imaginary: Float
     '''
 
-    ua_types = {
-        'Real': 'Float',
-        'Imaginary': 'Float',
-               }
+    ua_types = (
+        ('Real', 'Float'),
+        ('Imaginary', 'Float'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -15805,10 +15814,10 @@ class DoubleComplexNumberType(FrozenClass):
     :vartype Imaginary: Double
     '''
 
-    ua_types = {
-        'Real': 'Double',
-        'Imaginary': 'Double',
-               }
+    ua_types = (
+        ('Real', 'Double'),
+        ('Imaginary', 'Double'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -15854,13 +15863,13 @@ class AxisInformation(FrozenClass):
     :vartype AxisSteps: Double
     '''
 
-    ua_types = {
-        'EngineeringUnits': 'EUInformation',
-        'EURange': 'Range',
-        'Title': 'LocalizedText',
-        'AxisScaleType': 'AxisScaleEnumeration',
-        'AxisSteps': 'ListOfDouble',
-               }
+    ua_types = (
+        ('EngineeringUnits', 'EUInformation'),
+        ('EURange', 'Range'),
+        ('Title', 'LocalizedText'),
+        ('AxisScaleType', 'AxisScaleEnumeration'),
+        ('AxisSteps', 'ListOfDouble'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -15914,10 +15923,10 @@ class XVType(FrozenClass):
     :vartype Value: Float
     '''
 
-    ua_types = {
-        'X': 'Double',
-        'Value': 'Float',
-               }
+    ua_types = (
+        ('X', 'Double'),
+        ('Value', 'Float'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -15973,18 +15982,18 @@ class ProgramDiagnosticDataType(FrozenClass):
     :vartype LastMethodReturnStatus: StatusResult
     '''
 
-    ua_types = {
-        'CreateSessionId': 'NodeId',
-        'CreateClientName': 'String',
-        'InvocationCreationTime': 'DateTime',
-        'LastTransitionTime': 'DateTime',
-        'LastMethodCall': 'String',
-        'LastMethodSessionId': 'NodeId',
-        'LastMethodInputArguments': 'ListOfArgument',
-        'LastMethodOutputArguments': 'ListOfArgument',
-        'LastMethodCallTime': 'DateTime',
-        'LastMethodReturnStatus': 'StatusResult',
-               }
+    ua_types = (
+        ('CreateSessionId', 'NodeId'),
+        ('CreateClientName', 'String'),
+        ('InvocationCreationTime', 'DateTime'),
+        ('LastTransitionTime', 'DateTime'),
+        ('LastMethodCall', 'String'),
+        ('LastMethodSessionId', 'NodeId'),
+        ('LastMethodInputArguments', 'ListOfArgument'),
+        ('LastMethodOutputArguments', 'ListOfArgument'),
+        ('LastMethodCallTime', 'DateTime'),
+        ('LastMethodReturnStatus', 'StatusResult'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
@@ -16072,11 +16081,11 @@ class Annotation(FrozenClass):
     :vartype AnnotationTime: DateTime
     '''
 
-    ua_types = {
-        'Message': 'String',
-        'UserName': 'String',
-        'AnnotationTime': 'DateTime',
-               }
+    ua_types = (
+        ('Message', 'String'),
+        ('UserName', 'String'),
+        ('AnnotationTime', 'DateTime'),
+               )
 
     def __init__(self, binary=None):
         if binary is not None:
