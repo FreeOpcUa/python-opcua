@@ -136,14 +136,8 @@ class CodeGenerator(object):
         self.write("           ]")
         self.write("")
 
-        self.write("def __init__(self, binary=None):")
+        self.write("def __init__(self):")
         self.iidx += 1
-        self.write("if binary is not None:")
-        self.iidx += 1
-        self.write("self._binary_init(binary)")
-        self.write("self._freeze = True")
-        self.write("return")
-        self.iidx -= 1
 
         # hack extension object stuff
         extobj_hack = False
@@ -230,12 +224,7 @@ class CodeGenerator(object):
         self.write("@staticmethod")
         self.write("def from_binary(data):")
         self.iidx += 1
-        self.write("return {}(data)".format(obj.name))
-        self.iidx -= 1
-        self.write("")
-
-        self.write("def _binary_init(self, data):")
-        self.iidx += 1
+        self.write("obj = {}()".format(obj.name))
         iidx = self.iidx
         for idx, field in enumerate(obj.fields):
             self.iidx = iidx
@@ -246,14 +235,14 @@ class CodeGenerator(object):
                 bit = obj.bits[field.switchfield]
                 if field.switchvalue:
                     mask = '0b' + '0' * (8 - bit.length) + '1' * bit.length
-                    self.write("val = self.{} & {}".format(bit.container, mask))
+                    self.write("val = obj.{} & {}".format(bit.container, mask))
                     self.write("if val == {}:".format(bit.idx))
                 else:
-                    self.write("if self.{} & (1 << {}):".format(bit.container, bit.idx))
+                    self.write("if obj.{} & (1 << {}):".format(bit.container, bit.idx))
                 self.iidx += 1
             if field.is_native_type():
                 if field.length:
-                    self.write("self.{} = uabin.Primitives.{}.unpack_array(data)".format(field.name, field.uatype))
+                    self.write("obj.{} = uabin.Primitives.{}.unpack_array(data)".format(field.name, field.uatype))
                 else:
                     self.write_unpack_uatype(field.name, field.uatype)
             elif field.uatype in self.model.enum_list:
@@ -275,23 +264,22 @@ class CodeGenerator(object):
                     self.iidx += 1
                     self.write("array.append({})".format(frombinary))
                     self.iidx -= 2
-                    self.write("self.{} = array".format(field.name))
+                    self.write("obj.{} = array".format(field.name))
                 else:
-                    self.write("self.{} = {}".format(field.name, frombinary))
+                    self.write("obj.{} = {}".format(field.name, frombinary))
             if field.switchfield:
                 self.iidx -= 1
                 self.write("else:")
                 self.iidx += 1
                 if extobj_hack and field.name == "Encoding":
-                    self.write("self.Encoding = 1")
+                    self.write("obj.Encoding = 1")
                 elif field.uatype == obj.name:  # help!!! selv referencing class
-                    self.write("self.{} = None".format(field.name))
+                    self.write("obj.{} = None".format(field.name))
                 elif not obj.name in ("ExtensionObject") and field.name == "TypeId":  # and ( obj.name.endswith("Request") or obj.name.endswith("Response")):
-                    self.write("self.TypeId = FourByteNodeId(ObjectIds.{}_Encoding_DefaultBinary)".format(obj.name))
+                    self.write("obj.TypeId = FourByteNodeId(ObjectIds.{}_Encoding_DefaultBinary)".format(obj.name))
                 else:
-                    self.write("self.{} = {}".format(field.name, "[]" if field.length else self.get_default_value(field)))
-        if len(obj.fields) == 0:
-            self.write("pass")
+                    self.write("obj.{} = {}".format(field.name, "[]" if field.length else self.get_default_value(field)))
+        self.write("return obj")
 
         self.iidx = 2
 
