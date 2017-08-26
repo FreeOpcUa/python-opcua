@@ -10,7 +10,8 @@ from calendar import timegm
 import uuid
 
 from opcua.ua.uaerrors import UaError
-from opcua.ua.uatypes import UaError
+from opcua.common.utils import Buffer
+from opcua import ua
 
 
 if sys.version_info.major > 2:
@@ -262,10 +263,6 @@ def pack_uatype(vtype, value):
     elif vtype.value > 25:
         return Primitives.Bytes.pack(value)
     elif vtype.name == "ExtensionObject":
-        # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
-        # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
-        # Using local import to avoid import loop
-        from opcua.ua import extensionobject_to_binary
         return extensionobject_to_binary(value)
     else:
         try:
@@ -281,10 +278,6 @@ def unpack_uatype(vtype, data):
     elif vtype.value > 25:
         return Primitives.Bytes.unpack(data)
     elif vtype.name == "ExtensionObject":
-        # dependency loop: classes in uaprotocol_auto use Variant defined in this file,
-        # but Variant can contain any object from uaprotocol_auto as ExtensionObject.
-        # Using local import to avoid import loop
-        from opcua.ua import extensionobject_from_binary
         return extensionobject_from_binary(data)
     else:
         from opcua.ua import uatypes
@@ -335,7 +328,7 @@ def struct_to_binary(obj):
             packet.append(list_to_binary(val, uatype))
         else:
             if has_switch and val is None and name in obj.ua_switches:
-                    pass
+                pass
             else:
                 packet.append(to_binary(val, uatype))
     return b''.join(packet)
@@ -351,6 +344,8 @@ def to_binary(val, uatype):
         return nodeid_to_binary(val)
     elif uatype == "Variant":
         return variant_to_binary(val)
+    else:
+        raise ValueError("Cannot pack {} of type {} to ua binary".format(val, uatype))
 
 
 def list_to_binary(val, uatype):
@@ -364,6 +359,59 @@ def list_to_binary(val, uatype):
         return b''.join(pack)
 
 
+def nodeid_to_binary(nodeid):
+    if nodeid.NodeIdType == ua.NodeIdType.TwoByte:
+        return struct.pack("<BB", nodeid.NodeIdType.value, nodeid.Identifier)
+    elif nodeid.NodeIdType == ua.NodeIdType.FourByte:
+        return struct.pack("<BBH", nodeid.NodeIdType.value, nodeid.NamespaceIndex, nodeid.Identifier)
+    elif nodeid.NodeIdType == ua.NodeIdType.Numeric:
+        return struct.pack("<BHI", nodeid.NodeIdType.value, nodeid.NamespaceIndex, nodeid.Identifier)
+    elif nodeid.NodeIdType == ua.NodeIdType.String:
+        return struct.pack("<BH", nodeid.NodeIdType.value, nodeid.NamespaceIndex) + \
+            Primitives.String.pack(nodeid.Identifier)
+    elif nodeid.NodeIdType == ua.NodeIdType.ByteString:
+        return struct.pack("<BH", nodeid.NodeIdType.value, nodeid.NamespaceIndex) + \
+            Primitives.Bytes.pack(nodeid.Identifier)
+    elif nodeid.NodeIdType == ua.NodeIdType.Guid:
+        return struct.pack("<BH", nodeid.NodeIdType.value, nodeid.NamespaceIndex) + \
+               Primitives.Guid.pack(nodeid.Identifier)
+    else:
+        return struct.pack("<BH", nodeid.NodeIdType.value, nodeid.NamespaceIndex) + \
+            nodeid.Identifier.to_binary()
+    # FIXME: Missing NNamespaceURI and ServerIndex
+
+
+def nodeid_from_binary(data):
+    nid = ua.NodeId()
+    encoding = ord(data.read(1))
+    nid.NodeIdType = ua.NodeIdType(encoding & 0b00111111)
+
+    if nid.NodeIdType == ua.NodeIdType.TwoByte:
+        nid.Identifier = ord(data.read(1))
+    elif nid.NodeIdType == ua.NodeIdType.FourByte:
+        nid.NamespaceIndex, nid.Identifier = struct.unpack("<BH", data.read(3))
+    elif nid.NodeIdType == ua.NodeIdType.Numeric:
+        nid.NamespaceIndex, nid.Identifier = struct.unpack("<HI", data.read(6))
+    elif nid.NodeIdType == ua.NodeIdType.String:
+        nid.NamespaceIndex = Primitives.UInt16.unpack(data)
+        nid.Identifier = Primitives.String.unpack(data)
+    elif nid.NodeIdType == ua.NodeIdType.ByteString:
+        nid.NamespaceIndex = Primitives.UInt16.unpack(data)
+        nid.Identifier = Primitives.Bytes.unpack(data)
+    elif nid.NodeIdType == ua.NodeIdType.Guid:
+        nid.NamespaceIndex = Primitives.UInt16.unpack(data)
+        nid.Identifier = Primitives.Guid.unpack(data)
+    else:
+        raise UaError("Unknown NodeId encoding: " + str(nid.NodeIdType))
+
+    if test_bit(encoding, 7):
+        nid.NamespaceUri = Primitives.String.unpack(data)
+    if test_bit(encoding, 6):
+        nid.ServerIndex = Primitives.UInt32.unpack(data)
+
+    return nid
+
+
 def variant_to_binary(var):
     b = []
     encoding = var.VariantType.value & 0b111111
@@ -373,9 +421,9 @@ def variant_to_binary(var):
         if var.Dimensions is not None:
             encoding = set_bit(encoding, 6)
         b.append(Primitives.UInt8.pack(encoding))
-        b.append(pack_uatype_array(var.VariantType, flatten(var.Value)))
+        b.append(pack_uatype_array(var.VariantType, ua.flatten(var.Value)))
         if var.Dimensions is not None:
-            b.append(pack_uatype_array(VariantType.Int32, var.Dimensions))
+            b.append(pack_uatype_array(ua.VariantType.Int32, var.Dimensions))
     else:
         b.append(Primitives.UInt8.pack(encoding))
         b.append(pack_uatype(var.VariantType, var.Value))
@@ -395,7 +443,7 @@ def variant_from_binary(data):
     else:
         value = unpack_uatype(vtype, data)
     if test_bit(encoding, 6):
-        dimensions = unpack_uatype_array(VariantType.Int32, data)
+        dimensions = unpack_uatype_array(ua.VariantType.Int32, data)
         value = reshape(value, dimensions)
     return ua.Variant(value, vtype, dimensions, is_array=array)
 
@@ -419,11 +467,11 @@ def extensionobject_from_binary(data):
     Convert binary-coded ExtensionObject to a Python object.
     Returns an object, or None if TypeId is zero
     """
-    typeid = NodeId.from_binary(data)
+    typeid = nodeid_from_binary(data)
     Encoding = ord(data.read(1))
     body = None
     if Encoding & (1 << 0):
-        length = uabin.Primitives.Int32.unpack(data)
+        length = Primitives.Int32.unpack(data)
         if length < 1:
             body = Buffer(b"")
         else:
@@ -431,13 +479,13 @@ def extensionobject_from_binary(data):
             data.skip(length)
     if typeid.Identifier == 0:
         return None
-    elif typeid in extension_object_classes:
-        klass = extension_object_classes[typeid]
+    elif typeid in ua.extension_object_classes:
+        klass = ua.extension_object_classes[typeid]
         if body is None:
             raise UaError("parsing ExtensionObject {0} without data".format(klass.__name__))
         return klass.from_binary(body)
     else:
-        e = ExtensionObject()
+        e = ua.ExtensionObject()
         e.TypeId = typeid
         e.Encoding = Encoding
         if body is not None:
@@ -451,19 +499,47 @@ def extensionobject_to_binary(obj):
     If obj is None, convert to empty ExtensionObject (TypeId = 0, no Body).
     Returns a binary string
     """
-    if isinstance(obj, ExtensionObject):
+    if isinstance(obj, ua.ExtensionObject):
         return obj.to_binary()
     if obj is None:
-        TypeId = NodeId()
+        TypeId = ua.NodeId()
         Encoding = 0
         Body = None
     else:
-        TypeId = extension_object_ids[obj.__class__.__name__]
+        TypeId = ua.extension_object_ids[obj.__class__.__name__]
         Encoding = 0x01
         Body = obj.to_binary()
     packet = []
     packet.append(TypeId.to_binary())
-    packet.append(uabin.Primitives.UInt8.pack(Encoding))
+    packet.append(Primitives.UInt8.pack(Encoding))
     if Body:
-        packet.append(uabin.Primitives.Bytes.pack(Body))
+        packet.append(Primitives.Bytes.pack(Body))
     return b''.join(packet)
+
+
+def from_binary(uatype, data):
+    if hasattr(Primitives, uatype):
+        st = getattr(Primitives, uatype)
+        return st.unpack(data)
+    elif uatype == "NodeId":
+        return nodeid_from_binary(data)
+    elif uatype == "Variant":
+        return variant_from_binary(data)
+    else:
+        return struct_from_binary(uatype, data)
+
+
+def struct_from_binary(objtype, data):
+    print("SfB", objtype, data)
+    #obj = objtype()
+    obj = getattr(ua, objtype)()
+    for name, uatype in obj.ua_types:
+        # if our member has a swtich and it is not set we skip it
+        if hasattr(obj, "ua_switches") and name in obj.ua_switches:
+            container_name, idx = obj.ua_switches[name]
+            val = getattr(obj, container_name)
+            if not test_bit(val, idx):
+                continue
+        val = from_binary(uatype, data) 
+        setattr(obj, name, val)
+    return obj
