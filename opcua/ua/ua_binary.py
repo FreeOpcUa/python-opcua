@@ -242,7 +242,7 @@ class Primitives(Primitives1):
     String = _String()
     Bytes = _Bytes()
     ByteString = _Bytes()
-    CharArray = _Bytes()
+    CharArray = _String()
     DateTime = _DateTime()
     Guid = _Guid()
 
@@ -322,11 +322,13 @@ def struct_to_binary(obj):
     packet = []
     has_switch = hasattr(obj, "ua_switches")
     if has_switch:
-        for name, switch in obj.ua_switches:
-            member = getattr(name, obj)
-            container, idx = switch
-            if name is not None:
-                container |= (idx << 0)
+        for name, switch in obj.ua_switches.items():
+            member = getattr(obj, name)
+            container_name, idx = switch
+            if member is not None:
+                container_val = getattr(obj, container_name)
+                container_val = container_val | 1 << idx
+                setattr(obj, container_name, container_val)
     for name, uatype in obj.ua_types:
         val = getattr(obj, name)
         if uatype.startswith("ListOf"):

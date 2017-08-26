@@ -1,6 +1,7 @@
 
 IgnoredEnums = ["NodeIdType"]
 IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "LocalizedText", "ExtensionObject", "XmlElement"]
+IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "ExtensionObject"]
 
 class Primitives1(object):
     Int8 = 0
@@ -127,11 +128,12 @@ class CodeGenerator(object):
             #if field.switchvalue is not None: Not sure we need to handle that one
         if switch_written:
             self.write("           }")
-        self.write("ua_types = (")
+        self.write("ua_types = [")
+        self.write("")
         for field in obj.fields:
             prefix = "ListOf" if field.length else ""
             self.write("    ('{}', '{}'),".format(field.name, prefix + field.uatype))
-        self.write("           )")
+        self.write("           ]")
         self.write("")
 
         self.write("def __init__(self, binary=None):")

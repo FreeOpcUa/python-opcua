@@ -773,4 +773,3 @@ class Argument(auto.Argument):
         auto.Argument.__init__(self)
         self.ValueRank = -2
 
-#AttributeIdsInv = {v: k for k, v in AttributeIds.__dict__.items()}
