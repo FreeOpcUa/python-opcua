@@ -170,6 +170,7 @@ class EventNotifier(_MaskEnum):
 
 
 class StatusCode(FrozenClass):
+
     """
     :ivar value:
     :vartype value: int
@@ -178,7 +179,10 @@ class StatusCode(FrozenClass):
     :ivar doc:
     :vartype doc: string
     """
-    ua_types = ["value", "UInt32"]
+
+    ua_types = [
+            ("value", "UInt32")
+            ]
 
     def __init__(self, value=0):
         if isinstance(value, str):
@@ -547,10 +551,16 @@ class LocalizedText(FrozenClass):
     A string qualified with a namespace index.
     """
 
-    ua_types = {
-        "Text": "String",
-        "Locale": "String"
-    }
+    ua_switches = {
+        'Locale': ('Encoding', 0),
+        'Text': ('Encoding', 1),
+               }
+
+    ua_types = (
+        ('Encoding', 'UInt8'),
+        ('Locale', 'CharArray'),
+        ('Text', 'CharArray'),
+               )
 
     def __init__(self, text=None):
         self.Encoding = 0
@@ -833,6 +843,10 @@ class Variant(FrozenClass):
         return "Variant(val:{0!s},type:{1})".format(self.Value, self.VariantType)
     __repr__ = __str__
 
+    def to_binary(self):
+        from opcua.ua.ua_binary import variant_to_binary
+        return variant_to_binary(self)
+
 def _split_list(l, n):
     n = max(1, n)
     return [l[i:i + n] for i in range(0, len(l), n)]
@@ -922,7 +936,24 @@ class DataValue(FrozenClass):
     :vartype ServerPicoseconds: int
     """
 
-    ua_types = []
+    ua_switches = {
+        'Value': ('Encoding', 0),
+        'StatusCode': ('Encoding', 1),
+        'SourceTimestamp': ('Encoding', 2),
+        'ServerTimestamp': ('Encoding', 3),
+        'SourcePicoseconds': ('Encoding', 4),
+        'ServerPicoseconds': ('Encoding', 5),
+               }
+
+    ua_types = (
+        ('Encoding', 'UInt8'),
+        ('Value', 'Variant'),
+        ('StatusCode', 'StatusCode'),
+        ('SourceTimestamp', 'DateTime'),
+        ('SourcePicoseconds', 'UInt16'),
+        ('ServerTimestamp', 'DateTime'),
+        ('ServerPicoseconds', 'UInt16'),
+               )
 
     def __init__(self, variant=None, status=None):
         self.Encoding = 0
