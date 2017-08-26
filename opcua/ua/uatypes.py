@@ -18,7 +18,6 @@ from opcua.ua import ObjectIds
 from opcua.ua.uaerrors import UaError
 from opcua.ua.uaerrors import UaStatusCodeError
 from opcua.ua.uaerrors import UaStringParsingError
-from opcua.common.utils import Buffer
 
 
 logger = logging.getLogger(__name__)
@@ -392,58 +391,6 @@ class NodeId(FrozenClass):
     def __str__(self):
         return "{0}NodeId({1})".format(self.NodeIdType.name, self.to_string())
     __repr__ = __str__
-
-    def to_binary(self):
-        if self.NodeIdType == NodeIdType.TwoByte:
-            return struct.pack("<BB", self.NodeIdType.value, self.Identifier)
-        elif self.NodeIdType == NodeIdType.FourByte:
-            return struct.pack("<BBH", self.NodeIdType.value, self.NamespaceIndex, self.Identifier)
-        elif self.NodeIdType == NodeIdType.Numeric:
-            return struct.pack("<BHI", self.NodeIdType.value, self.NamespaceIndex, self.Identifier)
-        elif self.NodeIdType == NodeIdType.String:
-            return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
-                uabin.Primitives.String.pack(self.Identifier)
-        elif self.NodeIdType == NodeIdType.ByteString:
-            return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
-                uabin.Primitives.Bytes.pack(self.Identifier)
-        elif self.NodeIdType == NodeIdType.Guid:
-            return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
-                   uabin.Primitives.Guid.pack(self.Identifier)
-        else:
-            return struct.pack("<BH", self.NodeIdType.value, self.NamespaceIndex) + \
-                self.Identifier.to_binary()
-        # FIXME: Missing NNamespaceURI and ServerIndex
-
-    @staticmethod
-    def from_binary(data):
-        nid = NodeId()
-        encoding = ord(data.read(1))
-        nid.NodeIdType = NodeIdType(encoding & 0b00111111)
-
-        if nid.NodeIdType == NodeIdType.TwoByte:
-            nid.Identifier = ord(data.read(1))
-        elif nid.NodeIdType == NodeIdType.FourByte:
-            nid.NamespaceIndex, nid.Identifier = struct.unpack("<BH", data.read(3))
-        elif nid.NodeIdType == NodeIdType.Numeric:
-            nid.NamespaceIndex, nid.Identifier = struct.unpack("<HI", data.read(6))
-        elif nid.NodeIdType == NodeIdType.String:
-            nid.NamespaceIndex = uabin.Primitives.UInt16.unpack(data)
-            nid.Identifier = uabin.Primitives.String.unpack(data)
-        elif nid.NodeIdType == NodeIdType.ByteString:
-            nid.NamespaceIndex = uabin.Primitives.UInt16.unpack(data)
-            nid.Identifier = uabin.Primitives.Bytes.unpack(data)
-        elif nid.NodeIdType == NodeIdType.Guid:
-            nid.NamespaceIndex = uabin.Primitives.UInt16.unpack(data)
-            nid.Identifier = uabin.Primitives.Guid.unpack(data)
-        else:
-            raise UaError("Unknown NodeId encoding: " + str(nid.NodeIdType))
-
-        if uabin.test_bit(encoding, 7):
-            nid.NamespaceUri = uabin.Primitives.String.unpack(data)
-        if uabin.test_bit(encoding, 6):
-            nid.ServerIndex = uabin.Primitives.UInt32.unpack(data)
-
-        return nid
 
 
 class TwoByteNodeId(NodeId):
