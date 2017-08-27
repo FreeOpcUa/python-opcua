@@ -8,6 +8,7 @@ import logging
 from datetime import datetime, timedelta, tzinfo, MAXYEAR
 from calendar import timegm
 import uuid
+from enum import IntEnum, Enum
 
 from opcua.ua.uaerrors import UaError
 from opcua.common.utils import Buffer
@@ -325,7 +326,7 @@ def struct_to_binary(obj):
     for name, uatype in obj.ua_types:
         val = getattr(obj, name)
         if uatype.startswith("ListOf"):
-            packet.append(list_to_binary(val, uatype))
+            packet.append(list_to_binary(val, uatype[6:]))
         else:
             if has_switch and val is None and name in obj.ua_switches:
                 pass
@@ -334,16 +335,23 @@ def struct_to_binary(obj):
     return b''.join(packet)
 
 
-def to_binary(val, uatype):
-    if hasattr(Primitives, uatype):
+def to_binary(val, uatype=None):
+    print("TB", val, uatype)
+    if isinstance(uatype, (str, unicode)) and hasattr(Primitives, uatype):
         st = getattr(Primitives, uatype)
         return st.pack(val)
+    elif isinstance(val, (IntEnum, Enum)):
+        return Primitives.UInt32.pack(val.value)
+    elif isinstance(val, ua.NodeId):
+        return nodeid_to_binary(val)
+    elif isinstance(val, ua.Header):
+        return header_to_binary(val)
+    elif isinstance(val, ua.Variant):
+        return variant_to_binary(val)
     elif hasattr(val, "ua_types"):
         return struct_to_binary(val)
-    elif uatype == "NodeId":
-        return nodeid_to_binary(val)
-    elif uatype == "Variant":
-        return variant_to_binary(val)
+    elif uatype == "ExtensionObject":
+        return extensionobject_to_binary(val)
     else:
         raise ValueError("Cannot pack {} of type {} to ua binary".format(val, uatype))
 
@@ -508,9 +516,9 @@ def extensionobject_to_binary(obj):
     else:
         TypeId = ua.extension_object_ids[obj.__class__.__name__]
         Encoding = 0x01
-        Body = obj.to_binary()
+        Body = to_binary(obj)
     packet = []
-    packet.append(TypeId.to_binary())
+    packet.append(to_binary(TypeId))
     packet.append(Primitives.UInt8.pack(Encoding))
     if Body:
         packet.append(Primitives.Bytes.pack(Body))
@@ -518,12 +526,20 @@ def extensionobject_to_binary(obj):
 
 
 def from_binary(uatype, data):
-    if hasattr(Primitives, uatype):
+    print("FROM BIN", uatype, data)
+    if isinstance(uatype, (str, unicode)) and uatype.startswith("ListOf"):
+        size = Primitives.Int32.unpack(data)
+        res = []
+        for _ in range(size):
+            res.append(from_binary(data, uatype[6:]))
+        return res
+
+    elif isinstance(uatype, (str, unicode)) and hasattr(Primitives, uatype):
         st = getattr(Primitives, uatype)
         return st.unpack(data)
-    elif uatype == "NodeId":
+    elif uatype == ua.NodeId or uatype == "NodeId":
         return nodeid_from_binary(data)
-    elif uatype == "Variant":
+    elif uatype == ua.Variant or uatype == "Variant":
         return variant_from_binary(data)
     else:
         return struct_from_binary(uatype, data)
@@ -531,8 +547,13 @@ def from_binary(uatype, data):
 
 def struct_from_binary(objtype, data):
     print("SfB", objtype, data)
-    #obj = objtype()
-    obj = getattr(ua, objtype)()
+    if isinstance(objtype, (unicode, str)):
+        obj = getattr(ua, objtype)()
+    else:
+        obj = objtype()
+    print("LOOK", obj.ua_types)
+    for name, uatype in obj.ua_types:
+        print("AN", name, uatype)
     for name, uatype in obj.ua_types:
         # if our member has a swtich and it is not set we skip it
         if hasattr(obj, "ua_switches") and name in obj.ua_switches:
@@ -543,3 +564,26 @@ def struct_from_binary(objtype, data):
         val = from_binary(uatype, data) 
         setattr(obj, name, val)
     return obj
+
+
+def header_to_binary(hdr):
+    b = []
+    b.append(struct.pack("<3ss", hdr.MessageType, hdr.ChunkType))
+    size = hdr.body_size + 8
+    if hdr.MessageType in (ua.MessageType.SecureOpen, ua.MessageType.SecureClose, ua.MessageType.SecureMessage):
+        size += 4
+    b.append(Primitives.UInt32.pack(size))
+    if hdr.MessageType in (ua.MessageType.SecureOpen, ua.MessageType.SecureClose, ua.MessageType.SecureMessage):
+        b.append(Primitives.UInt32.pack(hdr.ChannelId))
+    return b"".join(b)
+
+
+def header_from_string(data):
+    hdr = ua.Header()
+    hdr.MessageType, hdr.ChunkType, hdr.packet_size = struct.unpack("<3scI", data.read(8))
+    hdr.body_size = hdr.packet_size - 8
+    if hdr.MessageType in (ua.MessageType.SecureOpen, ua.MessageType.SecureClose, ua.MessageType.SecureMessage):
+        hdr.body_size -= 4
+        hdr.ChannelId = Primitives.UInt32.unpack(data)
+    return hdr
+

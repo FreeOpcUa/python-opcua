@@ -9,7 +9,7 @@ from concurrent.futures import Future
 from functools import partial
 
 from opcua import ua
-from opcua.common import utils
+import opcua.ua.ua_binary as uabin
 from opcua.ua.uaerrors import UaError, BadTimeout, BadNoSubscription, BadSessionClosed
 
 
@@ -50,7 +50,7 @@ class UASocketClient(object):
             request.RequestHeader = self._create_request_header(timeout)
             self.logger.debug("Sending: %s", request)
             try:
-                binreq = request.to_binary()
+                binreq = uabin.to_binary(request)
             except:
                 # reset reqeust handle if any error
                 # see self._create_request_header
@@ -79,10 +79,10 @@ class UASocketClient(object):
 
     def check_answer(self, data, context):
         data = data.copy()
-        typeid = ua.NodeId.from_binary(data)
+        typeid = uabin.nodeid_from_binary(data)
         if typeid == ua.FourByteNodeId(ua.ObjectIds.ServiceFault_Encoding_DefaultBinary):
             self.logger.warning("ServiceFault from server received %s", context)
-            hdr = ua.ResponseHeader.from_binary(data)
+            hdr = uabin.from_binary(ua.ResponseHeader, data)
             hdr.ServiceResult.check()
             return False
         return True
@@ -134,7 +134,7 @@ class UASocketClient(object):
         self.logger.info("opening connection")
         sock = socket.create_connection((host, port))
         sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)  # nodelay ncessary to avoid packing in one frame, some servers do not like it
-        self._socket = utils.SocketWrapper(sock)
+        self._socket = ua.utils.SocketWrapper(sock)
         self.start()
 
     def disconnect_socket(self):
@@ -162,7 +162,7 @@ class UASocketClient(object):
         
         # FIXME: we have a race condition here
         # we can get a packet with the new token id before we reach to store it..
-        response = ua.OpenSecureChannelResponse.from_binary(future.result(self.timeout))
+        response = uabin.from_binary(ua.OpenSecureChannelResponse, future.result(self.timeout))
         response.ResponseHeader.ServiceResult.check()
         self._connection.set_channel(response.Parameters)
         return response.Parameters
@@ -235,7 +235,7 @@ class UaClient(object):
         request = ua.CreateSessionRequest()
         request.Parameters = parameters
         data = self._uasocket.send_request(request)
-        response = ua.CreateSessionResponse.from_binary(data)
+        response = uabin.from_binary(ua.CreateSessionResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         self._uasocket.authentication_token = response.Parameters.AuthenticationToken
@@ -246,7 +246,7 @@ class UaClient(object):
         request = ua.ActivateSessionRequest()
         request.Parameters = parameters
         data = self._uasocket.send_request(request)
-        response = ua.ActivateSessionResponse.from_binary(data)
+        response = uabin.from_binary(ua.ActivateSessionResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Parameters
@@ -256,7 +256,7 @@ class UaClient(object):
         request = ua.CloseSessionRequest()
         request.DeleteSubscriptions = deletesubscriptions
         data = self._uasocket.send_request(request)
-        response = ua.CloseSessionResponse.from_binary(data)
+        response = uabin.from_binary(ua.CloseSessionResponse, data)
         try:
             response.ResponseHeader.ServiceResult.check()
         except BadSessionClosed:
@@ -271,7 +271,7 @@ class UaClient(object):
         request = ua.BrowseRequest()
         request.Parameters = parameters
         data = self._uasocket.send_request(request)
-        response = ua.BrowseResponse.from_binary(data)
+        response = uabin.from_binary(ua.BrowseResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
@@ -281,7 +281,7 @@ class UaClient(object):
         request = ua.BrowseNextRequest()
         request.Parameters = parameters
         data = self._uasocket.send_request(request)
-        response = ua.BrowseNextResponse.from_binary(data)
+        response = uabin.from_binary(ua.BrowseNextResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Parameters.Results
@@ -291,7 +291,7 @@ class UaClient(object):
         request = ua.ReadRequest()
         request.Parameters = parameters
         data = self._uasocket.send_request(request)
-        response = ua.ReadResponse.from_binary(data)
+        response = uabin.from_binary(ua.ReadResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         # cast to Enum attributes that need to
@@ -311,7 +311,7 @@ class UaClient(object):
         request = ua.WriteRequest()
         request.Parameters = params
         data = self._uasocket.send_request(request)
-        response = ua.WriteResponse.from_binary(data)
+        response = uabin.from_binary(ua.WriteResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
@@ -321,7 +321,7 @@ class UaClient(object):
         request = ua.GetEndpointsRequest()
         request.Parameters = params
         data = self._uasocket.send_request(request)
-        response = ua.GetEndpointsResponse.from_binary(data)
+        response = uabin.from_binary(ua.GetEndpointsResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Endpoints
@@ -331,7 +331,7 @@ class UaClient(object):
         request = ua.FindServersRequest()
         request.Parameters = params
         data = self._uasocket.send_request(request)
-        response = ua.FindServersResponse.from_binary(data)
+        response = uabin.from_binary(ua.FindServersResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Servers
@@ -341,7 +341,7 @@ class UaClient(object):
         request = ua.FindServersOnNetworkRequest()
         request.Parameters = params
         data = self._uasocket.send_request(request)
-        response = ua.FindServersOnNetworkResponse.from_binary(data)
+        response = uabin.from_binary(ua.FindServersOnNetworkResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Parameters
@@ -351,7 +351,7 @@ class UaClient(object):
         request = ua.RegisterServerRequest()
         request.Server = registered_server
         data = self._uasocket.send_request(request)
-        response = ua.RegisterServerResponse.from_binary(data)
+        response = uabin.from_binary(ua.RegisterServerResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         # nothing to return for this service
@@ -361,7 +361,7 @@ class UaClient(object):
         request = ua.RegisterServer2Request()
         request.Parameters = params
         data = self._uasocket.send_request(request)
-        response = ua.RegisterServer2Response.from_binary(data)
+        response = uabin.from_binary(ua.RegisterServer2Response, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.ConfigurationResults
@@ -371,7 +371,7 @@ class UaClient(object):
         request = ua.TranslateBrowsePathsToNodeIdsRequest()
         request.Parameters.BrowsePaths = browsepaths
         data = self._uasocket.send_request(request)
-        response = ua.TranslateBrowsePathsToNodeIdsResponse.from_binary(data)
+        response = uabin.from_binary(ua.TranslateBrowsePathsToNodeIdsResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
@@ -388,7 +388,7 @@ class UaClient(object):
     def _create_subscription_callback(self, pub_callback, resp_fut, data_fut):
         self.logger.info("_create_subscription_callback")
         data = data_fut.result()
-        response = ua.CreateSubscriptionResponse.from_binary(data)
+        response = uabin.from_binary(ua.CreateSubscriptionResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         self._publishcallbacks[response.Parameters.SubscriptionId] = pub_callback
@@ -406,7 +406,7 @@ class UaClient(object):
     def _delete_subscriptions_callback(self, subscriptionids, resp_fut, data_fut):
         self.logger.info("_delete_subscriptions_callback")
         data = data_fut.result()
-        response = ua.DeleteSubscriptionsResponse.from_binary(data)
+        response = uabin.from_binary(ua.DeleteSubscriptionsResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         for sid in subscriptionids:
@@ -451,7 +451,7 @@ class UaClient(object):
 
         # parse publish response
         try:
-            response = ua.PublishResponse.from_binary(data)
+            response = uabin.from_binary(ua.PublishResponse, data)
             self.logger.debug(response)
         except Exception:
             # INFO: catching the exception here might be obsolete because we already
@@ -479,7 +479,7 @@ class UaClient(object):
         request = ua.CreateMonitoredItemsRequest()
         request.Parameters = params
         data = self._uasocket.send_request(request)
-        response = ua.CreateMonitoredItemsResponse.from_binary(data)
+        response = uabin.from_binary(ua.CreateMonitoredItemsResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
@@ -489,7 +489,7 @@ class UaClient(object):
         request = ua.DeleteMonitoredItemsRequest()
         request.Parameters = params
         data = self._uasocket.send_request(request)
-        response = ua.DeleteMonitoredItemsResponse.from_binary(data)
+        response = uabin.from_binary(ua.DeleteMonitoredItemsResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
@@ -499,7 +499,7 @@ class UaClient(object):
         request = ua.AddNodesRequest()
         request.Parameters.NodesToAdd = nodestoadd
         data = self._uasocket.send_request(request)
-        response = ua.AddNodesResponse.from_binary(data)
+        response = uabin.from_binary(ua.AddNodesResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
@@ -509,7 +509,7 @@ class UaClient(object):
         request = ua.AddReferencesRequest()
         request.Parameters.ReferencesToAdd = refs
         data = self._uasocket.send_request(request)
-        response = ua.AddReferencesResponse.from_binary(data)
+        response = uabin.from_binary(ua.AddReferencesResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
@@ -519,7 +519,7 @@ class UaClient(object):
         request = ua.DeleteReferencesRequest()
         request.Parameters.ReferencesToDelete = refs
         data = self._uasocket.send_request(request)
-        response = ua.DeleteReferencesResponse.from_binary(data)
+        response = uabin.from_binary(ua.DeleteReferencesResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Parameters.Results
@@ -530,7 +530,7 @@ class UaClient(object):
         request = ua.DeleteNodesRequest()
         request.Parameters = params
         data = self._uasocket.send_request(request)
-        response = ua.DeleteNodesResponse.from_binary(data)
+        response = uabin.from_binary(ua.DeleteNodesResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
@@ -539,7 +539,7 @@ class UaClient(object):
         request = ua.CallRequest()
         request.Parameters.MethodsToCall = methodstocall
         data = self._uasocket.send_request(request)
-        response = ua.CallResponse.from_binary(data)
+        response = uabin.from_binary(ua.CallResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
@@ -549,7 +549,7 @@ class UaClient(object):
         request = ua.HistoryReadRequest()
         request.Parameters = params
         data = self._uasocket.send_request(request)
-        response = ua.HistoryReadResponse.from_binary(data)
+        response = uabin.from_binary(ua.HistoryReadResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
@@ -559,7 +559,7 @@ class UaClient(object):
         request = ua.ModifyMonitoredItemsRequest()
         request.Parameters = params
         data = self._uasocket.send_request(request)
-        response = ua.ModifyMonitoredItemsResponse.from_binary(data)
+        response = uabin.from_binary(ua.ModifyMonitoredItemsResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         return response.Results

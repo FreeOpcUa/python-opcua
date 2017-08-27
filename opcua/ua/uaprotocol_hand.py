@@ -35,27 +35,6 @@ class Hello(uatypes.FrozenClass):
         self.EndpointUrl = ""
         self._freeze = True
 
-    def to_binary(self):
-        b = []
-        b.append(uabin.Primitives.UInt32.pack(self.ProtocolVersion))
-        b.append(uabin.Primitives.UInt32.pack(self.ReceiveBufferSize))
-        b.append(uabin.Primitives.UInt32.pack(self.SendBufferSize))
-        b.append(uabin.Primitives.UInt32.pack(self.MaxMessageSize))
-        b.append(uabin.Primitives.UInt32.pack(self.MaxChunkCount))
-        b.append(uabin.Primitives.String.pack(self.EndpointUrl))
-        return b"".join(b)
-
-    @staticmethod
-    def from_binary(data):
-        hello = Hello()
-        hello.ProtocolVersion = uabin.Primitives.UInt32.unpack(data)
-        hello.ReceiveBufferSize = uabin.Primitives.UInt32.unpack(data)
-        hello.SendBufferSize = uabin.Primitives.UInt32.unpack(data)
-        hello.MaxMessageSize = uabin.Primitives.UInt32.unpack(data)
-        hello.MaxChunkCount = uabin.Primitives.UInt32.unpack(data)
-        hello.EndpointUrl = uabin.Primitives.String.unpack(data)
-        return hello
-
 
 class MessageType(object):
     Invalid = b"INV"  # FIXME: check value
@@ -87,27 +66,6 @@ class Header(uatypes.FrozenClass):
     def add_size(self, size):
         self.body_size += size
 
-    def to_binary(self):
-        b = []
-        b.append(struct.pack("<3ss", self.MessageType, self.ChunkType))
-        size = self.body_size + 8
-        if self.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
-            size += 4
-        b.append(uabin.Primitives.UInt32.pack(size))
-        if self.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
-            b.append(uabin.Primitives.UInt32.pack(self.ChannelId))
-        return b"".join(b)
-
-    @staticmethod
-    def from_string(data):
-        hdr = Header()
-        hdr.MessageType, hdr.ChunkType, hdr.packet_size = struct.unpack("<3scI", data.read(8))
-        hdr.body_size = hdr.packet_size - 8
-        if hdr.MessageType in (MessageType.SecureOpen, MessageType.SecureClose, MessageType.SecureMessage):
-            hdr.body_size -= 4
-            hdr.ChannelId = uabin.Primitives.UInt32.unpack(data)
-        return hdr
-
     @staticmethod
     def max_size():
         return struct.calcsize("<3scII")
@@ -130,25 +88,20 @@ class ErrorMessage(uatypes.FrozenClass):
         self.Reason = ""
         self._freeze = True
 
-    def to_binary(self):
-        b = []
-        b.append(self.Error.to_binary())
-        b.append(uabin.Primitives.String.pack(self.Reason))
-        return b"".join(b)
-
-    @staticmethod
-    def from_binary(data):
-        ack = ErrorMessage()
-        ack.Error = uatypes.StatusCode.from_binary(data)
-        ack.Reason = uabin.Primitives.String.unpack(data)
-        return ack
-
     def __str__(self):
         return "MessageAbort(error:{0}, reason:{1})".format(self.Error, self.Reason)
     __repr__ = __str__
 
 
 class Acknowledge(uatypes.FrozenClass):
+
+    ua_types = [
+            ("ProtocolVersion", "UInt32"),
+            ("ReceiveBufferSize", "UInt32"),
+            ("SendBufferSize", "UInt32"),
+            ("MaxMessageSize", "UInt32"),
+            ("MaxChunkCount", "UInt32"),
+            ]
 
     def __init__(self):
         self.ProtocolVersion = 0
@@ -158,24 +111,14 @@ class Acknowledge(uatypes.FrozenClass):
         self.MaxChunkCount = 0  # No limits
         self._freeze = True
 
-    def to_binary(self):
-        return struct.pack(
-            "<5I",
-            self.ProtocolVersion,
-            self.ReceiveBufferSize,
-            self.SendBufferSize,
-            self.MaxMessageSize,
-            self.MaxChunkCount)
-
-    @staticmethod
-    def from_binary(data):
-        ack = Acknowledge()
-        ack.ProtocolVersion, ack.ReceiveBufferSize, ack.SendBufferSize, ack.MaxMessageSize, ack.MaxChunkCount \
-            = struct.unpack("<5I", data.read(20))
-        return ack
-
 
 class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
+
+    ua_types = [
+            ("SecurityPolicyURI", "String"),
+            ("SenderCertificate", "String"),
+            ("ReceiverCertificateThumbPrint", "String"),
+            ]
 
     def __init__(self):
         self.SecurityPolicyURI = "http://opcfoundation.org/UA/SecurityPolicy#None"
@@ -183,42 +126,23 @@ class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
         self.ReceiverCertificateThumbPrint = None
         self._freeze = True
 
-    def to_binary(self):
-        b = []
-        b.append(uabin.Primitives.String.pack(self.SecurityPolicyURI))
-        b.append(uabin.Primitives.String.pack(self.SenderCertificate))
-        b.append(uabin.Primitives.String.pack(self.ReceiverCertificateThumbPrint))
-        return b"".join(b)
-
-    @staticmethod
-    def from_binary(data):
-        hdr = AsymmetricAlgorithmHeader()
-        hdr.SecurityPolicyURI = uabin.Primitives.String.unpack(data)
-        hdr.SenderCertificate = uabin.Primitives.Bytes.unpack(data)
-        hdr.ReceiverCertificateThumbPrint = uabin.Primitives.Bytes.unpack(data)
-        return hdr
-
     def __str__(self):
+        size1 = len(self.SenderCertificate) if self.SenderCertificate is not None else None
+        size2 = len(self.ReceiverCertificateThumbPrint) if self.ReceiverCertificateThumbPrint is not None else None
         return "{0}(SecurityPolicy:{1}, certificatesize:{2}, receiverCertificatesize:{3} )".format(
-            self.__class__.__name__, self.SecurityPolicyURI, len(self.SenderCertificate),
-            len(self.ReceiverCertificateThumbPrint))
+            self.__class__.__name__, self.SecurityPolicyURI,  size1, size2)
     __repr__ = __str__
 
 
 class SymmetricAlgorithmHeader(uatypes.FrozenClass):
 
+    ua_types = [
+            ("TokenId", "UInt32"),
+            ]
+
     def __init__(self):
         self.TokenId = 0
         self._freeze = True
-
-    @staticmethod
-    def from_binary(data):
-        obj = SymmetricAlgorithmHeader()
-        obj.TokenId = uabin.Primitives.UInt32.unpack(data)
-        return obj
-
-    def to_binary(self):
-        return uabin.Primitives.UInt32.pack(self.TokenId)
 
     @staticmethod
     def max_size():
@@ -231,23 +155,15 @@ class SymmetricAlgorithmHeader(uatypes.FrozenClass):
 
 class SequenceHeader(uatypes.FrozenClass):
 
+    ua_types = [
+            ("SequenceNumber", "UInt32"),
+            ("RequestId", "UInt32"),
+            ]
+
     def __init__(self):
         self.SequenceNumber = None
         self.RequestId = None
         self._freeze = True
-
-    @staticmethod
-    def from_binary(data):
-        obj = SequenceHeader()
-        obj.SequenceNumber = uabin.Primitives.UInt32.unpack(data)
-        obj.RequestId = uabin.Primitives.UInt32.unpack(data)
-        return obj
-
-    def to_binary(self):
-        b = []
-        b.append(uabin.Primitives.UInt32.pack(self.SequenceNumber))
-        b.append(uabin.Primitives.UInt32.pack(self.RequestId))
-        return b"".join(b)
 
     @staticmethod
     def max_size():
@@ -388,10 +304,10 @@ class MessageChunk(uatypes.FrozenClass):
         data = buf.copy(header.body_size)
         buf.skip(header.body_size)
         if header.MessageType in (MessageType.SecureMessage, MessageType.SecureClose):
-            security_header = SymmetricAlgorithmHeader.from_binary(data)
+            security_header = uabin.from_binary(SymmetricAlgorithmHeader, data)
             crypto = security_policy.symmetric_cryptography
         elif header.MessageType == MessageType.SecureOpen:
-            security_header = AsymmetricAlgorithmHeader.from_binary(data)
+            security_header = uabin.from_binary(AsymmetricAlgorithmHeader, data)
             crypto = security_policy.asymmetric_cryptography
         else:
             raise UaError("Unsupported message type: {0}".format(header.MessageType))
@@ -403,9 +319,9 @@ class MessageChunk(uatypes.FrozenClass):
         if signature_size > 0:
             signature = decrypted[-signature_size:]
             decrypted = decrypted[:-signature_size]
-            crypto.verify(obj.MessageHeader.to_binary() + obj.SecurityHeader.to_binary() + decrypted, signature)
+            crypto.verify(uabin.to_binary(obj.MessageHeader) + uabin.to_binary(obj.SecurityHeader) + decrypted, signature)
         data = utils.Buffer(crypto.remove_padding(decrypted))
-        obj.SequenceHeader = SequenceHeader.from_binary(data)
+        obj.SequenceHeader = uabin.from_binary(SequenceHeader, data)
         obj.Body = data.read(len(data))
         return obj
 
@@ -416,11 +332,11 @@ class MessageChunk(uatypes.FrozenClass):
         return size // pbs * self._security_policy.encrypted_block_size()
 
     def to_binary(self):
-        security = self.SecurityHeader.to_binary()
-        encrypted_part = self.SequenceHeader.to_binary() + self.Body
+        security = uabin.to_binary(self.SecurityHeader)
+        encrypted_part = uabin.to_binary(self.SequenceHeader) + self.Body
         encrypted_part += self._security_policy.padding(len(encrypted_part))
         self.MessageHeader.body_size = len(security) + self.encrypted_size(len(encrypted_part))
-        header = self.MessageHeader.to_binary()
+        header = uabin.to_binary(self.MessageHeader)
         encrypted_part += self._security_policy.signature(header + security + encrypted_part)
         return header + security + self._security_policy.encrypt(encrypted_part)
 
@@ -568,9 +484,9 @@ class SecureConnection(object):
         The only supported types are Hello, Acknowledge and ErrorMessage
         """
         header = Header(message_type, ChunkType.Single)
-        binmsg = message.to_binary()
+        binmsg = uabin.to_binary(message)
         header.body_size = len(binmsg)
-        return header.to_binary() + binmsg
+        return uabin.to_binary(header) + binmsg
 
     def message_to_binary(self, message, message_type=MessageType.SecureMessage, request_id=0, algohdr=None):
         """
@@ -646,7 +562,7 @@ class SecureConnection(object):
         """
         if header.MessageType == MessageType.SecureOpen:
             data = body.copy(header.body_size)
-            security_header = AsymmetricAlgorithmHeader.from_binary(data)
+            security_header = uabin.from_binary(AsymmetricAlgorithmHeader, data)
             self.select_policy(security_header.SecurityPolicyURI, security_header.SenderCertificate)
 
         if header.MessageType in (MessageType.SecureMessage,
@@ -656,15 +572,15 @@ class SecureConnection(object):
                                                       header, body)
             return self._receive(chunk)
         elif header.MessageType == MessageType.Hello:
-            msg = Hello.from_binary(body)
+            msg = uabin.from_binary(Hello, body)
             self._max_chunk_size = msg.ReceiveBufferSize
             return msg
         elif header.MessageType == MessageType.Acknowledge:
-            msg = Acknowledge.from_binary(body)
+            msg = uabin.from_binary(Acknowledge, body)
             self._max_chunk_size = msg.SendBufferSize
             return msg
         elif header.MessageType == MessageType.Error:
-            msg = ErrorMessage.from_binary(body)
+            msg = uabin.from_binary(ErrorMessage, body)
             logger.warning("Received an error: %s", msg)
             return msg
         else:
@@ -677,7 +593,7 @@ class SecureConnection(object):
         object, or None (if intermediate chunk is received)
         """
         logger.debug("Waiting for header")
-        header = Header.from_string(socket)
+        header = uabin.header_from_string(socket)
         logger.info("received header: %s", header)
         body = socket.read(header.body_size)
         if len(body) != header.body_size:
@@ -690,7 +606,7 @@ class SecureConnection(object):
         if msg.MessageHeader.ChunkType == ChunkType.Intermediate:
             return None
         if msg.MessageHeader.ChunkType == ChunkType.Abort:
-            err = ErrorMessage.from_binary(utils.Buffer(msg.Body))
+            err = uabin.from_binary(ErrorMessage, utils.Buffer(msg.Body))
             logger.warning("Message %s aborted: %s", msg, err)
             # specs Part 6, 6.7.3 say that aborted message shall be ignored
             # and SecureChannel should not be closed
