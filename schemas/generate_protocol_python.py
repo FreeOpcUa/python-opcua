@@ -206,7 +206,7 @@ class CodeGenerator(object):
                 enum = self.model.get_enum(field.uatype)
                 self.write_pack_enum(listname, fname, enum)
             elif field.uatype in ("ExtensionObject"):
-                self.write("{}.append(extensionobject_to_binary({}))".format(listname, fname))
+                self.write("{}.append(uabin.extensionobject_to_binary({}))".format(listname, fname))
             else:
                 self.write("{}.append({}.to_binary())".format(listname, fname))
             if field.length:
@@ -252,7 +252,7 @@ class CodeGenerator(object):
                 self.write_unpack_enum(field.name, enum)
             else:
                 if field.uatype in ("ExtensionObject"):
-                    frombinary = "extensionobject_from_binary(data)"
+                    frombinary = "uabin.extensionobject_from_binary(data)"
                 else:
                     frombinary = "{}.from_binary(data)".format(field.uatype)
                 if field.length:
@@ -329,6 +329,8 @@ class CodeGenerator(object):
             return
 
     def get_default_value(self, field):
+        if field.switchfield:
+            return None
         if field.uatype in self.model.enum_list:
             enum = self.model.get_enum(field.uatype)
             return enum.name + "(0)"
@@ -343,7 +345,7 @@ class CodeGenerator(object):
         elif field.uatype in ("Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Double", "Float", "Byte"):
             return 0
         elif field.uatype in ("ExtensionObject"):
-            return "None"
+            return "ExtensionObject()"
         else:
             return field.uatype + "()"
 

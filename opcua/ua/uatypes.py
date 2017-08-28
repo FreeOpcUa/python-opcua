@@ -392,6 +392,10 @@ class NodeId(FrozenClass):
         return "{0}NodeId({1})".format(self.NodeIdType.name, self.to_string())
     __repr__ = __str__
 
+    def to_binary(self):
+        import opcua 
+        return opcua.ua.ua_binary.nodeid_to_binary(self)
+
 
 class TwoByteNodeId(NodeId):
 
@@ -572,17 +576,20 @@ class ExtensionObject(FrozenClass):
     :ivar Body:
     :vartype Body: bytes
     """
+    ua_switches = {
+        'Body': ('Encoding', 0),
+            }
 
-    ua_types = {
-        "TypeId": "NodeId",
-        "Encoding": "Byte",
-        "Body": "ByteString"
-    }
+    ua_types = (
+        ("TypeId", "NodeId"),
+        ("Encoding", "Byte"),
+        ("Body", "ByteString"),
+    )
 
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
-        self.Body = b''
+        self.Body = None
         self._freeze = True
 
     def to_binary(self):
@@ -613,8 +620,9 @@ class ExtensionObject(FrozenClass):
         return ext
 
     def __str__(self):
+        size = len(self.Body) if self.Body is not None else None
         return 'ExtensionObject(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-            'Encoding:' + str(self.Encoding) + ', ' + str(len(self.Body)) + ' bytes)'
+            'Encoding:' + str(self.Encoding) + ', ' + str(size) + ' bytes)'
 
     __repr__ = __str__
 

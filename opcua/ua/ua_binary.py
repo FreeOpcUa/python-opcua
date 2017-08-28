@@ -319,11 +319,13 @@ def struct_to_binary(obj):
         for name, switch in obj.ua_switches.items():
             member = getattr(obj, name)
             container_name, idx = switch
+            print("Test for", name, member)
             if member is not None:
                 container_val = getattr(obj, container_name)
                 container_val = container_val | 1 << idx
                 setattr(obj, container_name, container_val)
     for name, uatype in obj.ua_types:
+        print(name, uatype)
         val = getattr(obj, name)
         if uatype.startswith("ListOf"):
             packet.append(list_to_binary(val, uatype[6:]))
@@ -331,6 +333,7 @@ def struct_to_binary(obj):
             if has_switch and val is None and name in obj.ua_switches:
                 pass
             else:
+                print("append", val, uatype)
                 packet.append(to_binary(val, uatype))
     return b''.join(packet)
 
@@ -350,8 +353,6 @@ def to_binary(val, uatype=None):
         return variant_to_binary(val)
     elif hasattr(val, "ua_types"):
         return struct_to_binary(val)
-    elif uatype == "ExtensionObject":
-        return extensionobject_to_binary(val)
     else:
         raise ValueError("Cannot pack {} of type {} to ua binary".format(val, uatype))
 
@@ -531,11 +532,13 @@ def from_binary(uatype, data):
         size = Primitives.Int32.unpack(data)
         res = []
         for _ in range(size):
-            res.append(from_binary(data, uatype[6:]))
+            res.append(from_binary(uatype[6:], data))
         return res
 
     elif isinstance(uatype, (str, unicode)) and hasattr(Primitives, uatype):
         st = getattr(Primitives, uatype)
+        res = st.unpack(data)
+        return res
         return st.unpack(data)
     elif uatype == ua.NodeId or uatype == "NodeId":
         return nodeid_from_binary(data)
@@ -546,7 +549,7 @@ def from_binary(uatype, data):
 
 
 def struct_from_binary(objtype, data):
-    print("SfB", objtype, data)
+    print("\nSfB", objtype, data, "\n")
     if isinstance(objtype, (unicode, str)):
         obj = getattr(ua, objtype)()
     else:
@@ -563,6 +566,7 @@ def struct_from_binary(objtype, data):
                 continue
         val = from_binary(uatype, data) 
         setattr(obj, name, val)
+    print("RET", obj)
     return obj
 
 
