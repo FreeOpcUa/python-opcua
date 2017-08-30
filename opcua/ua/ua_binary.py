@@ -351,6 +351,9 @@ def to_binary(val, uatype=None):
         return header_to_binary(val)
     elif isinstance(val, ua.Variant):
         return variant_to_binary(val)
+    elif uatype == "ExtensionObject":
+        #pack val into an extensionobject
+        return extensionobject_to_binary(val)
     elif hasattr(val, "ua_types"):
         return struct_to_binary(val)
     else:
@@ -540,7 +543,7 @@ def from_binary(uatype, data):
         res = st.unpack(data)
         return res
         return st.unpack(data)
-    elif uatype == ua.NodeId or uatype == "NodeId":
+    elif uatype == ua.NodeId or uatype in ("NodeId", "ExpandedNodeId"):
         return nodeid_from_binary(data)
     elif uatype == ua.Variant or uatype == "Variant":
         return variant_from_binary(data)
