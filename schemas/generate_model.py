@@ -256,7 +256,7 @@ def remove_vector_length(model):
     for struct in model.structs:
         new = []
         for field in struct.fields:
-            if not field.name.startswith("NoOf"):
+            if not field.name.startswith("NoOf") and field.name != "Length":
                 new.append(field)
         struct.fields = new
 
