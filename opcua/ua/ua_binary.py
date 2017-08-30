@@ -354,7 +354,7 @@ def to_binary(val, uatype=None):
     elif hasattr(val, "ua_types"):
         return struct_to_binary(val)
     else:
-        raise ValueError("Cannot pack {} of type {} to ua binary".format(val, uatype))
+        raise ValueError("No known way to pack {} of type {} to ua binary".format(val, uatype))
 
 
 def list_to_binary(val, uatype):
@@ -492,7 +492,7 @@ def extensionobject_from_binary(data):
         klass = ua.extension_object_classes[typeid]
         if body is None:
             raise UaError("parsing ExtensionObject {0} without data".format(klass.__name__))
-        return klass.from_binary(body)
+        return from_binary(klass, body)
     else:
         e = ua.ExtensionObject()
         e.TypeId = typeid
@@ -551,9 +551,11 @@ def from_binary(uatype, data):
 def struct_from_binary(objtype, data):
     print("\nSfB", objtype, data, "\n")
     if isinstance(objtype, (unicode, str)):
-        obj = getattr(ua, objtype)()
-    else:
-        obj = objtype()
+        objtype = getattr(ua, objtype)
+    print("OBJTYPE", objtype, type(objtype))
+    if issubclass(objtype, Enum):
+        return objtype(Primitives.UInt32.unpack(data))
+    obj = objtype()
     print("LOOK", obj.ua_types)
     for name, uatype in obj.ua_types:
         print("AN", name, uatype)
@@ -582,7 +584,7 @@ def header_to_binary(hdr):
     return b"".join(b)
 
 
-def header_from_string(data):
+def header_from_binary(data):
     hdr = ua.Header()
     hdr.MessageType, hdr.ChunkType, hdr.packet_size = struct.unpack("<3scI", data.read(8))
     hdr.body_size = hdr.packet_size - 8

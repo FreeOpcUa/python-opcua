@@ -8,7 +8,7 @@ from opcua.ua import uatypes
 from opcua.ua import ua_binary as uabin
 from opcua.ua import UaError
 from opcua.common import utils
-from opcua.ua.uatypes import AccessLevel
+from opcua.ua.uatypes import AccessLevel, FrozenClass
 
 logger = logging.getLogger('opcua.uaprotocol')
 
@@ -295,7 +295,7 @@ class MessageChunk(uatypes.FrozenClass):
 
     @staticmethod
     def from_binary(security_policy, data):
-        h = Header.from_string(data)
+        h = uabin.header_from_binary(data)
         return MessageChunk.from_header_and_body(security_policy, h, data)
 
     @staticmethod
@@ -593,7 +593,7 @@ class SecureConnection(object):
         object, or None (if intermediate chunk is received)
         """
         logger.debug("Waiting for header")
-        header = uabin.header_from_string(socket)
+        header = uabin.header_from_binary(socket)
         logger.info("received header: %s", header)
         body = socket.read(header.body_size)
         if len(body) != header.body_size:
@@ -688,4 +688,29 @@ class Argument(auto.Argument):
     def __init__(self):
         auto.Argument.__init__(self)
         self.ValueRank = -2
+
+
+class XmlElement(FrozenClass):
+    '''
+    An XML element encoded as a UTF-8 string.
+    :ivar Value:
+    :vartype Value: String
+    '''
+
+    ua_types = [
+        ('Value', 'String'),
+               ]
+
+    def __init__(self, xml=""):
+        self.Value = xml
+        self._freeze = True
+
+    def __str__(self):
+        return 'XmlElement(' + 'Value:' + str(self.Value) + ')'
+
+    __repr__ = __str__
+
+    def __eq__(self, el):
+        return isinstance(el, XmlElement) and self.Value == el.Value
+
 

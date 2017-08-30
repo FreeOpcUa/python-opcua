@@ -1,7 +1,6 @@
 
 IgnoredEnums = ["NodeIdType"]
-IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "LocalizedText", "ExtensionObject", "XmlElement"]
-IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "ExtensionObject"]
+IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "ExtensionObject", "XmlElement"]
 
 class Primitives1(object):
     Int8 = 0
@@ -129,10 +128,12 @@ class CodeGenerator(object):
         if switch_written:
             self.write("           }")
         self.write("ua_types = [")
-        self.write("")
         for field in obj.fields:
             prefix = "ListOf" if field.length else ""
-            self.write("    ('{}', '{}'),".format(field.name, prefix + field.uatype))
+            uatype = prefix + field.uatype
+            if uatype == "ListOfChar":
+                uatype = "String"
+            self.write("    ('{}', '{}'),".format(field.name, uatype))
         self.write("           ]")
         self.write("")
 

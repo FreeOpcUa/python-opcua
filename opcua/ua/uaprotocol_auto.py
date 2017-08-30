@@ -713,49 +713,6 @@ class ExceptionDeviationFormat(IntEnum):
     Unknown = 4
 
 
-class XmlElement(FrozenClass):
-    '''
-    An XML element encoded as a UTF-8 string.
-
-    :ivar Length:
-    :vartype Length: Int32
-    :ivar Value:
-    :vartype Value: Char
-    '''
-
-    ua_types = [
-
-        ('Length', 'Int32'),
-        ('Value', 'ListOfChar'),
-               ]
-
-    def __init__(self):
-        self.Length = 0
-        self.Value = []
-        self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(self.Length))
-        packet.append(uabin.Primitives.Int32.pack(len(self.Value)))
-        for fieldname in self.Value:
-            packet.append(uabin.Primitives.Char.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = XmlElement()
-        self.Length = uabin.Primitives.Int32.unpack(data)
-        obj.Value = uabin.Primitives.Char.unpack_array(data)
-        return obj
-
-    def __str__(self):
-        return 'XmlElement(' + 'Length:' + str(self.Length) + ', ' + \
-               'Value:' + str(self.Value) + ')'
-
-    __repr__ = __str__
-
-
 class DiagnosticInfo(FrozenClass):
     '''
     A recursive structure containing diagnostic information associated with a status code.
@@ -788,7 +745,6 @@ class DiagnosticInfo(FrozenClass):
         'InnerDiagnosticInfo': ('Encoding', 6),
                }
     ua_types = [
-
         ('Encoding', 'UInt8'),
         ('SymbolicId', 'Int32'),
         ('NamespaceURI', 'Int32'),
@@ -900,7 +856,6 @@ class LocalizedText(FrozenClass):
         'Text': ('Encoding', 1),
                }
     ua_types = [
-
         ('Encoding', 'UInt8'),
         ('Locale', 'CharArray'),
         ('Text', 'CharArray'),
@@ -945,120 +900,6 @@ class LocalizedText(FrozenClass):
     __repr__ = __str__
 
 
-class DataValue(FrozenClass):
-    '''
-    A value with an associated timestamp, and quality.
-
-    :ivar Encoding:
-    :vartype Encoding: UInt8
-    :ivar Value:
-    :vartype Value: Variant
-    :ivar StatusCode:
-    :vartype StatusCode: StatusCode
-    :ivar SourceTimestamp:
-    :vartype SourceTimestamp: DateTime
-    :ivar SourcePicoseconds:
-    :vartype SourcePicoseconds: UInt16
-    :ivar ServerTimestamp:
-    :vartype ServerTimestamp: DateTime
-    :ivar ServerPicoseconds:
-    :vartype ServerPicoseconds: UInt16
-    '''
-
-    ua_switches = {
-        'Value': ('Encoding', 0),
-        'StatusCode': ('Encoding', 1),
-        'SourceTimestamp': ('Encoding', 2),
-        'SourcePicoseconds': ('Encoding', 3),
-        'ServerTimestamp': ('Encoding', 4),
-        'ServerPicoseconds': ('Encoding', 5),
-               }
-    ua_types = [
-
-        ('Encoding', 'UInt8'),
-        ('Value', 'Variant'),
-        ('StatusCode', 'StatusCode'),
-        ('SourceTimestamp', 'DateTime'),
-        ('SourcePicoseconds', 'UInt16'),
-        ('ServerTimestamp', 'DateTime'),
-        ('ServerPicoseconds', 'UInt16'),
-               ]
-
-    def __init__(self):
-        self.Encoding = 0
-        self.Value = None
-        self.StatusCode = None
-        self.SourceTimestamp = None
-        self.SourcePicoseconds = None
-        self.ServerTimestamp = None
-        self.ServerPicoseconds = None
-        self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        if self.Value: self.Encoding |= (1 << 0)
-        if self.StatusCode: self.Encoding |= (1 << 1)
-        if self.SourceTimestamp: self.Encoding |= (1 << 2)
-        if self.SourcePicoseconds: self.Encoding |= (1 << 3)
-        if self.ServerTimestamp: self.Encoding |= (1 << 4)
-        if self.ServerPicoseconds: self.Encoding |= (1 << 5)
-        packet.append(uabin.Primitives.UInt8.pack(self.Encoding))
-        if self.Value: 
-            packet.append(self.Value.to_binary())
-        if self.StatusCode: 
-            packet.append(self.StatusCode.to_binary())
-        if self.SourceTimestamp: 
-            packet.append(uabin.Primitives.DateTime.pack(self.SourceTimestamp))
-        if self.SourcePicoseconds: 
-            packet.append(uabin.Primitives.UInt16.pack(self.SourcePicoseconds))
-        if self.ServerTimestamp: 
-            packet.append(uabin.Primitives.DateTime.pack(self.ServerTimestamp))
-        if self.ServerPicoseconds: 
-            packet.append(uabin.Primitives.UInt16.pack(self.ServerPicoseconds))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DataValue()
-        self.Encoding = uabin.Primitives.UInt8.unpack(data)
-        if obj.Encoding & (1 << 0):
-            obj.Value = Variant.from_binary(data)
-        else:
-            obj.Value = None
-        if obj.Encoding & (1 << 1):
-            obj.StatusCode = StatusCode.from_binary(data)
-        else:
-            obj.StatusCode = None
-        if obj.Encoding & (1 << 2):
-            self.SourceTimestamp = uabin.Primitives.DateTime.unpack(data)
-        else:
-            obj.SourceTimestamp = None
-        if obj.Encoding & (1 << 3):
-            self.SourcePicoseconds = uabin.Primitives.UInt16.unpack(data)
-        else:
-            obj.SourcePicoseconds = None
-        if obj.Encoding & (1 << 4):
-            self.ServerTimestamp = uabin.Primitives.DateTime.unpack(data)
-        else:
-            obj.ServerTimestamp = None
-        if obj.Encoding & (1 << 5):
-            self.ServerPicoseconds = uabin.Primitives.UInt16.unpack(data)
-        else:
-            obj.ServerPicoseconds = None
-            return obj
-
-    def __str__(self):
-        return 'DataValue(' + 'Encoding:' + str(self.Encoding) + ', ' + \
-               'Value:' + str(self.Value) + ', ' + \
-               'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'SourceTimestamp:' + str(self.SourceTimestamp) + ', ' + \
-               'SourcePicoseconds:' + str(self.SourcePicoseconds) + ', ' + \
-               'ServerTimestamp:' + str(self.ServerTimestamp) + ', ' + \
-               'ServerPicoseconds:' + str(self.ServerPicoseconds) + ')'
-
-    __repr__ = __str__
-
-
 class TrustListDataType(FrozenClass):
     '''
     :ivar SpecifiedLists:
@@ -1074,7 +915,6 @@ class TrustListDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('SpecifiedLists', 'UInt32'),
         ('TrustedCertificates', 'ListOfByteString'),
         ('TrustedCrls', 'ListOfByteString'),
@@ -1144,7 +984,6 @@ class Argument(FrozenClass):
     '''
 
     ua_types = [
-
         ('Name', 'String'),
         ('DataType', 'NodeId'),
         ('ValueRank', 'Int32'),
@@ -1204,7 +1043,6 @@ class EnumValueType(FrozenClass):
     '''
 
     ua_types = [
-
         ('Value', 'Int64'),
         ('DisplayName', 'LocalizedText'),
         ('Description', 'LocalizedText'),
@@ -1250,7 +1088,6 @@ class OptionSet(FrozenClass):
     '''
 
     ua_types = [
-
         ('Value', 'ByteString'),
         ('ValidBits', 'ByteString'),
                ]
@@ -1287,7 +1124,6 @@ class Union(FrozenClass):
     '''
 
     ua_types = [
-
                ]
 
     def __init__(self):
@@ -1317,7 +1153,6 @@ class TimeZoneDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('Offset', 'Int16'),
         ('DaylightSavingInOffset', 'Boolean'),
                ]
@@ -1368,7 +1203,6 @@ class ApplicationDescription(FrozenClass):
     '''
 
     ua_types = [
-
         ('ApplicationUri', 'String'),
         ('ProductUri', 'String'),
         ('ApplicationName', 'LocalizedText'),
@@ -1446,7 +1280,6 @@ class RequestHeader(FrozenClass):
     '''
 
     ua_types = [
-
         ('AuthenticationToken', 'NodeId'),
         ('Timestamp', 'DateTime'),
         ('RequestHandle', 'UInt32'),
@@ -1520,7 +1353,6 @@ class ResponseHeader(FrozenClass):
     '''
 
     ua_types = [
-
         ('Timestamp', 'DateTime'),
         ('RequestHandle', 'UInt32'),
         ('ServiceResult', 'StatusCode'),
@@ -1583,7 +1415,6 @@ class ServiceFault(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
                ]
@@ -1624,7 +1455,6 @@ class FindServersParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('EndpointUrl', 'String'),
         ('LocaleIds', 'ListOfString'),
         ('ServerUris', 'ListOfString'),
@@ -1676,7 +1506,6 @@ class FindServersRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'FindServersParameters'),
@@ -1724,7 +1553,6 @@ class FindServersResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Servers', 'ListOfApplicationDescription'),
@@ -1779,7 +1607,6 @@ class ServerOnNetwork(FrozenClass):
     '''
 
     ua_types = [
-
         ('RecordId', 'UInt32'),
         ('ServerName', 'String'),
         ('DiscoveryUrl', 'String'),
@@ -1832,7 +1659,6 @@ class FindServersOnNetworkParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('StartingRecordId', 'UInt32'),
         ('MaxRecordsToReturn', 'UInt32'),
         ('ServerCapabilityFilter', 'ListOfString'),
@@ -1880,7 +1706,6 @@ class FindServersOnNetworkRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'FindServersOnNetworkParameters'),
@@ -1924,7 +1749,6 @@ class FindServersOnNetworkResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('LastCounterResetTime', 'DateTime'),
         ('Servers', 'ListOfServerOnNetwork'),
                ]
@@ -1972,7 +1796,6 @@ class FindServersOnNetworkResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'FindServersOnNetworkResult'),
@@ -2024,7 +1847,6 @@ class UserTokenPolicy(FrozenClass):
     '''
 
     ua_types = [
-
         ('PolicyId', 'String'),
         ('TokenType', 'UserTokenType'),
         ('IssuedTokenType', 'String'),
@@ -2092,7 +1914,6 @@ class EndpointDescription(FrozenClass):
     '''
 
     ua_types = [
-
         ('EndpointUrl', 'String'),
         ('Server', 'ApplicationDescription'),
         ('ServerCertificate', 'ByteString'),
@@ -2170,7 +1991,6 @@ class GetEndpointsParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('EndpointUrl', 'String'),
         ('LocaleIds', 'ListOfString'),
         ('ProfileUris', 'ListOfString'),
@@ -2222,7 +2042,6 @@ class GetEndpointsRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'GetEndpointsParameters'),
@@ -2270,7 +2089,6 @@ class GetEndpointsResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Endpoints', 'ListOfEndpointDescription'),
@@ -2335,7 +2153,6 @@ class RegisteredServer(FrozenClass):
     '''
 
     ua_types = [
-
         ('ServerUri', 'String'),
         ('ProductUri', 'String'),
         ('ServerNames', 'ListOfLocalizedText'),
@@ -2417,7 +2234,6 @@ class RegisterServerRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Server', 'RegisteredServer'),
@@ -2463,7 +2279,6 @@ class RegisterServerResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
                ]
@@ -2500,7 +2315,6 @@ class DiscoveryConfiguration(FrozenClass):
     '''
 
     ua_types = [
-
                ]
 
     def __init__(self):
@@ -2532,7 +2346,6 @@ class MdnsDiscoveryConfiguration(FrozenClass):
     '''
 
     ua_types = [
-
         ('MdnsServerName', 'String'),
         ('ServerCapabilities', 'ListOfString'),
                ]
@@ -2573,7 +2386,6 @@ class RegisterServer2Parameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('Server', 'RegisteredServer'),
         ('DiscoveryConfiguration', 'ListOfExtensionObject'),
                ]
@@ -2621,7 +2433,6 @@ class RegisterServer2Request(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'RegisterServer2Parameters'),
@@ -2669,7 +2480,6 @@ class RegisterServer2Response(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('ConfigurationResults', 'ListOfStatusCode'),
@@ -2738,7 +2548,6 @@ class ChannelSecurityToken(FrozenClass):
     '''
 
     ua_types = [
-
         ('ChannelId', 'UInt32'),
         ('TokenId', 'UInt32'),
         ('CreatedAt', 'DateTime'),
@@ -2793,7 +2602,6 @@ class OpenSecureChannelParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('ClientProtocolVersion', 'UInt32'),
         ('RequestType', 'SecurityTokenRequestType'),
         ('SecurityMode', 'MessageSecurityMode'),
@@ -2851,7 +2659,6 @@ class OpenSecureChannelRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'OpenSecureChannelParameters'),
@@ -2897,7 +2704,6 @@ class OpenSecureChannelResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('ServerProtocolVersion', 'UInt32'),
         ('SecurityToken', 'ChannelSecurityToken'),
         ('ServerNonce', 'ByteString'),
@@ -2945,7 +2751,6 @@ class OpenSecureChannelResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'OpenSecureChannelResult'),
@@ -2991,7 +2796,6 @@ class CloseSecureChannelRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
                ]
@@ -3032,7 +2836,6 @@ class CloseSecureChannelResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
                ]
@@ -3073,7 +2876,6 @@ class SignedSoftwareCertificate(FrozenClass):
     '''
 
     ua_types = [
-
         ('CertificateData', 'ByteString'),
         ('Signature', 'ByteString'),
                ]
@@ -3114,7 +2916,6 @@ class SignatureData(FrozenClass):
     '''
 
     ua_types = [
-
         ('Algorithm', 'String'),
         ('Signature', 'ByteString'),
                ]
@@ -3165,7 +2966,6 @@ class CreateSessionParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('ClientDescription', 'ApplicationDescription'),
         ('ServerUri', 'String'),
         ('EndpointUrl', 'String'),
@@ -3238,7 +3038,6 @@ class CreateSessionRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'CreateSessionParameters'),
@@ -3296,7 +3095,6 @@ class CreateSessionResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('SessionId', 'NodeId'),
         ('AuthenticationToken', 'NodeId'),
         ('RevisedSessionTimeout', 'Double'),
@@ -3388,7 +3186,6 @@ class CreateSessionResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'CreateSessionResult'),
@@ -3432,7 +3229,6 @@ class UserIdentityToken(FrozenClass):
     '''
 
     ua_types = [
-
         ('PolicyId', 'String'),
                ]
 
@@ -3466,7 +3262,6 @@ class AnonymousIdentityToken(FrozenClass):
     '''
 
     ua_types = [
-
         ('PolicyId', 'String'),
                ]
 
@@ -3506,7 +3301,6 @@ class UserNameIdentityToken(FrozenClass):
     '''
 
     ua_types = [
-
         ('PolicyId', 'String'),
         ('UserName', 'String'),
         ('Password', 'ByteString'),
@@ -3557,7 +3351,6 @@ class X509IdentityToken(FrozenClass):
     '''
 
     ua_types = [
-
         ('PolicyId', 'String'),
         ('CertificateData', 'ByteString'),
                ]
@@ -3596,7 +3389,6 @@ class KerberosIdentityToken(FrozenClass):
     '''
 
     ua_types = [
-
         ('PolicyId', 'String'),
         ('TicketData', 'ByteString'),
                ]
@@ -3639,7 +3431,6 @@ class IssuedIdentityToken(FrozenClass):
     '''
 
     ua_types = [
-
         ('PolicyId', 'String'),
         ('TokenData', 'ByteString'),
         ('EncryptionAlgorithm', 'String'),
@@ -3689,7 +3480,6 @@ class ActivateSessionParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('ClientSignature', 'SignatureData'),
         ('ClientSoftwareCertificates', 'ListOfSignedSoftwareCertificate'),
         ('LocaleIds', 'ListOfString'),
@@ -3756,7 +3546,6 @@ class ActivateSessionRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'ActivateSessionParameters'),
@@ -3802,7 +3591,6 @@ class ActivateSessionResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('ServerNonce', 'ByteString'),
         ('Results', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
@@ -3864,7 +3652,6 @@ class ActivateSessionResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'ActivateSessionResult'),
@@ -3912,7 +3699,6 @@ class CloseSessionRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('DeleteSubscriptions', 'Boolean'),
@@ -3958,7 +3744,6 @@ class CloseSessionResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
                ]
@@ -3995,7 +3780,6 @@ class CancelParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('RequestHandle', 'UInt32'),
                ]
 
@@ -4033,7 +3817,6 @@ class CancelRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'CancelParameters'),
@@ -4075,7 +3858,6 @@ class CancelResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('CancelCount', 'UInt32'),
                ]
 
@@ -4113,7 +3895,6 @@ class CancelResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'CancelResult'),
@@ -4165,7 +3946,6 @@ class NodeAttributes(FrozenClass):
     '''
 
     ua_types = [
-
         ('SpecifiedAttributes', 'UInt32'),
         ('DisplayName', 'LocalizedText'),
         ('Description', 'LocalizedText'),
@@ -4229,7 +4009,6 @@ class ObjectAttributes(FrozenClass):
     '''
 
     ua_types = [
-
         ('SpecifiedAttributes', 'UInt32'),
         ('DisplayName', 'LocalizedText'),
         ('Description', 'LocalizedText'),
@@ -4312,7 +4091,6 @@ class VariableAttributes(FrozenClass):
     '''
 
     ua_types = [
-
         ('SpecifiedAttributes', 'UInt32'),
         ('DisplayName', 'LocalizedText'),
         ('Description', 'LocalizedText'),
@@ -4420,7 +4198,6 @@ class MethodAttributes(FrozenClass):
     '''
 
     ua_types = [
-
         ('SpecifiedAttributes', 'UInt32'),
         ('DisplayName', 'LocalizedText'),
         ('Description', 'LocalizedText'),
@@ -4494,7 +4271,6 @@ class ObjectTypeAttributes(FrozenClass):
     '''
 
     ua_types = [
-
         ('SpecifiedAttributes', 'UInt32'),
         ('DisplayName', 'LocalizedText'),
         ('Description', 'LocalizedText'),
@@ -4571,7 +4347,6 @@ class VariableTypeAttributes(FrozenClass):
     '''
 
     ua_types = [
-
         ('SpecifiedAttributes', 'UInt32'),
         ('DisplayName', 'LocalizedText'),
         ('Description', 'LocalizedText'),
@@ -4666,7 +4441,6 @@ class ReferenceTypeAttributes(FrozenClass):
     '''
 
     ua_types = [
-
         ('SpecifiedAttributes', 'UInt32'),
         ('DisplayName', 'LocalizedText'),
         ('Description', 'LocalizedText'),
@@ -4745,7 +4519,6 @@ class DataTypeAttributes(FrozenClass):
     '''
 
     ua_types = [
-
         ('SpecifiedAttributes', 'UInt32'),
         ('DisplayName', 'LocalizedText'),
         ('Description', 'LocalizedText'),
@@ -4816,7 +4589,6 @@ class ViewAttributes(FrozenClass):
     '''
 
     ua_types = [
-
         ('SpecifiedAttributes', 'UInt32'),
         ('DisplayName', 'LocalizedText'),
         ('Description', 'LocalizedText'),
@@ -4892,7 +4664,6 @@ class AddNodesItem(FrozenClass):
     '''
 
     ua_types = [
-
         ('ParentNodeId', 'ExpandedNodeId'),
         ('ReferenceTypeId', 'NodeId'),
         ('RequestedNewNodeId', 'ExpandedNodeId'),
@@ -4958,7 +4729,6 @@ class AddNodesResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('StatusCode', 'StatusCode'),
         ('AddedNodeId', 'NodeId'),
                ]
@@ -4995,7 +4765,6 @@ class AddNodesParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodesToAdd', 'ListOfAddNodesItem'),
                ]
 
@@ -5040,7 +4809,6 @@ class AddNodesRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'AddNodesParameters'),
@@ -5090,7 +4858,6 @@ class AddNodesResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfAddNodesResult'),
@@ -5163,7 +4930,6 @@ class AddReferencesItem(FrozenClass):
     '''
 
     ua_types = [
-
         ('SourceNodeId', 'NodeId'),
         ('ReferenceTypeId', 'NodeId'),
         ('IsForward', 'Boolean'),
@@ -5220,7 +4986,6 @@ class AddReferencesParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('ReferencesToAdd', 'ListOfAddReferencesItem'),
                ]
 
@@ -5265,7 +5030,6 @@ class AddReferencesRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'AddReferencesParameters'),
@@ -5315,7 +5079,6 @@ class AddReferencesResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfStatusCode'),
@@ -5380,7 +5143,6 @@ class DeleteNodesItem(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'NodeId'),
         ('DeleteTargetReferences', 'Boolean'),
                ]
@@ -5417,7 +5179,6 @@ class DeleteNodesParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodesToDelete', 'ListOfDeleteNodesItem'),
                ]
 
@@ -5462,7 +5223,6 @@ class DeleteNodesRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'DeleteNodesParameters'),
@@ -5512,7 +5272,6 @@ class DeleteNodesResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfStatusCode'),
@@ -5583,7 +5342,6 @@ class DeleteReferencesItem(FrozenClass):
     '''
 
     ua_types = [
-
         ('SourceNodeId', 'NodeId'),
         ('ReferenceTypeId', 'NodeId'),
         ('IsForward', 'Boolean'),
@@ -5635,7 +5393,6 @@ class DeleteReferencesParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('ReferencesToDelete', 'ListOfDeleteReferencesItem'),
                ]
 
@@ -5680,7 +5437,6 @@ class DeleteReferencesRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'DeleteReferencesParameters'),
@@ -5724,7 +5480,6 @@ class DeleteReferencesResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('Results', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
@@ -5781,7 +5536,6 @@ class DeleteReferencesResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'DeleteReferencesResult'),
@@ -5829,7 +5583,6 @@ class ViewDescription(FrozenClass):
     '''
 
     ua_types = [
-
         ('ViewId', 'NodeId'),
         ('Timestamp', 'DateTime'),
         ('ViewVersion', 'UInt32'),
@@ -5883,7 +5636,6 @@ class BrowseDescription(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'NodeId'),
         ('BrowseDirection', 'BrowseDirection'),
         ('ReferenceTypeId', 'NodeId'),
@@ -5954,7 +5706,6 @@ class ReferenceDescription(FrozenClass):
     '''
 
     ua_types = [
-
         ('ReferenceTypeId', 'NodeId'),
         ('IsForward', 'Boolean'),
         ('NodeId', 'ExpandedNodeId'),
@@ -6022,7 +5773,6 @@ class BrowseResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('StatusCode', 'StatusCode'),
         ('ContinuationPoint', 'ByteString'),
         ('References', 'ListOfReferenceDescription'),
@@ -6075,7 +5825,6 @@ class BrowseParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('View', 'ViewDescription'),
         ('RequestedMaxReferencesPerNode', 'UInt32'),
         ('NodesToBrowse', 'ListOfBrowseDescription'),
@@ -6130,7 +5879,6 @@ class BrowseRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'BrowseParameters'),
@@ -6180,7 +5928,6 @@ class BrowseResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfBrowseResult'),
@@ -6243,7 +5990,6 @@ class BrowseNextParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('ReleaseContinuationPoints', 'Boolean'),
         ('ContinuationPoints', 'ListOfByteString'),
                ]
@@ -6288,7 +6034,6 @@ class BrowseNextRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'BrowseNextParameters'),
@@ -6332,7 +6077,6 @@ class BrowseNextResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('Results', 'ListOfBrowseResult'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
@@ -6389,7 +6133,6 @@ class BrowseNextResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'BrowseNextResult'),
@@ -6439,7 +6182,6 @@ class RelativePathElement(FrozenClass):
     '''
 
     ua_types = [
-
         ('ReferenceTypeId', 'NodeId'),
         ('IsInverse', 'Boolean'),
         ('IncludeSubtypes', 'Boolean'),
@@ -6488,7 +6230,6 @@ class RelativePath(FrozenClass):
     '''
 
     ua_types = [
-
         ('Elements', 'ListOfRelativePathElement'),
                ]
 
@@ -6531,7 +6272,6 @@ class BrowsePath(FrozenClass):
     '''
 
     ua_types = [
-
         ('StartingNode', 'NodeId'),
         ('RelativePath', 'RelativePath'),
                ]
@@ -6572,7 +6312,6 @@ class BrowsePathTarget(FrozenClass):
     '''
 
     ua_types = [
-
         ('TargetId', 'ExpandedNodeId'),
         ('RemainingPathIndex', 'UInt32'),
                ]
@@ -6613,7 +6352,6 @@ class BrowsePathResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('StatusCode', 'StatusCode'),
         ('Targets', 'ListOfBrowsePathTarget'),
                ]
@@ -6657,7 +6395,6 @@ class TranslateBrowsePathsToNodeIdsParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('BrowsePaths', 'ListOfBrowsePath'),
                ]
 
@@ -6702,7 +6439,6 @@ class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'TranslateBrowsePathsToNodeIdsParameters'),
@@ -6752,7 +6488,6 @@ class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfBrowsePathResult'),
@@ -6813,7 +6548,6 @@ class RegisterNodesParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodesToRegister', 'ListOfNodeId'),
                ]
 
@@ -6858,7 +6592,6 @@ class RegisterNodesRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'RegisterNodesParameters'),
@@ -6900,7 +6633,6 @@ class RegisterNodesResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('RegisteredNodeIds', 'ListOfNodeId'),
                ]
 
@@ -6945,7 +6677,6 @@ class RegisterNodesResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'RegisterNodesResult'),
@@ -6987,7 +6718,6 @@ class UnregisterNodesParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodesToUnregister', 'ListOfNodeId'),
                ]
 
@@ -7032,7 +6762,6 @@ class UnregisterNodesRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'UnregisterNodesParameters'),
@@ -7078,7 +6807,6 @@ class UnregisterNodesResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
                ]
@@ -7131,7 +6859,6 @@ class EndpointConfiguration(FrozenClass):
     '''
 
     ua_types = [
-
         ('OperationTimeout', 'Int32'),
         ('UseBinaryEncoding', 'Boolean'),
         ('MaxStringLength', 'Int32'),
@@ -7213,7 +6940,6 @@ class SupportedProfile(FrozenClass):
     '''
 
     ua_types = [
-
         ('OrganizationUri', 'String'),
         ('ProfileId', 'String'),
         ('ComplianceTool', 'String'),
@@ -7290,7 +7016,6 @@ class SoftwareCertificate(FrozenClass):
     '''
 
     ua_types = [
-
         ('ProductName', 'String'),
         ('ProductUri', 'String'),
         ('VendorName', 'String'),
@@ -7378,7 +7103,6 @@ class QueryDataDescription(FrozenClass):
     '''
 
     ua_types = [
-
         ('RelativePath', 'RelativePath'),
         ('AttributeId', 'UInt32'),
         ('IndexRange', 'String'),
@@ -7424,7 +7148,6 @@ class NodeTypeDescription(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeDefinitionNode', 'ExpandedNodeId'),
         ('IncludeSubTypes', 'Boolean'),
         ('DataToReturn', 'ListOfQueryDataDescription'),
@@ -7477,7 +7200,6 @@ class QueryDataSet(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'ExpandedNodeId'),
         ('TypeDefinitionNode', 'ExpandedNodeId'),
         ('Values', 'ListOfVariant'),
@@ -7532,7 +7254,6 @@ class NodeReference(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'NodeId'),
         ('ReferenceTypeId', 'NodeId'),
         ('IsForward', 'Boolean'),
@@ -7588,7 +7309,6 @@ class ContentFilterElement(FrozenClass):
     '''
 
     ua_types = [
-
         ('FilterOperator', 'FilterOperator'),
         ('FilterOperands', 'ListOfExtensionObject'),
                ]
@@ -7632,7 +7352,6 @@ class ContentFilter(FrozenClass):
     '''
 
     ua_types = [
-
         ('Elements', 'ListOfContentFilterElement'),
                ]
 
@@ -7671,7 +7390,6 @@ class ElementOperand(FrozenClass):
     '''
 
     ua_types = [
-
         ('Index', 'UInt32'),
                ]
 
@@ -7703,7 +7421,6 @@ class LiteralOperand(FrozenClass):
     '''
 
     ua_types = [
-
         ('Value', 'Variant'),
                ]
 
@@ -7743,7 +7460,6 @@ class AttributeOperand(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'NodeId'),
         ('Alias', 'String'),
         ('BrowsePath', 'RelativePath'),
@@ -7801,7 +7517,6 @@ class SimpleAttributeOperand(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeDefinitionId', 'NodeId'),
         ('BrowsePath', 'ListOfQualifiedName'),
         ('AttributeId', 'UInt32'),
@@ -7859,7 +7574,6 @@ class ContentFilterElementResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('StatusCode', 'StatusCode'),
         ('OperandStatusCodes', 'ListOfStatusCode'),
         ('OperandDiagnosticInfos', 'ListOfDiagnosticInfo'),
@@ -7917,7 +7631,6 @@ class ContentFilterResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('ElementResults', 'ListOfContentFilterElementResult'),
         ('ElementDiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
@@ -7972,7 +7685,6 @@ class ParsingResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('StatusCode', 'StatusCode'),
         ('DataStatusCodes', 'ListOfStatusCode'),
         ('DataDiagnosticInfos', 'ListOfDiagnosticInfo'),
@@ -8036,7 +7748,6 @@ class QueryFirstParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('View', 'ViewDescription'),
         ('NodeTypes', 'ListOfNodeTypeDescription'),
         ('Filter', 'ContentFilter'),
@@ -8099,7 +7810,6 @@ class QueryFirstRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'QueryFirstParameters'),
@@ -8149,7 +7859,6 @@ class QueryFirstResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('QueryDataSets', 'ListOfQueryDataSet'),
         ('ContinuationPoint', 'ByteString'),
         ('ParsingResults', 'ListOfParsingResult'),
@@ -8226,7 +7935,6 @@ class QueryFirstResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'QueryFirstResult'),
@@ -8270,7 +7978,6 @@ class QueryNextParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('ReleaseContinuationPoint', 'Boolean'),
         ('ContinuationPoint', 'ByteString'),
                ]
@@ -8311,7 +8018,6 @@ class QueryNextRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'QueryNextParameters'),
@@ -8355,7 +8061,6 @@ class QueryNextResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('QueryDataSets', 'ListOfQueryDataSet'),
         ('RevisedContinuationPoint', 'ByteString'),
                ]
@@ -8403,7 +8108,6 @@ class QueryNextResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'QueryNextResult'),
@@ -8451,7 +8155,6 @@ class ReadValueId(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'NodeId'),
         ('AttributeId', 'UInt32'),
         ('IndexRange', 'String'),
@@ -8502,7 +8205,6 @@ class ReadParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('MaxAge', 'Double'),
         ('TimestampsToReturn', 'TimestampsToReturn'),
         ('NodesToRead', 'ListOfReadValueId'),
@@ -8555,7 +8257,6 @@ class ReadRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'ReadParameters'),
@@ -8603,7 +8304,6 @@ class ReadResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfDataValue'),
@@ -8670,7 +8370,6 @@ class HistoryReadValueId(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'NodeId'),
         ('IndexRange', 'String'),
         ('DataEncoding', 'QualifiedName'),
@@ -8721,7 +8420,6 @@ class HistoryReadResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('StatusCode', 'StatusCode'),
         ('ContinuationPoint', 'ByteString'),
         ('HistoryData', 'ExtensionObject'),
@@ -8761,7 +8459,6 @@ class HistoryReadDetails(FrozenClass):
     '''
 
     ua_types = [
-
                ]
 
     def __init__(self):
@@ -8795,7 +8492,6 @@ class ReadEventDetails(FrozenClass):
     '''
 
     ua_types = [
-
         ('NumValuesPerNode', 'UInt32'),
         ('StartTime', 'DateTime'),
         ('EndTime', 'DateTime'),
@@ -8850,7 +8546,6 @@ class ReadRawModifiedDetails(FrozenClass):
     '''
 
     ua_types = [
-
         ('IsReadModified', 'Boolean'),
         ('StartTime', 'DateTime'),
         ('EndTime', 'DateTime'),
@@ -8910,7 +8605,6 @@ class ReadProcessedDetails(FrozenClass):
     '''
 
     ua_types = [
-
         ('StartTime', 'DateTime'),
         ('EndTime', 'DateTime'),
         ('ProcessingInterval', 'Double'),
@@ -8971,7 +8665,6 @@ class ReadAtTimeDetails(FrozenClass):
     '''
 
     ua_types = [
-
         ('ReqTimes', 'ListOfDateTime'),
         ('UseSimpleBounds', 'Boolean'),
                ]
@@ -9010,7 +8703,6 @@ class HistoryData(FrozenClass):
     '''
 
     ua_types = [
-
         ('DataValues', 'ListOfDataValue'),
                ]
 
@@ -9053,7 +8745,6 @@ class ModificationInfo(FrozenClass):
     '''
 
     ua_types = [
-
         ('ModificationTime', 'DateTime'),
         ('UpdateType', 'HistoryUpdateType'),
         ('UserName', 'String'),
@@ -9097,7 +8788,6 @@ class HistoryModifiedData(FrozenClass):
     '''
 
     ua_types = [
-
         ('DataValues', 'ListOfDataValue'),
         ('ModificationInfos', 'ListOfModificationInfo'),
                ]
@@ -9148,7 +8838,6 @@ class HistoryEvent(FrozenClass):
     '''
 
     ua_types = [
-
         ('Events', 'ListOfHistoryEventFieldList'),
                ]
 
@@ -9193,7 +8882,6 @@ class HistoryReadParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('HistoryReadDetails', 'ExtensionObject'),
         ('TimestampsToReturn', 'TimestampsToReturn'),
         ('ReleaseContinuationPoints', 'Boolean'),
@@ -9251,7 +8939,6 @@ class HistoryReadRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'HistoryReadParameters'),
@@ -9299,7 +8986,6 @@ class HistoryReadResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfHistoryReadResult'),
@@ -9366,7 +9052,6 @@ class WriteValue(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'NodeId'),
         ('AttributeId', 'UInt32'),
         ('IndexRange', 'String'),
@@ -9413,7 +9098,6 @@ class WriteParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodesToWrite', 'ListOfWriteValue'),
                ]
 
@@ -9456,7 +9140,6 @@ class WriteRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'WriteParameters'),
@@ -9504,7 +9187,6 @@ class WriteResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfStatusCode'),
@@ -9565,7 +9247,6 @@ class HistoryUpdateDetails(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'NodeId'),
                ]
 
@@ -9601,7 +9282,6 @@ class UpdateDataDetails(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'NodeId'),
         ('PerformInsertReplace', 'PerformUpdateType'),
         ('UpdateValues', 'ListOfDataValue'),
@@ -9654,7 +9334,6 @@ class UpdateStructureDataDetails(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'NodeId'),
         ('PerformInsertReplace', 'PerformUpdateType'),
         ('UpdateValues', 'ListOfDataValue'),
@@ -9709,7 +9388,6 @@ class UpdateEventDetails(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'NodeId'),
         ('PerformInsertReplace', 'PerformUpdateType'),
         ('Filter', 'EventFilter'),
@@ -9769,7 +9447,6 @@ class DeleteRawModifiedDetails(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'NodeId'),
         ('IsDeleteModified', 'Boolean'),
         ('StartTime', 'DateTime'),
@@ -9818,7 +9495,6 @@ class DeleteAtTimeDetails(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'NodeId'),
         ('ReqTimes', 'ListOfDateTime'),
                ]
@@ -9859,7 +9535,6 @@ class DeleteEventDetails(FrozenClass):
     '''
 
     ua_types = [
-
         ('NodeId', 'NodeId'),
         ('EventIds', 'ListOfByteString'),
                ]
@@ -9902,7 +9577,6 @@ class HistoryUpdateResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('StatusCode', 'StatusCode'),
         ('OperationResults', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
@@ -9958,7 +9632,6 @@ class HistoryUpdateParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('HistoryUpdateDetails', 'ListOfExtensionObject'),
                ]
 
@@ -10001,7 +9674,6 @@ class HistoryUpdateRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'HistoryUpdateParameters'),
@@ -10049,7 +9721,6 @@ class HistoryUpdateResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfHistoryUpdateResult'),
@@ -10114,7 +9785,6 @@ class CallMethodRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('ObjectId', 'NodeId'),
         ('MethodId', 'NodeId'),
         ('InputArguments', 'ListOfVariant'),
@@ -10169,7 +9839,6 @@ class CallMethodResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('StatusCode', 'StatusCode'),
         ('InputArgumentResults', 'ListOfStatusCode'),
         ('InputArgumentDiagnosticInfos', 'ListOfDiagnosticInfo'),
@@ -10237,7 +9906,6 @@ class CallParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('MethodsToCall', 'ListOfCallMethodRequest'),
                ]
 
@@ -10280,7 +9948,6 @@ class CallRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'CallParameters'),
@@ -10328,7 +9995,6 @@ class CallResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfCallMethodResult'),
@@ -10387,7 +10053,6 @@ class MonitoringFilter(FrozenClass):
     '''
 
     ua_types = [
-
                ]
 
     def __init__(self):
@@ -10419,7 +10084,6 @@ class DataChangeFilter(FrozenClass):
     '''
 
     ua_types = [
-
         ('Trigger', 'DataChangeTrigger'),
         ('DeadbandType', 'UInt32'),
         ('DeadbandValue', 'Double'),
@@ -10463,7 +10127,6 @@ class EventFilter(FrozenClass):
     '''
 
     ua_types = [
-
         ('SelectClauses', 'ListOfSimpleAttributeOperand'),
         ('WhereClause', 'ContentFilter'),
                ]
@@ -10515,7 +10178,6 @@ class AggregateConfiguration(FrozenClass):
     '''
 
     ua_types = [
-
         ('UseServerCapabilitiesDefaults', 'Boolean'),
         ('TreatUncertainAsBad', 'Boolean'),
         ('PercentDataBad', 'Byte'),
@@ -10573,7 +10235,6 @@ class AggregateFilter(FrozenClass):
     '''
 
     ua_types = [
-
         ('StartTime', 'DateTime'),
         ('AggregateType', 'NodeId'),
         ('ProcessingInterval', 'Double'),
@@ -10618,7 +10279,6 @@ class MonitoringFilterResult(FrozenClass):
     '''
 
     ua_types = [
-
                ]
 
     def __init__(self):
@@ -10650,7 +10310,6 @@ class EventFilterResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('SelectClauseResults', 'ListOfStatusCode'),
         ('SelectClauseDiagnosticInfos', 'ListOfDiagnosticInfo'),
         ('WhereClauseResult', 'ContentFilterResult'),
@@ -10710,7 +10369,6 @@ class AggregateFilterResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('RevisedStartTime', 'DateTime'),
         ('RevisedProcessingInterval', 'Double'),
         ('RevisedAggregateConfiguration', 'AggregateConfiguration'),
@@ -10760,7 +10418,6 @@ class MonitoringParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('ClientHandle', 'UInt32'),
         ('SamplingInterval', 'Double'),
         ('Filter', 'ExtensionObject'),
@@ -10816,7 +10473,6 @@ class MonitoredItemCreateRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('ItemToMonitor', 'ReadValueId'),
         ('MonitoringMode', 'MonitoringMode'),
         ('RequestedParameters', 'MonitoringParameters'),
@@ -10866,7 +10522,6 @@ class MonitoredItemCreateResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('StatusCode', 'StatusCode'),
         ('MonitoredItemId', 'UInt32'),
         ('RevisedSamplingInterval', 'Double'),
@@ -10922,7 +10577,6 @@ class CreateMonitoredItemsParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('SubscriptionId', 'UInt32'),
         ('TimestampsToReturn', 'TimestampsToReturn'),
         ('ItemsToCreate', 'ListOfMonitoredItemCreateRequest'),
@@ -10975,7 +10629,6 @@ class CreateMonitoredItemsRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'CreateMonitoredItemsParameters'),
@@ -11023,7 +10676,6 @@ class CreateMonitoredItemsResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfMonitoredItemCreateResult'),
@@ -11086,7 +10738,6 @@ class MonitoredItemModifyRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('MonitoredItemId', 'UInt32'),
         ('RequestedParameters', 'MonitoringParameters'),
                ]
@@ -11129,7 +10780,6 @@ class MonitoredItemModifyResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('StatusCode', 'StatusCode'),
         ('RevisedSamplingInterval', 'Double'),
         ('RevisedQueueSize', 'UInt32'),
@@ -11180,7 +10830,6 @@ class ModifyMonitoredItemsParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('SubscriptionId', 'UInt32'),
         ('TimestampsToReturn', 'TimestampsToReturn'),
         ('ItemsToModify', 'ListOfMonitoredItemModifyRequest'),
@@ -11233,7 +10882,6 @@ class ModifyMonitoredItemsRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'ModifyMonitoredItemsParameters'),
@@ -11281,7 +10929,6 @@ class ModifyMonitoredItemsResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfMonitoredItemModifyResult'),
@@ -11346,7 +10993,6 @@ class SetMonitoringModeParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('SubscriptionId', 'UInt32'),
         ('MonitoringMode', 'MonitoringMode'),
         ('MonitoredItemIds', 'ListOfUInt32'),
@@ -11394,7 +11040,6 @@ class SetMonitoringModeRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'SetMonitoringModeParameters'),
@@ -11438,7 +11083,6 @@ class SetMonitoringModeResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('Results', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
@@ -11493,7 +11137,6 @@ class SetMonitoringModeResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'SetMonitoringModeResult'),
@@ -11541,7 +11184,6 @@ class SetTriggeringParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('SubscriptionId', 'UInt32'),
         ('TriggeringItemId', 'UInt32'),
         ('LinksToAdd', 'ListOfUInt32'),
@@ -11596,7 +11238,6 @@ class SetTriggeringRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'SetTriggeringParameters'),
@@ -11644,7 +11285,6 @@ class SetTriggeringResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('AddResults', 'ListOfStatusCode'),
         ('AddDiagnosticInfos', 'ListOfDiagnosticInfo'),
         ('RemoveResults', 'ListOfStatusCode'),
@@ -11723,7 +11363,6 @@ class SetTriggeringResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'SetTriggeringResult'),
@@ -11767,7 +11406,6 @@ class DeleteMonitoredItemsParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('SubscriptionId', 'UInt32'),
         ('MonitoredItemIds', 'ListOfUInt32'),
                ]
@@ -11810,7 +11448,6 @@ class DeleteMonitoredItemsRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'DeleteMonitoredItemsParameters'),
@@ -11858,7 +11495,6 @@ class DeleteMonitoredItemsResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfStatusCode'),
@@ -11929,7 +11565,6 @@ class CreateSubscriptionParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('RequestedPublishingInterval', 'Double'),
         ('RequestedLifetimeCount', 'UInt32'),
         ('RequestedMaxKeepAliveCount', 'UInt32'),
@@ -11990,7 +11625,6 @@ class CreateSubscriptionRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'CreateSubscriptionParameters'),
@@ -12038,7 +11672,6 @@ class CreateSubscriptionResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('SubscriptionId', 'UInt32'),
         ('RevisedPublishingInterval', 'Double'),
         ('RevisedLifetimeCount', 'UInt32'),
@@ -12089,7 +11722,6 @@ class CreateSubscriptionResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'CreateSubscriptionResult'),
@@ -12141,7 +11773,6 @@ class ModifySubscriptionParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('SubscriptionId', 'UInt32'),
         ('RequestedPublishingInterval', 'Double'),
         ('RequestedLifetimeCount', 'UInt32'),
@@ -12202,7 +11833,6 @@ class ModifySubscriptionRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'ModifySubscriptionParameters'),
@@ -12248,7 +11878,6 @@ class ModifySubscriptionResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('RevisedPublishingInterval', 'Double'),
         ('RevisedLifetimeCount', 'UInt32'),
         ('RevisedMaxKeepAliveCount', 'UInt32'),
@@ -12294,7 +11923,6 @@ class ModifySubscriptionResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'ModifySubscriptionResult'),
@@ -12338,7 +11966,6 @@ class SetPublishingModeParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('PublishingEnabled', 'Boolean'),
         ('SubscriptionIds', 'ListOfUInt32'),
                ]
@@ -12381,7 +12008,6 @@ class SetPublishingModeRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'SetPublishingModeParameters'),
@@ -12425,7 +12051,6 @@ class SetPublishingModeResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('Results', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
@@ -12480,7 +12105,6 @@ class SetPublishingModeResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'SetPublishingModeResult'),
@@ -12526,7 +12150,6 @@ class NotificationMessage(FrozenClass):
     '''
 
     ua_types = [
-
         ('SequenceNumber', 'UInt32'),
         ('PublishTime', 'DateTime'),
         ('NotificationData', 'ListOfExtensionObject'),
@@ -12573,7 +12196,6 @@ class NotificationData(FrozenClass):
     '''
 
     ua_types = [
-
                ]
 
     def __init__(self):
@@ -12603,7 +12225,6 @@ class DataChangeNotification(FrozenClass):
     '''
 
     ua_types = [
-
         ('MonitoredItems', 'ListOfMonitoredItemNotification'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
@@ -12656,7 +12277,6 @@ class MonitoredItemNotification(FrozenClass):
     '''
 
     ua_types = [
-
         ('ClientHandle', 'UInt32'),
         ('Value', 'DataValue'),
                ]
@@ -12693,7 +12313,6 @@ class EventNotificationList(FrozenClass):
     '''
 
     ua_types = [
-
         ('Events', 'ListOfEventFieldList'),
                ]
 
@@ -12734,7 +12353,6 @@ class EventFieldList(FrozenClass):
     '''
 
     ua_types = [
-
         ('ClientHandle', 'UInt32'),
         ('EventFields', 'ListOfVariant'),
                ]
@@ -12778,7 +12396,6 @@ class HistoryEventFieldList(FrozenClass):
     '''
 
     ua_types = [
-
         ('EventFields', 'ListOfVariant'),
                ]
 
@@ -12819,7 +12436,6 @@ class StatusChangeNotification(FrozenClass):
     '''
 
     ua_types = [
-
         ('Status', 'StatusCode'),
         ('DiagnosticInfo', 'DiagnosticInfo'),
                ]
@@ -12858,7 +12474,6 @@ class SubscriptionAcknowledgement(FrozenClass):
     '''
 
     ua_types = [
-
         ('SubscriptionId', 'UInt32'),
         ('SequenceNumber', 'UInt32'),
                ]
@@ -12895,7 +12510,6 @@ class PublishParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('SubscriptionAcknowledgements', 'ListOfSubscriptionAcknowledgement'),
                ]
 
@@ -12938,7 +12552,6 @@ class PublishRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'PublishParameters'),
@@ -12990,7 +12603,6 @@ class PublishResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('SubscriptionId', 'UInt32'),
         ('AvailableSequenceNumbers', 'ListOfUInt32'),
         ('MoreNotifications', 'Boolean'),
@@ -13067,7 +12679,6 @@ class PublishResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'PublishResult'),
@@ -13111,7 +12722,6 @@ class RepublishParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('SubscriptionId', 'UInt32'),
         ('RetransmitSequenceNumber', 'UInt32'),
                ]
@@ -13152,7 +12762,6 @@ class RepublishRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'RepublishParameters'),
@@ -13198,7 +12807,6 @@ class RepublishResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('NotificationMessage', 'NotificationMessage'),
@@ -13242,7 +12850,6 @@ class TransferResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('StatusCode', 'StatusCode'),
         ('AvailableSequenceNumbers', 'ListOfUInt32'),
                ]
@@ -13283,7 +12890,6 @@ class TransferSubscriptionsParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('SubscriptionIds', 'ListOfUInt32'),
         ('SendInitialValues', 'Boolean'),
                ]
@@ -13326,7 +12932,6 @@ class TransferSubscriptionsRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'TransferSubscriptionsParameters'),
@@ -13370,7 +12975,6 @@ class TransferSubscriptionsResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('Results', 'ListOfTransferResult'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
@@ -13425,7 +13029,6 @@ class TransferSubscriptionsResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'TransferSubscriptionsResult'),
@@ -13467,7 +13070,6 @@ class DeleteSubscriptionsParameters(FrozenClass):
     '''
 
     ua_types = [
-
         ('SubscriptionIds', 'ListOfUInt32'),
                ]
 
@@ -13505,7 +13107,6 @@ class DeleteSubscriptionsRequest(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'DeleteSubscriptionsParameters'),
@@ -13553,7 +13154,6 @@ class DeleteSubscriptionsResponse(FrozenClass):
     '''
 
     ua_types = [
-
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfStatusCode'),
@@ -13624,7 +13224,6 @@ class BuildInfo(FrozenClass):
     '''
 
     ua_types = [
-
         ('ProductUri', 'String'),
         ('ManufacturerName', 'String'),
         ('ProductName', 'String'),
@@ -13685,7 +13284,6 @@ class RedundantServerDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('ServerId', 'String'),
         ('ServiceLevel', 'Byte'),
         ('ServerState', 'ServerState'),
@@ -13727,7 +13325,6 @@ class EndpointUrlListDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('EndpointUrlList', 'ListOfString'),
                ]
 
@@ -13763,7 +13360,6 @@ class NetworkGroupDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('ServerUri', 'String'),
         ('NetworkPaths', 'ListOfEndpointUrlListDataType'),
                ]
@@ -13813,7 +13409,6 @@ class SamplingIntervalDiagnosticsDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('SamplingInterval', 'Double'),
         ('MonitoredItemCount', 'UInt32'),
         ('MaxMonitoredItemCount', 'UInt32'),
@@ -13882,7 +13477,6 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('ServerViewCount', 'UInt32'),
         ('CurrentSessionCount', 'UInt32'),
         ('CumulatedSessionCount', 'UInt32'),
@@ -13979,7 +13573,6 @@ class ServerStatusDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('StartTime', 'DateTime'),
         ('CurrentTime', 'DateTime'),
         ('State', 'ServerState'),
@@ -14120,7 +13713,6 @@ class SessionDiagnosticsDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('SessionId', 'NodeId'),
         ('SessionName', 'String'),
         ('ClientDescription', 'ApplicationDescription'),
@@ -14380,7 +13972,6 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('SessionId', 'NodeId'),
         ('ClientUserIdOfSession', 'String'),
         ('ClientUserIdHistory', 'ListOfString'),
@@ -14456,7 +14047,6 @@ class ServiceCounterDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('TotalCount', 'UInt32'),
         ('ErrorCount', 'UInt32'),
                ]
@@ -14495,7 +14085,6 @@ class StatusResult(FrozenClass):
     '''
 
     ua_types = [
-
         ('StatusCode', 'StatusCode'),
         ('DiagnosticInfo', 'DiagnosticInfo'),
                ]
@@ -14592,7 +14181,6 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('SessionId', 'NodeId'),
         ('SubscriptionId', 'UInt32'),
         ('Priority', 'Byte'),
@@ -14778,7 +14366,6 @@ class ModelChangeStructureDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('Affected', 'NodeId'),
         ('AffectedType', 'NodeId'),
         ('Verb', 'Byte'),
@@ -14822,7 +14409,6 @@ class SemanticChangeStructureDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('Affected', 'NodeId'),
         ('AffectedType', 'NodeId'),
                ]
@@ -14861,7 +14447,6 @@ class Range(FrozenClass):
     '''
 
     ua_types = [
-
         ('Low', 'Double'),
         ('High', 'Double'),
                ]
@@ -14904,7 +14489,6 @@ class EUInformation(FrozenClass):
     '''
 
     ua_types = [
-
         ('NamespaceUri', 'String'),
         ('UnitId', 'Int32'),
         ('DisplayName', 'LocalizedText'),
@@ -14953,7 +14537,6 @@ class ComplexNumberType(FrozenClass):
     '''
 
     ua_types = [
-
         ('Real', 'Float'),
         ('Imaginary', 'Float'),
                ]
@@ -14992,7 +14575,6 @@ class DoubleComplexNumberType(FrozenClass):
     '''
 
     ua_types = [
-
         ('Real', 'Double'),
         ('Imaginary', 'Double'),
                ]
@@ -15037,7 +14619,6 @@ class AxisInformation(FrozenClass):
     '''
 
     ua_types = [
-
         ('EngineeringUnits', 'EUInformation'),
         ('EURange', 'Range'),
         ('Title', 'LocalizedText'),
@@ -15093,7 +14674,6 @@ class XVType(FrozenClass):
     '''
 
     ua_types = [
-
         ('X', 'Double'),
         ('Value', 'Float'),
                ]
@@ -15148,7 +14728,6 @@ class ProgramDiagnosticDataType(FrozenClass):
     '''
 
     ua_types = [
-
         ('CreateSessionId', 'NodeId'),
         ('CreateClientName', 'String'),
         ('InvocationCreationTime', 'DateTime'),
@@ -15243,7 +14822,6 @@ class Annotation(FrozenClass):
     '''
 
     ua_types = [
-
         ('Message', 'String'),
         ('UserName', 'String'),
         ('AnnotationTime', 'DateTime'),
