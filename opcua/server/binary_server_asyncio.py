@@ -10,6 +10,7 @@ except ImportError:
 
 
 from opcua import ua
+import opcua.ua.ua_binary as uabin
 from opcua.server.uaprocessor import UaProcessor
 
 logger = logging.getLogger(__name__)
@@ -82,7 +83,7 @@ class BinaryServer(object):
                     try:
                         backup_buf = buf.copy()
                         try:
-                            hdr = ua.Header.from_string(buf)
+                            hdr = uabin.header_from_binary(buf)
                         except ua.utils.NotEnoughData:
                             logger.info("We did not receive enough data from client, waiting for more")
                             self.data = backup_buf.read(len(backup_buf))
