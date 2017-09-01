@@ -766,66 +766,6 @@ class DiagnosticInfo(FrozenClass):
         self.InnerDiagnosticInfo = None
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        if self.SymbolicId: self.Encoding |= (1 << 0)
-        if self.NamespaceURI: self.Encoding |= (1 << 1)
-        if self.Locale: self.Encoding |= (1 << 2)
-        if self.LocalizedText: self.Encoding |= (1 << 3)
-        if self.AdditionalInfo: self.Encoding |= (1 << 4)
-        if self.InnerStatusCode: self.Encoding |= (1 << 5)
-        if self.InnerDiagnosticInfo: self.Encoding |= (1 << 6)
-        packet.append(uabin.Primitives.UInt8.pack(self.Encoding))
-        if self.SymbolicId: 
-            packet.append(uabin.Primitives.Int32.pack(self.SymbolicId))
-        if self.NamespaceURI: 
-            packet.append(uabin.Primitives.Int32.pack(self.NamespaceURI))
-        if self.Locale: 
-            packet.append(uabin.Primitives.Int32.pack(self.Locale))
-        if self.LocalizedText: 
-            packet.append(uabin.Primitives.Int32.pack(self.LocalizedText))
-        if self.AdditionalInfo: 
-            packet.append(uabin.Primitives.CharArray.pack(self.AdditionalInfo))
-        if self.InnerStatusCode: 
-            packet.append(self.InnerStatusCode.to_binary())
-        if self.InnerDiagnosticInfo: 
-            packet.append(self.InnerDiagnosticInfo.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DiagnosticInfo()
-        self.Encoding = uabin.Primitives.UInt8.unpack(data)
-        if obj.Encoding & (1 << 0):
-            self.SymbolicId = uabin.Primitives.Int32.unpack(data)
-        else:
-            obj.SymbolicId = None
-        if obj.Encoding & (1 << 1):
-            self.NamespaceURI = uabin.Primitives.Int32.unpack(data)
-        else:
-            obj.NamespaceURI = None
-        if obj.Encoding & (1 << 2):
-            self.Locale = uabin.Primitives.Int32.unpack(data)
-        else:
-            obj.Locale = None
-        if obj.Encoding & (1 << 3):
-            self.LocalizedText = uabin.Primitives.Int32.unpack(data)
-        else:
-            obj.LocalizedText = None
-        if obj.Encoding & (1 << 4):
-            self.AdditionalInfo = uabin.Primitives.CharArray.unpack(data)
-        else:
-            obj.AdditionalInfo = None
-        if obj.Encoding & (1 << 5):
-            obj.InnerStatusCode = StatusCode.from_binary(data)
-        else:
-            obj.InnerStatusCode = None
-        if obj.Encoding & (1 << 6):
-            obj.InnerDiagnosticInfo = DiagnosticInfo.from_binary(data)
-        else:
-            obj.InnerDiagnosticInfo = None
-            return obj
-
     def __str__(self):
         return 'DiagnosticInfo(' + 'Encoding:' + str(self.Encoding) + ', ' + \
                'SymbolicId:' + str(self.SymbolicId) + ', ' + \
@@ -867,31 +807,6 @@ class LocalizedText(FrozenClass):
         self.Text = None
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        if self.Locale: self.Encoding |= (1 << 0)
-        if self.Text: self.Encoding |= (1 << 1)
-        packet.append(uabin.Primitives.UInt8.pack(self.Encoding))
-        if self.Locale: 
-            packet.append(uabin.Primitives.CharArray.pack(self.Locale))
-        if self.Text: 
-            packet.append(uabin.Primitives.CharArray.pack(self.Text))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = LocalizedText()
-        self.Encoding = uabin.Primitives.UInt8.unpack(data)
-        if obj.Encoding & (1 << 0):
-            self.Locale = uabin.Primitives.CharArray.unpack(data)
-        else:
-            obj.Locale = None
-        if obj.Encoding & (1 << 1):
-            self.Text = uabin.Primitives.CharArray.unpack(data)
-        else:
-            obj.Text = None
-            return obj
-
     def __str__(self):
         return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', ' + \
                'Locale:' + str(self.Locale) + ', ' + \
@@ -929,33 +844,6 @@ class TrustListDataType(FrozenClass):
         self.IssuerCertificates = []
         self.IssuerCrls = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SpecifiedLists))
-        packet.append(uabin.Primitives.Int32.pack(len(self.TrustedCertificates)))
-        for fieldname in self.TrustedCertificates:
-            packet.append(uabin.Primitives.ByteString.pack(fieldname))
-        packet.append(uabin.Primitives.Int32.pack(len(self.TrustedCrls)))
-        for fieldname in self.TrustedCrls:
-            packet.append(uabin.Primitives.ByteString.pack(fieldname))
-        packet.append(uabin.Primitives.Int32.pack(len(self.IssuerCertificates)))
-        for fieldname in self.IssuerCertificates:
-            packet.append(uabin.Primitives.ByteString.pack(fieldname))
-        packet.append(uabin.Primitives.Int32.pack(len(self.IssuerCrls)))
-        for fieldname in self.IssuerCrls:
-            packet.append(uabin.Primitives.ByteString.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = TrustListDataType()
-        self.SpecifiedLists = uabin.Primitives.UInt32.unpack(data)
-        obj.TrustedCertificates = uabin.Primitives.ByteString.unpack_array(data)
-        obj.TrustedCrls = uabin.Primitives.ByteString.unpack_array(data)
-        obj.IssuerCertificates = uabin.Primitives.ByteString.unpack_array(data)
-        obj.IssuerCrls = uabin.Primitives.ByteString.unpack_array(data)
-        return obj
 
     def __str__(self):
         return 'TrustListDataType(' + 'SpecifiedLists:' + str(self.SpecifiedLists) + ', ' + \
@@ -999,27 +887,6 @@ class Argument(FrozenClass):
         self.Description = LocalizedText()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.Name))
-        packet.append(self.DataType.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(self.ValueRank))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ArrayDimensions)))
-        for fieldname in self.ArrayDimensions:
-            packet.append(uabin.Primitives.UInt32.pack(fieldname))
-        packet.append(self.Description.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = Argument()
-        self.Name = uabin.Primitives.String.unpack(data)
-        obj.DataType = NodeId.from_binary(data)
-        self.ValueRank = uabin.Primitives.Int32.unpack(data)
-        obj.ArrayDimensions = uabin.Primitives.UInt32.unpack_array(data)
-        obj.Description = LocalizedText.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'Argument(' + 'Name:' + str(self.Name) + ', ' + \
                'DataType:' + str(self.DataType) + ', ' + \
@@ -1054,21 +921,6 @@ class EnumValueType(FrozenClass):
         self.Description = LocalizedText()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int64.pack(self.Value))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = EnumValueType()
-        self.Value = uabin.Primitives.Int64.unpack(data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'EnumValueType(' + 'Value:' + str(self.Value) + ', ' + \
                'DisplayName:' + str(self.DisplayName) + ', ' + \
@@ -1097,19 +949,6 @@ class OptionSet(FrozenClass):
         self.ValidBits = None
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.ByteString.pack(self.Value))
-        packet.append(uabin.Primitives.ByteString.pack(self.ValidBits))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = OptionSet()
-        self.Value = uabin.Primitives.ByteString.unpack(data)
-        self.ValidBits = uabin.Primitives.ByteString.unpack(data)
-        return obj
-
     def __str__(self):
         return 'OptionSet(' + 'Value:' + str(self.Value) + ', ' + \
                'ValidBits:' + str(self.ValidBits) + ')'
@@ -1128,15 +967,6 @@ class Union(FrozenClass):
 
     def __init__(self):
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = Union()
-        return obj
 
     def __str__(self):
         return 'Union(' +  + ')'
@@ -1161,19 +991,6 @@ class TimeZoneDataType(FrozenClass):
         self.Offset = 0
         self.DaylightSavingInOffset = True
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int16.pack(self.Offset))
-        packet.append(uabin.Primitives.Boolean.pack(self.DaylightSavingInOffset))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = TimeZoneDataType()
-        self.Offset = uabin.Primitives.Int16.unpack(data)
-        self.DaylightSavingInOffset = uabin.Primitives.Boolean.unpack(data)
-        return obj
 
     def __str__(self):
         return 'TimeZoneDataType(' + 'Offset:' + str(self.Offset) + ', ' + \
@@ -1221,31 +1038,6 @@ class ApplicationDescription(FrozenClass):
         self.DiscoveryProfileUri = None
         self.DiscoveryUrls = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.ApplicationUri))
-        packet.append(uabin.Primitives.String.pack(self.ProductUri))
-        packet.append(self.ApplicationName.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.ApplicationType.value))
-        packet.append(uabin.Primitives.String.pack(self.GatewayServerUri))
-        packet.append(uabin.Primitives.String.pack(self.DiscoveryProfileUri))
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiscoveryUrls)))
-        for fieldname in self.DiscoveryUrls:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ApplicationDescription()
-        self.ApplicationUri = uabin.Primitives.String.unpack(data)
-        self.ProductUri = uabin.Primitives.String.unpack(data)
-        obj.ApplicationName = LocalizedText.from_binary(data)
-        self.ApplicationType = ApplicationType(uabin.Primitives.UInt32.unpack(data))
-        self.GatewayServerUri = uabin.Primitives.String.unpack(data)
-        self.DiscoveryProfileUri = uabin.Primitives.String.unpack(data)
-        obj.DiscoveryUrls = uabin.Primitives.String.unpack_array(data)
-        return obj
 
     def __str__(self):
         return 'ApplicationDescription(' + 'ApplicationUri:' + str(self.ApplicationUri) + ', ' + \
@@ -1299,29 +1091,6 @@ class RequestHeader(FrozenClass):
         self.AdditionalHeader = ExtensionObject()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.AuthenticationToken.to_binary())
-        packet.append(uabin.Primitives.DateTime.pack(self.Timestamp))
-        packet.append(uabin.Primitives.UInt32.pack(self.RequestHandle))
-        packet.append(uabin.Primitives.UInt32.pack(self.ReturnDiagnostics))
-        packet.append(uabin.Primitives.String.pack(self.AuditEntryId))
-        packet.append(uabin.Primitives.UInt32.pack(self.TimeoutHint))
-        packet.append(uabin.extensionobject_to_binary(self.AdditionalHeader))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RequestHeader()
-        obj.AuthenticationToken = NodeId.from_binary(data)
-        self.Timestamp = uabin.Primitives.DateTime.unpack(data)
-        self.RequestHandle = uabin.Primitives.UInt32.unpack(data)
-        self.ReturnDiagnostics = uabin.Primitives.UInt32.unpack(data)
-        self.AuditEntryId = uabin.Primitives.String.unpack(data)
-        self.TimeoutHint = uabin.Primitives.UInt32.unpack(data)
-        obj.AdditionalHeader = uabin.extensionobject_from_binary(data)
-        return obj
-
     def __str__(self):
         return 'RequestHeader(' + 'AuthenticationToken:' + str(self.AuthenticationToken) + ', ' + \
                'Timestamp:' + str(self.Timestamp) + ', ' + \
@@ -1370,29 +1139,6 @@ class ResponseHeader(FrozenClass):
         self.AdditionalHeader = ExtensionObject()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.DateTime.pack(self.Timestamp))
-        packet.append(uabin.Primitives.UInt32.pack(self.RequestHandle))
-        packet.append(self.ServiceResult.to_binary())
-        packet.append(self.ServiceDiagnostics.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.StringTable)))
-        for fieldname in self.StringTable:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        packet.append(uabin.extensionobject_to_binary(self.AdditionalHeader))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ResponseHeader()
-        self.Timestamp = uabin.Primitives.DateTime.unpack(data)
-        self.RequestHandle = uabin.Primitives.UInt32.unpack(data)
-        obj.ServiceResult = StatusCode.from_binary(data)
-        obj.ServiceDiagnostics = DiagnosticInfo.from_binary(data)
-        obj.StringTable = uabin.Primitives.String.unpack_array(data)
-        obj.AdditionalHeader = uabin.extensionobject_from_binary(data)
-        return obj
-
     def __str__(self):
         return 'ResponseHeader(' + 'Timestamp:' + str(self.Timestamp) + ', ' + \
                'RequestHandle:' + str(self.RequestHandle) + ', ' + \
@@ -1424,19 +1170,6 @@ class ServiceFault(FrozenClass):
         self.ResponseHeader = ResponseHeader()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ServiceFault()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'ServiceFault(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ')'
@@ -1465,25 +1198,6 @@ class FindServersParameters(FrozenClass):
         self.LocaleIds = []
         self.ServerUris = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.EndpointUrl))
-        packet.append(uabin.Primitives.Int32.pack(len(self.LocaleIds)))
-        for fieldname in self.LocaleIds:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ServerUris)))
-        for fieldname in self.ServerUris:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = FindServersParameters()
-        self.EndpointUrl = uabin.Primitives.String.unpack(data)
-        obj.LocaleIds = uabin.Primitives.String.unpack_array(data)
-        obj.ServerUris = uabin.Primitives.String.unpack_array(data)
-        return obj
 
     def __str__(self):
         return 'FindServersParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
@@ -1517,21 +1231,6 @@ class FindServersRequest(FrozenClass):
         self.Parameters = FindServersParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = FindServersRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = FindServersParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'FindServersRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -1563,28 +1262,6 @@ class FindServersResponse(FrozenClass):
         self.ResponseHeader = ResponseHeader()
         self.Servers = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Servers)))
-        for fieldname in self.Servers:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = FindServersResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(ApplicationDescription.from_binary(data))
-        obj.Servers = array
-        return obj
 
     def __str__(self):
         return 'FindServersResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -1620,25 +1297,6 @@ class ServerOnNetwork(FrozenClass):
         self.ServerCapabilities = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.RecordId))
-        packet.append(uabin.Primitives.String.pack(self.ServerName))
-        packet.append(uabin.Primitives.String.pack(self.DiscoveryUrl))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ServerCapabilities)))
-        for fieldname in self.ServerCapabilities:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ServerOnNetwork()
-        self.RecordId = uabin.Primitives.UInt32.unpack(data)
-        self.ServerName = uabin.Primitives.String.unpack(data)
-        self.DiscoveryUrl = uabin.Primitives.String.unpack(data)
-        obj.ServerCapabilities = uabin.Primitives.String.unpack_array(data)
-        return obj
-
     def __str__(self):
         return 'ServerOnNetwork(' + 'RecordId:' + str(self.RecordId) + ', ' + \
                'ServerName:' + str(self.ServerName) + ', ' + \
@@ -1670,23 +1328,6 @@ class FindServersOnNetworkParameters(FrozenClass):
         self.ServerCapabilityFilter = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.StartingRecordId))
-        packet.append(uabin.Primitives.UInt32.pack(self.MaxRecordsToReturn))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ServerCapabilityFilter)))
-        for fieldname in self.ServerCapabilityFilter:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = FindServersOnNetworkParameters()
-        self.StartingRecordId = uabin.Primitives.UInt32.unpack(data)
-        self.MaxRecordsToReturn = uabin.Primitives.UInt32.unpack(data)
-        obj.ServerCapabilityFilter = uabin.Primitives.String.unpack_array(data)
-        return obj
-
     def __str__(self):
         return 'FindServersOnNetworkParameters(' + 'StartingRecordId:' + str(self.StartingRecordId) + ', ' + \
                'MaxRecordsToReturn:' + str(self.MaxRecordsToReturn) + ', ' + \
@@ -1717,21 +1358,6 @@ class FindServersOnNetworkRequest(FrozenClass):
         self.Parameters = FindServersOnNetworkParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = FindServersOnNetworkRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = FindServersOnNetworkParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'FindServersOnNetworkRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -1757,26 +1383,6 @@ class FindServersOnNetworkResult(FrozenClass):
         self.LastCounterResetTime = datetime.utcnow()
         self.Servers = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.DateTime.pack(self.LastCounterResetTime))
-        packet.append(uabin.Primitives.Int32.pack(len(self.Servers)))
-        for fieldname in self.Servers:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = FindServersOnNetworkResult()
-        self.LastCounterResetTime = uabin.Primitives.DateTime.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(ServerOnNetwork.from_binary(data))
-        obj.Servers = array
-        return obj
 
     def __str__(self):
         return 'FindServersOnNetworkResult(' + 'LastCounterResetTime:' + str(self.LastCounterResetTime) + ', ' + \
@@ -1806,21 +1412,6 @@ class FindServersOnNetworkResponse(FrozenClass):
         self.ResponseHeader = ResponseHeader()
         self.Parameters = FindServersOnNetworkResult()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = FindServersOnNetworkResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = FindServersOnNetworkResult.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'FindServersOnNetworkResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -1861,25 +1452,6 @@ class UserTokenPolicy(FrozenClass):
         self.IssuerEndpointUrl = None
         self.SecurityPolicyUri = None
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.PolicyId))
-        packet.append(uabin.Primitives.UInt32.pack(self.TokenType.value))
-        packet.append(uabin.Primitives.String.pack(self.IssuedTokenType))
-        packet.append(uabin.Primitives.String.pack(self.IssuerEndpointUrl))
-        packet.append(uabin.Primitives.String.pack(self.SecurityPolicyUri))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = UserTokenPolicy()
-        self.PolicyId = uabin.Primitives.String.unpack(data)
-        self.TokenType = UserTokenType(uabin.Primitives.UInt32.unpack(data))
-        self.IssuedTokenType = uabin.Primitives.String.unpack(data)
-        self.IssuerEndpointUrl = uabin.Primitives.String.unpack(data)
-        self.SecurityPolicyUri = uabin.Primitives.String.unpack(data)
-        return obj
 
     def __str__(self):
         return 'UserTokenPolicy(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
@@ -1935,38 +1507,6 @@ class EndpointDescription(FrozenClass):
         self.SecurityLevel = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.EndpointUrl))
-        packet.append(self.Server.to_binary())
-        packet.append(uabin.Primitives.ByteString.pack(self.ServerCertificate))
-        packet.append(uabin.Primitives.UInt32.pack(self.SecurityMode.value))
-        packet.append(uabin.Primitives.String.pack(self.SecurityPolicyUri))
-        packet.append(uabin.Primitives.Int32.pack(len(self.UserIdentityTokens)))
-        for fieldname in self.UserIdentityTokens:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.String.pack(self.TransportProfileUri))
-        packet.append(uabin.Primitives.Byte.pack(self.SecurityLevel))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = EndpointDescription()
-        self.EndpointUrl = uabin.Primitives.String.unpack(data)
-        obj.Server = ApplicationDescription.from_binary(data)
-        self.ServerCertificate = uabin.Primitives.ByteString.unpack(data)
-        self.SecurityMode = MessageSecurityMode(uabin.Primitives.UInt32.unpack(data))
-        self.SecurityPolicyUri = uabin.Primitives.String.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(UserTokenPolicy.from_binary(data))
-        obj.UserIdentityTokens = array
-        self.TransportProfileUri = uabin.Primitives.String.unpack(data)
-        self.SecurityLevel = uabin.Primitives.Byte.unpack(data)
-        return obj
-
     def __str__(self):
         return 'EndpointDescription(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
                'Server:' + str(self.Server) + ', ' + \
@@ -2002,25 +1542,6 @@ class GetEndpointsParameters(FrozenClass):
         self.ProfileUris = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.EndpointUrl))
-        packet.append(uabin.Primitives.Int32.pack(len(self.LocaleIds)))
-        for fieldname in self.LocaleIds:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ProfileUris)))
-        for fieldname in self.ProfileUris:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = GetEndpointsParameters()
-        self.EndpointUrl = uabin.Primitives.String.unpack(data)
-        obj.LocaleIds = uabin.Primitives.String.unpack_array(data)
-        obj.ProfileUris = uabin.Primitives.String.unpack_array(data)
-        return obj
-
     def __str__(self):
         return 'GetEndpointsParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
                'LocaleIds:' + str(self.LocaleIds) + ', ' + \
@@ -2053,21 +1574,6 @@ class GetEndpointsRequest(FrozenClass):
         self.Parameters = GetEndpointsParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = GetEndpointsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = GetEndpointsParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'GetEndpointsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -2099,28 +1605,6 @@ class GetEndpointsResponse(FrozenClass):
         self.ResponseHeader = ResponseHeader()
         self.Endpoints = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Endpoints)))
-        for fieldname in self.Endpoints:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = GetEndpointsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(EndpointDescription.from_binary(data))
-        obj.Endpoints = array
-        return obj
 
     def __str__(self):
         return 'GetEndpointsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -2174,40 +1658,6 @@ class RegisteredServer(FrozenClass):
         self.IsOnline = True
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.ServerUri))
-        packet.append(uabin.Primitives.String.pack(self.ProductUri))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ServerNames)))
-        for fieldname in self.ServerNames:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.ServerType.value))
-        packet.append(uabin.Primitives.String.pack(self.GatewayServerUri))
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiscoveryUrls)))
-        for fieldname in self.DiscoveryUrls:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        packet.append(uabin.Primitives.String.pack(self.SemaphoreFilePath))
-        packet.append(uabin.Primitives.Boolean.pack(self.IsOnline))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RegisteredServer()
-        self.ServerUri = uabin.Primitives.String.unpack(data)
-        self.ProductUri = uabin.Primitives.String.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(LocalizedText.from_binary(data))
-        obj.ServerNames = array
-        self.ServerType = ApplicationType(uabin.Primitives.UInt32.unpack(data))
-        self.GatewayServerUri = uabin.Primitives.String.unpack(data)
-        obj.DiscoveryUrls = uabin.Primitives.String.unpack_array(data)
-        self.SemaphoreFilePath = uabin.Primitives.String.unpack(data)
-        self.IsOnline = uabin.Primitives.Boolean.unpack(data)
-        return obj
-
     def __str__(self):
         return 'RegisteredServer(' + 'ServerUri:' + str(self.ServerUri) + ', ' + \
                'ProductUri:' + str(self.ProductUri) + ', ' + \
@@ -2245,21 +1695,6 @@ class RegisterServerRequest(FrozenClass):
         self.Server = RegisteredServer()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Server.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RegisterServerRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Server = RegisteredServer.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'RegisterServerRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -2288,19 +1723,6 @@ class RegisterServerResponse(FrozenClass):
         self.ResponseHeader = ResponseHeader()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RegisterServerResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'RegisterServerResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ')'
@@ -2319,15 +1741,6 @@ class DiscoveryConfiguration(FrozenClass):
 
     def __init__(self):
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DiscoveryConfiguration()
-        return obj
 
     def __str__(self):
         return 'DiscoveryConfiguration(' +  + ')'
@@ -2355,21 +1768,6 @@ class MdnsDiscoveryConfiguration(FrozenClass):
         self.ServerCapabilities = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.MdnsServerName))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ServerCapabilities)))
-        for fieldname in self.ServerCapabilities:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = MdnsDiscoveryConfiguration()
-        self.MdnsServerName = uabin.Primitives.String.unpack(data)
-        obj.ServerCapabilities = uabin.Primitives.String.unpack_array(data)
-        return obj
-
     def __str__(self):
         return 'MdnsDiscoveryConfiguration(' + 'MdnsServerName:' + str(self.MdnsServerName) + ', ' + \
                'ServerCapabilities:' + str(self.ServerCapabilities) + ')'
@@ -2394,26 +1792,6 @@ class RegisterServer2Parameters(FrozenClass):
         self.Server = RegisteredServer()
         self.DiscoveryConfiguration = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.Server.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiscoveryConfiguration)))
-        for fieldname in self.DiscoveryConfiguration:
-            packet.append(uabin.extensionobject_to_binary(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RegisterServer2Parameters()
-        obj.Server = RegisteredServer.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(uabin.extensionobject_from_binary(data))
-        obj.DiscoveryConfiguration = array
-        return obj
 
     def __str__(self):
         return 'RegisterServer2Parameters(' + 'Server:' + str(self.Server) + ', ' + \
@@ -2443,21 +1821,6 @@ class RegisterServer2Request(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = RegisterServer2Parameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RegisterServer2Request()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = RegisterServer2Parameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'RegisterServer2Request(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -2492,37 +1855,6 @@ class RegisterServer2Response(FrozenClass):
         self.ConfigurationResults = []
         self.DiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.ConfigurationResults)))
-        for fieldname in self.ConfigurationResults:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RegisterServer2Response()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.ConfigurationResults = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'RegisterServer2Response(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -2560,23 +1892,6 @@ class ChannelSecurityToken(FrozenClass):
         self.CreatedAt = datetime.utcnow()
         self.RevisedLifetime = 0
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.ChannelId))
-        packet.append(uabin.Primitives.UInt32.pack(self.TokenId))
-        packet.append(uabin.Primitives.DateTime.pack(self.CreatedAt))
-        packet.append(uabin.Primitives.UInt32.pack(self.RevisedLifetime))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ChannelSecurityToken()
-        self.ChannelId = uabin.Primitives.UInt32.unpack(data)
-        self.TokenId = uabin.Primitives.UInt32.unpack(data)
-        self.CreatedAt = uabin.Primitives.DateTime.unpack(data)
-        self.RevisedLifetime = uabin.Primitives.UInt32.unpack(data)
-        return obj
 
     def __str__(self):
         return 'ChannelSecurityToken(' + 'ChannelId:' + str(self.ChannelId) + ', ' + \
@@ -2617,25 +1932,6 @@ class OpenSecureChannelParameters(FrozenClass):
         self.RequestedLifetime = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.ClientProtocolVersion))
-        packet.append(uabin.Primitives.UInt32.pack(self.RequestType.value))
-        packet.append(uabin.Primitives.UInt32.pack(self.SecurityMode.value))
-        packet.append(uabin.Primitives.ByteString.pack(self.ClientNonce))
-        packet.append(uabin.Primitives.UInt32.pack(self.RequestedLifetime))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = OpenSecureChannelParameters()
-        self.ClientProtocolVersion = uabin.Primitives.UInt32.unpack(data)
-        self.RequestType = SecurityTokenRequestType(uabin.Primitives.UInt32.unpack(data))
-        self.SecurityMode = MessageSecurityMode(uabin.Primitives.UInt32.unpack(data))
-        self.ClientNonce = uabin.Primitives.ByteString.unpack(data)
-        self.RequestedLifetime = uabin.Primitives.UInt32.unpack(data)
-        return obj
-
     def __str__(self):
         return 'OpenSecureChannelParameters(' + 'ClientProtocolVersion:' + str(self.ClientProtocolVersion) + ', ' + \
                'RequestType:' + str(self.RequestType) + ', ' + \
@@ -2670,21 +1966,6 @@ class OpenSecureChannelRequest(FrozenClass):
         self.Parameters = OpenSecureChannelParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = OpenSecureChannelRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = OpenSecureChannelParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'OpenSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -2714,21 +1995,6 @@ class OpenSecureChannelResult(FrozenClass):
         self.SecurityToken = ChannelSecurityToken()
         self.ServerNonce = None
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.ServerProtocolVersion))
-        packet.append(self.SecurityToken.to_binary())
-        packet.append(uabin.Primitives.ByteString.pack(self.ServerNonce))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = OpenSecureChannelResult()
-        self.ServerProtocolVersion = uabin.Primitives.UInt32.unpack(data)
-        obj.SecurityToken = ChannelSecurityToken.from_binary(data)
-        self.ServerNonce = uabin.Primitives.ByteString.unpack(data)
-        return obj
 
     def __str__(self):
         return 'OpenSecureChannelResult(' + 'ServerProtocolVersion:' + str(self.ServerProtocolVersion) + ', ' + \
@@ -2762,21 +2028,6 @@ class OpenSecureChannelResponse(FrozenClass):
         self.Parameters = OpenSecureChannelResult()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = OpenSecureChannelResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = OpenSecureChannelResult.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'OpenSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -2805,19 +2056,6 @@ class CloseSecureChannelRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CloseSecureChannelRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'CloseSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ')'
@@ -2844,19 +2082,6 @@ class CloseSecureChannelResponse(FrozenClass):
         self.TypeId = FourByteNodeId(ObjectIds.CloseSecureChannelResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CloseSecureChannelResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'CloseSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -2885,19 +2110,6 @@ class SignedSoftwareCertificate(FrozenClass):
         self.Signature = None
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.ByteString.pack(self.CertificateData))
-        packet.append(uabin.Primitives.ByteString.pack(self.Signature))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SignedSoftwareCertificate()
-        self.CertificateData = uabin.Primitives.ByteString.unpack(data)
-        self.Signature = uabin.Primitives.ByteString.unpack(data)
-        return obj
-
     def __str__(self):
         return 'SignedSoftwareCertificate(' + 'CertificateData:' + str(self.CertificateData) + ', ' + \
                'Signature:' + str(self.Signature) + ')'
@@ -2924,19 +2136,6 @@ class SignatureData(FrozenClass):
         self.Algorithm = None
         self.Signature = None
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.Algorithm))
-        packet.append(uabin.Primitives.ByteString.pack(self.Signature))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SignatureData()
-        self.Algorithm = uabin.Primitives.String.unpack(data)
-        self.Signature = uabin.Primitives.ByteString.unpack(data)
-        return obj
 
     def __str__(self):
         return 'SignatureData(' + 'Algorithm:' + str(self.Algorithm) + ', ' + \
@@ -2987,31 +2186,6 @@ class CreateSessionParameters(FrozenClass):
         self.MaxResponseMessageSize = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.ClientDescription.to_binary())
-        packet.append(uabin.Primitives.String.pack(self.ServerUri))
-        packet.append(uabin.Primitives.String.pack(self.EndpointUrl))
-        packet.append(uabin.Primitives.String.pack(self.SessionName))
-        packet.append(uabin.Primitives.ByteString.pack(self.ClientNonce))
-        packet.append(uabin.Primitives.ByteString.pack(self.ClientCertificate))
-        packet.append(uabin.Primitives.Double.pack(self.RequestedSessionTimeout))
-        packet.append(uabin.Primitives.UInt32.pack(self.MaxResponseMessageSize))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CreateSessionParameters()
-        obj.ClientDescription = ApplicationDescription.from_binary(data)
-        self.ServerUri = uabin.Primitives.String.unpack(data)
-        self.EndpointUrl = uabin.Primitives.String.unpack(data)
-        self.SessionName = uabin.Primitives.String.unpack(data)
-        self.ClientNonce = uabin.Primitives.ByteString.unpack(data)
-        self.ClientCertificate = uabin.Primitives.ByteString.unpack(data)
-        self.RequestedSessionTimeout = uabin.Primitives.Double.unpack(data)
-        self.MaxResponseMessageSize = uabin.Primitives.UInt32.unpack(data)
-        return obj
-
     def __str__(self):
         return 'CreateSessionParameters(' + 'ClientDescription:' + str(self.ClientDescription) + ', ' + \
                'ServerUri:' + str(self.ServerUri) + ', ' + \
@@ -3048,21 +2222,6 @@ class CreateSessionRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = CreateSessionParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CreateSessionRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = CreateSessionParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'CreateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -3118,47 +2277,6 @@ class CreateSessionResult(FrozenClass):
         self.MaxRequestMessageSize = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.SessionId.to_binary())
-        packet.append(self.AuthenticationToken.to_binary())
-        packet.append(uabin.Primitives.Double.pack(self.RevisedSessionTimeout))
-        packet.append(uabin.Primitives.ByteString.pack(self.ServerNonce))
-        packet.append(uabin.Primitives.ByteString.pack(self.ServerCertificate))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ServerEndpoints)))
-        for fieldname in self.ServerEndpoints:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.ServerSoftwareCertificates)))
-        for fieldname in self.ServerSoftwareCertificates:
-            packet.append(fieldname.to_binary())
-        packet.append(self.ServerSignature.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.MaxRequestMessageSize))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CreateSessionResult()
-        obj.SessionId = NodeId.from_binary(data)
-        obj.AuthenticationToken = NodeId.from_binary(data)
-        self.RevisedSessionTimeout = uabin.Primitives.Double.unpack(data)
-        self.ServerNonce = uabin.Primitives.ByteString.unpack(data)
-        self.ServerCertificate = uabin.Primitives.ByteString.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(EndpointDescription.from_binary(data))
-        obj.ServerEndpoints = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(SignedSoftwareCertificate.from_binary(data))
-        obj.ServerSoftwareCertificates = array
-        obj.ServerSignature = SignatureData.from_binary(data)
-        self.MaxRequestMessageSize = uabin.Primitives.UInt32.unpack(data)
-        return obj
-
     def __str__(self):
         return 'CreateSessionResult(' + 'SessionId:' + str(self.SessionId) + ', ' + \
                'AuthenticationToken:' + str(self.AuthenticationToken) + ', ' + \
@@ -3197,21 +2315,6 @@ class CreateSessionResponse(FrozenClass):
         self.Parameters = CreateSessionResult()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CreateSessionResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = CreateSessionResult.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'CreateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -3236,17 +2339,6 @@ class UserIdentityToken(FrozenClass):
         self.PolicyId = None
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.PolicyId))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = UserIdentityToken()
-        self.PolicyId = uabin.Primitives.String.unpack(data)
-        return obj
-
     def __str__(self):
         return 'UserIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ')'
 
@@ -3268,17 +2360,6 @@ class AnonymousIdentityToken(FrozenClass):
     def __init__(self):
         self.PolicyId = None
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.PolicyId))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AnonymousIdentityToken()
-        self.PolicyId = uabin.Primitives.String.unpack(data)
-        return obj
 
     def __str__(self):
         return 'AnonymousIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ')'
@@ -3314,23 +2395,6 @@ class UserNameIdentityToken(FrozenClass):
         self.EncryptionAlgorithm = None
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.PolicyId))
-        packet.append(uabin.Primitives.String.pack(self.UserName))
-        packet.append(uabin.Primitives.ByteString.pack(self.Password))
-        packet.append(uabin.Primitives.String.pack(self.EncryptionAlgorithm))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = UserNameIdentityToken()
-        self.PolicyId = uabin.Primitives.String.unpack(data)
-        self.UserName = uabin.Primitives.String.unpack(data)
-        self.Password = uabin.Primitives.ByteString.unpack(data)
-        self.EncryptionAlgorithm = uabin.Primitives.String.unpack(data)
-        return obj
-
     def __str__(self):
         return 'UserNameIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
                'UserName:' + str(self.UserName) + ', ' + \
@@ -3360,19 +2424,6 @@ class X509IdentityToken(FrozenClass):
         self.CertificateData = None
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.PolicyId))
-        packet.append(uabin.Primitives.ByteString.pack(self.CertificateData))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = X509IdentityToken()
-        self.PolicyId = uabin.Primitives.String.unpack(data)
-        self.CertificateData = uabin.Primitives.ByteString.unpack(data)
-        return obj
-
     def __str__(self):
         return 'X509IdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
                'CertificateData:' + str(self.CertificateData) + ')'
@@ -3397,19 +2448,6 @@ class KerberosIdentityToken(FrozenClass):
         self.PolicyId = None
         self.TicketData = None
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.PolicyId))
-        packet.append(uabin.Primitives.ByteString.pack(self.TicketData))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = KerberosIdentityToken()
-        self.PolicyId = uabin.Primitives.String.unpack(data)
-        self.TicketData = uabin.Primitives.ByteString.unpack(data)
-        return obj
 
     def __str__(self):
         return 'KerberosIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
@@ -3441,21 +2479,6 @@ class IssuedIdentityToken(FrozenClass):
         self.TokenData = None
         self.EncryptionAlgorithm = None
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.PolicyId))
-        packet.append(uabin.Primitives.ByteString.pack(self.TokenData))
-        packet.append(uabin.Primitives.String.pack(self.EncryptionAlgorithm))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = IssuedIdentityToken()
-        self.PolicyId = uabin.Primitives.String.unpack(data)
-        self.TokenData = uabin.Primitives.ByteString.unpack(data)
-        self.EncryptionAlgorithm = uabin.Primitives.String.unpack(data)
-        return obj
 
     def __str__(self):
         return 'IssuedIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
@@ -3495,34 +2518,6 @@ class ActivateSessionParameters(FrozenClass):
         self.UserTokenSignature = SignatureData()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.ClientSignature.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.ClientSoftwareCertificates)))
-        for fieldname in self.ClientSoftwareCertificates:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.LocaleIds)))
-        for fieldname in self.LocaleIds:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        packet.append(uabin.extensionobject_to_binary(self.UserIdentityToken))
-        packet.append(self.UserTokenSignature.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ActivateSessionParameters()
-        obj.ClientSignature = SignatureData.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(SignedSoftwareCertificate.from_binary(data))
-        obj.ClientSoftwareCertificates = array
-        obj.LocaleIds = uabin.Primitives.String.unpack_array(data)
-        obj.UserIdentityToken = uabin.extensionobject_from_binary(data)
-        obj.UserTokenSignature = SignatureData.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'ActivateSessionParameters(' + 'ClientSignature:' + str(self.ClientSignature) + ', ' + \
                'ClientSoftwareCertificates:' + str(self.ClientSoftwareCertificates) + ', ' + \
@@ -3557,21 +2552,6 @@ class ActivateSessionRequest(FrozenClass):
         self.Parameters = ActivateSessionParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ActivateSessionRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = ActivateSessionParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'ActivateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -3601,35 +2581,6 @@ class ActivateSessionResult(FrozenClass):
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.ByteString.pack(self.ServerNonce))
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ActivateSessionResult()
-        self.ServerNonce = uabin.Primitives.ByteString.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'ActivateSessionResult(' + 'ServerNonce:' + str(self.ServerNonce) + ', ' + \
@@ -3663,21 +2614,6 @@ class ActivateSessionResponse(FrozenClass):
         self.Parameters = ActivateSessionResult()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ActivateSessionResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = ActivateSessionResult.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'ActivateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -3710,21 +2646,6 @@ class CloseSessionRequest(FrozenClass):
         self.DeleteSubscriptions = True
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(uabin.Primitives.Boolean.pack(self.DeleteSubscriptions))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CloseSessionRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        self.DeleteSubscriptions = uabin.Primitives.Boolean.unpack(data)
-        return obj
-
     def __str__(self):
         return 'CloseSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -3753,19 +2674,6 @@ class CloseSessionResponse(FrozenClass):
         self.ResponseHeader = ResponseHeader()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CloseSessionResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'CloseSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ')'
@@ -3786,17 +2694,6 @@ class CancelParameters(FrozenClass):
     def __init__(self):
         self.RequestHandle = 0
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.RequestHandle))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CancelParameters()
-        self.RequestHandle = uabin.Primitives.UInt32.unpack(data)
-        return obj
 
     def __str__(self):
         return 'CancelParameters(' + 'RequestHandle:' + str(self.RequestHandle) + ')'
@@ -3828,21 +2725,6 @@ class CancelRequest(FrozenClass):
         self.Parameters = CancelParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CancelRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = CancelParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'CancelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -3864,17 +2746,6 @@ class CancelResult(FrozenClass):
     def __init__(self):
         self.CancelCount = 0
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.CancelCount))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CancelResult()
-        self.CancelCount = uabin.Primitives.UInt32.unpack(data)
-        return obj
 
     def __str__(self):
         return 'CancelResult(' + 'CancelCount:' + str(self.CancelCount) + ')'
@@ -3905,21 +2776,6 @@ class CancelResponse(FrozenClass):
         self.ResponseHeader = ResponseHeader()
         self.Parameters = CancelResult()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CancelResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = CancelResult.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'CancelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -3960,25 +2816,6 @@ class NodeAttributes(FrozenClass):
         self.WriteMask = 0
         self.UserWriteMask = 0
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.WriteMask))
-        packet.append(uabin.Primitives.UInt32.pack(self.UserWriteMask))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = NodeAttributes()
-        self.SpecifiedAttributes = uabin.Primitives.UInt32.unpack(data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        self.WriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.UserWriteMask = uabin.Primitives.UInt32.unpack(data)
-        return obj
 
     def __str__(self):
         return 'NodeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -4025,27 +2862,6 @@ class ObjectAttributes(FrozenClass):
         self.UserWriteMask = 0
         self.EventNotifier = 0
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.WriteMask))
-        packet.append(uabin.Primitives.UInt32.pack(self.UserWriteMask))
-        packet.append(uabin.Primitives.Byte.pack(self.EventNotifier))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ObjectAttributes()
-        self.SpecifiedAttributes = uabin.Primitives.UInt32.unpack(data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        self.WriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.UserWriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.EventNotifier = uabin.Primitives.Byte.unpack(data)
-        return obj
 
     def __str__(self):
         return 'ObjectAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -4122,43 +2938,6 @@ class VariableAttributes(FrozenClass):
         self.Historizing = True
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.WriteMask))
-        packet.append(uabin.Primitives.UInt32.pack(self.UserWriteMask))
-        packet.append(self.Value.to_binary())
-        packet.append(self.DataType.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(self.ValueRank))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ArrayDimensions)))
-        for fieldname in self.ArrayDimensions:
-            packet.append(uabin.Primitives.UInt32.pack(fieldname))
-        packet.append(uabin.Primitives.Byte.pack(self.AccessLevel))
-        packet.append(uabin.Primitives.Byte.pack(self.UserAccessLevel))
-        packet.append(uabin.Primitives.Double.pack(self.MinimumSamplingInterval))
-        packet.append(uabin.Primitives.Boolean.pack(self.Historizing))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = VariableAttributes()
-        self.SpecifiedAttributes = uabin.Primitives.UInt32.unpack(data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        self.WriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.UserWriteMask = uabin.Primitives.UInt32.unpack(data)
-        obj.Value = Variant.from_binary(data)
-        obj.DataType = NodeId.from_binary(data)
-        self.ValueRank = uabin.Primitives.Int32.unpack(data)
-        obj.ArrayDimensions = uabin.Primitives.UInt32.unpack_array(data)
-        self.AccessLevel = uabin.Primitives.Byte.unpack(data)
-        self.UserAccessLevel = uabin.Primitives.Byte.unpack(data)
-        self.MinimumSamplingInterval = uabin.Primitives.Double.unpack(data)
-        self.Historizing = uabin.Primitives.Boolean.unpack(data)
-        return obj
-
     def __str__(self):
         return 'VariableAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
                'DisplayName:' + str(self.DisplayName) + ', ' + \
@@ -4217,29 +2996,6 @@ class MethodAttributes(FrozenClass):
         self.UserExecutable = True
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.WriteMask))
-        packet.append(uabin.Primitives.UInt32.pack(self.UserWriteMask))
-        packet.append(uabin.Primitives.Boolean.pack(self.Executable))
-        packet.append(uabin.Primitives.Boolean.pack(self.UserExecutable))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = MethodAttributes()
-        self.SpecifiedAttributes = uabin.Primitives.UInt32.unpack(data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        self.WriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.UserWriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.Executable = uabin.Primitives.Boolean.unpack(data)
-        self.UserExecutable = uabin.Primitives.Boolean.unpack(data)
-        return obj
-
     def __str__(self):
         return 'MethodAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
                'DisplayName:' + str(self.DisplayName) + ', ' + \
@@ -4287,27 +3043,6 @@ class ObjectTypeAttributes(FrozenClass):
         self.UserWriteMask = 0
         self.IsAbstract = True
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.WriteMask))
-        packet.append(uabin.Primitives.UInt32.pack(self.UserWriteMask))
-        packet.append(uabin.Primitives.Boolean.pack(self.IsAbstract))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ObjectTypeAttributes()
-        self.SpecifiedAttributes = uabin.Primitives.UInt32.unpack(data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        self.WriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.UserWriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.IsAbstract = uabin.Primitives.Boolean.unpack(data)
-        return obj
 
     def __str__(self):
         return 'ObjectTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -4372,37 +3107,6 @@ class VariableTypeAttributes(FrozenClass):
         self.IsAbstract = True
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.WriteMask))
-        packet.append(uabin.Primitives.UInt32.pack(self.UserWriteMask))
-        packet.append(self.Value.to_binary())
-        packet.append(self.DataType.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(self.ValueRank))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ArrayDimensions)))
-        for fieldname in self.ArrayDimensions:
-            packet.append(uabin.Primitives.UInt32.pack(fieldname))
-        packet.append(uabin.Primitives.Boolean.pack(self.IsAbstract))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = VariableTypeAttributes()
-        self.SpecifiedAttributes = uabin.Primitives.UInt32.unpack(data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        self.WriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.UserWriteMask = uabin.Primitives.UInt32.unpack(data)
-        obj.Value = Variant.from_binary(data)
-        obj.DataType = NodeId.from_binary(data)
-        self.ValueRank = uabin.Primitives.Int32.unpack(data)
-        obj.ArrayDimensions = uabin.Primitives.UInt32.unpack_array(data)
-        self.IsAbstract = uabin.Primitives.Boolean.unpack(data)
-        return obj
-
     def __str__(self):
         return 'VariableTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
                'DisplayName:' + str(self.DisplayName) + ', ' + \
@@ -4462,31 +3166,6 @@ class ReferenceTypeAttributes(FrozenClass):
         self.InverseName = LocalizedText()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.WriteMask))
-        packet.append(uabin.Primitives.UInt32.pack(self.UserWriteMask))
-        packet.append(uabin.Primitives.Boolean.pack(self.IsAbstract))
-        packet.append(uabin.Primitives.Boolean.pack(self.Symmetric))
-        packet.append(self.InverseName.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ReferenceTypeAttributes()
-        self.SpecifiedAttributes = uabin.Primitives.UInt32.unpack(data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        self.WriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.UserWriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.IsAbstract = uabin.Primitives.Boolean.unpack(data)
-        self.Symmetric = uabin.Primitives.Boolean.unpack(data)
-        obj.InverseName = LocalizedText.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'ReferenceTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
                'DisplayName:' + str(self.DisplayName) + ', ' + \
@@ -4535,27 +3214,6 @@ class DataTypeAttributes(FrozenClass):
         self.UserWriteMask = 0
         self.IsAbstract = True
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.WriteMask))
-        packet.append(uabin.Primitives.UInt32.pack(self.UserWriteMask))
-        packet.append(uabin.Primitives.Boolean.pack(self.IsAbstract))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DataTypeAttributes()
-        self.SpecifiedAttributes = uabin.Primitives.UInt32.unpack(data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        self.WriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.UserWriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.IsAbstract = uabin.Primitives.Boolean.unpack(data)
-        return obj
 
     def __str__(self):
         return 'DataTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -4607,29 +3265,6 @@ class ViewAttributes(FrozenClass):
         self.ContainsNoLoops = True
         self.EventNotifier = 0
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SpecifiedAttributes))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.WriteMask))
-        packet.append(uabin.Primitives.UInt32.pack(self.UserWriteMask))
-        packet.append(uabin.Primitives.Boolean.pack(self.ContainsNoLoops))
-        packet.append(uabin.Primitives.Byte.pack(self.EventNotifier))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ViewAttributes()
-        self.SpecifiedAttributes = uabin.Primitives.UInt32.unpack(data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        self.WriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.UserWriteMask = uabin.Primitives.UInt32.unpack(data)
-        self.ContainsNoLoops = uabin.Primitives.Boolean.unpack(data)
-        self.EventNotifier = uabin.Primitives.Byte.unpack(data)
-        return obj
 
     def __str__(self):
         return 'ViewAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -4683,29 +3318,6 @@ class AddNodesItem(FrozenClass):
         self.TypeDefinition = ExpandedNodeId()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.ParentNodeId.to_binary())
-        packet.append(self.ReferenceTypeId.to_binary())
-        packet.append(self.RequestedNewNodeId.to_binary())
-        packet.append(self.BrowseName.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.NodeClass.value))
-        packet.append(uabin.extensionobject_to_binary(self.NodeAttributes))
-        packet.append(self.TypeDefinition.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AddNodesItem()
-        obj.ParentNodeId = ExpandedNodeId.from_binary(data)
-        obj.ReferenceTypeId = NodeId.from_binary(data)
-        obj.RequestedNewNodeId = ExpandedNodeId.from_binary(data)
-        obj.BrowseName = QualifiedName.from_binary(data)
-        self.NodeClass = NodeClass(uabin.Primitives.UInt32.unpack(data))
-        obj.NodeAttributes = uabin.extensionobject_from_binary(data)
-        obj.TypeDefinition = ExpandedNodeId.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'AddNodesItem(' + 'ParentNodeId:' + str(self.ParentNodeId) + ', ' + \
                'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
@@ -4738,19 +3350,6 @@ class AddNodesResult(FrozenClass):
         self.AddedNodeId = NodeId()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.StatusCode.to_binary())
-        packet.append(self.AddedNodeId.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AddNodesResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        obj.AddedNodeId = NodeId.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'AddNodesResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
                'AddedNodeId:' + str(self.AddedNodeId) + ')'
@@ -4771,24 +3370,6 @@ class AddNodesParameters(FrozenClass):
     def __init__(self):
         self.NodesToAdd = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.NodesToAdd)))
-        for fieldname in self.NodesToAdd:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AddNodesParameters()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(AddNodesItem.from_binary(data))
-        obj.NodesToAdd = array
-        return obj
 
     def __str__(self):
         return 'AddNodesParameters(' + 'NodesToAdd:' + str(self.NodesToAdd) + ')'
@@ -4819,21 +3400,6 @@ class AddNodesRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = AddNodesParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AddNodesRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = AddNodesParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'AddNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4870,37 +3436,6 @@ class AddNodesResponse(FrozenClass):
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AddNodesResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(AddNodesResult.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'AddNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4947,27 +3482,6 @@ class AddReferencesItem(FrozenClass):
         self.TargetNodeClass = NodeClass(0)
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.SourceNodeId.to_binary())
-        packet.append(self.ReferenceTypeId.to_binary())
-        packet.append(uabin.Primitives.Boolean.pack(self.IsForward))
-        packet.append(uabin.Primitives.String.pack(self.TargetServerUri))
-        packet.append(self.TargetNodeId.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.TargetNodeClass.value))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AddReferencesItem()
-        obj.SourceNodeId = NodeId.from_binary(data)
-        obj.ReferenceTypeId = NodeId.from_binary(data)
-        self.IsForward = uabin.Primitives.Boolean.unpack(data)
-        self.TargetServerUri = uabin.Primitives.String.unpack(data)
-        obj.TargetNodeId = ExpandedNodeId.from_binary(data)
-        self.TargetNodeClass = NodeClass(uabin.Primitives.UInt32.unpack(data))
-        return obj
-
     def __str__(self):
         return 'AddReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', ' + \
                'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
@@ -4992,24 +3506,6 @@ class AddReferencesParameters(FrozenClass):
     def __init__(self):
         self.ReferencesToAdd = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.ReferencesToAdd)))
-        for fieldname in self.ReferencesToAdd:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AddReferencesParameters()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(AddReferencesItem.from_binary(data))
-        obj.ReferencesToAdd = array
-        return obj
 
     def __str__(self):
         return 'AddReferencesParameters(' + 'ReferencesToAdd:' + str(self.ReferencesToAdd) + ')'
@@ -5040,21 +3536,6 @@ class AddReferencesRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = AddReferencesParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AddReferencesRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = AddReferencesParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'AddReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -5092,37 +3573,6 @@ class AddReferencesResponse(FrozenClass):
         self.DiagnosticInfos = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AddReferencesResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
-
     def __str__(self):
         return 'AddReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -5152,19 +3602,6 @@ class DeleteNodesItem(FrozenClass):
         self.DeleteTargetReferences = True
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        packet.append(uabin.Primitives.Boolean.pack(self.DeleteTargetReferences))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteNodesItem()
-        obj.NodeId = NodeId.from_binary(data)
-        self.DeleteTargetReferences = uabin.Primitives.Boolean.unpack(data)
-        return obj
-
     def __str__(self):
         return 'DeleteNodesItem(' + 'NodeId:' + str(self.NodeId) + ', ' + \
                'DeleteTargetReferences:' + str(self.DeleteTargetReferences) + ')'
@@ -5185,24 +3622,6 @@ class DeleteNodesParameters(FrozenClass):
     def __init__(self):
         self.NodesToDelete = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.NodesToDelete)))
-        for fieldname in self.NodesToDelete:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteNodesParameters()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DeleteNodesItem.from_binary(data))
-        obj.NodesToDelete = array
-        return obj
 
     def __str__(self):
         return 'DeleteNodesParameters(' + 'NodesToDelete:' + str(self.NodesToDelete) + ')'
@@ -5233,21 +3652,6 @@ class DeleteNodesRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteNodesParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteNodesRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = DeleteNodesParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'DeleteNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -5284,37 +3688,6 @@ class DeleteNodesResponse(FrozenClass):
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteNodesResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'DeleteNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -5357,25 +3730,6 @@ class DeleteReferencesItem(FrozenClass):
         self.DeleteBidirectional = True
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.SourceNodeId.to_binary())
-        packet.append(self.ReferenceTypeId.to_binary())
-        packet.append(uabin.Primitives.Boolean.pack(self.IsForward))
-        packet.append(self.TargetNodeId.to_binary())
-        packet.append(uabin.Primitives.Boolean.pack(self.DeleteBidirectional))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteReferencesItem()
-        obj.SourceNodeId = NodeId.from_binary(data)
-        obj.ReferenceTypeId = NodeId.from_binary(data)
-        self.IsForward = uabin.Primitives.Boolean.unpack(data)
-        obj.TargetNodeId = ExpandedNodeId.from_binary(data)
-        self.DeleteBidirectional = uabin.Primitives.Boolean.unpack(data)
-        return obj
-
     def __str__(self):
         return 'DeleteReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', ' + \
                'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
@@ -5399,24 +3753,6 @@ class DeleteReferencesParameters(FrozenClass):
     def __init__(self):
         self.ReferencesToDelete = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.ReferencesToDelete)))
-        for fieldname in self.ReferencesToDelete:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteReferencesParameters()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DeleteReferencesItem.from_binary(data))
-        obj.ReferencesToDelete = array
-        return obj
 
     def __str__(self):
         return 'DeleteReferencesParameters(' + 'ReferencesToDelete:' + str(self.ReferencesToDelete) + ')'
@@ -5448,21 +3784,6 @@ class DeleteReferencesRequest(FrozenClass):
         self.Parameters = DeleteReferencesParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteReferencesRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = DeleteReferencesParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'DeleteReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -5488,33 +3809,6 @@ class DeleteReferencesResult(FrozenClass):
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteReferencesResult()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'DeleteReferencesResult(' + 'Results:' + str(self.Results) + ', ' + \
@@ -5547,21 +3841,6 @@ class DeleteReferencesResponse(FrozenClass):
         self.Parameters = DeleteReferencesResult()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteReferencesResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = DeleteReferencesResult.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'DeleteReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -5593,21 +3872,6 @@ class ViewDescription(FrozenClass):
         self.Timestamp = datetime.utcnow()
         self.ViewVersion = 0
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.ViewId.to_binary())
-        packet.append(uabin.Primitives.DateTime.pack(self.Timestamp))
-        packet.append(uabin.Primitives.UInt32.pack(self.ViewVersion))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ViewDescription()
-        obj.ViewId = NodeId.from_binary(data)
-        self.Timestamp = uabin.Primitives.DateTime.unpack(data)
-        self.ViewVersion = uabin.Primitives.UInt32.unpack(data)
-        return obj
 
     def __str__(self):
         return 'ViewDescription(' + 'ViewId:' + str(self.ViewId) + ', ' + \
@@ -5652,27 +3916,6 @@ class BrowseDescription(FrozenClass):
         self.NodeClassMask = 0
         self.ResultMask = 0
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.BrowseDirection.value))
-        packet.append(self.ReferenceTypeId.to_binary())
-        packet.append(uabin.Primitives.Boolean.pack(self.IncludeSubtypes))
-        packet.append(uabin.Primitives.UInt32.pack(self.NodeClassMask))
-        packet.append(uabin.Primitives.UInt32.pack(self.ResultMask))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = BrowseDescription()
-        obj.NodeId = NodeId.from_binary(data)
-        self.BrowseDirection = BrowseDirection(uabin.Primitives.UInt32.unpack(data))
-        obj.ReferenceTypeId = NodeId.from_binary(data)
-        self.IncludeSubtypes = uabin.Primitives.Boolean.unpack(data)
-        self.NodeClassMask = uabin.Primitives.UInt32.unpack(data)
-        self.ResultMask = uabin.Primitives.UInt32.unpack(data)
-        return obj
 
     def __str__(self):
         return 'BrowseDescription(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -5725,29 +3968,6 @@ class ReferenceDescription(FrozenClass):
         self.TypeDefinition = ExpandedNodeId()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.ReferenceTypeId.to_binary())
-        packet.append(uabin.Primitives.Boolean.pack(self.IsForward))
-        packet.append(self.NodeId.to_binary())
-        packet.append(self.BrowseName.to_binary())
-        packet.append(self.DisplayName.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.NodeClass.value))
-        packet.append(self.TypeDefinition.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ReferenceDescription()
-        obj.ReferenceTypeId = NodeId.from_binary(data)
-        self.IsForward = uabin.Primitives.Boolean.unpack(data)
-        obj.NodeId = ExpandedNodeId.from_binary(data)
-        obj.BrowseName = QualifiedName.from_binary(data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        self.NodeClass = NodeClass(uabin.Primitives.UInt32.unpack(data))
-        obj.TypeDefinition = ExpandedNodeId.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'ReferenceDescription(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
                'IsForward:' + str(self.IsForward) + ', ' + \
@@ -5784,28 +4004,6 @@ class BrowseResult(FrozenClass):
         self.References = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.StatusCode.to_binary())
-        packet.append(uabin.Primitives.ByteString.pack(self.ContinuationPoint))
-        packet.append(uabin.Primitives.Int32.pack(len(self.References)))
-        for fieldname in self.References:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = BrowseResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        self.ContinuationPoint = uabin.Primitives.ByteString.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(ReferenceDescription.from_binary(data))
-        obj.References = array
-        return obj
-
     def __str__(self):
         return 'BrowseResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
                'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
@@ -5835,28 +4033,6 @@ class BrowseParameters(FrozenClass):
         self.RequestedMaxReferencesPerNode = 0
         self.NodesToBrowse = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.View.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.RequestedMaxReferencesPerNode))
-        packet.append(uabin.Primitives.Int32.pack(len(self.NodesToBrowse)))
-        for fieldname in self.NodesToBrowse:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = BrowseParameters()
-        obj.View = ViewDescription.from_binary(data)
-        self.RequestedMaxReferencesPerNode = uabin.Primitives.UInt32.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(BrowseDescription.from_binary(data))
-        obj.NodesToBrowse = array
-        return obj
 
     def __str__(self):
         return 'BrowseParameters(' + 'View:' + str(self.View) + ', ' + \
@@ -5889,21 +4065,6 @@ class BrowseRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = BrowseParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = BrowseRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = BrowseParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'BrowseRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -5941,37 +4102,6 @@ class BrowseResponse(FrozenClass):
         self.DiagnosticInfos = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = BrowseResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(BrowseResult.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
-
     def __str__(self):
         return 'BrowseResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -5998,21 +4128,6 @@ class BrowseNextParameters(FrozenClass):
         self.ReleaseContinuationPoints = True
         self.ContinuationPoints = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Boolean.pack(self.ReleaseContinuationPoints))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ContinuationPoints)))
-        for fieldname in self.ContinuationPoints:
-            packet.append(uabin.Primitives.ByteString.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = BrowseNextParameters()
-        self.ReleaseContinuationPoints = uabin.Primitives.Boolean.unpack(data)
-        obj.ContinuationPoints = uabin.Primitives.ByteString.unpack_array(data)
-        return obj
 
     def __str__(self):
         return 'BrowseNextParameters(' + 'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', ' + \
@@ -6045,21 +4160,6 @@ class BrowseNextRequest(FrozenClass):
         self.Parameters = BrowseNextParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = BrowseNextRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = BrowseNextParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'BrowseNextRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -6085,33 +4185,6 @@ class BrowseNextResult(FrozenClass):
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = BrowseNextResult()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(BrowseResult.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'BrowseNextResult(' + 'Results:' + str(self.Results) + ', ' + \
@@ -6143,21 +4216,6 @@ class BrowseNextResponse(FrozenClass):
         self.ResponseHeader = ResponseHeader()
         self.Parameters = BrowseNextResult()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = BrowseNextResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = BrowseNextResult.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'BrowseNextResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6195,23 +4253,6 @@ class RelativePathElement(FrozenClass):
         self.TargetName = QualifiedName()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.ReferenceTypeId.to_binary())
-        packet.append(uabin.Primitives.Boolean.pack(self.IsInverse))
-        packet.append(uabin.Primitives.Boolean.pack(self.IncludeSubtypes))
-        packet.append(self.TargetName.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RelativePathElement()
-        obj.ReferenceTypeId = NodeId.from_binary(data)
-        self.IsInverse = uabin.Primitives.Boolean.unpack(data)
-        self.IncludeSubtypes = uabin.Primitives.Boolean.unpack(data)
-        obj.TargetName = QualifiedName.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'RelativePathElement(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
                'IsInverse:' + str(self.IsInverse) + ', ' + \
@@ -6236,24 +4277,6 @@ class RelativePath(FrozenClass):
     def __init__(self):
         self.Elements = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.Elements)))
-        for fieldname in self.Elements:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RelativePath()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(RelativePathElement.from_binary(data))
-        obj.Elements = array
-        return obj
 
     def __str__(self):
         return 'RelativePath(' + 'Elements:' + str(self.Elements) + ')'
@@ -6280,19 +4303,6 @@ class BrowsePath(FrozenClass):
         self.StartingNode = NodeId()
         self.RelativePath = RelativePath()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.StartingNode.to_binary())
-        packet.append(self.RelativePath.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = BrowsePath()
-        obj.StartingNode = NodeId.from_binary(data)
-        obj.RelativePath = RelativePath.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'BrowsePath(' + 'StartingNode:' + str(self.StartingNode) + ', ' + \
@@ -6321,19 +4331,6 @@ class BrowsePathTarget(FrozenClass):
         self.RemainingPathIndex = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TargetId.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.RemainingPathIndex))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = BrowsePathTarget()
-        obj.TargetId = ExpandedNodeId.from_binary(data)
-        self.RemainingPathIndex = uabin.Primitives.UInt32.unpack(data)
-        return obj
-
     def __str__(self):
         return 'BrowsePathTarget(' + 'TargetId:' + str(self.TargetId) + ', ' + \
                'RemainingPathIndex:' + str(self.RemainingPathIndex) + ')'
@@ -6361,26 +4358,6 @@ class BrowsePathResult(FrozenClass):
         self.Targets = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.StatusCode.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Targets)))
-        for fieldname in self.Targets:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = BrowsePathResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(BrowsePathTarget.from_binary(data))
-        obj.Targets = array
-        return obj
-
     def __str__(self):
         return 'BrowsePathResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
                'Targets:' + str(self.Targets) + ')'
@@ -6401,24 +4378,6 @@ class TranslateBrowsePathsToNodeIdsParameters(FrozenClass):
     def __init__(self):
         self.BrowsePaths = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.BrowsePaths)))
-        for fieldname in self.BrowsePaths:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = TranslateBrowsePathsToNodeIdsParameters()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(BrowsePath.from_binary(data))
-        obj.BrowsePaths = array
-        return obj
 
     def __str__(self):
         return 'TranslateBrowsePathsToNodeIdsParameters(' + 'BrowsePaths:' + str(self.BrowsePaths) + ')'
@@ -6449,21 +4408,6 @@ class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = TranslateBrowsePathsToNodeIdsParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = TranslateBrowsePathsToNodeIdsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = TranslateBrowsePathsToNodeIdsParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'TranslateBrowsePathsToNodeIdsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6501,37 +4445,6 @@ class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
         self.DiagnosticInfos = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = TranslateBrowsePathsToNodeIdsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(BrowsePathResult.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
-
     def __str__(self):
         return 'TranslateBrowsePathsToNodeIdsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -6554,24 +4467,6 @@ class RegisterNodesParameters(FrozenClass):
     def __init__(self):
         self.NodesToRegister = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.NodesToRegister)))
-        for fieldname in self.NodesToRegister:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RegisterNodesParameters()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(NodeId.from_binary(data))
-        obj.NodesToRegister = array
-        return obj
 
     def __str__(self):
         return 'RegisterNodesParameters(' + 'NodesToRegister:' + str(self.NodesToRegister) + ')'
@@ -6603,21 +4498,6 @@ class RegisterNodesRequest(FrozenClass):
         self.Parameters = RegisterNodesParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RegisterNodesRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = RegisterNodesParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'RegisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -6639,24 +4519,6 @@ class RegisterNodesResult(FrozenClass):
     def __init__(self):
         self.RegisteredNodeIds = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.RegisteredNodeIds)))
-        for fieldname in self.RegisteredNodeIds:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RegisterNodesResult()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(NodeId.from_binary(data))
-        obj.RegisteredNodeIds = array
-        return obj
 
     def __str__(self):
         return 'RegisterNodesResult(' + 'RegisteredNodeIds:' + str(self.RegisteredNodeIds) + ')'
@@ -6688,21 +4550,6 @@ class RegisterNodesResponse(FrozenClass):
         self.Parameters = RegisterNodesResult()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RegisterNodesResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = RegisterNodesResult.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'RegisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -6724,24 +4571,6 @@ class UnregisterNodesParameters(FrozenClass):
     def __init__(self):
         self.NodesToUnregister = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.NodesToUnregister)))
-        for fieldname in self.NodesToUnregister:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = UnregisterNodesParameters()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(NodeId.from_binary(data))
-        obj.NodesToUnregister = array
-        return obj
 
     def __str__(self):
         return 'UnregisterNodesParameters(' + 'NodesToUnregister:' + str(self.NodesToUnregister) + ')'
@@ -6773,21 +4602,6 @@ class UnregisterNodesRequest(FrozenClass):
         self.Parameters = UnregisterNodesParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = UnregisterNodesRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = UnregisterNodesParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'UnregisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -6815,19 +4629,6 @@ class UnregisterNodesResponse(FrozenClass):
         self.TypeId = FourByteNodeId(ObjectIds.UnregisterNodesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = UnregisterNodesResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'UnregisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6882,33 +4683,6 @@ class EndpointConfiguration(FrozenClass):
         self.SecurityTokenLifetime = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(self.OperationTimeout))
-        packet.append(uabin.Primitives.Boolean.pack(self.UseBinaryEncoding))
-        packet.append(uabin.Primitives.Int32.pack(self.MaxStringLength))
-        packet.append(uabin.Primitives.Int32.pack(self.MaxByteStringLength))
-        packet.append(uabin.Primitives.Int32.pack(self.MaxArrayLength))
-        packet.append(uabin.Primitives.Int32.pack(self.MaxMessageSize))
-        packet.append(uabin.Primitives.Int32.pack(self.MaxBufferSize))
-        packet.append(uabin.Primitives.Int32.pack(self.ChannelLifetime))
-        packet.append(uabin.Primitives.Int32.pack(self.SecurityTokenLifetime))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = EndpointConfiguration()
-        self.OperationTimeout = uabin.Primitives.Int32.unpack(data)
-        self.UseBinaryEncoding = uabin.Primitives.Boolean.unpack(data)
-        self.MaxStringLength = uabin.Primitives.Int32.unpack(data)
-        self.MaxByteStringLength = uabin.Primitives.Int32.unpack(data)
-        self.MaxArrayLength = uabin.Primitives.Int32.unpack(data)
-        self.MaxMessageSize = uabin.Primitives.Int32.unpack(data)
-        self.MaxBufferSize = uabin.Primitives.Int32.unpack(data)
-        self.ChannelLifetime = uabin.Primitives.Int32.unpack(data)
-        self.SecurityTokenLifetime = uabin.Primitives.Int32.unpack(data)
-        return obj
-
     def __str__(self):
         return 'EndpointConfiguration(' + 'OperationTimeout:' + str(self.OperationTimeout) + ', ' + \
                'UseBinaryEncoding:' + str(self.UseBinaryEncoding) + ', ' + \
@@ -6956,29 +4730,6 @@ class SupportedProfile(FrozenClass):
         self.ComplianceLevel = ComplianceLevel(0)
         self.UnsupportedUnitIds = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.OrganizationUri))
-        packet.append(uabin.Primitives.String.pack(self.ProfileId))
-        packet.append(uabin.Primitives.String.pack(self.ComplianceTool))
-        packet.append(uabin.Primitives.DateTime.pack(self.ComplianceDate))
-        packet.append(uabin.Primitives.UInt32.pack(self.ComplianceLevel.value))
-        packet.append(uabin.Primitives.Int32.pack(len(self.UnsupportedUnitIds)))
-        for fieldname in self.UnsupportedUnitIds:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SupportedProfile()
-        self.OrganizationUri = uabin.Primitives.String.unpack(data)
-        self.ProfileId = uabin.Primitives.String.unpack(data)
-        self.ComplianceTool = uabin.Primitives.String.unpack(data)
-        self.ComplianceDate = uabin.Primitives.DateTime.unpack(data)
-        self.ComplianceLevel = ComplianceLevel(uabin.Primitives.UInt32.unpack(data))
-        obj.UnsupportedUnitIds = uabin.Primitives.String.unpack_array(data)
-        return obj
 
     def __str__(self):
         return 'SupportedProfile(' + 'OrganizationUri:' + str(self.OrganizationUri) + ', ' + \
@@ -7041,42 +4792,6 @@ class SoftwareCertificate(FrozenClass):
         self.SupportedProfiles = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.ProductName))
-        packet.append(uabin.Primitives.String.pack(self.ProductUri))
-        packet.append(uabin.Primitives.String.pack(self.VendorName))
-        packet.append(uabin.Primitives.ByteString.pack(self.VendorProductCertificate))
-        packet.append(uabin.Primitives.String.pack(self.SoftwareVersion))
-        packet.append(uabin.Primitives.String.pack(self.BuildNumber))
-        packet.append(uabin.Primitives.DateTime.pack(self.BuildDate))
-        packet.append(uabin.Primitives.String.pack(self.IssuedBy))
-        packet.append(uabin.Primitives.DateTime.pack(self.IssueDate))
-        packet.append(uabin.Primitives.Int32.pack(len(self.SupportedProfiles)))
-        for fieldname in self.SupportedProfiles:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SoftwareCertificate()
-        self.ProductName = uabin.Primitives.String.unpack(data)
-        self.ProductUri = uabin.Primitives.String.unpack(data)
-        self.VendorName = uabin.Primitives.String.unpack(data)
-        self.VendorProductCertificate = uabin.Primitives.ByteString.unpack(data)
-        self.SoftwareVersion = uabin.Primitives.String.unpack(data)
-        self.BuildNumber = uabin.Primitives.String.unpack(data)
-        self.BuildDate = uabin.Primitives.DateTime.unpack(data)
-        self.IssuedBy = uabin.Primitives.String.unpack(data)
-        self.IssueDate = uabin.Primitives.DateTime.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(SupportedProfile.from_binary(data))
-        obj.SupportedProfiles = array
-        return obj
-
     def __str__(self):
         return 'SoftwareCertificate(' + 'ProductName:' + str(self.ProductName) + ', ' + \
                'ProductUri:' + str(self.ProductUri) + ', ' + \
@@ -7114,21 +4829,6 @@ class QueryDataDescription(FrozenClass):
         self.IndexRange = None
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.RelativePath.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.AttributeId))
-        packet.append(uabin.Primitives.String.pack(self.IndexRange))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = QueryDataDescription()
-        obj.RelativePath = RelativePath.from_binary(data)
-        self.AttributeId = uabin.Primitives.UInt32.unpack(data)
-        self.IndexRange = uabin.Primitives.String.unpack(data)
-        return obj
-
     def __str__(self):
         return 'QueryDataDescription(' + 'RelativePath:' + str(self.RelativePath) + ', ' + \
                'AttributeId:' + str(self.AttributeId) + ', ' + \
@@ -7159,28 +4859,6 @@ class NodeTypeDescription(FrozenClass):
         self.DataToReturn = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeDefinitionNode.to_binary())
-        packet.append(uabin.Primitives.Boolean.pack(self.IncludeSubTypes))
-        packet.append(uabin.Primitives.Int32.pack(len(self.DataToReturn)))
-        for fieldname in self.DataToReturn:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = NodeTypeDescription()
-        obj.TypeDefinitionNode = ExpandedNodeId.from_binary(data)
-        self.IncludeSubTypes = uabin.Primitives.Boolean.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(QueryDataDescription.from_binary(data))
-        obj.DataToReturn = array
-        return obj
-
     def __str__(self):
         return 'NodeTypeDescription(' + 'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', ' + \
                'IncludeSubTypes:' + str(self.IncludeSubTypes) + ', ' + \
@@ -7210,28 +4888,6 @@ class QueryDataSet(FrozenClass):
         self.TypeDefinitionNode = ExpandedNodeId()
         self.Values = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        packet.append(self.TypeDefinitionNode.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Values)))
-        for fieldname in self.Values:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = QueryDataSet()
-        obj.NodeId = ExpandedNodeId.from_binary(data)
-        obj.TypeDefinitionNode = ExpandedNodeId.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(Variant.from_binary(data))
-        obj.Values = array
-        return obj
 
     def __str__(self):
         return 'QueryDataSet(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -7267,30 +4923,6 @@ class NodeReference(FrozenClass):
         self.ReferencedNodeIds = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        packet.append(self.ReferenceTypeId.to_binary())
-        packet.append(uabin.Primitives.Boolean.pack(self.IsForward))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ReferencedNodeIds)))
-        for fieldname in self.ReferencedNodeIds:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = NodeReference()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.ReferenceTypeId = NodeId.from_binary(data)
-        self.IsForward = uabin.Primitives.Boolean.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(NodeId.from_binary(data))
-        obj.ReferencedNodeIds = array
-        return obj
-
     def __str__(self):
         return 'NodeReference(' + 'NodeId:' + str(self.NodeId) + ', ' + \
                'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
@@ -7318,26 +4950,6 @@ class ContentFilterElement(FrozenClass):
         self.FilterOperands = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.FilterOperator.value))
-        packet.append(uabin.Primitives.Int32.pack(len(self.FilterOperands)))
-        for fieldname in self.FilterOperands:
-            packet.append(uabin.extensionobject_to_binary(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ContentFilterElement()
-        self.FilterOperator = FilterOperator(uabin.Primitives.UInt32.unpack(data))
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(uabin.extensionobject_from_binary(data))
-        obj.FilterOperands = array
-        return obj
-
     def __str__(self):
         return 'ContentFilterElement(' + 'FilterOperator:' + str(self.FilterOperator) + ', ' + \
                'FilterOperands:' + str(self.FilterOperands) + ')'
@@ -7359,24 +4971,6 @@ class ContentFilter(FrozenClass):
         self.Elements = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.Elements)))
-        for fieldname in self.Elements:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ContentFilter()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(ContentFilterElement.from_binary(data))
-        obj.Elements = array
-        return obj
-
     def __str__(self):
         return 'ContentFilter(' + 'Elements:' + str(self.Elements) + ')'
 
@@ -7397,17 +4991,6 @@ class ElementOperand(FrozenClass):
         self.Index = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.Index))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ElementOperand()
-        self.Index = uabin.Primitives.UInt32.unpack(data)
-        return obj
-
     def __str__(self):
         return 'ElementOperand(' + 'Index:' + str(self.Index) + ')'
 
@@ -7427,17 +5010,6 @@ class LiteralOperand(FrozenClass):
     def __init__(self):
         self.Value = Variant()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.Value.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = LiteralOperand()
-        obj.Value = Variant.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'LiteralOperand(' + 'Value:' + str(self.Value) + ')'
@@ -7475,25 +5047,6 @@ class AttributeOperand(FrozenClass):
         self.IndexRange = None
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        packet.append(uabin.Primitives.String.pack(self.Alias))
-        packet.append(self.BrowsePath.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.AttributeId))
-        packet.append(uabin.Primitives.String.pack(self.IndexRange))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AttributeOperand()
-        obj.NodeId = NodeId.from_binary(data)
-        self.Alias = uabin.Primitives.String.unpack(data)
-        obj.BrowsePath = RelativePath.from_binary(data)
-        self.AttributeId = uabin.Primitives.UInt32.unpack(data)
-        self.IndexRange = uabin.Primitives.String.unpack(data)
-        return obj
-
     def __str__(self):
         return 'AttributeOperand(' + 'NodeId:' + str(self.NodeId) + ', ' + \
                'Alias:' + str(self.Alias) + ', ' + \
@@ -7530,30 +5083,6 @@ class SimpleAttributeOperand(FrozenClass):
         self.IndexRange = None
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeDefinitionId.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.BrowsePath)))
-        for fieldname in self.BrowsePath:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.AttributeId))
-        packet.append(uabin.Primitives.String.pack(self.IndexRange))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SimpleAttributeOperand()
-        obj.TypeDefinitionId = NodeId.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(QualifiedName.from_binary(data))
-        obj.BrowsePath = array
-        self.AttributeId = uabin.Primitives.UInt32.unpack(data)
-        self.IndexRange = uabin.Primitives.String.unpack(data)
-        return obj
-
     def __str__(self):
         return 'SimpleAttributeOperand(' + 'TypeDefinitionId:' + str(self.TypeDefinitionId) + ', ' + \
                'BrowsePath:' + str(self.BrowsePath) + ', ' + \
@@ -7585,35 +5114,6 @@ class ContentFilterElementResult(FrozenClass):
         self.OperandDiagnosticInfos = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.StatusCode.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.OperandStatusCodes)))
-        for fieldname in self.OperandStatusCodes:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.OperandDiagnosticInfos)))
-        for fieldname in self.OperandDiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ContentFilterElementResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.OperandStatusCodes = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.OperandDiagnosticInfos = array
-        return obj
-
     def __str__(self):
         return 'ContentFilterElementResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
                'OperandStatusCodes:' + str(self.OperandStatusCodes) + ', ' + \
@@ -7639,33 +5139,6 @@ class ContentFilterResult(FrozenClass):
         self.ElementResults = []
         self.ElementDiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.ElementResults)))
-        for fieldname in self.ElementResults:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.ElementDiagnosticInfos)))
-        for fieldname in self.ElementDiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ContentFilterResult()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(ContentFilterElementResult.from_binary(data))
-        obj.ElementResults = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.ElementDiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'ContentFilterResult(' + 'ElementResults:' + str(self.ElementResults) + ', ' + \
@@ -7695,35 +5168,6 @@ class ParsingResult(FrozenClass):
         self.DataStatusCodes = []
         self.DataDiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.StatusCode.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DataStatusCodes)))
-        for fieldname in self.DataStatusCodes:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DataDiagnosticInfos)))
-        for fieldname in self.DataDiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ParsingResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.DataStatusCodes = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DataDiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'ParsingResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
@@ -7763,32 +5207,6 @@ class QueryFirstParameters(FrozenClass):
         self.MaxReferencesToReturn = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.View.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.NodeTypes)))
-        for fieldname in self.NodeTypes:
-            packet.append(fieldname.to_binary())
-        packet.append(self.Filter.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.MaxDataSetsToReturn))
-        packet.append(uabin.Primitives.UInt32.pack(self.MaxReferencesToReturn))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = QueryFirstParameters()
-        obj.View = ViewDescription.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(NodeTypeDescription.from_binary(data))
-        obj.NodeTypes = array
-        obj.Filter = ContentFilter.from_binary(data)
-        self.MaxDataSetsToReturn = uabin.Primitives.UInt32.unpack(data)
-        self.MaxReferencesToReturn = uabin.Primitives.UInt32.unpack(data)
-        return obj
-
     def __str__(self):
         return 'QueryFirstParameters(' + 'View:' + str(self.View) + ', ' + \
                'NodeTypes:' + str(self.NodeTypes) + ', ' + \
@@ -7820,21 +5238,6 @@ class QueryFirstRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = QueryFirstParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = QueryFirstRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = QueryFirstParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'QueryFirstRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -7874,46 +5277,6 @@ class QueryFirstResult(FrozenClass):
         self.FilterResult = ContentFilterResult()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.QueryDataSets)))
-        for fieldname in self.QueryDataSets:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.ByteString.pack(self.ContinuationPoint))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ParsingResults)))
-        for fieldname in self.ParsingResults:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        packet.append(self.FilterResult.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = QueryFirstResult()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(QueryDataSet.from_binary(data))
-        obj.QueryDataSets = array
-        self.ContinuationPoint = uabin.Primitives.ByteString.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(ParsingResult.from_binary(data))
-        obj.ParsingResults = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        obj.FilterResult = ContentFilterResult.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'QueryFirstResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', ' + \
                'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
@@ -7946,21 +5309,6 @@ class QueryFirstResponse(FrozenClass):
         self.Parameters = QueryFirstResult()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = QueryFirstResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = QueryFirstResult.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'QueryFirstResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -7986,19 +5334,6 @@ class QueryNextParameters(FrozenClass):
         self.ReleaseContinuationPoint = True
         self.ContinuationPoint = None
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Boolean.pack(self.ReleaseContinuationPoint))
-        packet.append(uabin.Primitives.ByteString.pack(self.ContinuationPoint))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = QueryNextParameters()
-        self.ReleaseContinuationPoint = uabin.Primitives.Boolean.unpack(data)
-        self.ContinuationPoint = uabin.Primitives.ByteString.unpack(data)
-        return obj
 
     def __str__(self):
         return 'QueryNextParameters(' + 'ReleaseContinuationPoint:' + str(self.ReleaseContinuationPoint) + ', ' + \
@@ -8029,21 +5364,6 @@ class QueryNextRequest(FrozenClass):
         self.Parameters = QueryNextParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = QueryNextRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = QueryNextParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'QueryNextRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -8069,26 +5389,6 @@ class QueryNextResult(FrozenClass):
         self.QueryDataSets = []
         self.RevisedContinuationPoint = None
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.QueryDataSets)))
-        for fieldname in self.QueryDataSets:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.ByteString.pack(self.RevisedContinuationPoint))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = QueryNextResult()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(QueryDataSet.from_binary(data))
-        obj.QueryDataSets = array
-        self.RevisedContinuationPoint = uabin.Primitives.ByteString.unpack(data)
-        return obj
 
     def __str__(self):
         return 'QueryNextResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', ' + \
@@ -8118,21 +5418,6 @@ class QueryNextResponse(FrozenClass):
         self.ResponseHeader = ResponseHeader()
         self.Parameters = QueryNextResult()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = QueryNextResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = QueryNextResult.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'QueryNextResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -8168,23 +5453,6 @@ class ReadValueId(FrozenClass):
         self.DataEncoding = QualifiedName()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.AttributeId))
-        packet.append(uabin.Primitives.String.pack(self.IndexRange))
-        packet.append(self.DataEncoding.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ReadValueId()
-        obj.NodeId = NodeId.from_binary(data)
-        self.AttributeId = uabin.Primitives.UInt32.unpack(data)
-        self.IndexRange = uabin.Primitives.String.unpack(data)
-        obj.DataEncoding = QualifiedName.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'ReadValueId(' + 'NodeId:' + str(self.NodeId) + ', ' + \
                'AttributeId:' + str(self.AttributeId) + ', ' + \
@@ -8216,28 +5484,6 @@ class ReadParameters(FrozenClass):
         self.NodesToRead = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Double.pack(self.MaxAge))
-        packet.append(uabin.Primitives.UInt32.pack(self.TimestampsToReturn.value))
-        packet.append(uabin.Primitives.Int32.pack(len(self.NodesToRead)))
-        for fieldname in self.NodesToRead:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ReadParameters()
-        self.MaxAge = uabin.Primitives.Double.unpack(data)
-        self.TimestampsToReturn = TimestampsToReturn(uabin.Primitives.UInt32.unpack(data))
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(ReadValueId.from_binary(data))
-        obj.NodesToRead = array
-        return obj
-
     def __str__(self):
         return 'ReadParameters(' + 'MaxAge:' + str(self.MaxAge) + ', ' + \
                'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
@@ -8267,21 +5513,6 @@ class ReadRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = ReadParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ReadRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = ReadParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'ReadRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -8316,37 +5547,6 @@ class ReadResponse(FrozenClass):
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ReadResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DataValue.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'ReadResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -8383,23 +5583,6 @@ class HistoryReadValueId(FrozenClass):
         self.ContinuationPoint = None
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        packet.append(uabin.Primitives.String.pack(self.IndexRange))
-        packet.append(self.DataEncoding.to_binary())
-        packet.append(uabin.Primitives.ByteString.pack(self.ContinuationPoint))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryReadValueId()
-        obj.NodeId = NodeId.from_binary(data)
-        self.IndexRange = uabin.Primitives.String.unpack(data)
-        obj.DataEncoding = QualifiedName.from_binary(data)
-        self.ContinuationPoint = uabin.Primitives.ByteString.unpack(data)
-        return obj
-
     def __str__(self):
         return 'HistoryReadValueId(' + 'NodeId:' + str(self.NodeId) + ', ' + \
                'IndexRange:' + str(self.IndexRange) + ', ' + \
@@ -8431,21 +5614,6 @@ class HistoryReadResult(FrozenClass):
         self.HistoryData = ExtensionObject()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.StatusCode.to_binary())
-        packet.append(uabin.Primitives.ByteString.pack(self.ContinuationPoint))
-        packet.append(uabin.extensionobject_to_binary(self.HistoryData))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryReadResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        self.ContinuationPoint = uabin.Primitives.ByteString.unpack(data)
-        obj.HistoryData = uabin.extensionobject_from_binary(data)
-        return obj
-
     def __str__(self):
         return 'HistoryReadResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
                'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
@@ -8463,15 +5631,6 @@ class HistoryReadDetails(FrozenClass):
 
     def __init__(self):
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryReadDetails()
-        return obj
 
     def __str__(self):
         return 'HistoryReadDetails(' +  + ')'
@@ -8504,23 +5663,6 @@ class ReadEventDetails(FrozenClass):
         self.EndTime = datetime.utcnow()
         self.Filter = EventFilter()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.NumValuesPerNode))
-        packet.append(uabin.Primitives.DateTime.pack(self.StartTime))
-        packet.append(uabin.Primitives.DateTime.pack(self.EndTime))
-        packet.append(self.Filter.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ReadEventDetails()
-        self.NumValuesPerNode = uabin.Primitives.UInt32.unpack(data)
-        self.StartTime = uabin.Primitives.DateTime.unpack(data)
-        self.EndTime = uabin.Primitives.DateTime.unpack(data)
-        obj.Filter = EventFilter.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'ReadEventDetails(' + 'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', ' + \
@@ -8560,25 +5702,6 @@ class ReadRawModifiedDetails(FrozenClass):
         self.NumValuesPerNode = 0
         self.ReturnBounds = True
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Boolean.pack(self.IsReadModified))
-        packet.append(uabin.Primitives.DateTime.pack(self.StartTime))
-        packet.append(uabin.Primitives.DateTime.pack(self.EndTime))
-        packet.append(uabin.Primitives.UInt32.pack(self.NumValuesPerNode))
-        packet.append(uabin.Primitives.Boolean.pack(self.ReturnBounds))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ReadRawModifiedDetails()
-        self.IsReadModified = uabin.Primitives.Boolean.unpack(data)
-        self.StartTime = uabin.Primitives.DateTime.unpack(data)
-        self.EndTime = uabin.Primitives.DateTime.unpack(data)
-        self.NumValuesPerNode = uabin.Primitives.UInt32.unpack(data)
-        self.ReturnBounds = uabin.Primitives.Boolean.unpack(data)
-        return obj
 
     def __str__(self):
         return 'ReadRawModifiedDetails(' + 'IsReadModified:' + str(self.IsReadModified) + ', ' + \
@@ -8620,32 +5743,6 @@ class ReadProcessedDetails(FrozenClass):
         self.AggregateConfiguration = AggregateConfiguration()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.DateTime.pack(self.StartTime))
-        packet.append(uabin.Primitives.DateTime.pack(self.EndTime))
-        packet.append(uabin.Primitives.Double.pack(self.ProcessingInterval))
-        packet.append(uabin.Primitives.Int32.pack(len(self.AggregateType)))
-        for fieldname in self.AggregateType:
-            packet.append(fieldname.to_binary())
-        packet.append(self.AggregateConfiguration.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ReadProcessedDetails()
-        self.StartTime = uabin.Primitives.DateTime.unpack(data)
-        self.EndTime = uabin.Primitives.DateTime.unpack(data)
-        self.ProcessingInterval = uabin.Primitives.Double.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(NodeId.from_binary(data))
-        obj.AggregateType = array
-        obj.AggregateConfiguration = AggregateConfiguration.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'ReadProcessedDetails(' + 'StartTime:' + str(self.StartTime) + ', ' + \
                'EndTime:' + str(self.EndTime) + ', ' + \
@@ -8674,21 +5771,6 @@ class ReadAtTimeDetails(FrozenClass):
         self.UseSimpleBounds = True
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.ReqTimes)))
-        for fieldname in self.ReqTimes:
-            packet.append(uabin.Primitives.DateTime.pack(fieldname))
-        packet.append(uabin.Primitives.Boolean.pack(self.UseSimpleBounds))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ReadAtTimeDetails()
-        obj.ReqTimes = uabin.Primitives.DateTime.unpack_array(data)
-        self.UseSimpleBounds = uabin.Primitives.Boolean.unpack(data)
-        return obj
-
     def __str__(self):
         return 'ReadAtTimeDetails(' + 'ReqTimes:' + str(self.ReqTimes) + ', ' + \
                'UseSimpleBounds:' + str(self.UseSimpleBounds) + ')'
@@ -8709,24 +5791,6 @@ class HistoryData(FrozenClass):
     def __init__(self):
         self.DataValues = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.DataValues)))
-        for fieldname in self.DataValues:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryData()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DataValue.from_binary(data))
-        obj.DataValues = array
-        return obj
 
     def __str__(self):
         return 'HistoryData(' + 'DataValues:' + str(self.DataValues) + ')'
@@ -8756,21 +5820,6 @@ class ModificationInfo(FrozenClass):
         self.UserName = None
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.DateTime.pack(self.ModificationTime))
-        packet.append(uabin.Primitives.UInt32.pack(self.UpdateType.value))
-        packet.append(uabin.Primitives.String.pack(self.UserName))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ModificationInfo()
-        self.ModificationTime = uabin.Primitives.DateTime.unpack(data)
-        self.UpdateType = HistoryUpdateType(uabin.Primitives.UInt32.unpack(data))
-        self.UserName = uabin.Primitives.String.unpack(data)
-        return obj
-
     def __str__(self):
         return 'ModificationInfo(' + 'ModificationTime:' + str(self.ModificationTime) + ', ' + \
                'UpdateType:' + str(self.UpdateType) + ', ' + \
@@ -8797,33 +5846,6 @@ class HistoryModifiedData(FrozenClass):
         self.ModificationInfos = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.DataValues)))
-        for fieldname in self.DataValues:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.ModificationInfos)))
-        for fieldname in self.ModificationInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryModifiedData()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DataValue.from_binary(data))
-        obj.DataValues = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(ModificationInfo.from_binary(data))
-        obj.ModificationInfos = array
-        return obj
-
     def __str__(self):
         return 'HistoryModifiedData(' + 'DataValues:' + str(self.DataValues) + ', ' + \
                'ModificationInfos:' + str(self.ModificationInfos) + ')'
@@ -8844,24 +5866,6 @@ class HistoryEvent(FrozenClass):
     def __init__(self):
         self.Events = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.Events)))
-        for fieldname in self.Events:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryEvent()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(HistoryEventFieldList.from_binary(data))
-        obj.Events = array
-        return obj
 
     def __str__(self):
         return 'HistoryEvent(' + 'Events:' + str(self.Events) + ')'
@@ -8895,30 +5899,6 @@ class HistoryReadParameters(FrozenClass):
         self.NodesToRead = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.extensionobject_to_binary(self.HistoryReadDetails))
-        packet.append(uabin.Primitives.UInt32.pack(self.TimestampsToReturn.value))
-        packet.append(uabin.Primitives.Boolean.pack(self.ReleaseContinuationPoints))
-        packet.append(uabin.Primitives.Int32.pack(len(self.NodesToRead)))
-        for fieldname in self.NodesToRead:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryReadParameters()
-        obj.HistoryReadDetails = uabin.extensionobject_from_binary(data)
-        self.TimestampsToReturn = TimestampsToReturn(uabin.Primitives.UInt32.unpack(data))
-        self.ReleaseContinuationPoints = uabin.Primitives.Boolean.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(HistoryReadValueId.from_binary(data))
-        obj.NodesToRead = array
-        return obj
-
     def __str__(self):
         return 'HistoryReadParameters(' + 'HistoryReadDetails:' + str(self.HistoryReadDetails) + ', ' + \
                'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
@@ -8949,21 +5929,6 @@ class HistoryReadRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = HistoryReadParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryReadRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = HistoryReadParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'HistoryReadRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -8998,37 +5963,6 @@ class HistoryReadResponse(FrozenClass):
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryReadResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(HistoryReadResult.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'HistoryReadResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9065,23 +5999,6 @@ class WriteValue(FrozenClass):
         self.Value = DataValue()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.AttributeId))
-        packet.append(uabin.Primitives.String.pack(self.IndexRange))
-        packet.append(self.Value.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = WriteValue()
-        obj.NodeId = NodeId.from_binary(data)
-        self.AttributeId = uabin.Primitives.UInt32.unpack(data)
-        self.IndexRange = uabin.Primitives.String.unpack(data)
-        obj.Value = DataValue.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'WriteValue(' + 'NodeId:' + str(self.NodeId) + ', ' + \
                'AttributeId:' + str(self.AttributeId) + ', ' + \
@@ -9104,24 +6021,6 @@ class WriteParameters(FrozenClass):
     def __init__(self):
         self.NodesToWrite = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.NodesToWrite)))
-        for fieldname in self.NodesToWrite:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = WriteParameters()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(WriteValue.from_binary(data))
-        obj.NodesToWrite = array
-        return obj
 
     def __str__(self):
         return 'WriteParameters(' + 'NodesToWrite:' + str(self.NodesToWrite) + ')'
@@ -9150,21 +6049,6 @@ class WriteRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = WriteParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = WriteRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = WriteParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'WriteRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9200,37 +6084,6 @@ class WriteResponse(FrozenClass):
         self.DiagnosticInfos = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = WriteResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
-
     def __str__(self):
         return 'WriteResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -9253,17 +6106,6 @@ class HistoryUpdateDetails(FrozenClass):
     def __init__(self):
         self.NodeId = NodeId()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryUpdateDetails()
-        obj.NodeId = NodeId.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'HistoryUpdateDetails(' + 'NodeId:' + str(self.NodeId) + ')'
@@ -9292,28 +6134,6 @@ class UpdateDataDetails(FrozenClass):
         self.PerformInsertReplace = PerformUpdateType(0)
         self.UpdateValues = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.PerformInsertReplace.value))
-        packet.append(uabin.Primitives.Int32.pack(len(self.UpdateValues)))
-        for fieldname in self.UpdateValues:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = UpdateDataDetails()
-        obj.NodeId = NodeId.from_binary(data)
-        self.PerformInsertReplace = PerformUpdateType(uabin.Primitives.UInt32.unpack(data))
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DataValue.from_binary(data))
-        obj.UpdateValues = array
-        return obj
 
     def __str__(self):
         return 'UpdateDataDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -9344,28 +6164,6 @@ class UpdateStructureDataDetails(FrozenClass):
         self.PerformInsertReplace = PerformUpdateType(0)
         self.UpdateValues = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.PerformInsertReplace.value))
-        packet.append(uabin.Primitives.Int32.pack(len(self.UpdateValues)))
-        for fieldname in self.UpdateValues:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = UpdateStructureDataDetails()
-        obj.NodeId = NodeId.from_binary(data)
-        self.PerformInsertReplace = PerformUpdateType(uabin.Primitives.UInt32.unpack(data))
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DataValue.from_binary(data))
-        obj.UpdateValues = array
-        return obj
 
     def __str__(self):
         return 'UpdateStructureDataDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -9400,30 +6198,6 @@ class UpdateEventDetails(FrozenClass):
         self.Filter = EventFilter()
         self.EventData = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.PerformInsertReplace.value))
-        packet.append(self.Filter.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.EventData)))
-        for fieldname in self.EventData:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = UpdateEventDetails()
-        obj.NodeId = NodeId.from_binary(data)
-        self.PerformInsertReplace = PerformUpdateType(uabin.Primitives.UInt32.unpack(data))
-        obj.Filter = EventFilter.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(HistoryEventFieldList.from_binary(data))
-        obj.EventData = array
-        return obj
 
     def __str__(self):
         return 'UpdateEventDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -9460,23 +6234,6 @@ class DeleteRawModifiedDetails(FrozenClass):
         self.EndTime = datetime.utcnow()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        packet.append(uabin.Primitives.Boolean.pack(self.IsDeleteModified))
-        packet.append(uabin.Primitives.DateTime.pack(self.StartTime))
-        packet.append(uabin.Primitives.DateTime.pack(self.EndTime))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteRawModifiedDetails()
-        obj.NodeId = NodeId.from_binary(data)
-        self.IsDeleteModified = uabin.Primitives.Boolean.unpack(data)
-        self.StartTime = uabin.Primitives.DateTime.unpack(data)
-        self.EndTime = uabin.Primitives.DateTime.unpack(data)
-        return obj
-
     def __str__(self):
         return 'DeleteRawModifiedDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
                'IsDeleteModified:' + str(self.IsDeleteModified) + ', ' + \
@@ -9504,21 +6261,6 @@ class DeleteAtTimeDetails(FrozenClass):
         self.ReqTimes = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.ReqTimes)))
-        for fieldname in self.ReqTimes:
-            packet.append(uabin.Primitives.DateTime.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteAtTimeDetails()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.ReqTimes = uabin.Primitives.DateTime.unpack_array(data)
-        return obj
-
     def __str__(self):
         return 'DeleteAtTimeDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
                'ReqTimes:' + str(self.ReqTimes) + ')'
@@ -9543,21 +6285,6 @@ class DeleteEventDetails(FrozenClass):
         self.NodeId = NodeId()
         self.EventIds = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.NodeId.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.EventIds)))
-        for fieldname in self.EventIds:
-            packet.append(uabin.Primitives.ByteString.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteEventDetails()
-        obj.NodeId = NodeId.from_binary(data)
-        obj.EventIds = uabin.Primitives.ByteString.unpack_array(data)
-        return obj
 
     def __str__(self):
         return 'DeleteEventDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -9588,35 +6315,6 @@ class HistoryUpdateResult(FrozenClass):
         self.DiagnosticInfos = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.StatusCode.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.OperationResults)))
-        for fieldname in self.OperationResults:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryUpdateResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.OperationResults = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
-
     def __str__(self):
         return 'HistoryUpdateResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
                'OperationResults:' + str(self.OperationResults) + ', ' + \
@@ -9638,24 +6336,6 @@ class HistoryUpdateParameters(FrozenClass):
     def __init__(self):
         self.HistoryUpdateDetails = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.HistoryUpdateDetails)))
-        for fieldname in self.HistoryUpdateDetails:
-            packet.append(uabin.extensionobject_to_binary(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryUpdateParameters()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(uabin.extensionobject_from_binary(data))
-        obj.HistoryUpdateDetails = array
-        return obj
 
     def __str__(self):
         return 'HistoryUpdateParameters(' + 'HistoryUpdateDetails:' + str(self.HistoryUpdateDetails) + ')'
@@ -9684,21 +6364,6 @@ class HistoryUpdateRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = HistoryUpdateParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryUpdateRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = HistoryUpdateParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'HistoryUpdateRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9734,37 +6399,6 @@ class HistoryUpdateResponse(FrozenClass):
         self.DiagnosticInfos = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryUpdateResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(HistoryUpdateResult.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
-
     def __str__(self):
         return 'HistoryUpdateResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -9795,28 +6429,6 @@ class CallMethodRequest(FrozenClass):
         self.MethodId = NodeId()
         self.InputArguments = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.ObjectId.to_binary())
-        packet.append(self.MethodId.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.InputArguments)))
-        for fieldname in self.InputArguments:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CallMethodRequest()
-        obj.ObjectId = NodeId.from_binary(data)
-        obj.MethodId = NodeId.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(Variant.from_binary(data))
-        obj.InputArguments = array
-        return obj
 
     def __str__(self):
         return 'CallMethodRequest(' + 'ObjectId:' + str(self.ObjectId) + ', ' + \
@@ -9852,44 +6464,6 @@ class CallMethodResult(FrozenClass):
         self.OutputArguments = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.StatusCode.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.InputArgumentResults)))
-        for fieldname in self.InputArgumentResults:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.InputArgumentDiagnosticInfos)))
-        for fieldname in self.InputArgumentDiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.OutputArguments)))
-        for fieldname in self.OutputArguments:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CallMethodResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.InputArgumentResults = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.InputArgumentDiagnosticInfos = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(Variant.from_binary(data))
-        obj.OutputArguments = array
-        return obj
-
     def __str__(self):
         return 'CallMethodResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
                'InputArgumentResults:' + str(self.InputArgumentResults) + ', ' + \
@@ -9912,24 +6486,6 @@ class CallParameters(FrozenClass):
     def __init__(self):
         self.MethodsToCall = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.MethodsToCall)))
-        for fieldname in self.MethodsToCall:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CallParameters()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(CallMethodRequest.from_binary(data))
-        obj.MethodsToCall = array
-        return obj
 
     def __str__(self):
         return 'CallParameters(' + 'MethodsToCall:' + str(self.MethodsToCall) + ')'
@@ -9958,21 +6514,6 @@ class CallRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = CallParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CallRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = CallParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'CallRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -10008,37 +6549,6 @@ class CallResponse(FrozenClass):
         self.DiagnosticInfos = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CallResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(CallMethodResult.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
-
     def __str__(self):
         return 'CallResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -10057,15 +6567,6 @@ class MonitoringFilter(FrozenClass):
 
     def __init__(self):
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = MonitoringFilter()
-        return obj
 
     def __str__(self):
         return 'MonitoringFilter(' +  + ')'
@@ -10095,21 +6596,6 @@ class DataChangeFilter(FrozenClass):
         self.DeadbandValue = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.Trigger.value))
-        packet.append(uabin.Primitives.UInt32.pack(self.DeadbandType))
-        packet.append(uabin.Primitives.Double.pack(self.DeadbandValue))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DataChangeFilter()
-        self.Trigger = DataChangeTrigger(uabin.Primitives.UInt32.unpack(data))
-        self.DeadbandType = uabin.Primitives.UInt32.unpack(data)
-        self.DeadbandValue = uabin.Primitives.Double.unpack(data)
-        return obj
-
     def __str__(self):
         return 'DataChangeFilter(' + 'Trigger:' + str(self.Trigger) + ', ' + \
                'DeadbandType:' + str(self.DeadbandType) + ', ' + \
@@ -10135,26 +6621,6 @@ class EventFilter(FrozenClass):
         self.SelectClauses = []
         self.WhereClause = ContentFilter()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.SelectClauses)))
-        for fieldname in self.SelectClauses:
-            packet.append(fieldname.to_binary())
-        packet.append(self.WhereClause.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = EventFilter()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(SimpleAttributeOperand.from_binary(data))
-        obj.SelectClauses = array
-        obj.WhereClause = ContentFilter.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'EventFilter(' + 'SelectClauses:' + str(self.SelectClauses) + ', ' + \
@@ -10193,25 +6659,6 @@ class AggregateConfiguration(FrozenClass):
         self.UseSlopedExtrapolation = True
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Boolean.pack(self.UseServerCapabilitiesDefaults))
-        packet.append(uabin.Primitives.Boolean.pack(self.TreatUncertainAsBad))
-        packet.append(uabin.Primitives.Byte.pack(self.PercentDataBad))
-        packet.append(uabin.Primitives.Byte.pack(self.PercentDataGood))
-        packet.append(uabin.Primitives.Boolean.pack(self.UseSlopedExtrapolation))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AggregateConfiguration()
-        self.UseServerCapabilitiesDefaults = uabin.Primitives.Boolean.unpack(data)
-        self.TreatUncertainAsBad = uabin.Primitives.Boolean.unpack(data)
-        self.PercentDataBad = uabin.Primitives.Byte.unpack(data)
-        self.PercentDataGood = uabin.Primitives.Byte.unpack(data)
-        self.UseSlopedExtrapolation = uabin.Primitives.Boolean.unpack(data)
-        return obj
-
     def __str__(self):
         return 'AggregateConfiguration(' + 'UseServerCapabilitiesDefaults:' + str(self.UseServerCapabilitiesDefaults) + ', ' + \
                'TreatUncertainAsBad:' + str(self.TreatUncertainAsBad) + ', ' + \
@@ -10248,23 +6695,6 @@ class AggregateFilter(FrozenClass):
         self.AggregateConfiguration = AggregateConfiguration()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.DateTime.pack(self.StartTime))
-        packet.append(self.AggregateType.to_binary())
-        packet.append(uabin.Primitives.Double.pack(self.ProcessingInterval))
-        packet.append(self.AggregateConfiguration.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AggregateFilter()
-        self.StartTime = uabin.Primitives.DateTime.unpack(data)
-        obj.AggregateType = NodeId.from_binary(data)
-        self.ProcessingInterval = uabin.Primitives.Double.unpack(data)
-        obj.AggregateConfiguration = AggregateConfiguration.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'AggregateFilter(' + 'StartTime:' + str(self.StartTime) + ', ' + \
                'AggregateType:' + str(self.AggregateType) + ', ' + \
@@ -10283,15 +6713,6 @@ class MonitoringFilterResult(FrozenClass):
 
     def __init__(self):
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = MonitoringFilterResult()
-        return obj
 
     def __str__(self):
         return 'MonitoringFilterResult(' +  + ')'
@@ -10320,35 +6741,6 @@ class EventFilterResult(FrozenClass):
         self.SelectClauseDiagnosticInfos = []
         self.WhereClauseResult = ContentFilterResult()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.SelectClauseResults)))
-        for fieldname in self.SelectClauseResults:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.SelectClauseDiagnosticInfos)))
-        for fieldname in self.SelectClauseDiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        packet.append(self.WhereClauseResult.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = EventFilterResult()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.SelectClauseResults = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.SelectClauseDiagnosticInfos = array
-        obj.WhereClauseResult = ContentFilterResult.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'EventFilterResult(' + 'SelectClauseResults:' + str(self.SelectClauseResults) + ', ' + \
@@ -10379,21 +6771,6 @@ class AggregateFilterResult(FrozenClass):
         self.RevisedProcessingInterval = 0
         self.RevisedAggregateConfiguration = AggregateConfiguration()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.DateTime.pack(self.RevisedStartTime))
-        packet.append(uabin.Primitives.Double.pack(self.RevisedProcessingInterval))
-        packet.append(self.RevisedAggregateConfiguration.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AggregateFilterResult()
-        self.RevisedStartTime = uabin.Primitives.DateTime.unpack(data)
-        self.RevisedProcessingInterval = uabin.Primitives.Double.unpack(data)
-        obj.RevisedAggregateConfiguration = AggregateConfiguration.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'AggregateFilterResult(' + 'RevisedStartTime:' + str(self.RevisedStartTime) + ', ' + \
@@ -10433,25 +6810,6 @@ class MonitoringParameters(FrozenClass):
         self.DiscardOldest = True
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.ClientHandle))
-        packet.append(uabin.Primitives.Double.pack(self.SamplingInterval))
-        packet.append(uabin.extensionobject_to_binary(self.Filter))
-        packet.append(uabin.Primitives.UInt32.pack(self.QueueSize))
-        packet.append(uabin.Primitives.Boolean.pack(self.DiscardOldest))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = MonitoringParameters()
-        self.ClientHandle = uabin.Primitives.UInt32.unpack(data)
-        self.SamplingInterval = uabin.Primitives.Double.unpack(data)
-        obj.Filter = uabin.extensionobject_from_binary(data)
-        self.QueueSize = uabin.Primitives.UInt32.unpack(data)
-        self.DiscardOldest = uabin.Primitives.Boolean.unpack(data)
-        return obj
-
     def __str__(self):
         return 'MonitoringParameters(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
                'SamplingInterval:' + str(self.SamplingInterval) + ', ' + \
@@ -10483,21 +6841,6 @@ class MonitoredItemCreateRequest(FrozenClass):
         self.MonitoringMode = MonitoringMode(0)
         self.RequestedParameters = MonitoringParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.ItemToMonitor.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.MonitoringMode.value))
-        packet.append(self.RequestedParameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = MonitoredItemCreateRequest()
-        obj.ItemToMonitor = ReadValueId.from_binary(data)
-        self.MonitoringMode = MonitoringMode(uabin.Primitives.UInt32.unpack(data))
-        obj.RequestedParameters = MonitoringParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'MonitoredItemCreateRequest(' + 'ItemToMonitor:' + str(self.ItemToMonitor) + ', ' + \
@@ -10537,25 +6880,6 @@ class MonitoredItemCreateResult(FrozenClass):
         self.FilterResult = ExtensionObject()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.StatusCode.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.MonitoredItemId))
-        packet.append(uabin.Primitives.Double.pack(self.RevisedSamplingInterval))
-        packet.append(uabin.Primitives.UInt32.pack(self.RevisedQueueSize))
-        packet.append(uabin.extensionobject_to_binary(self.FilterResult))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = MonitoredItemCreateResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        self.MonitoredItemId = uabin.Primitives.UInt32.unpack(data)
-        self.RevisedSamplingInterval = uabin.Primitives.Double.unpack(data)
-        self.RevisedQueueSize = uabin.Primitives.UInt32.unpack(data)
-        obj.FilterResult = uabin.extensionobject_from_binary(data)
-        return obj
-
     def __str__(self):
         return 'MonitoredItemCreateResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
                'MonitoredItemId:' + str(self.MonitoredItemId) + ', ' + \
@@ -10588,28 +6912,6 @@ class CreateMonitoredItemsParameters(FrozenClass):
         self.ItemsToCreate = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SubscriptionId))
-        packet.append(uabin.Primitives.UInt32.pack(self.TimestampsToReturn.value))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ItemsToCreate)))
-        for fieldname in self.ItemsToCreate:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CreateMonitoredItemsParameters()
-        self.SubscriptionId = uabin.Primitives.UInt32.unpack(data)
-        self.TimestampsToReturn = TimestampsToReturn(uabin.Primitives.UInt32.unpack(data))
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(MonitoredItemCreateRequest.from_binary(data))
-        obj.ItemsToCreate = array
-        return obj
-
     def __str__(self):
         return 'CreateMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
                'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
@@ -10639,21 +6941,6 @@ class CreateMonitoredItemsRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = CreateMonitoredItemsParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CreateMonitoredItemsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = CreateMonitoredItemsParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'CreateMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -10689,37 +6976,6 @@ class CreateMonitoredItemsResponse(FrozenClass):
         self.DiagnosticInfos = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CreateMonitoredItemsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(MonitoredItemCreateResult.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
-
     def __str__(self):
         return 'CreateMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -10746,19 +7002,6 @@ class MonitoredItemModifyRequest(FrozenClass):
         self.MonitoredItemId = 0
         self.RequestedParameters = MonitoringParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.MonitoredItemId))
-        packet.append(self.RequestedParameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = MonitoredItemModifyRequest()
-        self.MonitoredItemId = uabin.Primitives.UInt32.unpack(data)
-        obj.RequestedParameters = MonitoringParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'MonitoredItemModifyRequest(' + 'MonitoredItemId:' + str(self.MonitoredItemId) + ', ' + \
@@ -10793,23 +7036,6 @@ class MonitoredItemModifyResult(FrozenClass):
         self.FilterResult = ExtensionObject()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.StatusCode.to_binary())
-        packet.append(uabin.Primitives.Double.pack(self.RevisedSamplingInterval))
-        packet.append(uabin.Primitives.UInt32.pack(self.RevisedQueueSize))
-        packet.append(uabin.extensionobject_to_binary(self.FilterResult))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = MonitoredItemModifyResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        self.RevisedSamplingInterval = uabin.Primitives.Double.unpack(data)
-        self.RevisedQueueSize = uabin.Primitives.UInt32.unpack(data)
-        obj.FilterResult = uabin.extensionobject_from_binary(data)
-        return obj
-
     def __str__(self):
         return 'MonitoredItemModifyResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
                'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', ' + \
@@ -10841,28 +7067,6 @@ class ModifyMonitoredItemsParameters(FrozenClass):
         self.ItemsToModify = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SubscriptionId))
-        packet.append(uabin.Primitives.UInt32.pack(self.TimestampsToReturn.value))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ItemsToModify)))
-        for fieldname in self.ItemsToModify:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ModifyMonitoredItemsParameters()
-        self.SubscriptionId = uabin.Primitives.UInt32.unpack(data)
-        self.TimestampsToReturn = TimestampsToReturn(uabin.Primitives.UInt32.unpack(data))
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(MonitoredItemModifyRequest.from_binary(data))
-        obj.ItemsToModify = array
-        return obj
-
     def __str__(self):
         return 'ModifyMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
                'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
@@ -10892,21 +7096,6 @@ class ModifyMonitoredItemsRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = ModifyMonitoredItemsParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ModifyMonitoredItemsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = ModifyMonitoredItemsParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'ModifyMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -10942,37 +7131,6 @@ class ModifyMonitoredItemsResponse(FrozenClass):
         self.DiagnosticInfos = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ModifyMonitoredItemsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(MonitoredItemModifyResult.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
-
     def __str__(self):
         return 'ModifyMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -11004,23 +7162,6 @@ class SetMonitoringModeParameters(FrozenClass):
         self.MonitoredItemIds = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SubscriptionId))
-        packet.append(uabin.Primitives.UInt32.pack(self.MonitoringMode.value))
-        packet.append(uabin.Primitives.Int32.pack(len(self.MonitoredItemIds)))
-        for fieldname in self.MonitoredItemIds:
-            packet.append(uabin.Primitives.UInt32.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SetMonitoringModeParameters()
-        self.SubscriptionId = uabin.Primitives.UInt32.unpack(data)
-        self.MonitoringMode = MonitoringMode(uabin.Primitives.UInt32.unpack(data))
-        obj.MonitoredItemIds = uabin.Primitives.UInt32.unpack_array(data)
-        return obj
-
     def __str__(self):
         return 'SetMonitoringModeParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
                'MonitoringMode:' + str(self.MonitoringMode) + ', ' + \
@@ -11051,21 +7192,6 @@ class SetMonitoringModeRequest(FrozenClass):
         self.Parameters = SetMonitoringModeParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SetMonitoringModeRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = SetMonitoringModeParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'SetMonitoringModeRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -11091,33 +7217,6 @@ class SetMonitoringModeResult(FrozenClass):
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SetMonitoringModeResult()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'SetMonitoringModeResult(' + 'Results:' + str(self.Results) + ', ' + \
@@ -11147,21 +7246,6 @@ class SetMonitoringModeResponse(FrozenClass):
         self.ResponseHeader = ResponseHeader()
         self.Parameters = SetMonitoringModeResult()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SetMonitoringModeResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = SetMonitoringModeResult.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'SetMonitoringModeResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -11197,27 +7281,6 @@ class SetTriggeringParameters(FrozenClass):
         self.LinksToRemove = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SubscriptionId))
-        packet.append(uabin.Primitives.UInt32.pack(self.TriggeringItemId))
-        packet.append(uabin.Primitives.Int32.pack(len(self.LinksToAdd)))
-        for fieldname in self.LinksToAdd:
-            packet.append(uabin.Primitives.UInt32.pack(fieldname))
-        packet.append(uabin.Primitives.Int32.pack(len(self.LinksToRemove)))
-        for fieldname in self.LinksToRemove:
-            packet.append(uabin.Primitives.UInt32.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SetTriggeringParameters()
-        self.SubscriptionId = uabin.Primitives.UInt32.unpack(data)
-        self.TriggeringItemId = uabin.Primitives.UInt32.unpack(data)
-        obj.LinksToAdd = uabin.Primitives.UInt32.unpack_array(data)
-        obj.LinksToRemove = uabin.Primitives.UInt32.unpack_array(data)
-        return obj
-
     def __str__(self):
         return 'SetTriggeringParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
                'TriggeringItemId:' + str(self.TriggeringItemId) + ', ' + \
@@ -11248,21 +7311,6 @@ class SetTriggeringRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = SetTriggeringParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SetTriggeringRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = SetTriggeringParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'SetTriggeringRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -11298,51 +7346,6 @@ class SetTriggeringResult(FrozenClass):
         self.RemoveDiagnosticInfos = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.AddResults)))
-        for fieldname in self.AddResults:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.AddDiagnosticInfos)))
-        for fieldname in self.AddDiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.RemoveResults)))
-        for fieldname in self.RemoveResults:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.RemoveDiagnosticInfos)))
-        for fieldname in self.RemoveDiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SetTriggeringResult()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.AddResults = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.AddDiagnosticInfos = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.RemoveResults = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.RemoveDiagnosticInfos = array
-        return obj
-
     def __str__(self):
         return 'SetTriggeringResult(' + 'AddResults:' + str(self.AddResults) + ', ' + \
                'AddDiagnosticInfos:' + str(self.AddDiagnosticInfos) + ', ' + \
@@ -11374,21 +7377,6 @@ class SetTriggeringResponse(FrozenClass):
         self.Parameters = SetTriggeringResult()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SetTriggeringResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = SetTriggeringResult.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'SetTriggeringResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -11414,21 +7402,6 @@ class DeleteMonitoredItemsParameters(FrozenClass):
         self.SubscriptionId = 0
         self.MonitoredItemIds = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SubscriptionId))
-        packet.append(uabin.Primitives.Int32.pack(len(self.MonitoredItemIds)))
-        for fieldname in self.MonitoredItemIds:
-            packet.append(uabin.Primitives.UInt32.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteMonitoredItemsParameters()
-        self.SubscriptionId = uabin.Primitives.UInt32.unpack(data)
-        obj.MonitoredItemIds = uabin.Primitives.UInt32.unpack_array(data)
-        return obj
 
     def __str__(self):
         return 'DeleteMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
@@ -11458,21 +7431,6 @@ class DeleteMonitoredItemsRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteMonitoredItemsParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteMonitoredItemsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = DeleteMonitoredItemsParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'DeleteMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -11507,37 +7465,6 @@ class DeleteMonitoredItemsResponse(FrozenClass):
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteMonitoredItemsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'DeleteMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -11582,27 +7509,6 @@ class CreateSubscriptionParameters(FrozenClass):
         self.Priority = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Double.pack(self.RequestedPublishingInterval))
-        packet.append(uabin.Primitives.UInt32.pack(self.RequestedLifetimeCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.RequestedMaxKeepAliveCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.MaxNotificationsPerPublish))
-        packet.append(uabin.Primitives.Boolean.pack(self.PublishingEnabled))
-        packet.append(uabin.Primitives.Byte.pack(self.Priority))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CreateSubscriptionParameters()
-        self.RequestedPublishingInterval = uabin.Primitives.Double.unpack(data)
-        self.RequestedLifetimeCount = uabin.Primitives.UInt32.unpack(data)
-        self.RequestedMaxKeepAliveCount = uabin.Primitives.UInt32.unpack(data)
-        self.MaxNotificationsPerPublish = uabin.Primitives.UInt32.unpack(data)
-        self.PublishingEnabled = uabin.Primitives.Boolean.unpack(data)
-        self.Priority = uabin.Primitives.Byte.unpack(data)
-        return obj
-
     def __str__(self):
         return 'CreateSubscriptionParameters(' + 'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', ' + \
                'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', ' + \
@@ -11635,21 +7541,6 @@ class CreateSubscriptionRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = CreateSubscriptionParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CreateSubscriptionRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = CreateSubscriptionParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'CreateSubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -11685,23 +7576,6 @@ class CreateSubscriptionResult(FrozenClass):
         self.RevisedMaxKeepAliveCount = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SubscriptionId))
-        packet.append(uabin.Primitives.Double.pack(self.RevisedPublishingInterval))
-        packet.append(uabin.Primitives.UInt32.pack(self.RevisedLifetimeCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.RevisedMaxKeepAliveCount))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CreateSubscriptionResult()
-        self.SubscriptionId = uabin.Primitives.UInt32.unpack(data)
-        self.RevisedPublishingInterval = uabin.Primitives.Double.unpack(data)
-        self.RevisedLifetimeCount = uabin.Primitives.UInt32.unpack(data)
-        self.RevisedMaxKeepAliveCount = uabin.Primitives.UInt32.unpack(data)
-        return obj
-
     def __str__(self):
         return 'CreateSubscriptionResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
                'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', ' + \
@@ -11732,21 +7606,6 @@ class CreateSubscriptionResponse(FrozenClass):
         self.ResponseHeader = ResponseHeader()
         self.Parameters = CreateSubscriptionResult()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = CreateSubscriptionResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = CreateSubscriptionResult.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'CreateSubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -11790,27 +7649,6 @@ class ModifySubscriptionParameters(FrozenClass):
         self.Priority = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SubscriptionId))
-        packet.append(uabin.Primitives.Double.pack(self.RequestedPublishingInterval))
-        packet.append(uabin.Primitives.UInt32.pack(self.RequestedLifetimeCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.RequestedMaxKeepAliveCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.MaxNotificationsPerPublish))
-        packet.append(uabin.Primitives.Byte.pack(self.Priority))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ModifySubscriptionParameters()
-        self.SubscriptionId = uabin.Primitives.UInt32.unpack(data)
-        self.RequestedPublishingInterval = uabin.Primitives.Double.unpack(data)
-        self.RequestedLifetimeCount = uabin.Primitives.UInt32.unpack(data)
-        self.RequestedMaxKeepAliveCount = uabin.Primitives.UInt32.unpack(data)
-        self.MaxNotificationsPerPublish = uabin.Primitives.UInt32.unpack(data)
-        self.Priority = uabin.Primitives.Byte.unpack(data)
-        return obj
-
     def __str__(self):
         return 'ModifySubscriptionParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
                'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', ' + \
@@ -11844,21 +7682,6 @@ class ModifySubscriptionRequest(FrozenClass):
         self.Parameters = ModifySubscriptionParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ModifySubscriptionRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = ModifySubscriptionParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'ModifySubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -11888,21 +7711,6 @@ class ModifySubscriptionResult(FrozenClass):
         self.RevisedLifetimeCount = 0
         self.RevisedMaxKeepAliveCount = 0
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Double.pack(self.RevisedPublishingInterval))
-        packet.append(uabin.Primitives.UInt32.pack(self.RevisedLifetimeCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.RevisedMaxKeepAliveCount))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ModifySubscriptionResult()
-        self.RevisedPublishingInterval = uabin.Primitives.Double.unpack(data)
-        self.RevisedLifetimeCount = uabin.Primitives.UInt32.unpack(data)
-        self.RevisedMaxKeepAliveCount = uabin.Primitives.UInt32.unpack(data)
-        return obj
 
     def __str__(self):
         return 'ModifySubscriptionResult(' + 'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', ' + \
@@ -11934,21 +7742,6 @@ class ModifySubscriptionResponse(FrozenClass):
         self.Parameters = ModifySubscriptionResult()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ModifySubscriptionResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = ModifySubscriptionResult.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'ModifySubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -11974,21 +7767,6 @@ class SetPublishingModeParameters(FrozenClass):
         self.PublishingEnabled = True
         self.SubscriptionIds = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Boolean.pack(self.PublishingEnabled))
-        packet.append(uabin.Primitives.Int32.pack(len(self.SubscriptionIds)))
-        for fieldname in self.SubscriptionIds:
-            packet.append(uabin.Primitives.UInt32.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SetPublishingModeParameters()
-        self.PublishingEnabled = uabin.Primitives.Boolean.unpack(data)
-        obj.SubscriptionIds = uabin.Primitives.UInt32.unpack_array(data)
-        return obj
 
     def __str__(self):
         return 'SetPublishingModeParameters(' + 'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
@@ -12019,21 +7797,6 @@ class SetPublishingModeRequest(FrozenClass):
         self.Parameters = SetPublishingModeParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SetPublishingModeRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = SetPublishingModeParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'SetPublishingModeRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -12059,33 +7822,6 @@ class SetPublishingModeResult(FrozenClass):
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SetPublishingModeResult()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'SetPublishingModeResult(' + 'Results:' + str(self.Results) + ', ' + \
@@ -12115,21 +7851,6 @@ class SetPublishingModeResponse(FrozenClass):
         self.ResponseHeader = ResponseHeader()
         self.Parameters = SetPublishingModeResult()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SetPublishingModeResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = SetPublishingModeResult.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'SetPublishingModeResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -12161,28 +7882,6 @@ class NotificationMessage(FrozenClass):
         self.NotificationData = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SequenceNumber))
-        packet.append(uabin.Primitives.DateTime.pack(self.PublishTime))
-        packet.append(uabin.Primitives.Int32.pack(len(self.NotificationData)))
-        for fieldname in self.NotificationData:
-            packet.append(uabin.extensionobject_to_binary(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = NotificationMessage()
-        self.SequenceNumber = uabin.Primitives.UInt32.unpack(data)
-        self.PublishTime = uabin.Primitives.DateTime.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(uabin.extensionobject_from_binary(data))
-        obj.NotificationData = array
-        return obj
-
     def __str__(self):
         return 'NotificationMessage(' + 'SequenceNumber:' + str(self.SequenceNumber) + ', ' + \
                'PublishTime:' + str(self.PublishTime) + ', ' + \
@@ -12200,15 +7899,6 @@ class NotificationData(FrozenClass):
 
     def __init__(self):
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = NotificationData()
-        return obj
 
     def __str__(self):
         return 'NotificationData(' +  + ')'
@@ -12233,33 +7923,6 @@ class DataChangeNotification(FrozenClass):
         self.MonitoredItems = []
         self.DiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.MonitoredItems)))
-        for fieldname in self.MonitoredItems:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DataChangeNotification()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(MonitoredItemNotification.from_binary(data))
-        obj.MonitoredItems = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'DataChangeNotification(' + 'MonitoredItems:' + str(self.MonitoredItems) + ', ' + \
@@ -12286,19 +7949,6 @@ class MonitoredItemNotification(FrozenClass):
         self.Value = DataValue()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.ClientHandle))
-        packet.append(self.Value.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = MonitoredItemNotification()
-        self.ClientHandle = uabin.Primitives.UInt32.unpack(data)
-        obj.Value = DataValue.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'MonitoredItemNotification(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
                'Value:' + str(self.Value) + ')'
@@ -12319,24 +7969,6 @@ class EventNotificationList(FrozenClass):
     def __init__(self):
         self.Events = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.Events)))
-        for fieldname in self.Events:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = EventNotificationList()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(EventFieldList.from_binary(data))
-        obj.Events = array
-        return obj
 
     def __str__(self):
         return 'EventNotificationList(' + 'Events:' + str(self.Events) + ')'
@@ -12362,26 +7994,6 @@ class EventFieldList(FrozenClass):
         self.EventFields = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.ClientHandle))
-        packet.append(uabin.Primitives.Int32.pack(len(self.EventFields)))
-        for fieldname in self.EventFields:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = EventFieldList()
-        self.ClientHandle = uabin.Primitives.UInt32.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(Variant.from_binary(data))
-        obj.EventFields = array
-        return obj
-
     def __str__(self):
         return 'EventFieldList(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
                'EventFields:' + str(self.EventFields) + ')'
@@ -12402,24 +8014,6 @@ class HistoryEventFieldList(FrozenClass):
     def __init__(self):
         self.EventFields = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.EventFields)))
-        for fieldname in self.EventFields:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = HistoryEventFieldList()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(Variant.from_binary(data))
-        obj.EventFields = array
-        return obj
 
     def __str__(self):
         return 'HistoryEventFieldList(' + 'EventFields:' + str(self.EventFields) + ')'
@@ -12444,19 +8038,6 @@ class StatusChangeNotification(FrozenClass):
         self.Status = StatusCode()
         self.DiagnosticInfo = DiagnosticInfo()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.Status.to_binary())
-        packet.append(self.DiagnosticInfo.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = StatusChangeNotification()
-        obj.Status = StatusCode.from_binary(data)
-        obj.DiagnosticInfo = DiagnosticInfo.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'StatusChangeNotification(' + 'Status:' + str(self.Status) + ', ' + \
@@ -12483,19 +8064,6 @@ class SubscriptionAcknowledgement(FrozenClass):
         self.SequenceNumber = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SubscriptionId))
-        packet.append(uabin.Primitives.UInt32.pack(self.SequenceNumber))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SubscriptionAcknowledgement()
-        self.SubscriptionId = uabin.Primitives.UInt32.unpack(data)
-        self.SequenceNumber = uabin.Primitives.UInt32.unpack(data)
-        return obj
-
     def __str__(self):
         return 'SubscriptionAcknowledgement(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
                'SequenceNumber:' + str(self.SequenceNumber) + ')'
@@ -12516,24 +8084,6 @@ class PublishParameters(FrozenClass):
     def __init__(self):
         self.SubscriptionAcknowledgements = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.SubscriptionAcknowledgements)))
-        for fieldname in self.SubscriptionAcknowledgements:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = PublishParameters()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(SubscriptionAcknowledgement.from_binary(data))
-        obj.SubscriptionAcknowledgements = array
-        return obj
 
     def __str__(self):
         return 'PublishParameters(' + 'SubscriptionAcknowledgements:' + str(self.SubscriptionAcknowledgements) + ')'
@@ -12562,21 +8112,6 @@ class PublishRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = PublishParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = PublishRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = PublishParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'PublishRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -12620,43 +8155,6 @@ class PublishResult(FrozenClass):
         self.DiagnosticInfos = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SubscriptionId))
-        packet.append(uabin.Primitives.Int32.pack(len(self.AvailableSequenceNumbers)))
-        for fieldname in self.AvailableSequenceNumbers:
-            packet.append(uabin.Primitives.UInt32.pack(fieldname))
-        packet.append(uabin.Primitives.Boolean.pack(self.MoreNotifications))
-        packet.append(self.NotificationMessage.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = PublishResult()
-        self.SubscriptionId = uabin.Primitives.UInt32.unpack(data)
-        obj.AvailableSequenceNumbers = uabin.Primitives.UInt32.unpack_array(data)
-        self.MoreNotifications = uabin.Primitives.Boolean.unpack(data)
-        obj.NotificationMessage = NotificationMessage.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
-
     def __str__(self):
         return 'PublishResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
                'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ', ' + \
@@ -12690,21 +8188,6 @@ class PublishResponse(FrozenClass):
         self.Parameters = PublishResult()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = PublishResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = PublishResult.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'PublishResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -12730,19 +8213,6 @@ class RepublishParameters(FrozenClass):
         self.SubscriptionId = 0
         self.RetransmitSequenceNumber = 0
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.SubscriptionId))
-        packet.append(uabin.Primitives.UInt32.pack(self.RetransmitSequenceNumber))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RepublishParameters()
-        self.SubscriptionId = uabin.Primitives.UInt32.unpack(data)
-        self.RetransmitSequenceNumber = uabin.Primitives.UInt32.unpack(data)
-        return obj
 
     def __str__(self):
         return 'RepublishParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
@@ -12772,21 +8242,6 @@ class RepublishRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = RepublishParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RepublishRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = RepublishParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'RepublishRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -12818,21 +8273,6 @@ class RepublishResponse(FrozenClass):
         self.NotificationMessage = NotificationMessage()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.NotificationMessage.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RepublishResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.NotificationMessage = NotificationMessage.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'RepublishResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -12859,21 +8299,6 @@ class TransferResult(FrozenClass):
         self.AvailableSequenceNumbers = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.StatusCode.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.AvailableSequenceNumbers)))
-        for fieldname in self.AvailableSequenceNumbers:
-            packet.append(uabin.Primitives.UInt32.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = TransferResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        obj.AvailableSequenceNumbers = uabin.Primitives.UInt32.unpack_array(data)
-        return obj
-
     def __str__(self):
         return 'TransferResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
                'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ')'
@@ -12898,21 +8323,6 @@ class TransferSubscriptionsParameters(FrozenClass):
         self.SubscriptionIds = []
         self.SendInitialValues = True
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.SubscriptionIds)))
-        for fieldname in self.SubscriptionIds:
-            packet.append(uabin.Primitives.UInt32.pack(fieldname))
-        packet.append(uabin.Primitives.Boolean.pack(self.SendInitialValues))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = TransferSubscriptionsParameters()
-        obj.SubscriptionIds = uabin.Primitives.UInt32.unpack_array(data)
-        self.SendInitialValues = uabin.Primitives.Boolean.unpack(data)
-        return obj
 
     def __str__(self):
         return 'TransferSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ', ' + \
@@ -12943,21 +8353,6 @@ class TransferSubscriptionsRequest(FrozenClass):
         self.Parameters = TransferSubscriptionsParameters()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = TransferSubscriptionsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = TransferSubscriptionsParameters.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'TransferSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'RequestHeader:' + str(self.RequestHeader) + ', ' + \
@@ -12983,33 +8378,6 @@ class TransferSubscriptionsResult(FrozenClass):
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = TransferSubscriptionsResult()
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(TransferResult.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'TransferSubscriptionsResult(' + 'Results:' + str(self.Results) + ', ' + \
@@ -13040,21 +8408,6 @@ class TransferSubscriptionsResponse(FrozenClass):
         self.Parameters = TransferSubscriptionsResult()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = TransferSubscriptionsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        obj.Parameters = TransferSubscriptionsResult.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'TransferSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
@@ -13076,19 +8429,6 @@ class DeleteSubscriptionsParameters(FrozenClass):
     def __init__(self):
         self.SubscriptionIds = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.SubscriptionIds)))
-        for fieldname in self.SubscriptionIds:
-            packet.append(uabin.Primitives.UInt32.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteSubscriptionsParameters()
-        obj.SubscriptionIds = uabin.Primitives.UInt32.unpack_array(data)
-        return obj
 
     def __str__(self):
         return 'DeleteSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
@@ -13117,21 +8457,6 @@ class DeleteSubscriptionsRequest(FrozenClass):
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteSubscriptionsParameters()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.RequestHeader.to_binary())
-        packet.append(self.Parameters.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteSubscriptionsRequest()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.RequestHeader = RequestHeader.from_binary(data)
-        obj.Parameters = DeleteSubscriptionsParameters.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'DeleteSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -13166,37 +8491,6 @@ class DeleteSubscriptionsResponse(FrozenClass):
         self.Results = []
         self.DiagnosticInfos = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.TypeId.to_binary())
-        packet.append(self.ResponseHeader.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.Results)))
-        for fieldname in self.Results:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.DiagnosticInfos)))
-        for fieldname in self.DiagnosticInfos:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DeleteSubscriptionsResponse()
-        obj.TypeId = NodeId.from_binary(data)
-        obj.ResponseHeader = ResponseHeader.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(StatusCode.from_binary(data))
-        obj.Results = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(DiagnosticInfo.from_binary(data))
-        obj.DiagnosticInfos = array
-        return obj
 
     def __str__(self):
         return 'DeleteSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -13241,27 +8535,6 @@ class BuildInfo(FrozenClass):
         self.BuildDate = datetime.utcnow()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.ProductUri))
-        packet.append(uabin.Primitives.String.pack(self.ManufacturerName))
-        packet.append(uabin.Primitives.String.pack(self.ProductName))
-        packet.append(uabin.Primitives.String.pack(self.SoftwareVersion))
-        packet.append(uabin.Primitives.String.pack(self.BuildNumber))
-        packet.append(uabin.Primitives.DateTime.pack(self.BuildDate))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = BuildInfo()
-        self.ProductUri = uabin.Primitives.String.unpack(data)
-        self.ManufacturerName = uabin.Primitives.String.unpack(data)
-        self.ProductName = uabin.Primitives.String.unpack(data)
-        self.SoftwareVersion = uabin.Primitives.String.unpack(data)
-        self.BuildNumber = uabin.Primitives.String.unpack(data)
-        self.BuildDate = uabin.Primitives.DateTime.unpack(data)
-        return obj
-
     def __str__(self):
         return 'BuildInfo(' + 'ProductUri:' + str(self.ProductUri) + ', ' + \
                'ManufacturerName:' + str(self.ManufacturerName) + ', ' + \
@@ -13295,21 +8568,6 @@ class RedundantServerDataType(FrozenClass):
         self.ServerState = ServerState(0)
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.ServerId))
-        packet.append(uabin.Primitives.Byte.pack(self.ServiceLevel))
-        packet.append(uabin.Primitives.UInt32.pack(self.ServerState.value))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = RedundantServerDataType()
-        self.ServerId = uabin.Primitives.String.unpack(data)
-        self.ServiceLevel = uabin.Primitives.Byte.unpack(data)
-        self.ServerState = ServerState(uabin.Primitives.UInt32.unpack(data))
-        return obj
-
     def __str__(self):
         return 'RedundantServerDataType(' + 'ServerId:' + str(self.ServerId) + ', ' + \
                'ServiceLevel:' + str(self.ServiceLevel) + ', ' + \
@@ -13331,19 +8589,6 @@ class EndpointUrlListDataType(FrozenClass):
     def __init__(self):
         self.EndpointUrlList = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Int32.pack(len(self.EndpointUrlList)))
-        for fieldname in self.EndpointUrlList:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = EndpointUrlListDataType()
-        obj.EndpointUrlList = uabin.Primitives.String.unpack_array(data)
-        return obj
 
     def __str__(self):
         return 'EndpointUrlListDataType(' + 'EndpointUrlList:' + str(self.EndpointUrlList) + ')'
@@ -13368,26 +8613,6 @@ class NetworkGroupDataType(FrozenClass):
         self.ServerUri = None
         self.NetworkPaths = []
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.ServerUri))
-        packet.append(uabin.Primitives.Int32.pack(len(self.NetworkPaths)))
-        for fieldname in self.NetworkPaths:
-            packet.append(fieldname.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = NetworkGroupDataType()
-        self.ServerUri = uabin.Primitives.String.unpack(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(EndpointUrlListDataType.from_binary(data))
-        obj.NetworkPaths = array
-        return obj
 
     def __str__(self):
         return 'NetworkGroupDataType(' + 'ServerUri:' + str(self.ServerUri) + ', ' + \
@@ -13421,23 +8646,6 @@ class SamplingIntervalDiagnosticsDataType(FrozenClass):
         self.MaxMonitoredItemCount = 0
         self.DisabledMonitoredItemCount = 0
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Double.pack(self.SamplingInterval))
-        packet.append(uabin.Primitives.UInt32.pack(self.MonitoredItemCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.MaxMonitoredItemCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.DisabledMonitoredItemCount))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SamplingIntervalDiagnosticsDataType()
-        self.SamplingInterval = uabin.Primitives.Double.unpack(data)
-        self.MonitoredItemCount = uabin.Primitives.UInt32.unpack(data)
-        self.MaxMonitoredItemCount = uabin.Primitives.UInt32.unpack(data)
-        self.DisabledMonitoredItemCount = uabin.Primitives.UInt32.unpack(data)
-        return obj
 
     def __str__(self):
         return 'SamplingIntervalDiagnosticsDataType(' + 'SamplingInterval:' + str(self.SamplingInterval) + ', ' + \
@@ -13506,39 +8714,6 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
         self.RejectedRequestsCount = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.ServerViewCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.CurrentSessionCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.CumulatedSessionCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.SecurityRejectedSessionCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.RejectedSessionCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.SessionTimeoutCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.SessionAbortCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.CurrentSubscriptionCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.CumulatedSubscriptionCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.PublishingIntervalCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.SecurityRejectedRequestsCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.RejectedRequestsCount))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ServerDiagnosticsSummaryDataType()
-        self.ServerViewCount = uabin.Primitives.UInt32.unpack(data)
-        self.CurrentSessionCount = uabin.Primitives.UInt32.unpack(data)
-        self.CumulatedSessionCount = uabin.Primitives.UInt32.unpack(data)
-        self.SecurityRejectedSessionCount = uabin.Primitives.UInt32.unpack(data)
-        self.RejectedSessionCount = uabin.Primitives.UInt32.unpack(data)
-        self.SessionTimeoutCount = uabin.Primitives.UInt32.unpack(data)
-        self.SessionAbortCount = uabin.Primitives.UInt32.unpack(data)
-        self.CurrentSubscriptionCount = uabin.Primitives.UInt32.unpack(data)
-        self.CumulatedSubscriptionCount = uabin.Primitives.UInt32.unpack(data)
-        self.PublishingIntervalCount = uabin.Primitives.UInt32.unpack(data)
-        self.SecurityRejectedRequestsCount = uabin.Primitives.UInt32.unpack(data)
-        self.RejectedRequestsCount = uabin.Primitives.UInt32.unpack(data)
-        return obj
-
     def __str__(self):
         return 'ServerDiagnosticsSummaryDataType(' + 'ServerViewCount:' + str(self.ServerViewCount) + ', ' + \
                'CurrentSessionCount:' + str(self.CurrentSessionCount) + ', ' + \
@@ -13589,27 +8764,6 @@ class ServerStatusDataType(FrozenClass):
         self.SecondsTillShutdown = 0
         self.ShutdownReason = LocalizedText()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.DateTime.pack(self.StartTime))
-        packet.append(uabin.Primitives.DateTime.pack(self.CurrentTime))
-        packet.append(uabin.Primitives.UInt32.pack(self.State.value))
-        packet.append(self.BuildInfo.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.SecondsTillShutdown))
-        packet.append(self.ShutdownReason.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ServerStatusDataType()
-        self.StartTime = uabin.Primitives.DateTime.unpack(data)
-        self.CurrentTime = uabin.Primitives.DateTime.unpack(data)
-        self.State = ServerState(uabin.Primitives.UInt32.unpack(data))
-        obj.BuildInfo = BuildInfo.from_binary(data)
-        self.SecondsTillShutdown = uabin.Primitives.UInt32.unpack(data)
-        obj.ShutdownReason = LocalizedText.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'ServerStatusDataType(' + 'StartTime:' + str(self.StartTime) + ', ' + \
@@ -13804,103 +8958,6 @@ class SessionDiagnosticsDataType(FrozenClass):
         self.UnregisterNodesCount = ServiceCounterDataType()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.SessionId.to_binary())
-        packet.append(uabin.Primitives.String.pack(self.SessionName))
-        packet.append(self.ClientDescription.to_binary())
-        packet.append(uabin.Primitives.String.pack(self.ServerUri))
-        packet.append(uabin.Primitives.String.pack(self.EndpointUrl))
-        packet.append(uabin.Primitives.Int32.pack(len(self.LocaleIds)))
-        for fieldname in self.LocaleIds:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        packet.append(uabin.Primitives.Double.pack(self.ActualSessionTimeout))
-        packet.append(uabin.Primitives.UInt32.pack(self.MaxResponseMessageSize))
-        packet.append(uabin.Primitives.DateTime.pack(self.ClientConnectionTime))
-        packet.append(uabin.Primitives.DateTime.pack(self.ClientLastContactTime))
-        packet.append(uabin.Primitives.UInt32.pack(self.CurrentSubscriptionsCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.CurrentMonitoredItemsCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.CurrentPublishRequestsInQueue))
-        packet.append(self.TotalRequestCount.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.UnauthorizedRequestCount))
-        packet.append(self.ReadCount.to_binary())
-        packet.append(self.HistoryReadCount.to_binary())
-        packet.append(self.WriteCount.to_binary())
-        packet.append(self.HistoryUpdateCount.to_binary())
-        packet.append(self.CallCount.to_binary())
-        packet.append(self.CreateMonitoredItemsCount.to_binary())
-        packet.append(self.ModifyMonitoredItemsCount.to_binary())
-        packet.append(self.SetMonitoringModeCount.to_binary())
-        packet.append(self.SetTriggeringCount.to_binary())
-        packet.append(self.DeleteMonitoredItemsCount.to_binary())
-        packet.append(self.CreateSubscriptionCount.to_binary())
-        packet.append(self.ModifySubscriptionCount.to_binary())
-        packet.append(self.SetPublishingModeCount.to_binary())
-        packet.append(self.PublishCount.to_binary())
-        packet.append(self.RepublishCount.to_binary())
-        packet.append(self.TransferSubscriptionsCount.to_binary())
-        packet.append(self.DeleteSubscriptionsCount.to_binary())
-        packet.append(self.AddNodesCount.to_binary())
-        packet.append(self.AddReferencesCount.to_binary())
-        packet.append(self.DeleteNodesCount.to_binary())
-        packet.append(self.DeleteReferencesCount.to_binary())
-        packet.append(self.BrowseCount.to_binary())
-        packet.append(self.BrowseNextCount.to_binary())
-        packet.append(self.TranslateBrowsePathsToNodeIdsCount.to_binary())
-        packet.append(self.QueryFirstCount.to_binary())
-        packet.append(self.QueryNextCount.to_binary())
-        packet.append(self.RegisterNodesCount.to_binary())
-        packet.append(self.UnregisterNodesCount.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SessionDiagnosticsDataType()
-        obj.SessionId = NodeId.from_binary(data)
-        self.SessionName = uabin.Primitives.String.unpack(data)
-        obj.ClientDescription = ApplicationDescription.from_binary(data)
-        self.ServerUri = uabin.Primitives.String.unpack(data)
-        self.EndpointUrl = uabin.Primitives.String.unpack(data)
-        obj.LocaleIds = uabin.Primitives.String.unpack_array(data)
-        self.ActualSessionTimeout = uabin.Primitives.Double.unpack(data)
-        self.MaxResponseMessageSize = uabin.Primitives.UInt32.unpack(data)
-        self.ClientConnectionTime = uabin.Primitives.DateTime.unpack(data)
-        self.ClientLastContactTime = uabin.Primitives.DateTime.unpack(data)
-        self.CurrentSubscriptionsCount = uabin.Primitives.UInt32.unpack(data)
-        self.CurrentMonitoredItemsCount = uabin.Primitives.UInt32.unpack(data)
-        self.CurrentPublishRequestsInQueue = uabin.Primitives.UInt32.unpack(data)
-        obj.TotalRequestCount = ServiceCounterDataType.from_binary(data)
-        self.UnauthorizedRequestCount = uabin.Primitives.UInt32.unpack(data)
-        obj.ReadCount = ServiceCounterDataType.from_binary(data)
-        obj.HistoryReadCount = ServiceCounterDataType.from_binary(data)
-        obj.WriteCount = ServiceCounterDataType.from_binary(data)
-        obj.HistoryUpdateCount = ServiceCounterDataType.from_binary(data)
-        obj.CallCount = ServiceCounterDataType.from_binary(data)
-        obj.CreateMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
-        obj.ModifyMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
-        obj.SetMonitoringModeCount = ServiceCounterDataType.from_binary(data)
-        obj.SetTriggeringCount = ServiceCounterDataType.from_binary(data)
-        obj.DeleteMonitoredItemsCount = ServiceCounterDataType.from_binary(data)
-        obj.CreateSubscriptionCount = ServiceCounterDataType.from_binary(data)
-        obj.ModifySubscriptionCount = ServiceCounterDataType.from_binary(data)
-        obj.SetPublishingModeCount = ServiceCounterDataType.from_binary(data)
-        obj.PublishCount = ServiceCounterDataType.from_binary(data)
-        obj.RepublishCount = ServiceCounterDataType.from_binary(data)
-        obj.TransferSubscriptionsCount = ServiceCounterDataType.from_binary(data)
-        obj.DeleteSubscriptionsCount = ServiceCounterDataType.from_binary(data)
-        obj.AddNodesCount = ServiceCounterDataType.from_binary(data)
-        obj.AddReferencesCount = ServiceCounterDataType.from_binary(data)
-        obj.DeleteNodesCount = ServiceCounterDataType.from_binary(data)
-        obj.DeleteReferencesCount = ServiceCounterDataType.from_binary(data)
-        obj.BrowseCount = ServiceCounterDataType.from_binary(data)
-        obj.BrowseNextCount = ServiceCounterDataType.from_binary(data)
-        obj.TranslateBrowsePathsToNodeIdsCount = ServiceCounterDataType.from_binary(data)
-        obj.QueryFirstCount = ServiceCounterDataType.from_binary(data)
-        obj.QueryNextCount = ServiceCounterDataType.from_binary(data)
-        obj.RegisterNodesCount = ServiceCounterDataType.from_binary(data)
-        obj.UnregisterNodesCount = ServiceCounterDataType.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'SessionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
                'SessionName:' + str(self.SessionName) + ', ' + \
@@ -13995,35 +9052,6 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
         self.ClientCertificate = None
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.SessionId.to_binary())
-        packet.append(uabin.Primitives.String.pack(self.ClientUserIdOfSession))
-        packet.append(uabin.Primitives.Int32.pack(len(self.ClientUserIdHistory)))
-        for fieldname in self.ClientUserIdHistory:
-            packet.append(uabin.Primitives.String.pack(fieldname))
-        packet.append(uabin.Primitives.String.pack(self.AuthenticationMechanism))
-        packet.append(uabin.Primitives.String.pack(self.Encoding))
-        packet.append(uabin.Primitives.String.pack(self.TransportProtocol))
-        packet.append(uabin.Primitives.UInt32.pack(self.SecurityMode.value))
-        packet.append(uabin.Primitives.String.pack(self.SecurityPolicyUri))
-        packet.append(uabin.Primitives.ByteString.pack(self.ClientCertificate))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SessionSecurityDiagnosticsDataType()
-        obj.SessionId = NodeId.from_binary(data)
-        self.ClientUserIdOfSession = uabin.Primitives.String.unpack(data)
-        obj.ClientUserIdHistory = uabin.Primitives.String.unpack_array(data)
-        self.AuthenticationMechanism = uabin.Primitives.String.unpack(data)
-        self.Encoding = uabin.Primitives.String.unpack(data)
-        self.TransportProtocol = uabin.Primitives.String.unpack(data)
-        self.SecurityMode = MessageSecurityMode(uabin.Primitives.UInt32.unpack(data))
-        self.SecurityPolicyUri = uabin.Primitives.String.unpack(data)
-        self.ClientCertificate = uabin.Primitives.ByteString.unpack(data)
-        return obj
-
     def __str__(self):
         return 'SessionSecurityDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
                'ClientUserIdOfSession:' + str(self.ClientUserIdOfSession) + ', ' + \
@@ -14056,19 +9084,6 @@ class ServiceCounterDataType(FrozenClass):
         self.ErrorCount = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.UInt32.pack(self.TotalCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.ErrorCount))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ServiceCounterDataType()
-        self.TotalCount = uabin.Primitives.UInt32.unpack(data)
-        self.ErrorCount = uabin.Primitives.UInt32.unpack(data)
-        return obj
-
     def __str__(self):
         return 'ServiceCounterDataType(' + 'TotalCount:' + str(self.TotalCount) + ', ' + \
                'ErrorCount:' + str(self.ErrorCount) + ')'
@@ -14093,19 +9108,6 @@ class StatusResult(FrozenClass):
         self.StatusCode = StatusCode()
         self.DiagnosticInfo = DiagnosticInfo()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(self.StatusCode.to_binary())
-        packet.append(self.DiagnosticInfo.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = StatusResult()
-        obj.StatusCode = StatusCode.from_binary(data)
-        obj.DiagnosticInfo = DiagnosticInfo.from_binary(data)
-        return obj
 
     def __str__(self):
         return 'StatusResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
@@ -14248,77 +9250,6 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
         self.EventQueueOverFlowCount = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.SessionId.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.SubscriptionId))
-        packet.append(uabin.Primitives.Byte.pack(self.Priority))
-        packet.append(uabin.Primitives.Double.pack(self.PublishingInterval))
-        packet.append(uabin.Primitives.UInt32.pack(self.MaxKeepAliveCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.MaxLifetimeCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.MaxNotificationsPerPublish))
-        packet.append(uabin.Primitives.Boolean.pack(self.PublishingEnabled))
-        packet.append(uabin.Primitives.UInt32.pack(self.ModifyCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.EnableCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.DisableCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.RepublishRequestCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.RepublishMessageRequestCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.RepublishMessageCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.TransferRequestCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.TransferredToAltClientCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.TransferredToSameClientCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.PublishRequestCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.DataChangeNotificationsCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.EventNotificationsCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.NotificationsCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.LatePublishRequestCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.CurrentKeepAliveCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.CurrentLifetimeCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.UnacknowledgedMessageCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.DiscardedMessageCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.MonitoredItemCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.DisabledMonitoredItemCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.MonitoringQueueOverflowCount))
-        packet.append(uabin.Primitives.UInt32.pack(self.NextSequenceNumber))
-        packet.append(uabin.Primitives.UInt32.pack(self.EventQueueOverFlowCount))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SubscriptionDiagnosticsDataType()
-        obj.SessionId = NodeId.from_binary(data)
-        self.SubscriptionId = uabin.Primitives.UInt32.unpack(data)
-        self.Priority = uabin.Primitives.Byte.unpack(data)
-        self.PublishingInterval = uabin.Primitives.Double.unpack(data)
-        self.MaxKeepAliveCount = uabin.Primitives.UInt32.unpack(data)
-        self.MaxLifetimeCount = uabin.Primitives.UInt32.unpack(data)
-        self.MaxNotificationsPerPublish = uabin.Primitives.UInt32.unpack(data)
-        self.PublishingEnabled = uabin.Primitives.Boolean.unpack(data)
-        self.ModifyCount = uabin.Primitives.UInt32.unpack(data)
-        self.EnableCount = uabin.Primitives.UInt32.unpack(data)
-        self.DisableCount = uabin.Primitives.UInt32.unpack(data)
-        self.RepublishRequestCount = uabin.Primitives.UInt32.unpack(data)
-        self.RepublishMessageRequestCount = uabin.Primitives.UInt32.unpack(data)
-        self.RepublishMessageCount = uabin.Primitives.UInt32.unpack(data)
-        self.TransferRequestCount = uabin.Primitives.UInt32.unpack(data)
-        self.TransferredToAltClientCount = uabin.Primitives.UInt32.unpack(data)
-        self.TransferredToSameClientCount = uabin.Primitives.UInt32.unpack(data)
-        self.PublishRequestCount = uabin.Primitives.UInt32.unpack(data)
-        self.DataChangeNotificationsCount = uabin.Primitives.UInt32.unpack(data)
-        self.EventNotificationsCount = uabin.Primitives.UInt32.unpack(data)
-        self.NotificationsCount = uabin.Primitives.UInt32.unpack(data)
-        self.LatePublishRequestCount = uabin.Primitives.UInt32.unpack(data)
-        self.CurrentKeepAliveCount = uabin.Primitives.UInt32.unpack(data)
-        self.CurrentLifetimeCount = uabin.Primitives.UInt32.unpack(data)
-        self.UnacknowledgedMessageCount = uabin.Primitives.UInt32.unpack(data)
-        self.DiscardedMessageCount = uabin.Primitives.UInt32.unpack(data)
-        self.MonitoredItemCount = uabin.Primitives.UInt32.unpack(data)
-        self.DisabledMonitoredItemCount = uabin.Primitives.UInt32.unpack(data)
-        self.MonitoringQueueOverflowCount = uabin.Primitives.UInt32.unpack(data)
-        self.NextSequenceNumber = uabin.Primitives.UInt32.unpack(data)
-        self.EventQueueOverFlowCount = uabin.Primitives.UInt32.unpack(data)
-        return obj
-
     def __str__(self):
         return 'SubscriptionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
                'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
@@ -14377,21 +9308,6 @@ class ModelChangeStructureDataType(FrozenClass):
         self.Verb = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.Affected.to_binary())
-        packet.append(self.AffectedType.to_binary())
-        packet.append(uabin.Primitives.Byte.pack(self.Verb))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ModelChangeStructureDataType()
-        obj.Affected = NodeId.from_binary(data)
-        obj.AffectedType = NodeId.from_binary(data)
-        self.Verb = uabin.Primitives.Byte.unpack(data)
-        return obj
-
     def __str__(self):
         return 'ModelChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', ' + \
                'AffectedType:' + str(self.AffectedType) + ', ' + \
@@ -14418,19 +9334,6 @@ class SemanticChangeStructureDataType(FrozenClass):
         self.AffectedType = NodeId()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.Affected.to_binary())
-        packet.append(self.AffectedType.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = SemanticChangeStructureDataType()
-        obj.Affected = NodeId.from_binary(data)
-        obj.AffectedType = NodeId.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'SemanticChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', ' + \
                'AffectedType:' + str(self.AffectedType) + ')'
@@ -14455,19 +9358,6 @@ class Range(FrozenClass):
         self.Low = 0
         self.High = 0
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Double.pack(self.Low))
-        packet.append(uabin.Primitives.Double.pack(self.High))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = Range()
-        self.Low = uabin.Primitives.Double.unpack(data)
-        self.High = uabin.Primitives.Double.unpack(data)
-        return obj
 
     def __str__(self):
         return 'Range(' + 'Low:' + str(self.Low) + ', ' + \
@@ -14502,23 +9392,6 @@ class EUInformation(FrozenClass):
         self.Description = LocalizedText()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.NamespaceUri))
-        packet.append(uabin.Primitives.Int32.pack(self.UnitId))
-        packet.append(self.DisplayName.to_binary())
-        packet.append(self.Description.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = EUInformation()
-        self.NamespaceUri = uabin.Primitives.String.unpack(data)
-        self.UnitId = uabin.Primitives.Int32.unpack(data)
-        obj.DisplayName = LocalizedText.from_binary(data)
-        obj.Description = LocalizedText.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'EUInformation(' + 'NamespaceUri:' + str(self.NamespaceUri) + ', ' + \
                'UnitId:' + str(self.UnitId) + ', ' + \
@@ -14546,19 +9419,6 @@ class ComplexNumberType(FrozenClass):
         self.Imaginary = 0
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Float.pack(self.Real))
-        packet.append(uabin.Primitives.Float.pack(self.Imaginary))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ComplexNumberType()
-        self.Real = uabin.Primitives.Float.unpack(data)
-        self.Imaginary = uabin.Primitives.Float.unpack(data)
-        return obj
-
     def __str__(self):
         return 'ComplexNumberType(' + 'Real:' + str(self.Real) + ', ' + \
                'Imaginary:' + str(self.Imaginary) + ')'
@@ -14583,19 +9443,6 @@ class DoubleComplexNumberType(FrozenClass):
         self.Real = 0
         self.Imaginary = 0
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Double.pack(self.Real))
-        packet.append(uabin.Primitives.Double.pack(self.Imaginary))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = DoubleComplexNumberType()
-        self.Real = uabin.Primitives.Double.unpack(data)
-        self.Imaginary = uabin.Primitives.Double.unpack(data)
-        return obj
 
     def __str__(self):
         return 'DoubleComplexNumberType(' + 'Real:' + str(self.Real) + ', ' + \
@@ -14634,27 +9481,6 @@ class AxisInformation(FrozenClass):
         self.AxisSteps = []
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.EngineeringUnits.to_binary())
-        packet.append(self.EURange.to_binary())
-        packet.append(self.Title.to_binary())
-        packet.append(uabin.Primitives.UInt32.pack(self.AxisScaleType.value))
-        packet.append(uabin.Primitives.Int32.pack(len(self.AxisSteps)))
-        for fieldname in self.AxisSteps:
-            packet.append(uabin.Primitives.Double.pack(fieldname))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = AxisInformation()
-        obj.EngineeringUnits = EUInformation.from_binary(data)
-        obj.EURange = Range.from_binary(data)
-        obj.Title = LocalizedText.from_binary(data)
-        self.AxisScaleType = AxisScaleEnumeration(uabin.Primitives.UInt32.unpack(data))
-        obj.AxisSteps = uabin.Primitives.Double.unpack_array(data)
-        return obj
-
     def __str__(self):
         return 'AxisInformation(' + 'EngineeringUnits:' + str(self.EngineeringUnits) + ', ' + \
                'EURange:' + str(self.EURange) + ', ' + \
@@ -14682,19 +9508,6 @@ class XVType(FrozenClass):
         self.X = 0
         self.Value = 0
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.Double.pack(self.X))
-        packet.append(uabin.Primitives.Float.pack(self.Value))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = XVType()
-        self.X = uabin.Primitives.Double.unpack(data)
-        self.Value = uabin.Primitives.Float.unpack(data)
-        return obj
 
     def __str__(self):
         return 'XVType(' + 'X:' + str(self.X) + ', ' + \
@@ -14753,49 +9566,6 @@ class ProgramDiagnosticDataType(FrozenClass):
         self.LastMethodReturnStatus = StatusResult()
         self._freeze = True
 
-    def to_binary(self):
-        packet = []
-        packet.append(self.CreateSessionId.to_binary())
-        packet.append(uabin.Primitives.String.pack(self.CreateClientName))
-        packet.append(uabin.Primitives.DateTime.pack(self.InvocationCreationTime))
-        packet.append(uabin.Primitives.DateTime.pack(self.LastTransitionTime))
-        packet.append(uabin.Primitives.String.pack(self.LastMethodCall))
-        packet.append(self.LastMethodSessionId.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.LastMethodInputArguments)))
-        for fieldname in self.LastMethodInputArguments:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.Int32.pack(len(self.LastMethodOutputArguments)))
-        for fieldname in self.LastMethodOutputArguments:
-            packet.append(fieldname.to_binary())
-        packet.append(uabin.Primitives.DateTime.pack(self.LastMethodCallTime))
-        packet.append(self.LastMethodReturnStatus.to_binary())
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = ProgramDiagnosticDataType()
-        obj.CreateSessionId = NodeId.from_binary(data)
-        self.CreateClientName = uabin.Primitives.String.unpack(data)
-        self.InvocationCreationTime = uabin.Primitives.DateTime.unpack(data)
-        self.LastTransitionTime = uabin.Primitives.DateTime.unpack(data)
-        self.LastMethodCall = uabin.Primitives.String.unpack(data)
-        obj.LastMethodSessionId = NodeId.from_binary(data)
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(Argument.from_binary(data))
-        obj.LastMethodInputArguments = array
-        length = uabin.Primitives.Int32.unpack(data)
-        array = []
-        if length != -1:
-            for _ in range(0, length):
-                array.append(Argument.from_binary(data))
-        obj.LastMethodOutputArguments = array
-        self.LastMethodCallTime = uabin.Primitives.DateTime.unpack(data)
-        obj.LastMethodReturnStatus = StatusResult.from_binary(data)
-        return obj
-
     def __str__(self):
         return 'ProgramDiagnosticDataType(' + 'CreateSessionId:' + str(self.CreateSessionId) + ', ' + \
                'CreateClientName:' + str(self.CreateClientName) + ', ' + \
@@ -14832,21 +9602,6 @@ class Annotation(FrozenClass):
         self.UserName = None
         self.AnnotationTime = datetime.utcnow()
         self._freeze = True
-
-    def to_binary(self):
-        packet = []
-        packet.append(uabin.Primitives.String.pack(self.Message))
-        packet.append(uabin.Primitives.String.pack(self.UserName))
-        packet.append(uabin.Primitives.DateTime.pack(self.AnnotationTime))
-        return b''.join(packet)
-
-    @staticmethod
-    def from_binary(data):
-        obj = Annotation()
-        self.Message = uabin.Primitives.String.unpack(data)
-        self.UserName = uabin.Primitives.String.unpack(data)
-        self.AnnotationTime = uabin.Primitives.DateTime.unpack(data)
-        return obj
 
     def __str__(self):
         return 'Annotation(' + 'Message:' + str(self.Message) + ', ' + \
