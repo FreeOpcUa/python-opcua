@@ -281,10 +281,9 @@ def unpack_uatype(vtype, data):
     elif vtype.name == "ExtensionObject":
         return extensionobject_from_binary(data)
     else:
-        from opcua.ua import uatypes
-        if hasattr(uatypes, vtype.name):
-            klass = getattr(uatypes, vtype.name)
-            return klass.from_binary(data)
+        if hasattr(ua.uatypes, vtype.name):
+            klass = getattr(ua.uatypes, vtype.name)
+            return from_binary(klass, data)
         else:
             raise UaError("can not unpack unknown vtype {0!s}".format(vtype))
 
@@ -301,17 +300,6 @@ def unpack_uatype_array(vtype, data):
             return [unpack_uatype(vtype, data) for _ in range(length)]
 
 
-"""
-def to_binary(obj):
-    if isintance(obj, NodeId):
-        return nodeid_to_binary(obj)
-    elif hasattr(val, "ua_types"):
-        return to_binary(val)
-    else:
-        raise ValueError("Do not know how to convert {} to binary: {}".format(type(obj), obj))
-"""
-
-
 def struct_to_binary(obj):
     packet = []
     has_switch = hasattr(obj, "ua_switches")
@@ -319,13 +307,11 @@ def struct_to_binary(obj):
         for name, switch in obj.ua_switches.items():
             member = getattr(obj, name)
             container_name, idx = switch
-            print("Test for", name, member)
             if member is not None:
                 container_val = getattr(obj, container_name)
                 container_val = container_val | 1 << idx
                 setattr(obj, container_name, container_val)
     for name, uatype in obj.ua_types:
-        print(name, uatype)
         val = getattr(obj, name)
         if uatype.startswith("ListOf"):
             packet.append(list_to_binary(val, uatype[6:]))
@@ -333,13 +319,11 @@ def struct_to_binary(obj):
             if has_switch and val is None and name in obj.ua_switches:
                 pass
             else:
-                print("append", val, uatype)
                 packet.append(to_binary(val, uatype))
     return b''.join(packet)
 
 
 def to_binary(val, uatype=None):
-    print("TB", val, uatype)
     if isinstance(uatype, (str, unicode)) and hasattr(Primitives, uatype):
         st = getattr(Primitives, uatype)
         return st.pack(val)
@@ -530,14 +514,14 @@ def extensionobject_to_binary(obj):
 
 
 def from_binary(uatype, data):
-    print("FROM BIN", uatype, data)
     if isinstance(uatype, (str, unicode)) and uatype.startswith("ListOf"):
         size = Primitives.Int32.unpack(data)
+        if size == -1:
+            return None
         res = []
         for _ in range(size):
             res.append(from_binary(uatype[6:], data))
         return res
-
     elif isinstance(uatype, (str, unicode)) and hasattr(Primitives, uatype):
         st = getattr(Primitives, uatype)
         res = st.unpack(data)
@@ -547,21 +531,18 @@ def from_binary(uatype, data):
         return nodeid_from_binary(data)
     elif uatype == ua.Variant or uatype == "Variant":
         return variant_from_binary(data)
+    elif uatype == ua.ExtensionObject or uatype == "ExtensionObject":
+        return extensionobject_from_binary(data)
     else:
         return struct_from_binary(uatype, data)
 
 
 def struct_from_binary(objtype, data):
-    print("\nSfB", objtype, data, "\n")
     if isinstance(objtype, (unicode, str)):
         objtype = getattr(ua, objtype)
-    print("OBJTYPE", objtype, type(objtype))
     if issubclass(objtype, Enum):
         return objtype(Primitives.UInt32.unpack(data))
     obj = objtype()
-    print("LOOK", obj.ua_types)
-    for name, uatype in obj.ua_types:
-        print("AN", name, uatype)
     for name, uatype in obj.ua_types:
         # if our member has a swtich and it is not set we skip it
         if hasattr(obj, "ua_switches") and name in obj.ua_switches:
@@ -571,7 +552,6 @@ def struct_from_binary(objtype, data):
                 continue
         val = from_binary(uatype, data) 
         setattr(obj, name, val)
-    print("RET", obj)
     return obj
 
 
