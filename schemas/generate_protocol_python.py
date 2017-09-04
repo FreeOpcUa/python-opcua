@@ -3,12 +3,10 @@ IgnoredEnums = ["NodeIdType"]
 IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "ExtensionObject", "XmlElement"]
 
 class Primitives1(object):
-    Int8 = 0
     SByte = 0
     Int16 = 0
     Int32 = 0
     Int64 = 0
-    UInt8 = 0
     Char = 0
     Byte = 0
     UInt16 = 0
@@ -174,7 +172,7 @@ class CodeGenerator(object):
         self.write("self.{} = {}(uabin.Primitives.{}.unpack(data))".format(name, enum.name, enum.uatype))
 
     def get_size_from_uatype(self, uatype):
-        if uatype in ("Int8", "UInt8", "Sbyte", "Byte", "Char", "Boolean"):
+        if uatype in ("Sbyte", "Byte", "Char", "Boolean"):
             return 1
         elif uatype in ("Int16", "UInt16"):
             return 2
@@ -215,7 +213,7 @@ class CodeGenerator(object):
             return "True"
         elif field.uatype in ("DateTime"):
             return "datetime.utcnow()"
-        elif field.uatype in ("Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Double", "Float", "Byte"):
+        elif field.uatype in ("Int16", "Int32", "Int64", "UInt16", "UInt32", "UInt64", "Double", "Float", "Byte"):
             return 0
         elif field.uatype in ("ExtensionObject"):
             return "ExtensionObject()"
@@ -234,5 +232,6 @@ if __name__ == "__main__":
     gm.remove_vector_length(model)
     gm.split_requests(model)
     gm.fix_names(model)
+    gm.remove_duplicate_types(model)
     c = CodeGenerator(model, protocolpath)
     c.run()

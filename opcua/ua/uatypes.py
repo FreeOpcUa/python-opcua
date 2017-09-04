@@ -513,9 +513,9 @@ class LocalizedText(FrozenClass):
                }
 
     ua_types = (
-        ('Encoding', 'UInt8'),
-        ('Locale', 'CharArray'),
-        ('Text', 'CharArray'),
+        ('Encoding', 'Byte'),
+        ('Locale', 'String'),
+        ('Text', 'String'),
                )
 
     def __init__(self, text=None):
@@ -534,7 +534,7 @@ class LocalizedText(FrozenClass):
             self.Encoding |= (1 << 0)
         if self.Text:
             self.Encoding |= (1 << 1)
-        packet.append(uabin.Primitives.UInt8.pack(self.Encoding))
+        packet.append(uabin.Primitives.Byte.pack(self.Encoding))
         if self.Locale:
             packet.append(uabin.Primitives.String.pack(self.Locale))
         if self.Text:
@@ -602,7 +602,7 @@ class ExtensionObject(FrozenClass):
         if self.Body:
             self.Encoding = 0x01
         packet.append(self.TypeId.to_binary())
-        packet.append(uabin.Primitives.UInt8.pack(self.Encoding))
+        packet.append(uabin.Primitives.Byte.pack(self.Encoding))
         if self.Body:
             packet.append(uabin.Primitives.ByteString.pack(self.Body))
         return b''.join(packet)
@@ -611,7 +611,7 @@ class ExtensionObject(FrozenClass):
     def from_binary(data):
         obj = ExtensionObject()
         obj.TypeId = NodeId.from_binary(data)
-        obj.Encoding = uabin.Primitives.UInt8.unpack(data)
+        obj.Encoding = uabin.Primitives.Byte.unpack(data)
         if obj.Encoding & (1 << 0):
             obj.Body = uabin.Primitives.ByteString.unpack(data)
         return obj
@@ -874,7 +874,7 @@ class DataValue(FrozenClass):
                }
 
     ua_types = (
-        ('Encoding', 'UInt8'),
+        ('Encoding', 'Byte'),
         ('Value', 'Variant'),
         ('StatusCode', 'StatusCode'),
         ('SourceTimestamp', 'DateTime'),
@@ -912,7 +912,7 @@ class DataValue(FrozenClass):
             self.Encoding |= (1 << 4)
         if self.ServerPicoseconds:
             self.Encoding |= (1 << 5)
-        packet.append(uabin.Primitives.UInt8.pack(self.Encoding))
+        packet.append(uabin.Primitives.Byte.pack(self.Encoding))
         if self.Value:
             packet.append(self.Value.to_binary())
         if self.StatusCode:
