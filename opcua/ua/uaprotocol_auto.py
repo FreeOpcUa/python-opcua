@@ -718,7 +718,7 @@ class DiagnosticInfo(FrozenClass):
     A recursive structure containing diagnostic information associated with a status code.
 
     :ivar Encoding:
-    :vartype Encoding: UInt8
+    :vartype Encoding: Byte
     :ivar SymbolicId:
     :vartype SymbolicId: Int32
     :ivar NamespaceURI:
@@ -728,7 +728,7 @@ class DiagnosticInfo(FrozenClass):
     :ivar LocalizedText:
     :vartype LocalizedText: Int32
     :ivar AdditionalInfo:
-    :vartype AdditionalInfo: CharArray
+    :vartype AdditionalInfo: String
     :ivar InnerStatusCode:
     :vartype InnerStatusCode: StatusCode
     :ivar InnerDiagnosticInfo:
@@ -745,12 +745,12 @@ class DiagnosticInfo(FrozenClass):
         'InnerDiagnosticInfo': ('Encoding', 6),
                }
     ua_types = [
-        ('Encoding', 'UInt8'),
+        ('Encoding', 'Byte'),
         ('SymbolicId', 'Int32'),
         ('NamespaceURI', 'Int32'),
         ('Locale', 'Int32'),
         ('LocalizedText', 'Int32'),
-        ('AdditionalInfo', 'CharArray'),
+        ('AdditionalInfo', 'String'),
         ('InnerStatusCode', 'StatusCode'),
         ('InnerDiagnosticInfo', 'DiagnosticInfo'),
                ]
@@ -784,11 +784,11 @@ class LocalizedText(FrozenClass):
     A string qualified with a namespace index.
 
     :ivar Encoding:
-    :vartype Encoding: UInt8
+    :vartype Encoding: Byte
     :ivar Locale:
-    :vartype Locale: CharArray
+    :vartype Locale: String
     :ivar Text:
-    :vartype Text: CharArray
+    :vartype Text: String
     '''
 
     ua_switches = {
@@ -796,9 +796,9 @@ class LocalizedText(FrozenClass):
         'Text': ('Encoding', 1),
                }
     ua_types = [
-        ('Encoding', 'UInt8'),
-        ('Locale', 'CharArray'),
-        ('Text', 'CharArray'),
+        ('Encoding', 'Byte'),
+        ('Locale', 'String'),
+        ('Text', 'String'),
                ]
 
     def __init__(self):

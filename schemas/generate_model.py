@@ -78,52 +78,10 @@ class Field(object):
     __repr__ = __str__
 
     def is_native_type(self):
-        if self.uatype in ("Char", "SByte", "Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Boolean", "Double", "Float", "Byte", "String", "CharArray", "ByteString", "DateTime"):
+        if self.uatype in ("Char", "SByte", "Int16", "Int32", "Int64", "UInt16", "UInt32", "UInt64", "Boolean", "Double", "Float", "Byte", "String", "CharArray", "ByteString", "DateTime"):
             return True
         return False
 
-    def get_ctype(self):
-        if self.uatype == "String":
-            ty = "std::string"
-        elif self.uatype == "CharArray":
-            ty = "std::string"
-        elif self.uatype == "Char":
-            ty = "char"
-        elif self.uatype == "SByte":
-            ty = "char"
-        elif self.uatype == "Int8":
-            ty = "int8_t"
-        elif self.uatype == "Int16":
-            ty = "int16_t"
-        elif self.uatype == "Int32":
-            ty = "int32_t"
-        elif self.uatype == "Int64":
-            ty = "int64_t"
-        elif self.uatype == "UInt8":
-            ty = "uint8_t"
-        elif self.uatype == "UInt16":
-            ty = "uint16_t"
-        elif self.uatype == "UInt32":
-            ty = "uint32_t"
-        elif self.uatype == "UInt64":
-            ty = "uint64_t"
-        elif self.uatype == "DateTime":
-            ty = "OpcUa::DateTime"
-        elif self.uatype == "Boolean":
-            ty = "bool"
-        elif self.uatype == "Double":
-            ty = "double"
-        elif self.uatype == "Float":
-            ty = "float"
-        elif self.uatype == "ByteString":
-            ty = "OpcUa::ByteString"
-        elif self.uatype == "Byte":
-            ty = "uint8_t"
-        else:
-            ty = "OpcUa::" + self.uatype
-        if self.length:
-            ty = "std::vector<{0}>".format(ty)
-        return ty
 
 class Enum(object):
     def __init__(self):
@@ -163,7 +121,7 @@ class Model(object):
 
 
 def reorder_structs(model):
-    types = IgnoredStructs + IgnoredEnums + ["Bit", "Char", "CharArray", "Guid", "SByte", "Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "DateTime", "Boolean", "Double", "Float", "ByteString", "Byte", "StatusCode", "DiagnosticInfo", "String", "AttributeID"] + [enum.name for enum in model.enums] + ["VariableAccessLevel"]
+    types = IgnoredStructs + IgnoredEnums + ["Bit", "Char", "CharArray", "Guid", "SByte", "Int16", "Int32", "Int64", "UInt16", "UInt32", "UInt64", "DateTime", "Boolean", "Double", "Float", "ByteString", "Byte", "StatusCode", "DiagnosticInfo", "String", "AttributeID"] + [enum.name for enum in model.enums] + ["VariableAccessLevel"]
     waiting = {}
     newstructs = []
     for s in model.structs:
@@ -238,7 +196,7 @@ def add_encoding_field(model):
                     f = Field()
                     f.sourcetype = field.sourcetype
                     f.name = "Encoding"
-                    f.uatype = "UInt8"
+                    f.uatype = "Byte"
                     newfields.append(f)
 
                 b = Bit()
@@ -267,6 +225,13 @@ def remove_body_length(model):
             if not field.name == "BodyLength":
                 new.append(field)
         struct.fields = new
+
+def remove_duplicate_types(model):
+    for struct in model.structs:
+        for field in struct.fields:
+            if field.uatype == "CharArray":
+                field.uatype = "String"
+
 
 #def remove_extensionobject_fields(model):
     #for obj in model.structs:

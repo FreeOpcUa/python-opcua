@@ -319,7 +319,7 @@ class MessageChunk(uatypes.FrozenClass):
         if signature_size > 0:
             signature = decrypted[-signature_size:]
             decrypted = decrypted[:-signature_size]
-            crypto.verify(uabin.to_binary(obj.MessageHeader) + uabin.to_binary(obj.SecurityHeader) + decrypted, signature)
+            crypto.verify(uabin.struct_to_binary(obj.MessageHeader) + uabin.struct_to_binary(obj.SecurityHeader) + decrypted, signature)
         data = utils.Buffer(crypto.remove_padding(decrypted))
         obj.SequenceHeader = uabin.from_binary(SequenceHeader, data)
         obj.Body = data.read(len(data))
@@ -332,11 +332,11 @@ class MessageChunk(uatypes.FrozenClass):
         return size // pbs * self._security_policy.encrypted_block_size()
 
     def to_binary(self):
-        security = uabin.to_binary(self.SecurityHeader)
-        encrypted_part = uabin.to_binary(self.SequenceHeader) + self.Body
+        security = uabin.struct_to_binary(self.SecurityHeader)
+        encrypted_part = uabin.struct_to_binary(self.SequenceHeader) + self.Body
         encrypted_part += self._security_policy.padding(len(encrypted_part))
         self.MessageHeader.body_size = len(security) + self.encrypted_size(len(encrypted_part))
-        header = uabin.to_binary(self.MessageHeader)
+        header = uabin.header_to_binary(self.MessageHeader)
         encrypted_part += self._security_policy.signature(header + security + encrypted_part)
         return header + security + self._security_policy.encrypt(encrypted_part)
 
@@ -484,9 +484,9 @@ class SecureConnection(object):
         The only supported types are Hello, Acknowledge and ErrorMessage
         """
         header = Header(message_type, ChunkType.Single)
-        binmsg = uabin.to_binary(message)
+        binmsg = uabin.struct_to_binary(message)
         header.body_size = len(binmsg)
-        return uabin.to_binary(header) + binmsg
+        return uabin.header_to_binary(header) + binmsg
 
     def message_to_binary(self, message, message_type=MessageType.SecureMessage, request_id=0, algohdr=None):
         """
@@ -562,7 +562,7 @@ class SecureConnection(object):
         """
         if header.MessageType == MessageType.SecureOpen:
             data = body.copy(header.body_size)
-            security_header = uabin.from_binary(AsymmetricAlgorithmHeader, data)
+            security_header = uabin.struct_from_binary(AsymmetricAlgorithmHeader, data)
             self.select_policy(security_header.SecurityPolicyURI, security_header.SenderCertificate)
 
         if header.MessageType in (MessageType.SecureMessage,
@@ -572,15 +572,15 @@ class SecureConnection(object):
                                                       header, body)
             return self._receive(chunk)
         elif header.MessageType == MessageType.Hello:
-            msg = uabin.from_binary(Hello, body)
+            msg = uabin.struct_from_binary(Hello, body)
             self._max_chunk_size = msg.ReceiveBufferSize
             return msg
         elif header.MessageType == MessageType.Acknowledge:
-            msg = uabin.from_binary(Acknowledge, body)
+            msg = uabin.struct_from_binary(Acknowledge, body)
             self._max_chunk_size = msg.SendBufferSize
             return msg
         elif header.MessageType == MessageType.Error:
-            msg = uabin.from_binary(ErrorMessage, body)
+            msg = uabin.struct_from_binary(ErrorMessage, body)
             logger.warning("Received an error: %s", msg)
             return msg
         else:
@@ -606,7 +606,7 @@ class SecureConnection(object):
         if msg.MessageHeader.ChunkType == ChunkType.Intermediate:
             return None
         if msg.MessageHeader.ChunkType == ChunkType.Abort:
-            err = uabin.from_binary(ErrorMessage, utils.Buffer(msg.Body))
+            err = uabin.struct_from_binary(ErrorMessage, utils.Buffer(msg.Body))
             logger.warning("Message %s aborted: %s", msg, err)
             # specs Part 6, 6.7.3 say that aborted message shall be ignored
             # and SecureChannel should not be closed
