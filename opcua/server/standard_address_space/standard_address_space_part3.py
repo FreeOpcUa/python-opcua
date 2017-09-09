@@ -140,7 +140,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=27")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("Describes a value that is an integer between ?32,768 and 32,767.")
+    attrs.Description = ua.LocalizedText("Describes a value that is an integer between −32,768 and 32,767.")
     attrs.DisplayName = ua.LocalizedText("Int16")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -164,7 +164,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=27")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("Describes a value that is an integer between ?2,147,483,648  and 2,147,483,647.")
+    attrs.Description = ua.LocalizedText("Describes a value that is an integer between −2,147,483,648  and 2,147,483,647.")
     attrs.DisplayName = ua.LocalizedText("Int32")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -188,7 +188,7 @@ def create_standard_address_space_Part3(server):
     node.ParentNodeId = ua.NodeId.from_string("i=27")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.DataTypeAttributes()
-    attrs.Description = ua.LocalizedText("Describes a value that is an integer between ?9,223,372,036,854,775,808 and 9,223,372,036,854,775,807.")
+    attrs.Description = ua.LocalizedText("Describes a value that is an integer between −9,223,372,036,854,775,808 and 9,223,372,036,854,775,807.")
     attrs.DisplayName = ua.LocalizedText("Int64")
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -632,18 +632,18 @@ def create_standard_address_space_Part3(server):
     value = []
     extobj = ua.EnumValueType()
     extobj.Value = 1
-    extobj.DisplayName.Text = b'Mandatory'
-    extobj.Description.Text = b'The BrowseName must appear in all instances of the type.'
+    extobj.DisplayName.Text = 'Mandatory'
+    extobj.Description.Text = 'The BrowseName must appear in all instances of the type.'
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = 2
-    extobj.DisplayName.Text = b'Optional'
-    extobj.Description.Text = b'The BrowseName may appear in an instance of the type.'
+    extobj.DisplayName.Text = 'Optional'
+    extobj.Description.Text = 'The BrowseName may appear in an instance of the type.'
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = 3
-    extobj.DisplayName.Text = b'Constraint'
-    extobj.Description.Text = b'The modelling rule defines a constraint and the BrowseName is not used in an instance of the type.'
+    extobj.DisplayName.Text = 'Constraint'
+    extobj.Description.Text = 'The modelling rule defines a constraint and the BrowseName is not used in an instance of the type.'
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
@@ -981,48 +981,48 @@ def create_standard_address_space_Part3(server):
     value = []
     extobj = ua.EnumValueType()
     extobj.Value = 0
-    extobj.DisplayName.Text = b'Unspecified'
-    extobj.Description.Text = b'No classes are selected.'
+    extobj.DisplayName.Text = 'Unspecified'
+    extobj.Description.Text = 'No classes are selected.'
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = 1
-    extobj.DisplayName.Text = b'Object'
-    extobj.Description.Text = b'The node is an object.'
+    extobj.DisplayName.Text = 'Object'
+    extobj.Description.Text = 'The node is an object.'
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = 2
-    extobj.DisplayName.Text = b'Variable'
-    extobj.Description.Text = b'The node is a variable.'
+    extobj.DisplayName.Text = 'Variable'
+    extobj.Description.Text = 'The node is a variable.'
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = 4
-    extobj.DisplayName.Text = b'Method'
-    extobj.Description.Text = b'The node is a method.'
+    extobj.DisplayName.Text = 'Method'
+    extobj.Description.Text = 'The node is a method.'
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = 8
-    extobj.DisplayName.Text = b'ObjectType'
-    extobj.Description.Text = b'The node is an object type.'
+    extobj.DisplayName.Text = 'ObjectType'
+    extobj.Description.Text = 'The node is an object type.'
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = 16
-    extobj.DisplayName.Text = b'VariableType'
-    extobj.Description.Text = b'The node is an variable type.'
+    extobj.DisplayName.Text = 'VariableType'
+    extobj.Description.Text = 'The node is an variable type.'
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = 32
-    extobj.DisplayName.Text = b'ReferenceType'
-    extobj.Description.Text = b'The node is a reference type.'
+    extobj.DisplayName.Text = 'ReferenceType'
+    extobj.Description.Text = 'The node is a reference type.'
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = 64
-    extobj.DisplayName.Text = b'DataType'
-    extobj.Description.Text = b'The node is a data type.'
+    extobj.DisplayName.Text = 'DataType'
+    extobj.Description.Text = 'The node is a data type.'
     value.append(extobj)
     extobj = ua.EnumValueType()
     extobj.Value = 128
-    extobj.DisplayName.Text = b'View'
-    extobj.Description.Text = b'The node is a view.'
+    extobj.DisplayName.Text = 'View'
+    extobj.Description.Text = 'The node is a view.'
     value.append(extobj)
     attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)
     attrs.ValueRank = 1
