@@ -210,6 +210,7 @@ def add_encoding_field(model):
                 newfields.append(field)
         struct.fields = newfields
 
+
 def remove_vector_length(model):
     for struct in model.structs:
         new = []
@@ -218,6 +219,7 @@ def remove_vector_length(model):
                 new.append(field)
         struct.fields = new
 
+
 def remove_body_length(model):
     for struct in model.structs:
         new = []
@@ -225,6 +227,7 @@ def remove_body_length(model):
             if not field.name == "BodyLength":
                 new.append(field)
         struct.fields = new
+
 
 def remove_duplicate_types(model):
     for struct in model.structs:
