@@ -553,7 +553,7 @@ class Client(object):
         ns_node.set_value(uries)
         return len(uries) - 1
 
-    def import_and_register_structures(self, nodes=None):
+    def load_type_definitions(self, nodes=None):
         """
         Download xml from given variable node defining custom structures.
         If no no node is given, attemps to import variables from all nodes under
@@ -573,6 +573,10 @@ class Client(object):
         for node in nodes:
             xml = node.get_value()
             xml = xml.decode("utf-8")
+            name = node.get_browse_name().Name
+            name = name.replace(".", "")
+            name = name.replace("'", "")
+            name = name.replace('"', '')
             name = "structures_" + node.get_browse_name().Name
             gen = StructGenerator()
             gen.make_model_from_string(xml)
