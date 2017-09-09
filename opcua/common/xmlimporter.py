@@ -289,7 +289,7 @@ class XmlImporter(object):
             ltext = ua.LocalizedText()
             for name, val in obj.value:
                 if name == "Text":
-                    ltext.Text = val.encode("utf-8")
+                    ltext.Text = val
                 else:
                     self.logger.warning("While parsing localizedText value, unkown element: %s with val: %s", name, val)
             return ua.Variant(ltext, ua.VariantType.LocalizedText)

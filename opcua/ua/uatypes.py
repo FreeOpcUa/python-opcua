@@ -547,15 +547,15 @@ class LocalizedText(FrozenClass):
     """
 
     ua_types = {
-        "Text": "ByteString",
-        "Locale": "ByteString"
+        "Text": "String",
+        "Locale": "String"
     }
 
     def __init__(self, text=None):
         self.Encoding = 0
+        if text is not None and not isinstance(text, str):
+            raise ValueError("A LocalizedText object takes a string as argument, not a {}, {}".format(text, type(text)))
         self.Text = text
-        if isinstance(self.Text, unicode):
-            self.Text = self.Text.encode('utf-8')
         if self.Text:
             self.Encoding |= (1 << 1)
         self.Locale = None
@@ -569,9 +569,9 @@ class LocalizedText(FrozenClass):
             self.Encoding |= (1 << 1)
         packet.append(uabin.Primitives.UInt8.pack(self.Encoding))
         if self.Locale:
-            packet.append(uabin.Primitives.Bytes.pack(self.Locale))
+            packet.append(uabin.Primitives.String.pack(self.Locale))
         if self.Text:
-            packet.append(uabin.Primitives.Bytes.pack(self.Text))
+            packet.append(uabin.Primitives.String.pack(self.Text))
         return b''.join(packet)
 
     @staticmethod
@@ -579,21 +579,21 @@ class LocalizedText(FrozenClass):
         obj = LocalizedText()
         obj.Encoding = ord(data.read(1))
         if obj.Encoding & (1 << 0):
-            obj.Locale = uabin.Primitives.Bytes.unpack(data)
+            obj.Locale = uabin.Primitives.String.unpack(data)
         if obj.Encoding & (1 << 1):
-            obj.Text = uabin.Primitives.Bytes.unpack(data)
+            obj.Text = uabin.Primitives.String.unpack(data)
         return obj
 
     def to_string(self):
         # FIXME: use local
         if self.Text is None:
             return ""
-        return self.Text.decode('utf-8')
+        return self.Text
 
     def __str__(self):
         return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', ' + \
             'Locale:' + str(self.Locale) + ', ' + \
-            'Text:' + str(self.Text) + ')'
+            'Text:' + str(self.Text) +')'
     __repr__ = __str__
 
     def __eq__(self, other):

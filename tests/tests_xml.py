@@ -79,7 +79,7 @@ class XmlTests(object):
         inputs = m.get_child("InputArguments")
         val = inputs.get_value()
         val[0].ArrayDimensions = [2, 2]
-        desc = b"My nce description"
+        desc = "My nce description"
         val[0].Description = ua.LocalizedText(desc)
         inputs.set_value(val)
 
@@ -259,7 +259,7 @@ class XmlTests(object):
     def test_xml_ext_obj(self):
         arg = ua.Argument()
         arg.DataType = ua.NodeId(ua.ObjectIds.Float)
-        arg.Description = ua.LocalizedText(b"Nice description")
+        arg.Description = ua.LocalizedText("Nice description")
         arg.ArrayDimensions = [1, 2, 3]
         arg.Name = "MyArg"
 
@@ -275,13 +275,13 @@ class XmlTests(object):
     def test_xml_ext_obj_array(self):
         arg = ua.Argument()
         arg.DataType = ua.NodeId(ua.ObjectIds.Float)
-        arg.Description = ua.LocalizedText(b"Nice description")
+        arg.Description = ua.LocalizedText("Nice description")
         arg.ArrayDimensions = [1, 2, 3]
         arg.Name = "MyArg"
 
         arg2 = ua.Argument()
         arg2.DataType = ua.NodeId(ua.ObjectIds.Int32)
-        arg2.Description = ua.LocalizedText(b"Nice description2")
+        arg2.Description = ua.LocalizedText("Nice description2")
         arg2.ArrayDimensions = [4, 5, 6]
         arg2.Name = "MyArg2"
 
@@ -375,6 +375,7 @@ class XmlTests(object):
         self.assertEqual(node, node2)
         self.assertEqual(dtype, node2.get_data_type())
         if test_equality:
+            print("DEBUG", node, dv, node2, node2.get_value())
             self.assertEqual(dv.Value, node2.get_data_value().Value)
         self.assertEqual(rank, node2.get_value_rank())
         self.assertEqual(dim, node2.get_array_dimensions())
