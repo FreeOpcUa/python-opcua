@@ -234,7 +234,7 @@ class XMLParser(object):
             if val_el.text is None:
                 mytext = b""
             else:
-                mytext = bytes(val_el.text, "utf-8")
+                mytext = val_el.text.encode()
                 mytext = base64.b64decode(mytext)
             obj.value = mytext
         elif ntag == "String":
