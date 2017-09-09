@@ -10,7 +10,7 @@ import uuid
 from opcua import ua
 from opcua.ua.ua_binary import extensionobject_from_binary
 from opcua.ua.ua_binary import extensionobject_to_binary
-from opcua.ua.ua_binary import to_binary, reshape, from_binary
+from opcua.ua.ua_binary import nodeid_to_binary, variant_to_binary, reshape, from_binary
 from opcua.ua import flatten, get_shape
 from opcua.server.internal_subscription import WhereClauseEvaluator
 from opcua.common.event_objects import BaseEvent

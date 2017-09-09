@@ -14,7 +14,6 @@ from opcua.ua.uaerrors import UaError
 from opcua.common.utils import Buffer
 from opcua import ua
 
-
 if sys.version_info.major > 2:
     unicode = str
 
@@ -87,7 +86,6 @@ else:
 
 
 class _Primitive(object):
-
     def pack_array(self, array):
         if array is None:
             return b'\xff\xff\xff\xff'
@@ -107,7 +105,6 @@ class _Primitive(object):
 
 
 class _DateTime(_Primitive):
-
     @staticmethod
     def pack(dt):
         epch = datetime_to_win_epoch(dt)
@@ -120,7 +117,6 @@ class _DateTime(_Primitive):
 
 
 class _String(_Primitive):
-
     @staticmethod
     def pack(string):
         if string is None:
@@ -142,7 +138,6 @@ class _String(_Primitive):
 
 
 class _Bytes(_Primitive):
-
     @staticmethod
     def pack(data):
         return _String.pack(data)
@@ -156,7 +151,6 @@ class _Bytes(_Primitive):
 
 
 class _Null(_Primitive):
-
     @staticmethod
     def pack(data):
         return b""
@@ -167,7 +161,6 @@ class _Null(_Primitive):
 
 
 class _Guid(_Primitive):
-
     @staticmethod
     def pack(guid):
         # convert python UUID 6 field format to OPC UA 4 field format
@@ -177,9 +170,9 @@ class _Guid(_Primitive):
         f4a = Primitives.Byte.pack(guid.clock_seq_hi_variant)
         f4b = Primitives.Byte.pack(guid.clock_seq_low)
         f4c = struct.pack('>Q', guid.node)[2:8]  # no primitive .pack available for 6 byte int
-        f4 = f4a+f4b+f4c
+        f4 = f4a + f4b + f4c
         # concat byte fields
-        b = f1+f2+f3+f4
+        b = f1 + f2 + f3 + f4
 
         return b
 
@@ -207,19 +200,6 @@ class _Primitive1(_Primitive):
 
     def unpack(self, data):
         return struct.unpack(self.format, data.read(self.size))[0]
-    
-    #def pack_array(self, array):
-        #"""
-        #Basically the same as the method in _Primitive but MAYBE a bit more efficient....
-        #"""
-        #if array is None:
-            #return b'\xff\xff\xff\xff'
-        #length = len(array)
-        #if length == 0:
-            #return b'\x00\x00\x00\x00'
-        #if length == 1:
-            #return b'\x01\x00\x00\x00' + self.pack(array[0])
-        #return struct.pack(build_array_format("<i", length, self.format[1]), length, *array)
 
 
 class Primitives1(object):
@@ -328,11 +308,11 @@ def struct_to_binary(obj):
 
 def to_binary(val, uatype):
     """
-    try hard to pack a python object to binary
+    Pack a python object to binary given a string defining its type
     """
     if isinstance(val, (list, tuple)):
         length = len(val)
-        b = [to_binary(el) for el in val]
+        b = [to_binary(el, uatype) for el in val]
         b.insert(0, Primitives.Int32.pack(length))
         return b"".join(b)
     elif isinstance(uatype, (str, unicode)) and hasattr(ua.VariantType, uatype):
@@ -342,8 +322,6 @@ def to_binary(val, uatype):
         return Primitives.UInt32.pack(val.value)
     elif isinstance(val, ua.NodeId):
         return nodeid_to_binary(val)
-    elif isinstance(val, ua.Header): # should have this here or use directly correct method when necessary??
-        return header_to_binary(val) #
     elif isinstance(val, ua.Variant):
         return variant_to_binary(val)
     elif hasattr(val, "ua_types"):
@@ -463,7 +441,7 @@ def reshape(flat, dims):
         flat.append([])
     if not subdims or subdims == [0]:
         return flat
-    return [reshape(flat[i: i + subsize], subdims) for i in range(0, len(flat), subsize)]
+    return [reshape(flat[i:i + subsize], subdims) for i in range(0, len(flat), subsize)]
 
 
 def extensionobject_from_binary(data):
@@ -504,7 +482,7 @@ def extensionobject_to_binary(obj):
     Returns a binary string
     """
     if isinstance(obj, ua.ExtensionObject):
-        return obj.to_binary()
+        return struct_to_binary(obj)
     if obj is None:
         TypeId = ua.NodeId()
         Encoding = 0
@@ -556,7 +534,7 @@ def struct_from_binary(objtype, data):
             val = getattr(obj, container_name)
             if not test_bit(val, idx):
                 continue
-        val = from_binary(uatype, data) 
+        val = from_binary(uatype, data)
         setattr(obj, name, val)
     return obj
 
@@ -581,4 +559,3 @@ def header_from_binary(data):
         hdr.body_size -= 4
         hdr.ChannelId = Primitives.UInt32.unpack(data)
     return hdr
-
