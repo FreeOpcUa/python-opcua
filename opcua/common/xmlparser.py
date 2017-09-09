@@ -6,6 +6,7 @@ from pytz import utc
 import uuid
 import re
 import sys
+import base64
 
 import xml.etree.ElementTree as ET
 
@@ -229,13 +230,20 @@ class XMLParser(object):
             # According to specs, DateTime should be either UTC or with a timezone.
             if obj.value.tzinfo is None or obj.value.tzinfo.utcoffset(obj.value) is None:
                 utc.localize(obj.value) # FIXME Forcing to UTC if unaware, maybe should raise?
-        elif ntag in ("ByteString", "String"):
+        elif ntag == "ByteString":
+            if val_el.text is None:
+                mytext = b""
+            else:
+                mytext = bytes(val_el.text, "utf-8")
+                mytext = base64.b64decode(mytext)
+            obj.value = mytext
+        elif ntag == "String":
             mytext = val_el.text
             if mytext is None:
                 # Support importing null strings.
                 mytext = ""
-            mytext = mytext.replace('\n', '').replace('\r', '')
-            obj.value = ua_type_to_python(mytext, ntag)
+            #mytext = mytext.replace('\n', '').replace('\r', '')
+            obj.value = mytext
         elif ntag == "Guid":
             self._parse_contained_value(val_el, obj)
             # Override parsed string type to guid.
@@ -272,14 +280,13 @@ class XMLParser(object):
         return "".join(txtlist)
 
     def _parse_list_of_localized_text(self, el):
-        # FIXME Why not calling parse_body as for LocalizedText without list?
         value = []
         for localized_text in el:
-            ntag = self._retag.match(localized_text.tag).groups()[1]
-            for child in localized_text:
-                ntag = self._retag.match(child.tag).groups()[1]
-                if ntag == 'Text':
-                    value.append(self._get_text(child))
+            mylist = self._parse_body(localized_text)
+            # small hack since we did not handle LocalizedText as ExtensionObject at begynning
+            for name, val in mylist:
+                if name == "Text":
+                    value.append(val)
         return value
 
     def _parse_list_of_extension_object(self, el):
