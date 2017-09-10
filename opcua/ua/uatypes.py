@@ -379,9 +379,9 @@ class NodeId(FrozenClass):
             ntype = "b"
         string += "{0}={1}".format(ntype, self.Identifier)
         if self.ServerIndex:
-            string = "srv=" + str(self.ServerIndex) + string
+            string = "; srv=" + str(self.ServerIndex) + string
         if self.NamespaceUri:
-            string += "nsu={0}".format(self.NamespaceUri)
+            string += "; nsu={0}".format(self.NamespaceUri)
         return string
 
     def __str__(self):
