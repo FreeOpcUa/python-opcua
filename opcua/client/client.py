@@ -573,29 +573,30 @@ class Client(object):
         for node in nodes:
             xml = node.get_value()
             xml = xml.decode("utf-8")
-            name = node.get_browse_name().Name
-            name = name.replace(".", "")
-            name = name.replace("'", "")
-            name = name.replace('"', '')
-            name = "structures_" + node.get_browse_name().Name
             generator = StructGenerator()
             generator.make_model_from_string(xml)
             # generate and execute new code on the fly
             d = generator.get_python_classes(structs_dict)
             # same but using a file that is imported. This can be usefull for debugging library
+            #name = node.get_browse_name().Name
+            # Make sure structure names do not contain charaters that cannot be used in Python class name
+            #name = name.replace(".", "")
+            #name = name.replace("'", "")
+            #name = name.replace('"', '')
+            #name = "structures_" + node.get_browse_name().Name
             #generator.save_and_import(name + ".py", append_to=structs_dict)
 
         # register classes
         for desc in self.nodes.base_structure_type.get_children_descriptions():
-            # TODO: make sure that we do not need to look recursively at children
-            # FIXME: we should get enoding and description but this is too 
-            # expensive. we take a shorcut and assume that browsename of struct 
+            # It migth be possible here to get encoding of node then its description
+            # to get back correct xml description of encoding
+            # but we take a shorcut and assume that browsename of struct 
             # is the same as the name of the data type structure
             if desc.BrowseName.Name in structs_dict:
                 struct_node = self.get_node(desc.NodeId)
                 refs = struct_node.get_references(ua.ObjectIds.HasEncoding, ua.BrowseDirection.Forward)
                 for ref in refs:
-                    if "Binary" in ref.BrowseName.Name:
+                    if "Default Binary" == ref.BrowseName.Name:
                         ua.register_extension_object(desc.BrowseName.Name, ref.NodeId, structs_dict[desc.BrowseName.Name])
 
 
