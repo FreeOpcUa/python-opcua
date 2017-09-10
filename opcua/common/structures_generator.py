@@ -11,6 +11,10 @@ from lxml import objectify
 
 
 from opcua.ua.ua_binary import Primitives
+from opcua import ua
+# The next two imports are for generated code
+from datetime import datetime
+import uuid
 
 
 def get_default_value(uatype):
@@ -24,7 +28,7 @@ def get_default_value(uatype):
         return "True"
     elif uatype == "DateTime":
         return "datetime.utcnow()"
-    elif uatype in ("Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Double", "Float", "Byte", "SByte"):
+    elif uatype in ("Int16", "Int32", "Int64", "UInt16", "UInt32", "UInt64", "Double", "Float", "Byte", "SByte"):
         return 0
     else:
         return "ua." + uatype + "()"
@@ -166,6 +170,28 @@ class StructGenerator(object):
             _file.write(struct.get_code())
         _file.close()
 
+    def get_python_classes(self, env=None):
+        """
+        generate Python code and execute in a new environment
+        return a dict of structures {name: class}
+        Rmw: Since the code is generated on the fly, in case of error the stack trace is 
+        not available and debugging is very hard...
+        """
+        if env is None:
+            env = {}
+        #  Add the required libraries to dict
+        if not "ua" in env:
+            env['ua'] = ua
+        if not "datetime" in env:
+            env['datetime'] = datetime
+        if not "uuid" in env:
+            env['uuid'] = uuid
+        # generate classes one by one and add them to dict
+        for struct in self.model:
+            code = struct.get_code()
+            exec(code, env)
+        return env
+
     def save_and_import(self, path, append_to=None):
         """
         save the new structures to a python file which be used later
@@ -183,12 +209,6 @@ class StructGenerator(object):
         for struct in self.model:
             result[struct.name] = getattr(mymodule, struct.name)
         return result
-
-    def get_structures(self):
-        ld = {}
-        for struct in self.model:
-            exec(struct.get_code(), ld)
-        return ld
 
     def _make_header(self, _file):
         _file.write("""

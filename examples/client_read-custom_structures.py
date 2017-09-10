@@ -18,7 +18,7 @@ if __name__ == "__main__":
         objects = client.get_objects_node()
         struct = client.get_node("ns=2;i=10239")
         before = struct.get_value()
-        client.import_and_register_structures()  # scan server for custom structures and import them
+        client.load_type_definitions()  # scan server for custom structures and import them
         after = struct.get_value()
         
 
