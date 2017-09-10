@@ -579,27 +579,21 @@ class Client(object):
             d = generator.get_python_classes(structs_dict)
             # same but using a file that is imported. This can be usefull for debugging library
             #name = node.get_browse_name().Name
-            # Make sure structure names do not contain charaters that cannot be used in Python class name
+            # Make sure structure names do not contain charaters that cannot be used in Python class file names
             #name = name.replace(".", "")
             #name = name.replace("'", "")
             #name = name.replace('"', '')
             #name = "structures_" + node.get_browse_name().Name
             #generator.save_and_import(name + ".py", append_to=structs_dict)
 
-        # register classes
-        for desc in self.nodes.base_structure_type.get_children_descriptions():
-            # It migth be possible here to get encoding of node then its description
-            # to get back correct xml description of encoding
-            # but we take a shorcut and assume that browsename of struct 
-            # is the same as the name of the data type structure
-            if desc.BrowseName.Name in structs_dict:
-                struct_node = self.get_node(desc.NodeId)
-                refs = struct_node.get_references(ua.ObjectIds.HasEncoding, ua.BrowseDirection.Forward)
-                for ref in refs:
-                    if "Default Binary" == ref.BrowseName.Name:
-                        ua.register_extension_object(desc.BrowseName.Name, ref.NodeId, structs_dict[desc.BrowseName.Name])
+            # register classes
+            # every children of our node should represent a class
+            for ndesc in node.get_children_descriptions():
+                ndesc_node = self.get_node(ndesc.NodeId)
+                ref_desc_list = ndesc_node.get_references(refs=ua.ObjectIds.HasDescription, direction=ua.BrowseDirection.Inverse)
+                if ref_desc_list:  #some server put extra things here
+                    name = ndesc.BrowseName.Name
+                    nodeid = ref_desc_list[0].NodeId
+                    ua.register_extension_object(name, nodeid, structs_dict[name])
 
 
-
-
-            
