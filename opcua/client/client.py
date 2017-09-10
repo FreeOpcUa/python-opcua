@@ -578,13 +578,16 @@ class Client(object):
             name = name.replace("'", "")
             name = name.replace('"', '')
             name = "structures_" + node.get_browse_name().Name
-            gen = StructGenerator()
-            gen.make_model_from_string(xml)
-            gen.save_and_import(name + ".py", append_to=structs_dict)
+            generator = StructGenerator()
+            generator.make_model_from_string(xml)
+            # generate and execute new code on the fly
+            d = generator.get_python_classes(structs_dict)
+            # same but using a file that is imported. This can be usefull for debugging library
+            #generator.save_and_import(name + ".py", append_to=structs_dict)
 
         # register classes
         for desc in self.nodes.base_structure_type.get_children_descriptions():
-            # FIXME: maybe we should look recursively at children
+            # TODO: make sure that we do not need to look recursively at children
             # FIXME: we should get enoding and description but this is too 
             # expensive. we take a shorcut and assume that browsename of struct 
             # is the same as the name of the data type structure
