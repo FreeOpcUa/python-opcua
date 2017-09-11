@@ -163,12 +163,20 @@ class StructGenerator(object):
                 struct.fields.append(field)
             self.model.append(struct)
 
-    def save_to_file(self, path):
+    def save_to_file(self, path, register=False):
         _file = open(path, "wt")
         self._make_header(_file)
         for struct in self.model:
             _file.write(struct.get_code())
+        if register:
+            _file.write(self._make_registration())
         _file.close()
+
+    def _make_registration(self):
+        code = "\n\n"
+        for struct in self.model:
+            code += "\nsetattr(ua, '{name}', {name})\n".format(name=struct.name)
+        return code
 
     def get_python_classes(self, env=None):
         """

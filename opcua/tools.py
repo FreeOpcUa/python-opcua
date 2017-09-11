@@ -1,3 +1,4 @@
+import os
 import logging
 import sys
 import argparse
@@ -18,6 +19,7 @@ from opcua import Client
 from opcua import Server
 from opcua import Node
 from opcua import uamethod
+from opcua.common.structures_generator import StructGenerator
 
 
 def add_minimum_args(parser):
@@ -723,3 +725,33 @@ def uacall():
         client.disconnect()
     sys.exit(0)
     print(args)
+
+
+def uageneratestructs():
+    parser = argparse.ArgumentParser(description="Generate a Python module from the xml structure definition (.bsd)")
+    parser.add_argument("-i",
+                        "--input",
+                        dest="input_path",
+                        required=True,
+                        help="The xml file definning the custom OPC UA structures.",
+                        )
+    parser.add_argument("-o",
+                        "--output",
+                        dest="output_path",
+                        required=True,
+                        type=str,
+                        default=None,
+                        help="The python file to be generated.",
+                        )
+
+    args = parser.parse_args()
+    if not os.path.isfile(args.output_path):
+        parser.print_usage()
+        return 1
+
+    generator = StructGenerator()
+    generator.make_model_from_file(args.input_path)
+    generator.save_to_file(args.output_path, True)
+
+
+
