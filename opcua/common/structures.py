@@ -1,20 +1,21 @@
 """
-parse simple structures from an xml tree
+Support for custom structures in client and server
 We only support a subset of features but should be enough
 for custom structures
 """
 
 import os
 import importlib
+import re
+# The next two imports are for generated code
+from datetime import datetime
+import uuid
 
 from lxml import objectify
 
 
 from opcua.ua.ua_binary import Primitives
 from opcua import ua
-# The next two imports are for generated code
-from datetime import datetime
-import uuid
 
 
 def get_default_value(uatype):
@@ -151,10 +152,11 @@ class StructGenerator(object):
                 if name.startswith("NoOf"):
                     array = True
                     continue
-                field = Field(name)
+                field = Field(_clean_name(name))
                 field.uatype = xmlfield.get("TypeName")
                 if ":" in field.uatype:
                     field.uatype = field.uatype.split(":")[1]
+                field.uatype = _clean_name(field.uatype)
                 field.value = get_default_value(field.uatype)
                 if array:
                     field.array = True
@@ -188,11 +190,11 @@ class StructGenerator(object):
         if env is None:
             env = {}
         #  Add the required libraries to dict
-        if not "ua" in env:
+        if "ua" not in env:
             env['ua'] = ua
-        if not "datetime" in env:
+        if "datetime" not in env:
             env['datetime'] = datetime
-        if not "uuid" in env:
+        if "uuid" not in env:
             env['uuid'] = uuid
         # generate classes one by one and add them to dict
         for struct in self.model:
@@ -233,17 +235,56 @@ from opcua import ua
 
 
 
-if __name__ == "__main__":
-    import sys
-    from IPython import embed
-    sys.path.insert(0, ".") # necessary for import in current dir
+def load_type_definitions(server, nodes=None):
+    """
+    Download xml from given variable node defining custom structures.
+    If no no node is given, attemps to import variables from all nodes under
+    "0:OPC Binary"
+    the code is generated and imported on the fly. If you know the structures
+    are not going to be modified it might be interresting to copy the generated files
+    and include them in you code
+    """
+    if nodes is None:
+        nodes = []
+        for desc in server.nodes.opc_binary.get_children_descriptions():
+            if desc.BrowseName != ua.QualifiedName("Opc.Ua"):
+                nodes.append(server.get_node(desc.NodeId))
+    
+    structs_dict = {}
+    for node in nodes:
+        xml = node.get_value()
+        xml = xml.decode("utf-8")
+        generator = StructGenerator()
+        generator.make_model_from_string(xml)
+        # generate and execute new code on the fly
+        generator.get_python_classes(structs_dict)
+        # same but using a file that is imported. This can be usefull for debugging library
+        #name = node.get_browse_name().Name
+        # Make sure structure names do not contain charaters that cannot be used in Python class file names
+        #name = _clean_name(name)
+        #name = "structures_" + node.get_browse_name().Name
+        #generator.save_and_import(name + ".py", append_to=structs_dict)
 
-    #xmlpath = "schemas/Opc.Ua.Types.bsd"
-    xmlpath = "schemas/example.bsd"
-    c = StructGenerator(xmlpath, "structures.py")
-    c.run()
-    import structures as s
+        # register classes
+        # every children of our node should represent a class
+        for ndesc in node.get_children_descriptions():
+            ndesc_node = server.get_node(ndesc.NodeId)
+            ref_desc_list = ndesc_node.get_references(refs=ua.ObjectIds.HasDescription, direction=ua.BrowseDirection.Inverse)
+            if ref_desc_list:  #some server put extra things here
+                name = _clean_name(ndesc.BrowseName.Name)
+                if not name in structs_dict:
+                    print("Error {} is found as child of binary definition node but is not found in xml".format(name))
+                    continue
+                nodeid = ref_desc_list[0].NodeId
+                ua.register_extension_object(name, nodeid, structs_dict[name])
 
 
-    #sts = c.get_structures()
-    embed()
+def _clean_name(name):
+    """
+    Remove characters that might be present in  OPC UA structures
+    but cannot be part of of Python class names
+    """
+    name = re.sub(r'\W+', '_', name)
+    name = re.sub(r'^[0-9]+', r'_\g<0>', name)
+
+    return name

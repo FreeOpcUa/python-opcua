@@ -16,7 +16,7 @@ from opcua.common.subscription import Subscription
 from opcua.common import utils
 from opcua.crypto import security_policies
 from opcua.common.shortcuts import Shortcuts
-from opcua.common.structures_generator import StructGenerator
+from opcua.common.structures import load_type_definitions
 use_crypto = True
 try:
     from opcua.crypto import uacrypto
@@ -110,6 +110,7 @@ class Client(object):
         self.uaclient = UaClient(timeout)
         self.user_certificate = None
         self.user_private_key = None
+        self._server_nonce = None
         self._session_counter = 1
         self.keepalive = None
         self.nodes = Shortcuts(self.uaclient)
@@ -131,8 +132,7 @@ class Client(object):
                     ep.SecurityMode == security_mode and
                     ep.SecurityPolicyUri == policy_uri):
                 return ep
-        raise ua.UaError("No matching endpoints: {0}, {1}".format(
-                         security_mode, policy_uri))
+        raise ua.UaError("No matching endpoints: {0}, {1}".format(security_mode, policy_uri))
 
     def set_user(self, username):
         """
@@ -504,7 +504,7 @@ class Client(object):
         """
 
         if isinstance(period, ua.CreateSubscriptionParameters):
-             return Subscription(self.uaclient, period, handler)
+            return Subscription(self.uaclient, period, handler)
         params = ua.CreateSubscriptionParameters()
         params.RequestedPublishingInterval = period
         params.RequestedLifetimeCount = 10000
@@ -554,46 +554,6 @@ class Client(object):
         return len(uries) - 1
 
     def load_type_definitions(self, nodes=None):
-        """
-        Download xml from given variable node defining custom structures.
-        If no no node is given, attemps to import variables from all nodes under
-        "0:OPC Binary"
-        the code is generated and imported on the fly. If you know the structures
-        are not going to be modified it might be interresting to copy the generated files
-        and include them in you code
-        """
-        if nodes is None:
-            nodes = []
-            for desc in self.nodes.opc_binary.get_children_descriptions():
-                if desc.BrowseName != ua.QualifiedName("Opc.Ua"):
-                    nodes.append(self.get_node(desc.NodeId))
-        self.logger.info("Importing structures from nodes: %s", nodes)
-        
-        structs_dict = {}
-        for node in nodes:
-            xml = node.get_value()
-            xml = xml.decode("utf-8")
-            generator = StructGenerator()
-            generator.make_model_from_string(xml)
-            # generate and execute new code on the fly
-            d = generator.get_python_classes(structs_dict)
-            # same but using a file that is imported. This can be usefull for debugging library
-            #name = node.get_browse_name().Name
-            # Make sure structure names do not contain charaters that cannot be used in Python class file names
-            #name = name.replace(".", "")
-            #name = name.replace("'", "")
-            #name = name.replace('"', '')
-            #name = "structures_" + node.get_browse_name().Name
-            #generator.save_and_import(name + ".py", append_to=structs_dict)
-
-            # register classes
-            # every children of our node should represent a class
-            for ndesc in node.get_children_descriptions():
-                ndesc_node = self.get_node(ndesc.NodeId)
-                ref_desc_list = ndesc_node.get_references(refs=ua.ObjectIds.HasDescription, direction=ua.BrowseDirection.Inverse)
-                if ref_desc_list:  #some server put extra things here
-                    name = ndesc.BrowseName.Name
-                    nodeid = ref_desc_list[0].NodeId
-                    ua.register_extension_object(name, nodeid, structs_dict[name])
+        return load_type_definitions(self, nodes)
 
 
