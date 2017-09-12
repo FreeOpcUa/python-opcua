@@ -1,4 +1,3 @@
-import os
 import logging
 import sys
 import argparse
@@ -19,7 +18,6 @@ from opcua import Client
 from opcua import Server
 from opcua import Node
 from opcua import uamethod
-from opcua.common.structures_generator import StructGenerator
 
 
 def add_minimum_args(parser):
@@ -41,12 +39,13 @@ def add_minimum_args(parser):
                         help="Set socket timeout (NOT the diverse UA timeouts)")
 
 
-def add_common_args(parser, default_node='i=84'):
+def add_common_args(parser, default_node='i=84', require_node=False):
     add_minimum_args(parser)
     parser.add_argument("-n",
                         "--nodeid",
                         help="Fully-qualified node ID (for example: i=85). Default: root node",
                         default=default_node,
+                        required=require_node,
                         metavar="NODE")
     parser.add_argument("-p",
                         "--path",
@@ -729,12 +728,7 @@ def uacall():
 
 def uageneratestructs():
     parser = argparse.ArgumentParser(description="Generate a Python module from the xml structure definition (.bsd)")
-    parser.add_argument("-i",
-                        "--input",
-                        dest="input_path",
-                        required=True,
-                        help="The xml file definning the custom OPC UA structures.",
-                        )
+    add_common_args(parser, require_node=True)
     parser.add_argument("-o",
                         "--output",
                         dest="output_path",
@@ -743,15 +737,15 @@ def uageneratestructs():
                         default=None,
                         help="The python file to be generated.",
                         )
+    args = parse_args(parser, requirenodeid=True)
 
-    args = parser.parse_args()
-    if not os.path.isfile(args.output_path):
-        parser.print_usage()
-        return 1
-
-    generator = StructGenerator()
-    generator.make_model_from_file(args.input_path)
-    generator.save_to_file(args.output_path, True)
-
-
-
+    client = Client(args.url, timeout=args.timeout)
+    client.set_security_string(args.security)
+    client.connect()
+    try:
+        node = get_node(client, args)
+        generators, _ = client.load_type_definitions([node])
+        generators[0].save_to_file(args.output_path, True)
+    finally:
+        client.disconnect()
+    sys.exit(0)

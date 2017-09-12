@@ -40,6 +40,7 @@ class Struct(object):
         self.name = name
         self.fields = []
         self.code = ""
+        self.typeid = None
 
     def get_code(self):
         if not self.fields:
@@ -177,7 +178,7 @@ class StructGenerator(object):
     def _make_registration(self):
         code = "\n\n"
         for struct in self.model:
-            code += "\nsetattr(ua, '{name}', {name})\n".format(name=struct.name)
+            code += "ua.register_extension_object('{name}', ua.NodeId.from_string('{nodeid}'), {name})\n".format(name=struct.name, nodeid=struct.typeid)
         return code
 
     def get_python_classes(self, env=None):
@@ -232,13 +233,17 @@ import uuid
 from opcua import ua
 """)
 
-
+    def set_typeid(self, name, typeid):
+        for struct in self.model:
+            if struct.name == name:
+                struct.typeid = typeid
+                return
 
 
 def load_type_definitions(server, nodes=None):
     """
     Download xml from given variable node defining custom structures.
-    If no no node is given, attemps to import variables from all nodes under
+    If no node is given, attemps to import variables from all nodes under
     "0:OPC Binary"
     the code is generated and imported on the fly. If you know the structures
     are not going to be modified it might be interresting to copy the generated files
@@ -251,10 +256,12 @@ def load_type_definitions(server, nodes=None):
                 nodes.append(server.get_node(desc.NodeId))
     
     structs_dict = {}
+    generators = []
     for node in nodes:
         xml = node.get_value()
         xml = xml.decode("utf-8")
         generator = StructGenerator()
+        generators.append(generator)
         generator.make_model_from_string(xml)
         # generate and execute new code on the fly
         generator.get_python_classes(structs_dict)
@@ -277,6 +284,9 @@ def load_type_definitions(server, nodes=None):
                     continue
                 nodeid = ref_desc_list[0].NodeId
                 ua.register_extension_object(name, nodeid, structs_dict[name])
+                # save the typeid if user want to create static file for type definitnion
+                generator.set_typeid(name, nodeid.to_string())
+    return generators, structs_dict
 
 
 def _clean_name(name):
