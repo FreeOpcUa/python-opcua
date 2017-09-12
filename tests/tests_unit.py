@@ -16,7 +16,7 @@ from opcua.common.event_objects import BaseEvent
 from opcua.common.ua_utils import string_to_variant, variant_to_string, string_to_val, val_to_string
 from opcua.common.xmlimporter import XmlImporter
 from opcua.ua.uatypes import _MaskEnum
-from opcua.common.structures_generator import StructGenerator
+from opcua.common.structures import StructGenerator
 
 
 class TestUnit(unittest.TestCase):
