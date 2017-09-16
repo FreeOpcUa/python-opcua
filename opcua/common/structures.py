@@ -69,7 +69,6 @@ class {0}(object):
             code += "    pass"
         for field in self.fields:
             code += "        self.{} = {}\n".format(field.name, field.value)
-        print(code)
         return code
 
 
