@@ -426,11 +426,11 @@ def variant_from_binary(data):
         value = unpack_uatype(vtype, data)
     if test_bit(encoding, 6):
         dimensions = unpack_uatype_array(ua.VariantType.Int32, data)
-        value = reshape(value, dimensions)
+        value = _reshape(value, dimensions)
     return ua.Variant(value, vtype, dimensions, is_array=array)
 
 
-def reshape(flat, dims):
+def _reshape(flat, dims):
     subdims = dims[1:]
     subsize = 1
     for i in subdims:
@@ -441,7 +441,7 @@ def reshape(flat, dims):
         flat.append([])
     if not subdims or subdims == [0]:
         return flat
-    return [reshape(flat[i:i + subsize], subdims) for i in range(0, len(flat), subsize)]
+    return [_reshape(flat[i:i + subsize], subdims) for i in range(0, len(flat), subsize)]
 
 
 def extensionobject_from_binary(data):
@@ -478,7 +478,7 @@ def extensionobject_from_binary(data):
 def extensionobject_to_binary(obj):
     """
     Convert Python object to binary-coded ExtensionObject.
-    If obj is None, convert to empty ExtensionObject (TypeId = 0, no Body).
+    If obj is None, convert to empty ExtensionObject (TypeId=0, no Body).
     Returns a binary string
     """
     if isinstance(obj, ua.ExtensionObject):
