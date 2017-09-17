@@ -195,7 +195,7 @@ class MonitoredItemService(object):
                 mid = self._monitored_datachange[handle]
                 mdata = self._monitored_items[mid]
                 mdata.mvalue.set_current_value(value.Value.Value)
-                if mdata.filter is not None:
+                if mdata.filter:
                     deadband_flag_pass = self.deadband_callback(mdata.mvalue, mdata.filter)
                 else:
                     deadband_flag_pass = True
@@ -205,7 +205,6 @@ class MonitoredItemService(object):
                     self.isub.enqueue_datachange_event(mid, event, mdata.queue_size)
 
     def deadband_callback(self, values, flt):
-        ua.DeadbandType.None_
         if flt.DeadbandType == ua.DeadbandType.None_ or values.get_old_value() is None:
             return True
         elif flt.DeadbandType == ua.DeadbandType.Absolute and \

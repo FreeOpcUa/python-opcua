@@ -1,6 +1,6 @@
 
 IgnoredEnums = ["NodeIdType"]
-IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "ExtensionObject", "XmlElement"]
+IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "ExtensionObject", "XmlElement", "LocalizedText"]
 
 class Primitives1(object):
     SByte = 0

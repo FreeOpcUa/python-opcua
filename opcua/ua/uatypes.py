@@ -543,6 +543,9 @@ class ExtensionObject(FrozenClass):
         self.Body = None
         self._freeze = True
 
+    def __bool__(self):
+        return self.Body is not None
+
     @staticmethod
     def from_object(obj):
         ext = ExtensionObject()

@@ -779,42 +779,6 @@ class DiagnosticInfo(FrozenClass):
     __repr__ = __str__
 
 
-class LocalizedText(FrozenClass):
-    '''
-    A string qualified with a namespace index.
-
-    :ivar Encoding:
-    :vartype Encoding: Byte
-    :ivar Locale:
-    :vartype Locale: String
-    :ivar Text:
-    :vartype Text: String
-    '''
-
-    ua_switches = {
-        'Locale': ('Encoding', 0),
-        'Text': ('Encoding', 1),
-               }
-    ua_types = [
-        ('Encoding', 'Byte'),
-        ('Locale', 'String'),
-        ('Text', 'String'),
-               ]
-
-    def __init__(self):
-        self.Encoding = 0
-        self.Locale = None
-        self.Text = None
-        self._freeze = True
-
-    def __str__(self):
-        return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', ' + \
-               'Locale:' + str(self.Locale) + ', ' + \
-               'Text:' + str(self.Text) + ')'
-
-    __repr__ = __str__
-
-
 class TrustListDataType(FrozenClass):
     '''
     :ivar SpecifiedLists:
