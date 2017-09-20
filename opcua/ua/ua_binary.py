@@ -259,22 +259,22 @@ def struct_to_binary(obj):
     for name, uatype in obj.ua_types:
         val = getattr(obj, name)
         if uatype.startswith("ListOf"):
-            packet.append(list_to_binary(val, uatype[6:]))
+            packet.append(list_to_binary(uatype[6:], val))
         else:
             if has_switch and val is None and name in obj.ua_switches:
                 pass
             else:
-                packet.append(to_binary(val, uatype))
+                packet.append(to_binary(uatype, val))
     return b''.join(packet)
 
 
-def to_binary(val, uatype):
+def to_binary(uatype, val):
     """
     Pack a python object to binary given a string defining its type
     """
     if isinstance(val, (list, tuple)):
         length = len(val)
-        b = [to_binary(el, uatype) for el in val]
+        b = [to_binary(uatype, el) for el in val]
         b.insert(0, Primitives.Int32.pack(length))
         return b"".join(b)
     elif isinstance(uatype, (str, unicode)) and hasattr(ua.VariantType, uatype):
@@ -292,14 +292,14 @@ def to_binary(val, uatype):
         raise UaError("No known way to pack {} of type {} to ua binary".format(val, uatype))
 
 
-def list_to_binary(val, uatype):
+def list_to_binary(uatype, val):
     if val is None:
         return Primitives.Int32.pack(-1)
     else:
         pack = []
         pack.append(Primitives.Int32.pack(len(val)))
         for el in val:
-            pack.append(to_binary(el, uatype))
+            pack.append(to_binary(uatype, el))
         return b''.join(pack)
 
 

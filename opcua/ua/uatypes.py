@@ -585,14 +585,6 @@ class ExtensionObject(FrozenClass):
         return self.Body is not None
     __nonzero__ = __bool__  # Python2 compatibilty
 
-    @staticmethod
-    def from_object(obj):
-        ext = ExtensionObject()
-        oid = getattr(ObjectIds, "{0}_Encoding_DefaultBinary".format(obj.__class__.__name__))
-        ext.TypeId = FourByteNodeId(oid)
-        ext.Body = obj.to_binary()
-        return ext
-
     def __str__(self):
         size = len(self.Body) if self.Body is not None else None
         return 'ExtensionObject(' + 'TypeId:' + str(self.TypeId) + ', ' + \
