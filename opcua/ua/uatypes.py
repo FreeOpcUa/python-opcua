@@ -4,14 +4,14 @@ implement ua datatypes
 
 import logging
 from enum import Enum, IntEnum
-from datetime import datetime
+from calendar import timegm
 import sys
 import os
 import uuid
 import re
 import itertools
+from datetime import datetime, timedelta, MAXYEAR, tzinfo
 
-from opcua.ua import ua_binary as uabin
 from opcua.ua import status_codes
 from opcua.ua import ObjectIds
 from opcua.ua.uaerrors import UaError
@@ -24,8 +24,46 @@ if sys.version_info.major > 2:
     unicode = str
 
 
+EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
+HUNDREDS_OF_NANOSECONDS = 10000000
+FILETIME_EPOCH_AS_DATETIME = datetime(1601, 1, 1)
+
+
+class UTC(tzinfo):
+    """
+    UTC
+    """
+
+    def utcoffset(self, dt):
+        return timedelta(0)
+
+    def tzname(self, dt):
+        return "UTC"
+
+    def dst(self, dt):
+        return timedelta(0)
+
+
+
+# method copied from David Buxton <david@gasmark6.com> sample code
+def datetime_to_win_epoch(dt):
+    if (dt.tzinfo is None) or (dt.tzinfo.utcoffset(dt) is None):
+        dt = dt.replace(tzinfo=UTC())
+    ft = EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
+    return ft + (dt.microsecond * 10)
+
+
 def get_win_epoch():
-    return uabin.win_epoch_to_datetime(0)
+    return win_epoch_to_datetime(0)
+
+
+def win_epoch_to_datetime(epch):
+    try:
+        return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch // 10)
+    except OverflowError:
+        # FILETIMEs after 31 Dec 9999 can't be converted to datetime
+        logger.warning("datetime overflow: %s", epch)
+        return datetime(MAXYEAR, 12, 31, 23, 59, 59, 999999)
 
 
 class _FrozenClass(object):

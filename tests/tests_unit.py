@@ -19,6 +19,7 @@ from opcua.common.ua_utils import string_to_variant, variant_to_string, string_t
 from opcua.common.xmlimporter import XmlImporter
 from opcua.ua.uatypes import _MaskEnum
 from opcua.common.structures import StructGenerator
+from opcua.common.connection import MessageChunk
 
 
 class TestUnit(unittest.TestCase):
@@ -389,25 +390,25 @@ class TestUnit(unittest.TestCase):
 
     def test_datetime(self):
         now = datetime.utcnow()
-        epch = ua.ua_binary.datetime_to_win_epoch(now)
-        dt = ua.ua_binary.win_epoch_to_datetime(epch)
+        epch = ua.datetime_to_win_epoch(now)
+        dt = ua.win_epoch_to_datetime(epch)
         self.assertEqual(now, dt)
 
         # python's datetime has a range from Jan 1, 0001 to the end of year 9999
         # windows' filetime has a range from Jan 1, 1601 to approx. year 30828
         # let's test an overlapping range [Jan 1, 1601 - Dec 31, 9999]
         dt = datetime(1601, 1, 1)
-        self.assertEqual(ua.ua_binary.win_epoch_to_datetime(ua.ua_binary.datetime_to_win_epoch(dt)), dt)
+        self.assertEqual(ua.win_epoch_to_datetime(ua.datetime_to_win_epoch(dt)), dt)
         dt = datetime(9999, 12, 31, 23, 59, 59)
-        self.assertEqual(ua.ua_binary.win_epoch_to_datetime(ua.ua_binary.datetime_to_win_epoch(dt)), dt)
+        self.assertEqual(ua.win_epoch_to_datetime(ua.datetime_to_win_epoch(dt)), dt)
 
         epch = 128930364000001000
-        dt = ua.ua_binary.win_epoch_to_datetime(epch)
-        epch2 = ua.ua_binary.datetime_to_win_epoch(dt)
+        dt = ua.win_epoch_to_datetime(epch)
+        epch2 = ua.datetime_to_win_epoch(dt)
         self.assertEqual(epch, epch2)
 
         epch = 0
-        self.assertEqual(ua.ua_binary.datetime_to_win_epoch(ua.ua_binary.win_epoch_to_datetime(epch)), epch)
+        self.assertEqual(ua.datetime_to_win_epoch(ua.win_epoch_to_datetime(epch)), epch)
 
     def test_equal_nodeid(self):
         nid1 = ua.NodeId(999, 2)
@@ -517,18 +518,18 @@ class TestUnit(unittest.TestCase):
 
     def test_message_chunk(self):
         pol = ua.SecurityPolicy()
-        chunks = ua.MessageChunk.message_to_chunks(pol, b'123', 65536)
+        chunks = MessageChunk.message_to_chunks(pol, b'123', 65536)
         self.assertEqual(len(chunks), 1)
         seq = 0
         for chunk in chunks:
             seq += 1
             chunk.SequenceHeader.SequenceNumber = seq
-        chunk2 = ua.MessageChunk.from_binary(pol, ua.utils.Buffer(chunks[0].to_binary()))
+        chunk2 = MessageChunk.from_binary(pol, ua.utils.Buffer(chunks[0].to_binary()))
         self.assertEqual(chunks[0].to_binary(), chunk2.to_binary())
 
         # for policy None, MessageChunk overhead is 12+4+8 = 24 bytes
         # Let's pack 11 bytes into 28-byte chunks. The message must be split as 4+4+3
-        chunks = ua.MessageChunk.message_to_chunks(pol, b'12345678901', 28)
+        chunks = MessageChunk.message_to_chunks(pol, b'12345678901', 28)
         self.assertEqual(len(chunks), 3)
         self.assertEqual(chunks[0].Body, b'1234')
         self.assertEqual(chunks[1].Body, b'5678')

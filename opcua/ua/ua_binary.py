@@ -5,8 +5,6 @@ Binary protocol specific functions and constants
 import sys
 import struct
 import logging
-from datetime import datetime, timedelta, tzinfo, MAXYEAR
-from calendar import timegm
 import uuid
 from enum import IntEnum, Enum
 
@@ -18,10 +16,6 @@ if sys.version_info.major > 2:
     unicode = str
 
 logger = logging.getLogger('__name__')
-
-EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
-HUNDREDS_OF_NANOSECONDS = 10000000
-FILETIME_EPOCH_AS_DATETIME = datetime(1601, 1, 1)
 
 
 def test_bit(data, offset):
@@ -37,38 +31,6 @@ def set_bit(data, offset):
 def unset_bit(data, offset):
     mask = 1 << offset
     return data & ~mask
-
-
-class UTC(tzinfo):
-    """
-    UTC
-    """
-
-    def utcoffset(self, dt):
-        return timedelta(0)
-
-    def tzname(self, dt):
-        return "UTC"
-
-    def dst(self, dt):
-        return timedelta(0)
-
-
-# method copied from David Buxton <david@gasmark6.com> sample code
-def datetime_to_win_epoch(dt):
-    if (dt.tzinfo is None) or (dt.tzinfo.utcoffset(dt) is None):
-        dt = dt.replace(tzinfo=UTC())
-    ft = EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
-    return ft + (dt.microsecond * 10)
-
-
-def win_epoch_to_datetime(epch):
-    try:
-        return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch // 10)
-    except OverflowError:
-        # FILETIMEs after 31 Dec 9999 can't be converted to datetime
-        logger.warning("datetime overflow: %s", epch)
-        return datetime(MAXYEAR, 12, 31, 23, 59, 59, 999999)
 
 
 def build_array_format_py2(prefix, length, fmtchar):
@@ -107,13 +69,13 @@ class _Primitive(object):
 class _DateTime(_Primitive):
     @staticmethod
     def pack(dt):
-        epch = datetime_to_win_epoch(dt)
+        epch = ua.datetime_to_win_epoch(dt)
         return Primitives.Int64.pack(epch)
 
     @staticmethod
     def unpack(data):
         epch = Primitives.Int64.unpack(data)
-        return win_epoch_to_datetime(epch)
+        return ua.win_epoch_to_datetime(epch)
 
 
 class _String(_Primitive):
@@ -559,3 +521,16 @@ def header_from_binary(data):
         hdr.body_size -= 4
         hdr.ChannelId = Primitives.UInt32.unpack(data)
     return hdr
+
+
+def uatcp_to_binary(message_type, message):
+    """
+    Convert OPC UA TCP message (see OPC UA specs Part 6, 7.1) to binary.
+    The only supported types are Hello, Acknowledge and ErrorMessage
+    """
+    header = ua.Header(message_type, ua.ChunkType.Single)
+    binmsg = struct_to_binary(message)
+    header.body_size = len(binmsg)
+    return header_to_binary(header) + binmsg
+
+

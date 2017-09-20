@@ -5,8 +5,9 @@ import time
 
 from opcua import ua
 from opcua.ua.ua_binary import nodeid_from_binary, struct_from_binary
-from opcua.ua.ua_binary import struct_to_binary
+from opcua.ua.ua_binary import struct_to_binary, uatcp_to_binary
 from opcua.common import utils
+from opcua.common.connection import SecureConnection
 
 
 class PublishRequestData(object):
@@ -31,7 +32,7 @@ class UaProcessor(object):
         self._datalock = RLock()
         self._publishdata_queue = []
         self._publish_result_queue = []  # used when we need to wait for PublishRequest
-        self._connection = ua.SecureConnection(ua.SecurityPolicy())
+        self._connection = SecureConnection(ua.SecurityPolicy())
 
     def set_policies(self, policies):
         self._connection.set_policy_factories(policies)
@@ -91,7 +92,7 @@ class UaProcessor(object):
             ack = ua.Acknowledge()
             ack.ReceiveBufferSize = msg.ReceiveBufferSize
             ack.SendBufferSize = msg.SendBufferSize
-            data = self._connection.tcp_to_binary(ua.MessageType.Acknowledge, ack)
+            data = uatcp_to_binary(ua.MessageType.Acknowledge, ack)
             self.socket.write(data)
         elif isinstance(msg, ua.ErrorMessage):
             self.logger.warning("Received an error message type")
@@ -127,13 +128,13 @@ class UaProcessor(object):
 
             response = ua.CreateSessionResponse()
             response.Parameters = sessiondata
-            response.Parameters.ServerCertificate = self._connection._security_policy.client_certificate
-            if self._connection._security_policy.server_certificate is None:
+            response.Parameters.ServerCertificate = self._connection.security_policy.client_certificate
+            if self._connection.security_policy.server_certificate is None:
                 data = params.ClientNonce
             else:
-                data = self._connection._security_policy.server_certificate + params.ClientNonce
+                data = self._connection.security_policy.server_certificate + params.ClientNonce
             response.Parameters.ServerSignature.Signature = \
-                self._connection._security_policy.asymmetric_cryptography.signature(data)
+                self._connection.security_policy.asymmetric_cryptography.signature(data)
 
             response.Parameters.ServerSignature.Algorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
 
@@ -158,11 +159,11 @@ class UaProcessor(object):
                 self.logger.info("request to activate non-existing session")
                 raise utils.ServiceError(ua.StatusCodes.BadSessionIdInvalid)
 
-            if self._connection._security_policy.client_certificate is None:
+            if self._connection.security_policy.client_certificate is None:
                 data = self.session.nonce
             else:
-                data = self._connection._security_policy.client_certificate + self.session.nonce
-            self._connection._security_policy.asymmetric_cryptography.verify(data, params.ClientSignature.Signature)
+                data = self._connection.security_policy.client_certificate + self.session.nonce
+            self._connection.security_policy.asymmetric_cryptography.verify(data, params.ClientSignature.Signature)
 
             result = self.session.activate_session(params)
 
@@ -245,7 +246,7 @@ class UaProcessor(object):
 
         elif typeid == ua.NodeId(ua.ObjectIds.RegisterServer2Request_Encoding_DefaultBinary):
             self.logger.info("register server 2 request")
-            params = form_binary(ua.RegisterServer2Parameters, body)
+            params = struct_from_binary(ua.RegisterServer2Parameters, body)
 
             results = self.iserver.register_server2(params)
 

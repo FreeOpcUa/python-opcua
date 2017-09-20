@@ -77,7 +77,6 @@ class CodeGenerator(object):
         self.write("")
         #self.write("from opcua.ua.uaerrors import UaError")
         self.write("from opcua.ua.uatypes import *")
-        self.write("from opcua.ua import ua_binary as uabin")
         self.write("from opcua.ua.object_ids import ObjectIds")
 
     def generate_enum_code(self, enum):
