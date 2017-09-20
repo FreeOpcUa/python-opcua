@@ -583,6 +583,7 @@ class ExtensionObject(FrozenClass):
 
     def __bool__(self):
         return self.Body is not None
+    __nonzero__ = __bool__  # Python2 compatibilty
 
     @staticmethod
     def from_object(obj):
