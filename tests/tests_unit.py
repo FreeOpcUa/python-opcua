@@ -145,6 +145,15 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(v.NodeIdValue, v2.NodeIdValue)
         print(v2.NodeIdValue)
 
+    def test_nodeid_nsu(self):
+        n = ua.NodeId(100, 2)
+        n.NamespaceUri = "http://freeopcua/tests"
+        n.ServerIndex = 4
+        data = nodeid_to_binary(n)
+        n2 = nodeid_from_binary(ua.utils.Buffer(data))
+        self.assertEqual(n, n2)
+        n3 = ua.NodeId.from_string(n.to_string())
+        self.assertEqual(n, n3)
 
     def test_nodeid_ordering(self):
         a = ua.NodeId(2000, 1)
@@ -201,6 +210,7 @@ class TestUnit(unittest.TestCase):
         statuscode2 = ua.StatusCode(ua.StatusCodes.Uncertain)
         self.assertEqual(string_to_val(s_statuscode, ua.VariantType.StatusCode), statuscode)
         self.assertEqual(string_to_val(s_statuscode2, ua.VariantType.StatusCode), statuscode2)
+
     def test_string_to_variant_qname(self):
         string = "2:name"
         obj = ua.QualifiedName("name", 2)

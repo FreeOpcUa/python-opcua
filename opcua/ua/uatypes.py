@@ -389,9 +389,9 @@ class NodeId(FrozenClass):
         return nodeid
 
     def to_string(self):
-        string = ""
+        string = []
         if self.NamespaceIndex != 0:
-            string += "ns={0};".format(self.NamespaceIndex)
+            string.append("ns={0}".format(self.NamespaceIndex))
         ntype = None
         if self.NodeIdType == NodeIdType.Numeric:
             ntype = "i"
@@ -405,12 +405,12 @@ class NodeId(FrozenClass):
             ntype = "g"
         elif self.NodeIdType == NodeIdType.ByteString:
             ntype = "b"
-        string += "{0}={1}".format(ntype, self.Identifier)
+        string.append("{0}={1}".format(ntype, self.Identifier))
         if self.ServerIndex:
-            string = "; srv=" + str(self.ServerIndex) + string
+            string.append("srv={}".format(self.ServerIndex))
         if self.NamespaceUri:
-            string += "; nsu={0}".format(self.NamespaceUri)
-        return string
+            string.append("nsu={0}".format(self.NamespaceUri))
+        return ";".join(string)
 
     def __str__(self):
         return "{0}NodeId({1})".format(self.NodeIdType.name, self.to_string())
