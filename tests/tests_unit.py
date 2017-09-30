@@ -41,6 +41,13 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(v, v2)
         self.assertTrue(v2.is_array)
 
+    def test_variant_empty_list(self):
+        v = ua.Variant([], varianttype=ua.VariantType.Int32, is_array=True)
+        data = variant_to_binary(v)
+        v2 = variant_from_binary(ua.utils.Buffer(data))
+        self.assertEqual(v, v2)
+        self.assertTrue(v2.is_array)
+
     def test_structs_save_and_import(self):
         xmlpath = "tests/example.bsd"
         c = StructGenerator()

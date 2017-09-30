@@ -33,40 +33,7 @@ def unset_bit(data, offset):
     return data & ~mask
 
 
-def build_array_format_py2(prefix, length, fmtchar):
-    return prefix + str(length) + fmtchar
-
-
-def build_array_format_py3(prefix, length, fmtchar):
-    return prefix + str(length) + chr(fmtchar)
-
-
-if sys.version_info.major < 3:
-    build_array_format = build_array_format_py2
-else:
-    build_array_format = build_array_format_py3
-
-
-class _Primitive(object):
-    def pack_array(self, array):
-        if array is None:
-            return b'\xff\xff\xff\xff'
-        length = len(array)
-        b = [self.pack(val) for val in array]
-        b.insert(0, Primitives.Int32.pack(length))
-        return b"".join(b)
-
-    def unpack_array(self, data):
-        length = Primitives.Int32.unpack(data)
-        if length == -1:
-            return None
-        elif length == 0:
-            return []
-        else:
-            return [self.unpack(data) for _ in range(length)]
-
-
-class _DateTime(_Primitive):
+class _DateTime(object):
     @staticmethod
     def pack(dt):
         epch = ua.datetime_to_win_epoch(dt)
@@ -78,7 +45,7 @@ class _DateTime(_Primitive):
         return ua.win_epoch_to_datetime(epch)
 
 
-class _String(_Primitive):
+class _String(object):
     @staticmethod
     def pack(string):
         if string is None:
@@ -99,7 +66,7 @@ class _String(_Primitive):
             return b.decode("utf-8")
 
 
-class _Bytes(_Primitive):
+class _Bytes(object):
     @staticmethod
     def pack(data):
         return _String.pack(data)
@@ -112,7 +79,7 @@ class _Bytes(_Primitive):
         return data.read(length)
 
 
-class _Null(_Primitive):
+class _Null(object):
     @staticmethod
     def pack(data):
         return b""
@@ -122,7 +89,7 @@ class _Null(_Primitive):
         return None
 
 
-class _Guid(_Primitive):
+class _Guid(object):
     @staticmethod
     def pack(guid):
         # convert python UUID 6 field format to OPC UA 4 field format
@@ -151,7 +118,7 @@ class _Guid(_Primitive):
         return uuid.UUID(bytes=b)
 
 
-class _Primitive1(_Primitive):
+class _Primitive1(object):
     def __init__(self, fmt):
         self.struct = struct.Struct(fmt)
         self.size = self.struct.size
@@ -189,15 +156,6 @@ class Primitives(Primitives1):
     Guid = _Guid()
 
 
-def pack_uatype_array(vtype, array):
-    if array is None:
-        return b'\xff\xff\xff\xff'
-    length = len(array)
-    b = [pack_uatype(vtype, val) for val in array]
-    b.insert(0, Primitives.Int32.pack(length))
-    return b"".join(b)
-
-
 def pack_uatype(vtype, value):
     if hasattr(Primitives, vtype.name):
         return getattr(Primitives, vtype.name).pack(value)
@@ -233,16 +191,20 @@ def unpack_uatype(vtype, data):
             raise UaError("Cannot unpack unknown variant type {0!s}".format(vtype))
 
 
+def pack_uatype_array(vtype, array):
+    if array is None:
+        return b'\xff\xff\xff\xff'
+    length = len(array)
+    b = [pack_uatype(vtype, val) for val in array]
+    b.insert(0, Primitives.Int32.pack(length))
+    return b"".join(b)
+
+
 def unpack_uatype_array(vtype, data):
-    if hasattr(Primitives, vtype.name):
-        st = getattr(Primitives, vtype.name)
-        return st.unpack_array(data)
-    else:
-        length = Primitives.Int32.unpack(data)
-        if length == -1:
-            return None
-        else:
-            return [unpack_uatype(vtype, data) for _ in range(length)]
+    length = Primitives.Int32.unpack(data)
+    if length == -1:
+        return None
+    return [unpack_uatype(vtype, data) for _ in range(length)]
 
 
 def struct_to_binary(obj):
@@ -272,11 +234,9 @@ def to_binary(uatype, val):
     """
     Pack a python object to binary given a string defining its type
     """
-    if isinstance(val, (list, tuple)):
-        length = len(val)
-        b = [to_binary(uatype, el) for el in val]
-        b.insert(0, Primitives.Int32.pack(length))
-        return b"".join(b)
+    if uatype.startswith("ListOf"):
+    #if isinstance(val, (list, tuple)):
+        return list_to_binary(uatype[6:], val)
     elif isinstance(uatype, (str, unicode)) and hasattr(ua.VariantType, uatype):
         vtype = getattr(ua.VariantType, uatype)
         return pack_uatype(vtype, val)
@@ -295,12 +255,11 @@ def to_binary(uatype, val):
 def list_to_binary(uatype, val):
     if val is None:
         return Primitives.Int32.pack(-1)
-    else:
-        pack = []
-        pack.append(Primitives.Int32.pack(len(val)))
-        for el in val:
-            pack.append(to_binary(uatype, el))
-        return b''.join(pack)
+    pack = []
+    pack.append(Primitives.Int32.pack(len(val)))
+    for el in val:
+        pack.append(to_binary(uatype, el))
+    return b''.join(pack)
 
 
 def nodeid_to_binary(nodeid):
@@ -542,5 +501,3 @@ def uatcp_to_binary(message_type, message):
     binmsg = struct_to_binary(message)
     header.body_size = len(binmsg)
     return header_to_binary(header) + binmsg
-
-
