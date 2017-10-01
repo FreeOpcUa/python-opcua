@@ -38,7 +38,7 @@ def val_to_string(val):
     elif isinstance(val, str):
         pass
     elif isinstance(val, bytes):
-        val = val.decode("utf-8")
+        val = val.decode("utf-8", errors="replace")
     elif isinstance(val, datetime):
         val = val.isoformat()
     elif isinstance(val, (int, float)):

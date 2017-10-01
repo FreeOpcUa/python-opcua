@@ -112,7 +112,8 @@ class _MaskEnum(IntEnum):
     @classmethod
     def parse_bitfield(cls, the_int):
         """ Take an integer and interpret it as a set of enum values. """
-        assert isinstance(the_int, int)
+        if not isinstance(the_int, int):
+            raise ValueError("Argument should be an int, we received {} fo type {}".format(the_int, type(the_int)))
 
         return {cls(b) for b in cls._bits(the_int)}
 
