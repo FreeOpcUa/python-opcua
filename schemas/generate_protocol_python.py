@@ -1,14 +1,12 @@
 
 IgnoredEnums = ["NodeIdType"]
-IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "LocalizedText", "ExtensionObject", "XmlElement"]
+IgnoredStructs = ["QualifiedName", "NodeId", "ExpandedNodeId", "FilterOperand", "Variant", "DataValue", "ExtensionObject", "XmlElement", "LocalizedText"]
 
 class Primitives1(object):
-    Int8 = 0
     SByte = 0
     Int16 = 0
     Int32 = 0
     Int64 = 0
-    UInt8 = 0
     Char = 0
     Byte = 0
     UInt16 = 0
@@ -79,7 +77,6 @@ class CodeGenerator(object):
         self.write("")
         #self.write("from opcua.ua.uaerrors import UaError")
         self.write("from opcua.ua.uatypes import *")
-        self.write("from opcua.ua import ua_binary as uabin")
         self.write("from opcua.ua.object_ids import ObjectIds")
 
     def generate_enum_code(self, enum):
@@ -115,20 +112,30 @@ class CodeGenerator(object):
         self.write("'''")
 
         self.write("")
-        self.write("ua_types = {")
+        switch_written = False
         for field in obj.fields:
-            self.write("    '{}': '{}',".format(field.name, field.uatype))
-        self.write("           }")
+            if field.switchfield is not None:
+                if not switch_written:
+                    self.write("ua_switches = {")
+                    switch_written = True
+
+                bit = obj.bits[field.switchfield]
+                self.write("    '{}': ('{}', {}),".format(field.name, bit.container, bit.idx))
+            #if field.switchvalue is not None: Not sure we need to handle that one
+        if switch_written:
+            self.write("           }")
+        self.write("ua_types = [")
+        for field in obj.fields:
+            prefix = "ListOf" if field.length else ""
+            uatype = prefix + field.uatype
+            if uatype == "ListOfChar":
+                uatype = "String"
+            self.write("    ('{}', '{}'),".format(field.name, uatype))
+        self.write("           ]")
         self.write("")
 
-        self.write("def __init__(self, binary=None):")
+        self.write("def __init__(self):")
         self.iidx += 1
-        self.write("if binary is not None:")
-        self.iidx += 1
-        self.write("self._binary_init(binary)")
-        self.write("self._freeze = True")
-        self.write("return")
-        self.iidx -= 1
 
         # hack extension object stuff
         extobj_hack = False
@@ -147,141 +154,7 @@ class CodeGenerator(object):
         self.write("self._freeze = True")
         self.iidx = 1
 
-        # serialize code
-        self.write("")
-        self.write("def to_binary(self):")
-        self.iidx += 1
-
-        # hack for self referencing classes
-        # for field in obj.fields:
-        # if field.uatype == obj.name: #help!!! selv referencing class
-        #self.write("if self.{name} is None: self.{name} = {uatype}()".format(name=field.name, uatype=field.uatype))
-
-        self.write("packet = []")
-        if extobj_hack:
-            self.write("body = []")
-        #self.write("tmp = packet")
-        for field in obj.fields:
-            if field.switchfield:
-                if field.switchvalue:
-                    bit = obj.bits[field.switchfield]
-                    #self.write("if self.{}: self.{} |= (value << {})".format(field.name, field.switchfield, field.switchvalue))
-                    mask = '0b' + '0' * (8 - bit.length) + '1' * bit.length
-                    self.write("others = self.{} & {}".format(bit.container, mask))
-                    self.write("if self.{}: self.{} = ( {} | others )".format(field.name, bit.container, field.switchvalue))
-                else:
-                    bit = obj.bits[field.switchfield]
-                    self.write("if self.{}: self.{} |= (1 << {})".format(field.name, bit.container, bit.idx))
-        iidx = self.iidx
-        listname = "packet"
-        for idx, field in enumerate(obj.fields):
-            # if field.name == "Body" and idx <= (len(obj.fields)-1):
-            if field.name == "BodyLength":
-                listname = "body"
-                #self.write("tmp = packet")
-                continue
-            self.iidx = iidx
-            switch = ""
-            fname = "self." + field.name
-            if field.switchfield:
-                self.write("if self.{}: ".format(field.name))
-                self.iidx += 1
-            if field.length:
-                self.write("{}.append(uabin.Primitives.Int32.pack(len(self.{})))".format(listname, field.name))
-                self.write("for fieldname in self.{}:".format(field.name))
-                fname = "fieldname"
-                self.iidx += 1
-            if field.is_native_type():
-                self.write_pack_uatype(listname, fname, field.uatype)
-            elif field.uatype in self.model.enum_list:
-                enum = self.model.get_enum(field.uatype)
-                self.write_pack_enum(listname, fname, enum)
-            elif field.uatype in ("ExtensionObject"):
-                self.write("{}.append(extensionobject_to_binary({}))".format(listname, fname))
-            else:
-                self.write("{}.append({}.to_binary())".format(listname, fname))
-            if field.length:
-                self.iidx -= 1
-        self.iidx = 2
-        if extobj_hack:
-            self.write("body = b''.join(body)")
-            self.write("packet.append(struct.pack('<i', len(body)))")
-            self.write("packet.append(body)")
-        self.write("return b''.join(packet)")
-        self.write("")
-
-        self.iidx = 1
-        # deserialize
-        self.write("@staticmethod")
-        self.write("def from_binary(data):")
-        self.iidx += 1
-        self.write("return {}(data)".format(obj.name))
-        self.iidx -= 1
-        self.write("")
-
-        self.write("def _binary_init(self, data):")
-        self.iidx += 1
-        iidx = self.iidx
-        for idx, field in enumerate(obj.fields):
-            self.iidx = iidx
-            # if field.name == "Body" and idx <= (len(obj.fields)-1):
-            #self.write("bodylength = struct.unpack('<i', data)[0]")
-            # continue
-            if field.switchfield:
-                bit = obj.bits[field.switchfield]
-                if field.switchvalue:
-                    mask = '0b' + '0' * (8 - bit.length) + '1' * bit.length
-                    self.write("val = self.{} & {}".format(bit.container, mask))
-                    self.write("if val == {}:".format(bit.idx))
-                else:
-                    self.write("if self.{} & (1 << {}):".format(bit.container, bit.idx))
-                self.iidx += 1
-            if field.is_native_type():
-                if field.length:
-                    self.write("self.{} = uabin.Primitives.{}.unpack_array(data)".format(field.name, field.uatype))
-                else:
-                    self.write_unpack_uatype(field.name, field.uatype)
-            elif field.uatype in self.model.enum_list:
-                #uatype = self.model.get_enum(field.uatype).uatype
-                #self.write_unpack_uatype(field.name, uatype)
-                enum = self.model.get_enum(field.uatype)
-                self.write_unpack_enum(field.name, enum)
-            else:
-                if field.uatype in ("ExtensionObject"):
-                    frombinary = "extensionobject_from_binary(data)"
-                else:
-                    frombinary = "{}.from_binary(data)".format(field.uatype)
-                if field.length:
-                    self.write("length = uabin.Primitives.Int32.unpack(data)")
-                    self.write("array = []")
-                    self.write("if length != -1:")
-                    self.iidx += 1
-                    self.write("for _ in range(0, length):")
-                    self.iidx += 1
-                    self.write("array.append({})".format(frombinary))
-                    self.iidx -= 2
-                    self.write("self.{} = array".format(field.name))
-                else:
-                    self.write("self.{} = {}".format(field.name, frombinary))
-            if field.switchfield:
-                self.iidx -= 1
-                self.write("else:")
-                self.iidx += 1
-                if extobj_hack and field.name == "Encoding":
-                    self.write("self.Encoding = 1")
-                elif field.uatype == obj.name:  # help!!! selv referencing class
-                    self.write("self.{} = None".format(field.name))
-                elif not obj.name in ("ExtensionObject") and field.name == "TypeId":  # and ( obj.name.endswith("Request") or obj.name.endswith("Response")):
-                    self.write("self.TypeId = FourByteNodeId(ObjectIds.{}_Encoding_DefaultBinary)".format(obj.name))
-                else:
-                    self.write("self.{} = {}".format(field.name, "[]" if field.length else self.get_default_value(field)))
-        if len(obj.fields) == 0:
-            self.write("pass")
-
-        self.iidx = 2
-
         #__str__
-        self.iidx = 1
         self.write("")
         self.write("def __str__(self):")
         self.iidx += 1
@@ -298,7 +171,7 @@ class CodeGenerator(object):
         self.write("self.{} = {}(uabin.Primitives.{}.unpack(data))".format(name, enum.name, enum.uatype))
 
     def get_size_from_uatype(self, uatype):
-        if uatype in ("Int8", "UInt8", "Sbyte", "Byte", "Char", "Boolean"):
+        if uatype in ("Sbyte", "Byte", "Char", "Boolean"):
             return 1
         elif uatype in ("Int16", "UInt16"):
             return 2
@@ -326,6 +199,8 @@ class CodeGenerator(object):
             return
 
     def get_default_value(self, field):
+        if field.switchfield:
+            return None
         if field.uatype in self.model.enum_list:
             enum = self.model.get_enum(field.uatype)
             return enum.name + "(0)"
@@ -337,10 +212,10 @@ class CodeGenerator(object):
             return "True"
         elif field.uatype in ("DateTime"):
             return "datetime.utcnow()"
-        elif field.uatype in ("Int8", "Int16", "Int32", "Int64", "UInt8", "UInt16", "UInt32", "UInt64", "Double", "Float", "Byte"):
+        elif field.uatype in ("Int16", "Int32", "Int64", "UInt16", "UInt32", "UInt64", "Double", "Float", "Byte"):
             return 0
         elif field.uatype in ("ExtensionObject"):
-            return "None"
+            return "ExtensionObject()"
         else:
             return field.uatype + "()"
 
@@ -356,5 +231,6 @@ if __name__ == "__main__":
     gm.remove_vector_length(model)
     gm.split_requests(model)
     gm.fix_names(model)
+    gm.remove_duplicate_types(model)
     c = CodeGenerator(model, protocolpath)
     c.run()

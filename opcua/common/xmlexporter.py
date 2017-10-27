@@ -11,6 +11,7 @@ import base64
 from opcua import ua
 from opcua.ua import object_ids as o_ids
 from opcua.common.ua_utils import get_base_data_type
+from opcua.ua.uatypes import extension_object_ids
 
 
 class XmlExporter(object):
@@ -377,7 +378,7 @@ class XmlExporter(object):
                 if val is not None:
                     el.text = str(val)
         else:
-            for name, vtype in val.ua_types.items():
+            for name, vtype in val.ua_types:
                 self.member_to_etree(el, name, ua.NodeId(getattr(ua.ObjectIds, vtype)), getattr(val, name))
 
 
@@ -386,7 +387,6 @@ class XmlExporter(object):
         if var.Value is not None:
             val_el = Et.SubElement(el, 'Value')
             self._value_to_etree(val_el, dtype_name, dtype, var.Value)
-
 
     def _value_to_etree(self, el, type_name, dtype, val):
         if val is None:
@@ -417,6 +417,8 @@ class XmlExporter(object):
                 self._extobj_to_etree(el, type_name, dtype, val)
 
 
+
+
     def _extobj_to_etree(self, val_el, name, dtype, val):
         obj_el = Et.SubElement(val_el, "uax:ExtensionObject")
         type_el = Et.SubElement(obj_el, "uax:TypeId")
@@ -424,8 +426,14 @@ class XmlExporter(object):
         id_el.text = dtype.to_string()
         body_el = Et.SubElement(obj_el, "uax:Body")
         struct_el = Et.SubElement(body_el, "uax:" + name)
-        for name in self._get_member_order(dtype, val):
-            self.member_to_etree(struct_el, name, ua.NodeId(getattr(ua.ObjectIds, val.ua_types[name])), getattr(val, name))
+        for name, vtype  in val.ua_types:
+            # FIXME; what happend if we have a custom type which is not part of ObjectIds???
+            if vtype.startswith("ListOf"):
+                vtype = vtype[6:]
+            self.member_to_etree(struct_el, name, ua.NodeId(getattr(ua.ObjectIds, vtype)), getattr(val, name))
+            #self.member_to_etree(struct_el, name, extension_object_ids[vtype], getattr(val, name))
+        #for name in self._get_member_order(dtype, val):
+            #self.member_to_etree(struct_el, name, ua.NodeId(getattr(ua.ObjectIds, val.ua_types[name])), getattr(val, name))
 
     def _get_member_order(self, dtype, val):
         '''

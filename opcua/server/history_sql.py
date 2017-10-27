@@ -5,6 +5,7 @@ from threading import Lock
 import sqlite3
 
 from opcua import ua
+from opcua.ua.ua_binary import variant_from_binary, variant_to_binary
 from opcua.common.utils import Buffer
 from opcua.common import events
 from opcua.server.history import HistoryStorageInterface
@@ -66,7 +67,7 @@ class HistorySQLite(HistoryStorageInterface):
                                    datavalue.StatusCode.value,
                                    str(datavalue.Value.Value),
                                    datavalue.Value.VariantType.name,
-                                   sqlite3.Binary(datavalue.Value.to_binary())
+                                   sqlite3.Binary(variant_to_binary(datavalue.Value))
                                )
                               )
             except sqlite3.Error as e:
@@ -114,7 +115,7 @@ class HistorySQLite(HistoryStorageInterface):
                                            (start_time, end_time, limit,)):
 
                     # rebuild the data value object
-                    dv = ua.DataValue(ua.Variant.from_binary(Buffer(row[6])))
+                    dv = ua.DataValue(variant_from_binary(Buffer(row[6])))
                     dv.ServerTimestamp = row[1]
                     dv.SourceTimestamp = row[2]
                     dv.StatusCode = ua.StatusCode(row[3])
@@ -215,7 +216,7 @@ class HistorySQLite(HistoryStorageInterface):
                     cont_timestamps.append(row[0])
                     for i, field in enumerate(row[1:]):
                         if field is not None:
-                            fdict[clauses[i]] = ua.Variant.from_binary(Buffer(field))
+                            fdict[clauses[i]] = variant_from_binary(Buffer(field))
                         else:
                             fdict[clauses[i]] = ua.Variant(None)
 
@@ -302,7 +303,7 @@ class HistorySQLite(HistoryStorageInterface):
         for name in names:
             variant = ev_variant_dict[name]
             placeholders.append('?')
-            ev_variant_binaries.append(sqlite3.Binary(variant.to_binary()))
+            ev_variant_binaries.append(sqlite3.Binary(variant_to_binary(variant)))
 
         return self._list_to_sql_str(names), self._list_to_sql_str(placeholders, False), tuple(ev_variant_binaries)
 

@@ -9,6 +9,7 @@ from copy import copy
 import opcua
 from opcua import ua
 from opcua.common import xmlparser
+from opcua.ua.uaerrors import UaError
 
 import sys
 
@@ -222,19 +223,25 @@ class XmlImporter(object):
     def _make_ext_obj(self, obj):
         ext = self._get_ext_class(obj.objname)()
         for name, val in obj.body:
-            if isinstance(val, str):
-                raise Exception("Error val should a dict", name, val)
+            if not isinstance(val, list):
+                raise Exception("Error val should be a list, this is a python-opcua bug", name, type(val), val)
             else:
                 for attname, v in val:
                     self._set_attr(ext, attname, v)
         return ext
+
+    def _get_val_type(self, obj, attname):
+        for name, uatype in obj.ua_types:
+            if name == attname:
+                return uatype
+        raise UaError("Attribute '{}' defined in xml is not found in object '{}'".format(attname, ext))
 
     def _set_attr(self, obj, attname, val):
         # tow possible values:
         # either we get value directly
         # or a dict if it s an object or a list
         if isinstance(val, (str, unicode)):
-            pval = xmlparser.ua_type_to_python(val, obj.ua_types[attname])
+            pval = xmlparser.ua_type_to_python(val, self._get_val_type(obj, attname))
             setattr(obj, attname, pval)
         else:
             # so we have either an object or a list...
@@ -248,7 +255,7 @@ class XmlImporter(object):
                             obj2 = ua.NodeId.from_string(v2)
                         setattr(obj, attname, obj2)
                         break
-            elif not isinstance(obj2, ua.NodeId) and not hasattr(obj2, "ua_types"):
+            elif not hasattr(obj2, "ua_types"):
                 # we probably have a list
                 my_list = []
                 for vtype, v2 in val:

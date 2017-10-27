@@ -721,25 +721,3 @@ class CommonTests(object):
         for dt, vdt in test_data.items():
             self.assertEqual(ua_utils.data_type_to_variant_type(self.opc.get_node(ua.NodeId(dt))), vdt)
 
-    def test_variant_intenum(self):
-        ase = ua.AxisScaleEnumeration(ua.AxisScaleEnumeration.Linear)  # Just pick an existing IntEnum class
-        vAse = ua.Variant(ase)
-        self.assertEqual(vAse.VariantType, ua.VariantType.Int32)
-
-    def test_variant_listoflocalizedtext(self):
-        '''
-        Implementation regarding LocalizedText[] in a Variant was changed without detection in test.
-        This test makes it is tested. 
-        '''
-        v = ua.Variant(['Linear', 'Log', 'Ln'], ua.VariantType.LocalizedText)
-        with self.assertRaises(ua.UaError):
-            v.to_binary()
-
-        v = ua.Variant([ua.LocalizedText('Linear'), ua.LocalizedText('Log'), ua.LocalizedText('Ln')], ua.VariantType.LocalizedText)
-        with self.assertNotRaises(ua.UaError):
-            v.to_binary()
-
-
-
-
-

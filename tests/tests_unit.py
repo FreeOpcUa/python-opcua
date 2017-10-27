@@ -8,15 +8,18 @@ from collections import namedtuple
 import uuid
 
 from opcua import ua
-from opcua.ua import extensionobject_from_binary
-from opcua.ua import extensionobject_to_binary
-from opcua.ua.uatypes import flatten, get_shape, reshape
+from opcua.ua.ua_binary import extensionobject_from_binary
+from opcua.ua.ua_binary import extensionobject_to_binary
+from opcua.ua.ua_binary import nodeid_to_binary, variant_to_binary, _reshape, variant_from_binary, nodeid_from_binary
+from opcua.ua.ua_binary import struct_to_binary, struct_from_binary
+from opcua.ua import flatten, get_shape
 from opcua.server.internal_subscription import WhereClauseEvaluator
 from opcua.common.event_objects import BaseEvent
 from opcua.common.ua_utils import string_to_variant, variant_to_string, string_to_val, val_to_string
 from opcua.common.xmlimporter import XmlImporter
 from opcua.ua.uatypes import _MaskEnum
 from opcua.common.structures import StructGenerator
+from opcua.common.connection import MessageChunk
 
 
 class TestUnit(unittest.TestCase):
@@ -27,14 +30,21 @@ class TestUnit(unittest.TestCase):
 
     def test_variant_array_none(self):
         v = ua.Variant(None, varianttype=ua.VariantType.Int32, is_array=True)
-        data = v.to_binary()
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(data))
+        data = variant_to_binary(v)
+        v2 = variant_from_binary(ua.utils.Buffer(data))
         self.assertEqual(v, v2)
         self.assertTrue(v2.is_array)
 
         v = ua.Variant(None, varianttype=ua.VariantType.Null, is_array=True)
-        data = v.to_binary()
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(data))
+        data = variant_to_binary(v)
+        v2 = variant_from_binary(ua.utils.Buffer(data))
+        self.assertEqual(v, v2)
+        self.assertTrue(v2.is_array)
+
+    def test_variant_empty_list(self):
+        v = ua.Variant([], varianttype=ua.VariantType.Int32, is_array=True)
+        data = variant_to_binary(v)
+        v2 = variant_from_binary(ua.utils.Buffer(data))
         self.assertEqual(v, v2)
         self.assertTrue(v2.is_array)
 
@@ -51,13 +61,13 @@ class TestUnit(unittest.TestCase):
         xmlpath = "tests/example.bsd"
         c = StructGenerator()
         c.make_model_from_file(xmlpath)
-        c.save_to_file("structures.py")
+        c.save_to_file("tests/structures.py")
         import structures as s
 
         # test with default values
         v = s.ScalarValueDataType()
-        data = v.to_binary()
-        v2 = s.ScalarValueDataType.from_binary(ua.utils.Buffer(data))
+        data = struct_to_binary(v)
+        v2 = struct_from_binary(s.ScalarValueDataType, ua.utils.Buffer(data))
 
 
         # set some values
@@ -90,21 +100,21 @@ class TestUnit(unittest.TestCase):
         #self.UInteger =
 
 
-        data = v.to_binary()
-        v2 = s.ScalarValueDataType.from_binary(ua.utils.Buffer(data))
+        data = struct_to_binary(v)
+        v2 = struct_from_binary(s.ScalarValueDataType, ua.utils.Buffer(data))
         self.assertEqual(v.NodeIdValue, v2.NodeIdValue)
 
     def test_custom_structs_array(self):
         xmlpath = "tests/example.bsd"
         c = StructGenerator()
         c.make_model_from_file(xmlpath)
-        c.save_to_file("structures.py")
+        c.save_to_file("tests/structures.py")
         import structures as s
 
         # test with default values
         v = s.ArrayValueDataType()
-        data = v.to_binary()
-        v2 = s.ArrayValueDataType.from_binary(ua.utils.Buffer(data))
+        data = struct_to_binary(v)
+        v2 = struct_from_binary(s.ArrayValueDataType, ua.utils.Buffer(data))
 
 
         # set some values
@@ -137,11 +147,20 @@ class TestUnit(unittest.TestCase):
         #self.UInteger =
 
 
-        data = v.to_binary()
-        v2 = s.ArrayValueDataType.from_binary(ua.utils.Buffer(data))
+        data = struct_to_binary(v)
+        v2 = struct_from_binary(s.ArrayValueDataType, ua.utils.Buffer(data))
         self.assertEqual(v.NodeIdValue, v2.NodeIdValue)
         print(v2.NodeIdValue)
 
+    def test_nodeid_nsu(self):
+        n = ua.NodeId(100, 2)
+        n.NamespaceUri = "http://freeopcua/tests"
+        n.ServerIndex = 4
+        data = nodeid_to_binary(n)
+        n2 = nodeid_from_binary(ua.utils.Buffer(data))
+        self.assertEqual(n, n2)
+        n3 = ua.NodeId.from_string(n.to_string())
+        self.assertEqual(n, n3)
 
     def test_nodeid_ordering(self):
         a = ua.NodeId(2000, 1)
@@ -198,6 +217,7 @@ class TestUnit(unittest.TestCase):
         statuscode2 = ua.StatusCode(ua.StatusCodes.Uncertain)
         self.assertEqual(string_to_val(s_statuscode, ua.VariantType.StatusCode), statuscode)
         self.assertEqual(string_to_val(s_statuscode2, ua.VariantType.StatusCode), statuscode2)
+
     def test_string_to_variant_qname(self):
         string = "2:name"
         obj = ua.QualifiedName("name", 2)
@@ -218,15 +238,15 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(string_to_val(string, ua.VariantType.XmlElement), obj)
         self.assertEqual(val_to_string(obj), string)
 
-        b = obj.to_binary()
-        obj2 = obj.from_binary(ua.utils.Buffer(b))
+        b = struct_to_binary(obj)
+        obj2 = struct_from_binary(ua.XmlElement, ua.utils.Buffer(b))
         self.assertEqual(obj, obj2)
 
     def test_variant_dimensions(self):
         l = [[[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0], [3.0, 3.0, 3.0, 3.0]], [[5.0, 5.0, 5.0, 5.0], [7.0, 8.0, 9.0, 01.0], [1.0, 1.0, 1.0, 1.0]]]
         v = ua.Variant(l)
         self.assertEqual(v.Dimensions, [2, 3, 4])
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        v2 = variant_from_binary(ua.utils.Buffer(variant_to_binary(v)))
         self.assertEqual(v, v2)
         self.assertEqual(v.Dimensions, v2.Dimensions)
 
@@ -234,7 +254,7 @@ class TestUnit(unittest.TestCase):
         l = [[[], [], []], [[], [], []]]
         v = ua.Variant(l, ua.VariantType.UInt32)
         self.assertEqual(v.Dimensions, [2, 3, 0])
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        v2 = variant_from_binary(ua.utils.Buffer(variant_to_binary(v)))
         self.assertEqual(v.Dimensions, v2.Dimensions)
         self.assertEqual(v, v2)
 
@@ -245,7 +265,7 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(dims, [2, 3, 4])
         self.assertNotEqual(l, l2)
 
-        l3 = reshape(l2, (2, 3, 4))
+        l3 = _reshape(l2, (2, 3, 4))
         self.assertEqual(l, l3)
 
 
@@ -264,20 +284,20 @@ class TestUnit(unittest.TestCase):
         with self.assertRaises(ua.UaError):
             v = ua.Variant(b"ljsdfljds", ua.VariantTypeCustom(89))
         v = ua.Variant(b"ljsdfljds", ua.VariantTypeCustom(61))
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        v2 = variant_from_binary(ua.utils.Buffer(variant_to_binary(v)))
         self.assertEqual(v.VariantType, v2.VariantType)
         self.assertEqual(v, v2)
 
 
     def test_custom_variant_array(self):
         v = ua.Variant([b"ljsdfljds", b"lkjsdljksdf"], ua.VariantTypeCustom(40))
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        v2 = variant_from_binary(ua.utils.Buffer(variant_to_binary(v)))
         self.assertEqual(v.VariantType, v2.VariantType)
         self.assertEqual(v, v2)
 
     def test_guid(self):
         v = ua.Variant(uuid.uuid4(), ua.VariantType.Guid)
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        v2 = variant_from_binary(ua.utils.Buffer(variant_to_binary(v)))
         self.assertEqual(v.VariantType, v2.VariantType)
         self.assertEqual(v, v2)
 
@@ -286,8 +306,8 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(nid.NodeIdType, ua.NodeIdType.TwoByte)
         nid = ua.NodeId(446, 3, ua.NodeIdType.FourByte)
         self.assertEqual(nid.NodeIdType, ua.NodeIdType.FourByte)
-        d = nid.to_binary()
-        new_nid = nid.from_binary(io.BytesIO(d))
+        d = nodeid_to_binary(nid)
+        new_nid = nodeid_from_binary(io.BytesIO(d))
         self.assertEqual(new_nid, nid)
         self.assertEqual(new_nid.NodeIdType, ua.NodeIdType.FourByte)
         self.assertEqual(new_nid.Identifier, 446)
@@ -311,12 +331,12 @@ class TestUnit(unittest.TestCase):
         self.assertNotEqual(s, bs)
         self.assertNotEqual(s, g)
         self.assertNotEqual(g, guid)
-        self.assertEqual(tb, ua.NodeId.from_binary(ua.utils.Buffer(tb.to_binary())))
-        self.assertEqual(fb, ua.NodeId.from_binary(ua.utils.Buffer(fb.to_binary())))
-        self.assertEqual(n, ua.NodeId.from_binary(ua.utils.Buffer(n.to_binary())))
-        self.assertEqual(s1, ua.NodeId.from_binary(ua.utils.Buffer(s1.to_binary())))
-        self.assertEqual(bs, ua.NodeId.from_binary(ua.utils.Buffer(bs.to_binary())))
-        self.assertEqual(guid, ua.NodeId.from_binary(ua.utils.Buffer(guid.to_binary())))
+        self.assertEqual(tb, nodeid_from_binary(ua.utils.Buffer(nodeid_to_binary(tb))))
+        self.assertEqual(fb, nodeid_from_binary(ua.utils.Buffer(nodeid_to_binary(fb))))
+        self.assertEqual(n, nodeid_from_binary(ua.utils.Buffer(nodeid_to_binary(n))))
+        self.assertEqual(s1, nodeid_from_binary(ua.utils.Buffer(nodeid_to_binary(s1))))
+        self.assertEqual(bs, nodeid_from_binary(ua.utils.Buffer(nodeid_to_binary(bs))))
+        self.assertEqual(guid, nodeid_from_binary(ua.utils.Buffer(nodeid_to_binary(guid))))
 
     def test_nodeid_string(self):
         nid0 = ua.NodeId(45)
@@ -349,29 +369,29 @@ class TestUnit(unittest.TestCase):
     def test_expandednodeid(self):
         nid = ua.ExpandedNodeId()
         self.assertEqual(nid.NodeIdType, ua.NodeIdType.TwoByte)
-        nid2 = ua.ExpandedNodeId.from_binary(ua.utils.Buffer(nid.to_binary()))
+        nid2 = nodeid_from_binary(ua.utils.Buffer(nodeid_to_binary(nid)))
         self.assertEqual(nid, nid2)
 
     def test_null_string(self):
         v = ua.Variant(None, ua.VariantType.String)
-        b = v.to_binary()
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(b))
+        b = variant_to_binary(v)
+        v2 = variant_from_binary(ua.utils.Buffer(b))
         self.assertEqual(v.Value, v2.Value)
         v = ua.Variant("", ua.VariantType.String)
-        b = v.to_binary()
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(b))
+        b = variant_to_binary(v)
+        v2 = variant_from_binary(ua.utils.Buffer(b))
         self.assertEqual(v.Value, v2.Value)
 
     def test_extension_object(self):
         obj = ua.UserNameIdentityToken()
         obj.UserName = "admin"
         obj.Password = b"pass"
-        obj2 = ua.extensionobject_from_binary(ua.utils.Buffer(extensionobject_to_binary(obj)))
+        obj2 = extensionobject_from_binary(ua.utils.Buffer(extensionobject_to_binary(obj)))
         self.assertEqual(type(obj), type(obj2))
         self.assertEqual(obj.UserName, obj2.UserName)
         self.assertEqual(obj.Password, obj2.Password)
         v1 = ua.Variant(obj)
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(v1.to_binary()))
+        v2 = variant_from_binary(ua.utils.Buffer(variant_to_binary(v1)))
         self.assertEqual(type(v1), type(v2))
         self.assertEqual(v1.VariantType, v2.VariantType)
 
@@ -380,32 +400,32 @@ class TestUnit(unittest.TestCase):
         obj.Body = b'example of data in custom format'
         obj.TypeId = ua.NodeId.from_string('ns=3;i=42')
         data = ua.utils.Buffer(extensionobject_to_binary(obj))
-        obj2 = ua.extensionobject_from_binary(data)
+        obj2 = extensionobject_from_binary(data)
         self.assertEqual(type(obj2), ua.ExtensionObject)
         self.assertEqual(obj2.TypeId, obj.TypeId)
         self.assertEqual(obj2.Body, b'example of data in custom format')
 
     def test_datetime(self):
         now = datetime.utcnow()
-        epch = ua.ua_binary.datetime_to_win_epoch(now)
-        dt = ua.ua_binary.win_epoch_to_datetime(epch)
+        epch = ua.datetime_to_win_epoch(now)
+        dt = ua.win_epoch_to_datetime(epch)
         self.assertEqual(now, dt)
 
         # python's datetime has a range from Jan 1, 0001 to the end of year 9999
         # windows' filetime has a range from Jan 1, 1601 to approx. year 30828
         # let's test an overlapping range [Jan 1, 1601 - Dec 31, 9999]
         dt = datetime(1601, 1, 1)
-        self.assertEqual(ua.ua_binary.win_epoch_to_datetime(ua.ua_binary.datetime_to_win_epoch(dt)), dt)
+        self.assertEqual(ua.win_epoch_to_datetime(ua.datetime_to_win_epoch(dt)), dt)
         dt = datetime(9999, 12, 31, 23, 59, 59)
-        self.assertEqual(ua.ua_binary.win_epoch_to_datetime(ua.ua_binary.datetime_to_win_epoch(dt)), dt)
+        self.assertEqual(ua.win_epoch_to_datetime(ua.datetime_to_win_epoch(dt)), dt)
 
         epch = 128930364000001000
-        dt = ua.ua_binary.win_epoch_to_datetime(epch)
-        epch2 = ua.ua_binary.datetime_to_win_epoch(dt)
+        dt = ua.win_epoch_to_datetime(epch)
+        epch2 = ua.datetime_to_win_epoch(dt)
         self.assertEqual(epch, epch2)
 
         epch = 0
-        self.assertEqual(ua.ua_binary.datetime_to_win_epoch(ua.ua_binary.win_epoch_to_datetime(epch)), epch)
+        self.assertEqual(ua.datetime_to_win_epoch(ua.win_epoch_to_datetime(epch)), epch)
 
     def test_equal_nodeid(self):
         nid1 = ua.NodeId(999, 2)
@@ -428,8 +448,8 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(nid.NamespaceIndex, 1)
         self.assertEqual(nid.Identifier, 'hëllò')
         self.assertEqual(nid.NodeIdType, ua.NodeIdType.String)
-        d = nid.to_binary()
-        new_nid = nid.from_binary(io.BytesIO(d))
+        d = nodeid_to_binary(nid)
+        new_nid = nodeid_from_binary(io.BytesIO(d))
         self.assertEqual(new_nid, nid)
         self.assertEqual(new_nid.Identifier, 'hëllò')
         self.assertEqual(new_nid.NodeIdType, ua.NodeIdType.String)
@@ -473,7 +493,7 @@ class TestUnit(unittest.TestCase):
         v = ua.Variant(now)
         self.assertEqual(v.Value, now)
         self.assertEqual(v.VariantType, ua.VariantType.DateTime)
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        v2 = variant_from_binary(ua.utils.Buffer(variant_to_binary(v)))
         self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
         # commonity method:
@@ -483,7 +503,7 @@ class TestUnit(unittest.TestCase):
         v = ua.Variant([1, 2, 3, 4, 5])
         self.assertEqual(v.Value[1], 2)
         # self.assertEqual(v.VarianType, ua.VariantType.Int64) # we do not care, we should aonly test for sutff that matter
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        v2 = variant_from_binary(ua.utils.Buffer(variant_to_binary(v)))
         self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
 
@@ -491,15 +511,15 @@ class TestUnit(unittest.TestCase):
         v = ua.Variant([now])
         self.assertEqual(v.Value[0], now)
         self.assertEqual(v.VariantType, ua.VariantType.DateTime)
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
+        v2 = variant_from_binary(ua.utils.Buffer(variant_to_binary(v)))
         self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
 
     def test_variant_array_dim(self):
         v = ua.Variant([1, 2, 3, 4, 5, 6], dimensions=[2, 3])
         self.assertEqual(v.Value[1], 2)
-        v2 = ua.Variant.from_binary(ua.utils.Buffer(v.to_binary()))
-        self.assertEqual(reshape(v.Value, (2, 3)), v2.Value)
+        v2 = variant_from_binary(ua.utils.Buffer(variant_to_binary(v)))
+        self.assertEqual(_reshape(v.Value, (2, 3)), v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
         self.assertEqual(v.Dimensions, v2.Dimensions)
         self.assertEqual(v2.Dimensions, [2, 3])
@@ -510,23 +530,23 @@ class TestUnit(unittest.TestCase):
         t3 = ua.LocalizedText('root')
         self.assertEqual(t1, t2)
         self.assertNotEqual(t1, t3)
-        t4 = ua.LocalizedText.from_binary(ua.utils.Buffer(t1.to_binary()))
+        t4 = struct_from_binary(ua.LocalizedText, ua.utils.Buffer(struct_to_binary(t1)))
         self.assertEqual(t1, t4)
 
     def test_message_chunk(self):
         pol = ua.SecurityPolicy()
-        chunks = ua.MessageChunk.message_to_chunks(pol, b'123', 65536)
+        chunks = MessageChunk.message_to_chunks(pol, b'123', 65536)
         self.assertEqual(len(chunks), 1)
         seq = 0
         for chunk in chunks:
             seq += 1
             chunk.SequenceHeader.SequenceNumber = seq
-        chunk2 = ua.MessageChunk.from_binary(pol, ua.utils.Buffer(chunks[0].to_binary()))
+        chunk2 = MessageChunk.from_binary(pol, ua.utils.Buffer(chunks[0].to_binary()))
         self.assertEqual(chunks[0].to_binary(), chunk2.to_binary())
 
         # for policy None, MessageChunk overhead is 12+4+8 = 24 bytes
         # Let's pack 11 bytes into 28-byte chunks. The message must be split as 4+4+3
-        chunks = ua.MessageChunk.message_to_chunks(pol, b'12345678901', 28)
+        chunks = MessageChunk.message_to_chunks(pol, b'12345678901', 28)
         self.assertEqual(len(chunks), 3)
         self.assertEqual(chunks[0].Body, b'1234')
         self.assertEqual(chunks[1].Body, b'5678')
@@ -613,6 +633,16 @@ class TestMaskEnum(unittest.TestCase):
             as_set = self.MyEnum.parse_bitfield(bitfield)
             back_to_bitfield = self.MyEnum.to_bitfield(as_set)
             self.assertEqual(back_to_bitfield, bitfield)
+
+
+    def test_variant_intenum(self):
+        ase = ua.AxisScaleEnumeration(ua.AxisScaleEnumeration.Linear)  # Just pick an existing IntEnum class
+        vAse = ua.Variant(ase)
+        self.assertEqual(vAse.VariantType, ua.VariantType.Int32)
+
+
+
+
 
 
 if __name__ == '__main__':
