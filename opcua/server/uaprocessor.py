@@ -65,7 +65,7 @@ class UaProcessor(object):
                                      len(self._publish_result_queue))
                     return
                 requestdata = self._publishdata_queue.pop(0)
-                if time.time() - requestdata.timestamp < requestdata.requesthdr.TimeoutHint / 1000:
+                if requestdata.requesthdr.TimeoutHint == 0 or requestdata.requesthdr.TimeoutHint != 0 and time.time() - requestdata.timestamp < requestdata.requesthdr.TimeoutHint / 1000:
                     break
 
         response = ua.PublishResponse()
