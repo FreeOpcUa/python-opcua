@@ -13,10 +13,17 @@ def _to_val(objs, attr, val):
     from opcua import ua
     cls = getattr(ua, objs[0])
     for o in objs[1:]:
-        cls = getattr(ua, cls.ua_types[o])
+        cls = getattr(ua, _get_uatype_name(cls, o))
     if cls == ua.NodeId:
         return "ua.NodeId.from_string('val')"
-    return ua_type_to_python(val, cls.ua_types[attr])
+    return ua_type_to_python(val, _get_uatype_name(cls, attr))
+
+
+def _get_uatype_name(cls, attname):
+    for name, uat in cls.ua_types:
+        if name == attname:
+            return uat
+    raise Exception("Could not find attribute {} in obj {}".format(attname, cls))
 
 
 def ua_type_to_python(val, uatype):
