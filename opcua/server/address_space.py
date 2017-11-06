@@ -320,6 +320,11 @@ class NodeManagementService(object):
             result.append(self._add_reference(ref, user))
         return result
 
+    def try_add_references(self, refs, user=User.Admin):
+        for ref in refs:
+            if not self._add_reference(ref, user).is_good():
+                yield ref
+
     def _add_reference(self, addref, user):
         if addref.SourceNodeId not in self._aspace:
             return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
