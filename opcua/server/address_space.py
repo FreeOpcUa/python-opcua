@@ -250,6 +250,19 @@ class NodeManagementService(object):
         # add requested attrs
         self._add_nodeattributes(item.NodeAttributes, nodedata)
 
+
+    def _add_unique_reference(self, source, desc):
+        refs = self._aspace[source].references
+        for r in refs:
+            if r.ReferenceTypeId == desc.ReferenceTypeId and r.NodeId == desc.NodeId:
+                if r.IsForward !=  desc.IsForward:
+                    self.logger.error("Cannot add conflicting reference %s ", str(desc))
+                    return ua.StatusCode(ua.StatusCodes.BadReferenceNotAllowed)
+                break # ref already exists
+        else:
+            refs.append(desc)
+        return ua.StatusCode()
+
     def _add_ref_from_parent(self, nodedata, item):
         desc = ua.ReferenceDescription()
         desc.ReferenceTypeId = item.ReferenceTypeId
@@ -259,7 +272,7 @@ class NodeManagementService(object):
         desc.DisplayName = item.NodeAttributes.DisplayName
         desc.TypeDefinition = item.TypeDefinition
         desc.IsForward = True
-        self._aspace[item.ParentNodeId].references.append(desc)
+        self._add_unique_reference(item.ParentNodeId, desc)
 
     def _add_ref_to_parent(self, nodedata, item, user):
         addref = ua.AddReferencesItem()
@@ -343,8 +356,7 @@ class NodeManagementService(object):
         dname = self._aspace.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.DisplayName).Value.Value
         if dname:
             rdesc.DisplayName = dname
-        self._aspace[addref.SourceNodeId].references.append(rdesc)
-        return ua.StatusCode()
+        return self._add_unique_reference(addref.SourceNodeId, rdesc)
 
     def delete_references(self, refs, user=User.Admin):
         result = []
