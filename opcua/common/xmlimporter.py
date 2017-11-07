@@ -24,6 +24,7 @@ class XmlImporter(object):
         self.server = server
         self.namespaces = {}
         self.aliases = {}
+        self.refs = None
 
     def _map_namespaces(self, namespaces_uris):
         """
@@ -38,7 +39,7 @@ class XmlImporter(object):
 
     def _map_aliases(self, aliases):
         """
-        maps the import aliases to the correct namespaces        
+        maps the import aliases to the correct namespaces
         """
         aliases_mapped = {}
         for alias, node_id in aliases.items():
@@ -54,6 +55,7 @@ class XmlImporter(object):
 
         self.namespaces = self._map_namespaces(self.parser.get_used_namespaces())
         self.aliases = self._map_aliases(self.parser.get_aliases())
+        self.refs = []
 
         dnodes = self.parser.get_node_datas()
         dnodes = self.make_objects(dnodes)
@@ -67,6 +69,11 @@ class XmlImporter(object):
                 self.logger.warning("failure adding node %s", nodedata)
                 raise
             nodes.append(node)
+
+        self.refs, remaining_refs = [], self.refs
+        self._add_references(remaining_refs)
+        assert len(self.refs) == 0, self.refs
+
         return nodes
 
     def _add_node_data(self, nodedata):
@@ -96,9 +103,13 @@ class XmlImporter(object):
 
     def _add_references(self, refs):
         if isinstance(self.server, opcua.server.server.Server):
-            return self.server.iserver.isession.add_references(refs)
+            res = self.server.iserver.isession.add_references(refs)
         else:
-            return self.server.uaclient.add_references(refs)
+            res = self.server.uaclient.add_references(refs)
+
+        for sc, ref in zip(res, refs):
+            if not sc.is_good():
+                self.refs.append(ref)
 
     def make_objects(self, node_datas):
         new_nodes = []

@@ -112,7 +112,6 @@
   <UADataType NodeId="ns=1;i=3011" BrowseName="1:MyEnumVal">
         <DisplayName>MyEnumVal</DisplayName>
         <References>
-            <Reference ReferenceType="HasProperty">ns=1;i=6002</Reference>
             <Reference ReferenceType="HasSubtype" IsForward="false">i=29</Reference>
         </References>
         <Definition Name="1:MyEnumVal">
