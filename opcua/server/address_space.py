@@ -364,29 +364,31 @@ class NodeManagementService(object):
             result.append(self._delete_reference(ref, user))
         return result
 
+    def _delete_unique_reference(self, item, invert = False):
+        if invert:
+            source, target, forward = item.TargetNodeId, item.SourceNodeId, not item.IsForward
+        else:
+            source, target, forward = item.SourceNodeId, item.TargetNodeId, item.IsForward
+        for rdesc in self._aspace[source].references:
+            if rdesc.NodeId == target and rdesc.ReferenceTypeId == item.ReferenceTypeId:
+                if rdesc.IsForward == forward:
+                    self._aspace[source].references.remove(rdesc)
+                    return ua.StatusCode()
+        return ua.StatusCode(ua.StatusCodes.BadNotFound)
+
     def _delete_reference(self, item, user):
         if item.SourceNodeId not in self._aspace:
             return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
         if item.TargetNodeId not in self._aspace:
             return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
+        if item.ReferenceTypeId not in self._aspace:
+            return ua.StatusCode(ua.StatusCodes.BadReferenceTypeIdInvalid)
         if user != User.Admin:
             return ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
 
-        for rdesc in self._aspace[item.SourceNodeId].references:
-            if rdesc.NodeId is item.TargetNodeId:
-                if rdesc.ReferenceTypeId != item.ReferenceTypeId:
-                    return ua.StatusCode(ua.StatusCodes.BadReferenceTypeIdInvalid)
-                if rdesc.IsForward == item.IsForward or item.DeleteBidirectional:
-                    self._aspace[item.SourceNodeId].references.remove(rdesc)
-
-        for rdesc in self._aspace[item.TargetNodeId].references:
-            if rdesc.NodeId is item.SourceNodeId:
-                if rdesc.ReferenceTypeId != item.ReferenceTypeId:
-                    return ua.StatusCode(ua.StatusCodes.BadReferenceTypeIdInvalid)
-                if rdesc.IsForward == item.IsForward or item.DeleteBidirectional:
-                    self._aspace[item.SourceNodeId].references.remove(rdesc)
-
-        return ua.StatusCode()
+        if item.DeleteBidirectional:
+            self._delete_unique_reference(item, True)
+        return self._delete_unique_reference(item)
 
     def _add_node_attr(self, item, nodedata, name, vtype=None):
         if item.SpecifiedAttributes & getattr(ua.NodeAttributesMask, name):
