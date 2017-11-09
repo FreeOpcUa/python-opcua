@@ -7,6 +7,12 @@ from opcua import ua
 from opcua.common import events
 import opcua.common
 
+def _check_results(results, reqlen = 1):
+    assert len(results) == reqlen, results
+    for r in results:
+        r.check()
+
+def _to_nodeid(nodeid):
 class Node(object):
 
     """
@@ -546,17 +552,13 @@ class Node(object):
         result = self.server.history_read(params)[0]
         return result
 
-    def delete(self, delete_references=True):
+    def delete(self, delete_references=True, recursive=False):
         """
         Delete node from address space
         """
-        ditem = ua.DeleteNodesItem()
-        ditem.NodeId = self.nodeid
-        ditem.DeleteTargetReferences = delete_references
-        params = ua.DeleteNodesParameters()
-        params.NodesToDelete = [ditem]
-        result = self.server.delete_nodes(params)
-        result[0].check()
+        results = opcua.common.manage_nodes.delete_nodes(self.server, [self], recursive, delete_references)
+        _check_results(results)
+
 
     def add_folder(self, nodeid, bname):
         return  opcua.common.manage_nodes.create_folder(self, nodeid, bname)

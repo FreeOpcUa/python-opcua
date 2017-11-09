@@ -367,7 +367,7 @@ def _guess_datatype(variant):
         return ua.NodeId(getattr(ua.ObjectIds, variant.VariantType.name))
 
 
-def delete_nodes(server, nodes, recursive=False):
+def delete_nodes(server, nodes, recursive=False, delete_target_references=True):
     """
     Delete specified nodes. Optionally delete recursively all nodes with a
     downward hierachic references to the node
@@ -378,7 +378,7 @@ def delete_nodes(server, nodes, recursive=False):
     for mynode in nodes:
         it = ua.DeleteNodesItem()
         it.NodeId = mynode.nodeid
-        it.DeleteTargetReferences = True
+        it.DeleteTargetReferences = delete_target_references
         nodestodelete.append(it)
     params = ua.DeleteNodesParameters()
     params.NodesToDelete = nodestodelete
