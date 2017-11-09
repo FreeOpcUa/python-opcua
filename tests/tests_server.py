@@ -31,13 +31,13 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
     @classmethod
     def setUpClass(cls):
         cls.srv = Server()
-        cls.srv.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_num))
+        cls.srv.set_endpoint('opc.tcp://127.0.0.1:{0:d}'.format(port_num))
         add_server_methods(cls.srv)
         cls.srv.start()
         cls.opc = cls.srv
         cls.discovery = Server()
         cls.discovery.set_application_uri("urn:freeopcua:python:discovery")
-        cls.discovery.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_discovery))
+        cls.discovery.set_endpoint('opc.tcp://127.0.0.1:{0:d}'.format(port_discovery))
         cls.discovery.start()
 
     @classmethod
@@ -200,7 +200,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         self.assertEqual(ev.ServerId, None)
         self.assertEqual(ev.ClientAuditEntryId, None)
         self.assertEqual(ev.ClientUserId, None)
-        
+
     def test_get_event_from_type_node_MultiInhereted_AuditOpenSecureChannelEvent(self):
         ev = opcua.common.events.get_event_obj_from_type_node(opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.AuditOpenSecureChannelEventType)))
         self.assertIsNot(ev, None)
@@ -293,7 +293,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         self.assertEqual(ev.ServerId, None)
         self.assertEqual(ev.ClientAuditEntryId, None)
         self.assertEqual(ev.ClientUserId, None)
-        
+
     def test_eventgenerator_MultiInheritedEvent(self):
         evgen = self.opc.get_event_generator(ua.ObjectIds.AuditOpenSecureChannelEventType)
         check_eventgenerator_SourceServer(self, evgen)
@@ -561,22 +561,21 @@ class TestServerCaching(unittest.TestCase):
         self.assertEqual(server.get_node(id).get_value(), 123)
 
         os.remove(path)
-        
+
 class TestServerStartError(unittest.TestCase):
-    
+
     def test_port_in_use(self):
 
         server1 = Server()
-        server1.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_num + 1))
+        server1.set_endpoint('opc.tcp://127.0.0.1:{0:d}'.format(port_num + 1))
         server1.start()
 
         server2 = Server()
-        server2.set_endpoint('opc.tcp://localhost:{0:d}'.format(port_num + 1))
+        server2.set_endpoint('opc.tcp://127.0.0.1:{0:d}'.format(port_num + 1))
         try:
             server2.start()
         except Exception:
             pass
-        
+
         server1.stop()
         server2.stop()
-
