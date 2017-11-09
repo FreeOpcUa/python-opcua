@@ -329,17 +329,16 @@ class XMLParser(object):
 
     def _parse_refs(self, el, obj):
         for ref in el:
+            struct = RefStruct()
+            struct.forward = "IsForward" not in ref.attrib or ref.attrib["IsForward"] not in ("false", "False")
+            struct.target = ref.text
+            struct.reftype = ref.attrib["ReferenceType"]
+            obj.refs.append(struct)
+
             if ref.attrib["ReferenceType"] == "HasTypeDefinition":
                 obj.typedef = ref.text
-            elif "IsForward" in ref.attrib and ref.attrib["IsForward"] in ("false", "False"):
-                # if obj.parent:
-                    # sys.stderr.write("Parent is already set with: "+ obj.parent + " " + ref.text + "\n")
-                obj.parent = ref.text
-                obj.parentlink = ref.attrib["ReferenceType"]
-            else:
-                struct = RefStruct()
-                if "IsForward" in ref.attrib:
-                    struct.forward = ref.attrib["IsForward"]
-                struct.target = ref.text
-                struct.reftype = ref.attrib["ReferenceType"]
-                obj.refs.append(struct)
+            elif not struct.forward:
+                if not obj.parent:
+                    obj.parent = ref.text
+                if obj.parent == ref.text:
+                    obj.parentlink = ref.attrib["ReferenceType"]

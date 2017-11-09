@@ -144,9 +144,8 @@ class XmlImporter(object):
         node.BrowseName = self._migrate_ns(obj.browsename)
         self.logger.info("Importing xml node (%s, %s) as (%s %s)", obj.browsename, obj.nodeid, node.BrowseName, node.RequestedNewNodeId)
         node.NodeClass = getattr(ua.NodeClass, obj.nodetype[2:])
-        if obj.parent:
+        if obj.parent and obj.parentlink:
             node.ParentNodeId = self._migrate_ns(obj.parent)
-        if obj.parentlink:
             node.ReferenceTypeId = self._migrate_ns(obj.parentlink)
         if obj.typedef:
             node.TypeDefinition = self._migrate_ns(obj.typedef)
@@ -395,7 +394,7 @@ class XmlImporter(object):
         refs = []
         for data in obj.refs:
             ref = ua.AddReferencesItem()
-            ref.IsForward = True
+            ref.IsForward = data.forward
             ref.ReferenceTypeId = self.to_nodeid(data.reftype)
             ref.SourceNodeId = self._migrate_ns(obj.nodeid)
             ref.TargetNodeClass = ua.NodeClass.DataType

@@ -90,9 +90,8 @@ def create_standard_address_space_{0!s}(server):
         self.writecode(indent, 'node.RequestedNewNodeId = ua.NodeId.from_string("{0}")'.format(obj.nodeid))
         self.writecode(indent, 'node.BrowseName = ua.QualifiedName.from_string("{0}")'.format(obj.browsename))
         self.writecode(indent, 'node.NodeClass = ua.NodeClass.{0}'.format(obj.nodetype[2:]))
-        if obj.parent:
+        if obj.parent and obj.parentlink:
             self.writecode(indent, 'node.ParentNodeId = ua.NodeId.from_string("{0}")'.format(obj.parent))
-        if obj.parent:
             self.writecode(indent, 'node.ReferenceTypeId = {0}'.format(self.to_ref_type(obj.parentlink)))
         if obj.typedef:
             self.writecode(indent, 'node.TypeDefinition = ua.NodeId.from_string("{0}")'.format(obj.typedef))
@@ -267,7 +266,7 @@ def create_standard_address_space_{0!s}(server):
         self.writecode(indent, "refs = []")
         for ref in obj.refs:
             self.writecode(indent, 'ref = ua.AddReferencesItem()')
-            self.writecode(indent, 'ref.IsForward = True')
+            self.writecode(indent, 'ref.IsForward = {0}'.format(ref.forward))
             self.writecode(indent, 'ref.ReferenceTypeId = {0}'.format(self.to_ref_type(ref.reftype)))
             self.writecode(indent, 'ref.SourceNodeId = ua.NodeId.from_string("{0}")'.format(obj.nodeid))
             self.writecode(indent, 'ref.TargetNodeClass = ua.NodeClass.DataType')
