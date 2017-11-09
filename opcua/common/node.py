@@ -584,8 +584,8 @@ class Node(object):
     def add_method(self, *args):
         return opcua.common.manage_nodes.create_method(self, *args)
 
-    def add_reference_type(self, parent, nodeid, bname):
-        return opcua.common.manage_nodes.create_reference_type(parent, nodeid, bname)
+    def add_reference_type(self, nodeid, bname, symmetric=True, inversename=None):
+        return opcua.common.manage_nodes.create_reference_type(self, nodeid, bname, symmetric, inversename)
 
     def call_method(self, methodid, *args):
         return opcua.common.methods.call_method(self, methodid, *args)
