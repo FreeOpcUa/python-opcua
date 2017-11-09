@@ -570,6 +570,52 @@ class Node(object):
         results = opcua.common.manage_nodes.delete_nodes(self.server, [self], recursive, delete_references)
         _check_results(results)
 
+    def delete_reference(self, target, reftype, forward=True, bidirectional=True):
+        """
+        Delete given node's references from address space
+        """
+        known_refs = self.get_references(reftype, includesubtypes=False)
+        targetid = _to_nodeid(target)
+
+        for r in known_refs:
+            if r.NodeId == targetid and r.IsForward == forward:
+                rdesc = r
+                break
+        else:
+            raise ua.UaStatusCodeError(ua.StatusCodes.BadNotFound)
+
+        ditem = ua.DeleteReferencesItem()
+        ditem.SourceNodeId = self.nodeid
+        ditem.TargetNodeId = rdesc.NodeId
+        ditem.ReferenceTypeId = rdesc.ReferenceTypeId
+        ditem.IsForward = rdesc.IsForward
+        ditem.DeleteBidirectional = bidirectional
+
+        self.server.delete_references([ditem])[0].check()
+
+    def add_reference(self, target, reftype, forward=True, bidirectional=True):
+        """
+        Add reference to node
+        """
+
+        aitem = ua.AddReferencesItem()
+        aitem.SourceNodeId = self.nodeid
+        aitem.TargetNodeId = _to_nodeid(target)
+        aitem.ReferenceTypeId = _to_nodeid(reftype)
+        aitem.IsForward = forward
+
+        params = [aitem]
+
+        if bidirectional:
+            aitem2 = ua.AddReferencesItem()
+            aitem2.SourceNodeId = aitem.TargetNodeId
+            aitem2.TargetNodeId = aitem.SourceNodeId
+            aitem2.ReferenceTypeId = aitem.ReferenceTypeId
+            aitem2.IsForward = not forward
+            params.append(aitem2)
+
+        results =  self.server.add_references(params)
+        _check_results(results, len(params))
 
     def add_folder(self, nodeid, bname):
         return  opcua.common.manage_nodes.create_folder(self, nodeid, bname)

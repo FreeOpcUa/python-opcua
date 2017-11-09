@@ -122,6 +122,59 @@ class CommonTests(object):
             with self.assertRaises(ua.UaStatusCodeError):
                 node.get_browse_name()
 
+    def test_delete_references(self):
+        newtype = self.opc.get_node(ua.ObjectIds.HierarchicalReferences).add_reference_type(0, "HasSuperSecretVariable")
+
+        obj = self.opc.get_objects_node()
+        fold = obj.add_folder(2, "FolderToRef")
+        var = fold.add_variable(2, "VarToRef", 42)
+
+        fold.add_reference(var, newtype)
+
+        self.assertEqual(var.get_referenced_nodes(newtype), [fold])
+        self.assertEqual(fold.get_referenced_nodes(newtype), [var])
+
+        fold.delete_reference(var, newtype)
+
+        self.assertEqual(var.get_referenced_nodes(newtype), [])
+        self.assertEqual(fold.get_referenced_nodes(newtype), [])
+
+        fold.add_reference(var, newtype, bidirectional=False)
+
+        self.assertEqual(var.get_referenced_nodes(newtype), [])
+        self.assertEqual(fold.get_referenced_nodes(newtype), [var])
+
+        fold.delete_reference(var, newtype)
+
+        self.assertEqual(var.get_referenced_nodes(newtype), [])
+        self.assertEqual(fold.get_referenced_nodes(newtype), [])
+
+
+        var.add_reference(fold, newtype, forward=False, bidirectional=False)
+
+        self.assertEqual(var.get_referenced_nodes(newtype), [fold])
+        self.assertEqual(fold.get_referenced_nodes(newtype), [])
+
+        with self.assertRaises(ua.UaStatusCodeError):
+            fold.delete_reference(var, newtype)
+
+        self.assertEqual(var.get_referenced_nodes(newtype), [fold])
+        self.assertEqual(fold.get_referenced_nodes(newtype), [])
+
+        with self.assertRaises(ua.UaStatusCodeError):
+            var.delete_reference(fold, newtype)
+
+        self.assertEqual(var.get_referenced_nodes(newtype), [fold])
+        self.assertEqual(fold.get_referenced_nodes(newtype), [])
+
+        var.delete_reference(fold, newtype, forward=False)
+
+        self.assertEqual(var.get_referenced_nodes(newtype), [])
+        self.assertEqual(fold.get_referenced_nodes(newtype), [])
+
+        # clean-up
+        self.opc.delete_nodes([fold, newtype], recursive=True)
+
     def test_server_node(self):
         node = self.opc.get_server_node()
         self.assertEqual(ua.QualifiedName('Server', 0), node.get_browse_name())
