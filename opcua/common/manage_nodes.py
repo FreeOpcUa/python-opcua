@@ -103,29 +103,14 @@ def create_variable_type(parent, nodeid, bname, datatype):
     return node.Node(parent.server, _create_variable_type(parent.server, parent.nodeid, nodeid, qname, datatype))
 
 
-def create_reference_type(parent, nodeid, bname):
+def create_reference_type(parent, nodeid, bname, symmetric=True, inversename=None):
     """
     Create a new reference type
     args are nodeid and browsename
     or idx and name
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
-    addnode = ua.AddNodesItem()
-    addnode.RequestedNewNodeId = nodeid
-    addnode.BrowseName = qname
-    addnode.NodeClass = ua.NodeClass.Variable
-    addnode.ParentNodeId = parent.nodeid
-    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
-    attrs = ua.ReferenceTypeAttributes()
-    attrs.IsAbstract = False
-    attrs.Description = ua.LocalizedText(qname.Name)
-    attrs.DisplayName = ua.LocalizedText(qname.Name)
-    attrs.AccessLevel = ua.AccessLevel.CurrentRead.mask
-    attrs.UserAccessLevel = ua.AccessLevel.CurrentRead.mask
-    addnode.NodeAttributes = attrs
-    results = parent.server.add_nodes([addnode])
-    results[0].StatusCode.check()
-    return node.Node(parent.server, results[0].AddedNodeId)
+    return node.Node(parent.server, _create_reference_type(parent.server, parent.nodeid, nodeid, qname, symmetric, inversename))
 
 
 def create_object_type(parent, nodeid, bname):
@@ -186,6 +171,26 @@ def _create_object(server, parentnodeid, nodeid, qname, objecttype):
     results[0].StatusCode.check()
     return results[0].AddedNodeId
 
+
+def _create_reference_type(server, parentnodeid, nodeid, qname, symmetric, inversename):
+    addnode = ua.AddNodesItem()
+    addnode.RequestedNewNodeId = nodeid
+    addnode.BrowseName = qname
+    addnode.NodeClass = ua.NodeClass.ReferenceType
+    addnode.ParentNodeId = parentnodeid
+    addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
+    attrs = ua.ReferenceTypeAttributes()
+    attrs.IsAbstract = False
+    attrs.Description = ua.LocalizedText(qname.Name)
+    attrs.DisplayName = ua.LocalizedText(qname.Name)
+    attrs.Symmetric = symmetric
+    attrs.InverseName = ua.LocalizedText(inversename)
+    attrs.UserWriteMask = 0
+    addnode.NodeAttributes = attrs
+
+    results = server.add_nodes([addnode])
+    results[0].StatusCode.check()
+    return results[0].AddedNodeId
 
 def _create_object_type(server, parentnodeid, nodeid, qname):
     addnode = ua.AddNodesItem()
