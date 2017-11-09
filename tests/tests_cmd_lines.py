@@ -15,7 +15,7 @@ class TestCmdLines(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.srv = Server()
-        cls.srv_url = 'opc.tcp://localhost:{0:d}'.format(port_num)
+        cls.srv_url = 'opc.tcp://127.0.0.1:{0:d}'.format(port_num)
         cls.srv.set_endpoint(cls.srv_url)
         objects = cls.srv.get_objects_node()
         obj = objects.add_object(4, "directory")
@@ -44,7 +44,7 @@ class TestCmdLines(unittest.TestCase):
 
     def test_uadiscover(self):
         s = subprocess.check_output(["python", "tools/uadiscover", "--url", self.srv_url])
-        self.assertIn(b"opc.tcp://localhost", s)
+        self.assertIn(b"opc.tcp://127.0.0.1", s)
         self.assertIn(b"FreeOpcUa", s)
         self.assertIn(b"urn:freeopcua:python:server", s)
 
