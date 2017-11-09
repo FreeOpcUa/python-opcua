@@ -13,6 +13,17 @@ def _check_results(results, reqlen = 1):
         r.check()
 
 def _to_nodeid(nodeid):
+    if isinstance(nodeid, int):
+        return ua.TwoByteNodeId(nodeid)
+    elif isinstance(nodeid, Node):
+        return nodeid.nodeid
+    elif isinstance(nodeid, ua.NodeId):
+        return nodeid
+    elif type(nodeid) in (str, bytes):
+        return ua.NodeId.from_string(nodeid)
+    else:
+        raise ua.UaError("Could not resolve '{0}' to a type id".format(nodeid))
+
 class Node(object):
 
     """
@@ -331,7 +342,7 @@ class Node(object):
         """
         desc = ua.BrowseDescription()
         desc.BrowseDirection = direction
-        desc.ReferenceTypeId = ua.TwoByteNodeId(refs)
+        desc.ReferenceTypeId = _to_nodeid(refs)
         desc.IncludeSubtypes = includesubtypes
         desc.NodeClassMask = nodeclassmask
         desc.ResultMask = ua.BrowseResultMask.All
