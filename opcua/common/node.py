@@ -617,14 +617,20 @@ class Node(object):
         results =  self.server.add_references(params)
         _check_results(results, len(params))
 
-    def add_folder(self, nodeid, bname):
-        return  opcua.common.manage_nodes.create_folder(self, nodeid, bname)
+    def _add_modelling_rule(self, parent, mandatory):
+        if mandatory is not None and parent.get_node_class() == ua.NodeClass.ObjectType:
+            rule=ua.ObjectIds.ModellingRule_Mandatory if mandatory else ua.ObjectIds.ModellingRule_Optional
+            self.add_reference(rule, ua.ObjectIds.HasModellingRule, True, False)
+        return self
 
-    def add_object(self, nodeid, bname, objecttype=None):
-        return opcua.common.manage_nodes.create_object(self, nodeid, bname, objecttype)
+    def add_folder(self, nodeid, bname, mandatory=True):
+        return  opcua.common.manage_nodes.create_folder(self, nodeid, bname)._add_modelling_rule(self, mandatory)
 
-    def add_variable(self, nodeid, bname, val, varianttype=None, datatype=None):
-        return opcua.common.manage_nodes.create_variable(self, nodeid, bname, val, varianttype, datatype)
+    def add_object(self, nodeid, bname, objecttype=None, mandatory=True):
+        return opcua.common.manage_nodes.create_object(self, nodeid, bname, objecttype)._add_modelling_rule(self, mandatory)
+
+    def add_variable(self, nodeid, bname, val, varianttype=None, datatype=None, mandatory=True):
+        return opcua.common.manage_nodes.create_variable(self, nodeid, bname, val, varianttype, datatype)._add_modelling_rule(self, mandatory)
 
     def add_object_type(self, nodeid, bname):
         return opcua.common.manage_nodes.create_object_type(self, nodeid, bname)
@@ -635,11 +641,12 @@ class Node(object):
     def add_data_type(self, nodeid, bname, description=None):
         return opcua.common.manage_nodes.create_data_type(self, nodeid, bname, description=None)
 
-    def add_property(self, nodeid, bname, val, varianttype=None, datatype=None):
-        return opcua.common.manage_nodes.create_property(self, nodeid, bname, val, varianttype, datatype)
+    def add_property(self, nodeid, bname, val, varianttype=None, datatype=None, mandatory=True):
+        return opcua.common.manage_nodes.create_property(self, nodeid, bname, val, varianttype, datatype)._add_modelling_rule(self, mandatory)
 
-    def add_method(self, *args):
-        return opcua.common.manage_nodes.create_method(self, *args)
+    def add_method(self, *args, **kwargs):
+        mandatory = kwargs.pop('mandatory', True)
+        return opcua.common.manage_nodes.create_method(self, *args, **kwargs)._add_modelling_rule(self, mandatory)
 
     def add_reference_type(self, nodeid, bname, symmetric=True, inversename=None):
         return opcua.common.manage_nodes.create_reference_type(self, nodeid, bname, symmetric, inversename)

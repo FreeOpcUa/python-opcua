@@ -36,6 +36,32 @@ def add_server_methods(srv):
     o = srv.get_objects_node()
     v = o.add_method(ua.NodeId("ServerMethodArray2", 2), ua.QualifiedName('ServerMethodArray2', 2), func3, [ua.VariantType.Int64], [ua.VariantType.Int64])
 
+    @uamethod
+    def func4(parent):
+        return []
+
+    base_otype= srv.get_node(ua.ObjectIds.BaseObjectType)
+    custom_otype = base_otype.add_object_type(2, 'ObjectWithMethodsType')
+    custom_otype.add_method(2, 'ServerMethodDefault', func4)
+    custom_otype.add_method(2, 'ServerMethodMandatory', func4, mandatory=True)
+    custom_otype.add_method(2, 'ServerMethodOptional', func4, mandatory=False)
+    custom_otype.add_method(2, 'ServerMethodNone', func4, mandatory=None)
+    o.add_object(2, 'ObjectWithMethods', custom_otype)
+
+
+def _test_modelling_rules(test, parent, mandatory, result):
+    f = parent.add_folder(3, 'MyFolder', mandatory=mandatory)
+    test.assertEqual(f.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
+
+    o = parent.add_object(3, 'MyObject', mandatory=mandatory)
+    test.assertEqual(o.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
+
+    v = parent.add_variable(3, 'MyVariable', 6, mandatory=mandatory)
+    test.assertEqual(v.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
+
+    p = parent.add_property(3, 'MyProperty', 10, mandatory=mandatory)
+    test.assertEqual(p.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
+
 
 class CommonTests(object):
 
@@ -540,6 +566,79 @@ class CommonTests(object):
         self.assertTrue(v in childs)
         self.assertTrue(p in childs)
 
+    def test_add_nodes_modelling_rules_type_default(self):
+        base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
+        custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
+
+        result = [self.opc.get_node(ua.ObjectIds.ModellingRule_Mandatory)]
+
+        f = custom_otype.add_folder(3, 'MyFolder')
+        self.assertEqual(f.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
+
+        o = custom_otype.add_object(3, 'MyObject')
+        self.assertEqual(o.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
+
+        v = custom_otype.add_variable(3, 'MyVariable', 6)
+        self.assertEqual(v.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
+
+        p = custom_otype.add_property(3, 'MyProperty', 10)
+        self.assertEqual(p.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
+
+        m = base_otype.get_child(['2:ObjectWithMethodsType', '2:ServerMethodDefault'])
+        self.assertEqual(m.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
+
+        objects = self.opc.get_objects_node()
+        objects.get_child(['2:ObjectWithMethods', '2:ServerMethodDefault'])
+
+    def test_add_nodes_modelling_rules_type_true(self):
+        base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
+        custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
+
+        result = [self.opc.get_node(ua.ObjectIds.ModellingRule_Mandatory)]
+        _test_modelling_rules(self, custom_otype, True, result)
+
+        m = base_otype.get_child(['2:ObjectWithMethodsType', '2:ServerMethodMandatory'])
+        self.assertEqual(m.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
+
+        objects = self.opc.get_objects_node()
+        objects.get_child(['2:ObjectWithMethods', '2:ServerMethodMandatory'])
+
+
+    def test_add_nodes_modelling_rules_type_false(self):
+        base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
+        custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
+
+        result = [self.opc.get_node(ua.ObjectIds.ModellingRule_Optional)]
+        _test_modelling_rules(self, custom_otype, False, result)
+
+        m = base_otype.get_child(['2:ObjectWithMethodsType', '2:ServerMethodOptional'])
+        self.assertEqual(m.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
+
+    def test_add_nodes_modelling_rules_type_none(self):
+        base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
+        custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
+
+        result = []
+        _test_modelling_rules(self, custom_otype, None, result)
+
+        m = base_otype.get_child(['2:ObjectWithMethodsType', '2:ServerMethodNone'])
+        self.assertEqual(m.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
+
+    def test_add_nodes_modelling_rules_folder_true(self):
+        objects = self.opc.get_objects_node()
+        folder = objects.add_folder(3, 'MyFolder')
+        _test_modelling_rules(self, folder, True, [])
+
+    def test_add_nodes_modelling_rules_folder_false(self):
+        objects = self.opc.get_objects_node()
+        folder = objects.add_folder(3, 'MyFolder')
+        _test_modelling_rules(self, folder, False, [])
+
+    def test_add_nodes_modelling_rules_folder_none(self):
+        objects = self.opc.get_objects_node()
+        folder = objects.add_folder(3, 'MyFolder')
+        _test_modelling_rules(self, folder, None, [])
+
     def test_incl_subtypes(self):
         base_type = self.opc.get_root_node().get_child(["0:Types", "0:ObjectTypes", "0:BaseObjectType"])
         descs = base_type.get_children_descriptions(includesubtypes=True)
@@ -576,6 +675,7 @@ class CommonTests(object):
         self.assertTrue(objects in nodes)
         self.assertEqual(o.get_parent(), objects)
         self.assertEqual(o.get_type_definition().Identifier, ua.ObjectIds.BaseObjectType)
+        self.assertEqual(o.get_references(ua.ObjectIds.HasModellingRule), [])
 
         o2 = o.add_object(3, 'MySecondObject')
         nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Forward, includesubtypes=False)
@@ -584,6 +684,7 @@ class CommonTests(object):
         self.assertTrue(o in nodes)
         self.assertEqual(o2.get_parent(), o)
         self.assertEqual(o2.get_type_definition().Identifier, ua.ObjectIds.BaseObjectType)
+        self.assertEqual(o2.get_references(ua.ObjectIds.HasModellingRule), [])
 
         v = o.add_variable(3, 'MyVariable', 6)
         nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Forward, includesubtypes=False)
@@ -592,6 +693,7 @@ class CommonTests(object):
         self.assertTrue(o in nodes)
         self.assertEqual(v.get_parent(), o)
         self.assertEqual(v.get_type_definition().Identifier, ua.ObjectIds.BaseDataVariableType)
+        self.assertEqual(v.get_references(ua.ObjectIds.HasModellingRule), [])
 
         p = o.add_property(3, 'MyProperty', 2)
         nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasProperty, direction=ua.BrowseDirection.Forward, includesubtypes=False)
@@ -600,6 +702,10 @@ class CommonTests(object):
         self.assertTrue(o in nodes)
         self.assertEqual(p.get_parent(), o)
         self.assertEqual(p.get_type_definition().Identifier, ua.ObjectIds.PropertyType)
+        self.assertEqual(p.get_references(ua.ObjectIds.HasModellingRule), [])
+
+        m = objects.get_child("2:ServerMethod")
+        self.assertEqual(m.get_references(ua.ObjectIds.HasModellingRule), [])
 
     def test_path_string(self):
         o = self.opc.nodes.objects.add_folder(1, "titif").add_object(3, "opath")
