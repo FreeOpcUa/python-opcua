@@ -653,6 +653,8 @@ class CommonTests(object):
         v_t = dev_t.add_variable(0, "sensor", 1.0)
         p_t = dev_t.add_property(0, "sensor_id", "0340")
         ctrl_t = dev_t.add_object(0, "controller")
+        v_opt_t = dev_t.add_variable(0, "vendor", 1.0, mandatory=False)
+        v_none_t = dev_t.add_variable(0, "model", 1.0, mandatory=None)
         prop_t = ctrl_t.add_property(0, "state", "Running")
 
         # Create device sutype
@@ -668,6 +670,11 @@ class CommonTests(object):
         self.assertEqual(mydevice.get_type_definition(), dev_t.nodeid)
         obj = mydevice.get_child(["0:controller"])
         prop = mydevice.get_child(["0:controller", "0:state"])
+        with self.assertRaises(ua.UaError):
+            mydevice.get_child(["0:controller", "0:vendor"])
+        with self.assertRaises(ua.UaError):
+            mydevice.get_child(["0:controller", "0:model"])
+
         self.assertEqual(prop.get_type_definition().Identifier, ua.ObjectIds.PropertyType)
         self.assertEqual(prop.get_value(), "Running")
         self.assertNotEqual(prop.nodeid, prop_t.nodeid)
