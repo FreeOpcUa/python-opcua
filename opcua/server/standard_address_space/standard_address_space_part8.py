@@ -41,6 +41,13 @@ def create_standard_address_space_Part8(server):
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=2367")
     refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2365")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=63")
+    refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
@@ -60,10 +67,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2366")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=2366")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=80")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2366")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2365")
     refs.append(ref)
     server.add_references(refs)
    
@@ -84,10 +105,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2367")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=2367")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=80")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2367")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2365")
     refs.append(ref)
     server.add_references(refs)
    
@@ -126,6 +161,13 @@ def create_standard_address_space_Part8(server):
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=2371")
     refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2368")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2365")
+    refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
@@ -144,10 +186,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2370")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=2370")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=80")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2370")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2368")
     refs.append(ref)
     server.add_references(refs)
    
@@ -167,10 +223,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2369")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=2369")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2369")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2368")
     refs.append(ref)
     server.add_references(refs)
    
@@ -190,10 +260,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2371")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=2371")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=80")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2371")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2368")
     refs.append(ref)
     server.add_references(refs)
    
@@ -211,6 +295,15 @@ def create_standard_address_space_Part8(server):
     attrs.ValueRank = -2
     node.NodeAttributes = attrs
     server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2372")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2365")
+    refs.append(ref)
+    server.add_references(refs)
    
     node = ua.AddNodesItem()
     node.RequestedNewNodeId = ua.NodeId.from_string("i=2373")
@@ -240,6 +333,13 @@ def create_standard_address_space_Part8(server):
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=2375")
     refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2373")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2372")
+    refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
@@ -258,10 +358,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2374")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=2374")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2374")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2373")
     refs.append(ref)
     server.add_references(refs)
    
@@ -281,10 +395,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2375")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=2375")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2375")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2373")
     refs.append(ref)
     server.add_references(refs)
    
@@ -309,6 +437,13 @@ def create_standard_address_space_Part8(server):
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=2377")
     refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2376")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2372")
+    refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
@@ -327,10 +462,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2377")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=2377")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=2377")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2376")
     refs.append(ref)
     server.add_references(refs)
    
@@ -362,6 +511,13 @@ def create_standard_address_space_Part8(server):
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=11461")
     refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=11238")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2372")
+    refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
@@ -380,10 +536,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=11241")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=11241")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=11241")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=11238")
     refs.append(ref)
     server.add_references(refs)
    
@@ -403,10 +573,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=11461")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=11461")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=11461")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=11238")
     refs.append(ref)
     server.add_references(refs)
    
@@ -459,6 +643,13 @@ def create_standard_address_space_Part8(server):
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12028")
     refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12021")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=2365")
+    refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
@@ -477,10 +668,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12024")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=12024")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=80")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12024")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12021")
     refs.append(ref)
     server.add_references(refs)
    
@@ -500,10 +705,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12025")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=12025")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12025")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12021")
     refs.append(ref)
     server.add_references(refs)
    
@@ -523,10 +742,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12026")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=12026")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12026")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12021")
     refs.append(ref)
     server.add_references(refs)
    
@@ -546,10 +779,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12027")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=12027")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12027")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12021")
     refs.append(ref)
     server.add_references(refs)
    
@@ -569,10 +816,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12028")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=12028")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12028")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12021")
     refs.append(ref)
     server.add_references(refs)
    
@@ -598,6 +859,13 @@ def create_standard_address_space_Part8(server):
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12037")
     refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12029")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12021")
+    refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
@@ -616,10 +884,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12037")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=12037")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12037")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12029")
     refs.append(ref)
     server.add_references(refs)
    
@@ -645,6 +927,13 @@ def create_standard_address_space_Part8(server):
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12046")
     refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12038")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12021")
+    refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
@@ -663,10 +952,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12046")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=12046")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12046")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12038")
     refs.append(ref)
     server.add_references(refs)
    
@@ -699,6 +1002,13 @@ def create_standard_address_space_Part8(server):
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12056")
     refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12047")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12021")
+    refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
@@ -717,10 +1027,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12055")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=12055")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12055")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12047")
     refs.append(ref)
     server.add_references(refs)
    
@@ -740,10 +1064,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12056")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=12056")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12056")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12047")
     refs.append(ref)
     server.add_references(refs)
    
@@ -783,6 +1121,13 @@ def create_standard_address_space_Part8(server):
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12067")
     refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12057")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12021")
+    refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
@@ -801,10 +1146,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12065")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=12065")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12065")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12057")
     refs.append(ref)
     server.add_references(refs)
    
@@ -824,10 +1183,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12066")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=12066")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12066")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12057")
     refs.append(ref)
     server.add_references(refs)
    
@@ -847,10 +1220,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12067")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=12067")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12067")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12057")
     refs.append(ref)
     server.add_references(refs)
    
@@ -874,6 +1261,13 @@ def create_standard_address_space_Part8(server):
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12076")
     refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12068")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12021")
+    refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
@@ -892,10 +1286,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12076")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=12076")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12076")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12068")
     refs.append(ref)
     server.add_references(refs)
    
@@ -909,6 +1317,15 @@ def create_standard_address_space_Part8(server):
     attrs.DisplayName = ua.LocalizedText("Range")
     node.NodeAttributes = attrs
     server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=884")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=22")
+    refs.append(ref)
+    server.add_references(refs)
    
     node = ua.AddNodesItem()
     node.RequestedNewNodeId = ua.NodeId.from_string("i=887")
@@ -920,6 +1337,15 @@ def create_standard_address_space_Part8(server):
     attrs.DisplayName = ua.LocalizedText("EUInformation")
     node.NodeAttributes = attrs
     server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=887")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=22")
+    refs.append(ref)
+    server.add_references(refs)
    
     node = ua.AddNodesItem()
     node.RequestedNewNodeId = ua.NodeId.from_string("i=12077")
@@ -938,6 +1364,13 @@ def create_standard_address_space_Part8(server):
     ref.SourceNodeId = ua.NodeId.from_string("i=12077")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12078")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12077")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=29")
     refs.append(ref)
     server.add_references(refs)
    
@@ -958,10 +1391,24 @@ def create_standard_address_space_Part8(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12078")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
     ref.SourceNodeId = ua.NodeId.from_string("i=12078")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12078")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12077")
     refs.append(ref)
     server.add_references(refs)
    
@@ -975,6 +1422,15 @@ def create_standard_address_space_Part8(server):
     attrs.DisplayName = ua.LocalizedText("ComplexNumberType")
     node.NodeAttributes = attrs
     server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12171")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=22")
+    refs.append(ref)
+    server.add_references(refs)
    
     node = ua.AddNodesItem()
     node.RequestedNewNodeId = ua.NodeId.from_string("i=12172")
@@ -986,6 +1442,15 @@ def create_standard_address_space_Part8(server):
     attrs.DisplayName = ua.LocalizedText("DoubleComplexNumberType")
     node.NodeAttributes = attrs
     server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12172")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=22")
+    refs.append(ref)
+    server.add_references(refs)
    
     node = ua.AddNodesItem()
     node.RequestedNewNodeId = ua.NodeId.from_string("i=12079")
@@ -997,6 +1462,15 @@ def create_standard_address_space_Part8(server):
     attrs.DisplayName = ua.LocalizedText("AxisInformation")
     node.NodeAttributes = attrs
     server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12079")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=22")
+    refs.append(ref)
+    server.add_references(refs)
    
     node = ua.AddNodesItem()
     node.RequestedNewNodeId = ua.NodeId.from_string("i=12080")
@@ -1008,6 +1482,15 @@ def create_standard_address_space_Part8(server):
     attrs.DisplayName = ua.LocalizedText("XVType")
     node.NodeAttributes = attrs
     server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12080")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=22")
+    refs.append(ref)
+    server.add_references(refs)
    
     node = ua.AddNodesItem()
     node.RequestedNewNodeId = ua.NodeId.from_string("i=885")
@@ -1023,11 +1506,25 @@ def create_standard_address_space_Part8(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=885")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=884")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
     ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
     ref.SourceNodeId = ua.NodeId.from_string("i=885")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=8873")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=885")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
@@ -1045,11 +1542,25 @@ def create_standard_address_space_Part8(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=888")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=887")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
     ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
     ref.SourceNodeId = ua.NodeId.from_string("i=888")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=8876")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=888")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
@@ -1067,11 +1578,25 @@ def create_standard_address_space_Part8(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12173")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12171")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
     ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
     ref.SourceNodeId = ua.NodeId.from_string("i=12173")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12175")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12173")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
@@ -1089,11 +1614,25 @@ def create_standard_address_space_Part8(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12174")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12172")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
     ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
     ref.SourceNodeId = ua.NodeId.from_string("i=12174")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12178")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12174")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
@@ -1111,11 +1650,25 @@ def create_standard_address_space_Part8(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12081")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12079")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
     ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
     ref.SourceNodeId = ua.NodeId.from_string("i=12081")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12083")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12081")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
@@ -1133,11 +1686,25 @@ def create_standard_address_space_Part8(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12082")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12080")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
     ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
     ref.SourceNodeId = ua.NodeId.from_string("i=12082")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12086")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12082")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
@@ -1155,11 +1722,25 @@ def create_standard_address_space_Part8(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=886")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=884")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
     ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
     ref.SourceNodeId = ua.NodeId.from_string("i=886")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=8238")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=886")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
@@ -1177,11 +1758,25 @@ def create_standard_address_space_Part8(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=889")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=887")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
     ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
     ref.SourceNodeId = ua.NodeId.from_string("i=889")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=8241")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=889")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
@@ -1199,11 +1794,25 @@ def create_standard_address_space_Part8(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12181")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12171")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
     ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
     ref.SourceNodeId = ua.NodeId.from_string("i=12181")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12183")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12181")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
@@ -1221,11 +1830,25 @@ def create_standard_address_space_Part8(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12182")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12172")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
     ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
     ref.SourceNodeId = ua.NodeId.from_string("i=12182")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12186")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12182")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
@@ -1243,11 +1866,25 @@ def create_standard_address_space_Part8(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12089")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12079")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
     ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
     ref.SourceNodeId = ua.NodeId.from_string("i=12089")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12091")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12089")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
@@ -1265,10 +1902,24 @@ def create_standard_address_space_Part8(server):
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12090")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12080")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
     ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
     ref.SourceNodeId = ua.NodeId.from_string("i=12090")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12094")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12090")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
