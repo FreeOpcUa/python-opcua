@@ -41,4 +41,4 @@ def fill_address_space(nodeservice):
         create_standard_address_space_Part10(server)
         create_standard_address_space_Part11(server)
         create_standard_address_space_Part13(server)
-        assert len(server.postponed) == 1370, len(server.postponed)
+        assert len(server.postponed) == 1561, len(server.postponed)
