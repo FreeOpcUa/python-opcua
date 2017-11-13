@@ -77,10 +77,15 @@ def _instantiate_node(server, node_type, parentid, rdesc, nodeid, bname, dname=N
             for c_rdesc in descs:
                 # skip items that already exists, prefer the 'lowest' one in object hierarchy
                 if not ua_utils.is_child_present(node, c_rdesc.BrowseName):
+
                     c_node_type = Node(server, c_rdesc.NodeId)
-                    # skip optional elements, or node without ModellingRule at top-level
                     refs = c_node_type.get_referenced_nodes(refs=ua.ObjectIds.HasModellingRule)
-                    if (toplevel and len(refs) == 0) or (len(refs) == 1 and refs[0].nodeid == ua.NodeId(ua.ObjectIds.ModellingRule_Optional)):
+                    # exclude nodes without ModellingRule at top-level
+                    if toplevel and len(refs) == 0:
+                        continue
+                    # skip optional elements (server policy)
+                    if len(refs) == 1 and refs[0].nodeid == ua.NodeId(ua.ObjectIds.ModellingRule_Optional):
+                        logger.info("Will not instantiate optional node %s as part of %s", c_rdesc.BrowseName, addnode.BrowseName)
                         continue
 
                     # if root node being instantiated has a String NodeId, create the children with a String NodeId
