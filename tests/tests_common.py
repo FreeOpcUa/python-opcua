@@ -24,6 +24,13 @@ def add_server_methods(srv):
 
     @uamethod
     def func2(parent, methodname, value):
+        if methodname == "panic":
+            return ua.StatusCode(ua.StatusCodes.BadOutOfMemory)
+        if methodname != "sin":
+            res = ua.CallMethodResult()
+            res.StatusCode = ua.StatusCode(ua.StatusCodes.BadInvalidArgument)
+            res.InputArgumentResults = [ua.StatusCode(ua.StatusCodes.BadNotSupported), ua.StatusCode()]
+            return res
         return math.sin(value)
 
     o = srv.get_objects_node()
@@ -544,6 +551,12 @@ class CommonTests(object):
         m = o.get_child("2:ServerMethodArray")
         result = o.call_method(m, "sin", ua.Variant(math.pi))
         self.assertTrue(result < 0.01)
+        with self.assertRaises(ua.UaStatusCodeError) as cm:
+            result = o.call_method(m, "cos", ua.Variant(math.pi))
+        self.assertEqual(cm.exception.code, ua.StatusCodes.BadInvalidArgument)
+        with self.assertRaises(ua.UaStatusCodeError) as cm:
+            result = o.call_method(m, "panic", ua.Variant(math.pi))
+        self.assertEqual(cm.exception.code, ua.StatusCodes.BadOutOfMemory)
 
     def test_method_array2(self):
         o = self.opc.get_objects_node()

@@ -445,8 +445,14 @@ class MethodService(object):
                 res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNothingToDo)
             else:
                 try:
-                    res.OutputArguments = node.call(method.ObjectId, *method.InputArguments)
-                    for _ in method.InputArguments:
+                    result = node.call(method.ObjectId, *method.InputArguments)
+                    if isinstance(result, ua.CallMethodResult):
+                        res = result
+                    elif isinstance(result, ua.StatusCode):
+                        res.StatusCode = result
+                    else:
+                        res.OutputArguments = result
+                    while len(res.InputArgumentResults) < len(method.InputArguments):
                         res.InputArgumentResults.append(ua.StatusCode())
                 except Exception:
                     self.logger.exception("Error executing method call %s, an exception was raised: ", method)
