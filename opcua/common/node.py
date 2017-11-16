@@ -570,6 +570,15 @@ class Node(object):
         results = opcua.common.manage_nodes.delete_nodes(self.server, [self], recursive, delete_references)
         _check_results(results)
 
+    def _fill_delete_reference_item(self, rdesc, bidirectional = False):
+        ditem = ua.DeleteReferencesItem()
+        ditem.SourceNodeId = self.nodeid
+        ditem.TargetNodeId = rdesc.NodeId
+        ditem.ReferenceTypeId = rdesc.ReferenceTypeId
+        ditem.IsForward = rdesc.IsForward
+        ditem.DeleteBidirectional = bidirectional
+        return ditem
+
     def delete_reference(self, target, reftype, forward=True, bidirectional=True):
         """
         Delete given node's references from address space
@@ -584,13 +593,7 @@ class Node(object):
         else:
             raise ua.UaStatusCodeError(ua.StatusCodes.BadNotFound)
 
-        ditem = ua.DeleteReferencesItem()
-        ditem.SourceNodeId = self.nodeid
-        ditem.TargetNodeId = rdesc.NodeId
-        ditem.ReferenceTypeId = rdesc.ReferenceTypeId
-        ditem.IsForward = rdesc.IsForward
-        ditem.DeleteBidirectional = bidirectional
-
+        ditem = self._fill_delete_reference_item(rdesc, bidirectional)
         self.server.delete_references([ditem])[0].check()
 
     def add_reference(self, target, reftype, forward=True, bidirectional=True):
@@ -617,14 +620,33 @@ class Node(object):
         results =  self.server.add_references(params)
         _check_results(results, len(params))
 
+    def _add_modelling_rule(self, parent, mandatory=True):
+        if mandatory is not None and parent.get_node_class() == ua.NodeClass.ObjectType:
+            rule=ua.ObjectIds.ModellingRule_Mandatory if mandatory else ua.ObjectIds.ModellingRule_Optional
+            self.add_reference(rule, ua.ObjectIds.HasModellingRule, True, False)
+        return self
+
+    def set_modelling_rule(self, mandatory):
+        parent = self.get_parent()
+        if parent is None:
+            return ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
+        if parent.get_node_class() != ua.NodeClass.ObjectType:
+            return ua.StatusCode(ua.StatusCodes.BadTypeMismatch)
+        # remove all existing modelling rule
+        rules = self.get_references(ua.ObjectIds.HasModellingRule)
+        self.server.delete_references(list(map(self._fill_delete_reference_item, rules)))
+
+        self._add_modelling_rule(parent, mandatory)
+        return ua.StatusCode()
+
     def add_folder(self, nodeid, bname):
-        return  opcua.common.manage_nodes.create_folder(self, nodeid, bname)
+        return  opcua.common.manage_nodes.create_folder(self, nodeid, bname)._add_modelling_rule(self)
 
     def add_object(self, nodeid, bname, objecttype=None):
-        return opcua.common.manage_nodes.create_object(self, nodeid, bname, objecttype)
+        return opcua.common.manage_nodes.create_object(self, nodeid, bname, objecttype)._add_modelling_rule(self)
 
     def add_variable(self, nodeid, bname, val, varianttype=None, datatype=None):
-        return opcua.common.manage_nodes.create_variable(self, nodeid, bname, val, varianttype, datatype)
+        return opcua.common.manage_nodes.create_variable(self, nodeid, bname, val, varianttype, datatype)._add_modelling_rule(self)
 
     def add_object_type(self, nodeid, bname):
         return opcua.common.manage_nodes.create_object_type(self, nodeid, bname)
@@ -636,10 +658,10 @@ class Node(object):
         return opcua.common.manage_nodes.create_data_type(self, nodeid, bname, description=None)
 
     def add_property(self, nodeid, bname, val, varianttype=None, datatype=None):
-        return opcua.common.manage_nodes.create_property(self, nodeid, bname, val, varianttype, datatype)
+        return opcua.common.manage_nodes.create_property(self, nodeid, bname, val, varianttype, datatype)._add_modelling_rule(self)
 
     def add_method(self, *args):
-        return opcua.common.manage_nodes.create_method(self, *args)
+        return opcua.common.manage_nodes.create_method(self, *args)._add_modelling_rule(self)
 
     def add_reference_type(self, nodeid, bname, symmetric=True, inversename=None):
         return opcua.common.manage_nodes.create_reference_type(self, nodeid, bname, symmetric, inversename)

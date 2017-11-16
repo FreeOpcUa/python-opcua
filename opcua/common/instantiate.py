@@ -31,21 +31,14 @@ def instantiate(parent, node_type, nodeid=None, bname=None, dname=None, idx=0):
     elif isinstance(bname, str):
         bname = ua.QualifiedName.from_string(bname)
 
-    nodeids = _instantiate_node(parent.server, parent.nodeid, rdesc, nodeid, bname, dname=dname)
+    nodeids = _instantiate_node(parent.server, Node(parent.server, rdesc.NodeId), parent.nodeid, rdesc, nodeid, bname, dname=dname, toplevel=True)
     return [Node(parent.server, nid) for nid in nodeids]
 
 
-def _instantiate_node(server, parentid, rdesc, nodeid, bname, dname=None, recursive=True):
+def _instantiate_node(server, node_type, parentid, rdesc, nodeid, bname, dname=None, recursive=True, toplevel=False):
     """
     instantiate a node type under parent
     """
-    node_type = Node(server, rdesc.NodeId)
-    refs = node_type.get_referenced_nodes(refs=ua.ObjectIds.HasModellingRule)
-
-    # skip optional elements
-    if len(refs) == 1 and refs[0].nodeid == ua.NodeId(ua.ObjectIds.ModellingRule_Optional):
-        return []
-
     addnode = ua.AddNodesItem()
     addnode.RequestedNewNodeId = nodeid
     addnode.BrowseName = bname
@@ -84,14 +77,23 @@ def _instantiate_node(server, parentid, rdesc, nodeid, bname, dname=None, recurs
             for c_rdesc in descs:
                 # skip items that already exists, prefer the 'lowest' one in object hierarchy
                 if not ua_utils.is_child_present(node, c_rdesc.BrowseName):
+
+                    c_node_type = Node(server, c_rdesc.NodeId)
+                    refs = c_node_type.get_referenced_nodes(refs=ua.ObjectIds.HasModellingRule)
+                    # exclude nodes without ModellingRule at top-level
+                    if toplevel and len(refs) == 0:
+                        continue
+                    # skip optional elements (server policy)
+                    if len(refs) == 1 and refs[0].nodeid == ua.NodeId(ua.ObjectIds.ModellingRule_Optional):
+                        logger.info("Will not instantiate optional node %s as part of %s", c_rdesc.BrowseName, addnode.BrowseName)
+                        continue
+
                     # if root node being instantiated has a String NodeId, create the children with a String NodeId
                     if res.AddedNodeId.NodeIdType is ua.NodeIdType.String:
                         inst_nodeid = res.AddedNodeId.Identifier + "." + c_rdesc.BrowseName.Name
-                        nodeids = _instantiate_node(server, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(identifier=inst_nodeid, namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
+                        nodeids = _instantiate_node(server, c_node_type, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(identifier=inst_nodeid, namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
                     else:
-                        nodeids = _instantiate_node(server, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
+                        nodeids = _instantiate_node(server, c_node_type, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
                     added_nodes.extend(nodeids)
 
     return added_nodes
-
-
