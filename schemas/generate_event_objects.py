@@ -110,7 +110,7 @@ class EventsCodeGenerator(object):
 
 
 if __name__ == "__main__":
-    xmlPath = "Opc.Ua.NodeSet2.Part5.xml"
+    xmlPath = "Opc.Ua.NodeSet2.xml"
     output_file = "../opcua/common/event_objects.py"
     p = gme.Parser(xmlPath)
     model = p.parse()
