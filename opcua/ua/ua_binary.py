@@ -120,9 +120,10 @@ class _Guid(object):
 
 class _Primitive1(object):
     def __init__(self, fmt):
-        self.struct = struct.Struct(fmt)
-        self.size = self.struct.size
-        self.format = self.struct.format
+        self._fmt = fmt
+        st = struct.Struct(fmt.format(1))
+        self.size = st.size
+        self.format = st.format
 
     def pack(self, data):
         return struct.pack(self.format, data)
@@ -130,20 +131,24 @@ class _Primitive1(object):
     def unpack(self, data):
         return struct.unpack(self.format, data.read(self.size))[0]
 
+    def unpack_many(self, data, length):
+        if length is 0:
+            return ()
+        return struct.unpack(self._fmt.format(length), data.read(self.size*length))
 
 class Primitives1(object):
-    SByte = _Primitive1("<b")
-    Int16 = _Primitive1("<h")
-    Int32 = _Primitive1("<i")
-    Int64 = _Primitive1("<q")
-    Byte = _Primitive1("<B")
+    SByte = _Primitive1("<{:d}b")
+    Int16 = _Primitive1("<{:d}h")
+    Int32 = _Primitive1("<{:d}i")
+    Int64 = _Primitive1("<{:d}q")
+    Byte = _Primitive1("<{:d}B")
     Char = Byte
-    UInt16 = _Primitive1("<H")
-    UInt32 = _Primitive1("<I")
-    UInt64 = _Primitive1("<Q")
-    Boolean = _Primitive1("<?")
-    Double = _Primitive1("<d")
-    Float = _Primitive1("<f")
+    UInt16 = _Primitive1("<{:d}H")
+    UInt32 = _Primitive1("<{:d}I")
+    UInt64 = _Primitive1("<{:d}Q")
+    Boolean = _Primitive1("<{:d}?")
+    Double = _Primitive1("<{:d}d")
+    Float = _Primitive1("<{:d}f")
 
 
 class Primitives(Primitives1):
@@ -204,7 +209,13 @@ def unpack_uatype_array(vtype, data):
     length = Primitives.Int32.unpack(data)
     if length == -1:
         return None
-    return [unpack_uatype(vtype, data) for _ in range(length)]
+    elif hasattr(Primitives1, vtype.name):
+        dataType = getattr(Primitives1, vtype.name)
+        # Remark: works without tuple conversion to list.
+        return list(dataType.unpack_many(data, length))
+    else:
+        # Revert to slow serial unpacking.
+        return [unpack_uatype(vtype, data) for _ in range(length)]
 
 
 def struct_to_binary(obj):
