@@ -17,8 +17,8 @@ class Hello(uatypes.FrozenClass):
         self.ProtocolVersion = 0
         self.ReceiveBufferSize = 65536
         self.SendBufferSize = 65536
-        self.MaxMessageSize = 0
-        self.MaxChunkCount = 0
+        self.MaxMessageSize = 0 # No limits
+        self.MaxChunkCount = 0 # No limits
         self.EndpointUrl = ""
         self._freeze = True
 

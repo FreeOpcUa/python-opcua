@@ -114,6 +114,9 @@ class Client(object):
         self._session_counter = 1
         self.keepalive = None
         self.nodes = Shortcuts(self.uaclient)
+        self._maxMessageSize = 0 # No limits
+        self._maxChunkCount = 0 # No limits
+
 
     def __enter__(self):
         self.connect()
@@ -147,6 +150,20 @@ class Client(object):
         initial password from the URL will be overwritten
         """
         self._password = pwd
+
+    def set_max_messagesize(self, maxMessageSize):
+        """
+        Set the max messagesize for the connection.
+        """
+        self._maxMessageSize = maxMessageSize
+    
+
+    def set_max_chunkcount(self, maxChunkCount):
+        """
+        Set the max chunkcount for the connection.
+        """
+        self._maxChunkCount = maxChunkCount
+    
 
     def set_security_string(self, string):
         """
@@ -270,7 +287,7 @@ class Client(object):
         """
         Send OPC-UA hello to server
         """
-        ack = self.uaclient.send_hello(self.server_url.geturl())
+        ack = self.uaclient.send_hello(self.server_url.geturl(), self._maxMessageSize, self._maxChunkCount)
         # FIXME check ack
 
     def open_secure_channel(self, renew=False):
