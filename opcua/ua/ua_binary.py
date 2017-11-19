@@ -446,13 +446,12 @@ def from_binary(uatype, data):
     unpack data given an uatype as a string or a python class having a ua_types memeber
     """
     if isinstance(uatype, (str, unicode)) and uatype.startswith("ListOf"):
+        utype = uatype[6:]
+        if hasattr(ua.VariantType, utype):
+            vtype = getattr(ua.VariantType, utype)
+            return unpack_uatype_array(vtype, data)
         size = Primitives.Int32.unpack(data)
-        if size == -1:
-            return None
-        res = []
-        for _ in range(size):
-            res.append(from_binary(uatype[6:], data))
-        return res
+        return [from_binary(utype, data) for _ in range(size)]
     elif isinstance(uatype, (str, unicode)) and hasattr(ua.VariantType, uatype):
         vtype = getattr(ua.VariantType, uatype)
         return unpack_uatype(vtype, data)
