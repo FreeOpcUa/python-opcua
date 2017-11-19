@@ -131,10 +131,19 @@ class _Primitive1(object):
     def unpack(self, data):
         return struct.unpack(self.format, data.read(self.size))[0]
 
-    def unpack_many(self, data, length):
-        if length is 0:
+    def pack_array(self, data):
+        if data is None:
+            return Primitives.Int32.pack(-1)
+        sizedata = Primitives.Int32.pack(len(data))
+        return sizedata + struct.pack(self._fmt.format(len(data)), *data)
+
+    def unpack_array(self, data, length):
+        if length == -1:
+            return None
+        if length == 0:
             return ()
         return struct.unpack(self._fmt.format(length), data.read(self.size*length))
+
 
 class Primitives1(object):
     SByte = _Primitive1("<{:d}b")
@@ -197,6 +206,9 @@ def unpack_uatype(vtype, data):
 
 
 def pack_uatype_array(vtype, array):
+    if hasattr(Primitives1, vtype.name):
+        dataType = getattr(Primitives1, vtype.name)
+        return dataType.pack_array(array)
     if array is None:
         return b'\xff\xff\xff\xff'
     length = len(array)
@@ -212,7 +224,7 @@ def unpack_uatype_array(vtype, data):
     elif hasattr(Primitives1, vtype.name):
         dataType = getattr(Primitives1, vtype.name)
         # Remark: works without tuple conversion to list.
-        return list(dataType.unpack_many(data, length))
+        return list(dataType.unpack_array(data, length))
     else:
         # Revert to slow serial unpacking.
         return [unpack_uatype(vtype, data) for _ in range(length)]
@@ -266,10 +278,12 @@ def to_binary(uatype, val):
 def list_to_binary(uatype, val):
     if val is None:
         return Primitives.Int32.pack(-1)
-    pack = []
-    pack.append(Primitives.Int32.pack(len(val)))
-    for el in val:
-        pack.append(to_binary(uatype, el))
+    if hasattr(Primitives1, uatype):
+        dataType = getattr(Primitives1, uatype)
+        return dataType.pack_array(val)
+    datasize = Primitives.Int32.pack(len(val))
+    pack = [to_binary(uatype, el) for el in val]
+    pack.insert(0, datasize)
     return b''.join(pack)
 
 
