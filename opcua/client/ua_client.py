@@ -144,9 +144,11 @@ class UASocketClient(object):
         self._socket.socket.shutdown(socket.SHUT_RDWR)
         self._socket.socket.close()
 
-    def send_hello(self, url):
+    def send_hello(self, url, max_messagesize = 0, max_chunkcount = 0):
         hello = ua.Hello()
         hello.EndpointUrl = url
+        hello.MaxMessageSize = max_messagesize
+        hello.MaxChunkCount = max_chunkcount
         future = Future()
         with self._lock:
             self._callbackmap[0] = future
@@ -218,8 +220,8 @@ class UaClient(object):
     def disconnect_socket(self):
         return self._uasocket.disconnect_socket()
 
-    def send_hello(self, url):
-        return self._uasocket.send_hello(url)
+    def send_hello(self, url, max_messagesize = 0, max_chunkcount = 0):
+        return self._uasocket.send_hello(url, max_messagesize, max_chunkcount)
 
     def open_secure_channel(self, params):
         return self._uasocket.open_secure_channel(params)
