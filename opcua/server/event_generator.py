@@ -85,7 +85,7 @@ class EventGenerator(object):
         """
         Trigger the event. This will send a notification to all subscribed clients
         """
-        self.event.EventId = ua.Variant(uuid.uuid4().hex, ua.VariantType.ByteString)
+        self.event.EventId = ua.Variant(uuid.uuid4().hex.encode('utf-8'), ua.VariantType.ByteString)
         if time:
             self.event.Time = time
         else:

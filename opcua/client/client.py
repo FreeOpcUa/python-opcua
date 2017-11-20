@@ -412,7 +412,7 @@ class Client(object):
             challenge += self.security_policy.server_certificate
         if self._server_nonce is not None:
             challenge += self._server_nonce
-        params.ClientSignature.Algorithm = b"http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+        params.ClientSignature.Algorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
         params.ClientSignature.Signature = self.security_policy.asymmetric_cryptography.signature(challenge)
         params.LocaleIds.append("en")
         if not username and not certificate:
@@ -435,7 +435,7 @@ class Client(object):
         # the last serverNonce to the serverCertificate
         sig = uacrypto.sign_sha1(self.user_private_key, challenge)
         params.UserTokenSignature = ua.SignatureData()
-        params.UserTokenSignature.Algorithm = b"http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+        params.UserTokenSignature.Algorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
         params.UserTokenSignature.Signature = sig
 
     def _add_user_auth(self, params, username, password):

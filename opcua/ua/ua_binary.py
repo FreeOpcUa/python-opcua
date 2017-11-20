@@ -48,17 +48,20 @@ class _DateTime(object):
 class _String(object):
     @staticmethod
     def pack(string):
-        if string is None:
-            return Primitives.Int32.pack(-1)
-        if isinstance(string, unicode):
-            string = string.encode('utf-8')
-        length = len(string)
-        return Primitives.Int32.pack(length) + string
+        if string is not None:
+            if sys.version_info.major > 2:
+                string = string.encode('utf-8')
+            else:
+                # we do not want this test to happen with python3
+                if isinstance(string, unicode):
+                    string = string.encode('utf-8')
+        return _Bytes.pack(string)
 
     @staticmethod
     def unpack(data):
         b = _Bytes.unpack(data)
         if sys.version_info.major < 3:
+            # return unicode(b)
             return b
         else:
             if b is None:
@@ -69,7 +72,12 @@ class _String(object):
 class _Bytes(object):
     @staticmethod
     def pack(data):
-        return _String.pack(data)
+        if data is None:
+            return Primitives.Int32.pack(-1)
+        length = len(data)
+        if not isinstance(data, bytes):
+            print("BYTES EXPECTED", type(Primitives.Int32.pack(length)), type(data), data)
+        return Primitives.Int32.pack(length) + data
 
     @staticmethod
     def unpack(data):
@@ -142,7 +150,7 @@ class _Primitive1(object):
             return None
         if length == 0:
             return ()
-        return struct.unpack(self._fmt.format(length), data.read(self.size*length))
+        return struct.unpack(self._fmt.format(length), data.read(self.size * length))
 
 
 class Primitives1(object):
@@ -258,7 +266,7 @@ def to_binary(uatype, val):
     Pack a python object to binary given a string defining its type
     """
     if uatype.startswith("ListOf"):
-    #if isinstance(val, (list, tuple)):
+        #if isinstance(val, (list, tuple)):
         return list_to_binary(uatype[6:], val)
     elif isinstance(uatype, (str, unicode)) and hasattr(ua.VariantType, uatype):
         vtype = getattr(ua.VariantType, uatype)
