@@ -45,6 +45,22 @@ class _DateTime(object):
         return ua.win_epoch_to_datetime(epch)
 
 
+class _Bytes(object):
+    @staticmethod
+    def pack(data):
+        if data is None:
+            return Primitives.Int32.pack(-1)
+        length = len(data)
+        return Primitives.Int32.pack(length) + data
+
+    @staticmethod
+    def unpack(data):
+        length = Primitives.Int32.unpack(data)
+        if length == -1:
+            return None
+        return data.read(length)
+
+
 class _String(object):
     @staticmethod
     def pack(string):
@@ -61,30 +77,12 @@ class _String(object):
     def unpack(data):
         b = _Bytes.unpack(data)
         if sys.version_info.major < 3:
-            # return unicode(b)
+            # return unicode(b)  #might be correct for python2 but would complicate tests for python3
             return b
         else:
             if b is None:
                 return b
             return b.decode("utf-8")
-
-
-class _Bytes(object):
-    @staticmethod
-    def pack(data):
-        if data is None:
-            return Primitives.Int32.pack(-1)
-        length = len(data)
-        if not isinstance(data, bytes):
-            print("BYTES EXPECTED", type(Primitives.Int32.pack(length)), type(data), data)
-        return Primitives.Int32.pack(length) + data
-
-    @staticmethod
-    def unpack(data):
-        length = Primitives.Int32.unpack(data)
-        if length == -1:
-            return None
-        return data.read(length)
 
 
 class _Null(object):
