@@ -12,7 +12,7 @@ from opcua import uamethod
 from opcua import instantiate
 from opcua import copy_node
 from opcua.common import ua_utils
-
+from opcua.common.methods import call_method_full
 
 def add_server_methods(srv):
     @uamethod
@@ -45,7 +45,7 @@ def add_server_methods(srv):
 
     @uamethod
     def func4(parent):
-        return []
+        return None
 
     base_otype= srv.get_node(ua.ObjectIds.BaseObjectType)
     custom_otype = base_otype.add_object_type(2, 'ObjectWithMethodsType')
@@ -55,6 +55,11 @@ def add_server_methods(srv):
     custom_otype.add_method(2, 'ServerMethodNone', func4).set_modelling_rule(None)
     o.add_object(2, 'ObjectWithMethods', custom_otype)
 
+    @uamethod
+    def func5(parent):
+        return 1,2,3
+    o = srv.get_objects_node()
+    v = o.add_method(ua.NodeId("ServerMethodTuple", 2), ua.QualifiedName('ServerMethodTuple', 2), func5, [], [ua.VariantType.Int64, ua.VariantType.Int64, ua.VariantType.Int64])
 
 def _test_modelling_rules(test, parent, mandatory, result):
     f = parent.add_folder(3, 'MyFolder')
@@ -563,6 +568,25 @@ class CommonTests(object):
         m = o.get_child("2:ServerMethodArray2")
         result = o.call_method(m, [1.1, 3.4, 9])
         self.assertEqual(result, [2.2, 6.8, 18])
+        result = call_method_full(o, m, [1.1, 3.4, 9])
+        self.assertEqual(result.OutputArguments, [[2.2, 6.8, 18]])
+
+    def test_method_tuple(self):
+        o = self.opc.get_objects_node()
+        m = o.get_child("2:ServerMethodTuple")
+        result = o.call_method(m)
+        self.assertEqual(result, [1, 2, 3])
+        result = call_method_full(o, m)
+        self.assertEqual(result.OutputArguments, [1, 2, 3])
+
+    def test_method_none(self):
+        # this test calls the function linked to the type's method..
+        o = self.opc.get_node(ua.ObjectIds.BaseObjectType).get_child("2:ObjectWithMethodsType")
+        m = o.get_child("2:ServerMethodDefault")
+        result = o.call_method(m)
+        self.assertEqual(result, None)
+        result = call_method_full(o, m)
+        self.assertEqual(result.OutputArguments, [])
 
     def test_add_nodes(self):
         objects = self.opc.get_objects_node()
@@ -605,7 +629,7 @@ class CommonTests(object):
         self.assertEqual(m.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
 
         objects = self.opc.get_objects_node()
-        objects.get_child(['2:ObjectWithMethods', '2:ServerMethodDefault'])
+        c = objects.get_child(['2:ObjectWithMethods', '2:ServerMethodDefault'])
 
     def test_add_nodes_modelling_rules_type_true(self):
         base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
