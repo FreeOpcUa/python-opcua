@@ -72,5 +72,7 @@ def uamethod(func):
 def to_variant(*args):
     uaargs = []
     for arg in args:
-        uaargs.append(ua.Variant(arg))
+        if not isinstance(arg, ua.Variant):
+            arg = ua.Variant(arg)
+        uaargs.append(arg)
     return uaargs
