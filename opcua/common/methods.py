@@ -60,12 +60,17 @@ def uamethod(func):
             parent = args[0]
             args = args[1:]
             result = func(self, parent, *[arg.Value for arg in args])
-        if isinstance(result, ua.CallMethodResult):
+        if result is None:
+            return []
+        elif isinstance(result, ua.CallMethodResult):
             result.OutputArguments = to_variant(*result.OutputArguments)
             return result
         elif isinstance(result, ua.StatusCode):
             return result
-        return to_variant(result)
+        elif isinstance(result, tuple):
+            return to_variant(*result)
+        else:
+            return to_variant(result)
     return wrapper
 
 
