@@ -468,6 +468,6 @@ class UaProcessor(object):
         to be called when client has disconnected to ensure we really close
         everything we should
         """
-        print("Cleanup client connection: ", self.name)
+        self.logger.info("Cleanup client connection: ", self.name)
         if self.session:
             self.session.close_session(True)

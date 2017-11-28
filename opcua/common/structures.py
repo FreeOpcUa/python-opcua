@@ -7,6 +7,7 @@ for custom structures
 import os
 import importlib
 import re
+import logging
 # The next two imports are for generated code
 from datetime import datetime
 import uuid
@@ -229,7 +230,7 @@ def load_type_definitions(server, nodes=None):
             if ref_desc_list:  #some server put extra things here
                 name = _clean_name(ndesc.BrowseName.Name)
                 if not name in structs_dict:
-                    print("Error {} is found as child of binary definition node but is not found in xml".format(name))
+                    logging.getLogger(__name__).warning("Error {} is found as child of binary definition node but is not found in xml".format(name))
                     continue
                 nodeid = ref_desc_list[0].NodeId
                 ua.register_extension_object(name, nodeid, structs_dict[name])
