@@ -113,7 +113,7 @@ class BinaryServer(object):
             sockname = self._server.sockets[0].getsockname()
             self.hostname = sockname[0]
             self.port = sockname[1]
-        print('Listening on {0}:{1}'.format(self.hostname, self.port))
+        self.logger.warning('Listening on {0}:{1}'.format(self.hostname, self.port))
 
     def stop(self):
         self.logger.info("Closing asyncio socket server")

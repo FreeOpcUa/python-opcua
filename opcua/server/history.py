@@ -84,6 +84,7 @@ class HistoryDict(HistoryStorageInterface):
         self._datachanges_period = {}
         self._events = {}
         self._events_periods = {}
+        self.logger = logging.getLogger(__name__)
 
     def new_historized_node(self, node_id, period, count=0):
         if node_id in self._datachanges:
@@ -105,7 +106,7 @@ class HistoryDict(HistoryStorageInterface):
     def read_node_history(self, node_id, start, end, nb_values):
         cont = None
         if node_id not in self._datachanges:
-            print("Error attempt to read history for a node which is not historized")
+            self.logger.warning("Error attempt to read history for a node which is not historized")
             return [], cont
         else:
             if start is None:
