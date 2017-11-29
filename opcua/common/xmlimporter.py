@@ -43,7 +43,7 @@ class XmlImporter(object):
         """
         aliases_mapped = {}
         for alias, node_id in aliases.items():
-            aliases_mapped[alias] = self._migrate_ns(self.to_nodeid(node_id))
+            aliases_mapped[alias] = self.to_nodeid(node_id)
         return aliases_mapped
 
     def import_xml(self, xmlpath):
@@ -151,7 +151,7 @@ class XmlImporter(object):
             node.TypeDefinition = self._migrate_ns(obj.typedef)
         return node
 
-    def to_nodeid(self, nodeid):
+    def _to_nodeid(self, nodeid):
         if isinstance(nodeid, ua.NodeId):
             return nodeid
         elif not nodeid:
@@ -165,6 +165,9 @@ class XmlImporter(object):
                 return self.aliases[nodeid]
             else:
                 return ua.NodeId(getattr(ua.ObjectIds, nodeid))
+
+    def to_nodeid(self, nodeid):
+        return self._migrate_ns(self._to_nodeid(nodeid))
 
     def add_object(self, obj):
         node = self._get_node(obj)
@@ -398,7 +401,7 @@ class XmlImporter(object):
             ref.ReferenceTypeId = self.to_nodeid(data.reftype)
             ref.SourceNodeId = self._migrate_ns(obj.nodeid)
             ref.TargetNodeClass = ua.NodeClass.DataType
-            ref.TargetNodeId = self._migrate_ns(self.to_nodeid(data.target))
+            ref.TargetNodeId = self.to_nodeid(data.target)
             refs.append(ref)
         self._add_references(refs)
 
