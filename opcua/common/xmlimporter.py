@@ -263,7 +263,7 @@ class XmlImporter(object):
                             obj2 = ua.NodeId(getattr(ua.ObjectIds, v2))
                         else:
                             obj2 = ua.NodeId.from_string(v2)
-                        setattr(obj, attname, obj2)
+                        setattr(obj, attname, self._migrate_ns(obj2))
                         break
             elif not hasattr(obj2, "ua_types"):
                 # we probably have a list
