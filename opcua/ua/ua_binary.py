@@ -269,6 +269,8 @@ def to_binary(uatype, val):
     elif isinstance(uatype, (str, unicode)) and hasattr(ua.VariantType, uatype):
         vtype = getattr(ua.VariantType, uatype)
         return pack_uatype(vtype, val)
+    elif isinstance(uatype, (str, unicode)) and hasattr(Primitives, uatype):
+        return getattr(Primitives, uatype).pack(val)
     elif isinstance(val, (IntEnum, Enum)):
         return Primitives.UInt32.pack(val.value)
     elif isinstance(val, ua.NodeId):
@@ -475,6 +477,8 @@ def from_binary(uatype, data):
     elif isinstance(uatype, (str, unicode)) and hasattr(ua.VariantType, uatype):
         vtype = getattr(ua.VariantType, uatype)
         return unpack_uatype(vtype, data)
+    elif isinstance(uatype, (str, unicode)) and hasattr(Primitives, uatype):
+        return  getattr(Primitives, uatype).unpack(data)
     else:
         return struct_from_binary(uatype, data)
 
