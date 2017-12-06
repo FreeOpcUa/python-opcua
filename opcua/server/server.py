@@ -22,6 +22,7 @@ from opcua.client.client import Client
 from opcua.crypto import security_policies
 from opcua.common.event_objects import BaseEvent
 from opcua.common.shortcuts import Shortcuts
+from opcua.common.structures import load_type_definitions
 from opcua.common.xmlexporter import XmlExporter
 from opcua.common.xmlimporter import XmlImporter
 from opcua.common.ua_utils import get_nodes_of_namespace
@@ -278,8 +279,8 @@ class Server(object):
             self.bserver.start()
         except Exception as exp:
             self.iserver.stop()
-            raise exp        
-        
+            raise exp
+
 
     def stop(self):
         """
@@ -436,13 +437,13 @@ class Server(object):
 
     def export_xml_by_ns(self, path, namespaces=None):
         """
-        Export nodes of one or more namespaces to an XML file.  
+        Export nodes of one or more namespaces to an XML file.
         Namespaces used by nodes are always exported for consistency.
         Args:
             server: opc ua server to use
             path: name of the xml file to write
             namespaces: list of string uris or int indexes of the namespace to export, if not provide all ns are used except 0
-    
+
         Returns:
         """
         if namespaces is None:
@@ -522,3 +523,6 @@ class Server(object):
         Returns:
         """
         self.iserver.isession.add_method_callback(node.nodeid, callback)
+
+    def load_type_definitions(self, nodes=None):
+        return load_type_definitions(self, nodes)
