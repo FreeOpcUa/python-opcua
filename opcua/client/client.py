@@ -374,6 +374,11 @@ class Client(object):
         ep = Client.find_endpoint(response.ServerEndpoints, self.security_policy.Mode, self.security_policy.URI)
         self._policy_ids = ep.UserIdentityTokens
         self.session_timeout = response.RevisedSessionTimeout
+        # In case there was an existing session, try to reap existing KeepAlive-Thread
+        try:
+            self.keepalive.stop()
+        except AttributeError:
+            pass
         self.keepalive = KeepAlive(self, min(self.session_timeout, self.secure_channel_timeout) * 0.7)  # 0.7 is from spec
         self.keepalive.start()
         return response
