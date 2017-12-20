@@ -464,7 +464,7 @@ class Server(object):
 
         Returns:
         """
-        nodes = [node]
+        nodes = node if isinstance(node, (list, tuple)) else [node]
         for node in nodes:
             self.iserver.enable_history_data_change(node, period, count)
 
@@ -476,7 +476,7 @@ class Server(object):
 
         Returns:
         """
-        nodes = [node]
+        nodes = node if isinstance(node, (list, tuple)) else [node]
         for node in nodes:
             self.iserver.disable_history_data_change(node)
 
@@ -490,7 +490,7 @@ class Server(object):
 
         Returns:
         """
-        nodes = [node]
+        nodes = node if isinstance(node, (list, tuple)) else [node]
         for node in nodes:
             self.iserver.enable_history_event(node, period, count)
 
@@ -502,7 +502,7 @@ class Server(object):
 
         Returns:
         """
-        nodes = [node]
+        nodes = node if isinstance(node, (list, tuple)) else [node]
         for node in nodes:
             self.iserver.disable_history_event(node)
 
