@@ -138,7 +138,7 @@ class UaProcessor(object):
 
             response.Parameters.ServerSignature.Algorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
 
-            self.logger.info("sending create sesssion response")
+            self.logger.info("sending create session response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.CloseSessionRequest_Encoding_DefaultBinary):
@@ -148,7 +148,7 @@ class UaProcessor(object):
             self.session.close_session(deletesubs)
 
             response = ua.CloseSessionResponse()
-            self.logger.info("sending close sesssion response")
+            self.logger.info("sending close session response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
         elif typeid == ua.NodeId(ua.ObjectIds.ActivateSessionRequest_Encoding_DefaultBinary):
