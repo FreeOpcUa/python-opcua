@@ -48,7 +48,7 @@ class Server(object):
     All methods are threadsafe
 
     If you need more flexibility you call directly the Ua Service methods
-    on the iserver  or iserver.isesssion object members.
+    on the iserver  or iserver.isession object members.
 
     During startup the standard address space will be constructed, which may be
     time-consuming when running a server on a less powerful device (e.g. a
