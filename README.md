@@ -125,7 +125,9 @@ All protocol code is under opcua directory
 
 ## Running tests:
 
-python tests.py
+```
+./run-tests.sh
+```
 
 ## Coverage
 
