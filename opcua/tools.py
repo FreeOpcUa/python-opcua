@@ -595,10 +595,9 @@ def uadiscover():
 
 
 def print_history(o):
-    if isinstance(o, ua.HistoryData):
-        print("{0:30} {1:10} {2}".format('Source timestamp', 'Status', 'Value'))
-        for d in o.DataValues:
-            print("{0:30} {1:10} {2}".format(str(d.SourceTimestamp), d.StatusCode.name, d.Value))
+    print("{0:30} {1:10} {2}".format('Source timestamp', 'Status', 'Value'))
+    for d in o:
+        print("{0:30} {1:10} {2}".format(str(d.SourceTimestamp), d.StatusCode.name, d.Value.Value))
 
 
 def str_to_datetime(s, default=None):
