@@ -177,7 +177,7 @@ class Subscription(object):
         """
         return self._subscribe(nodes, attr, queuesize=0)
 
-    def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtypes=ua.ObjectIds.BaseEventType, evfilter=None):
+    def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtypes=ua.ObjectIds.BaseEventType, evfilter=None, queuesize=0):
         """
         Subscribe to events from a node. Default node is Server node.
         In most servers the server node is the only one you can subscribe to.
@@ -194,7 +194,7 @@ class Subscription(object):
             evtypes = [Node(self.server, evtype) for evtype in evtypes]
 
             evfilter = events.get_filter_from_event_type(evtypes)
-        return self._subscribe(sourcenode, ua.AttributeIds.EventNotifier, evfilter)
+        return self._subscribe(sourcenode, ua.AttributeIds.EventNotifier, evfilter, queuesize=queuesize)
 
     def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):
         is_list = True
