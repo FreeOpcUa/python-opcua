@@ -246,7 +246,11 @@ class Client(object):
         self.connect_socket()
         self.send_hello()
         self.open_secure_channel()
-        self.create_session()
+        try:
+            self.create_session()
+        except _base.TimeoutError as e:
+            self.disconnect_socket() # clean up open socket
+            raise e
         self.activate_session(username=self._username, password=self._password, certificate=self.user_certificate)
 
     def disconnect(self):
