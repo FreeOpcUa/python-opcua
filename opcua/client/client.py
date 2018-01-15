@@ -6,6 +6,7 @@ try:
 except ImportError:  # support for python2
     from urlparse import urlparse
 
+from concurrent.futures import _base
 from opcua import ua
 from opcua.client.ua_client import UaClient
 from opcua.common.xmlimporter import XmlImporter
