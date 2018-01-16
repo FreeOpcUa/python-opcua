@@ -207,36 +207,42 @@ class Client(object):
         """
         Connect, ask server for endpoints, and disconnect
         """
-        self.connect_socket()
-        self.send_hello()
-        self.open_secure_channel()
-        endpoints = self.get_endpoints()
-        self.close_secure_channel()
-        self.disconnect_socket()
+        try:
+            self.connect_socket()
+            self.send_hello()
+            self.open_secure_channel()
+            endpoints = self.get_endpoints()
+            self.close_secure_channel()
+        finally:
+            self.disconnect_socket()
         return endpoints
 
     def connect_and_find_servers(self):
         """
         Connect, ask server for a list of known servers, and disconnect
         """
-        self.connect_socket()
-        self.send_hello()
-        self.open_secure_channel()  # spec says it should not be necessary to open channel
-        servers = self.find_servers()
-        self.close_secure_channel()
-        self.disconnect_socket()
+        try:
+            self.connect_socket()
+            self.send_hello()
+            self.open_secure_channel()  # spec says it should not be necessary to open channel
+            servers = self.find_servers()
+            self.close_secure_channel()
+        finally:
+            self.disconnect_socket()
         return servers
 
     def connect_and_find_servers_on_network(self):
         """
         Connect, ask server for a list of known servers on network, and disconnect
         """
-        self.connect_socket()
-        self.send_hello()
-        self.open_secure_channel()
-        servers = self.find_servers_on_network()
-        self.close_secure_channel()
-        self.disconnect_socket()
+        try:
+            self.connect_socket()
+            self.send_hello()
+            self.open_secure_channel()
+            servers = self.find_servers_on_network()
+            self.close_secure_channel()
+        finally:
+            self.disconnect_socket()
         return servers
 
     def connect(self):
