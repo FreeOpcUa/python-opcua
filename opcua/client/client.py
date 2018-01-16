@@ -155,36 +155,42 @@ class Client(object):
         """
         Connect, ask server for endpoints, and disconnect
         """
-        await self.connect_socket()
-        await self.send_hello()
-        await self.open_secure_channel()
-        endpoints = await self.get_endpoints()
-        await self.close_secure_channel()
-        self.disconnect_socket()
+        try:
+            await self.connect_socket()
+            await self.send_hello()
+            await self.open_secure_channel()
+            endpoints = await self.get_endpoints()
+            await self.close_secure_channel()
+        finally:
+            self.disconnect_socket()
         return endpoints
 
     async def connect_and_find_servers(self):
         """
         Connect, ask server for a list of known servers, and disconnect
         """
-        await self.connect_socket()
-        await self.send_hello()
-        await self.open_secure_channel()  # spec says it should not be necessary to open channel
-        servers = await self.find_servers()
-        await self.close_secure_channel()
-        self.disconnect_socket()
+        try:
+            await self.connect_socket()
+            await self.send_hello()
+            await self.open_secure_channel()  # spec says it should not be necessary to open channel
+            servers = await self.find_servers()
+            await self.close_secure_channel()
+        finally:
+            self.disconnect_socket()
         return servers
 
     async def connect_and_find_servers_on_network(self):
         """
         Connect, ask server for a list of known servers on network, and disconnect
         """
-        await self.connect_socket()
-        await self.send_hello()
-        await self.open_secure_channel()
-        servers = await self.find_servers_on_network()
-        await self.close_secure_channel()
-        self.disconnect_socket()
+        try:
+            await self.connect_socket()
+            await self.send_hello()
+            await self.open_secure_channel()
+            servers = await self.find_servers_on_network()
+            await self.close_secure_channel()
+        finally:
+            self.disconnect_socket()
         return servers
 
     async def connect(self):
