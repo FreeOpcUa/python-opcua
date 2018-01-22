@@ -155,8 +155,8 @@ class Client(object):
         """
         Connect, ask server for endpoints, and disconnect
         """
+        await self.connect_socket()
         try:
-            await self.connect_socket()
             await self.send_hello()
             await self.open_secure_channel()
             endpoints = await self.get_endpoints()
@@ -169,8 +169,8 @@ class Client(object):
         """
         Connect, ask server for a list of known servers, and disconnect
         """
+        await self.connect_socket()
         try:
-            await self.connect_socket()
             await self.send_hello()
             await self.open_secure_channel()  # spec says it should not be necessary to open channel
             servers = await self.find_servers()
@@ -183,8 +183,8 @@ class Client(object):
         """
         Connect, ask server for a list of known servers on network, and disconnect
         """
+        await self.connect_socket()
         try:
-            await self.connect_socket()
             await self.send_hello()
             await self.open_secure_channel()
             servers = await self.find_servers_on_network()
@@ -200,9 +200,9 @@ class Client(object):
         """
         _logger.info('connect')
         await self.connect_socket()
-        await self.send_hello()
-        await self.open_secure_channel()
         try:
+            await self.send_hello()
+            await self.open_secure_channel()
             await self.create_session()
         except Exception as e:
             # clean up open socket
