@@ -207,8 +207,8 @@ class Client(object):
         """
         Connect, ask server for endpoints, and disconnect
         """
+        self.connect_socket()
         try:
-            self.connect_socket()
             self.send_hello()
             self.open_secure_channel()
             endpoints = self.get_endpoints()
@@ -221,8 +221,8 @@ class Client(object):
         """
         Connect, ask server for a list of known servers, and disconnect
         """
+        self.connect_socket()
         try:
-            self.connect_socket()
             self.send_hello()
             self.open_secure_channel()  # spec says it should not be necessary to open channel
             servers = self.find_servers()
@@ -235,8 +235,8 @@ class Client(object):
         """
         Connect, ask server for a list of known servers on network, and disconnect
         """
+        self.connect_socket()
         try:
-            self.connect_socket()
             self.send_hello()
             self.open_secure_channel()
             servers = self.find_servers_on_network()
@@ -251,9 +251,9 @@ class Client(object):
         Connect, create and activate session
         """
         self.connect_socket()
-        self.send_hello()
-        self.open_secure_channel()
         try:
+            self.send_hello()
+            self.open_secure_channel()
             self.create_session()
         except _base.TimeoutError as e:
             self.disconnect_socket() # clean up open socket
