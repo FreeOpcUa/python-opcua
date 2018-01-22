@@ -97,7 +97,6 @@ class Server(object):
         self.nodes = Shortcuts(self.iserver.isession)
 
         # setup some expected values
-        self.register_namespace(self.application_uri)
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
         sa_node.set_value([self.application_uri])
 
@@ -196,6 +195,7 @@ class Server(object):
 
     def _setup_server_nodes(self):
         # to be called just before starting server since it needs all parameters to be setup
+        self.register_namespace(self.application_uri)
         self._set_endpoints()
         self._policies = [ua.SecurityPolicyFactory()]
         if self.certificate and self.private_key:
