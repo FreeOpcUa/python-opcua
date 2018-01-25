@@ -29,9 +29,13 @@ if __name__ == "__main__":
         #var.set_value(3.9) # set node value using implicit data type
 
         # Now getting a variable node using its browse path
-        myvar = root.get_child(["0:Objects", "2:MyObject", "2:MyVariable"])
-        obj = root.get_child(["0:Objects", "2:MyObject"])
+        myvar = root.get_child(["0:Objects", "1:MyObject", "1:MyVariable"])
+        obj = root.get_child(["0:Objects", "1:MyObject"])
         print("myvar is: ", myvar)
+        print("myobj is: ", obj)
+
+        # Stacked myvar access
+        # print("myvar is: ", root.get_children()[0].get_children()[1].get_variables()[0].get_value())
 
     finally:
         client.disconnect()
