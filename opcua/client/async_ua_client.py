@@ -13,8 +13,8 @@ from opcua.common.async_connection import AsyncSecureConnection
 
 class UASocketProtocol(asyncio.Protocol):
     """
-    handle socket connection and send ua messages
-    timeout is the timeout used while waiting for an ua answer from server
+    Handle socket connection and send ua messages.
+    Timeout is the timeout used while waiting for an ua answer from server.
     """
 
     def __init__(self, timeout=1, security_policy=ua.SecurityPolicy()):
@@ -39,7 +39,7 @@ class UASocketProtocol(asyncio.Protocol):
         self.transport = None
 
     def data_received(self, data):
-        self.receive_buffer.put(data)
+        self.receive_buffer.put_nowait(data)
         if not self.is_receiving:
             self.is_receiving = True
             self.loop.create_task(self._receive())
@@ -69,16 +69,16 @@ class UASocketProtocol(asyncio.Protocol):
 
     def _send_request(self, request, callback=None, timeout=1000, message_type=ua.MessageType.SecureMessage):
         """
-        send request to server, lower-level method
-        timeout is the timeout written in ua header
-        returns future
+        Send request to server, lower-level method.
+        Timeout is the timeout written in ua header.
+        Returns future
         """
         request.RequestHeader = self._create_request_header(timeout)
         self.logger.debug("Sending: %s", request)
         try:
             binreq = struct_to_binary(request)
         except:
-            # reset reqeust handle if any error
+            # reset request handle if any error
             # see self._create_request_header
             self._request_handle -= 1
             raise
@@ -93,9 +93,9 @@ class UASocketProtocol(asyncio.Protocol):
 
     async def send_request(self, request, callback=None, timeout=1000, message_type=ua.MessageType.SecureMessage):
         """
-        send request to server.
-        timeout is the timeout written in ua header
-        returns response object if no callback is provided
+        Send a request to the server.
+        Timeout is the timeout written in ua header.
+        Returns response object if no callback is provided.
         """
         future = self._send_request(request, callback, timeout, message_type)
         if not callback:
@@ -116,7 +116,7 @@ class UASocketProtocol(asyncio.Protocol):
     async def _receive(self):
         msg = await self._connection.receive_from_socket(self)
         if msg is None:
-            return
+            pass
         elif isinstance(msg, ua.Message):
             self._call_callback(msg.request_id(), msg.body())
         elif isinstance(msg, ua.Acknowledge):
@@ -125,6 +125,11 @@ class UASocketProtocol(asyncio.Protocol):
             self.logger.warning("Received an error: %s", msg)
         else:
             raise ua.UaError("Unsupported message type: %s", msg)
+        if self._leftover_chunk or not self.receive_buffer.empty():
+            # keep receiving
+            self.loop.create_task(self._receive())
+        else:
+            self.is_receiving = False
 
     def _call_callback(self, request_id, body):
         future = self._callbackmap.pop(request_id, None)
@@ -174,9 +179,10 @@ class UASocketProtocol(asyncio.Protocol):
 
     async def close_secure_channel(self):
         """
-        close secure channel. It seems to trigger a shutdown of socket
-        in most servers, so be prepare to reconnect.
-        OPC UA specs Part 6, 7.1.4 say that Server does not send a CloseSecureChannel response and should just close socket
+        Close secure channel.
+        It seems to trigger a shutdown of socket in most servers, so be prepare to reconnect.
+        OPC UA specs Part 6, 7.1.4 say that Server does not send a CloseSecureChannel response
+        and should just close socket.
         """
         self.logger.info("close_secure_channel")
         request = ua.CloseSecureChannelRequest()
@@ -200,9 +206,8 @@ class UaClient:
 
     def __init__(self, timeout=1):
         self.logger = logging.getLogger(__name__)
-        # _publishcallbacks should be accessed in recv thread only
         self.loop = asyncio.get_event_loop()
-        self._publishcallbacks = {}
+        self._publish_callbacks = {}
         self._timeout = timeout
         self.security_policy = ua.SecurityPolicy()
         self.protocol = None
@@ -215,9 +220,7 @@ class UaClient:
         return self.protocol
 
     async def connect_socket(self, host, port):
-        """
-        connect to server socket and start receiving thread
-        """
+        """Connect to server socket."""
         self.logger.info("opening connection")
         # nodelay ncessary to avoid packing in one frame, some servers do not like it
         # ToDo: TCP_NODELAY is set by default, but only since 3.6
@@ -260,10 +263,10 @@ class UaClient:
         response.ResponseHeader.ServiceResult.check()
         return response.Parameters
 
-    async def close_session(self, deletesubscriptions):
+    async def close_session(self, delete_subscriptions):
         self.logger.info("close_session")
         request = ua.CloseSessionRequest()
-        request.DeleteSubscriptions = deletesubscriptions
+        request.DeleteSubscriptions = delete_subscriptions
         data = await self.protocol.send_request(request)
         response = struct_from_binary(ua.CloseSessionResponse, data)
         try:
@@ -375,10 +378,10 @@ class UaClient:
         response.ResponseHeader.ServiceResult.check()
         return response.ConfigurationResults
 
-    async def translate_browsepaths_to_nodeids(self, browsepaths):
+    async def translate_browsepaths_to_nodeids(self, browse_paths):
         self.logger.info("translate_browsepath_to_nodeid")
         request = ua.TranslateBrowsePathsToNodeIdsRequest()
-        request.Parameters.BrowsePaths = browsepaths
+        request.Parameters.BrowsePaths = browse_paths
         data = await self.protocol.send_request(request)
         response = struct_from_binary(ua.TranslateBrowsePathsToNodeIdsResponse, data)
         self.logger.debug(response)
@@ -389,41 +392,30 @@ class UaClient:
         self.logger.info("create_subscription")
         request = ua.CreateSubscriptionRequest()
         request.Parameters = params
-        resp_fut = asyncio.Future()
-        mycallbak = partial(self._create_subscription_callback, callback, resp_fut)
-        await self.protocol.send_request(request, mycallbak)
-        await asyncio.wait_for(resp_fut, self._timeout)
-        return resp_fut.result()
-
-    def _create_subscription_callback(self, pub_callback, resp_fut, data_fut):
-        self.logger.info("_create_subscription_callback")
-        data = data_fut.result()
-        response = struct_from_binary(ua.CreateSubscriptionResponse, data)
+        response = struct_from_binary(
+            ua.CreateSubscriptionResponse,
+            await self.protocol.send_request(request)
+        )
+        self.logger.info("create subscription callback")
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
-        self._publishcallbacks[response.Parameters.SubscriptionId] = pub_callback
-        resp_fut.set_result(response.Parameters)
+        self._publish_callbacks[response.Parameters.SubscriptionId] = callback
+        return response.Parameters
 
-    async def delete_subscriptions(self, subscriptionids):
+    async def delete_subscriptions(self, subscription_ids):
         self.logger.info("delete_subscription")
         request = ua.DeleteSubscriptionsRequest()
-        request.Parameters.SubscriptionIds = subscriptionids
-        resp_fut = asyncio.Future()
-        mycallbak = partial(self._delete_subscriptions_callback, subscriptionids, resp_fut)
-        self.protocol.send_request(request, mycallbak)
-        await asyncio.wait_for(resp_fut, self._timeout)
-        return resp_fut.result()
-
-    def _delete_subscriptions_callback(self, subscriptionids, resp_fut, data_fut):
-        # ToDo: this has to be a coro
-        self.logger.info("_delete_subscriptions_callback")
-        data = data_fut.result()
-        response = struct_from_binary(ua.DeleteSubscriptionsResponse, data)
+        request.Parameters.SubscriptionIds = subscription_ids
+        response = struct_from_binary(
+            ua.DeleteSubscriptionsResponse,
+            await self.protocol.send_request(request)
+        )
+        self.logger.info("delete subscriptions callback")
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
-        for sid in subscriptionids:
-            self._publishcallbacks.pop(sid)
-        resp_fut.set_result(response.Results)
+        for sid in subscription_ids:
+            self._publish_callbacks.pop(sid)
+        return response.Results
 
     async def publish(self, acks=None):
         self.logger.info("publish")
@@ -431,17 +423,13 @@ class UaClient:
             acks = []
         request = ua.PublishRequest()
         request.Parameters.SubscriptionAcknowledgements = acks
-        await self.protocol.send_request(request, self._call_publish_callback, timeout=0)
-
-    async def _call_publish_callback(self, future):
-        self.logger.info("call_publish_callback")
-        await future
-        data = future.result()
+        data = await self.protocol.send_request(request, timeout=0)
         # check if answer looks ok
         try:
             self.protocol.check_answer(data, "while waiting for publish response")
-        except BadTimeout:  # Spec Part 4, 7.28
-            self.publish()
+        except BadTimeout:
+            # Spec Part 4, 7.28
+            self.loop.create_task(self.publish())
             return
         except BadNoSubscription:  # Spec Part 5, 13.8.1
             # BadNoSubscription is expected after deleting the last subscription.
@@ -459,7 +447,6 @@ class UaClient:
             # to be to just ignore any BadNoSubscription responses.
             self.logger.info("BadNoSubscription received, ignoring because it's probably valid.")
             return
-
         # parse publish response
         try:
             response = struct_from_binary(ua.PublishResponse, data)
@@ -468,21 +455,21 @@ class UaClient:
             # INFO: catching the exception here might be obsolete because we already
             #       catch BadTimeout above. However, it's not really clear what this code
             #       does so it stays in, doesn't seem to hurt.
-            self.logger.exception("Error parsing notificatipn from server")
-            self.publish([])  # send publish request ot server so he does stop sending notifications
+            self.logger.exception("Error parsing notification from server")
+            # send publish request ot server so he does stop sending notifications
+            self.loop.create_task(self.publish([]))
             return
-
         # look for callback
         try:
-            callback = self._publishcallbacks[response.Parameters.SubscriptionId]
+            callback = self._publish_callbacks[response.Parameters.SubscriptionId]
         except KeyError:
             self.logger.warning("Received data for unknown subscription: %s ", response.Parameters.SubscriptionId)
             return
-
         # do callback
         try:
             callback(response.Parameters)
-        except Exception:  # we call client code, catch everything!
+        except Exception:
+            # we call client code, catch everything!
             self.logger.exception("Exception while calling user callback: %s")
 
     async def create_monitored_items(self, params):
