@@ -63,127 +63,130 @@ class Node(object):
     def __hash__(self):
         return self.nodeid.__hash__()
 
-    def get_browse_name(self):
+    async def get_browse_name(self):
         """
         Get browse name of a node. A browse name is a QualifiedName object
         composed of a string(name) and a namespace index.
         """
-        result = self.get_attribute(ua.AttributeIds.BrowseName)
+        result = await self.get_attribute(ua.AttributeIds.BrowseName)
         return result.Value.Value
 
-    def get_display_name(self):
+    async def get_display_name(self):
         """
         get description attribute of node
         """
-        result = self.get_attribute(ua.AttributeIds.DisplayName)
+        result = await self.get_attribute(ua.AttributeIds.DisplayName)
         return result.Value.Value
 
-    def get_data_type(self):
+    async def get_data_type(self):
         """
         get data type of node as NodeId
         """
-        result = self.get_attribute(ua.AttributeIds.DataType)
+        result = await self.get_attribute(ua.AttributeIds.DataType)
         return result.Value.Value
 
-    def get_data_type_as_variant_type(self):
+    async def get_data_type_as_variant_type(self):
         """
         get data type of node as VariantType
         This only works if node is a variable, otherwise type
         may not be convertible to VariantType
         """
-        result = self.get_attribute(ua.AttributeIds.DataType)
-        return opcua.common.ua_utils.data_type_to_variant_type(Node(self.server, result.Value.Value))
+        result = await self.get_attribute(ua.AttributeIds.DataType)
+        return await opcua.common.ua_utils.data_type_to_variant_type(Node(self.server, result.Value.Value))
 
-    def get_access_level(self):
+    async def get_access_level(self):
         """
         Get the access level attribute of the node as a set of AccessLevel enum values.
         """
-        result = self.get_attribute(ua.AttributeIds.AccessLevel)
+        result = await self.get_attribute(ua.AttributeIds.AccessLevel)
         return ua.AccessLevel.parse_bitfield(result.Value.Value)
 
-    def get_user_access_level(self):
+    async def get_user_access_level(self):
         """
         Get the user access level attribute of the node as a set of AccessLevel enum values.
         """
-        result = self.get_attribute(ua.AttributeIds.UserAccessLevel)
+        result = await self.get_attribute(ua.AttributeIds.UserAccessLevel)
         return ua.AccessLevel.parse_bitfield(result.Value.Value)
 
-    def get_event_notifier(self):
+    async def get_event_notifier(self):
         """
         Get the event notifier attribute of the node as a set of EventNotifier enum values.
         """
-        result = self.get_attribute(ua.AttributeIds.EventNotifier)
+        result = await self.get_attribute(ua.AttributeIds.EventNotifier)
         return ua.EventNotifier.parse_bitfield(result.Value.Value)
 
-    def set_event_notifier(self, values):
+    async def set_event_notifier(self, values):
         """
         Set the event notifier attribute.
 
         :param values: an iterable of EventNotifier enum values.
         """
         event_notifier_bitfield = ua.EventNotifier.to_bitfield(values)
-        self.set_attribute(ua.AttributeIds.EventNotifier, ua.DataValue(ua.Variant(event_notifier_bitfield, ua.VariantType.Byte)))
+        await self.set_attribute(
+            ua.AttributeIds.EventNotifier,
+            ua.DataValue(ua.Variant(event_notifier_bitfield, ua.VariantType.Byte))
+        )
 
-    def get_node_class(self):
+    async def get_node_class(self):
         """
         get node class attribute of node
         """
-        result = self.get_attribute(ua.AttributeIds.NodeClass)
+        result = await self.get_attribute(ua.AttributeIds.NodeClass)
         return result.Value.Value
 
-    def get_description(self):
+    async def get_description(self):
         """
         get description attribute class of node
         """
-        result = self.get_attribute(ua.AttributeIds.Description)
+        result = await self.get_attribute(ua.AttributeIds.Description)
         return result.Value.Value
 
-    def get_value(self):
+    async def get_value(self):
         """
         Get value of a node as a python type. Only variables ( and properties) have values.
         An exception will be generated for other node types.
         """
-        result = self.get_data_value()
+        result = await self.get_data_value()
         return result.Value.Value
 
-    def get_data_value(self):
+    async def get_data_value(self):
         """
         Get value of a node as a DataValue object. Only variables (and properties) have values.
         An exception will be generated for other node types.
         DataValue contain a variable value as a variant as well as server and source timestamps
         """
-        return self.get_attribute(ua.AttributeIds.Value)
+        return await self.get_attribute(ua.AttributeIds.Value)
 
-    def set_array_dimensions(self, value):
+    async def set_array_dimensions(self, value):
         """
         Set attribute ArrayDimensions of node
         make sure it has the correct data type
         """
         v = ua.Variant(value, ua.VariantType.UInt32)
-        self.set_attribute(ua.AttributeIds.ArrayDimensions, ua.DataValue(v))
+        await self.set_attribute(ua.AttributeIds.ArrayDimensions, ua.DataValue(v))
 
-    def get_array_dimensions(self):
+    async def get_array_dimensions(self):
         """
         Read and return ArrayDimensions attribute of node
         """
-        res = self.get_attribute(ua.AttributeIds.ArrayDimensions)
+        res = await self.get_attribute(ua.AttributeIds.ArrayDimensions)
         return res.Value.Value
 
-    def set_value_rank(self, value):
+    async def set_value_rank(self, value):
         """
         Set attribute ArrayDimensions of node
         """
         v = ua.Variant(value, ua.VariantType.Int32)
-        self.set_attribute(ua.AttributeIds.ValueRank, ua.DataValue(v))
+        await self.set_attribute(ua.AttributeIds.ValueRank, ua.DataValue(v))
 
-    def get_value_rank(self):
+    async def get_value_rank(self):
         """
         Read and return ArrayDimensions attribute of node
         """
-        res = self.get_attribute(ua.AttributeIds.ValueRank)
+        res = await self.get_attribute(ua.AttributeIds.ValueRank)
         return res.Value.Value
 
-    def set_value(self, value, varianttype=None):
+    async def set_value(self, value, varianttype=None):
         """
         Set value of a node. Only variables(properties) have values.
         An exception will be generated for other node types.
@@ -200,7 +203,7 @@ class Node(object):
             datavalue = ua.DataValue(value)
         else:
             datavalue = ua.DataValue(ua.Variant(value, varianttype))
-        self.set_attribute(ua.AttributeIds.Value, datavalue)
+        await self.set_attribute(ua.AttributeIds.Value, datavalue)
 
     set_data_value = set_value
 
@@ -216,15 +219,15 @@ class Node(object):
             self.unset_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.CurrentWrite)
             self.unset_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.CurrentWrite)
 
-    def set_attr_bit(self, attr, bit):
+    async def set_attr_bit(self, attr, bit):
         val = self.get_attribute(attr)
         val.Value.Value = ua.ua_binary.set_bit(val.Value.Value, bit)
-        self.set_attribute(attr, val)
+        await self.set_attribute(attr, val)
 
-    def unset_attr_bit(self, attr, bit):
+    async def unset_attr_bit(self, attr, bit):
         val = self.get_attribute(attr)
         val.Value.Value = ua.ua_binary.unset_bit(val.Value.Value, bit)
-        self.set_attribute(attr, val)
+        await self.set_attribute(attr, val)
 
     def set_read_only(self):
         """
@@ -233,7 +236,7 @@ class Node(object):
         """
         return self.set_writable(False)
 
-    def set_attribute(self, attributeid, datavalue):
+    async def set_attribute(self, attributeid, datavalue):
         """
         Set an attribute of a node
         attributeid is a member of ua.AttributeIds
@@ -245,10 +248,10 @@ class Node(object):
         attr.Value = datavalue
         params = ua.WriteParameters()
         params.NodesToWrite = [attr]
-        result = self.server.write(params)
+        result = await self.server.write(params)
         result[0].check()
 
-    def get_attribute(self, attr):
+    async def get_attribute(self, attr):
         """
         Read one attribute of a node
         result code from server is checked and an exception is raised in case of error
@@ -258,11 +261,11 @@ class Node(object):
         rv.AttributeId = attr
         params = ua.ReadParameters()
         params.NodesToRead.append(rv)
-        result = self.server.read(params)
+        result = await self.server.read(params)
         result[0].StatusCode.check()
         return result[0]
 
-    def get_attributes(self, attrs):
+    async def get_attributes(self, attrs):
         """
         Read several attributes of a node
         list of DataValue is returned
@@ -274,7 +277,7 @@ class Node(object):
             rv.AttributeId = attr
             params.NodesToRead.append(rv)
 
-        results = self.server.read(params)
+        results = await self.server.read(params)
         return results
 
     def get_children(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified):
@@ -322,8 +325,8 @@ class Node(object):
         """
         return self.get_children(refs=ua.ObjectIds.HasComponent, nodeclassmask=ua.NodeClass.Method)
 
-    def get_children_descriptions(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
-        return self.get_references(refs, ua.BrowseDirection.Forward, nodeclassmask, includesubtypes)
+    async def get_children_descriptions(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
+        return await self.get_references(refs, ua.BrowseDirection.Forward, nodeclassmask, includesubtypes)
 
     def get_encoding_refs(self):
         return self.get_referenced_nodes(ua.ObjectIds.HasEncoding, ua.BrowseDirection.Forward)
@@ -331,7 +334,7 @@ class Node(object):
     def get_description_refs(self):
         return self.get_referenced_nodes(ua.ObjectIds.HasDescription, ua.BrowseDirection.Forward)
 
-    def get_references(self, refs=ua.ObjectIds.References, direction=ua.BrowseDirection.Both, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
+    async def get_references(self, refs=ua.ObjectIds.References, direction=ua.BrowseDirection.Both, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
         """
         returns references of the node based on specific filter defined with:
 
@@ -346,50 +349,48 @@ class Node(object):
         desc.IncludeSubtypes = includesubtypes
         desc.NodeClassMask = nodeclassmask
         desc.ResultMask = ua.BrowseResultMask.All
-
         desc.NodeId = self.nodeid
         params = ua.BrowseParameters()
         params.View.Timestamp = ua.get_win_epoch()
         params.NodesToBrowse.append(desc)
         params.RequestedMaxReferencesPerNode = 0
-        results = self.server.browse(params)
-
-        references = self._browse_next(results)
+        results = await self.server.browse(params)
+        references = await self._browse_next(results)
         return references
 
-    def _browse_next(self, results):
+    async def _browse_next(self, results):
         references = results[0].References
         while results[0].ContinuationPoint:
             params = ua.BrowseNextParameters()
             params.ContinuationPoints = [results[0].ContinuationPoint]
             params.ReleaseContinuationPoints = False
-            results = self.server.browse_next(params)
+            results = await self.server.browse_next(params)
             references.extend(results[0].References)
         return references
 
-    def get_referenced_nodes(self, refs=ua.ObjectIds.References, direction=ua.BrowseDirection.Both, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
+    async def get_referenced_nodes(self, refs=ua.ObjectIds.References, direction=ua.BrowseDirection.Both, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
         """
         returns referenced nodes based on specific filter
         Paramters are the same as for get_references
 
         """
-        references = self.get_references(refs, direction, nodeclassmask, includesubtypes)
+        references = await self.get_references(refs, direction, nodeclassmask, includesubtypes)
         nodes = []
         for desc in references:
             node = Node(self.server, desc.NodeId)
             nodes.append(node)
         return nodes
 
-    def get_type_definition(self):
+    async def get_type_definition(self):
         """
         returns type definition of the node.
         """
-        references = self.get_references(refs=ua.ObjectIds.HasTypeDefinition, direction=ua.BrowseDirection.Forward)
+        references = await self.get_references(refs=ua.ObjectIds.HasTypeDefinition, direction=ua.BrowseDirection.Forward)
         if len(references) == 0:
             return None
         return references[0].NodeId
 
-    def get_path(self, max_length=20, as_string=False):
+    async def get_path(self, max_length=20, as_string=False):
         """
         Attempt to find path of node from root node and return it as a list of Nodes.
         There might several possible paths to a node, this function will return one
@@ -398,14 +399,18 @@ class Node(object):
         Since address space may have circular references, a max length is specified
 
         """
-        path = self._get_path(max_length)
-        path = [Node(self.server, ref.NodeId) for ref in path]
+        path = []
+        for ref in await self._get_path(max_length):
+            path.append(Node(self.server, ref.NodeId))
         path.append(self)
         if as_string:
-            path = [el.get_browse_name().to_string() for el in path]
+            str_path = []
+            for el in path:
+                name = await el.get_browse_name()
+                str_path.append(name.to_string())
         return path
 
-    def _get_path(self, max_length=20):
+    async def _get_path(self, max_length=20):
         """
         Attempt to find path of node from root node and return it as a list of Nodes.
         There might several possible paths to a node, this function will return one
@@ -417,29 +422,31 @@ class Node(object):
         path = []
         node = self
         while True:
-            refs = node.get_references(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse)
+            refs = await node.get_references(
+                refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse
+            )
             if len(refs) > 0:
                 path.insert(0, refs[0])
                 node = Node(self.server, refs[0].NodeId)
-                if len(path) >= (max_length -1):
+                if len(path) >= (max_length - 1):
                     return path
             else:
                 return path
 
-    def get_parent(self):
+    async def get_parent(self):
         """
         returns parent of the node.
         A Node may have several parents, the first found is returned.
         This method uses reverse references, a node might be missing such a link,
         thus we will not find its parent.
         """
-        refs = self.get_references(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse)
+        refs = await self.get_references(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse)
         if len(refs) > 0:
             return Node(self.server, refs[0].NodeId)
         else:
             return None
 
-    def get_child(self, path):
+    async def get_child(self, path):
         """
         get a child specified by its path from this node.
         A path might be:
@@ -454,7 +461,7 @@ class Node(object):
         bpath = ua.BrowsePath()
         bpath.StartingNode = self.nodeid
         bpath.RelativePath = rpath
-        result = self.server.translate_browsepaths_to_nodeids([bpath])
+        result = await self.server.translate_browsepaths_to_nodeids([bpath])
         result = result[0]
         result.StatusCode.check()
         # FIXME: seems this method may return several nodes

@@ -27,8 +27,8 @@ class MessageChunk(ua.FrozenClass):
         self.security_policy = security_policy
 
     @staticmethod
-    def from_binary(security_policy, data):
-        h = header_from_binary(data)
+    async def from_binary(security_policy, data):
+        h = await header_from_binary(data)
         return MessageChunk.from_header_and_body(security_policy, h, data)
 
     @staticmethod
@@ -190,10 +190,8 @@ class SecureConnection(object):
             if policy.matches(uri, mode):
                 self.security_policy = policy.create(peer_certificate)
                 return
-        if self.security_policy.URI != uri or (mode is not None and
-                                                self.security_policy.Mode != mode):
+        if self.security_policy.URI != uri or (mode is not None and self.security_policy.Mode != mode):
             raise ua.UaError("No matching policy: {0}, {1}".format(uri, mode))
-
 
     def message_to_binary(self, message, message_type=ua.MessageType.SecureMessage, request_id=0, algohdr=None):
         """
@@ -219,7 +217,6 @@ class SecureConnection(object):
             chunk.SequenceHeader.SequenceNumber = self._sequence_number
         return b"".join([chunk.to_binary() for chunk in chunks])
 
-
     def _check_incoming_chunk(self, chunk):
         assert isinstance(chunk, MessageChunk), "Expected chunk, got: {0}".format(chunk)
         if chunk.MessageHeader.MessageType != ua.MessageType.SecureOpen:
@@ -229,13 +226,14 @@ class SecureConnection(object):
                     self.channel.SecurityToken.ChannelId))
             if chunk.SecurityHeader.TokenId != self.channel.SecurityToken.TokenId:
                 if chunk.SecurityHeader.TokenId not in self._old_tokens:
-                    logger.warning("Received a chunk with wrong token id %s, expected %s", chunk.SecurityHeader.TokenId, self.channel.SecurityToken.TokenId)
-
+                    logger.warning(
+                        "Received a chunk with wrong token id %s, expected %s",
+                        chunk.SecurityHeader.TokenId, self.channel.SecurityToken.TokenId
+                    )
                     #raise UaError("Wrong token id {}, expected {}, old tokens are {}".format(
                         #chunk.SecurityHeader.TokenId,
                         #self.channel.SecurityToken.TokenId,
                         #self._old_tokens))
-
                 else:
                     # Do some cleanup, spec says we can remove old tokens when new one are used
                     idx = self._old_tokens.index(chunk.SecurityHeader.TokenId)
@@ -294,17 +292,18 @@ class SecureConnection(object):
         else:
             raise ua.UaError("Unsupported message type {0}".format(header.MessageType))
 
-    def receive_from_socket(self, socket):
+    async def receive_from_socket(self, protocol):
         """
         Convert binary stream to OPC UA TCP message (see OPC UA
         specs Part 6, 7.1: Hello, Acknowledge or ErrorMessage), or a Message
         object, or None (if intermediate chunk is received)
         """
         logger.debug("Waiting for header")
-        header = header_from_binary(socket)
-        logger.info("received header: %s", header)
-        body = socket.read(header.body_size)
+        header = await header_from_binary(protocol)
+        logger.debug("Received header: %s", header)
+        body = await protocol.read(header.body_size)
         if len(body) != header.body_size:
+            # ToDo: should never happen since UASocketProtocol.read() waits until `size` bytes are received. Remove?
             raise ua.UaError("{0} bytes expected, {1} available".format(header.body_size, len(body)))
         return self.receive_from_header_and_body(header, ua.utils.Buffer(body))
 
@@ -326,5 +325,3 @@ class SecureConnection(object):
             return message
         else:
             raise ua.UaError("Unsupported chunk type: {0}".format(msg))
-
-
