@@ -47,22 +47,25 @@ class UASocketProtocol(asyncio.Protocol):
     async def read(self, size):
         """Receive up to size bytes from socket."""
         data = b''
+        self.logger.debug('read %s bytes from socket', size)
         while size > 0:
+            self.logger.debug('data is now %s, waiting for %s bytes', len(data), size)
             # ToDo: abort on timeout, socket close
             # raise SocketClosedException("Server socket has closed")
             if self._leftover_chunk:
+                self.logger.debug('leftover bytes %s', len(self._leftover_chunk))
                 # use leftover chunk first
                 chunk = self._leftover_chunk
                 self._leftover_chunk = None
             else:
                 chunk = await self.receive_buffer.get()
-            needed_length = size - len(data)
-            if len(chunk) <= needed_length:
+            self.logger.debug('got chunk %s needed_length is %s', len(chunk), size)
+            if len(chunk) <= size:
                 _chunk = chunk
             else:
                 # chunk is too big
-                _chunk = chunk[:needed_length]
-                self._leftover_chunk = chunk[needed_length:]
+                _chunk = chunk[:size]
+                self._leftover_chunk = chunk[size:]
             data += _chunk
             size -= len(_chunk)
         return data
@@ -99,7 +102,8 @@ class UASocketProtocol(asyncio.Protocol):
         """
         future = self._send_request(request, callback, timeout, message_type)
         if not callback:
-            data = await asyncio.wait_for(future.result(), self.timeout)
+            await asyncio.wait_for(future, self.timeout)
+            data = future.result()
             self.check_answer(data, " in response to " + request.__class__.__name__)
             return data
 
@@ -246,7 +250,7 @@ class UaClient:
         self.logger.info("create_session")
         request = ua.CreateSessionRequest()
         request.Parameters = parameters
-        data = self.protocol.send_request(request)
+        data = await self.protocol.send_request(request)
         response = struct_from_binary(ua.CreateSessionResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
