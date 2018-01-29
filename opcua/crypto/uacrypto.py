@@ -1,5 +1,6 @@
 import os
 
+import aiofiles
 from cryptography import x509
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.backends import default_backend
@@ -12,13 +13,13 @@ from cryptography.hazmat.primitives.ciphers import algorithms
 from cryptography.hazmat.primitives.ciphers import modes
 
 
-def load_certificate(path):
+async def load_certificate(path):
     _, ext = os.path.splitext(path)
-    with open(path, "rb") as f:
+    async with aiofiles.open(path, mode='rb') as f:
         if ext == ".pem":
-            return x509.load_pem_x509_certificate(f.read(), default_backend())
+            return x509.load_pem_x509_certificate(await f.read(), default_backend())
         else:
-            return x509.load_der_x509_certificate(f.read(), default_backend())
+            return x509.load_der_x509_certificate(await f.read(), default_backend())
 
 
 def x509_from_der(data):
@@ -27,13 +28,13 @@ def x509_from_der(data):
     return x509.load_der_x509_certificate(data, default_backend())
 
 
-def load_private_key(path):
+async def load_private_key(path):
     _, ext = os.path.splitext(path)
-    with open(path, "rb") as f:
+    async with aiofiles.open(path, mode='rb') as f:
         if ext == ".pem":
-            return serialization.load_pem_private_key(f.read(), password=None, backend=default_backend())
+            return serialization.load_pem_private_key(await f.read(), password=None, backend=default_backend())
         else:
-            return serialization.load_der_private_key(f.read(), password=None, backend=default_backend())
+            return serialization.load_der_private_key(await f.read(), password=None, backend=default_backend())
 
 
 def der_from_x509(certificate):
@@ -172,12 +173,3 @@ def x509_to_string(cert):
     # TODO: show more information
     return "{0}{1}, {2} - {3}".format(x509_name_to_string(cert.subject), issuer, cert.not_valid_before, cert.not_valid_after)
 
-
-if __name__ == "__main__":
-    # Convert from PEM to DER
-    cert = load_certificate("../examples/server_cert.pem")
-    #rsa_pubkey = pubkey_from_dercert(der)
-    rsa_privkey = load_private_key("../examples/mykey.pem")
-    
-    from IPython import embed
-    embed()

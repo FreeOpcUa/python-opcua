@@ -117,28 +117,28 @@ def string_to_variant(string, vtype):
     return ua.Variant(string_to_val(string, vtype), vtype)
 
 
-def get_node_children(node, nodes=None):
+async def get_node_children(node, nodes=None):
     """
     Get recursively all children of a node
     """
     if nodes is None:
         nodes = [node]
-    for child in node.get_children():
+    for child in await node.get_children():
         nodes.append(child)
-        get_node_children(child, nodes)
+        await get_node_children(child, nodes)
     return nodes
 
 
-def get_node_subtypes(node, nodes=None):
+async def get_node_subtypes(node, nodes=None):
     if nodes is None:
         nodes = [node]
-    for child in node.get_children(refs=ua.ObjectIds.HasSubtype):
+    for child in await node.get_children(refs=ua.ObjectIds.HasSubtype):
         nodes.append(child)
-        get_node_subtypes(child, nodes)
+        await get_node_subtypes(child, nodes)
     return nodes
 
 
-def get_node_supertypes(node, includeitself=False, skipbase=True):
+async def get_node_supertypes(node, includeitself=False, skipbase=True):
     """
     return get all subtype parents of node recursive
     :param node: can be a ua.Node or ua.NodeId
@@ -149,47 +149,46 @@ def get_node_supertypes(node, includeitself=False, skipbase=True):
     parents = []
     if includeitself:
         parents.append(node)
-    parents.extend(_get_node_supertypes(node))
+    parents.extend(await _get_node_supertypes(node))
     if skipbase and len(parents) > 1:
         parents = parents[:-1]
-
     return parents
 
 
-def _get_node_supertypes(node):
+async def _get_node_supertypes(node):
     """
     recursive implementation of get_node_derived_from_types
     """
     basetypes = []
-    parent = get_node_supertype(node)
+    parent = await get_node_supertype(node)
     if parent:
         basetypes.append(parent)
-        basetypes.extend(_get_node_supertypes(parent))
+        basetypes.extend(await _get_node_supertypes(parent))
 
     return basetypes
 
 
-def get_node_supertype(node):
+async def get_node_supertype(node):
     """
     return node supertype or None
     """
-    supertypes = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype,
-                                           direction=ua.BrowseDirection.Inverse,
-                                           includesubtypes=True)
+    supertypes = await node.get_referenced_nodes(
+        refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True
+    )
     if supertypes:
         return supertypes[0]
     else:
         return None
 
 
-def is_child_present(node, browsename):
+async def is_child_present(node, browsename):
     """
     return if a browsename is present a child from the provide node
     :param node: node wherein to find the browsename
     :param browsename: browsename to search
     :returns returne True if the browsename is present else False 
     """
-    child_descs = node.get_children_descriptions()
+    child_descs = await node.get_children_descriptions()
     for child_desc in child_descs:
         if child_desc.BrowseName == browsename:
             return True
@@ -197,20 +196,20 @@ def is_child_present(node, browsename):
     return False
 
 
-def data_type_to_variant_type(dtype_node):
+async def data_type_to_variant_type(dtype_node):
     """
     Given a Node datatype, find out the variant type to encode
     data. This is not exactly straightforward...
     """
-    base = get_base_data_type(dtype_node)
-
+    base = await get_base_data_type(dtype_node)
     if base.nodeid.Identifier != 29:
         return ua.VariantType(base.nodeid.Identifier)
     else:
         # we have an enumeration, value is a Int32
         return ua.VariantType.Int32
 
-def get_base_data_type(datatype):
+
+async def get_base_data_type(datatype):
     """
     Looks up the base datatype of the provided datatype Node
     The base datatype is either:
@@ -225,7 +224,7 @@ def get_base_data_type(datatype):
     while base:
         if base.nodeid.NamespaceIndex == 0 and isinstance(base.nodeid.Identifier, int) and base.nodeid.Identifier <= 30:
             return base
-        base = get_node_supertype(base)
+        base = await get_node_supertype(base)
     raise ua.UaError("Datatype must be a subtype of builtin types {0!s}".format(datatype))
 
 
@@ -251,8 +250,10 @@ def get_nodes_of_namespace(server, namespaces=None):
     namespace_indexes = [n if isinstance(n, int) else ns_available.index(n) for n in namespaces]
 
     # filter nodeis based on the provide namespaces and convert the nodeid to a node
-    nodes = [server.get_node(nodeid) for nodeid in server.iserver.aspace.keys()
-             if nodeid.NamespaceIndex != 0 and nodeid.NamespaceIndex in namespace_indexes]
+    nodes = [
+        server.get_node(nodeid) for nodeid in server.iserver.aspace.keys()
+        if nodeid.NamespaceIndex != 0 and nodeid.NamespaceIndex in namespace_indexes
+    ]
     return nodes
 
 
@@ -263,5 +264,3 @@ def get_default_value(uatype):
         return ua.get_default_value(getattr(ua.VariantType, uatype))
     else:
         return getattr(ua, uatype)()
-
-

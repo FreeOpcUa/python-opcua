@@ -107,14 +107,14 @@ class Server(object):
     def __exit__(self, exc_type, exc_value, traceback):
         self.stop()
 
-    def load_certificate(self, path):
+    async def load_certificate(self, path):
         """
         load server certificate from file, either pem or der
         """
-        self.certificate = uacrypto.load_certificate(path)
+        self.certificate = await uacrypto.load_certificate(path)
 
-    def load_private_key(self, path):
-        self.private_key = uacrypto.load_private_key(path)
+    async def load_private_key(self, path):
+        self.private_key = await uacrypto.load_private_key(path)
 
     def disable_clock(self, val=True):
         """
