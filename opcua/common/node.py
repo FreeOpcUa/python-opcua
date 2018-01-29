@@ -24,8 +24,8 @@ def _to_nodeid(nodeid):
     else:
         raise ua.UaError("Could not resolve '{0}' to a type id".format(nodeid))
 
-class Node(object):
 
+class Node:
     """
     High level node object, to access node attribute,
     browse and populate address space.
