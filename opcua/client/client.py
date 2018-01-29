@@ -481,7 +481,7 @@ class Client(object):
         """
         return Node(self.uaclient, nodeid)
 
-    def create_subscription(self, period, handler):
+    async def create_subscription(self, period, handler):
         """
         Create a subscription.
         returns a Subscription object which allow
@@ -498,7 +498,9 @@ class Client(object):
         """
 
         if isinstance(period, ua.CreateSubscriptionParameters):
-            return Subscription(self.uaclient, period, handler)
+            subscription = Subscription(self.uaclient, period, handler)
+            await subscription.init()
+            return subscription
         params = ua.CreateSubscriptionParameters()
         params.RequestedPublishingInterval = period
         params.RequestedLifetimeCount = 10000
@@ -506,7 +508,9 @@ class Client(object):
         params.MaxNotificationsPerPublish = 10000
         params.PublishingEnabled = True
         params.Priority = 0
-        return Subscription(self.uaclient, params, handler)
+        subscription = Subscription(self.uaclient, params, handler)
+        await subscription.init()
+        return subscription
 
     def get_namespace_array(self):
         ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))

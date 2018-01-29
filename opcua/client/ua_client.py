@@ -102,7 +102,7 @@ class UASocketProtocol(asyncio.Protocol):
         """
         future = self._send_request(request, callback, timeout, message_type)
         if not callback:
-            await asyncio.wait_for(future, self.timeout)
+            await asyncio.wait_for(future, timeout if timeout else None)
             data = future.result()
             self.check_answer(data, " in response to " + request.__class__.__name__)
             return data

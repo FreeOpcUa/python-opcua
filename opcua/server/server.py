@@ -315,7 +315,7 @@ class Server(object):
         """
         return Node(self.iserver.isession, nodeid)
 
-    def create_subscription(self, period, handler):
+    async def create_subscription(self, period, handler):
         """
         Create a subscription.
         returns a Subscription object which allow
@@ -328,7 +328,9 @@ class Server(object):
         params.MaxNotificationsPerPublish = 0
         params.PublishingEnabled = True
         params.Priority = 0
-        return Subscription(self.iserver.isession, params, handler)
+        subscription = Subscription(self.iserver.isession, params, handler)
+        await subscription.init()
+        return subscription
 
     def get_namespace_array(self):
         """

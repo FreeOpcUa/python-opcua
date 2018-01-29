@@ -197,7 +197,7 @@ class HistoryManager(object):
         """
         self.storage = storage
 
-    def _create_subscription(self, handler):
+    async def _create_subscription(self, handler):
         params = ua.CreateSubscriptionParameters()
         params.RequestedPublishingInterval = 10
         params.RequestedLifetimeCount = 3000
@@ -205,7 +205,9 @@ class HistoryManager(object):
         params.MaxNotificationsPerPublish = 0
         params.PublishingEnabled = True
         params.Priority = 0
-        return Subscription(self.iserver.isession, params, handler)
+        subscription = Subscription(self.iserver.isession, params, handler)
+        await subscription.init()
+        return subscription
 
     def historize_data_change(self, node, period=timedelta(days=7), count=0):
         """

@@ -2,6 +2,7 @@
 high level interface to subscriptions
 """
 import time
+import asyncio
 import logging
 from threading import Lock
 import collections
@@ -77,6 +78,7 @@ class Subscription(object):
     """
 
     def __init__(self, server, params, handler):
+        self.loop = asyncio.get_event_loop()
         self.logger = logging.getLogger(__name__)
         self.server = server
         self._client_handle = 200
@@ -85,14 +87,16 @@ class Subscription(object):
         self._monitoreditems_map = {}
         self._lock = Lock()
         self.subscription_id = None
-        response = self.server.create_subscription(params, self.publish_callback)
-        self.subscription_id = response.SubscriptionId  # move to data class
 
+    async def init(self):
+        response = await self.server.create_subscription(self.parameters, self.publish_callback)
+        self.subscription_id = response.SubscriptionId  # move to data class
+        self.logger.info('Subscription created %s', self.subscription_id)
         # Launching two publish requests is a heuristic. We try to ensure
         # that the server always has at least one publish request in the queue,
         # even after it just replied to a publish request.
-        self.server.publish()
-        self.server.publish()
+        await self.server.publish()
+        await self.server.publish()
 
     def delete(self):
         """
@@ -103,9 +107,8 @@ class Subscription(object):
 
     def publish_callback(self, publishresult):
         self.logger.info("Publish callback called with result: %s", publishresult)
-        while self.subscription_id is None:
-            time.sleep(0.01)
-
+        if self.subscription_id is None:
+            raise RuntimeError('publish_callback was called before subscription_id was set')
         for notif in publishresult.NotificationMessage.NotificationData:
             if isinstance(notif, ua.DataChangeNotification):
                 self._call_datachange(notif)
@@ -115,11 +118,10 @@ class Subscription(object):
                 self._call_status(notif)
             else:
                 self.logger.warning("Notification type not supported yet for notification %s", notif)
-
         ack = ua.SubscriptionAcknowledgement()
         ack.SubscriptionId = self.subscription_id
         ack.SequenceNumber = publishresult.NotificationMessage.SequenceNumber
-        self.server.publish([ack])
+        self.loop.create_task(self.server.publish([ack]))
 
     def _call_datachange(self, datachange):
         for item in datachange.MonitoredItems:
@@ -168,16 +170,16 @@ class Subscription(object):
         except Exception:
             self.logger.exception("Exception calling status change handler")
 
-    def subscribe_data_change(self, nodes, attr=ua.AttributeIds.Value):
+    async def subscribe_data_change(self, nodes, attr=ua.AttributeIds.Value):
         """
         Subscribe for data change events for a node or list of nodes.
         default attribute is Value.
         Return a handle which can be used to unsubscribe
         If more control is necessary use create_monitored_items method
         """
-        return self._subscribe(nodes, attr, queuesize=0)
+        return await self._subscribe(nodes, attr, queuesize=0)
 
-    def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtypes=ua.ObjectIds.BaseEventType, evfilter=None, queuesize=0):
+    async def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtypes=ua.ObjectIds.BaseEventType, evfilter=None, queuesize=0):
         """
         Subscribe to events from a node. Default node is Server node.
         In most servers the server node is the only one you can subscribe to.
@@ -186,17 +188,14 @@ class Subscription(object):
         Return a handle which can be used to unsubscribe
         """
         sourcenode = Node(self.server, sourcenode)
-
         if evfilter is None:
             if not type(evtypes) in (list, tuple):
                 evtypes = [evtypes]
-
             evtypes = [Node(self.server, evtype) for evtype in evtypes]
-
             evfilter = events.get_filter_from_event_type(evtypes)
-        return self._subscribe(sourcenode, ua.AttributeIds.EventNotifier, evfilter, queuesize=queuesize)
+        return await self._subscribe(sourcenode, ua.AttributeIds.EventNotifier, evfilter, queuesize=queuesize)
 
-    def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):
+    async def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):
         is_list = True
         if isinstance(nodes, collections.Iterable):
             nodes = list(nodes)
@@ -207,8 +206,7 @@ class Subscription(object):
         for node in nodes:
             mir = self._make_monitored_item_request(node, attr, mfilter, queuesize)
             mirs.append(mir)
-
-        mids = self.create_monitored_items(mirs)
+        mids = await self.create_monitored_items(mirs)
         if is_list:
             return mids
         if type(mids[0]) == ua.StatusCode:
@@ -235,7 +233,7 @@ class Subscription(object):
         mir.RequestedParameters = mparams
         return mir
 
-    def create_monitored_items(self, monitored_items):
+    async def create_monitored_items(self, monitored_items):
         """
         low level method to have full control over subscription parameters
         Client handle must be unique since it will be used as key for internal registration of data
@@ -256,7 +254,7 @@ class Subscription(object):
                 #TODO: Either use the filter from request or from response. Here it uses from request, in modify it uses from response
                 data.mfilter = mi.RequestedParameters.Filter
                 self._monitoreditems_map[mi.RequestedParameters.ClientHandle] = data
-        results = self.server.create_monitored_items(params)
+        results = await self.server.create_monitored_items(params)
         mids = []
         # process result, add server_handle, or remove it if failed
         with self._lock:
@@ -271,7 +269,7 @@ class Subscription(object):
                 mids.append(result.MonitoredItemId)
         return mids
 
-    def unsubscribe(self, handle):
+    async def unsubscribe(self, handle):
         """
         unsubscribe to datachange or events using the handle returned while subscribing
         if you delete subscription, you do not need to unsubscribe
@@ -279,7 +277,7 @@ class Subscription(object):
         params = ua.DeleteMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
         params.MonitoredItemIds = [handle]
-        results = self.server.delete_monitored_items(params)
+        results = await self.server.delete_monitored_items(params)
         results[0].check()
         with self._lock:
             for k, v in self._monitoreditems_map.items():
@@ -287,7 +285,7 @@ class Subscription(object):
                     del(self._monitoreditems_map[k])
                     return
 
-    def modify_monitored_item(self, handle, new_samp_time, new_queuesize=0, mod_filter_val=-1):
+    async def modify_monitored_item(self, handle, new_samp_time, new_queuesize=0, mod_filter_val=-1):
         """
         Modify a monitored item.
         :param handle: Handle returned when originally subscribing
@@ -316,7 +314,7 @@ class Subscription(object):
         params = ua.ModifyMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
         params.ItemsToModify.append(modif_item)
-        results = self.server.modify_monitored_items(params)
+        results = await self.server.modify_monitored_items(params)
         item_to_change.mfilter = results[0].FilterResult
         return results
 
