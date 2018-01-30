@@ -3,14 +3,19 @@ High level node object, to access node attribute
 and browse address space
 """
 
+import logging
 from opcua import ua
 from opcua.common import events
 import opcua.common
 
-def _check_results(results, reqlen = 1):
+_logger = logging.getLogger(__name__)
+
+
+def _check_results(results, reqlen=1):
     assert len(results) == reqlen, results
     for r in results:
         r.check()
+
 
 def _to_nodeid(nodeid):
     if isinstance(nodeid, int):

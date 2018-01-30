@@ -14,13 +14,15 @@ from opcua import copy_node
 from opcua.common import ua_utils
 from opcua.common.methods import call_method_full
 
+
 def add_server_methods(srv):
     @uamethod
     def func(parent, value):
         return value * 2
 
     o = srv.get_objects_node()
-    v = o.add_method(ua.NodeId("ServerMethod", 2), ua.QualifiedName('ServerMethod', 2), func, [ua.VariantType.Int64], [ua.VariantType.Int64])
+    v = o.add_method(ua.NodeId("ServerMethod", 2), ua.QualifiedName('ServerMethod', 2), func, [ua.VariantType.Int64],
+        [ua.VariantType.Int64])
 
     @uamethod
     def func2(parent, methodname, value):
@@ -34,20 +36,22 @@ def add_server_methods(srv):
         return math.sin(value)
 
     o = srv.get_objects_node()
-    v = o.add_method(ua.NodeId("ServerMethodArray", 2), ua.QualifiedName('ServerMethodArray', 2), func2, [ua.VariantType.String, ua.VariantType.Int64], [ua.VariantType.Int64])
+    v = o.add_method(ua.NodeId("ServerMethodArray", 2), ua.QualifiedName('ServerMethodArray', 2), func2,
+        [ua.VariantType.String, ua.VariantType.Int64], [ua.VariantType.Int64])
 
     @uamethod
     def func3(parent, mylist):
         return [i * 2 for i in mylist]
 
     o = srv.get_objects_node()
-    v = o.add_method(ua.NodeId("ServerMethodArray2", 2), ua.QualifiedName('ServerMethodArray2', 2), func3, [ua.VariantType.Int64], [ua.VariantType.Int64])
+    v = o.add_method(ua.NodeId("ServerMethodArray2", 2), ua.QualifiedName('ServerMethodArray2', 2), func3,
+        [ua.VariantType.Int64], [ua.VariantType.Int64])
 
     @uamethod
     def func4(parent):
         return None
 
-    base_otype= srv.get_node(ua.ObjectIds.BaseObjectType)
+    base_otype = srv.get_node(ua.ObjectIds.BaseObjectType)
     custom_otype = base_otype.add_object_type(2, 'ObjectWithMethodsType')
     custom_otype.add_method(2, 'ServerMethodDefault', func4)
     custom_otype.add_method(2, 'ServerMethodMandatory', func4).set_modelling_rule(True)
@@ -57,9 +61,12 @@ def add_server_methods(srv):
 
     @uamethod
     def func5(parent):
-        return 1,2,3
+        return 1, 2, 3
+
     o = srv.get_objects_node()
-    v = o.add_method(ua.NodeId("ServerMethodTuple", 2), ua.QualifiedName('ServerMethodTuple', 2), func5, [], [ua.VariantType.Int64, ua.VariantType.Int64, ua.VariantType.Int64])
+    v = o.add_method(ua.NodeId("ServerMethodTuple", 2), ua.QualifiedName('ServerMethodTuple', 2), func5, [],
+        [ua.VariantType.Int64, ua.VariantType.Int64, ua.VariantType.Int64])
+
 
 def _test_modelling_rules(test, parent, mandatory, result):
     f = parent.add_folder(3, 'MyFolder')
@@ -80,7 +87,6 @@ def _test_modelling_rules(test, parent, mandatory, result):
 
 
 class CommonTests(object):
-
     '''
     Tests that will be run twice. Once on server side and once on
     client side since we have been carefull to have the exact
@@ -191,7 +197,6 @@ class CommonTests(object):
         self.assertEqual(var.get_referenced_nodes(newtype), [])
         self.assertEqual(fold.get_referenced_nodes(newtype), [])
 
-
         var.add_reference(fold, newtype, forward=False, bidirectional=False)
 
         self.assertEqual(var.get_referenced_nodes(newtype), [fold])
@@ -268,19 +273,24 @@ class CommonTests(object):
         objects = self.opc.get_objects_node()
         folder = objects.add_folder(4, "folder")
 
-        childs = objects.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Forward, includesubtypes=False)
+        childs = objects.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Forward,
+            includesubtypes=False)
         self.assertTrue(folder in childs)
 
-        childs = objects.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Both, includesubtypes=False)
+        childs = objects.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Both,
+            includesubtypes=False)
         self.assertTrue(folder in childs)
 
-        childs = objects.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        childs = objects.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Inverse,
+            includesubtypes=False)
         self.assertFalse(folder in childs)
 
-        parents = folder.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        parents = folder.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Inverse,
+            includesubtypes=False)
         self.assertTrue(objects in parents)
 
-        parents = folder.get_referenced_nodes(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        parents = folder.get_referenced_nodes(refs=ua.ObjectIds.HierarchicalReferences,
+            direction=ua.BrowseDirection.Inverse, includesubtypes=False)
         self.assertTrue(objects in parents)
 
         parent = folder.get_parent()
@@ -325,7 +335,8 @@ class CommonTests(object):
 
     def test_variant_array_dim(self):
         objects = self.opc.get_objects_node()
-        l = [[[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0], [3.0, 3.0, 3.0, 3.0]],[[5.0, 5.0, 5.0, 5.0], [7.0, 8.0, 9.0, 01.0], [1.0, 1.0, 1.0, 1.0]]]
+        l = [[[1.0, 1.0, 1.0, 1.0], [2.0, 2.0, 2.0, 2.0], [3.0, 3.0, 3.0, 3.0]],
+            [[5.0, 5.0, 5.0, 5.0], [7.0, 8.0, 9.0, 01.0], [1.0, 1.0, 1.0, 1.0]]]
         v = objects.add_variable(3, 'variableWithDims', l)
 
         v.set_array_dimensions([0, 0, 0])
@@ -339,7 +350,7 @@ class CommonTests(object):
         v2 = v.get_value()
         self.assertEqual(v2, l)
         dv = v.get_data_value()
-        self.assertEqual(dv.Value.Dimensions, [2,3,4])
+        self.assertEqual(dv.Value.Dimensions, [2, 3, 4])
 
         l = [[[], [], []], [[], [], []]]
         variant = ua.Variant(l, ua.VariantType.UInt32)
@@ -347,7 +358,7 @@ class CommonTests(object):
         v2 = v.get_value()
         self.assertEqual(v2, l)
         dv = v.get_data_value()
-        self.assertEqual(dv.Value.Dimensions, [2,3,0])
+        self.assertEqual(dv.Value.Dimensions, [2, 3, 0])
 
     def test_add_numeric_variable(self):
         objects = self.opc.get_objects_node()
@@ -608,7 +619,7 @@ class CommonTests(object):
         self.assertTrue(p in childs)
 
     def test_add_nodes_modelling_rules_type_default(self):
-        base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
+        base_otype = self.opc.get_node(ua.ObjectIds.BaseObjectType)
         custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
 
         result = [self.opc.get_node(ua.ObjectIds.ModellingRule_Mandatory)]
@@ -632,7 +643,7 @@ class CommonTests(object):
         c = objects.get_child(['2:ObjectWithMethods', '2:ServerMethodDefault'])
 
     def test_add_nodes_modelling_rules_type_true(self):
-        base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
+        base_otype = self.opc.get_node(ua.ObjectIds.BaseObjectType)
         custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
 
         result = [self.opc.get_node(ua.ObjectIds.ModellingRule_Mandatory)]
@@ -644,9 +655,8 @@ class CommonTests(object):
         objects = self.opc.get_objects_node()
         objects.get_child(['2:ObjectWithMethods', '2:ServerMethodMandatory'])
 
-
     def test_add_nodes_modelling_rules_type_false(self):
-        base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
+        base_otype = self.opc.get_node(ua.ObjectIds.BaseObjectType)
         custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
 
         result = [self.opc.get_node(ua.ObjectIds.ModellingRule_Optional)]
@@ -656,7 +666,7 @@ class CommonTests(object):
         self.assertEqual(m.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
 
     def test_add_nodes_modelling_rules_type_none(self):
-        base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
+        base_otype = self.opc.get_node(ua.ObjectIds.BaseObjectType)
         custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
 
         result = []
@@ -697,7 +707,7 @@ class CommonTests(object):
         o = f.add_object(3, 'MyObject2', ua.NodeId(ua.ObjectIds.BaseObjectType, 0))
         self.assertEqual(o.get_type_definition().Identifier, ua.ObjectIds.BaseObjectType)
 
-        base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
+        base_otype = self.opc.get_node(ua.ObjectIds.BaseObjectType)
         custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
 
         o = f.add_object(3, 'MyObject3', custom_otype.nodeid)
@@ -710,36 +720,44 @@ class CommonTests(object):
     def test_references_for_added_nodes(self):
         objects = self.opc.get_objects_node()
         o = objects.add_object(3, 'MyObject')
-        nodes = objects.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Forward, includesubtypes=False)
+        nodes = objects.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Forward,
+            includesubtypes=False)
         self.assertTrue(o in nodes)
-        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.Organizes, direction=ua.BrowseDirection.Inverse,
+            includesubtypes=False)
         self.assertTrue(objects in nodes)
         self.assertEqual(o.get_parent(), objects)
         self.assertEqual(o.get_type_definition().Identifier, ua.ObjectIds.BaseObjectType)
         self.assertEqual(o.get_references(ua.ObjectIds.HasModellingRule), [])
 
         o2 = o.add_object(3, 'MySecondObject')
-        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Forward, includesubtypes=False)
+        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Forward,
+            includesubtypes=False)
         self.assertTrue(o2 in nodes)
-        nodes = o2.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        nodes = o2.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Inverse,
+            includesubtypes=False)
         self.assertTrue(o in nodes)
         self.assertEqual(o2.get_parent(), o)
         self.assertEqual(o2.get_type_definition().Identifier, ua.ObjectIds.BaseObjectType)
         self.assertEqual(o2.get_references(ua.ObjectIds.HasModellingRule), [])
 
         v = o.add_variable(3, 'MyVariable', 6)
-        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Forward, includesubtypes=False)
+        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Forward,
+            includesubtypes=False)
         self.assertTrue(v in nodes)
-        nodes = v.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        nodes = v.get_referenced_nodes(refs=ua.ObjectIds.HasComponent, direction=ua.BrowseDirection.Inverse,
+            includesubtypes=False)
         self.assertTrue(o in nodes)
         self.assertEqual(v.get_parent(), o)
         self.assertEqual(v.get_type_definition().Identifier, ua.ObjectIds.BaseDataVariableType)
         self.assertEqual(v.get_references(ua.ObjectIds.HasModellingRule), [])
 
         p = o.add_property(3, 'MyProperty', 2)
-        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasProperty, direction=ua.BrowseDirection.Forward, includesubtypes=False)
+        nodes = o.get_referenced_nodes(refs=ua.ObjectIds.HasProperty, direction=ua.BrowseDirection.Forward,
+            includesubtypes=False)
         self.assertTrue(p in nodes)
-        nodes = p.get_referenced_nodes(refs=ua.ObjectIds.HasProperty, direction=ua.BrowseDirection.Inverse, includesubtypes=False)
+        nodes = p.get_referenced_nodes(refs=ua.ObjectIds.HasProperty, direction=ua.BrowseDirection.Inverse,
+            includesubtypes=False)
         self.assertTrue(o in nodes)
         self.assertEqual(p.get_parent(), o)
         self.assertEqual(p.get_type_definition().Identifier, ua.ObjectIds.PropertyType)
@@ -764,7 +782,9 @@ class CommonTests(object):
         self.assertEqual([of, op], path)
         target = self.opc.get_node("i=13387")
         path = target.get_path()
-        self.assertEqual([self.opc.nodes.root, self.opc.nodes.types, self.opc.nodes.object_types, self.opc.nodes.base_object_type, self.opc.nodes.folder_type, self.opc.get_node(ua.ObjectIds.FileDirectoryType), target], path)
+        self.assertEqual(
+            [self.opc.nodes.root, self.opc.nodes.types, self.opc.nodes.object_types, self.opc.nodes.base_object_type,
+                self.opc.nodes.folder_type, self.opc.get_node(ua.ObjectIds.FileDirectoryType), target], path)
 
     def test_get_endpoints(self):
         endpoints = self.opc.get_endpoints()
@@ -781,7 +801,6 @@ class CommonTests(object):
         devd_t = dev_t.add_object_type(0, "MyDeviceDervived")
         v_t = devd_t.add_variable(0, "childparam", 1.0)
         p_t = devd_t.add_property(0, "sensorx_id", "0340")
-
 
         nodes = copy_node(self.opc.nodes.objects, dev_t)
         mydevice = nodes[0]
@@ -845,7 +864,8 @@ class CommonTests(object):
         prop_t = ctrl_t.add_property(0, "state", "Running")
 
         # instanciate device
-        nodes = instantiate(self.opc.nodes.objects, dev_t, nodeid=ua.NodeId("InstDevice", 2, ua.NodeIdType.String), bname="2:InstDevice")
+        nodes = instantiate(self.opc.nodes.objects, dev_t, nodeid=ua.NodeId("InstDevice", 2, ua.NodeIdType.String),
+            bname="2:InstDevice")
         mydevice = nodes[0]
 
         self.assertEqual(mydevice.get_node_class(), ua.NodeClass.Object)
@@ -859,24 +879,28 @@ class CommonTests(object):
         self.assertNotEqual(prop.nodeid, prop_t.nodeid)
 
     def test_variable_with_datatype(self):
-        v1 = self.opc.nodes.objects.add_variable(3, 'VariableEnumType1', ua.ApplicationType.ClientAndServer, datatype=ua.NodeId(ua.ObjectIds.ApplicationType))
+        v1 = self.opc.nodes.objects.add_variable(3, 'VariableEnumType1', ua.ApplicationType.ClientAndServer,
+            datatype=ua.NodeId(ua.ObjectIds.ApplicationType))
         tp1 = v1.get_data_type()
         self.assertEqual(ua.NodeId(ua.ObjectIds.ApplicationType), tp1)
 
-        v2 = self.opc.nodes.objects.add_variable(3, 'VariableEnumType2', ua.ApplicationType.ClientAndServer, datatype=ua.NodeId(ua.ObjectIds.ApplicationType) )
+        v2 = self.opc.nodes.objects.add_variable(3, 'VariableEnumType2', ua.ApplicationType.ClientAndServer,
+            datatype=ua.NodeId(ua.ObjectIds.ApplicationType))
         tp2 = v2.get_data_type()
-        self.assertEqual( ua.NodeId(ua.ObjectIds.ApplicationType), tp2)
+        self.assertEqual(ua.NodeId(ua.ObjectIds.ApplicationType), tp2)
 
     def test_enum(self):
         # create enum type
         enums = self.opc.get_root_node().get_child(["0:Types", "0:DataTypes", "0:BaseDataType", "0:Enumeration"])
         myenum_type = enums.add_data_type(0, "MyEnum")
-        es = myenum_type.add_variable(0, "EnumStrings", [ua.LocalizedText("String0"), ua.LocalizedText("String1"), ua.LocalizedText("String2")], ua.VariantType.LocalizedText)
-        #es.set_value_rank(1)
+        es = myenum_type.add_variable(0, "EnumStrings",
+            [ua.LocalizedText("String0"), ua.LocalizedText("String1"), ua.LocalizedText("String2")],
+            ua.VariantType.LocalizedText)
+        # es.set_value_rank(1)
         # instantiate
         o = self.opc.get_objects_node()
         myvar = o.add_variable(2, "MyEnumVar", ua.LocalizedText("String1"), datatype=myenum_type.nodeid)
-        #myvar.set_writable(True)
+        # myvar.set_writable(True)
         # tests
         self.assertEqual(myvar.get_data_type(), myenum_type.nodeid)
         myvar.set_value(ua.LocalizedText("String2"))
@@ -926,6 +950,6 @@ class CommonTests(object):
             ua.ObjectIds.Enumeration: ua.VariantType.Int32,  # enumeration
             ua.ObjectIds.AttributeWriteMask: ua.VariantType.Int32,  # enumeration
             ua.ObjectIds.AxisScaleEnumeration: ua.VariantType.Int32  # enumeration
-            }
+        }
         for dt, vdt in test_data.items():
             self.assertEqual(ua_utils.data_type_to_variant_type(self.opc.get_node(ua.NodeId(dt))), vdt)

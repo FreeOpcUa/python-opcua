@@ -172,4 +172,3 @@ def x509_to_string(cert):
         issuer = ', issuer: {0}'.format(x509_name_to_string(cert.issuer))
     # TODO: show more information
     return "{0}{1}, {2} - {3}".format(x509_name_to_string(cert.subject), issuer, cert.not_valid_before, cert.not_valid_after)
-

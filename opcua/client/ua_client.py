@@ -18,7 +18,7 @@ class UASocketProtocol(asyncio.Protocol):
     """
 
     def __init__(self, timeout=1, security_policy=ua.SecurityPolicy()):
-        self.logger = logging.getLogger(__name__ + ".Socket")
+        self.logger = logging.getLogger(__name__ + ".UASocketProtocol")
         self.loop = asyncio.get_event_loop()
         self.transport = None
         self.receive_buffer = asyncio.Queue()
@@ -126,7 +126,7 @@ class UASocketProtocol(asyncio.Protocol):
         elif isinstance(msg, ua.Acknowledge):
             self._call_callback(0, msg)
         elif isinstance(msg, ua.ErrorMessage):
-            self.logger.warning("Received an error: %s", msg)
+            self.logger.warning("Received an error: %r", msg)
         else:
             raise ua.UaError("Unsupported message type: %s", msg)
         if self._leftover_chunk or not self.receive_buffer.empty():
@@ -209,7 +209,7 @@ class UaClient:
     """
 
     def __init__(self, timeout=1):
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(__name__ + '.UaClient')
         self.loop = asyncio.get_event_loop()
         self._publish_callbacks = {}
         self._timeout = timeout

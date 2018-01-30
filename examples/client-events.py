@@ -1,23 +1,13 @@
-import sys
-sys.path.insert(0, "..")
 
-try:
-    from IPython import embed
-except ImportError:
-    import code
-
-    def embed():
-        vars = globals()
-        vars.update(locals())
-        shell = code.InteractiveConsole(vars)
-        shell.interact()
-
-
+import asyncio
+import logging
 from opcua import Client
+
+logging.basicConfig(level=logging.INFO)
+_logger = logging.getLogger('opcua')
 
 
 class SubHandler(object):
-
     """
     Subscription Handler. To receive events from server for a subscription
     data_change and event methods are called directly from receiving thread.
@@ -28,30 +18,39 @@ class SubHandler(object):
         print("New event recived: ", event)
 
 
-if __name__ == "__main__":
-
-    client = Client("opc.tcp://localhost:4840/freeopcua/server/")
-    # client = Client("opc.tcp://admin@localhost:4840/freeopcua/server/") #connect using a user
+async def task(loop):
+    # url = "opc.tcp://commsvr.com:51234/UA/CAS_UA_Server"
+    url = "opc.tcp://localhost:4840/freeopcua/server/"
+    # url = "opc.tcp://admin@localhost:4840/freeopcua/server/"  #connect using a user
     try:
-        client.connect()
+        async with Client(url=url) as client:
+            # Client has a few methods to get proxy to UA nodes that should always be in address space such as Root or Objects
+            root = client.get_root_node()
+            _logger.info("Objects node is: %r", root)
 
-        # Client has a few methods to get proxy to UA nodes that should always be in address space such as Root or Objects
-        root = client.get_root_node()
-        print("Objects node is: ", root)
+            # Now getting a variable node using its browse path
+            obj = await root.get_child(["0:Objects", "2:MyObject"])
+            _logger.info("MyObject is: %r", obj)
 
-        # Now getting a variable node using its browse path
-        obj = root.get_child(["0:Objects", "2:MyObject"])
-        print("MyObject is: ", obj)
+            myevent = await root.get_child(["0:Types", "0:EventTypes", "0:BaseEventType", "2:MyFirstEvent"])
+            _logger.info("MyFirstEventType is: %r", myevent)
 
-        myevent = root.get_child(["0:Types", "0:EventTypes", "0:BaseEventType", "2:MyFirstEvent"])
-        print("MyFirstEventType is: ", myevent)
+            msclt = SubHandler()
+            sub = await client.create_subscription(100, msclt)
+            handle = await sub.subscribe_events(obj, myevent)
+            await sub.unsubscribe(handle)
+            await sub.delete()
+    except Exception:
+        _logger.exception('Error')
+    loop.stop()
 
-        msclt = SubHandler()
-        sub = client.create_subscription(100, msclt)
-        handle = sub.subscribe_events(obj, myevent)
 
-        embed()
-        sub.unsubscribe(handle)
-        sub.delete()
-    finally:
-        client.disconnect()
+def main():
+    loop = asyncio.get_event_loop()
+    loop.set_debug(True)
+    loop.run_until_complete(task(loop))
+    loop.close()
+
+
+if __name__ == "__main__":
+    main()

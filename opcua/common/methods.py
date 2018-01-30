@@ -41,6 +41,7 @@ def call_method_full(parent, methodid, *args):
     result.OutputArguments = [var.Value for var in result.OutputArguments]
     return result
 
+
 def _call_method(server, parentnodeid, methodid, arguments):
     request = ua.CallMethodRequest()
     request.ObjectId = parentnodeid

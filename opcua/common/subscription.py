@@ -4,7 +4,6 @@ high level interface to subscriptions
 import time
 import asyncio
 import logging
-from threading import Lock
 import collections
 
 from opcua import ua
@@ -84,8 +83,7 @@ class Subscription(object):
         self._client_handle = 200
         self._handler = handler
         self.parameters = params  # move to data class
-        self._monitoreditems_map = {}
-        self._lock = Lock()
+        self._monitored_items = {}
         self.subscription_id = None
 
     async def init(self):
@@ -125,11 +123,10 @@ class Subscription(object):
 
     def _call_datachange(self, datachange):
         for item in datachange.MonitoredItems:
-            with self._lock:
-                if item.ClientHandle not in self._monitoreditems_map:
-                    self.logger.warning("Received a notification for unknown handle: %s", item.ClientHandle)
-                    continue
-                data = self._monitoreditems_map[item.ClientHandle]
+            if item.ClientHandle not in self._monitored_items:
+                self.logger.warning("Received a notification for unknown handle: %s", item.ClientHandle)
+                continue
+            data = self._monitored_items[item.ClientHandle]
             if hasattr(self._handler, "datachange_notification"):
                 event_data = DataChangeNotif(data, item)
                 try:
@@ -147,8 +144,7 @@ class Subscription(object):
 
     def _call_event(self, eventlist):
         for event in eventlist.Events:
-            with self._lock:
-                data = self._monitoreditems_map[event.ClientHandle]
+            data = self._monitored_items[event.ClientHandle]
             result = events.Event.from_event_fields(data.mfilter.SelectClauses, event.EventFields)
             result.server_handle = data.server_handle
             if hasattr(self._handler, "event_notification"):
@@ -219,9 +215,8 @@ class Subscription(object):
         rv.AttributeId = attr
         # rv.IndexRange //We leave it null, then the entire array is returned
         mparams = ua.MonitoringParameters()
-        with self._lock:
-            self._client_handle += 1
-            mparams.ClientHandle = self._client_handle
+        self._client_handle += 1
+        mparams.ClientHandle = self._client_handle
         mparams.SamplingInterval = self.parameters.RequestedPublishingInterval
         mparams.QueueSize = queuesize
         mparams.DiscardOldest = True
@@ -242,31 +237,28 @@ class Subscription(object):
         params.SubscriptionId = self.subscription_id
         params.ItemsToCreate = monitored_items
         params.TimestampsToReturn = ua.TimestampsToReturn.Both
-
         # insert monitored item into map to avoid notification arrive before result return
         # server_handle is left as None in purpose as we don't get it yet.
-        with self._lock:
-            for mi in monitored_items:
-                data = SubscriptionItemData()
-                data.client_handle = mi.RequestedParameters.ClientHandle
-                data.node = Node(self.server, mi.ItemToMonitor.NodeId)
-                data.attribute = mi.ItemToMonitor.AttributeId
-                #TODO: Either use the filter from request or from response. Here it uses from request, in modify it uses from response
-                data.mfilter = mi.RequestedParameters.Filter
-                self._monitoreditems_map[mi.RequestedParameters.ClientHandle] = data
+        for mi in monitored_items:
+            data = SubscriptionItemData()
+            data.client_handle = mi.RequestedParameters.ClientHandle
+            data.node = Node(self.server, mi.ItemToMonitor.NodeId)
+            data.attribute = mi.ItemToMonitor.AttributeId
+            #TODO: Either use the filter from request or from response. Here it uses from request, in modify it uses from response
+            data.mfilter = mi.RequestedParameters.Filter
+            self._monitored_items[mi.RequestedParameters.ClientHandle] = data
         results = await self.server.create_monitored_items(params)
         mids = []
         # process result, add server_handle, or remove it if failed
-        with self._lock:
-            for idx, result in enumerate(results):
-                mi = params.ItemsToCreate[idx]
-                if not result.StatusCode.is_good():
-                    del self._monitoreditems_map[mi.RequestedParameters.ClientHandle]
-                    mids.append(result.StatusCode)
-                    continue
-                data = self._monitoreditems_map[mi.RequestedParameters.ClientHandle]
-                data.server_handle = result.MonitoredItemId
-                mids.append(result.MonitoredItemId)
+        for idx, result in enumerate(results):
+            mi = params.ItemsToCreate[idx]
+            if not result.StatusCode.is_good():
+                del self._monitored_items[mi.RequestedParameters.ClientHandle]
+                mids.append(result.StatusCode)
+                continue
+            data = self._monitored_items[mi.RequestedParameters.ClientHandle]
+            data.server_handle = result.MonitoredItemId
+            mids.append(result.MonitoredItemId)
         return mids
 
     async def unsubscribe(self, handle):
@@ -279,11 +271,10 @@ class Subscription(object):
         params.MonitoredItemIds = [handle]
         results = await self.server.delete_monitored_items(params)
         results[0].check()
-        with self._lock:
-            for k, v in self._monitoreditems_map.items():
-                if v.server_handle == handle:
-                    del(self._monitoreditems_map[k])
-                    return
+        for k, v in self._monitored_items.items():
+            if v.server_handle == handle:
+                del(self._monitored_items[k])
+                return
 
     async def modify_monitored_item(self, handle, new_samp_time, new_queuesize=0, mod_filter_val=-1):
         """
@@ -294,9 +285,9 @@ class Subscription(object):
         :param mod_filter_val: New deadband filter value
         :return: Return a Modify Monitored Item Result
         """
-        for monitored_item_index in self._monitoreditems_map:
-            if self._monitoreditems_map[monitored_item_index].server_handle == handle:
-                item_to_change = self._monitoreditems_map[monitored_item_index]
+        for monitored_item_index in self._monitored_items:
+            if self._monitored_items[monitored_item_index].server_handle == handle:
+                item_to_change = self._monitored_items[monitored_item_index]
                 break
         if mod_filter_val is None:
             mod_filter = None
@@ -320,8 +311,7 @@ class Subscription(object):
 
     def _modify_monitored_item_request(self, new_queuesize, new_samp_time, mod_filter, client_handle):
         req_params = ua.MonitoringParameters()
-        with self._lock:
-            req_params.ClientHandle = client_handle
+        req_params.ClientHandle = client_handle
         req_params.QueueSize = new_queuesize
         req_params.Filter = mod_filter
         req_params.SamplingInterval = new_samp_time
