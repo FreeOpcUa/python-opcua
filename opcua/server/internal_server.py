@@ -3,7 +3,6 @@ Internal server implementing opcu-ua interface.
 Can be used on server side or to implement binary/https opc-ua servers
 """
 
-
 import os
 import asyncio
 import logging
@@ -41,7 +40,7 @@ class ServerDesc(object):
 
 class InternalServer(object):
 
-    def __init__(self, shelffile=None):
+    def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.server_callback_dispatcher = CallbackDispatcher()
         self.endpoints = []
@@ -54,21 +53,18 @@ class InternalServer(object):
         self.view_service = ViewService(self.aspace)
         self.method_service = MethodService(self.aspace)
         self.node_mgt_service = NodeManagementService(self.aspace)
-        self.load_standard_address_space(shelffile)
         self.loop = asyncio.get_event_loop()
         self.asyncio_transports = []
         self.subscription_service = SubscriptionService(self.loop, self.aspace)
         self.history_manager = HistoryManager(self)
-
         # create a session to use on server side
         self.isession = InternalSession(self, self.aspace, self.subscription_service, "Internal", user=User.Admin)
-
         self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
-        self._address_space_fixes()
-        self.setup_nodes()
 
-    async def init(self):
-        pass
+    async def init(self, shelffile=None):
+        await self.load_standard_address_space(shelffile)
+        await self._address_space_fixes()
+        await self.setup_nodes()
 
     async def setup_nodes(self):
         """
@@ -78,35 +74,34 @@ class InternalServer(object):
         ns_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         await ns_node.set_value(uries)
 
-    def load_standard_address_space(self, shelffile=None):
-        if shelffile is not None and os.path.isfile(shelffile):
-            # import address space from shelf
-            self.aspace.load_aspace_shelf(shelffile)
-        else:
-            # import address space from code generated from xml
-            standard_address_space.fill_address_space(self.node_mgt_service)
-            # import address space directly from xml, this has performance impact so disabled
-            # importer = xmlimporter.XmlImporter(self.node_mgt_service)
-            # importer.import_xml("/path/to/python-opcua/schemas/Opc.Ua.NodeSet2.xml", self)
-
-            # if a cache file was supplied a shelve of the standard address space can now be built for next start up
-            if shelffile:
-                self.aspace.make_aspace_shelf(shelffile)
+    async def load_standard_address_space(self, shelf_file=None):
+        if shelf_file is not None:
+            is_file = await self.loop.run_in_executor(None, os.path.isfile, shelf_file)
+            if is_file:
+                # import address space from shelf
+                await self.loop.run_in_executor(None, self.aspace.load_aspace_shelf, shelf_file)
+                return
+        # import address space from code generated from xml
+        standard_address_space.fill_address_space(self.node_mgt_service)
+        # import address space directly from xml, this has performance impact so disabled
+        # importer = xmlimporter.XmlImporter(self.node_mgt_service)
+        # importer.import_xml("/path/to/python-opcua/schemas/Opc.Ua.NodeSet2.xml", self)
+        if shelf_file:
+            # path was supplied, but file doesn't exist - create one for next start up
+            await self.loop.run_in_executor(None, self.aspace.make_aspace_shelf, shelf_file)
 
     def _address_space_fixes(self):
         """
         Looks like the xml definition of address space has some error. This is a good place to fix them
         """
-
         it = ua.AddReferencesItem()
         it.SourceNodeId = ua.NodeId(ua.ObjectIds.BaseObjectType)
         it.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
         it.IsForward = False
         it.TargetNodeId = ua.NodeId(ua.ObjectIds.ObjectTypesFolder)
         it.TargetNodeClass = ua.NodeClass.Object
+        return self.isession.add_references([it])
 
-        results = self.isession.add_references([it])
- 
     def load_address_space(self, path):
         """
         Load address space from path
@@ -119,12 +114,12 @@ class InternalServer(object):
         """
         self.aspace.dump(path)
 
-    def start(self):
+    async def start(self):
         self.logger.info('starting internal server')
         for edp in self.endpoints:
             self._known_servers[edp.Server.ApplicationUri] = ServerDesc(edp.Server)
-        Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_State)).set_value(0, ua.VariantType.Int32)
-        Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_StartTime)).set_value(datetime.utcnow())
+        await Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_State)).set_value(0, ua.VariantType.Int32)
+        await Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_StartTime)).set_value(datetime.utcnow())
         if not self.disabled_clock:
             self._set_current_time()
 
@@ -134,7 +129,9 @@ class InternalServer(object):
         self.history_manager.stop()
 
     def _set_current_time(self):
-        self.current_time_node.set_value(datetime.utcnow())
+        self.loop.create_task(
+            self.current_time_node.set_value(datetime.utcnow())
+        )
         self.loop.call_later(1, self._set_current_time)
 
     def get_new_channel_id(self):
@@ -305,47 +302,47 @@ class InternalSession(object):
         self.logger.info('Activated internal session %s for user %s', self.name, self.user)
         return result
 
-    def read(self, params):
+    async def read(self, params):
         results = self.iserver.attribute_service.read(params)
         if self.external:
             return results
         return [deepcopy(dv) for dv in results]
 
-    def history_read(self, params):
+    async def history_read(self, params):
         return self.iserver.history_manager.read_history(params)
 
-    def write(self, params):
+    async def write(self, params):
         if not self.external:
             # If session is internal we need to store a copy og object, not a reference,
             # otherwise users may change it and we will not generate expected events
             params.NodesToWrite = [deepcopy(ntw) for ntw in params.NodesToWrite]
         return self.iserver.attribute_service.write(params, self.user)
 
-    def browse(self, params):
+    async def browse(self, params):
         return self.iserver.view_service.browse(params)
 
-    def translate_browsepaths_to_nodeids(self, params):
+    async def translate_browsepaths_to_nodeids(self, params):
         return self.iserver.view_service.translate_browsepaths_to_nodeids(params)
 
-    def add_nodes(self, params):
+    async def add_nodes(self, params):
         return self.iserver.node_mgt_service.add_nodes(params, self.user)
 
-    def delete_nodes(self, params):
+    async def delete_nodes(self, params):
         return self.iserver.node_mgt_service.delete_nodes(params, self.user)
 
-    def add_references(self, params):
+    async def add_references(self, params):
         return self.iserver.node_mgt_service.add_references(params, self.user)
 
-    def delete_references(self, params):
+    async def delete_references(self, params):
         return self.iserver.node_mgt_service.delete_references(params, self.user)
 
-    def add_method_callback(self, methodid, callback):
+    async def add_method_callback(self, methodid, callback):
         return self.aspace.add_method_callback(methodid, callback)
 
     def call(self, params):
         return self.iserver.method_service.call(params)
 
-    def create_subscription(self, params, callback):
+    async def create_subscription(self, params, callback):
         result = self.subscription_service.create_subscription(params, callback)
         self.subscriptions.append(result.SubscriptionId)
         return result
