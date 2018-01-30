@@ -15,48 +15,7 @@ from opcua.common.structures import load_type_definitions
 from opcua.crypto import uacrypto, security_policies
 
 
-class KeepAlive:
-    """
-    Used by Client to keep the session open.
-    OPCUA defines timeout both for sessions and secure channel
-    ToDo: remove
-    """
-
-    def __init__(self, client, timeout):
-        """
-        :param session_timeout: Timeout to re-new the session
-            in milliseconds.
-        """
-        self.logger = logging.getLogger(__name__)
-        self.loop = asyncio.get_event_loop()
-        self.client = client
-        self._do_stop = False
-        self._cond = Condition()
-        self.timeout = timeout
-
-        # some server support no timeout, but we do not trust them
-        if self.timeout == 0:
-            self.timeout = 3600000  # 1 hour
-
-    def run(self):
-        self.logger.debug("starting keepalive thread with period of %s milliseconds", self.timeout)
-        server_state = self.client.get_node(ua.FourByteNodeId(ua.ObjectIds.Server_ServerStatus_State))
-        while not self._do_stop:
-            with self._cond:
-                self._cond.wait(self.timeout / 1000)
-            if self._do_stop:
-                break
-            self.logger.debug("renewing channel")
-            self.client.open_secure_channel(renew=True)
-            val = server_state.get_value()
-            self.logger.debug("server state is: %s ", val)
-        self.logger.debug("keepalive thread has stopped")
-
-    def stop(self):
-        self.logger.debug("stoping keepalive thread")
-        self._do_stop = True
-        with self._cond:
-            self._cond.notify_all()
+_logger = logging.getLogger(__name__)
 
 
 class Client(object):
@@ -82,6 +41,7 @@ class Client(object):
             time. The timeout is specified in seconds.
         """
         self.logger = logging.getLogger(__name__)
+        self.loop = asyncio.get_event_loop()
         self.server_url = urlparse(url)
         # take initial username and password from the url
         self._username = self.server_url.username
@@ -100,7 +60,7 @@ class Client(object):
         self.user_private_key = None
         self._server_nonce = None
         self._session_counter = 1
-        self.keepalive = None
+        self.keep_alive = None
         self.nodes = Shortcuts(self.uaclient)
         self.max_messagesize = 0  # No limits
         self.max_chunkcount = 0  # No limits
@@ -110,7 +70,7 @@ class Client(object):
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
-        self.disconnect()
+        await self.disconnect()
 
     @staticmethod
     def find_endpoint(endpoints, security_mode, policy_uri):
@@ -230,6 +190,7 @@ class Client(object):
         High level method
         Connect, create and activate session
         """
+        _logger.info('connect')
         await self.connect_socket()
         await self.send_hello()
         await self.open_secure_channel()
@@ -241,6 +202,7 @@ class Client(object):
         High level method
         Close session, secure channel and socket
         """
+        _logger.info('disconnect')
         try:
             await self.close_session()
             await self.close_secure_channel()
@@ -337,7 +299,6 @@ class Client(object):
         desc.ProductUri = self.product_uri
         desc.ApplicationName = ua.LocalizedText(self.name)
         desc.ApplicationType = ua.ApplicationType.Client
-
         params = ua.CreateSessionParameters()
         # at least 32 random bytes for server to prove possession of private key (specs part 4, 5.6.2.2)
         nonce = utils.create_nonce(32)
@@ -346,7 +307,8 @@ class Client(object):
         params.ClientDescription = desc
         params.EndpointUrl = self.server_url.geturl()
         params.SessionName = self.description + " Session" + str(self._session_counter)
-        params.RequestedSessionTimeout = 3600000
+        # Requested maximum number of milliseconds that a Session should remain open without activity
+        params.RequestedSessionTimeout = 60 * 60 * 1000
         params.MaxResponseMessageSize = 0  # means no max size
         response = await self.uaclient.create_session(params)
         if self.security_policy.client_certificate is None:
@@ -362,12 +324,32 @@ class Client(object):
         # remember PolicyId's: we will use them in activate_session()
         ep = Client.find_endpoint(response.ServerEndpoints, self.security_policy.Mode, self.security_policy.URI)
         self._policy_ids = ep.UserIdentityTokens
+        #  Actual maximum number of milliseconds that a Session shall remain open without activity
         self.session_timeout = response.RevisedSessionTimeout
-        # 0.7 is from spec
-        # ToDo: refactor with callback_later
-        # self.keepalive = KeepAlive(self, min(self.session_timeout, self.secure_channel_timeout) * 0.7)
-        # self.keepalive.start()
+        self.keep_alive = self.loop.create_task(self._renew_session())
+        # ToDo: subscribe to ServerStatus
+        """
+        The preferred mechanism for a Client to monitor the connection status is through the keep-alive of the
+        Subscription. A Client should subscribe for the State Variable in the ServerStatus to detect shutdown or other
+        failure states. If no Subscription is created or the Server does not support Subscriptions,
+        the connection can be monitored by periodically reading the State Variable
+        """
         return response
+
+    async def _renew_session(self):
+        """
+        Renew the SecureChannel before the SessionTimeout will happen.
+        ToDo: shouldn't this only be done if there was no session activity?
+        """
+        # 0.7 is from spec
+        await asyncio.sleep(min(self.session_timeout, self.secure_channel_timeout) * 0.7)
+        server_state = self.get_node(ua.FourByteNodeId(ua.ObjectIds.Server_ServerStatus_State))
+        self.logger.debug("renewing channel")
+        await self.open_secure_channel(renew=True)
+        val = await server_state.get_value()
+        self.logger.debug("server state is: %s ", val)
+        # create new keep-alive task
+        self.keep_alive = self.loop.create_task(self._renew_session())
 
     def server_policy_id(self, token_type, default):
         """
@@ -462,8 +444,8 @@ class Client(object):
         """
         Close session
         """
-        if self.keepalive:
-            self.keepalive.stop()
+        if self.keep_alive:
+            self.keep_alive.cancel()
         return await self.uaclient.close_session(True)
 
     def get_root_node(self):

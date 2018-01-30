@@ -2,13 +2,10 @@
 High level interface to pure python OPC-UA server
 """
 
+import asyncio
 import logging
 from datetime import timedelta
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
-
+from urllib.parse import urlparse
 
 from opcua import ua
 # from opcua.binary_server import BinaryServer
@@ -26,6 +23,7 @@ from opcua.common.structures import load_type_definitions
 from opcua.common.xmlexporter import XmlExporter
 from opcua.common.xmlimporter import XmlImporter
 from opcua.common.ua_utils import get_nodes_of_namespace
+
 use_crypto = True
 try:
     from opcua.crypto import uacrypto
@@ -34,8 +32,7 @@ except ImportError:
     use_crypto = False
 
 
-class Server(object):
-
+class Server:
     """
     High level Server class
 
@@ -73,17 +70,16 @@ class Server(object):
     :vartype bserver: BinaryServer
     :ivar nodes: shortcuts to common nodes
     :vartype nodes: Shortcuts
-
     """
 
     def __init__(self, shelffile=None, iserver=None):
         self.logger = logging.getLogger(__name__)
-        self.endpoint = urlparse("opc.tcp://0.0.0.0:4840/freeopcua/server/")
-        self.application_uri = "urn:freeopcua:python:server"
-        self.product_uri = "urn:freeopcua.github.no:python:server"
-        self.name = "FreeOpcUa Python Server"
+        self.endpoint = urlparse('opc.tcp://0.0.0.0:4840/freeopcua/server/')
+        self.application_uri = 'urn:freeopcua:python:server'
+        self.product_uri = 'urn:freeopcua.github.no:python:server'
+        self.name = 'FreeOpcUa Python Server'
         self.application_type = ua.ApplicationType.ClientAndServer
-        self.default_timeout = 3600000
+        self.default_timeout = 60 * 60 * 1000
         if iserver is not None:
             self.iserver = iserver
         else:
@@ -95,16 +91,15 @@ class Server(object):
         self.private_key = None
         self._policies = []
         self.nodes = Shortcuts(self.iserver.isession)
-
         # setup some expected values
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
         sa_node.set_value([self.application_uri])
 
-    def __enter__(self):
+    def __aenter__(self):
         self.start()
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __aexit__(self, exc_type, exc_value, traceback):
         self.stop()
 
     async def load_certificate(self, path):
@@ -199,34 +194,43 @@ class Server(object):
         self._set_endpoints()
         self._policies = [ua.SecurityPolicyFactory()]
         if self.certificate and self.private_key:
-            self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
-                                ua.MessageSecurityMode.SignAndEncrypt)
-            self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
-                                                           ua.MessageSecurityMode.SignAndEncrypt,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
-            self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
-                                ua.MessageSecurityMode.Sign)
-            self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
-                                                           ua.MessageSecurityMode.Sign,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
-            self._set_endpoints(security_policies.SecurityPolicyBasic256,
-                                ua.MessageSecurityMode.SignAndEncrypt)
-            self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
-                                                           ua.MessageSecurityMode.SignAndEncrypt,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
-            self._set_endpoints(security_policies.SecurityPolicyBasic256,
-                                ua.MessageSecurityMode.Sign)
-            self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
-                                                           ua.MessageSecurityMode.Sign,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
+            self._set_endpoints(
+                security_policies.SecurityPolicyBasic128Rsa15, ua.MessageSecurityMode.SignAndEncrypt
+            )
+            self._policies.append(
+                ua.SecurityPolicyFactory(
+                    security_policies.SecurityPolicyBasic128Rsa15,
+                    ua.MessageSecurityMode.SignAndEncrypt,
+                    self.certificate,
+                    self.private_key)
+            )
+            self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15, ua.MessageSecurityMode.Sign)
+            self._policies.append(
+                ua.SecurityPolicyFactory(
+                    security_policies.SecurityPolicyBasic128Rsa15,
+                    ua.MessageSecurityMode.Sign,
+                    self.certificate,
+                    self.private_key
+                )
+            )
+            self._set_endpoints(security_policies.SecurityPolicyBasic256, ua.MessageSecurityMode.SignAndEncrypt)
+            self._policies.append(
+                ua.SecurityPolicyFactory(
+                    security_policies.SecurityPolicyBasic256,
+                    ua.MessageSecurityMode.SignAndEncrypt,
+                    self.certificate,
+                    self.private_key
+                )
+            )
+            self._set_endpoints(security_policies.SecurityPolicyBasic256, ua.MessageSecurityMode.Sign)
+            self._policies.append(
+                ua.SecurityPolicyFactory(
+                    security_policies.SecurityPolicyBasic256,
+                    ua.MessageSecurityMode.Sign,
+                    self.certificate,
+                    self.private_key
+                )
+            )
 
     def _set_endpoints(self, policy=ua.SecurityPolicy, mode=ua.MessageSecurityMode.None_):
         idtoken = ua.UserTokenPolicy()
@@ -267,7 +271,7 @@ class Server(object):
     def set_server_name(self, name):
         self.name = name
 
-    def start(self):
+    async def start(self):
         """
         Start to listen on network
         """
@@ -276,11 +280,10 @@ class Server(object):
         try:
             self.bserver = BinaryServer(self.iserver, self.endpoint.hostname, self.endpoint.port)
             self.bserver.set_policies(self._policies)
-            self.bserver.start()
+            await self.bserver.start()
         except Exception as exp:
             self.iserver.stop()
             raise exp
-
 
     def stop(self):
         """
@@ -332,30 +335,30 @@ class Server(object):
         await subscription.init()
         return subscription
 
-    def get_namespace_array(self):
+    async def get_namespace_array(self):
         """
         get all namespace defined in server
         """
         ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
-        return ns_node.get_value()
+        return await ns_node.get_value()
 
-    def register_namespace(self, uri):
+    async def register_namespace(self, uri):
         """
         Register a new namespace. Nodes should in custom namespace, not 0.
         """
         ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
-        uries = ns_node.get_value()
+        uries = await ns_node.get_value()
         if uri in uries:
             return uries.index(uri)
         uries.append(uri)
         ns_node.set_value(uries)
         return len(uries) - 1
 
-    def get_namespace_index(self, uri):
+    async def get_namespace_index(self, uri):
         """
         get index of a namespace using its uri
         """
-        uries = self.get_namespace_array()
+        uries = await self.get_namespace_array()
         return uries.index(uri)
 
     def get_event_generator(self, etype=None, source=ua.ObjectIds.Server):
@@ -377,7 +380,8 @@ class Server(object):
             properties = []
         return self._create_custom_type(idx, name, basetype, properties, [], [])
 
-    def create_custom_object_type(self, idx, name, basetype=ua.ObjectIds.BaseObjectType, properties=None, variables=None, methods=None):
+    def create_custom_object_type(self, idx, name, basetype=ua.ObjectIds.BaseObjectType, properties=None,
+            variables=None, methods=None):
         if properties is None:
             properties = []
         if variables is None:
@@ -387,9 +391,10 @@ class Server(object):
         return self._create_custom_type(idx, name, basetype, properties, variables, methods)
 
     # def create_custom_reference_type(self, idx, name, basetype=ua.ObjectIds.BaseReferenceType, properties=[]):
-        # return self._create_custom_type(idx, name, basetype, properties)
+    # return self._create_custom_type(idx, name, basetype, properties)
 
-    def create_custom_variable_type(self, idx, name, basetype=ua.ObjectIds.BaseVariableType, properties=None, variables=None, methods=None):
+    def create_custom_variable_type(self, idx, name, basetype=ua.ObjectIds.BaseVariableType, properties=None,
+            variables=None, methods=None):
         if properties is None:
             properties = []
         if variables is None:
@@ -416,10 +421,11 @@ class Server(object):
             datatype = None
             if len(variable) > 2:
                 datatype = variable[2]
-            custom_t.add_variable(idx, variable[0], ua.get_default_value(variable[1]), varianttype=variable[1], datatype=datatype)
+            custom_t.add_variable(
+                idx, variable[0], ua.get_default_value(variable[1]), varianttype=variable[1], datatype=datatype
+            )
         for method in methods:
             custom_t.add_method(idx, method[0], method[1], method[2], method[3])
-
         return custom_t
 
     def import_xml(self, path):
