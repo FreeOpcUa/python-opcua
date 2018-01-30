@@ -72,7 +72,8 @@ class Server:
     :vartype nodes: Shortcuts
     """
 
-    def __init__(self, shelffile=None, iserver=None):
+    def __init__(self, iserver=None):
+        self.loop = asyncio.get_event_loop()
         self.logger = logging.getLogger(__name__)
         self.endpoint = urlparse('opc.tcp://0.0.0.0:4840/freeopcua/server/')
         self.application_uri = 'urn:freeopcua:python:server'
@@ -83,7 +84,7 @@ class Server:
         if iserver is not None:
             self.iserver = iserver
         else:
-            self.iserver = InternalServer(shelffile)
+            self.iserver = InternalServer()
         self.bserver = None
         self._discovery_clients = {}
         self._discovery_period = 60
@@ -91,16 +92,19 @@ class Server:
         self.private_key = None
         self._policies = []
         self.nodes = Shortcuts(self.iserver.isession)
+
+    async def init(self, shelf_file=None):
+        await self.iserver.init(shelf_file)
         # setup some expected values
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
-        sa_node.set_value([self.application_uri])
+        await sa_node.set_value([self.application_uri])
 
-    def __aenter__(self):
-        self.start()
+    async def __aenter__(self):
+        await self.start()
         return self
 
-    def __aexit__(self, exc_type, exc_value, traceback):
-        self.stop()
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        await self.stop()
 
     async def load_certificate(self, path):
         """
@@ -154,7 +158,7 @@ class Server:
         self._discovery_clients[url].register_server(self)
         self._discovery_period = period
         if period:
-            self.iserver.loop.call_soon(self._renew_registration)
+            self.loop.call_soon(self._renew_registration)
 
     def unregister_to_discovery(self, url="opc.tcp://localhost:4840"):
         """
@@ -166,15 +170,7 @@ class Server:
     def _renew_registration(self):
         for client in self._discovery_clients.values():
             client.register_server(self)
-            self.iserver.loop.call_later(self._discovery_period, self._renew_registration)
-
-    def get_client_to_discovery(self, url="opc.tcp://localhost:4840"):
-        """
-        Create a client to discovery server and return it
-        """
-        client = Client(url)
-        client.connect()
-        return client
+            self.loop.call_later(self._discovery_period, self._renew_registration)
 
     def allow_remote_admin(self, allow):
         """
@@ -188,9 +184,9 @@ class Server:
     def get_endpoints(self):
         return self.iserver.get_endpoints()
 
-    def _setup_server_nodes(self):
+    async def _setup_server_nodes(self):
         # to be called just before starting server since it needs all parameters to be setup
-        self.register_namespace(self.application_uri)
+        await self.register_namespace(self.application_uri)
         self._set_endpoints()
         self._policies = [ua.SecurityPolicyFactory()]
         if self.certificate and self.private_key:
@@ -275,8 +271,8 @@ class Server:
         """
         Start to listen on network
         """
-        self._setup_server_nodes()
-        self.iserver.start()
+        await self._setup_server_nodes()
+        await self.iserver.start()
         try:
             self.bserver = BinaryServer(self.iserver, self.endpoint.hostname, self.endpoint.port)
             self.bserver.set_policies(self._policies)
@@ -351,7 +347,7 @@ class Server:
         if uri in uries:
             return uries.index(uri)
         uries.append(uri)
-        ns_node.set_value(uries)
+        await ns_node.set_value(uries)
         return len(uries) - 1
 
     async def get_namespace_index(self, uri):
@@ -403,29 +399,28 @@ class Server:
             methods = []
         return self._create_custom_type(idx, name, basetype, properties, variables, methods)
 
-    def _create_custom_type(self, idx, name, basetype, properties, variables, methods):
+    async def _create_custom_type(self, idx, name, basetype, properties, variables, methods):
         if isinstance(basetype, Node):
             base_t = basetype
         elif isinstance(basetype, ua.NodeId):
             base_t = Node(self.iserver.isession, basetype)
         else:
             base_t = Node(self.iserver.isession, ua.NodeId(basetype))
-
-        custom_t = base_t.add_object_type(idx, name)
+        custom_t = await base_t.add_object_type(idx, name)
         for prop in properties:
             datatype = None
             if len(prop) > 2:
                 datatype = prop[2]
-            custom_t.add_property(idx, prop[0], ua.get_default_value(prop[1]), varianttype=prop[1], datatype=datatype)
+            await custom_t.add_property(idx, prop[0], ua.get_default_value(prop[1]), varianttype=prop[1], datatype=datatype)
         for variable in variables:
             datatype = None
             if len(variable) > 2:
                 datatype = variable[2]
-            custom_t.add_variable(
+            await custom_t.add_variable(
                 idx, variable[0], ua.get_default_value(variable[1]), varianttype=variable[1], datatype=datatype
             )
         for method in methods:
-            custom_t.add_method(idx, method[0], method[1], method[2], method[3])
+            await custom_t.add_method(idx, method[0], method[1], method[2], method[3])
         return custom_t
 
     def import_xml(self, path):

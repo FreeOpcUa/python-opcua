@@ -212,25 +212,25 @@ class Node:
 
     set_data_value = set_value
 
-    def set_writable(self, writable=True):
+    async def set_writable(self, writable=True):
         """
         Set node as writable by clients.
         A node is always writable on server side.
         """
         if writable:
-            self.set_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.CurrentWrite)
-            self.set_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.CurrentWrite)
+            await self.set_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.CurrentWrite)
+            await self.set_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.CurrentWrite)
         else:
-            self.unset_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.CurrentWrite)
-            self.unset_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.CurrentWrite)
+            await self.unset_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.CurrentWrite)
+            await self.unset_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.CurrentWrite)
 
     async def set_attr_bit(self, attr, bit):
-        val = self.get_attribute(attr)
+        val = await self.get_attribute(attr)
         val.Value.Value = ua.ua_binary.set_bit(val.Value.Value, bit)
         await self.set_attribute(attr, val)
 
     async def unset_attr_bit(self, attr, bit):
-        val = self.get_attribute(attr)
+        val = await self.get_attribute(attr)
         val.Value.Value = ua.ua_binary.unset_bit(val.Value.Value, bit)
         await self.set_attribute(attr, val)
 
@@ -486,7 +486,7 @@ class Node:
             rpath.Elements.append(el)
         return rpath
 
-    def read_raw_history(self, starttime=None, endtime=None, numvalues=0):
+    async def read_raw_history(self, starttime=None, endtime=None, numvalues=0):
         """
         Read raw history of a node
         result code from server is checked and an exception is raised in case of error
@@ -505,7 +505,7 @@ class Node:
             details.EndTime = ua.get_win_epoch()
         details.NumValuesPerNode = numvalues
         details.ReturnBounds = True
-        result = self.history_read(details)
+        result = await self.history_read(details)
         return result.HistoryData.DataValues
 
     def history_read(self, details):
@@ -516,23 +516,20 @@ class Node:
         valueid = ua.HistoryReadValueId()
         valueid.NodeId = self.nodeid
         valueid.IndexRange = ''
-
         params = ua.HistoryReadParameters()
         params.HistoryReadDetails = details
         params.TimestampsToReturn = ua.TimestampsToReturn.Both
         params.ReleaseContinuationPoints = False
         params.NodesToRead.append(valueid)
-        result = self.server.history_read(params)[0]
-        return result
+        return self.server.history_read(params)[0]
 
-    def read_event_history(self, starttime=None, endtime=None, numvalues=0, evtypes=ua.ObjectIds.BaseEventType):
+    async def read_event_history(self, starttime=None, endtime=None, numvalues=0, evtypes=ua.ObjectIds.BaseEventType):
         """
         Read event history of a source node
         result code from server is checked and an exception is raised in case of error
         If numvalues is > 0 and number of events in period is > numvalues
         then result will be truncated
         """
-
         details = ua.ReadEventDetails()
         if starttime:
             details.StartTime = starttime
@@ -543,16 +540,12 @@ class Node:
         else:
             details.EndTime = ua.get_win_epoch()
         details.NumValuesPerNode = numvalues
-
         if not isinstance(evtypes, (list, tuple)):
             evtypes = [evtypes]
-
         evtypes = [Node(self.server, evtype) for evtype in evtypes]
-
         evfilter = events.get_filter_from_event_type(evtypes)
         details.Filter = evfilter
-
-        result = self.history_read_events(details)
+        result = await self.history_read_events(details)
         event_res = []
         for res in result.HistoryData.Events:
             event_res.append(events.Event.from_event_fields(evfilter.SelectClauses, res.EventFields))
@@ -566,20 +559,18 @@ class Node:
         valueid = ua.HistoryReadValueId()
         valueid.NodeId = self.nodeid
         valueid.IndexRange = ''
-
         params = ua.HistoryReadParameters()
         params.HistoryReadDetails = details
         params.TimestampsToReturn = ua.TimestampsToReturn.Both
         params.ReleaseContinuationPoints = False
         params.NodesToRead.append(valueid)
-        result = self.server.history_read(params)[0]
-        return result
+        return self.server.history_read(params)[0]
 
-    def delete(self, delete_references=True, recursive=False):
+    async def delete(self, delete_references=True, recursive=False):
         """
         Delete node from address space
         """
-        results = opcua.common.manage_nodes.delete_nodes(self.server, [self], recursive, delete_references)
+        results = await opcua.common.manage_nodes.delete_nodes(self.server, [self], recursive, delete_references)
         _check_results(results)
 
     def _fill_delete_reference_item(self, rdesc, bidirectional = False):
@@ -591,36 +582,31 @@ class Node:
         ditem.DeleteBidirectional = bidirectional
         return ditem
 
-    def delete_reference(self, target, reftype, forward=True, bidirectional=True):
+    async def delete_reference(self, target, reftype, forward=True, bidirectional=True):
         """
         Delete given node's references from address space
         """
-        known_refs = self.get_references(reftype, includesubtypes=False)
+        known_refs = await self.get_references(reftype, includesubtypes=False)
         targetid = _to_nodeid(target)
-
         for r in known_refs:
             if r.NodeId == targetid and r.IsForward == forward:
                 rdesc = r
                 break
         else:
             raise ua.UaStatusCodeError(ua.StatusCodes.BadNotFound)
-
         ditem = self._fill_delete_reference_item(rdesc, bidirectional)
-        self.server.delete_references([ditem])[0].check()
+        await self.server.delete_references([ditem])[0].check()
 
-    def add_reference(self, target, reftype, forward=True, bidirectional=True):
+    async def add_reference(self, target, reftype, forward=True, bidirectional=True):
         """
         Add reference to node
         """
-
         aitem = ua.AddReferencesItem()
         aitem.SourceNodeId = self.nodeid
         aitem.TargetNodeId = _to_nodeid(target)
         aitem.ReferenceTypeId = _to_nodeid(reftype)
         aitem.IsForward = forward
-
         params = [aitem]
-
         if bidirectional:
             aitem2 = ua.AddReferencesItem()
             aitem2.SourceNodeId = aitem.TargetNodeId
@@ -628,37 +614,38 @@ class Node:
             aitem2.ReferenceTypeId = aitem.ReferenceTypeId
             aitem2.IsForward = not forward
             params.append(aitem2)
-
-        results =  self.server.add_references(params)
+        results = await self.server.add_references(params)
         _check_results(results, len(params))
 
-    def _add_modelling_rule(self, parent, mandatory=True):
-        if mandatory is not None and parent.get_node_class() == ua.NodeClass.ObjectType:
+    async def _add_modelling_rule(self, parent, mandatory=True):
+        if mandatory is not None and await parent.get_node_class() == ua.NodeClass.ObjectType:
             rule=ua.ObjectIds.ModellingRule_Mandatory if mandatory else ua.ObjectIds.ModellingRule_Optional
-            self.add_reference(rule, ua.ObjectIds.HasModellingRule, True, False)
+            await self.add_reference(rule, ua.ObjectIds.HasModellingRule, True, False)
         return self
 
-    def set_modelling_rule(self, mandatory):
-        parent = self.get_parent()
+    async def set_modelling_rule(self, mandatory):
+        parent = await self.get_parent()
         if parent is None:
             return ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
-        if parent.get_node_class() != ua.NodeClass.ObjectType:
+        if await parent.get_node_class() != ua.NodeClass.ObjectType:
             return ua.StatusCode(ua.StatusCodes.BadTypeMismatch)
         # remove all existing modelling rule
         rules = self.get_references(ua.ObjectIds.HasModellingRule)
-        self.server.delete_references(list(map(self._fill_delete_reference_item, rules)))
-
+        await self.server.delete_references(list(map(self._fill_delete_reference_item, rules)))
         self._add_modelling_rule(parent, mandatory)
         return ua.StatusCode()
 
-    def add_folder(self, nodeid, bname):
-        return  opcua.common.manage_nodes.create_folder(self, nodeid, bname)._add_modelling_rule(self)
+    async def add_folder(self, nodeid, bname):
+        folder = await opcua.common.manage_nodes.create_folder(self, nodeid, bname)
+        return await folder._add_modelling_rule(self)
 
-    def add_object(self, nodeid, bname, objecttype=None):
-        return opcua.common.manage_nodes.create_object(self, nodeid, bname, objecttype)._add_modelling_rule(self)
+    async def add_object(self, nodeid, bname, objecttype=None):
+        obj = await opcua.common.manage_nodes.create_object(self, nodeid, bname, objecttype)
+        return await obj._add_modelling_rule(self)
 
-    def add_variable(self, nodeid, bname, val, varianttype=None, datatype=None):
-        return opcua.common.manage_nodes.create_variable(self, nodeid, bname, val, varianttype, datatype)._add_modelling_rule(self)
+    async def add_variable(self, nodeid, bname, val, varianttype=None, datatype=None):
+        var = await opcua.common.manage_nodes.create_variable(self, nodeid, bname, val, varianttype, datatype)
+        return await var._add_modelling_rule(self)
 
     def add_object_type(self, nodeid, bname):
         return opcua.common.manage_nodes.create_object_type(self, nodeid, bname)
@@ -669,11 +656,13 @@ class Node:
     def add_data_type(self, nodeid, bname, description=None):
         return opcua.common.manage_nodes.create_data_type(self, nodeid, bname, description=None)
 
-    def add_property(self, nodeid, bname, val, varianttype=None, datatype=None):
-        return opcua.common.manage_nodes.create_property(self, nodeid, bname, val, varianttype, datatype)._add_modelling_rule(self)
+    async def add_property(self, nodeid, bname, val, varianttype=None, datatype=None):
+        prop = await opcua.common.manage_nodes.create_property(self, nodeid, bname, val, varianttype, datatype)
+        return await prop._add_modelling_rule(self)
 
-    def add_method(self, *args):
-        return opcua.common.manage_nodes.create_method(self, *args)._add_modelling_rule(self)
+    async def add_method(self, *args):
+        method = await opcua.common.manage_nodes.create_method(self, *args)
+        return await method._add_modelling_rule(self)
 
     def add_reference_type(self, nodeid, bname, symmetric=True, inversename=None):
         return opcua.common.manage_nodes.create_reference_type(self, nodeid, bname, symmetric, inversename)

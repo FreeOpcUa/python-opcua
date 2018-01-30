@@ -1,12 +1,11 @@
-from threading import RLock
-import logging
-from datetime import datetime
-import collections
+
+import pickle
 import shelve
-try:
-    import cPickle as pickle
-except:
-    import pickle
+import asyncio
+import logging
+import collections
+from threading import RLock
+from datetime import datetime
 
 from opcua import ua
 from opcua.server.users import User
@@ -550,10 +549,9 @@ class AddressSpace(object):
 
         Note: Intended for slow devices, such as Raspberry Pi, to greatly improve start up time
         """
-        s = shelve.open(path, "n", protocol=pickle.HIGHEST_PROTOCOL)
-        for nodeid, ndata in self._nodes.items():
-            s[nodeid.to_string()] = ndata
-        s.close()
+        with shelve.open(path, 'n', protocol=pickle.HIGHEST_PROTOCOL) as s:
+            for nodeid, ndata in self._nodes.items():
+                s[nodeid.to_string()] = ndata
 
     def load_aspace_shelf(self, path):
         """
@@ -562,6 +560,8 @@ class AddressSpace(object):
 
         Note: Intended for slow devices, such as Raspberry Pi, to greatly improve start up time
         """
+        raise NotImplementedError
+        # ToDo: async friendly implementation - load all at once?
         class LazyLoadingDict(collections.MutableMapping):
             """
             Special dict that only loads nodes as they are accessed. If a node is accessed it gets copied from the
