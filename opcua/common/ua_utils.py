@@ -192,7 +192,6 @@ async def is_child_present(node, browsename):
     for child_desc in child_descs:
         if child_desc.BrowseName == browsename:
             return True
-
     return False
 
 

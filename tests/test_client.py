@@ -34,6 +34,7 @@ async def client():
 async def server():
     # start our own server
     srv = Server()
+    await srv.init()
     srv.set_endpoint(f'opc.tcp://127.0.0.1:{port_num1}')
     await add_server_methods(srv)
     await srv.start()

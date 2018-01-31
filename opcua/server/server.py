@@ -281,13 +281,12 @@ class Server:
             self.iserver.stop()
             raise exp
 
-    def stop(self):
+    async def stop(self):
         """
         Stop server
         """
-        for client in self._discovery_clients.values():
-            client.disconnect()
-        self.bserver.stop()
+        await asyncio.wait([client.disconnect() for client in self._discovery_clients.values()])
+        await self.bserver.stop()
         self.iserver.stop()
 
     def get_root_node(self):

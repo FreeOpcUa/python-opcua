@@ -60,9 +60,9 @@ async def add_server_methods(srv):
     base_otype = srv.get_node(ua.ObjectIds.BaseObjectType)
     custom_otype = await base_otype.add_object_type(2, 'ObjectWithMethodsType')
     await custom_otype.add_method(2, 'ServerMethodDefault', func4)
-    await custom_otype.add_method(2, 'ServerMethodMandatory', func4).set_modelling_rule(True)
-    await custom_otype.add_method(2, 'ServerMethodOptional', func4).set_modelling_rule(False)
-    await custom_otype.add_method(2, 'ServerMethodNone', func4).set_modelling_rule(None)
+    await (await custom_otype.add_method(2, 'ServerMethodMandatory', func4)).set_modelling_rule(True)
+    await (await custom_otype.add_method(2, 'ServerMethodOptional', func4)).set_modelling_rule(False)
+    await (await custom_otype.add_method(2, 'ServerMethodNone', func4)).set_modelling_rule(None)
     await o.add_object(2, 'ObjectWithMethods', custom_otype)
 
     @uamethod

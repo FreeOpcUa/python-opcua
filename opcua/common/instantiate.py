@@ -14,14 +14,14 @@ from opcua.common.copy_node import _rdesc_from_node, _read_and_copy_attrs
 logger = logging.getLogger(__name__)
 
 
-def instantiate(parent, node_type, nodeid=None, bname=None, dname=None, idx=0):
+async def instantiate(parent, node_type, nodeid=None, bname=None, dname=None, idx=0):
     """
     instantiate a node type under a parent node.
     nodeid and browse name of new node can be specified, or just namespace index
     If they exists children of the node type, such as components, variables and
     properties are also instantiated
     """
-    rdesc = _rdesc_from_node(parent, node_type)
+    rdesc = await _rdesc_from_node(parent, node_type)
     rdesc.TypeDefinition = node_type.nodeid
 
     if nodeid is None:
@@ -31,11 +31,14 @@ def instantiate(parent, node_type, nodeid=None, bname=None, dname=None, idx=0):
     elif isinstance(bname, str):
         bname = ua.QualifiedName.from_string(bname)
 
-    nodeids = _instantiate_node(parent.server, Node(parent.server, rdesc.NodeId), parent.nodeid, rdesc, nodeid, bname, dname=dname, toplevel=True)
+    nodeids = await _instantiate_node(
+        parent.server,
+        Node(parent.server, rdesc.NodeId), parent.nodeid, rdesc, nodeid, bname, dname=dname, toplevel=True
+    )
     return [Node(parent.server, nid) for nid in nodeids]
 
 
-def _instantiate_node(server, node_type, parentid, rdesc, nodeid, bname, dname=None, recursive=True, toplevel=False):
+async def _instantiate_node(server, node_type, parentid, rdesc, nodeid, bname, dname=None, recursive=True, toplevel=False):
     """
     instantiate a node type under parent
     """
@@ -48,38 +51,36 @@ def _instantiate_node(server, node_type, parentid, rdesc, nodeid, bname, dname=N
 
     if rdesc.NodeClass in (ua.NodeClass.Object, ua.NodeClass.ObjectType):
         addnode.NodeClass = ua.NodeClass.Object
-        _read_and_copy_attrs(node_type, ua.ObjectAttributes(), addnode)
+        await _read_and_copy_attrs(node_type, ua.ObjectAttributes(), addnode)
 
     elif rdesc.NodeClass in (ua.NodeClass.Variable, ua.NodeClass.VariableType):
         addnode.NodeClass = ua.NodeClass.Variable
-        _read_and_copy_attrs(node_type, ua.VariableAttributes(), addnode)
+        await _read_and_copy_attrs(node_type, ua.VariableAttributes(), addnode)
     elif rdesc.NodeClass in (ua.NodeClass.Method,):
         addnode.NodeClass = ua.NodeClass.Method
-        _read_and_copy_attrs(node_type, ua.MethodAttributes(), addnode)
+        await _read_and_copy_attrs(node_type, ua.MethodAttributes(), addnode)
     elif rdesc.NodeClass in (ua.NodeClass.DataType,):
         addnode.NodeClass = ua.NodeClass.DataType
-        _read_and_copy_attrs(node_type, ua.DataTypeAttributes(), addnode)
+        await _read_and_copy_attrs(node_type, ua.DataTypeAttributes(), addnode)
     else:
         logger.error("Instantiate: Node class not supported: %s", rdesc.NodeClass)
         raise RuntimeError("Instantiate: Node class not supported")
-        return
     if dname is not None:
         addnode.NodeAttributes.DisplayName = dname
 
-    res = server.add_nodes([addnode])[0]
+    res = (await server.add_nodes([addnode]))[0]
     added_nodes = [res.AddedNodeId]
 
     if recursive:
-        parents = ua_utils.get_node_supertypes(node_type, includeitself=True)
+        parents = await ua_utils.get_node_supertypes(node_type, includeitself=True)
         node = Node(server, res.AddedNodeId)
         for parent in parents:
-            descs = parent.get_children_descriptions(includesubtypes=False)
+            descs = await parent.get_children_descriptions(includesubtypes=False)
             for c_rdesc in descs:
                 # skip items that already exists, prefer the 'lowest' one in object hierarchy
-                if not ua_utils.is_child_present(node, c_rdesc.BrowseName):
-
+                if not await ua_utils.is_child_present(node, c_rdesc.BrowseName):
                     c_node_type = Node(server, c_rdesc.NodeId)
-                    refs = c_node_type.get_referenced_nodes(refs=ua.ObjectIds.HasModellingRule)
+                    refs = await c_node_type.get_referenced_nodes(refs=ua.ObjectIds.HasModellingRule)
                     # exclude nodes without ModellingRule at top-level
                     if toplevel and len(refs) == 0:
                         continue
@@ -87,13 +88,18 @@ def _instantiate_node(server, node_type, parentid, rdesc, nodeid, bname, dname=N
                     if len(refs) == 1 and refs[0].nodeid == ua.NodeId(ua.ObjectIds.ModellingRule_Optional):
                         logger.info("Will not instantiate optional node %s as part of %s", c_rdesc.BrowseName, addnode.BrowseName)
                         continue
-
                     # if root node being instantiated has a String NodeId, create the children with a String NodeId
                     if res.AddedNodeId.NodeIdType is ua.NodeIdType.String:
                         inst_nodeid = res.AddedNodeId.Identifier + "." + c_rdesc.BrowseName.Name
-                        nodeids = _instantiate_node(server, c_node_type, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(identifier=inst_nodeid, namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
+                        nodeids = await _instantiate_node(
+                            server, c_node_type, res.AddedNodeId, c_rdesc,
+                            nodeid=ua.NodeId(identifier=inst_nodeid, namespaceidx=res.AddedNodeId.NamespaceIndex),
+                            bname=c_rdesc.BrowseName
+                        )
                     else:
-                        nodeids = _instantiate_node(server, c_node_type, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
+                        nodeids = await _instantiate_node(
+                            server, c_node_type, res.AddedNodeId, c_rdesc,
+                            nodeid=ua.NodeId(namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName
+                        )
                     added_nodes.extend(nodeids)
-
     return added_nodes

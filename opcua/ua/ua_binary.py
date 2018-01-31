@@ -505,8 +505,7 @@ def struct_from_binary(objtype, data):
 
 
 def header_to_binary(hdr):
-    b = []
-    b.append(struct.pack("<3ss", hdr.MessageType, hdr.ChunkType))
+    b = [struct.pack("<3ss", hdr.MessageType, hdr.ChunkType)]
     size = hdr.body_size + 8
     if hdr.MessageType in (ua.MessageType.SecureOpen, ua.MessageType.SecureClose, ua.MessageType.SecureMessage):
         size += 4
