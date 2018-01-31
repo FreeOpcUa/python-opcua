@@ -59,8 +59,6 @@ class Server(object):
     As a result the first startup will be even slower due to the cache file
     generation but all further start ups will be significantly faster.
 
-    :ivar application_uri:
-    :vartype application_uri: uri
     :ivar product_uri:
     :vartype product_uri: uri
     :ivar name:
@@ -79,7 +77,7 @@ class Server(object):
     def __init__(self, shelffile=None, iserver=None):
         self.logger = logging.getLogger(__name__)
         self.endpoint = urlparse("opc.tcp://0.0.0.0:4840/freeopcua/server/")
-        self.application_uri = "urn:freeopcua:python:server"
+        self._application_uri = "urn:freeopcua:python:server"
         self.product_uri = "urn:freeopcua.github.no:python:server"
         self.name = "FreeOpcUa Python Server"
         self.application_type = ua.ApplicationType.ClientAndServer
@@ -97,8 +95,9 @@ class Server(object):
         self.nodes = Shortcuts(self.iserver.isession)
 
         # setup some expected values
+        self.set_application_uri(self._application_uri)
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
-        sa_node.set_value([self.application_uri])
+        sa_node.set_value([self._application_uri])
 
     def __enter__(self):
         self.start()
@@ -131,7 +130,14 @@ class Server(object):
         your system!
         default is : "urn:freeopcua:python:server"
         """
-        self.application_uri = uri
+        self._application_uri = uri
+        ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
+        uries = ns_node.get_value()
+        if len(uries) > 1:
+            uries[1] = uri  # application uri is always namespace 1
+        else:
+            uries.append(uri)
+        ns_node.set_value(uries)
 
     def find_servers(self, uris=None):
         """
@@ -195,7 +201,6 @@ class Server(object):
 
     def _setup_server_nodes(self):
         # to be called just before starting server since it needs all parameters to be setup
-        self.register_namespace(self.application_uri)
         self._set_endpoints()
         self._policies = [ua.SecurityPolicyFactory()]
         if self.certificate and self.private_key:
@@ -247,7 +252,7 @@ class Server(object):
 
         appdesc = ua.ApplicationDescription()
         appdesc.ApplicationName = ua.LocalizedText(self.name)
-        appdesc.ApplicationUri = self.application_uri
+        appdesc.ApplicationUri = self._application_uri
         appdesc.ApplicationType = self.application_type
         appdesc.ProductUri = self.product_uri
         appdesc.DiscoveryUrls.append(self.endpoint.geturl())
