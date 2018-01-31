@@ -19,6 +19,7 @@ class OPCUAProtocol(asyncio.Protocol):
     FIXME: find another solution
     """
     def __init__(self, iserver=None, policies=None, clients=None):
+        self.loop = asyncio.get_event_loop()
         self.peer_name = None
         self.transport = None
         self.processor = None
@@ -54,15 +55,15 @@ class OPCUAProtocol(asyncio.Protocol):
         if self.data:
             data = self.data + data
             self.data = b''
-        self._process_data(data)
+        self.loop.create_task(self._process_data(data))
 
-    def _process_data(self, data):
+    async def _process_data(self, data):
         buf = ua.utils.Buffer(data)
         while True:
             try:
                 backup_buf = buf.copy()
                 try:
-                    hdr = uabin.header_from_binary(buf)
+                    hdr = await uabin.header_from_binary(buf)
                 except ua.utils.NotEnoughData:
                     logger.info('We did not receive enough data from client, waiting for more')
                     self.data = backup_buf.read(len(backup_buf))

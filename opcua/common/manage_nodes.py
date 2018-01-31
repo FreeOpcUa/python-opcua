@@ -1,9 +1,16 @@
 """
 High level functions to create nodes
 """
+import logging
 from opcua import ua
 from opcua.common import node
 from opcua.common.instantiate import instantiate
+
+_logger = logging.getLogger(__name__)
+__all__ = [
+    'create_folder', 'create_object', 'create_property', 'create_variable', 'create_variable_type',
+    'create_reference_type', 'create_object_type', 'create_method', 'create_data_type', 'delete_nodes'
+]
 
 
 def _parse_nodeid_qname(*args):
@@ -28,7 +35,10 @@ def _parse_nodeid_qname(*args):
     except ua.UaError:
         raise
     except Exception as ex:
-        raise TypeError("This method takes either a namespace index and a string as argument or a nodeid and a qualifiedname. Received arguments {0} and got exception {1}".format(args, ex))
+        raise TypeError(
+            "This method takes either a namespace index and a string as argument or a nodeid and a qualifiedname. Received arguments {0} and got exception {1}".format(
+                args, ex)
+        )
 
 
 async def create_folder(parent, nodeid, bname):
@@ -55,8 +65,8 @@ async def create_object(parent, nodeid, bname, objecttype=None):
     if objecttype is not None:
         objecttype = node.Node(parent.server, objecttype)
         dname = ua.LocalizedText(bname)
-        nodes = instantiate(parent, objecttype, nodeid, bname=qname, dname=dname)[0]
-        return nodes
+        nodes = await instantiate(parent, objecttype, nodeid, bname=qname, dname=dname)
+        return nodes[0]
     else:
         return node.Node(
             parent.server,
@@ -64,7 +74,7 @@ async def create_object(parent, nodeid, bname, objecttype=None):
         )
 
 
-def create_property(parent, nodeid, bname, val, varianttype=None, datatype=None):
+async def create_property(parent, nodeid, bname, val, varianttype=None, datatype=None):
     """
     create a child node property
     args are nodeid, browsename, value, [variant type]
@@ -76,7 +86,10 @@ def create_property(parent, nodeid, bname, val, varianttype=None, datatype=None)
         datatype = ua.NodeId(datatype, 0)
     if datatype and not isinstance(datatype, ua.NodeId):
         raise RuntimeError("datatype argument must be a nodeid or an int refering to a nodeid")
-    return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, var, datatype=datatype, isproperty=True))
+    return node.Node(
+        parent.server,
+        await _create_variable(parent.server, parent.nodeid, nodeid, qname, var, datatype=datatype, isproperty=True)
+    )
 
 
 async def create_variable(parent, nodeid, bname, val, varianttype=None, datatype=None):
@@ -108,21 +121,25 @@ async def create_variable_type(parent, nodeid, bname, datatype):
     if datatype and isinstance(datatype, int):
         datatype = ua.NodeId(datatype, 0)
     if datatype and not isinstance(datatype, ua.NodeId):
-        raise RuntimeError("Data type argument must be a nodeid or an int refering to a nodeid, received: {}".format(datatype))
+        raise RuntimeError(
+            "Data type argument must be a nodeid or an int refering to a nodeid, received: {}".format(datatype))
     return node.Node(
         parent.server,
         await _create_variable_type(parent.server, parent.nodeid, nodeid, qname, datatype)
     )
 
 
-def create_reference_type(parent, nodeid, bname, symmetric=True, inversename=None):
+async def create_reference_type(parent, nodeid, bname, symmetric=True, inversename=None):
     """
     Create a new reference type
     args are nodeid and browsename
     or idx and name
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
-    return node.Node(parent.server, _create_reference_type(parent.server, parent.nodeid, nodeid, qname, symmetric, inversename))
+    return node.Node(
+        parent.server,
+        await _create_reference_type(parent.server, parent.nodeid, nodeid, qname, symmetric, inversename)
+    )
 
 
 async def create_object_type(parent, nodeid, bname):
@@ -144,6 +161,7 @@ async def create_method(parent, *args):
     if argument types is specified, child nodes advertising what arguments the method uses and returns will be created
     a callback is a method accepting the nodeid of the parent as first argument and variants after. returns a list of variants
     """
+    _logger.info('create_method %r', parent)
     nodeid, qname = _parse_nodeid_qname(*args[:2])
     callback = args[2]
     if len(args) > 3:
@@ -183,7 +201,7 @@ async def _create_object(server, parentnodeid, nodeid, qname, objecttype):
     return results[0].AddedNodeId
 
 
-def _create_reference_type(server, parentnodeid, nodeid, qname, symmetric, inversename):
+async def _create_reference_type(server, parentnodeid, nodeid, qname, symmetric, inversename):
     addnode = ua.AddNodesItem()
     addnode.RequestedNewNodeId = nodeid
     addnode.BrowseName = qname
@@ -199,7 +217,7 @@ def _create_reference_type(server, parentnodeid, nodeid, qname, symmetric, inver
     attrs.UserWriteMask = 0
     addnode.NodeAttributes = attrs
 
-    results = server.add_nodes([addnode])
+    results = await server.add_nodes([addnode])
     results[0].StatusCode.check()
     return results[0].AddedNodeId
 
@@ -268,7 +286,7 @@ async def _create_variable_type(server, parentnodeid, nodeid, qname, datatype, v
     addnode.NodeClass = ua.NodeClass.VariableType
     addnode.ParentNodeId = parentnodeid
     addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
-    #addnode.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseDataVariableType)
+    # addnode.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseDataVariableType)
     attrs = ua.VariableTypeAttributes()
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
@@ -280,7 +298,7 @@ async def _create_variable_type(server, parentnodeid, nodeid, qname, datatype, v
             attrs.ValueRank = ua.ValueRank.OneDimension
         else:
             attrs.ValueRank = ua.ValueRank.Scalar
-    #attrs.ArrayDimensions = None
+    # attrs.ArrayDimensions = None
     attrs.WriteMask = 0
     attrs.UserWriteMask = 0
     addnode.NodeAttributes = attrs
@@ -303,7 +321,7 @@ async def create_data_type(parent, nodeid, bname, description=None):
     addnode.NodeClass = ua.NodeClass.DataType
     addnode.ParentNodeId = parent.nodeid
     addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasSubtype)
-    #addnode.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseDataVariableType) # No type definition for types
+    # addnode.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseDataVariableType) # No type definition for types
     attrs = ua.DataTypeAttributes()
     if description is None:
         attrs.Description = ua.LocalizedText(qname.Name)
@@ -326,7 +344,7 @@ async def _create_method(parent, nodeid, qname, callback, inputs, outputs):
     addnode.NodeClass = ua.NodeClass.Method
     addnode.ParentNodeId = parent.nodeid
     addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
-    #node.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseObjectType)
+    # node.TypeDefinition = ua.NodeId(ua.ObjectIds.BaseObjectType)
     attrs = ua.MethodAttributes()
     attrs.Description = ua.LocalizedText(qname.Name)
     attrs.DisplayName = ua.LocalizedText(qname.Name)
@@ -339,19 +357,23 @@ async def _create_method(parent, nodeid, qname, callback, inputs, outputs):
     results[0].StatusCode.check()
     method = node.Node(parent.server, results[0].AddedNodeId)
     if inputs:
-        create_property(method,
-                        ua.NodeId(namespaceidx=method.nodeid.NamespaceIndex),
-                        ua.QualifiedName("InputArguments", 0),
-                        [_vtype_to_argument(vtype) for vtype in inputs],
-                        varianttype=ua.VariantType.ExtensionObject,
-                        datatype=ua.ObjectIds.Argument)
+        await create_property(
+            method,
+            ua.NodeId(namespaceidx=method.nodeid.NamespaceIndex),
+            ua.QualifiedName("InputArguments", 0),
+            [_vtype_to_argument(vtype) for vtype in inputs],
+            varianttype=ua.VariantType.ExtensionObject,
+            datatype=ua.ObjectIds.Argument
+        )
     if outputs:
-        create_property(method,
-                        ua.NodeId(namespaceidx=method.nodeid.NamespaceIndex),
-                        ua.QualifiedName("OutputArguments", 0),
-                        [_vtype_to_argument(vtype) for vtype in outputs],
-                        varianttype=ua.VariantType.ExtensionObject,
-                        datatype=ua.ObjectIds.Argument)
+        await create_property(
+            method,
+            ua.NodeId(namespaceidx=method.nodeid.NamespaceIndex),
+            ua.QualifiedName("OutputArguments", 0),
+            [_vtype_to_argument(vtype) for vtype in outputs],
+            varianttype=ua.VariantType.ExtensionObject,
+            datatype=ua.ObjectIds.Argument
+        )
     if hasattr(parent.server, "add_method_callback"):
         await parent.server.add_method_callback(method.nodeid, callback)
     return results[0].AddedNodeId
@@ -407,5 +429,3 @@ def _add_childs(nodes):
     for mynode in nodes[:]:
         results += mynode.get_children()
     return results
-
-

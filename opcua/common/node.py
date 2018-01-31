@@ -573,7 +573,7 @@ class Node:
         results = await opcua.common.manage_nodes.delete_nodes(self.server, [self], recursive, delete_references)
         _check_results(results)
 
-    def _fill_delete_reference_item(self, rdesc, bidirectional = False):
+    def _fill_delete_reference_item(self, rdesc, bidirectional=False):
         ditem = ua.DeleteReferencesItem()
         ditem.SourceNodeId = self.nodeid
         ditem.TargetNodeId = rdesc.NodeId
@@ -619,7 +619,7 @@ class Node:
 
     async def _add_modelling_rule(self, parent, mandatory=True):
         if mandatory is not None and await parent.get_node_class() == ua.NodeClass.ObjectType:
-            rule=ua.ObjectIds.ModellingRule_Mandatory if mandatory else ua.ObjectIds.ModellingRule_Optional
+            rule = ua.ObjectIds.ModellingRule_Mandatory if mandatory else ua.ObjectIds.ModellingRule_Optional
             await self.add_reference(rule, ua.ObjectIds.HasModellingRule, True, False)
         return self
 
@@ -630,9 +630,9 @@ class Node:
         if await parent.get_node_class() != ua.NodeClass.ObjectType:
             return ua.StatusCode(ua.StatusCodes.BadTypeMismatch)
         # remove all existing modelling rule
-        rules = self.get_references(ua.ObjectIds.HasModellingRule)
+        rules = await self.get_references(ua.ObjectIds.HasModellingRule)
         await self.server.delete_references(list(map(self._fill_delete_reference_item, rules)))
-        self._add_modelling_rule(parent, mandatory)
+        await self._add_modelling_rule(parent, mandatory)
         return ua.StatusCode()
 
     async def add_folder(self, nodeid, bname):
