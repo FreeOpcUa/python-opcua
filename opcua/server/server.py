@@ -285,7 +285,8 @@ class Server:
         """
         Stop server
         """
-        await asyncio.wait([client.disconnect() for client in self._discovery_clients.values()])
+        if self._discovery_clients:
+            await asyncio.wait([client.disconnect() for client in self._discovery_clients.values()])
         await self.bserver.stop()
         self.iserver.stop()
 

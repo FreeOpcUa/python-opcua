@@ -1,11 +1,12 @@
-import unittest
+
+import pytest
 import os
 import shelve
 import time
 
-from tests_common import CommonTests, add_server_methods
-from tests_xml import XmlTests
-from tests_subscriptions import SubscriptionTests
+from .tests_common import CommonTests, add_server_methods
+from .tests_xml import XmlTests
+from .tests_subscriptions import SubscriptionTests
 from datetime import timedelta, datetime
 from tempfile import NamedTemporaryFile
 

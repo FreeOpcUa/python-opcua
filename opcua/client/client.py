@@ -452,6 +452,7 @@ class Client(object):
         return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.RootFolder))
 
     def get_objects_node(self):
+        self.logger.info('get_objects_node')
         return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.ObjectsFolder))
 
     def get_server_node(self):

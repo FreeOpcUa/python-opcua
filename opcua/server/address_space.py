@@ -470,28 +470,23 @@ class AddressSpace(object):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self._nodes = {}
-        self._lock = RLock()  # FIXME: should use multiple reader, one writter pattern
         self._datachange_callback_counter = 200
         self._handle_to_attribute_map = {}
         self._default_idx = 2
         self._nodeid_counter = {0: 20000, 1: 2000}
 
     def __getitem__(self, nodeid):
-        with self._lock:
-            if nodeid in self._nodes:
-                return self._nodes.__getitem__(nodeid)
+        if nodeid in self._nodes:
+            return self._nodes.__getitem__(nodeid)
 
     def __setitem__(self, nodeid, value):
-        with self._lock:
-            return self._nodes.__setitem__(nodeid, value)
+        return self._nodes.__setitem__(nodeid, value)
 
     def __contains__(self, nodeid):
-        with self._lock:
-            return self._nodes.__contains__(nodeid)
+        return self._nodes.__contains__(nodeid)
 
     def __delitem__(self, nodeid):
-        with self._lock:
-            self._nodes.__delitem__(nodeid)
+        self._nodes.__delitem__(nodeid)
 
     def generate_nodeid(self, idx=None):
         if idx is None:
@@ -501,23 +496,18 @@ class AddressSpace(object):
         else:
             self._nodeid_counter[idx] = 1
         nodeid = ua.NodeId(self._nodeid_counter[idx], idx)
-        with self._lock:  # OK since reentrant lock
-            while True:
-                if nodeid in self._nodes:
-                    nodeid = self.generate_nodeid(idx)
-                else:
-                    return nodeid
+        while True:
+            if nodeid in self._nodes:
+                nodeid = self.generate_nodeid(idx)
+            else:
+                return nodeid
 
     def keys(self):
-        with self._lock:
-            return self._nodes.keys()
+        return self._nodes.keys()
 
     def empty(self):
-        """
-        Delete all nodes in address space
-        """
-        with self._lock:
-            self._nodes = {}
+        """Delete all nodes in address space"""
+        self._nodes = {}
 
     def dump(self, path):
         """
@@ -602,41 +592,39 @@ class AddressSpace(object):
         self._nodes = LazyLoadingDict(shelve.open(path, "r"))
 
     def get_attribute_value(self, nodeid, attr):
-        with self._lock:
-            self.logger.debug("get attr val: %s %s", nodeid, attr)
-            if nodeid not in self._nodes:
-                dv = ua.DataValue()
-                dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
-                return dv
-            node = self._nodes[nodeid]
-            if attr not in node.attributes:
-                dv = ua.DataValue()
-                dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
-                return dv
-            attval = node.attributes[attr]
-            if attval.value_callback:
-                return attval.value_callback()
-            return attval.value
+        # self.logger.debug("get attr val: %s %s", nodeid, attr)
+        if nodeid not in self._nodes:
+            dv = ua.DataValue()
+            dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
+            return dv
+        node = self._nodes[nodeid]
+        if attr not in node.attributes:
+            dv = ua.DataValue()
+            dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
+            return dv
+        attval = node.attributes[attr]
+        if attval.value_callback:
+            return attval.value_callback()
+        return attval.value
 
     def set_attribute_value(self, nodeid, attr, value):
-        with self._lock:
-            self.logger.debug("set attr val: %s %s %s", nodeid, attr, value)
-            if nodeid not in self._nodes:
-                return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
-            node = self._nodes[nodeid]
-            if attr not in node.attributes:
-                return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
-            if not value.SourceTimestamp:
-                value.SourceTimestamp = datetime.utcnow()
-            if not value.ServerTimestamp:
-                value.ServerTimestamp = datetime.utcnow()
+        # self.logger.debug("set attr val: %s %s %s", nodeid, attr, value)
+        if nodeid not in self._nodes:
+            return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
+        node = self._nodes[nodeid]
+        if attr not in node.attributes:
+            return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
+        if not value.SourceTimestamp:
+            value.SourceTimestamp = datetime.utcnow()
+        if not value.ServerTimestamp:
+            value.ServerTimestamp = datetime.utcnow()
 
-            attval = node.attributes[attr]
-            old = attval.value
-            attval.value = value
-            cbs = []
-            if old.Value != value.Value:  # only send call callback when a value change has happend
-                cbs = list(attval.datachange_callbacks.items())
+        attval = node.attributes[attr]
+        old = attval.value
+        attval.value = value
+        cbs = []
+        if old.Value != value.Value:  # only send call callback when a value change has happend
+            cbs = list(attval.datachange_callbacks.items())
 
         for k, v in cbs:
             try:
@@ -647,27 +635,24 @@ class AddressSpace(object):
         return ua.StatusCode()
 
     def add_datachange_callback(self, nodeid, attr, callback):
-        with self._lock:
-            self.logger.debug("set attr callback: %s %s %s", nodeid, attr, callback)
-            if nodeid not in self._nodes:
-                return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown), 0
-            node = self._nodes[nodeid]
-            if attr not in node.attributes:
-                return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid), 0
-            attval = node.attributes[attr]
-            self._datachange_callback_counter += 1
-            handle = self._datachange_callback_counter
-            attval.datachange_callbacks[handle] = callback
-            self._handle_to_attribute_map[handle] = (nodeid, attr)
-            return ua.StatusCode(), handle
+        self.logger.debug("set attr callback: %s %s %s", nodeid, attr, callback)
+        if nodeid not in self._nodes:
+            return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown), 0
+        node = self._nodes[nodeid]
+        if attr not in node.attributes:
+            return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid), 0
+        attval = node.attributes[attr]
+        self._datachange_callback_counter += 1
+        handle = self._datachange_callback_counter
+        attval.datachange_callbacks[handle] = callback
+        self._handle_to_attribute_map[handle] = (nodeid, attr)
+        return ua.StatusCode(), handle
 
     def delete_datachange_callback(self, handle):
-        with self._lock:
-            if handle in self._handle_to_attribute_map:
-                nodeid, attr = self._handle_to_attribute_map.pop(handle)
-                self._nodes[nodeid].attributes[attr].datachange_callbacks.pop(handle)
+        if handle in self._handle_to_attribute_map:
+            nodeid, attr = self._handle_to_attribute_map.pop(handle)
+            self._nodes[nodeid].attributes[attr].datachange_callbacks.pop(handle)
 
     def add_method_callback(self, methodid, callback):
-        with self._lock:
-            node = self._nodes[methodid]
-            node.call = callback
+        node = self._nodes[methodid]
+        node.call = callback

@@ -515,13 +515,13 @@ def header_to_binary(hdr):
     return b"".join(b)
 
 
-async def header_from_binary(data):
+def header_from_binary(data):
     hdr = ua.Header()
-    hdr.MessageType, hdr.ChunkType, hdr.packet_size = struct.unpack("<3scI", await data.read(8))
+    hdr.MessageType, hdr.ChunkType, hdr.packet_size = struct.unpack("<3scI", data.read(8))
     hdr.body_size = hdr.packet_size - 8
     if hdr.MessageType in (ua.MessageType.SecureOpen, ua.MessageType.SecureClose, ua.MessageType.SecureMessage):
         hdr.body_size -= 4
-        hdr.ChannelId = Primitives.UInt32.unpack(ua.utils.Buffer(await data.read(4)))
+        hdr.ChannelId = Primitives.UInt32.unpack(data)
     return hdr
 
 

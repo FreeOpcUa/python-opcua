@@ -18,12 +18,13 @@ class OPCUAProtocol(asyncio.Protocol):
     to the internal server object
     FIXME: find another solution
     """
+
     def __init__(self, iserver=None, policies=None, clients=None):
         self.loop = asyncio.get_event_loop()
         self.peer_name = None
         self.transport = None
         self.processor = None
-        self.data = b''
+        self.receive_buffer = b''
         self.iserver = iserver
         self.policies = policies
         self.clients = clients
@@ -51,38 +52,40 @@ class OPCUAProtocol(asyncio.Protocol):
             self.clients.remove(self)
 
     def data_received(self, data):
-        logger.debug('received %s bytes from socket', len(data))
-        if self.data:
-            data = self.data + data
-            self.data = b''
-        self.loop.create_task(self._process_data(data))
+        if self.receive_buffer:
+            data = self.receive_buffer + data
+            self.receive_buffer = b''
+        self._process_received_data(data)
 
-    async def _process_data(self, data):
+    def _process_received_data(self, data: bytes):
+        logger.info('_process_received_data %s', len(data))
         buf = ua.utils.Buffer(data)
-        while True:
+        try:
             try:
-                backup_buf = buf.copy()
-                try:
-                    hdr = await uabin.header_from_binary(buf)
-                except ua.utils.NotEnoughData:
-                    logger.info('We did not receive enough data from client, waiting for more')
-                    self.data = backup_buf.read(len(backup_buf))
-                    return
-                if len(buf) < hdr.body_size:
-                    logger.info('We did not receive enough data from client, waiting for more')
-                    self.data = backup_buf.read(len(backup_buf))
-                    return
-                ret = self.processor.process(hdr, buf)
-                if not ret:
-                    logger.info('processor returned False, we close connection from %s', self.peer_name)
-                    self.transport.close()
-                    return
-                if len(buf) == 0:
-                    return
-            except Exception:
-                logger.exception('Exception raised while parsing message from client, closing')
+                header = uabin.header_from_binary(buf)
+            except ua.utils.NotEnoughData:
+                logger.debug('Not enough data while parsing header from client, waiting for more')
+                self.receive_buffer = data + self.receive_buffer
                 return
+            if len(buf) < header.body_size:
+                logger.debug('We did not receive enough data from client. Need %s got %s', header.body_size, len(buf))
+                self.receive_buffer = data + self.receive_buffer
+                return
+            self.loop.create_task(self._process_received_message(header, buf))
+        except Exception:
+            logger.exception('Exception raised while parsing message from client')
+            return
 
+    async def _process_received_message(self, header, buf):
+        logger.debug('_process_received_message %s %s', header.body_size, len(buf))
+        ret = await self.processor.process(header, buf)
+        if not ret:
+            logger.info('processor returned False, we close connection from %s', self.peer_name)
+            self.transport.close()
+            return
+        if len(buf) != 0:
+            # There is data left in the buffer - process it
+            self._process_received_data(buf)
 
 class BinaryServer:
 
@@ -113,7 +116,7 @@ class BinaryServer:
             sockname = self._server.sockets[0].getsockname()
             self.hostname = sockname[0]
             self.port = sockname[1]
-        self.logger.warning('Listening on {0}:{1}'.format(self.hostname, self.port))
+        self.logger.info('Listening on {0}:{1}'.format(self.hostname, self.port))
 
     async def stop(self):
         self.logger.info('Closing asyncio socket server')
