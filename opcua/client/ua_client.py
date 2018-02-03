@@ -6,7 +6,7 @@ import logging
 from functools import partial
 
 from opcua import ua
-from opcua.ua.ua_binary import struct_from_binary, uatcp_to_binary, struct_to_binary, nodeid_from_binary
+from opcua.ua.ua_binary import struct_from_binary, uatcp_to_binary, struct_to_binary, nodeid_from_binary, header_from_binary
 from opcua.ua.uaerrors import UaError, BadTimeout, BadNoSubscription, BadSessionClosed
 from opcua.common.connection import SecureConnection
 
@@ -21,7 +21,7 @@ class UASocketProtocol(asyncio.Protocol):
         self.logger = logging.getLogger(__name__ + ".UASocketProtocol")
         self.loop = asyncio.get_event_loop()
         self.transport = None
-        self.receive_buffer = asyncio.Queue()
+        self.receive_buffer: bytes = None
         self.is_receiving = False
         self.timeout = timeout
         self.authentication_token = ua.NodeId()
@@ -29,7 +29,6 @@ class UASocketProtocol(asyncio.Protocol):
         self._request_handle = 0
         self._callbackmap = {}
         self._connection = SecureConnection(security_policy)
-        self._leftover_chunk = None
 
     def connection_made(self, transport: asyncio.Transport):
         self.transport = transport
@@ -39,36 +38,45 @@ class UASocketProtocol(asyncio.Protocol):
         self.transport = None
 
     def data_received(self, data: bytes):
-        self.receive_buffer.put_nowait(data)
-        if not self.is_receiving:
-            self.is_receiving = True
-            self.loop.create_task(self._receive())
+        if self.receive_buffer:
+            data = self.receive_buffer + data
+            self.receive_buffer = None
+        self._process_received_data(data)
 
-    async def read(self, size: int):
-        """Receive up to size bytes from socket."""
-        data = b''
-        self.logger.debug('read %s bytes from socket', size)
-        while size > 0:
-            self.logger.debug('data is now %s, waiting for %s bytes', len(data), size)
-            # ToDo: abort on timeout, socket close
-            # raise SocketClosedException("Server socket has closed")
-            if self._leftover_chunk:
-                self.logger.debug('leftover bytes %s', len(self._leftover_chunk))
-                # use leftover chunk first
-                chunk = self._leftover_chunk
-                self._leftover_chunk = None
-            else:
-                chunk = await self.receive_buffer.get()
-            self.logger.debug('got chunk %s needed_length is %s', len(chunk), size)
-            if len(chunk) <= size:
-                _chunk = chunk
-            else:
-                # chunk is too big
-                _chunk = chunk[:size]
-                self._leftover_chunk = chunk[size:]
-            data += _chunk
-            size -= len(_chunk)
-        return data
+    def _process_received_data(self, data: bytes):
+        """Try to parse a opcua message"""
+        buf = ua.utils.Buffer(data)
+        while True:
+            try:
+                try:
+                    header = header_from_binary(buf)
+                except ua.utils.NotEnoughData:
+                    self.logger.debug('Not enough data while parsing header from server, waiting for more')
+                    self.receive_buffer = data
+                    return
+                if len(buf) < header.body_size:
+                    self.logger.debug('We did not receive enough data from server. Need %s got %s', header.body_size, len(buf))
+                    self.receive_buffer = data
+                    return
+                msg = self._connection.receive_from_header_and_body(header, buf)
+                self._process_received_message(msg)
+                if len(buf) == 0:
+                    return
+            except Exception:
+                self.logger.exception('Exception raised while parsing message from client')
+                return
+
+    def _process_received_message(self, msg):
+        if msg is None:
+            pass
+        elif isinstance(msg, ua.Message):
+            self._call_callback(msg.request_id(), msg.body())
+        elif isinstance(msg, ua.Acknowledge):
+            self._call_callback(0, msg)
+        elif isinstance(msg, ua.ErrorMessage):
+            self.logger.warning("Received an error: %r", msg)
+        else:
+            raise ua.UaError("Unsupported message type: %s", msg)
 
     def _send_request(self, request, callback=None, timeout=1000, message_type=ua.MessageType.SecureMessage):
         """
@@ -116,24 +124,6 @@ class UASocketProtocol(asyncio.Protocol):
             hdr.ServiceResult.check()
             return False
         return True
-
-    async def _receive(self):
-        msg = await self._connection.receive_from_socket(self)
-        if msg is None:
-            pass
-        elif isinstance(msg, ua.Message):
-            self._call_callback(msg.request_id(), msg.body())
-        elif isinstance(msg, ua.Acknowledge):
-            self._call_callback(0, msg)
-        elif isinstance(msg, ua.ErrorMessage):
-            self.logger.warning("Received an error: %r", msg)
-        else:
-            raise ua.UaError("Unsupported message type: %s", msg)
-        if self._leftover_chunk or not self.receive_buffer.empty():
-            # keep receiving
-            self.loop.create_task(self._receive())
-        else:
-            self.is_receiving = False
 
     def _call_callback(self, request_id, body):
         future = self._callbackmap.pop(request_id, None)
