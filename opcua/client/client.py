@@ -6,7 +6,6 @@ try:
 except ImportError:  # support for python2
     from urlparse import urlparse
 
-from concurrent.futures import _base
 from opcua import ua
 from opcua.client.ua_client import UaClient
 from opcua.common.xmlimporter import XmlImporter
@@ -255,9 +254,9 @@ class Client(object):
             self.send_hello()
             self.open_secure_channel()
             self.create_session()
-        except _base.TimeoutError as e:
+        except:
             self.disconnect_socket() # clean up open socket
-            raise e
+            raise
         self.activate_session(username=self._username, password=self._password, certificate=self.user_certificate)
 
     def disconnect(self):
