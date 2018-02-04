@@ -16,6 +16,7 @@ from opcua.crypto import uacrypto, security_policies
 
 
 _logger = logging.getLogger(__name__)
+asyncio.get_event_loop().set_debug(True)
 
 
 class Client(object):
@@ -46,10 +47,10 @@ class Client(object):
         # take initial username and password from the url
         self._username = self.server_url.username
         self._password = self.server_url.password
-        self.name = "Pure Python Async. Client"
+        self.name = 'Pure Python Async. Client'
         self.description = self.name
-        self.application_uri = "urn:freeopcua:client"
-        self.product_uri = "urn:freeopcua.github.no:client"
+        self.application_uri = 'urn:freeopcua:client'
+        self.product_uri = 'urn:freeopcua.github.no:client'
         self.security_policy = ua.SecurityPolicy()
         self.secure_channel_id = None
         self.secure_channel_timeout = 3600000  # 1 hour
@@ -60,7 +61,6 @@ class Client(object):
         self.user_private_key = None
         self._server_nonce = None
         self._session_counter = 1
-        self.keep_alive = None
         self.nodes = Shortcuts(self.uaclient)
         self.max_messagesize = 0  # No limits
         self.max_chunkcount = 0  # No limits
@@ -326,7 +326,7 @@ class Client(object):
         self._policy_ids = ep.UserIdentityTokens
         #  Actual maximum number of milliseconds that a Session shall remain open without activity
         self.session_timeout = response.RevisedSessionTimeout
-        self.keep_alive = self.loop.create_task(self._renew_session())
+        self._schedule_renew_session()
         # ToDo: subscribe to ServerStatus
         """
         The preferred mechanism for a Client to monitor the connection status is through the keep-alive of the
@@ -336,20 +336,26 @@ class Client(object):
         """
         return response
 
+    def _schedule_renew_session(self, renew_session=False):
+        # if the session was intentionally closed `session_timeout` will be None
+        if renew_session and self.session_timeout:
+            self.loop.create_task(self._renew_session())
+        self.loop.call_later(
+            # 0.7 is from spec
+            min(self.session_timeout, self.secure_channel_timeout) * 0.7,
+            self._schedule_renew_session, True
+        )
+
     async def _renew_session(self):
         """
         Renew the SecureChannel before the SessionTimeout will happen.
         ToDo: shouldn't this only be done if there was no session activity?
         """
-        # 0.7 is from spec
-        await asyncio.sleep(min(self.session_timeout, self.secure_channel_timeout) * 0.7)
         server_state = self.get_node(ua.FourByteNodeId(ua.ObjectIds.Server_ServerStatus_State))
         self.logger.debug("renewing channel")
         await self.open_secure_channel(renew=True)
         val = await server_state.get_value()
         self.logger.debug("server state is: %s ", val)
-        # create new keep-alive task
-        self.keep_alive = self.loop.create_task(self._renew_session())
 
     def server_policy_id(self, token_type, default):
         """
@@ -444,8 +450,7 @@ class Client(object):
         """
         Close session
         """
-        if self.keep_alive:
-            self.keep_alive.cancel()
+        self.session_timeout = None
         return await self.uaclient.close_session(True)
 
     def get_root_node(self):

@@ -143,7 +143,7 @@ class Server:
         params.ServerUris = uris
         return self.iserver.find_servers(params)
 
-    def register_to_discovery(self, url="opc.tcp://localhost:4840", period=60):
+    async def register_to_discovery(self, url="opc.tcp://localhost:4840", period=60):
         """
         Register to an OPC-UA Discovery server. Registering must be renewed at
         least every 10 minutes, so this method will use our asyncio thread to
@@ -152,13 +152,13 @@ class Server:
         """
         # FIXME: have a period per discovery
         if url in self._discovery_clients:
-            self._discovery_clients[url].disconnect()
+            await self._discovery_clients[url].disconnect()
         self._discovery_clients[url] = Client(url)
-        self._discovery_clients[url].connect()
-        self._discovery_clients[url].register_server(self)
+        await self._discovery_clients[url].connect()
+        await self._discovery_clients[url].register_server(self)
         self._discovery_period = period
         if period:
-            self.loop.call_soon(self._renew_registration)
+            self.loop.call_soon(self._schedule_renew_registration)
 
     def unregister_to_discovery(self, url="opc.tcp://localhost:4840"):
         """
@@ -167,10 +167,13 @@ class Server:
         # FIXME: is there really no way to deregister?
         self._discovery_clients[url].disconnect()
 
-    def _renew_registration(self):
+    def _schedule_renew_registration(self):
+        self.loop.create_task(self._renew_registration())
+        self.loop.call_later(self._discovery_period, self._schedule_renew_registration)
+
+    async def _renew_registration(self):
         for client in self._discovery_clients.values():
-            client.register_server(self)
-            self.loop.call_later(self._discovery_period, self._renew_registration)
+            await client.register_server(self)
 
     def allow_remote_admin(self, allow):
         """
@@ -357,14 +360,16 @@ class Server:
         uries = await self.get_namespace_array()
         return uries.index(uri)
 
-    def get_event_generator(self, etype=None, source=ua.ObjectIds.Server):
+    async def get_event_generator(self, etype=None, source=ua.ObjectIds.Server):
         """
         Returns an event object using an event type from address space.
         Use this object to fire events
         """
         if not etype:
             etype = BaseEvent()
-        return EventGenerator(self.iserver.isession, etype, source)
+        ev_gen = EventGenerator(self.iserver.isession, etype)
+        await ev_gen.set_source(source)
+        return ev_gen
 
     def create_custom_data_type(self, idx, name, basetype=ua.ObjectIds.BaseDataType, properties=None):
         if properties is None:
@@ -457,7 +462,7 @@ class Server:
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.iserver.isession, nodes, recursive)
 
-    def historize_node_data_change(self, node, period=timedelta(days=7), count=0):
+    async def historize_node_data_change(self, node, period=timedelta(days=7), count=0):
         """
         Start historizing supplied nodes; see history module
         Args:
@@ -469,7 +474,7 @@ class Server:
         """
         nodes = node if isinstance(node, (list, tuple)) else [node]
         for node in nodes:
-            self.iserver.enable_history_data_change(node, period, count)
+            await self.iserver.enable_history_data_change(node, period, count)
 
     def dehistorize_node_data_change(self, node):
         """
@@ -497,7 +502,7 @@ class Server:
         for node in nodes:
             self.iserver.enable_history_event(node, period, count)
 
-    def dehistorize_node_event(self, node):
+    async def dehistorize_node_event(self, node):
         """
         Stop historizing events from node (typically a UA object); see history module
         Args:
@@ -507,7 +512,7 @@ class Server:
         """
         nodes = node if isinstance(node, (list, tuple)) else [node]
         for node in nodes:
-            self.iserver.disable_history_event(node)
+            await self.iserver.disable_history_event(node)
 
     def subscribe_server_callback(self, event, handle):
         self.iserver.subscribe_server_callback(event, handle)

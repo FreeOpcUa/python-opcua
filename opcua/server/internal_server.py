@@ -186,44 +186,42 @@ class InternalServer(object):
     def create_session(self, name, user=User.Anonymous, external=False):
         return InternalSession(self, self.aspace, self.subscription_service, name, user=user, external=external)
 
-    def enable_history_data_change(self, node, period=timedelta(days=7), count=0):
+    async def enable_history_data_change(self, node, period=timedelta(days=7), count=0):
         """
         Set attribute Historizing of node to True and start storing data for history
         """
-        node.set_attribute(ua.AttributeIds.Historizing, ua.DataValue(True))
-        node.set_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.HistoryRead)
-        node.set_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.HistoryRead)
-        self.history_manager.historize_data_change(node, period, count)
+        await node.set_attribute(ua.AttributeIds.Historizing, ua.DataValue(True))
+        await node.set_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.HistoryRead)
+        await node.set_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.HistoryRead)
+        await self.history_manager.historize_data_change(node, period, count)
 
-    def disable_history_data_change(self, node):
+    async def disable_history_data_change(self, node):
         """
         Set attribute Historizing of node to False and stop storing data for history
         """
-        node.set_attribute(ua.AttributeIds.Historizing, ua.DataValue(False))
-        node.unset_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.HistoryRead)
-        node.unset_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.HistoryRead)
-        self.history_manager.dehistorize(node)
+        await node.set_attribute(ua.AttributeIds.Historizing, ua.DataValue(False))
+        await node.unset_attr_bit(ua.AttributeIds.AccessLevel, ua.AccessLevel.HistoryRead)
+        await node.unset_attr_bit(ua.AttributeIds.UserAccessLevel, ua.AccessLevel.HistoryRead)
+        await self.history_manager.dehistorize(node)
 
-    def enable_history_event(self, source, period=timedelta(days=7), count=0):
+    async def enable_history_event(self, source, period=timedelta(days=7), count=0):
         """
         Set attribute History Read of object events to True and start storing data for history
         """
-        event_notifier = source.get_event_notifier()
+        event_notifier = await source.get_event_notifier()
         if ua.EventNotifier.SubscribeToEvents not in event_notifier:
             raise ua.UaError('Node does not generate events', event_notifier)
-
         if ua.EventNotifier.HistoryRead not in event_notifier:
             event_notifier.add(ua.EventNotifier.HistoryRead)
-            source.set_event_notifier(event_notifier)
+            await source.set_event_notifier(event_notifier)
+        await self.history_manager.historize_event(source, period, count)
 
-        self.history_manager.historize_event(source, period, count)
-
-    def disable_history_event(self, source):
+    async def disable_history_event(self, source):
         """
         Set attribute History Read of node to False and stop storing data for history
         """
         source.unset_attr_bit(ua.AttributeIds.EventNotifier, ua.EventNotifier.HistoryRead)
-        self.history_manager.dehistorize(source)
+        await self.history_manager.dehistorize(source)
 
     def subscribe_server_callback(self, event, handle):
         """
@@ -374,7 +372,7 @@ class InternalSession(object):
             CallbackType.ItemSubscriptionDeleted, ServerItemCallback(params, subscription_result))
         return subscription_result
 
-    def publish(self, acks=None):
+    async def publish(self, acks=None):
         if acks is None:
             acks = []
         return self.subscription_service.publish(acks)
