@@ -209,19 +209,19 @@ class HistoryManager(object):
         await subscription.init()
         return subscription
 
-    def historize_data_change(self, node, period=timedelta(days=7), count=0):
+    async def historize_data_change(self, node, period=timedelta(days=7), count=0):
         """
         Subscribe to the nodes' data changes and store the data in the active storage.
         """
         if not self._sub:
-            self._sub = self._create_subscription(SubHandler(self.storage))
+            self._sub = await self._create_subscription(SubHandler(self.storage))
         if node in self._handlers:
             raise ua.UaError("Node {0} is already historized".format(node))
         self.storage.new_historized_node(node.nodeid, period, count)
-        handler = self._sub.subscribe_data_change(node)
+        handler = await self._sub.subscribe_data_change(node)
         self._handlers[node] = handler
 
-    def historize_event(self, source, period=timedelta(days=7), count=0):
+    async def historize_event(self, source, period=timedelta(days=7), count=0):
         """
         Subscribe to the source nodes' events and store the data in the active storage.
 
@@ -235,7 +235,7 @@ class HistoryManager(object):
         must be deleted manually so that a new table with the custom event fields can be created.
         """
         if not self._sub:
-            self._sub = self._create_subscription(SubHandler(self.storage))
+            self._sub = await self._create_subscription(SubHandler(self.storage))
         if source in self._handlers:
             raise ua.UaError("Events from {0} are already historized".format(source))
 
@@ -247,7 +247,7 @@ class HistoryManager(object):
         handler = self._sub.subscribe_events(source, event_types)
         self._handlers[source] = handler
 
-    def dehistorize(self, node):
+    async def dehistorize(self, node):
         """
         Remove subscription to the node/source which is being historized
 
@@ -255,7 +255,7 @@ class HistoryManager(object):
         Only the subscriptions is removed. The historical data remains.
         """
         if node in self._handlers:
-            self._sub.unsubscribe(self._handlers[node])
+            await self._sub.unsubscribe(self._handlers[node])
             del(self._handlers[node])
         else:
             self.logger.error("History Manager isn't subscribed to %s", node)

@@ -247,7 +247,7 @@ class Subscription(object):
             #TODO: Either use the filter from request or from response. Here it uses from request, in modify it uses from response
             data.mfilter = mi.RequestedParameters.Filter
             self._monitored_items[mi.RequestedParameters.ClientHandle] = data
-        results = await self.server.create_monitored_items(params)
+        results = self.server.create_monitored_items(params)
         mids = []
         # process result, add server_handle, or remove it if failed
         for idx, result in enumerate(results):

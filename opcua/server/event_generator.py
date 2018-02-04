@@ -16,23 +16,18 @@ class EventGenerator(object):
     client when evebt is triggered (see example code in source)
 
     Arguments to constructor are:
-
         server: The InternalSession object to use for query and event triggering
-
         source: The emiting source for the node, either an objectId, NodeId or a Node
-
         etype: The event type, either an objectId, a NodeId or a Node object
     """
 
-    def __init__(self, isession, etype=None, source=ua.ObjectIds.Server):
+    def __init__(self, isession, etype=None):
         if not etype:
             etype = event_objects.BaseEvent()
-
         self.logger = logging.getLogger(__name__)
         self.isession = isession
         self.event = None
         node = None
-
         if isinstance(etype, event_objects.BaseEvent):
             self.event = etype
         elif isinstance(etype, Node):
@@ -41,16 +36,16 @@ class EventGenerator(object):
             node = Node(self.isession, etype)
         else:
             node = Node(self.isession, ua.NodeId(etype))
-
         if node:
             self.event = events.get_event_obj_from_type_node(node)
 
+    async def set_source(self, source=ua.ObjectIds.Server):
         if isinstance(source, Node):
             pass
         elif isinstance(source, ua.NodeId):
-            source = Node(isession, source)
+            source = Node(self.isession, source)
         else:
-            source = Node(isession, ua.NodeId(source))
+            source = Node(self.isession, ua.NodeId(source))
 
         if self.event.SourceNode:
             if source.nodeid != self.event.SourceNode:
@@ -60,7 +55,7 @@ class EventGenerator(object):
                 source = Node(self.isession, self.event.SourceNode)
 
         self.event.SourceNode = source.nodeid
-        self.event.SourceName = source.get_browse_name().Name
+        self.event.SourceName = (await source.get_browse_name()).Name
 
         source.set_event_notifier([ua.EventNotifier.SubscribeToEvents])
         refs = []
@@ -71,7 +66,7 @@ class EventGenerator(object):
         ref.TargetNodeClass = ua.NodeClass.ObjectType
         ref.TargetNodeId = self.event.EventType
         refs.append(ref)
-        results = self.isession.add_references(refs)
+        results = await self.isession.add_references(refs)
         # result.StatusCode.check()
 
     def __str__(self):

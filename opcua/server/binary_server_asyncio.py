@@ -58,7 +58,6 @@ class OPCUAProtocol(asyncio.Protocol):
         self._process_received_data(data)
 
     def _process_received_data(self, data: bytes):
-        logger.info('_process_received_data %s', len(data))
         buf = ua.utils.Buffer(data)
         try:
             try:
