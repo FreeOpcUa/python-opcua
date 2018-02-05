@@ -86,6 +86,7 @@ class OPCUAProtocol(asyncio.Protocol):
             # There is data left in the buffer - process it
             self._process_received_data(buf)
 
+
 class BinaryServer:
 
     def __init__(self, internal_server, hostname, port):

@@ -109,19 +109,18 @@ class Event(object):
         return ev
 
 
-def get_filter_from_event_type(eventtypes):
+async def get_filter_from_event_type(eventtypes):
     evfilter = ua.EventFilter()
-    evfilter.SelectClauses = select_clauses_from_evtype(eventtypes)
+    evfilter.SelectClauses = await select_clauses_from_evtype(eventtypes)
     evfilter.WhereClause = where_clause_from_evtype(eventtypes)
     return evfilter
 
 
-def select_clauses_from_evtype(evtypes):
+async def select_clauses_from_evtype(evtypes):
     clauses = []
-
     selected_paths = []
     for evtype in evtypes:
-        for prop in get_event_properties_from_type_node(evtype):
+        for prop in await get_event_properties_from_type_node(evtype):
             if prop.get_browse_name() not in selected_paths:
                 op = ua.SimpleAttributeOperand()
                 op.AttributeId = ua.AttributeIds.Value
@@ -162,21 +161,19 @@ def where_clause_from_evtype(evtypes):
     return cf
 
 
-def get_event_properties_from_type_node(node):
+async def get_event_properties_from_type_node(node):
     properties = []
     curr_node = node
-
     while True:
         properties.extend(curr_node.get_properties())
-
         if curr_node.nodeid.Identifier == ua.ObjectIds.BaseEventType:
             break
-
-        parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
+        parents = await curr_node.get_referenced_nodes(
+            refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True
+        )
         if len(parents) != 1:  # Something went wrong
             return None
         curr_node = parents[0]
-
     return properties
 
 
@@ -223,4 +220,3 @@ def _find_parent_eventtype(node):
         return parents[0].nodeid.Identifier, opcua.common.event_objects.IMPLEMENTED_EVENTS[parents[0].nodeid.Identifier]
     else:
         return _find_parent_eventtype(parents[0])
-
