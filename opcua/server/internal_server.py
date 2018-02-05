@@ -220,7 +220,7 @@ class InternalServer(object):
         """
         Set attribute History Read of node to False and stop storing data for history
         """
-        source.unset_attr_bit(ua.AttributeIds.EventNotifier, ua.EventNotifier.HistoryRead)
+        await source.unset_attr_bit(ua.AttributeIds.EventNotifier, ua.EventNotifier.HistoryRead)
         await self.history_manager.dehistorize(source)
 
     def subscribe_server_callback(self, event, handle):

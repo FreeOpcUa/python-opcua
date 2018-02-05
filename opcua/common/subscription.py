@@ -175,7 +175,8 @@ class Subscription(object):
         """
         return await self._subscribe(nodes, attr, queuesize=0)
 
-    async def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtypes=ua.ObjectIds.BaseEventType, evfilter=None, queuesize=0):
+    async def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtypes=ua.ObjectIds.BaseEventType, evfilter=None,
+            queuesize=0):
         """
         Subscribe to events from a node. Default node is Server node.
         In most servers the server node is the only one you can subscribe to.
@@ -188,7 +189,7 @@ class Subscription(object):
             if not type(evtypes) in (list, tuple):
                 evtypes = [evtypes]
             evtypes = [Node(self.server, evtype) for evtype in evtypes]
-            evfilter = events.get_filter_from_event_type(evtypes)
+            evfilter = await events.get_filter_from_event_type(evtypes)
         return await self._subscribe(sourcenode, ua.AttributeIds.EventNotifier, evfilter, queuesize=queuesize)
 
     async def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):
@@ -269,7 +270,7 @@ class Subscription(object):
         params = ua.DeleteMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
         params.MonitoredItemIds = [handle]
-        results = await self.server.delete_monitored_items(params)
+        results = self.server.delete_monitored_items(params)
         results[0].check()
         for k, v in self._monitored_items.items():
             if v.server_handle == handle:

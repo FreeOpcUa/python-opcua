@@ -543,12 +543,14 @@ class Node:
         if not isinstance(evtypes, (list, tuple)):
             evtypes = [evtypes]
         evtypes = [Node(self.server, evtype) for evtype in evtypes]
-        evfilter = events.get_filter_from_event_type(evtypes)
+        evfilter = await events.get_filter_from_event_type(evtypes)
         details.Filter = evfilter
         result = await self.history_read_events(details)
         event_res = []
         for res in result.HistoryData.Events:
-            event_res.append(events.Event.from_event_fields(evfilter.SelectClauses, res.EventFields))
+            event_res.append(
+                await events.Event.from_event_fields(evfilter.SelectClauses, res.EventFields)
+            )
         return event_res
 
     def history_read_events(self, details):
