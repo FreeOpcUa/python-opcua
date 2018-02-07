@@ -218,16 +218,16 @@ class SecureConnection(object):
         return b"".join([chunk.to_binary() for chunk in chunks])
 
     def _check_incoming_chunk(self, chunk):
-        assert isinstance(chunk, MessageChunk), "Expected chunk, got: {0}".format(chunk)
+        assert isinstance(chunk, MessageChunk), 'Expected chunk, got: {0}'.format(chunk)
         if chunk.MessageHeader.MessageType != ua.MessageType.SecureOpen:
             if chunk.MessageHeader.ChannelId != self.channel.SecurityToken.ChannelId:
-                raise ua.UaError("Wrong channel id {0}, expected {1}".format(
+                raise ua.UaError('Wrong channel id {0}, expected {1}'.format(
                     chunk.MessageHeader.ChannelId,
                     self.channel.SecurityToken.ChannelId))
             if chunk.SecurityHeader.TokenId != self.channel.SecurityToken.TokenId:
                 if chunk.SecurityHeader.TokenId not in self._old_tokens:
                     logger.warning(
-                        "Received a chunk with wrong token id %s, expected %s",
+                        'Received a chunk with wrong token id %s, expected %s',
                         chunk.SecurityHeader.TokenId, self.channel.SecurityToken.TokenId
                     )
                     #raise UaError("Wrong token id {}, expected {}, old tokens are {}".format(
@@ -241,10 +241,10 @@ class SecureConnection(object):
                         self._old_tokens = self._old_tokens[idx:]
         if self._incoming_parts:
             if self._incoming_parts[0].SequenceHeader.RequestId != chunk.SequenceHeader.RequestId:
-                raise ua.UaError("Wrong request id {0}, expected {1}".format(
+                raise ua.UaError('Wrong request id {0}, expected {1}'.format(
                     chunk.SequenceHeader.RequestId,
-                    self._incoming_parts[0].SequenceHeader.RequestId))
-
+                    self._incoming_parts[0].SequenceHeader.RequestId)
+                )
         # sequence number must be incremented or wrapped
         num = chunk.SequenceHeader.SequenceNumber
         if self._peer_sequence_number is not None:
@@ -252,12 +252,12 @@ class SecureConnection(object):
                 wrap = (1 << 32) - 1024
                 if num < 1024 and self._peer_sequence_number >= wrap:
                     # specs Part 6, 6.7.2
-                    logger.debug("Sequence number wrapped: %d -> %d",
-                                 self._peer_sequence_number, num)
+                    logger.debug('Sequence number wrapped: %d -> %d', self._peer_sequence_number, num)
                 else:
                     raise ua.UaError(
-                        "Wrong sequence {0} -> {1} (server bug or replay attack)"
-                        .format(self._peer_sequence_number, num))
+                        'Wrong sequence {0} -> {1} (server bug or replay attack)'
+                        .format(self._peer_sequence_number, num)
+                    )
         self._peer_sequence_number = num
 
     def receive_from_header_and_body(self, header, body):

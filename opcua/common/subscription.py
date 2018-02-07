@@ -166,14 +166,15 @@ class Subscription(object):
         except Exception:
             self.logger.exception("Exception calling status change handler")
 
-    async def subscribe_data_change(self, nodes, attr=ua.AttributeIds.Value):
+    def subscribe_data_change(self, nodes, attr=ua.AttributeIds.Value):
         """
+        Coroutine
         Subscribe for data change events for a node or list of nodes.
         default attribute is Value.
         Return a handle which can be used to unsubscribe
         If more control is necessary use create_monitored_items method
         """
-        return await self._subscribe(nodes, attr, queuesize=0)
+        return self._subscribe(nodes, attr, queuesize=0)
 
     async def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtypes=ua.ObjectIds.BaseEventType, evfilter=None,
             queuesize=0):
@@ -248,7 +249,7 @@ class Subscription(object):
             #TODO: Either use the filter from request or from response. Here it uses from request, in modify it uses from response
             data.mfilter = mi.RequestedParameters.Filter
             self._monitored_items[mi.RequestedParameters.ClientHandle] = data
-        results = self.server.create_monitored_items(params)
+        results = await self.server.create_monitored_items(params)
         mids = []
         # process result, add server_handle, or remove it if failed
         for idx, result in enumerate(results):
