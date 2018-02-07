@@ -346,6 +346,7 @@ class InternalSession(object):
         return result
 
     def create_monitored_items(self, params):
+        """Returns Future"""
         subscription_result = self.subscription_service.create_monitored_items(params)
         self.iserver.server_callback_dispatcher.dispatch(
             CallbackType.ItemSubscriptionCreated, ServerItemCallback(params, subscription_result))

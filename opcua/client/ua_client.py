@@ -63,7 +63,8 @@ class UASocketProtocol(asyncio.Protocol):
                 if len(buf) == 0:
                     return
             except Exception:
-                self.logger.exception('Exception raised while parsing message from client')
+                self.logger.exception('Exception raised while parsing message from server')
+                self.disconnect_socket()
                 return
 
     def _process_received_message(self, msg):
