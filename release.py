@@ -32,7 +32,7 @@ def release():
             os.system("git push --tags")
         ans = input("upload to pip?(Y/n)")
         if ans in ("", "y", "yes"):
-            os.system("rm -rf sdist/*")
+            os.system("rm -rf dist/*")
             os.system("python setup.py sdist")
             os.system("twine upload dist/*")
 
