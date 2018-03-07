@@ -417,11 +417,11 @@ class Client(object):
 
     def _add_anonymous_auth(self, params):
         params.UserIdentityToken = ua.AnonymousIdentityToken()
-        params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Anonymous, 'anonymous')
+        params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Anonymous, "anonymous")
 
     def _add_certificate_auth(self, params, certificate, challenge):
         params.UserIdentityToken = ua.X509IdentityToken()
-        params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Certificate, b"certificate_basic256")
+        params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Certificate, "certificate_basic256")
         params.UserIdentityToken.CertificateData = uacrypto.der_from_x509(certificate)
         # specs part 4, 5.6.3.1: the data to sign is created by appending
         # the last serverNonce to the serverCertificate
