@@ -65,24 +65,15 @@ class _String(object):
     @staticmethod
     def pack(string):
         if string is not None:
-            if sys.version_info.major > 2:
-                string = string.encode('utf-8')
-            else:
-                # we do not want this test to happen with python3
-                if isinstance(string, unicode):
-                    string = string.encode('utf-8')
+            string = string.encode('utf-8')
         return _Bytes.pack(string)
 
     @staticmethod
     def unpack(data):
         b = _Bytes.unpack(data)
-        if sys.version_info.major < 3:
-            # return unicode(b)  #might be correct for python2 but would complicate tests for python3
+        if b is None:
             return b
-        else:
-            if b is None:
-                return b
-            return b.decode("utf-8")
+        return b.decode('utf-8')
 
 
 class _Null(object):
@@ -266,10 +257,10 @@ def to_binary(uatype, val):
     if uatype.startswith("ListOf"):
         #if isinstance(val, (list, tuple)):
         return list_to_binary(uatype[6:], val)
-    elif isinstance(uatype, (str, unicode)) and hasattr(ua.VariantType, uatype):
+    elif type(uatype) is str and hasattr(ua.VariantType, uatype):
         vtype = getattr(ua.VariantType, uatype)
         return pack_uatype(vtype, val)
-    elif isinstance(uatype, (str, unicode)) and hasattr(Primitives, uatype):
+    elif type(uatype) is str and hasattr(Primitives, uatype):
         return getattr(Primitives, uatype).pack(val)
     elif isinstance(val, (IntEnum, Enum)):
         return Primitives.UInt32.pack(val.value)
@@ -448,18 +439,19 @@ def extensionobject_to_binary(obj):
     if isinstance(obj, ua.ExtensionObject):
         return struct_to_binary(obj)
     if obj is None:
-        TypeId = ua.NodeId()
-        Encoding = 0
-        Body = None
+        type_id = ua.NodeId()
+        encoding = 0
+        body = None
     else:
-        TypeId = ua.extension_object_ids[obj.__class__.__name__]
-        Encoding = 0x01
-        Body = struct_to_binary(obj)
-    packet = []
-    packet.append(nodeid_to_binary(TypeId))
-    packet.append(Primitives.Byte.pack(Encoding))
-    if Body:
-        packet.append(Primitives.Bytes.pack(Body))
+        type_id = ua.extension_object_ids[obj.__class__.__name__]
+        encoding = 0x01
+        body = struct_to_binary(obj)
+    packet = [
+        nodeid_to_binary(type_id),
+        Primitives.Byte.pack(encoding),
+    ]
+    if body:
+        packet.append(Primitives.Bytes.pack(body))
     return b''.join(packet)
 
 

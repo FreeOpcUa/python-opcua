@@ -4,12 +4,12 @@ import logging
 
 from opcua import Client
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 _logger = logging.getLogger('opcua')
 
 
 async def task(loop):
-    url = "opc.tcp://commsvr.com:51234/UA/CAS_UA_Server"
+    url = "opc.tcp://192.168.2.213:4840"
     # url = "opc.tcp://localhost:4840/freeopcua/server/"
     try:
         async with Client(url=url) as client:
