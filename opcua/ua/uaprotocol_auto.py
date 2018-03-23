@@ -2359,10 +2359,10 @@ class UserNameIdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UserNameIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-               'UserName:' + str(self.UserName) + ', ' + \
-               'Password:' + str(self.Password) + ', ' + \
-               'EncryptionAlgorithm:' + str(self.EncryptionAlgorithm) + ')'
+        return f'UserNameIdentityToken(PolicyId:{self.PolicyId}, ' + \
+               f'UserName:{self.UserName}, ' + \
+               f'Password:{self.Password}, ' + \
+               f'EncryptionAlgorithm:{self.EncryptionAlgorithm})'
 
     __repr__ = __str__
 
@@ -2482,11 +2482,11 @@ class ActivateSessionParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ActivateSessionParameters(' + 'ClientSignature:' + str(self.ClientSignature) + ', ' + \
-               'ClientSoftwareCertificates:' + str(self.ClientSoftwareCertificates) + ', ' + \
-               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
-               'UserIdentityToken:' + str(self.UserIdentityToken) + ', ' + \
-               'UserTokenSignature:' + str(self.UserTokenSignature) + ')'
+        return f'ActivateSessionParameters(ClientSignature:{self.ClientSignature}, ' + \
+               f'ClientSoftwareCertificates:{self.ClientSoftwareCertificates}, ' + \
+               f'LocaleIds:{self.LocaleIds}, ' + \
+               f'UserIdentityToken:{self.UserIdentityToken}, ' + \
+               f'UserTokenSignature:{self.UserTokenSignature})'
 
     __repr__ = __str__
 
@@ -2516,9 +2516,9 @@ class ActivateSessionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ActivateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'ActivateSessionRequest(TypeId:{self.TypeId}, ' + \
+               f'RequestHeader:{self.RequestHeader}, ' + \
+               f'Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -2546,7 +2546,7 @@ class ActivateSessionResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ActivateSessionResult(' + 'ServerNonce:' + str(self.ServerNonce) + ', ' + \
+        return 'ActivateSessionResult(ServerNonce:' + str(self.ServerNonce) + ', ' + \
                'Results:' + str(self.Results) + ', ' + \
                'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
 

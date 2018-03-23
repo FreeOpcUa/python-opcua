@@ -6,9 +6,12 @@ from dateutil import parser
 from datetime import datetime
 from enum import Enum, IntEnum
 import uuid
+import logging
 
 from opcua import ua
 from opcua.ua.uaerrors import UaError
+
+logger = logging.getLogger('__name__')
 
 
 def val_to_string(val):
