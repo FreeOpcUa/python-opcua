@@ -229,7 +229,7 @@ def unpack_uatype_array(vtype, data):
 
 def struct_to_binary(obj):
     packet = []
-    has_switch = hasattr(obj, "ua_switches")
+    has_switch = hasattr(obj, 'ua_switches')
     if has_switch:
         for name, switch in obj.ua_switches.items():
             member = getattr(obj, name)
@@ -240,7 +240,7 @@ def struct_to_binary(obj):
                 setattr(obj, container_name, container_val)
     for name, uatype in obj.ua_types:
         val = getattr(obj, name)
-        if uatype.startswith("ListOf"):
+        if uatype.startswith('ListOf'):
             packet.append(list_to_binary(uatype[6:], val))
         else:
             if has_switch and val is None and name in obj.ua_switches:
