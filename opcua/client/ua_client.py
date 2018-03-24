@@ -86,7 +86,7 @@ class UASocketProtocol(asyncio.Protocol):
         Returns future
         """
         request.RequestHeader = self._create_request_header(timeout)
-        self.logger.debug("Sending: %s", request)
+        self.logger.debug('Sending: %s', request)
         try:
             binreq = struct_to_binary(request)
         except Exception:

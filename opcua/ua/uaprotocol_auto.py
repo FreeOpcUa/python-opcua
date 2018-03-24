@@ -1,6 +1,6 @@
-'''
+"""
 Autogenerate code from xml spec
-'''
+"""
 
 from datetime import datetime
 from enum import IntEnum
@@ -10,21 +10,21 @@ from opcua.ua.object_ids import ObjectIds
 
 
 class NamingRuleType(IntEnum):
-    '''
+    """
     :ivar Mandatory:
     :vartype Mandatory: 1
     :ivar Optional:
     :vartype Optional: 2
     :ivar Constraint:
     :vartype Constraint: 3
-    '''
+    """
     Mandatory = 1
     Optional = 2
     Constraint = 3
 
 
 class OpenFileMode(IntEnum):
-    '''
+    """
     :ivar Read:
     :vartype Read: 1
     :ivar Write:
@@ -33,7 +33,7 @@ class OpenFileMode(IntEnum):
     :vartype EraseExisting: 4
     :ivar Append:
     :vartype Append: 8
-    '''
+    """
     Read = 1
     Write = 2
     EraseExisting = 4
@@ -41,7 +41,7 @@ class OpenFileMode(IntEnum):
 
 
 class TrustListMasks(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar TrustedCertificates:
@@ -54,7 +54,7 @@ class TrustListMasks(IntEnum):
     :vartype IssuerCrls: 8
     :ivar All:
     :vartype All: 15
-    '''
+    """
     None_ = 0
     TrustedCertificates = 1
     TrustedCrls = 2
@@ -64,7 +64,7 @@ class TrustListMasks(IntEnum):
 
 
 class IdType(IntEnum):
-    '''
+    """
     The type of identifier used in a node id.
 
     :ivar Numeric:
@@ -75,7 +75,7 @@ class IdType(IntEnum):
     :vartype Guid: 2
     :ivar Opaque:
     :vartype Opaque: 3
-    '''
+    """
     Numeric = 0
     String = 1
     Guid = 2
@@ -83,7 +83,7 @@ class IdType(IntEnum):
 
 
 class NodeClass(IntEnum):
-    '''
+    """
     A mask specifying the class of the node.
 
     :ivar Unspecified:
@@ -104,7 +104,7 @@ class NodeClass(IntEnum):
     :vartype DataType: 64
     :ivar View:
     :vartype View: 128
-    '''
+    """
     Unspecified = 0
     Object = 1
     Variable = 2
@@ -117,7 +117,7 @@ class NodeClass(IntEnum):
 
 
 class ApplicationType(IntEnum):
-    '''
+    """
     The types of applications.
 
     :ivar Server:
@@ -128,7 +128,7 @@ class ApplicationType(IntEnum):
     :vartype ClientAndServer: 2
     :ivar DiscoveryServer:
     :vartype DiscoveryServer: 3
-    '''
+    """
     Server = 0
     Client = 1
     ClientAndServer = 2
@@ -136,7 +136,7 @@ class ApplicationType(IntEnum):
 
 
 class MessageSecurityMode(IntEnum):
-    '''
+    """
     The type of security to use on a message.
 
     :ivar Invalid:
@@ -147,7 +147,7 @@ class MessageSecurityMode(IntEnum):
     :vartype Sign: 2
     :ivar SignAndEncrypt:
     :vartype SignAndEncrypt: 3
-    '''
+    """
     Invalid = 0
     None_ = 1
     Sign = 2
@@ -155,7 +155,7 @@ class MessageSecurityMode(IntEnum):
 
 
 class UserTokenType(IntEnum):
-    '''
+    """
     The possible user token types.
 
     :ivar Anonymous:
@@ -168,7 +168,7 @@ class UserTokenType(IntEnum):
     :vartype IssuedToken: 3
     :ivar Kerberos:
     :vartype Kerberos: 4
-    '''
+    """
     Anonymous = 0
     UserName = 1
     Certificate = 2
@@ -177,20 +177,20 @@ class UserTokenType(IntEnum):
 
 
 class SecurityTokenRequestType(IntEnum):
-    '''
+    """
     Indicates whether a token if being created or renewed.
 
     :ivar Issue:
     :vartype Issue: 0
     :ivar Renew:
     :vartype Renew: 1
-    '''
+    """
     Issue = 0
     Renew = 1
 
 
 class NodeAttributesMask(IntEnum):
-    '''
+    """
     The bits used to specify default attributes for a new node.
 
     :ivar None_:
@@ -257,7 +257,7 @@ class NodeAttributesMask(IntEnum):
     :vartype ReferenceType: 1371236
     :ivar View:
     :vartype View: 1335532
-    '''
+    """
     None_ = 0
     AccessLevel = 1
     ArrayDimensions = 2
@@ -293,7 +293,7 @@ class NodeAttributesMask(IntEnum):
 
 
 class AttributeWriteMask(IntEnum):
-    '''
+    """
     Define bits used to indicate which attributes are writable.
 
     :ivar None_:
@@ -342,7 +342,7 @@ class AttributeWriteMask(IntEnum):
     :vartype WriteMask: 1048576
     :ivar ValueForVariableType:
     :vartype ValueForVariableType: 2097152
-    '''
+    """
     None_ = 0
     AccessLevel = 1
     ArrayDimensions = 2
@@ -369,7 +369,7 @@ class AttributeWriteMask(IntEnum):
 
 
 class BrowseDirection(IntEnum):
-    '''
+    """
     The directions of the references to return.
 
     :ivar Forward:
@@ -378,14 +378,14 @@ class BrowseDirection(IntEnum):
     :vartype Inverse: 1
     :ivar Both:
     :vartype Both: 2
-    '''
+    """
     Forward = 0
     Inverse = 1
     Both = 2
 
 
 class BrowseResultMask(IntEnum):
-    '''
+    """
     A bit mask which specifies what should be returned in a browse response.
 
     :ivar None_:
@@ -408,7 +408,7 @@ class BrowseResultMask(IntEnum):
     :vartype ReferenceTypeInfo: 3
     :ivar TargetInfo:
     :vartype TargetInfo: 60
-    '''
+    """
     None_ = 0
     ReferenceTypeId = 1
     IsForward = 2
@@ -422,7 +422,7 @@ class BrowseResultMask(IntEnum):
 
 
 class ComplianceLevel(IntEnum):
-    '''
+    """
     :ivar Untested:
     :vartype Untested: 0
     :ivar Partial:
@@ -431,7 +431,7 @@ class ComplianceLevel(IntEnum):
     :vartype SelfTested: 2
     :ivar Certified:
     :vartype Certified: 3
-    '''
+    """
     Untested = 0
     Partial = 1
     SelfTested = 2
@@ -439,7 +439,7 @@ class ComplianceLevel(IntEnum):
 
 
 class FilterOperator(IntEnum):
-    '''
+    """
     :ivar Equals:
     :vartype Equals: 0
     :ivar IsNull:
@@ -476,7 +476,7 @@ class FilterOperator(IntEnum):
     :vartype BitwiseAnd: 16
     :ivar BitwiseOr:
     :vartype BitwiseOr: 17
-    '''
+    """
     Equals = 0
     IsNull = 1
     GreaterThan = 2
@@ -498,7 +498,7 @@ class FilterOperator(IntEnum):
 
 
 class TimestampsToReturn(IntEnum):
-    '''
+    """
     :ivar Source:
     :vartype Source: 0
     :ivar Server:
@@ -507,7 +507,7 @@ class TimestampsToReturn(IntEnum):
     :vartype Both: 2
     :ivar Neither:
     :vartype Neither: 3
-    '''
+    """
     Source = 0
     Server = 1
     Both = 2
@@ -515,7 +515,7 @@ class TimestampsToReturn(IntEnum):
 
 
 class HistoryUpdateType(IntEnum):
-    '''
+    """
     :ivar Insert:
     :vartype Insert: 1
     :ivar Replace:
@@ -524,7 +524,7 @@ class HistoryUpdateType(IntEnum):
     :vartype Update: 3
     :ivar Delete:
     :vartype Delete: 4
-    '''
+    """
     Insert = 1
     Replace = 2
     Update = 3
@@ -532,7 +532,7 @@ class HistoryUpdateType(IntEnum):
 
 
 class PerformUpdateType(IntEnum):
-    '''
+    """
     :ivar Insert:
     :vartype Insert: 1
     :ivar Replace:
@@ -541,7 +541,7 @@ class PerformUpdateType(IntEnum):
     :vartype Update: 3
     :ivar Remove:
     :vartype Remove: 4
-    '''
+    """
     Insert = 1
     Replace = 2
     Update = 3
@@ -549,49 +549,49 @@ class PerformUpdateType(IntEnum):
 
 
 class MonitoringMode(IntEnum):
-    '''
+    """
     :ivar Disabled:
     :vartype Disabled: 0
     :ivar Sampling:
     :vartype Sampling: 1
     :ivar Reporting:
     :vartype Reporting: 2
-    '''
+    """
     Disabled = 0
     Sampling = 1
     Reporting = 2
 
 
 class DataChangeTrigger(IntEnum):
-    '''
+    """
     :ivar Status:
     :vartype Status: 0
     :ivar StatusValue:
     :vartype StatusValue: 1
     :ivar StatusValueTimestamp:
     :vartype StatusValueTimestamp: 2
-    '''
+    """
     Status = 0
     StatusValue = 1
     StatusValueTimestamp = 2
 
 
 class DeadbandType(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar Absolute:
     :vartype Absolute: 1
     :ivar Percent:
     :vartype Percent: 2
-    '''
+    """
     None_ = 0
     Absolute = 1
     Percent = 2
 
 
 class EnumeratedTestType(IntEnum):
-    '''
+    """
     A simple enumerated type used for testing.
 
     :ivar Red:
@@ -600,14 +600,14 @@ class EnumeratedTestType(IntEnum):
     :vartype Yellow: 4
     :ivar Green:
     :vartype Green: 5
-    '''
+    """
     Red = 1
     Yellow = 4
     Green = 5
 
 
 class RedundancySupport(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar Cold:
@@ -620,7 +620,7 @@ class RedundancySupport(IntEnum):
     :vartype Transparent: 4
     :ivar HotAndMirrored:
     :vartype HotAndMirrored: 5
-    '''
+    """
     None_ = 0
     Cold = 1
     Warm = 2
@@ -630,7 +630,7 @@ class RedundancySupport(IntEnum):
 
 
 class ServerState(IntEnum):
-    '''
+    """
     :ivar Running:
     :vartype Running: 0
     :ivar Failed:
@@ -647,7 +647,7 @@ class ServerState(IntEnum):
     :vartype CommunicationFault: 6
     :ivar Unknown:
     :vartype Unknown: 7
-    '''
+    """
     Running = 0
     Failed = 1
     NoConfiguration = 2
@@ -659,7 +659,7 @@ class ServerState(IntEnum):
 
 
 class ModelChangeStructureVerbMask(IntEnum):
-    '''
+    """
     :ivar NodeAdded:
     :vartype NodeAdded: 1
     :ivar NodeDeleted:
@@ -670,7 +670,7 @@ class ModelChangeStructureVerbMask(IntEnum):
     :vartype ReferenceDeleted: 8
     :ivar DataTypeChanged:
     :vartype DataTypeChanged: 16
-    '''
+    """
     NodeAdded = 1
     NodeDeleted = 2
     ReferenceAdded = 4
@@ -679,21 +679,21 @@ class ModelChangeStructureVerbMask(IntEnum):
 
 
 class AxisScaleEnumeration(IntEnum):
-    '''
+    """
     :ivar Linear:
     :vartype Linear: 0
     :ivar Log:
     :vartype Log: 1
     :ivar Ln:
     :vartype Ln: 2
-    '''
+    """
     Linear = 0
     Log = 1
     Ln = 2
 
 
 class ExceptionDeviationFormat(IntEnum):
-    '''
+    """
     :ivar AbsoluteValue:
     :vartype AbsoluteValue: 0
     :ivar PercentOfValue:
@@ -704,7 +704,7 @@ class ExceptionDeviationFormat(IntEnum):
     :vartype PercentOfEURange: 3
     :ivar Unknown:
     :vartype Unknown: 4
-    '''
+    """
     AbsoluteValue = 0
     PercentOfValue = 1
     PercentOfRange = 2
@@ -713,7 +713,7 @@ class ExceptionDeviationFormat(IntEnum):
 
 
 class DiagnosticInfo(FrozenClass):
-    '''
+    """
     A recursive structure containing diagnostic information associated with a status code.
 
     :ivar Encoding:
@@ -732,7 +732,7 @@ class DiagnosticInfo(FrozenClass):
     :vartype InnerStatusCode: StatusCode
     :ivar InnerDiagnosticInfo:
     :vartype InnerDiagnosticInfo: DiagnosticInfo
-    '''
+    """
 
     ua_switches = {
         'SymbolicId': ('Encoding', 0),
@@ -742,7 +742,7 @@ class DiagnosticInfo(FrozenClass):
         'AdditionalInfo': ('Encoding', 4),
         'InnerStatusCode': ('Encoding', 5),
         'InnerDiagnosticInfo': ('Encoding', 6),
-               }
+    }
     ua_types = [
         ('Encoding', 'Byte'),
         ('SymbolicId', 'Int32'),
@@ -752,7 +752,7 @@ class DiagnosticInfo(FrozenClass):
         ('AdditionalInfo', 'String'),
         ('InnerStatusCode', 'StatusCode'),
         ('InnerDiagnosticInfo', 'DiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.Encoding = 0
@@ -766,20 +766,22 @@ class DiagnosticInfo(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DiagnosticInfo(' + 'Encoding:' + str(self.Encoding) + ', ' + \
-               'SymbolicId:' + str(self.SymbolicId) + ', ' + \
-               'NamespaceURI:' + str(self.NamespaceURI) + ', ' + \
-               'Locale:' + str(self.Locale) + ', ' + \
-               'LocalizedText:' + str(self.LocalizedText) + ', ' + \
-               'AdditionalInfo:' + str(self.AdditionalInfo) + ', ' + \
-               'InnerStatusCode:' + str(self.InnerStatusCode) + ', ' + \
-               'InnerDiagnosticInfo:' + str(self.InnerDiagnosticInfo) + ')'
+        return ', '.join((
+            f'DiagnosticInfo(Encoding:{self.Encoding}',
+            f'SymbolicId:{self.SymbolicId}',
+            f'NamespaceURI:{self.NamespaceURI}',
+            f'Locale:{self.Locale}',
+            f'LocalizedText:{self.LocalizedText}',
+            f'AdditionalInfo:{self.AdditionalInfo}',
+            f'InnerStatusCode:{self.InnerStatusCode}',
+            f'InnerDiagnosticInfo:{self.InnerDiagnosticInfo})'
+        ))
 
     __repr__ = __str__
 
 
 class TrustListDataType(FrozenClass):
-    '''
+    """
     :ivar SpecifiedLists:
     :vartype SpecifiedLists: UInt32
     :ivar TrustedCertificates:
@@ -790,7 +792,7 @@ class TrustListDataType(FrozenClass):
     :vartype IssuerCertificates: ByteString
     :ivar IssuerCrls:
     :vartype IssuerCrls: ByteString
-    '''
+    """
 
     ua_types = [
         ('SpecifiedLists', 'UInt32'),
@@ -798,7 +800,7 @@ class TrustListDataType(FrozenClass):
         ('TrustedCrls', 'ListOfByteString'),
         ('IssuerCertificates', 'ListOfByteString'),
         ('IssuerCrls', 'ListOfByteString'),
-               ]
+    ]
 
     def __init__(self):
         self.SpecifiedLists = 0
@@ -809,17 +811,19 @@ class TrustListDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TrustListDataType(' + 'SpecifiedLists:' + str(self.SpecifiedLists) + ', ' + \
-               'TrustedCertificates:' + str(self.TrustedCertificates) + ', ' + \
-               'TrustedCrls:' + str(self.TrustedCrls) + ', ' + \
-               'IssuerCertificates:' + str(self.IssuerCertificates) + ', ' + \
-               'IssuerCrls:' + str(self.IssuerCrls) + ')'
+        return ', '.join((
+            f'TrustListDataType(SpecifiedLists:{self.SpecifiedLists}',
+            f'TrustedCertificates:{self.TrustedCertificates}',
+            f'TrustedCrls:{self.TrustedCrls}',
+            f'IssuerCertificates:{self.IssuerCertificates}',
+            f'IssuerCrls:{self.IssuerCrls})'
+        ))
 
     __repr__ = __str__
 
 
 class Argument(FrozenClass):
-    '''
+    """
     An argument for a method.
 
     :ivar Name:
@@ -832,7 +836,7 @@ class Argument(FrozenClass):
     :vartype ArrayDimensions: UInt32
     :ivar Description:
     :vartype Description: LocalizedText
-    '''
+    """
 
     ua_types = [
         ('Name', 'String'),
@@ -840,7 +844,7 @@ class Argument(FrozenClass):
         ('ValueRank', 'Int32'),
         ('ArrayDimensions', 'ListOfUInt32'),
         ('Description', 'LocalizedText'),
-               ]
+    ]
 
     def __init__(self):
         self.Name = None
@@ -851,17 +855,19 @@ class Argument(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'Argument(' + 'Name:' + str(self.Name) + ', ' + \
-               'DataType:' + str(self.DataType) + ', ' + \
-               'ValueRank:' + str(self.ValueRank) + ', ' + \
-               'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
-               'Description:' + str(self.Description) + ')'
+        return ', '.join((
+            f'Argument(Name:{self.Name}',
+            f'DataType:{self.DataType}',
+            f'ValueRank:{self.ValueRank}',
+            f'ArrayDimensions:{self.ArrayDimensions}',
+            f'Description:{self.Description})'
+        ))
 
     __repr__ = __str__
 
 
 class EnumValueType(FrozenClass):
-    '''
+    """
     A mapping between a value of an enumerated type and a name and description.
 
     :ivar Value:
@@ -870,13 +876,13 @@ class EnumValueType(FrozenClass):
     :vartype DisplayName: LocalizedText
     :ivar Description:
     :vartype Description: LocalizedText
-    '''
+    """
 
     ua_types = [
         ('Value', 'Int64'),
         ('DisplayName', 'LocalizedText'),
         ('Description', 'LocalizedText'),
-               ]
+    ]
 
     def __init__(self):
         self.Value = 0
@@ -885,27 +891,29 @@ class EnumValueType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EnumValueType(' + 'Value:' + str(self.Value) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ')'
+        return ', '.join((
+            f'EnumValueType(Value:{self.Value}',
+            f'DisplayName:{self.DisplayName}',
+            f'Description:{self.Description})'
+        ))
 
     __repr__ = __str__
 
 
 class OptionSet(FrozenClass):
-    '''
+    """
     This abstract Structured DataType is the base DataType for all DataTypes representing a bit mask.
 
     :ivar Value:
     :vartype Value: ByteString
     :ivar ValidBits:
     :vartype ValidBits: ByteString
-    '''
+    """
 
     ua_types = [
         ('Value', 'ByteString'),
         ('ValidBits', 'ByteString'),
-               ]
+    ]
 
     def __init__(self):
         self.Value = None
@@ -913,42 +921,41 @@ class OptionSet(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'OptionSet(' + 'Value:' + str(self.Value) + ', ' + \
-               'ValidBits:' + str(self.ValidBits) + ')'
+        return f'OptionSet(Value:{self.Value}, ValidBits:{self.ValidBits})'
 
     __repr__ = __str__
 
 
 class Union(FrozenClass):
-    '''
+    """
     This abstract DataType is the base DataType for all union DataTypes.
 
-    '''
+    """
 
     ua_types = [
-               ]
+    ]
 
     def __init__(self):
         self._freeze = True
 
     def __str__(self):
-        return 'Union(' +  + ')'
+        return 'Union()'
 
     __repr__ = __str__
 
 
 class TimeZoneDataType(FrozenClass):
-    '''
+    """
     :ivar Offset:
     :vartype Offset: Int16
     :ivar DaylightSavingInOffset:
     :vartype DaylightSavingInOffset: Boolean
-    '''
+    """
 
     ua_types = [
         ('Offset', 'Int16'),
         ('DaylightSavingInOffset', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.Offset = 0
@@ -956,14 +963,13 @@ class TimeZoneDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TimeZoneDataType(' + 'Offset:' + str(self.Offset) + ', ' + \
-               'DaylightSavingInOffset:' + str(self.DaylightSavingInOffset) + ')'
+        return f'TimeZoneDataType(Offset:{self.Offset}, DaylightSavingInOffset:{self.DaylightSavingInOffset})'
 
     __repr__ = __str__
 
 
 class ApplicationDescription(FrozenClass):
-    '''
+    """
     Describes an application and how to find it.
 
     :ivar ApplicationUri:
@@ -980,7 +986,7 @@ class ApplicationDescription(FrozenClass):
     :vartype DiscoveryProfileUri: String
     :ivar DiscoveryUrls:
     :vartype DiscoveryUrls: String
-    '''
+    """
 
     ua_types = [
         ('ApplicationUri', 'String'),
@@ -990,7 +996,7 @@ class ApplicationDescription(FrozenClass):
         ('GatewayServerUri', 'String'),
         ('DiscoveryProfileUri', 'String'),
         ('DiscoveryUrls', 'ListOfString'),
-               ]
+    ]
 
     def __init__(self):
         self.ApplicationUri = None
@@ -1003,19 +1009,21 @@ class ApplicationDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ApplicationDescription(' + 'ApplicationUri:' + str(self.ApplicationUri) + ', ' + \
-               'ProductUri:' + str(self.ProductUri) + ', ' + \
-               'ApplicationName:' + str(self.ApplicationName) + ', ' + \
-               'ApplicationType:' + str(self.ApplicationType) + ', ' + \
-               'GatewayServerUri:' + str(self.GatewayServerUri) + ', ' + \
-               'DiscoveryProfileUri:' + str(self.DiscoveryProfileUri) + ', ' + \
-               'DiscoveryUrls:' + str(self.DiscoveryUrls) + ')'
+        return ', '.join((
+            f'ApplicationDescription(ApplicationUri:{self.ApplicationUri}',
+            f'ProductUri:{self.ProductUri}',
+            f'ApplicationName:{self.ApplicationName}',
+            f'ApplicationType:{self.ApplicationType}',
+            f'GatewayServerUri:{self.GatewayServerUri}',
+            f'DiscoveryProfileUri:{self.DiscoveryProfileUri}',
+            f'DiscoveryUrls:{self.DiscoveryUrls})'
+        ))
 
     __repr__ = __str__
 
 
 class RequestHeader(FrozenClass):
-    '''
+    """
     The header passed with every server request.
 
     :ivar AuthenticationToken:
@@ -1032,7 +1040,7 @@ class RequestHeader(FrozenClass):
     :vartype TimeoutHint: UInt32
     :ivar AdditionalHeader:
     :vartype AdditionalHeader: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('AuthenticationToken', 'NodeId'),
@@ -1042,7 +1050,7 @@ class RequestHeader(FrozenClass):
         ('AuditEntryId', 'String'),
         ('TimeoutHint', 'UInt32'),
         ('AdditionalHeader', 'ExtensionObject'),
-               ]
+    ]
 
     def __init__(self):
         self.AuthenticationToken = NodeId()
@@ -1055,19 +1063,21 @@ class RequestHeader(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RequestHeader(' + 'AuthenticationToken:' + str(self.AuthenticationToken) + ', ' + \
-               'Timestamp:' + str(self.Timestamp) + ', ' + \
-               'RequestHandle:' + str(self.RequestHandle) + ', ' + \
-               'ReturnDiagnostics:' + str(self.ReturnDiagnostics) + ', ' + \
-               'AuditEntryId:' + str(self.AuditEntryId) + ', ' + \
-               'TimeoutHint:' + str(self.TimeoutHint) + ', ' + \
-               'AdditionalHeader:' + str(self.AdditionalHeader) + ')'
+        return ', '.join((
+            f'RequestHeader(AuthenticationToken:{self.AuthenticationToken}',
+            f'Timestamp:{self.Timestamp}',
+            f'RequestHandle:{self.RequestHandle}',
+            f'ReturnDiagnostics:{self.ReturnDiagnostics}',
+            f'AuditEntryId:{self.AuditEntryId}',
+            f'TimeoutHint:{self.TimeoutHint}',
+            f'AdditionalHeader:{self.AdditionalHeader})'
+        ))
 
     __repr__ = __str__
 
 
 class ResponseHeader(FrozenClass):
-    '''
+    """
     The header passed with every server response.
 
     :ivar Timestamp:
@@ -1082,7 +1092,7 @@ class ResponseHeader(FrozenClass):
     :vartype StringTable: String
     :ivar AdditionalHeader:
     :vartype AdditionalHeader: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('Timestamp', 'DateTime'),
@@ -1091,7 +1101,7 @@ class ResponseHeader(FrozenClass):
         ('ServiceDiagnostics', 'DiagnosticInfo'),
         ('StringTable', 'ListOfString'),
         ('AdditionalHeader', 'ExtensionObject'),
-               ]
+    ]
 
     def __init__(self):
         self.Timestamp = datetime.utcnow()
@@ -1103,30 +1113,32 @@ class ResponseHeader(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ResponseHeader(' + 'Timestamp:' + str(self.Timestamp) + ', ' + \
-               'RequestHandle:' + str(self.RequestHandle) + ', ' + \
-               'ServiceResult:' + str(self.ServiceResult) + ', ' + \
-               'ServiceDiagnostics:' + str(self.ServiceDiagnostics) + ', ' + \
-               'StringTable:' + str(self.StringTable) + ', ' + \
-               'AdditionalHeader:' + str(self.AdditionalHeader) + ')'
+        return ', '.join((
+            f'ResponseHeader(Timestamp:{self.Timestamp}',
+            f'RequestHandle:{self.RequestHandle}',
+            f'ServiceResult:{self.ServiceResult}',
+            f'ServiceDiagnostics:{self.ServiceDiagnostics}',
+            f'StringTable:{self.StringTable}',
+            f'AdditionalHeader:{self.AdditionalHeader})'
+        ))
 
     __repr__ = __str__
 
 
 class ServiceFault(FrozenClass):
-    '''
+    """
     The response returned by all services when there is a service level error.
 
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ServiceFault_Encoding_DefaultBinary)
@@ -1134,27 +1146,26 @@ class ServiceFault(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ServiceFault(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ')'
+        return f'ServiceFault(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
 
 class FindServersParameters(FrozenClass):
-    '''
+    """
     :ivar EndpointUrl:
     :vartype EndpointUrl: String
     :ivar LocaleIds:
     :vartype LocaleIds: String
     :ivar ServerUris:
     :vartype ServerUris: String
-    '''
+    """
 
     ua_types = [
         ('EndpointUrl', 'String'),
         ('LocaleIds', 'ListOfString'),
         ('ServerUris', 'ListOfString'),
-               ]
+    ]
 
     def __init__(self):
         self.EndpointUrl = None
@@ -1163,15 +1174,17 @@ class FindServersParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FindServersParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
-               'ServerUris:' + str(self.ServerUris) + ')'
+        return ', '.join((
+            f'FindServersParameters(EndpointUrl:{self.EndpointUrl}',
+            f'LocaleIds:{self.LocaleIds}',
+            f'ServerUris:{self.ServerUris})'
+        ))
 
     __repr__ = __str__
 
 
 class FindServersRequest(FrozenClass):
-    '''
+    """
     Finds the servers known to the discovery server.
 
     :ivar TypeId:
@@ -1180,13 +1193,13 @@ class FindServersRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: FindServersParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'FindServersParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.FindServersRequest_Encoding_DefaultBinary)
@@ -1195,15 +1208,17 @@ class FindServersRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FindServersRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'FindServersRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class FindServersResponse(FrozenClass):
-    '''
+    """
     Finds the servers known to the discovery server.
 
     :ivar TypeId:
@@ -1212,13 +1227,13 @@ class FindServersResponse(FrozenClass):
     :vartype ResponseHeader: ResponseHeader
     :ivar Servers:
     :vartype Servers: ApplicationDescription
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Servers', 'ListOfApplicationDescription'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.FindServersResponse_Encoding_DefaultBinary)
@@ -1227,15 +1242,17 @@ class FindServersResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FindServersResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Servers:' + str(self.Servers) + ')'
+        return ', '.join((
+            f'FindServersResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Servers:{self.Servers})'
+        ))
 
     __repr__ = __str__
 
 
 class ServerOnNetwork(FrozenClass):
-    '''
+    """
     :ivar RecordId:
     :vartype RecordId: UInt32
     :ivar ServerName:
@@ -1244,14 +1261,14 @@ class ServerOnNetwork(FrozenClass):
     :vartype DiscoveryUrl: String
     :ivar ServerCapabilities:
     :vartype ServerCapabilities: String
-    '''
+    """
 
     ua_types = [
         ('RecordId', 'UInt32'),
         ('ServerName', 'String'),
         ('DiscoveryUrl', 'String'),
         ('ServerCapabilities', 'ListOfString'),
-               ]
+    ]
 
     def __init__(self):
         self.RecordId = 0
@@ -1261,29 +1278,31 @@ class ServerOnNetwork(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ServerOnNetwork(' + 'RecordId:' + str(self.RecordId) + ', ' + \
-               'ServerName:' + str(self.ServerName) + ', ' + \
-               'DiscoveryUrl:' + str(self.DiscoveryUrl) + ', ' + \
-               'ServerCapabilities:' + str(self.ServerCapabilities) + ')'
+        return ', '.join((
+            f'ServerOnNetwork(RecordId:{self.RecordId}',
+            f'ServerName:{self.ServerName}',
+            f'DiscoveryUrl:{self.DiscoveryUrl}',
+            f'ServerCapabilities:{self.ServerCapabilities})'
+        ))
 
     __repr__ = __str__
 
 
 class FindServersOnNetworkParameters(FrozenClass):
-    '''
+    """
     :ivar StartingRecordId:
     :vartype StartingRecordId: UInt32
     :ivar MaxRecordsToReturn:
     :vartype MaxRecordsToReturn: UInt32
     :ivar ServerCapabilityFilter:
     :vartype ServerCapabilityFilter: String
-    '''
+    """
 
     ua_types = [
         ('StartingRecordId', 'UInt32'),
         ('MaxRecordsToReturn', 'UInt32'),
         ('ServerCapabilityFilter', 'ListOfString'),
-               ]
+    ]
 
     def __init__(self):
         self.StartingRecordId = 0
@@ -1292,28 +1311,30 @@ class FindServersOnNetworkParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FindServersOnNetworkParameters(' + 'StartingRecordId:' + str(self.StartingRecordId) + ', ' + \
-               'MaxRecordsToReturn:' + str(self.MaxRecordsToReturn) + ', ' + \
-               'ServerCapabilityFilter:' + str(self.ServerCapabilityFilter) + ')'
+        return ', '.join((
+            f'FindServersOnNetworkParameters(StartingRecordId:{self.StartingRecordId}',
+            f'MaxRecordsToReturn:{self.MaxRecordsToReturn}',
+            f'ServerCapabilityFilter:{self.ServerCapabilityFilter})'
+        ))
 
     __repr__ = __str__
 
 
 class FindServersOnNetworkRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: FindServersOnNetworkParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'FindServersOnNetworkParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.FindServersOnNetworkRequest_Encoding_DefaultBinary)
@@ -1322,25 +1343,27 @@ class FindServersOnNetworkRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FindServersOnNetworkRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'FindServersOnNetworkRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class FindServersOnNetworkResult(FrozenClass):
-    '''
+    """
     :ivar LastCounterResetTime:
     :vartype LastCounterResetTime: DateTime
     :ivar Servers:
     :vartype Servers: ServerOnNetwork
-    '''
+    """
 
     ua_types = [
         ('LastCounterResetTime', 'DateTime'),
         ('Servers', 'ListOfServerOnNetwork'),
-               ]
+    ]
 
     def __init__(self):
         self.LastCounterResetTime = datetime.utcnow()
@@ -1348,27 +1371,26 @@ class FindServersOnNetworkResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FindServersOnNetworkResult(' + 'LastCounterResetTime:' + str(self.LastCounterResetTime) + ', ' + \
-               'Servers:' + str(self.Servers) + ')'
+        return f'FindServersOnNetworkResult(LastCounterResetTime:{self.LastCounterResetTime}, Servers:{self.Servers})'
 
     __repr__ = __str__
 
 
 class FindServersOnNetworkResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: FindServersOnNetworkResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'FindServersOnNetworkResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.FindServersOnNetworkResponse_Encoding_DefaultBinary)
@@ -1377,15 +1399,17 @@ class FindServersOnNetworkResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FindServersOnNetworkResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'FindServersOnNetworkResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class UserTokenPolicy(FrozenClass):
-    '''
+    """
     Describes a user token that can be used with a server.
 
     :ivar PolicyId:
@@ -1398,7 +1422,7 @@ class UserTokenPolicy(FrozenClass):
     :vartype IssuerEndpointUrl: String
     :ivar SecurityPolicyUri:
     :vartype SecurityPolicyUri: String
-    '''
+    """
 
     ua_types = [
         ('PolicyId', 'String'),
@@ -1406,7 +1430,7 @@ class UserTokenPolicy(FrozenClass):
         ('IssuedTokenType', 'String'),
         ('IssuerEndpointUrl', 'String'),
         ('SecurityPolicyUri', 'String'),
-               ]
+    ]
 
     def __init__(self):
         self.PolicyId = None
@@ -1417,17 +1441,19 @@ class UserTokenPolicy(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UserTokenPolicy(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-               'TokenType:' + str(self.TokenType) + ', ' + \
-               'IssuedTokenType:' + str(self.IssuedTokenType) + ', ' + \
-               'IssuerEndpointUrl:' + str(self.IssuerEndpointUrl) + ', ' + \
-               'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ')'
+        return ', '.join((
+            f'UserTokenPolicy(PolicyId:{self.PolicyId}',
+            f'TokenType:{self.TokenType}',
+            f'IssuedTokenType:{self.IssuedTokenType}',
+            f'IssuerEndpointUrl:{self.IssuerEndpointUrl}',
+            f'SecurityPolicyUri:{self.SecurityPolicyUri})'
+        ))
 
     __repr__ = __str__
 
 
 class EndpointDescription(FrozenClass):
-    '''
+    """
     The description of a endpoint that can be used to access a server.
 
     :ivar EndpointUrl:
@@ -1446,7 +1472,7 @@ class EndpointDescription(FrozenClass):
     :vartype TransportProfileUri: String
     :ivar SecurityLevel:
     :vartype SecurityLevel: Byte
-    '''
+    """
 
     ua_types = [
         ('EndpointUrl', 'String'),
@@ -1457,7 +1483,7 @@ class EndpointDescription(FrozenClass):
         ('UserIdentityTokens', 'ListOfUserTokenPolicy'),
         ('TransportProfileUri', 'String'),
         ('SecurityLevel', 'Byte'),
-               ]
+    ]
 
     def __init__(self):
         self.EndpointUrl = None
@@ -1471,33 +1497,35 @@ class EndpointDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EndpointDescription(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-               'Server:' + str(self.Server) + ', ' + \
-               'ServerCertificate:' + str(self.ServerCertificate) + ', ' + \
-               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
-               'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', ' + \
-               'UserIdentityTokens:' + str(self.UserIdentityTokens) + ', ' + \
-               'TransportProfileUri:' + str(self.TransportProfileUri) + ', ' + \
-               'SecurityLevel:' + str(self.SecurityLevel) + ')'
+        return ', '.join((
+            f'EndpointDescription(EndpointUrl:{self.EndpointUrl}',
+            f'Server:{self.Server}',
+            f'ServerCertificate:{self.ServerCertificate}',
+            f'SecurityMode:{self.SecurityMode}',
+            f'SecurityPolicyUri:{self.SecurityPolicyUri}',
+            f'UserIdentityTokens:{self.UserIdentityTokens}',
+            f'TransportProfileUri:{self.TransportProfileUri}',
+            f'SecurityLevel:{self.SecurityLevel})'
+        ))
 
     __repr__ = __str__
 
 
 class GetEndpointsParameters(FrozenClass):
-    '''
+    """
     :ivar EndpointUrl:
     :vartype EndpointUrl: String
     :ivar LocaleIds:
     :vartype LocaleIds: String
     :ivar ProfileUris:
     :vartype ProfileUris: String
-    '''
+    """
 
     ua_types = [
         ('EndpointUrl', 'String'),
         ('LocaleIds', 'ListOfString'),
         ('ProfileUris', 'ListOfString'),
-               ]
+    ]
 
     def __init__(self):
         self.EndpointUrl = None
@@ -1506,15 +1534,17 @@ class GetEndpointsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'GetEndpointsParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
-               'ProfileUris:' + str(self.ProfileUris) + ')'
+        return ', '.join((
+            f'GetEndpointsParameters(EndpointUrl:{self.EndpointUrl}',
+            f'LocaleIds:{self.LocaleIds}',
+            f'ProfileUris:{self.ProfileUris})'
+        ))
 
     __repr__ = __str__
 
 
 class GetEndpointsRequest(FrozenClass):
-    '''
+    """
     Gets the endpoints used by the server.
 
     :ivar TypeId:
@@ -1523,13 +1553,13 @@ class GetEndpointsRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: GetEndpointsParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'GetEndpointsParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.GetEndpointsRequest_Encoding_DefaultBinary)
@@ -1538,15 +1568,17 @@ class GetEndpointsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'GetEndpointsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'GetEndpointsRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class GetEndpointsResponse(FrozenClass):
-    '''
+    """
     Gets the endpoints used by the server.
 
     :ivar TypeId:
@@ -1555,13 +1587,13 @@ class GetEndpointsResponse(FrozenClass):
     :vartype ResponseHeader: ResponseHeader
     :ivar Endpoints:
     :vartype Endpoints: EndpointDescription
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Endpoints', 'ListOfEndpointDescription'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.GetEndpointsResponse_Encoding_DefaultBinary)
@@ -1570,15 +1602,17 @@ class GetEndpointsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'GetEndpointsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Endpoints:' + str(self.Endpoints) + ')'
+        return ', '.join((
+            f'GetEndpointsResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Endpoints:{self.Endpoints})'
+        ))
 
     __repr__ = __str__
 
 
 class RegisteredServer(FrozenClass):
-    '''
+    """
     The information required to register a server with a discovery server.
 
     :ivar ServerUri:
@@ -1597,7 +1631,7 @@ class RegisteredServer(FrozenClass):
     :vartype SemaphoreFilePath: String
     :ivar IsOnline:
     :vartype IsOnline: Boolean
-    '''
+    """
 
     ua_types = [
         ('ServerUri', 'String'),
@@ -1608,7 +1642,7 @@ class RegisteredServer(FrozenClass):
         ('DiscoveryUrls', 'ListOfString'),
         ('SemaphoreFilePath', 'String'),
         ('IsOnline', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.ServerUri = None
@@ -1622,20 +1656,22 @@ class RegisteredServer(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisteredServer(' + 'ServerUri:' + str(self.ServerUri) + ', ' + \
-               'ProductUri:' + str(self.ProductUri) + ', ' + \
-               'ServerNames:' + str(self.ServerNames) + ', ' + \
-               'ServerType:' + str(self.ServerType) + ', ' + \
-               'GatewayServerUri:' + str(self.GatewayServerUri) + ', ' + \
-               'DiscoveryUrls:' + str(self.DiscoveryUrls) + ', ' + \
-               'SemaphoreFilePath:' + str(self.SemaphoreFilePath) + ', ' + \
-               'IsOnline:' + str(self.IsOnline) + ')'
+        return ', '.join((
+            f'RegisteredServer(ServerUri:{self.ServerUri}',
+            f'ProductUri:{self.ProductUri}',
+            f'ServerNames:{self.ServerNames}',
+            f'ServerType:{self.ServerType}',
+            f'GatewayServerUri:{self.GatewayServerUri}',
+            f'DiscoveryUrls:{self.DiscoveryUrls}',
+            f'SemaphoreFilePath:{self.SemaphoreFilePath}',
+            f'IsOnline:{self.IsOnline})'
+        ))
 
     __repr__ = __str__
 
 
 class RegisterServerRequest(FrozenClass):
-    '''
+    """
     Registers a server with the discovery server.
 
     :ivar TypeId:
@@ -1644,13 +1680,13 @@ class RegisterServerRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Server:
     :vartype Server: RegisteredServer
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Server', 'RegisteredServer'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServerRequest_Encoding_DefaultBinary)
@@ -1659,27 +1695,29 @@ class RegisterServerRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterServerRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Server:' + str(self.Server) + ')'
+        return ', '.join((
+            f'RegisterServerRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Server:{self.Server})'
+        ))
 
     __repr__ = __str__
 
 
 class RegisterServerResponse(FrozenClass):
-    '''
+    """
     Registers a server with the discovery server.
 
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServerResponse_Encoding_DefaultBinary)
@@ -1687,44 +1725,43 @@ class RegisterServerResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterServerResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ')'
+        return f'RegisterServerResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
 
 class DiscoveryConfiguration(FrozenClass):
-    '''
+    """
     A base type for discovery configuration information.
 
-    '''
+    """
 
     ua_types = [
-               ]
+    ]
 
     def __init__(self):
         self._freeze = True
 
     def __str__(self):
-        return 'DiscoveryConfiguration(' +  + ')'
+        return 'DiscoveryConfiguration()'
 
     __repr__ = __str__
 
 
 class MdnsDiscoveryConfiguration(FrozenClass):
-    '''
+    """
     The discovery information needed for mDNS registration.
 
     :ivar MdnsServerName:
     :vartype MdnsServerName: String
     :ivar ServerCapabilities:
     :vartype ServerCapabilities: String
-    '''
+    """
 
     ua_types = [
         ('MdnsServerName', 'String'),
         ('ServerCapabilities', 'ListOfString'),
-               ]
+    ]
 
     def __init__(self):
         self.MdnsServerName = None
@@ -1732,24 +1769,26 @@ class MdnsDiscoveryConfiguration(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MdnsDiscoveryConfiguration(' + 'MdnsServerName:' + str(self.MdnsServerName) + ', ' + \
-               'ServerCapabilities:' + str(self.ServerCapabilities) + ')'
+        return ', '.join((
+            f'MdnsDiscoveryConfiguration(MdnsServerName:{self.MdnsServerName}',
+            f'ServerCapabilities:{self.ServerCapabilities})'
+        ))
 
     __repr__ = __str__
 
 
 class RegisterServer2Parameters(FrozenClass):
-    '''
+    """
     :ivar Server:
     :vartype Server: RegisteredServer
     :ivar DiscoveryConfiguration:
     :vartype DiscoveryConfiguration: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('Server', 'RegisteredServer'),
         ('DiscoveryConfiguration', 'ListOfExtensionObject'),
-               ]
+    ]
 
     def __init__(self):
         self.Server = RegisteredServer()
@@ -1757,27 +1796,26 @@ class RegisterServer2Parameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterServer2Parameters(' + 'Server:' + str(self.Server) + ', ' + \
-               'DiscoveryConfiguration:' + str(self.DiscoveryConfiguration) + ')'
+        return f'RegisterServer2Parameters(Server:{self.Server}, DiscoveryConfiguration:{self.DiscoveryConfiguration})'
 
     __repr__ = __str__
 
 
 class RegisterServer2Request(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: RegisterServer2Parameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'RegisterServer2Parameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServer2Request_Encoding_DefaultBinary)
@@ -1786,15 +1824,17 @@ class RegisterServer2Request(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterServer2Request(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'RegisterServer2Request(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class RegisterServer2Response(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -1803,14 +1843,14 @@ class RegisterServer2Response(FrozenClass):
     :vartype ConfigurationResults: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('ConfigurationResults', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServer2Response_Encoding_DefaultBinary)
@@ -1820,16 +1860,18 @@ class RegisterServer2Response(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterServer2Response(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'ConfigurationResults:' + str(self.ConfigurationResults) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'RegisterServer2Response(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'ConfigurationResults:{self.ConfigurationResults}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class ChannelSecurityToken(FrozenClass):
-    '''
+    """
     The token that identifies a set of keys for an active secure channel.
 
     :ivar ChannelId:
@@ -1840,14 +1882,14 @@ class ChannelSecurityToken(FrozenClass):
     :vartype CreatedAt: DateTime
     :ivar RevisedLifetime:
     :vartype RevisedLifetime: UInt32
-    '''
+    """
 
     ua_types = [
         ('ChannelId', 'UInt32'),
         ('TokenId', 'UInt32'),
         ('CreatedAt', 'DateTime'),
         ('RevisedLifetime', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.ChannelId = 0
@@ -1857,16 +1899,18 @@ class ChannelSecurityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ChannelSecurityToken(' + 'ChannelId:' + str(self.ChannelId) + ', ' + \
-               'TokenId:' + str(self.TokenId) + ', ' + \
-               'CreatedAt:' + str(self.CreatedAt) + ', ' + \
-               'RevisedLifetime:' + str(self.RevisedLifetime) + ')'
+        return ', '.join((
+            f'ChannelSecurityToken(ChannelId:{self.ChannelId}',
+            f'TokenId:{self.TokenId}',
+            f'CreatedAt:{self.CreatedAt}',
+            f'RevisedLifetime:{self.RevisedLifetime})'
+        ))
 
     __repr__ = __str__
 
 
 class OpenSecureChannelParameters(FrozenClass):
-    '''
+    """
     :ivar ClientProtocolVersion:
     :vartype ClientProtocolVersion: UInt32
     :ivar RequestType:
@@ -1877,7 +1921,7 @@ class OpenSecureChannelParameters(FrozenClass):
     :vartype ClientNonce: ByteString
     :ivar RequestedLifetime:
     :vartype RequestedLifetime: UInt32
-    '''
+    """
 
     ua_types = [
         ('ClientProtocolVersion', 'UInt32'),
@@ -1885,7 +1929,7 @@ class OpenSecureChannelParameters(FrozenClass):
         ('SecurityMode', 'MessageSecurityMode'),
         ('ClientNonce', 'ByteString'),
         ('RequestedLifetime', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.ClientProtocolVersion = 0
@@ -1896,17 +1940,19 @@ class OpenSecureChannelParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'OpenSecureChannelParameters(' + 'ClientProtocolVersion:' + str(self.ClientProtocolVersion) + ', ' + \
-               'RequestType:' + str(self.RequestType) + ', ' + \
-               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
-               'ClientNonce:' + str(self.ClientNonce) + ', ' + \
-               'RequestedLifetime:' + str(self.RequestedLifetime) + ')'
+        return ', '.join((
+            f'OpenSecureChannelParameters(ClientProtocolVersion:{self.ClientProtocolVersion}',
+            f'RequestType:{self.RequestType}',
+            f'SecurityMode:{self.SecurityMode}',
+            f'ClientNonce:{self.ClientNonce}',
+            f'RequestedLifetime:{self.RequestedLifetime})'
+        ))
 
     __repr__ = __str__
 
 
 class OpenSecureChannelRequest(FrozenClass):
-    '''
+    """
     Creates a secure channel with a server.
 
     :ivar TypeId:
@@ -1915,13 +1961,13 @@ class OpenSecureChannelRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: OpenSecureChannelParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'OpenSecureChannelParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.OpenSecureChannelRequest_Encoding_DefaultBinary)
@@ -1930,28 +1976,30 @@ class OpenSecureChannelRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'OpenSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'OpenSecureChannelRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class OpenSecureChannelResult(FrozenClass):
-    '''
+    """
     :ivar ServerProtocolVersion:
     :vartype ServerProtocolVersion: UInt32
     :ivar SecurityToken:
     :vartype SecurityToken: ChannelSecurityToken
     :ivar ServerNonce:
     :vartype ServerNonce: ByteString
-    '''
+    """
 
     ua_types = [
         ('ServerProtocolVersion', 'UInt32'),
         ('SecurityToken', 'ChannelSecurityToken'),
         ('ServerNonce', 'ByteString'),
-               ]
+    ]
 
     def __init__(self):
         self.ServerProtocolVersion = 0
@@ -1960,15 +2008,17 @@ class OpenSecureChannelResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'OpenSecureChannelResult(' + 'ServerProtocolVersion:' + str(self.ServerProtocolVersion) + ', ' + \
-               'SecurityToken:' + str(self.SecurityToken) + ', ' + \
-               'ServerNonce:' + str(self.ServerNonce) + ')'
+        return ', '.join((
+            f'OpenSecureChannelResult(ServerProtocolVersion:{self.ServerProtocolVersion}',
+            f'SecurityToken:{self.SecurityToken}',
+            f'ServerNonce:{self.ServerNonce})'
+        ))
 
     __repr__ = __str__
 
 
 class OpenSecureChannelResponse(FrozenClass):
-    '''
+    """
     Creates a secure channel with a server.
 
     :ivar TypeId:
@@ -1977,13 +2027,13 @@ class OpenSecureChannelResponse(FrozenClass):
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: OpenSecureChannelResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'OpenSecureChannelResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.OpenSecureChannelResponse_Encoding_DefaultBinary)
@@ -1992,27 +2042,29 @@ class OpenSecureChannelResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'OpenSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'OpenSecureChannelResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class CloseSecureChannelRequest(FrozenClass):
-    '''
+    """
     Closes a secure channel.
 
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CloseSecureChannelRequest_Encoding_DefaultBinary)
@@ -2020,26 +2072,25 @@ class CloseSecureChannelRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CloseSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ')'
+        return f'CloseSecureChannelRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader})'
 
     __repr__ = __str__
 
 
 class CloseSecureChannelResponse(FrozenClass):
-    '''
+    """
     Closes a secure channel.
 
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CloseSecureChannelResponse_Encoding_DefaultBinary)
@@ -2047,26 +2098,25 @@ class CloseSecureChannelResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CloseSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ')'
+        return f'CloseSecureChannelResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
 
 class SignedSoftwareCertificate(FrozenClass):
-    '''
+    """
     A software certificate with a digital signature.
 
     :ivar CertificateData:
     :vartype CertificateData: ByteString
     :ivar Signature:
     :vartype Signature: ByteString
-    '''
+    """
 
     ua_types = [
         ('CertificateData', 'ByteString'),
         ('Signature', 'ByteString'),
-               ]
+    ]
 
     def __init__(self):
         self.CertificateData = None
@@ -2074,26 +2124,25 @@ class SignedSoftwareCertificate(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SignedSoftwareCertificate(' + 'CertificateData:' + str(self.CertificateData) + ', ' + \
-               'Signature:' + str(self.Signature) + ')'
+        return f'SignedSoftwareCertificate(CertificateData:{self.CertificateData}, Signature:{self.Signature})'
 
     __repr__ = __str__
 
 
 class SignatureData(FrozenClass):
-    '''
+    """
     A digital signature.
 
     :ivar Algorithm:
     :vartype Algorithm: String
     :ivar Signature:
     :vartype Signature: ByteString
-    '''
+    """
 
     ua_types = [
         ('Algorithm', 'String'),
         ('Signature', 'ByteString'),
-               ]
+    ]
 
     def __init__(self):
         self.Algorithm = None
@@ -2101,14 +2150,13 @@ class SignatureData(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SignatureData(' + 'Algorithm:' + str(self.Algorithm) + ', ' + \
-               'Signature:' + str(self.Signature) + ')'
+        return f'SignatureData(Algorithm:{self.Algorithm}, Signature:{self.Signature})'
 
     __repr__ = __str__
 
 
 class CreateSessionParameters(FrozenClass):
-    '''
+    """
     :ivar ClientDescription:
     :vartype ClientDescription: ApplicationDescription
     :ivar ServerUri:
@@ -2125,7 +2173,7 @@ class CreateSessionParameters(FrozenClass):
     :vartype RequestedSessionTimeout: Double
     :ivar MaxResponseMessageSize:
     :vartype MaxResponseMessageSize: UInt32
-    '''
+    """
 
     ua_types = [
         ('ClientDescription', 'ApplicationDescription'),
@@ -2136,7 +2184,7 @@ class CreateSessionParameters(FrozenClass):
         ('ClientCertificate', 'ByteString'),
         ('RequestedSessionTimeout', 'Double'),
         ('MaxResponseMessageSize', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.ClientDescription = ApplicationDescription()
@@ -2150,20 +2198,22 @@ class CreateSessionParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSessionParameters(' + 'ClientDescription:' + str(self.ClientDescription) + ', ' + \
-               'ServerUri:' + str(self.ServerUri) + ', ' + \
-               'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-               'SessionName:' + str(self.SessionName) + ', ' + \
-               'ClientNonce:' + str(self.ClientNonce) + ', ' + \
-               'ClientCertificate:' + str(self.ClientCertificate) + ', ' + \
-               'RequestedSessionTimeout:' + str(self.RequestedSessionTimeout) + ', ' + \
-               'MaxResponseMessageSize:' + str(self.MaxResponseMessageSize) + ')'
+        return ', '.join((
+            f'CreateSessionParameters(ClientDescription:{self.ClientDescription}',
+            f'ServerUri:{self.ServerUri}',
+            f'EndpointUrl:{self.EndpointUrl}',
+            f'SessionName:{self.SessionName}',
+            f'ClientNonce:{self.ClientNonce}',
+            f'ClientCertificate:{self.ClientCertificate}',
+            f'RequestedSessionTimeout:{self.RequestedSessionTimeout}',
+            f'MaxResponseMessageSize:{self.MaxResponseMessageSize})'
+        ))
 
     __repr__ = __str__
 
 
 class CreateSessionRequest(FrozenClass):
-    '''
+    """
     Creates a new session with the server.
 
     :ivar TypeId:
@@ -2172,13 +2222,13 @@ class CreateSessionRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: CreateSessionParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'CreateSessionParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateSessionRequest_Encoding_DefaultBinary)
@@ -2187,15 +2237,17 @@ class CreateSessionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'CreateSessionRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class CreateSessionResult(FrozenClass):
-    '''
+    """
     :ivar SessionId:
     :vartype SessionId: NodeId
     :ivar AuthenticationToken:
@@ -2214,7 +2266,7 @@ class CreateSessionResult(FrozenClass):
     :vartype ServerSignature: SignatureData
     :ivar MaxRequestMessageSize:
     :vartype MaxRequestMessageSize: UInt32
-    '''
+    """
 
     ua_types = [
         ('SessionId', 'NodeId'),
@@ -2226,7 +2278,7 @@ class CreateSessionResult(FrozenClass):
         ('ServerSoftwareCertificates', 'ListOfSignedSoftwareCertificate'),
         ('ServerSignature', 'SignatureData'),
         ('MaxRequestMessageSize', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.SessionId = NodeId()
@@ -2241,21 +2293,23 @@ class CreateSessionResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSessionResult(' + 'SessionId:' + str(self.SessionId) + ', ' + \
-               'AuthenticationToken:' + str(self.AuthenticationToken) + ', ' + \
-               'RevisedSessionTimeout:' + str(self.RevisedSessionTimeout) + ', ' + \
-               'ServerNonce:' + str(self.ServerNonce) + ', ' + \
-               'ServerCertificate:' + str(self.ServerCertificate) + ', ' + \
-               'ServerEndpoints:' + str(self.ServerEndpoints) + ', ' + \
-               'ServerSoftwareCertificates:' + str(self.ServerSoftwareCertificates) + ', ' + \
-               'ServerSignature:' + str(self.ServerSignature) + ', ' + \
-               'MaxRequestMessageSize:' + str(self.MaxRequestMessageSize) + ')'
+        return ', '.join((
+            f'CreateSessionResult(SessionId:{self.SessionId}',
+            f'AuthenticationToken:{self.AuthenticationToken}',
+            f'RevisedSessionTimeout:{self.RevisedSessionTimeout}',
+            f'ServerNonce:{self.ServerNonce}',
+            f'ServerCertificate:{self.ServerCertificate}',
+            f'ServerEndpoints:{self.ServerEndpoints}',
+            f'ServerSoftwareCertificates:{self.ServerSoftwareCertificates}',
+            f'ServerSignature:{self.ServerSignature}',
+            f'MaxRequestMessageSize:{self.MaxRequestMessageSize})'
+        ))
 
     __repr__ = __str__
 
 
 class CreateSessionResponse(FrozenClass):
-    '''
+    """
     Creates a new session with the server.
 
     :ivar TypeId:
@@ -2264,13 +2318,13 @@ class CreateSessionResponse(FrozenClass):
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: CreateSessionResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'CreateSessionResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateSessionResponse_Encoding_DefaultBinary)
@@ -2279,59 +2333,61 @@ class CreateSessionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'CreateSessionResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class UserIdentityToken(FrozenClass):
-    '''
+    """
     A base type for a user identity token.
 
     :ivar PolicyId:
     :vartype PolicyId: String
-    '''
+    """
 
     ua_types = [
         ('PolicyId', 'String'),
-               ]
+    ]
 
     def __init__(self):
         self.PolicyId = None
         self._freeze = True
 
     def __str__(self):
-        return 'UserIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ')'
+        return f'UserIdentityToken(PolicyId:{self.PolicyId})'
 
     __repr__ = __str__
 
 
 class AnonymousIdentityToken(FrozenClass):
-    '''
+    """
     A token representing an anonymous user.
 
     :ivar PolicyId:
     :vartype PolicyId: String
-    '''
+    """
 
     ua_types = [
         ('PolicyId', 'String'),
-               ]
+    ]
 
     def __init__(self):
         self.PolicyId = None
         self._freeze = True
 
     def __str__(self):
-        return 'AnonymousIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ')'
+        return f'AnonymousIdentityToken(PolicyId:{self.PolicyId})',
 
     __repr__ = __str__
 
 
 class UserNameIdentityToken(FrozenClass):
-    '''
+    """
     A token representing a user identified by a user name and password.
 
     :ivar PolicyId:
@@ -2342,14 +2398,14 @@ class UserNameIdentityToken(FrozenClass):
     :vartype Password: ByteString
     :ivar EncryptionAlgorithm:
     :vartype EncryptionAlgorithm: String
-    '''
+    """
 
     ua_types = [
         ('PolicyId', 'String'),
         ('UserName', 'String'),
         ('Password', 'ByteString'),
         ('EncryptionAlgorithm', 'String'),
-               ]
+    ]
 
     def __init__(self):
         self.PolicyId = None
@@ -2359,28 +2415,30 @@ class UserNameIdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'UserNameIdentityToken(PolicyId:{self.PolicyId}, ' + \
-               f'UserName:{self.UserName}, ' + \
-               f'Password:{self.Password}, ' + \
-               f'EncryptionAlgorithm:{self.EncryptionAlgorithm})'
+        return ', '.join((
+            f'UserNameIdentityToken(PolicyId:{self.PolicyId}',
+            f'UserName:{self.UserName}',
+            f'Password:{self.Password}',
+            f'EncryptionAlgorithm:{self.EncryptionAlgorithm})'
+        ))
 
     __repr__ = __str__
 
 
 class X509IdentityToken(FrozenClass):
-    '''
+    """
     A token representing a user identified by an X509 certificate.
 
     :ivar PolicyId:
     :vartype PolicyId: String
     :ivar CertificateData:
     :vartype CertificateData: ByteString
-    '''
+    """
 
     ua_types = [
         ('PolicyId', 'String'),
         ('CertificateData', 'ByteString'),
-               ]
+    ]
 
     def __init__(self):
         self.PolicyId = None
@@ -2388,24 +2446,23 @@ class X509IdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'X509IdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-               'CertificateData:' + str(self.CertificateData) + ')'
+        return f'X509IdentityToken(PolicyId:{self.PolicyId}, CertificateData:{self.CertificateData})'
 
     __repr__ = __str__
 
 
 class KerberosIdentityToken(FrozenClass):
-    '''
+    """
     :ivar PolicyId:
     :vartype PolicyId: String
     :ivar TicketData:
     :vartype TicketData: ByteString
-    '''
+    """
 
     ua_types = [
         ('PolicyId', 'String'),
         ('TicketData', 'ByteString'),
-               ]
+    ]
 
     def __init__(self):
         self.PolicyId = None
@@ -2413,14 +2470,13 @@ class KerberosIdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'KerberosIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-               'TicketData:' + str(self.TicketData) + ')'
+        return f'KerberosIdentityToken(PolicyId:{self.PolicyId}, TicketData:{self.TicketData})'
 
     __repr__ = __str__
 
 
 class IssuedIdentityToken(FrozenClass):
-    '''
+    """
     A token representing a user identified by a WS-Security XML token.
 
     :ivar PolicyId:
@@ -2429,13 +2485,13 @@ class IssuedIdentityToken(FrozenClass):
     :vartype TokenData: ByteString
     :ivar EncryptionAlgorithm:
     :vartype EncryptionAlgorithm: String
-    '''
+    """
 
     ua_types = [
         ('PolicyId', 'String'),
         ('TokenData', 'ByteString'),
         ('EncryptionAlgorithm', 'String'),
-               ]
+    ]
 
     def __init__(self):
         self.PolicyId = None
@@ -2444,15 +2500,17 @@ class IssuedIdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'IssuedIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-               'TokenData:' + str(self.TokenData) + ', ' + \
-               'EncryptionAlgorithm:' + str(self.EncryptionAlgorithm) + ')'
+        return ', '.join((
+            f'IssuedIdentityToken(PolicyId:{self.PolicyId}',
+            f'TokenData:{self.TokenData}',
+            f'EncryptionAlgorithm:{self.EncryptionAlgorithm})'
+        ))
 
     __repr__ = __str__
 
 
 class ActivateSessionParameters(FrozenClass):
-    '''
+    """
     :ivar ClientSignature:
     :vartype ClientSignature: SignatureData
     :ivar ClientSoftwareCertificates:
@@ -2463,7 +2521,7 @@ class ActivateSessionParameters(FrozenClass):
     :vartype UserIdentityToken: ExtensionObject
     :ivar UserTokenSignature:
     :vartype UserTokenSignature: SignatureData
-    '''
+    """
 
     ua_types = [
         ('ClientSignature', 'SignatureData'),
@@ -2471,7 +2529,7 @@ class ActivateSessionParameters(FrozenClass):
         ('LocaleIds', 'ListOfString'),
         ('UserIdentityToken', 'ExtensionObject'),
         ('UserTokenSignature', 'SignatureData'),
-               ]
+    ]
 
     def __init__(self):
         self.ClientSignature = SignatureData()
@@ -2482,17 +2540,19 @@ class ActivateSessionParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ActivateSessionParameters(ClientSignature:{self.ClientSignature}, ' + \
-               f'ClientSoftwareCertificates:{self.ClientSoftwareCertificates}, ' + \
-               f'LocaleIds:{self.LocaleIds}, ' + \
-               f'UserIdentityToken:{self.UserIdentityToken}, ' + \
-               f'UserTokenSignature:{self.UserTokenSignature})'
+        return ', '.join((
+            f'ActivateSessionParameters(ClientSignature:{self.ClientSignature}',
+            f'ClientSoftwareCertificates:{self.ClientSoftwareCertificates}',
+            f'LocaleIds:{self.LocaleIds}',
+            f'UserIdentityToken:{self.UserIdentityToken}',
+            f'UserTokenSignature:{self.UserTokenSignature})'
+        ))
 
     __repr__ = __str__
 
 
 class ActivateSessionRequest(FrozenClass):
-    '''
+    """
     Activates a session with the server.
 
     :ivar TypeId:
@@ -2501,13 +2561,13 @@ class ActivateSessionRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: ActivateSessionParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'ActivateSessionParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ActivateSessionRequest_Encoding_DefaultBinary)
@@ -2516,28 +2576,30 @@ class ActivateSessionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ActivateSessionRequest(TypeId:{self.TypeId}, ' + \
-               f'RequestHeader:{self.RequestHeader}, ' + \
-               f'Parameters:{self.Parameters})'
+        return ', '.join((
+            f'ActivateSessionRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class ActivateSessionResult(FrozenClass):
-    '''
+    """
     :ivar ServerNonce:
     :vartype ServerNonce: ByteString
     :ivar Results:
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('ServerNonce', 'ByteString'),
         ('Results', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.ServerNonce = None
@@ -2546,15 +2608,17 @@ class ActivateSessionResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ActivateSessionResult(ServerNonce:' + str(self.ServerNonce) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'ActivateSessionResult(ServerNonce:{self.ServerNonce}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class ActivateSessionResponse(FrozenClass):
-    '''
+    """
     Activates a session with the server.
 
     :ivar TypeId:
@@ -2563,13 +2627,13 @@ class ActivateSessionResponse(FrozenClass):
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: ActivateSessionResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'ActivateSessionResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ActivateSessionResponse_Encoding_DefaultBinary)
@@ -2578,15 +2642,17 @@ class ActivateSessionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ActivateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'ActivateSessionResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class CloseSessionRequest(FrozenClass):
-    '''
+    """
     Closes a session with the server.
 
     :ivar TypeId:
@@ -2595,13 +2661,13 @@ class CloseSessionRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar DeleteSubscriptions:
     :vartype DeleteSubscriptions: Boolean
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('DeleteSubscriptions', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CloseSessionRequest_Encoding_DefaultBinary)
@@ -2610,27 +2676,29 @@ class CloseSessionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CloseSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'DeleteSubscriptions:' + str(self.DeleteSubscriptions) + ')'
+        return ', '.join((
+            f'CloseSessionRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'DeleteSubscriptions:{self.DeleteSubscriptions})'
+        ))
 
     __repr__ = __str__
 
 
 class CloseSessionResponse(FrozenClass):
-    '''
+    """
     Closes a session with the server.
 
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CloseSessionResponse_Encoding_DefaultBinary)
@@ -2638,34 +2706,33 @@ class CloseSessionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CloseSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ')'
+        return f'CloseSessionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
 
 class CancelParameters(FrozenClass):
-    '''
+    """
     :ivar RequestHandle:
     :vartype RequestHandle: UInt32
-    '''
+    """
 
     ua_types = [
         ('RequestHandle', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.RequestHandle = 0
         self._freeze = True
 
     def __str__(self):
-        return 'CancelParameters(' + 'RequestHandle:' + str(self.RequestHandle) + ')'
+        return f'CancelParameters(RequestHandle:{self.RequestHandle})'
 
     __repr__ = __str__
 
 
 class CancelRequest(FrozenClass):
-    '''
+    """
     Cancels an outstanding request.
 
     :ivar TypeId:
@@ -2674,13 +2741,13 @@ class CancelRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: CancelParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'CancelParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CancelRequest_Encoding_DefaultBinary)
@@ -2689,35 +2756,37 @@ class CancelRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CancelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'CancelRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class CancelResult(FrozenClass):
-    '''
+    """
     :ivar CancelCount:
     :vartype CancelCount: UInt32
-    '''
+    """
 
     ua_types = [
         ('CancelCount', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.CancelCount = 0
         self._freeze = True
 
     def __str__(self):
-        return 'CancelResult(' + 'CancelCount:' + str(self.CancelCount) + ')'
+        return f'CancelResult(CancelCount:{self.CancelCount})'
 
     __repr__ = __str__
 
 
 class CancelResponse(FrozenClass):
-    '''
+    """
     Cancels an outstanding request.
 
     :ivar TypeId:
@@ -2726,13 +2795,13 @@ class CancelResponse(FrozenClass):
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: CancelResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'CancelResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CancelResponse_Encoding_DefaultBinary)
@@ -2741,15 +2810,17 @@ class CancelResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CancelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'CancelResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class NodeAttributes(FrozenClass):
-    '''
+    """
     The base attributes for all nodes.
 
     :ivar SpecifiedAttributes:
@@ -2762,7 +2833,7 @@ class NodeAttributes(FrozenClass):
     :vartype WriteMask: UInt32
     :ivar UserWriteMask:
     :vartype UserWriteMask: UInt32
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -2770,7 +2841,7 @@ class NodeAttributes(FrozenClass):
         ('Description', 'LocalizedText'),
         ('WriteMask', 'UInt32'),
         ('UserWriteMask', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -2781,17 +2852,19 @@ class NodeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'NodeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ')'
+        return ', '.join((
+            f'NodeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}',
+            f'DisplayName:{self.DisplayName}',
+            f'Description:{self.Description}',
+            f'WriteMask:{self.WriteMask}',
+            f'UserWriteMask:{self.UserWriteMask})'
+        ))
 
     __repr__ = __str__
 
 
 class ObjectAttributes(FrozenClass):
-    '''
+    """
     The attributes for an object node.
 
     :ivar SpecifiedAttributes:
@@ -2806,7 +2879,7 @@ class ObjectAttributes(FrozenClass):
     :vartype UserWriteMask: UInt32
     :ivar EventNotifier:
     :vartype EventNotifier: Byte
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -2815,7 +2888,7 @@ class ObjectAttributes(FrozenClass):
         ('WriteMask', 'UInt32'),
         ('UserWriteMask', 'UInt32'),
         ('EventNotifier', 'Byte'),
-               ]
+    ]
 
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -2827,18 +2900,20 @@ class ObjectAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ObjectAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'EventNotifier:' + str(self.EventNotifier) + ')'
+        return ', '.join((
+            f'ObjectAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}',
+            f'DisplayName:{self.DisplayName}',
+            f'Description:{self.Description}',
+            f'WriteMask:{self.WriteMask}',
+            f'UserWriteMask:{self.UserWriteMask}',
+            f'EventNotifier:{self.EventNotifier})'
+        ))
 
     __repr__ = __str__
 
 
 class VariableAttributes(FrozenClass):
-    '''
+    """
     The attributes for a variable node.
 
     :ivar SpecifiedAttributes:
@@ -2867,7 +2942,7 @@ class VariableAttributes(FrozenClass):
     :vartype MinimumSamplingInterval: Double
     :ivar Historizing:
     :vartype Historizing: Boolean
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -2883,7 +2958,7 @@ class VariableAttributes(FrozenClass):
         ('UserAccessLevel', 'Byte'),
         ('MinimumSamplingInterval', 'Double'),
         ('Historizing', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -2902,25 +2977,27 @@ class VariableAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'VariableAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'Value:' + str(self.Value) + ', ' + \
-               'DataType:' + str(self.DataType) + ', ' + \
-               'ValueRank:' + str(self.ValueRank) + ', ' + \
-               'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
-               'AccessLevel:' + str(self.AccessLevel) + ', ' + \
-               'UserAccessLevel:' + str(self.UserAccessLevel) + ', ' + \
-               'MinimumSamplingInterval:' + str(self.MinimumSamplingInterval) + ', ' + \
-               'Historizing:' + str(self.Historizing) + ')'
+        return ', '.join((
+            f'VariableAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}',
+            f'DisplayName:{self.DisplayName}',
+            f'Description:{self.Description}',
+            f'WriteMask:{self.WriteMask}',
+            f'UserWriteMask:{self.UserWriteMask}',
+            f'Value:{self.Value}',
+            f'DataType:{self.DataType}',
+            f'ValueRank:{self.ValueRank}',
+            f'ArrayDimensions:{self.ArrayDimensions}',
+            f'AccessLevel:{self.AccessLevel}',
+            f'UserAccessLevel:{self.UserAccessLevel}',
+            f'MinimumSamplingInterval:{self.MinimumSamplingInterval}',
+            f'Historizing:{self.Historizing})'
+        ))
 
     __repr__ = __str__
 
 
 class MethodAttributes(FrozenClass):
-    '''
+    """
     The attributes for a method node.
 
     :ivar SpecifiedAttributes:
@@ -2937,7 +3014,7 @@ class MethodAttributes(FrozenClass):
     :vartype Executable: Boolean
     :ivar UserExecutable:
     :vartype UserExecutable: Boolean
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -2947,7 +3024,7 @@ class MethodAttributes(FrozenClass):
         ('UserWriteMask', 'UInt32'),
         ('Executable', 'Boolean'),
         ('UserExecutable', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -2960,19 +3037,21 @@ class MethodAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MethodAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'Executable:' + str(self.Executable) + ', ' + \
-               'UserExecutable:' + str(self.UserExecutable) + ')'
+        return ', '.join((
+            f'MethodAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}',
+            f'DisplayName:{self.DisplayName}',
+            f'Description:{self.Description}',
+            f'WriteMask:{self.WriteMask}',
+            f'UserWriteMask:{self.UserWriteMask}',
+            f'Executable:{self.Executable}',
+            f'UserExecutable:{self.UserExecutable})'
+        ))
 
     __repr__ = __str__
 
 
 class ObjectTypeAttributes(FrozenClass):
-    '''
+    """
     The attributes for an object type node.
 
     :ivar SpecifiedAttributes:
@@ -2987,7 +3066,7 @@ class ObjectTypeAttributes(FrozenClass):
     :vartype UserWriteMask: UInt32
     :ivar IsAbstract:
     :vartype IsAbstract: Boolean
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -2996,7 +3075,7 @@ class ObjectTypeAttributes(FrozenClass):
         ('WriteMask', 'UInt32'),
         ('UserWriteMask', 'UInt32'),
         ('IsAbstract', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -3008,18 +3087,20 @@ class ObjectTypeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ObjectTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'IsAbstract:' + str(self.IsAbstract) + ')'
+        return ', '.join((
+            f'ObjectTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}',
+            f'DisplayName:{self.DisplayName}',
+            f'Description:{self.Description}',
+            f'WriteMask:{self.WriteMask}',
+            f'UserWriteMask:{self.UserWriteMask}',
+            f'IsAbstract:{self.IsAbstract})'
+        ))
 
     __repr__ = __str__
 
 
 class VariableTypeAttributes(FrozenClass):
-    '''
+    """
     The attributes for a variable type node.
 
     :ivar SpecifiedAttributes:
@@ -3042,7 +3123,7 @@ class VariableTypeAttributes(FrozenClass):
     :vartype ArrayDimensions: UInt32
     :ivar IsAbstract:
     :vartype IsAbstract: Boolean
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -3055,7 +3136,7 @@ class VariableTypeAttributes(FrozenClass):
         ('ValueRank', 'Int32'),
         ('ArrayDimensions', 'ListOfUInt32'),
         ('IsAbstract', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -3071,22 +3152,24 @@ class VariableTypeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'VariableTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'Value:' + str(self.Value) + ', ' + \
-               'DataType:' + str(self.DataType) + ', ' + \
-               'ValueRank:' + str(self.ValueRank) + ', ' + \
-               'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
-               'IsAbstract:' + str(self.IsAbstract) + ')'
+        return ', '.join((
+            f'VariableTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}',
+            f'DisplayName:{self.DisplayName}',
+            f'Description:{self.Description}',
+            f'WriteMask:{self.WriteMask}',
+            f'UserWriteMask:{self.UserWriteMask}',
+            f'Value:{self.Value}',
+            f'DataType:{self.DataType}',
+            f'ValueRank:{self.ValueRank}',
+            f'ArrayDimensions:{self.ArrayDimensions}',
+            f'IsAbstract:{self.IsAbstract})'
+        ))
 
     __repr__ = __str__
 
 
 class ReferenceTypeAttributes(FrozenClass):
-    '''
+    """
     The attributes for a reference type node.
 
     :ivar SpecifiedAttributes:
@@ -3105,7 +3188,7 @@ class ReferenceTypeAttributes(FrozenClass):
     :vartype Symmetric: Boolean
     :ivar InverseName:
     :vartype InverseName: LocalizedText
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -3116,7 +3199,7 @@ class ReferenceTypeAttributes(FrozenClass):
         ('IsAbstract', 'Boolean'),
         ('Symmetric', 'Boolean'),
         ('InverseName', 'LocalizedText'),
-               ]
+    ]
 
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -3130,20 +3213,22 @@ class ReferenceTypeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReferenceTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'IsAbstract:' + str(self.IsAbstract) + ', ' + \
-               'Symmetric:' + str(self.Symmetric) + ', ' + \
-               'InverseName:' + str(self.InverseName) + ')'
+        return ', '.join((
+            f'ReferenceTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}',
+            f'DisplayName:{self.DisplayName}',
+            f'Description:{self.Description}',
+            f'WriteMask:{self.WriteMask}',
+            f'UserWriteMask:{self.UserWriteMask}',
+            f'IsAbstract:{self.IsAbstract}',
+            f'Symmetric:{self.Symmetric}',
+            f'InverseName:{self.InverseName})'
+        ))
 
     __repr__ = __str__
 
 
 class DataTypeAttributes(FrozenClass):
-    '''
+    """
     The attributes for a data type node.
 
     :ivar SpecifiedAttributes:
@@ -3158,7 +3243,7 @@ class DataTypeAttributes(FrozenClass):
     :vartype UserWriteMask: UInt32
     :ivar IsAbstract:
     :vartype IsAbstract: Boolean
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -3167,7 +3252,7 @@ class DataTypeAttributes(FrozenClass):
         ('WriteMask', 'UInt32'),
         ('UserWriteMask', 'UInt32'),
         ('IsAbstract', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -3179,18 +3264,20 @@ class DataTypeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'IsAbstract:' + str(self.IsAbstract) + ')'
+        return ', '.join((
+            f'DataTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}',
+            f'DisplayName:{self.DisplayName}',
+            f'Description:{self.Description}',
+            f'WriteMask:{self.WriteMask}',
+            f'UserWriteMask:{self.UserWriteMask}',
+            f'IsAbstract:{self.IsAbstract})'
+        ))
 
     __repr__ = __str__
 
 
 class ViewAttributes(FrozenClass):
-    '''
+    """
     The attributes for a view node.
 
     :ivar SpecifiedAttributes:
@@ -3207,7 +3294,7 @@ class ViewAttributes(FrozenClass):
     :vartype ContainsNoLoops: Boolean
     :ivar EventNotifier:
     :vartype EventNotifier: Byte
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -3217,7 +3304,7 @@ class ViewAttributes(FrozenClass):
         ('UserWriteMask', 'UInt32'),
         ('ContainsNoLoops', 'Boolean'),
         ('EventNotifier', 'Byte'),
-               ]
+    ]
 
     def __init__(self):
         self.SpecifiedAttributes = 0
@@ -3230,19 +3317,21 @@ class ViewAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ViewAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'ContainsNoLoops:' + str(self.ContainsNoLoops) + ', ' + \
-               'EventNotifier:' + str(self.EventNotifier) + ')'
+        return ', '.join((
+            f'ViewAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}',
+            f'DisplayName:{self.DisplayName}',
+            f'Description:{self.Description}',
+            f'WriteMask:{self.WriteMask}',
+            f'UserWriteMask:{self.UserWriteMask}',
+            f'ContainsNoLoops:{self.ContainsNoLoops}',
+            f'EventNotifier:{self.EventNotifier})'
+        ))
 
     __repr__ = __str__
 
 
 class AddNodesItem(FrozenClass):
-    '''
+    """
     A request to add a node to the server address space.
 
     :ivar ParentNodeId:
@@ -3259,7 +3348,7 @@ class AddNodesItem(FrozenClass):
     :vartype NodeAttributes: ExtensionObject
     :ivar TypeDefinition:
     :vartype TypeDefinition: ExpandedNodeId
-    '''
+    """
 
     ua_types = [
         ('ParentNodeId', 'ExpandedNodeId'),
@@ -3269,7 +3358,7 @@ class AddNodesItem(FrozenClass):
         ('NodeClass', 'NodeClass'),
         ('NodeAttributes', 'ExtensionObject'),
         ('TypeDefinition', 'ExpandedNodeId'),
-               ]
+    ]
 
     def __init__(self):
         self.ParentNodeId = ExpandedNodeId()
@@ -3282,31 +3371,33 @@ class AddNodesItem(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddNodesItem(' + 'ParentNodeId:' + str(self.ParentNodeId) + ', ' + \
-               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-               'RequestedNewNodeId:' + str(self.RequestedNewNodeId) + ', ' + \
-               'BrowseName:' + str(self.BrowseName) + ', ' + \
-               'NodeClass:' + str(self.NodeClass) + ', ' + \
-               'NodeAttributes:' + str(self.NodeAttributes) + ', ' + \
-               'TypeDefinition:' + str(self.TypeDefinition) + ')'
+        return ', '.join((
+            f'AddNodesItem(ParentNodeId:{self.ParentNodeId}',
+            f'ReferenceTypeId:{self.ReferenceTypeId}',
+            f'RequestedNewNodeId:{self.RequestedNewNodeId}',
+            f'BrowseName:{self.BrowseName}',
+            f'NodeClass:{self.NodeClass}',
+            f'NodeAttributes:{self.NodeAttributes}',
+            f'TypeDefinition:{self.TypeDefinition})'
+        ))
 
     __repr__ = __str__
 
 
 class AddNodesResult(FrozenClass):
-    '''
+    """
     A result of an add node operation.
 
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar AddedNodeId:
     :vartype AddedNodeId: NodeId
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
         ('AddedNodeId', 'NodeId'),
-               ]
+    ]
 
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -3314,34 +3405,33 @@ class AddNodesResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddNodesResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'AddedNodeId:' + str(self.AddedNodeId) + ')'
+        return f'AddNodesResult(StatusCode:{self.StatusCode}, AddedNodeId:{self.AddedNodeId})'
 
     __repr__ = __str__
 
 
 class AddNodesParameters(FrozenClass):
-    '''
+    """
     :ivar NodesToAdd:
     :vartype NodesToAdd: AddNodesItem
-    '''
+    """
 
     ua_types = [
         ('NodesToAdd', 'ListOfAddNodesItem'),
-               ]
+    ]
 
     def __init__(self):
         self.NodesToAdd = []
         self._freeze = True
 
     def __str__(self):
-        return 'AddNodesParameters(' + 'NodesToAdd:' + str(self.NodesToAdd) + ')'
+        return f'AddNodesParameters(NodesToAdd:{self.NodesToAdd})'
 
     __repr__ = __str__
 
 
 class AddNodesRequest(FrozenClass):
-    '''
+    """
     Adds one or more nodes to the server address space.
 
     :ivar TypeId:
@@ -3350,13 +3440,13 @@ class AddNodesRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: AddNodesParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'AddNodesParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AddNodesRequest_Encoding_DefaultBinary)
@@ -3365,15 +3455,17 @@ class AddNodesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'AddNodesRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class AddNodesResponse(FrozenClass):
-    '''
+    """
     Adds one or more nodes to the server address space.
 
     :ivar TypeId:
@@ -3384,14 +3476,14 @@ class AddNodesResponse(FrozenClass):
     :vartype Results: AddNodesResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfAddNodesResult'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AddNodesResponse_Encoding_DefaultBinary)
@@ -3401,16 +3493,18 @@ class AddNodesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'AddNodesResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class AddReferencesItem(FrozenClass):
-    '''
+    """
     A request to add a reference to the server address space.
 
     :ivar SourceNodeId:
@@ -3425,7 +3519,7 @@ class AddReferencesItem(FrozenClass):
     :vartype TargetNodeId: ExpandedNodeId
     :ivar TargetNodeClass:
     :vartype TargetNodeClass: NodeClass
-    '''
+    """
 
     ua_types = [
         ('SourceNodeId', 'NodeId'),
@@ -3434,7 +3528,7 @@ class AddReferencesItem(FrozenClass):
         ('TargetServerUri', 'String'),
         ('TargetNodeId', 'ExpandedNodeId'),
         ('TargetNodeClass', 'NodeClass'),
-               ]
+    ]
 
     def __init__(self):
         self.SourceNodeId = NodeId()
@@ -3446,38 +3540,40 @@ class AddReferencesItem(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', ' + \
-               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-               'IsForward:' + str(self.IsForward) + ', ' + \
-               'TargetServerUri:' + str(self.TargetServerUri) + ', ' + \
-               'TargetNodeId:' + str(self.TargetNodeId) + ', ' + \
-               'TargetNodeClass:' + str(self.TargetNodeClass) + ')'
+        return ', '.join((
+            f'AddReferencesItem(SourceNodeId:{self.SourceNodeId}',
+            f'ReferenceTypeId:{self.ReferenceTypeId}',
+            f'IsForward:{self.IsForward}',
+            f'TargetServerUri:{self.TargetServerUri}',
+            f'TargetNodeId:{self.TargetNodeId}',
+            f'TargetNodeClass:{self.TargetNodeClass})'
+        ))
 
     __repr__ = __str__
 
 
 class AddReferencesParameters(FrozenClass):
-    '''
+    """
     :ivar ReferencesToAdd:
     :vartype ReferencesToAdd: AddReferencesItem
-    '''
+    """
 
     ua_types = [
         ('ReferencesToAdd', 'ListOfAddReferencesItem'),
-               ]
+    ]
 
     def __init__(self):
         self.ReferencesToAdd = []
         self._freeze = True
 
     def __str__(self):
-        return 'AddReferencesParameters(' + 'ReferencesToAdd:' + str(self.ReferencesToAdd) + ')'
+        return f'AddReferencesParameters(ReferencesToAdd:{self.ReferencesToAdd})'
 
     __repr__ = __str__
 
 
 class AddReferencesRequest(FrozenClass):
-    '''
+    """
     Adds one or more references to the server address space.
 
     :ivar TypeId:
@@ -3486,13 +3582,13 @@ class AddReferencesRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: AddReferencesParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'AddReferencesParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AddReferencesRequest_Encoding_DefaultBinary)
@@ -3501,15 +3597,17 @@ class AddReferencesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'AddReferencesRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class AddReferencesResponse(FrozenClass):
-    '''
+    """
     Adds one or more references to the server address space.
 
     :ivar TypeId:
@@ -3520,14 +3618,14 @@ class AddReferencesResponse(FrozenClass):
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AddReferencesResponse_Encoding_DefaultBinary)
@@ -3537,28 +3635,30 @@ class AddReferencesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'AddReferencesResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class DeleteNodesItem(FrozenClass):
-    '''
+    """
     A request to delete a node to the server address space.
 
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar DeleteTargetReferences:
     :vartype DeleteTargetReferences: Boolean
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
         ('DeleteTargetReferences', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = NodeId()
@@ -3566,34 +3666,33 @@ class DeleteNodesItem(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteNodesItem(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'DeleteTargetReferences:' + str(self.DeleteTargetReferences) + ')'
+        return f'DeleteNodesItem(NodeId:{self.NodeId}, DeleteTargetReferences:{self.DeleteTargetReferences})'
 
     __repr__ = __str__
 
 
 class DeleteNodesParameters(FrozenClass):
-    '''
+    """
     :ivar NodesToDelete:
     :vartype NodesToDelete: DeleteNodesItem
-    '''
+    """
 
     ua_types = [
         ('NodesToDelete', 'ListOfDeleteNodesItem'),
-               ]
+    ]
 
     def __init__(self):
         self.NodesToDelete = []
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteNodesParameters(' + 'NodesToDelete:' + str(self.NodesToDelete) + ')'
+        return f'DeleteNodesParameters(NodesToDelete:{self.NodesToDelete})'
 
     __repr__ = __str__
 
 
 class DeleteNodesRequest(FrozenClass):
-    '''
+    """
     Delete one or more nodes from the server address space.
 
     :ivar TypeId:
@@ -3602,13 +3701,13 @@ class DeleteNodesRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: DeleteNodesParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'DeleteNodesParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteNodesRequest_Encoding_DefaultBinary)
@@ -3617,15 +3716,17 @@ class DeleteNodesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'DeleteNodesRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class DeleteNodesResponse(FrozenClass):
-    '''
+    """
     Delete one or more nodes from the server address space.
 
     :ivar TypeId:
@@ -3636,14 +3737,14 @@ class DeleteNodesResponse(FrozenClass):
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteNodesResponse_Encoding_DefaultBinary)
@@ -3653,16 +3754,18 @@ class DeleteNodesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'DeleteNodesResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class DeleteReferencesItem(FrozenClass):
-    '''
+    """
     A request to delete a node from the server address space.
 
     :ivar SourceNodeId:
@@ -3675,7 +3778,7 @@ class DeleteReferencesItem(FrozenClass):
     :vartype TargetNodeId: ExpandedNodeId
     :ivar DeleteBidirectional:
     :vartype DeleteBidirectional: Boolean
-    '''
+    """
 
     ua_types = [
         ('SourceNodeId', 'NodeId'),
@@ -3683,7 +3786,7 @@ class DeleteReferencesItem(FrozenClass):
         ('IsForward', 'Boolean'),
         ('TargetNodeId', 'ExpandedNodeId'),
         ('DeleteBidirectional', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.SourceNodeId = NodeId()
@@ -3694,37 +3797,39 @@ class DeleteReferencesItem(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', ' + \
-               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-               'IsForward:' + str(self.IsForward) + ', ' + \
-               'TargetNodeId:' + str(self.TargetNodeId) + ', ' + \
-               'DeleteBidirectional:' + str(self.DeleteBidirectional) + ')'
+        return ', '.join((
+            f'DeleteReferencesItem(SourceNodeId:{self.SourceNodeId}',
+            f'ReferenceTypeId:{self.ReferenceTypeId}',
+            f'IsForward:{self.IsForward}',
+            f'TargetNodeId:{self.TargetNodeId}',
+            f'DeleteBidirectional:{self.DeleteBidirectional})'
+        ))
 
     __repr__ = __str__
 
 
 class DeleteReferencesParameters(FrozenClass):
-    '''
+    """
     :ivar ReferencesToDelete:
     :vartype ReferencesToDelete: DeleteReferencesItem
-    '''
+    """
 
     ua_types = [
         ('ReferencesToDelete', 'ListOfDeleteReferencesItem'),
-               ]
+    ]
 
     def __init__(self):
         self.ReferencesToDelete = []
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteReferencesParameters(' + 'ReferencesToDelete:' + str(self.ReferencesToDelete) + ')'
+        return f'DeleteReferencesParameters(ReferencesToDelete:{self.ReferencesToDelete})'
 
     __repr__ = __str__
 
 
 class DeleteReferencesRequest(FrozenClass):
-    '''
+    """
     Delete one or more references from the server address space.
 
     :ivar TypeId:
@@ -3733,13 +3838,13 @@ class DeleteReferencesRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: DeleteReferencesParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'DeleteReferencesParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteReferencesRequest_Encoding_DefaultBinary)
@@ -3748,25 +3853,27 @@ class DeleteReferencesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'DeleteReferencesRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class DeleteReferencesResult(FrozenClass):
-    '''
+    """
     :ivar Results:
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('Results', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.Results = []
@@ -3774,14 +3881,13 @@ class DeleteReferencesResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteReferencesResult(' + 'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'DeleteReferencesResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class DeleteReferencesResponse(FrozenClass):
-    '''
+    """
     Delete one or more references from the server address space.
 
     :ivar TypeId:
@@ -3790,13 +3896,13 @@ class DeleteReferencesResponse(FrozenClass):
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: DeleteReferencesResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'DeleteReferencesResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteReferencesResponse_Encoding_DefaultBinary)
@@ -3805,15 +3911,17 @@ class DeleteReferencesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'DeleteReferencesResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class ViewDescription(FrozenClass):
-    '''
+    """
     The view to browse.
 
     :ivar ViewId:
@@ -3822,13 +3930,13 @@ class ViewDescription(FrozenClass):
     :vartype Timestamp: DateTime
     :ivar ViewVersion:
     :vartype ViewVersion: UInt32
-    '''
+    """
 
     ua_types = [
         ('ViewId', 'NodeId'),
         ('Timestamp', 'DateTime'),
         ('ViewVersion', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.ViewId = NodeId()
@@ -3837,15 +3945,17 @@ class ViewDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ViewDescription(' + 'ViewId:' + str(self.ViewId) + ', ' + \
-               'Timestamp:' + str(self.Timestamp) + ', ' + \
-               'ViewVersion:' + str(self.ViewVersion) + ')'
+        return ', '.join((
+            f'ViewDescription(ViewId:{self.ViewId}',
+            f'Timestamp:{self.Timestamp}',
+            f'ViewVersion:{self.ViewVersion})'
+        ))
 
     __repr__ = __str__
 
 
 class BrowseDescription(FrozenClass):
-    '''
+    """
     A request to browse the the references from a node.
 
     :ivar NodeId:
@@ -3860,7 +3970,7 @@ class BrowseDescription(FrozenClass):
     :vartype NodeClassMask: UInt32
     :ivar ResultMask:
     :vartype ResultMask: UInt32
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -3869,7 +3979,7 @@ class BrowseDescription(FrozenClass):
         ('IncludeSubtypes', 'Boolean'),
         ('NodeClassMask', 'UInt32'),
         ('ResultMask', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = NodeId()
@@ -3881,18 +3991,20 @@ class BrowseDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseDescription(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'BrowseDirection:' + str(self.BrowseDirection) + ', ' + \
-               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-               'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', ' + \
-               'NodeClassMask:' + str(self.NodeClassMask) + ', ' + \
-               'ResultMask:' + str(self.ResultMask) + ')'
+        return ', '.join((
+            f'BrowseDescription(NodeId:{self.NodeId}',
+            f'BrowseDirection:{self.BrowseDirection}',
+            f'ReferenceTypeId:{self.ReferenceTypeId}',
+            f'IncludeSubtypes:{self.IncludeSubtypes}',
+            f'NodeClassMask:{self.NodeClassMask}',
+            f'ResultMask:{self.ResultMask})'
+        ))
 
     __repr__ = __str__
 
 
 class ReferenceDescription(FrozenClass):
-    '''
+    """
     The description of a reference.
 
     :ivar ReferenceTypeId:
@@ -3909,7 +4021,7 @@ class ReferenceDescription(FrozenClass):
     :vartype NodeClass: NodeClass
     :ivar TypeDefinition:
     :vartype TypeDefinition: ExpandedNodeId
-    '''
+    """
 
     ua_types = [
         ('ReferenceTypeId', 'NodeId'),
@@ -3919,7 +4031,7 @@ class ReferenceDescription(FrozenClass):
         ('DisplayName', 'LocalizedText'),
         ('NodeClass', 'NodeClass'),
         ('TypeDefinition', 'ExpandedNodeId'),
-               ]
+    ]
 
     def __init__(self):
         self.ReferenceTypeId = NodeId()
@@ -3932,19 +4044,21 @@ class ReferenceDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReferenceDescription(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-               'IsForward:' + str(self.IsForward) + ', ' + \
-               'NodeId:' + str(self.NodeId) + ', ' + \
-               'BrowseName:' + str(self.BrowseName) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'NodeClass:' + str(self.NodeClass) + ', ' + \
-               'TypeDefinition:' + str(self.TypeDefinition) + ')'
+        return ', '.join((
+            f'ReferenceDescription(ReferenceTypeId:{self.ReferenceTypeId}',
+            f'IsForward:{self.IsForward}',
+            f'NodeId:{self.NodeId}',
+            f'BrowseName:{self.BrowseName}',
+            f'DisplayName:{self.DisplayName}',
+            f'NodeClass:{self.NodeClass}',
+            f'TypeDefinition:{self.TypeDefinition})'
+        ))
 
     __repr__ = __str__
 
 
 class BrowseResult(FrozenClass):
-    '''
+    """
     The result of a browse operation.
 
     :ivar StatusCode:
@@ -3953,13 +4067,13 @@ class BrowseResult(FrozenClass):
     :vartype ContinuationPoint: ByteString
     :ivar References:
     :vartype References: ReferenceDescription
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
         ('ContinuationPoint', 'ByteString'),
         ('References', 'ListOfReferenceDescription'),
-               ]
+    ]
 
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -3968,28 +4082,30 @@ class BrowseResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
-               'References:' + str(self.References) + ')'
+        return ', '.join((
+            f'BrowseResult(StatusCode:{self.StatusCode}',
+            f'ContinuationPoint:{self.ContinuationPoint}',
+            f'References:{self.References})'
+        ))
 
     __repr__ = __str__
 
 
 class BrowseParameters(FrozenClass):
-    '''
+    """
     :ivar View:
     :vartype View: ViewDescription
     :ivar RequestedMaxReferencesPerNode:
     :vartype RequestedMaxReferencesPerNode: UInt32
     :ivar NodesToBrowse:
     :vartype NodesToBrowse: BrowseDescription
-    '''
+    """
 
     ua_types = [
         ('View', 'ViewDescription'),
         ('RequestedMaxReferencesPerNode', 'UInt32'),
         ('NodesToBrowse', 'ListOfBrowseDescription'),
-               ]
+    ]
 
     def __init__(self):
         self.View = ViewDescription()
@@ -3998,15 +4114,17 @@ class BrowseParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseParameters(' + 'View:' + str(self.View) + ', ' + \
-               'RequestedMaxReferencesPerNode:' + str(self.RequestedMaxReferencesPerNode) + ', ' + \
-               'NodesToBrowse:' + str(self.NodesToBrowse) + ')'
+        return ', '.join((
+            f'BrowseParameters(View:{self.View}',
+            f'RequestedMaxReferencesPerNode:{self.RequestedMaxReferencesPerNode}',
+            f'NodesToBrowse:{self.NodesToBrowse})'
+        ))
 
     __repr__ = __str__
 
 
 class BrowseRequest(FrozenClass):
-    '''
+    """
     Browse the references for one or more nodes from the server address space.
 
     :ivar TypeId:
@@ -4015,13 +4133,13 @@ class BrowseRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: BrowseParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'BrowseParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.BrowseRequest_Encoding_DefaultBinary)
@@ -4030,15 +4148,17 @@ class BrowseRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'BrowseRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class BrowseResponse(FrozenClass):
-    '''
+    """
     Browse the references for one or more nodes from the server address space.
 
     :ivar TypeId:
@@ -4049,14 +4169,14 @@ class BrowseResponse(FrozenClass):
     :vartype Results: BrowseResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfBrowseResult'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.BrowseResponse_Encoding_DefaultBinary)
@@ -4066,26 +4186,28 @@ class BrowseResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'BrowseResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class BrowseNextParameters(FrozenClass):
-    '''
+    """
     :ivar ReleaseContinuationPoints:
     :vartype ReleaseContinuationPoints: Boolean
     :ivar ContinuationPoints:
     :vartype ContinuationPoints: ByteString
-    '''
+    """
 
     ua_types = [
         ('ReleaseContinuationPoints', 'Boolean'),
         ('ContinuationPoints', 'ListOfByteString'),
-               ]
+    ]
 
     def __init__(self):
         self.ReleaseContinuationPoints = True
@@ -4093,14 +4215,16 @@ class BrowseNextParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseNextParameters(' + 'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', ' + \
-               'ContinuationPoints:' + str(self.ContinuationPoints) + ')'
+        return ', '.join((
+            f'BrowseNextParameters(ReleaseContinuationPoints:{self.ReleaseContinuationPoints}',
+            f'ContinuationPoints:{self.ContinuationPoints})'
+        ))
 
     __repr__ = __str__
 
 
 class BrowseNextRequest(FrozenClass):
-    '''
+    """
     Continues one or more browse operations.
 
     :ivar TypeId:
@@ -4109,13 +4233,13 @@ class BrowseNextRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: BrowseNextParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'BrowseNextParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.BrowseNextRequest_Encoding_DefaultBinary)
@@ -4124,25 +4248,27 @@ class BrowseNextRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseNextRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'BrowseNextRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class BrowseNextResult(FrozenClass):
-    '''
+    """
     :ivar Results:
     :vartype Results: BrowseResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('Results', 'ListOfBrowseResult'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.Results = []
@@ -4150,14 +4276,13 @@ class BrowseNextResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseNextResult(' + 'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'BrowseNextResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class BrowseNextResponse(FrozenClass):
-    '''
+    """
     Continues one or more browse operations.
 
     :ivar TypeId:
@@ -4166,13 +4291,13 @@ class BrowseNextResponse(FrozenClass):
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: BrowseNextResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'BrowseNextResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.BrowseNextResponse_Encoding_DefaultBinary)
@@ -4181,15 +4306,17 @@ class BrowseNextResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseNextResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'BrowseNextResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class RelativePathElement(FrozenClass):
-    '''
+    """
     An element in a relative path.
 
     :ivar ReferenceTypeId:
@@ -4200,14 +4327,14 @@ class RelativePathElement(FrozenClass):
     :vartype IncludeSubtypes: Boolean
     :ivar TargetName:
     :vartype TargetName: QualifiedName
-    '''
+    """
 
     ua_types = [
         ('ReferenceTypeId', 'NodeId'),
         ('IsInverse', 'Boolean'),
         ('IncludeSubtypes', 'Boolean'),
         ('TargetName', 'QualifiedName'),
-               ]
+    ]
 
     def __init__(self):
         self.ReferenceTypeId = NodeId()
@@ -4217,50 +4344,52 @@ class RelativePathElement(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RelativePathElement(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-               'IsInverse:' + str(self.IsInverse) + ', ' + \
-               'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', ' + \
-               'TargetName:' + str(self.TargetName) + ')'
+        return ', '.join((
+            f'RelativePathElement(ReferenceTypeId:{self.ReferenceTypeId}',
+            f'IsInverse:{self.IsInverse}',
+            f'IncludeSubtypes:{self.IncludeSubtypes}',
+            f'TargetName:{self.TargetName})'
+        ))
 
     __repr__ = __str__
 
 
 class RelativePath(FrozenClass):
-    '''
+    """
     A relative path constructed from reference types and browse names.
 
     :ivar Elements:
     :vartype Elements: RelativePathElement
-    '''
+    """
 
     ua_types = [
         ('Elements', 'ListOfRelativePathElement'),
-               ]
+    ]
 
     def __init__(self):
         self.Elements = []
         self._freeze = True
 
     def __str__(self):
-        return 'RelativePath(' + 'Elements:' + str(self.Elements) + ')'
+        return f'RelativePath(Elements:{self.Elements})'
 
     __repr__ = __str__
 
 
 class BrowsePath(FrozenClass):
-    '''
+    """
     A request to translate a path into a node id.
 
     :ivar StartingNode:
     :vartype StartingNode: NodeId
     :ivar RelativePath:
     :vartype RelativePath: RelativePath
-    '''
+    """
 
     ua_types = [
         ('StartingNode', 'NodeId'),
         ('RelativePath', 'RelativePath'),
-               ]
+    ]
 
     def __init__(self):
         self.StartingNode = NodeId()
@@ -4268,26 +4397,25 @@ class BrowsePath(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowsePath(' + 'StartingNode:' + str(self.StartingNode) + ', ' + \
-               'RelativePath:' + str(self.RelativePath) + ')'
+        return f'BrowsePath(StartingNode:{self.StartingNode}, RelativePath:{self.RelativePath})'
 
     __repr__ = __str__
 
 
 class BrowsePathTarget(FrozenClass):
-    '''
+    """
     The target of the translated path.
 
     :ivar TargetId:
     :vartype TargetId: ExpandedNodeId
     :ivar RemainingPathIndex:
     :vartype RemainingPathIndex: UInt32
-    '''
+    """
 
     ua_types = [
         ('TargetId', 'ExpandedNodeId'),
         ('RemainingPathIndex', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.TargetId = ExpandedNodeId()
@@ -4295,26 +4423,25 @@ class BrowsePathTarget(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowsePathTarget(' + 'TargetId:' + str(self.TargetId) + ', ' + \
-               'RemainingPathIndex:' + str(self.RemainingPathIndex) + ')'
+        return f'BrowsePathTarget(TargetId:{self.TargetId}, RemainingPathIndex:{self.RemainingPathIndex})'
 
     __repr__ = __str__
 
 
 class BrowsePathResult(FrozenClass):
-    '''
+    """
     The result of a translate opearation.
 
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar Targets:
     :vartype Targets: BrowsePathTarget
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
         ('Targets', 'ListOfBrowsePathTarget'),
-               ]
+    ]
 
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -4322,34 +4449,33 @@ class BrowsePathResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowsePathResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'Targets:' + str(self.Targets) + ')'
+        return f'BrowsePathResult(StatusCode:{self.StatusCode}, Targets:{self.Targets})'
 
     __repr__ = __str__
 
 
 class TranslateBrowsePathsToNodeIdsParameters(FrozenClass):
-    '''
+    """
     :ivar BrowsePaths:
     :vartype BrowsePaths: BrowsePath
-    '''
+    """
 
     ua_types = [
         ('BrowsePaths', 'ListOfBrowsePath'),
-               ]
+    ]
 
     def __init__(self):
         self.BrowsePaths = []
         self._freeze = True
 
     def __str__(self):
-        return 'TranslateBrowsePathsToNodeIdsParameters(' + 'BrowsePaths:' + str(self.BrowsePaths) + ')'
+        return f'TranslateBrowsePathsToNodeIdsParameters(BrowsePaths:{self.BrowsePaths})'
 
     __repr__ = __str__
 
 
 class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
-    '''
+    """
     Translates one or more paths in the server address space.
 
     :ivar TypeId:
@@ -4358,13 +4484,13 @@ class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: TranslateBrowsePathsToNodeIdsParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'TranslateBrowsePathsToNodeIdsParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary)
@@ -4373,15 +4499,17 @@ class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TranslateBrowsePathsToNodeIdsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'TranslateBrowsePathsToNodeIdsRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
-    '''
+    """
     Translates one or more paths in the server address space.
 
     :ivar TypeId:
@@ -4392,14 +4520,14 @@ class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
     :vartype Results: BrowsePathResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfBrowsePathResult'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsResponse_Encoding_DefaultBinary)
@@ -4409,36 +4537,38 @@ class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TranslateBrowsePathsToNodeIdsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'TranslateBrowsePathsToNodeIdsResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class RegisterNodesParameters(FrozenClass):
-    '''
+    """
     :ivar NodesToRegister:
     :vartype NodesToRegister: NodeId
-    '''
+    """
 
     ua_types = [
         ('NodesToRegister', 'ListOfNodeId'),
-               ]
+    ]
 
     def __init__(self):
         self.NodesToRegister = []
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterNodesParameters(' + 'NodesToRegister:' + str(self.NodesToRegister) + ')'
+        return f'RegisterNodesParameters(NodesToRegister:{self.NodesToRegister})'
 
     __repr__ = __str__
 
 
 class RegisterNodesRequest(FrozenClass):
-    '''
+    """
     Registers one or more nodes for repeated use within a session.
 
     :ivar TypeId:
@@ -4447,13 +4577,13 @@ class RegisterNodesRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: RegisterNodesParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'RegisterNodesParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterNodesRequest_Encoding_DefaultBinary)
@@ -4462,35 +4592,37 @@ class RegisterNodesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'RegisterNodesRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class RegisterNodesResult(FrozenClass):
-    '''
+    """
     :ivar RegisteredNodeIds:
     :vartype RegisteredNodeIds: NodeId
-    '''
+    """
 
     ua_types = [
         ('RegisteredNodeIds', 'ListOfNodeId'),
-               ]
+    ]
 
     def __init__(self):
         self.RegisteredNodeIds = []
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterNodesResult(' + 'RegisteredNodeIds:' + str(self.RegisteredNodeIds) + ')'
+        return f'RegisterNodesResult(RegisteredNodeIds:{self.RegisteredNodeIds})'
 
     __repr__ = __str__
 
 
 class RegisterNodesResponse(FrozenClass):
-    '''
+    """
     Registers one or more nodes for repeated use within a session.
 
     :ivar TypeId:
@@ -4499,13 +4631,13 @@ class RegisterNodesResponse(FrozenClass):
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: RegisterNodesResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'RegisterNodesResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterNodesResponse_Encoding_DefaultBinary)
@@ -4514,35 +4646,37 @@ class RegisterNodesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'RegisterNodesResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class UnregisterNodesParameters(FrozenClass):
-    '''
+    """
     :ivar NodesToUnregister:
     :vartype NodesToUnregister: NodeId
-    '''
+    """
 
     ua_types = [
         ('NodesToUnregister', 'ListOfNodeId'),
-               ]
+    ]
 
     def __init__(self):
         self.NodesToUnregister = []
         self._freeze = True
 
     def __str__(self):
-        return 'UnregisterNodesParameters(' + 'NodesToUnregister:' + str(self.NodesToUnregister) + ')'
+        return f'UnregisterNodesParameters(NodesToUnregister:{self.NodesToUnregister})'
 
     __repr__ = __str__
 
 
 class UnregisterNodesRequest(FrozenClass):
-    '''
+    """
     Unregisters one or more previously registered nodes.
 
     :ivar TypeId:
@@ -4551,13 +4685,13 @@ class UnregisterNodesRequest(FrozenClass):
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: UnregisterNodesParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'UnregisterNodesParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.UnregisterNodesRequest_Encoding_DefaultBinary)
@@ -4566,27 +4700,29 @@ class UnregisterNodesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UnregisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'UnregisterNodesRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class UnregisterNodesResponse(FrozenClass):
-    '''
+    """
     Unregisters one or more previously registered nodes.
 
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.UnregisterNodesResponse_Encoding_DefaultBinary)
@@ -4594,14 +4730,13 @@ class UnregisterNodesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UnregisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ')'
+        return f'UnregisterNodesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
 
 class EndpointConfiguration(FrozenClass):
-    '''
+    """
     :ivar OperationTimeout:
     :vartype OperationTimeout: Int32
     :ivar UseBinaryEncoding:
@@ -4620,7 +4755,7 @@ class EndpointConfiguration(FrozenClass):
     :vartype ChannelLifetime: Int32
     :ivar SecurityTokenLifetime:
     :vartype SecurityTokenLifetime: Int32
-    '''
+    """
 
     ua_types = [
         ('OperationTimeout', 'Int32'),
@@ -4632,7 +4767,7 @@ class EndpointConfiguration(FrozenClass):
         ('MaxBufferSize', 'Int32'),
         ('ChannelLifetime', 'Int32'),
         ('SecurityTokenLifetime', 'Int32'),
-               ]
+    ]
 
     def __init__(self):
         self.OperationTimeout = 0
@@ -4647,21 +4782,23 @@ class EndpointConfiguration(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EndpointConfiguration(' + 'OperationTimeout:' + str(self.OperationTimeout) + ', ' + \
-               'UseBinaryEncoding:' + str(self.UseBinaryEncoding) + ', ' + \
-               'MaxStringLength:' + str(self.MaxStringLength) + ', ' + \
-               'MaxByteStringLength:' + str(self.MaxByteStringLength) + ', ' + \
-               'MaxArrayLength:' + str(self.MaxArrayLength) + ', ' + \
-               'MaxMessageSize:' + str(self.MaxMessageSize) + ', ' + \
-               'MaxBufferSize:' + str(self.MaxBufferSize) + ', ' + \
-               'ChannelLifetime:' + str(self.ChannelLifetime) + ', ' + \
-               'SecurityTokenLifetime:' + str(self.SecurityTokenLifetime) + ')'
+        return ', '.join((
+            f'EndpointConfiguration(OperationTimeout:{self.OperationTimeout}',
+            f'UseBinaryEncoding:{self.UseBinaryEncoding}',
+            f'MaxStringLength:{self.MaxStringLength}',
+            f'MaxByteStringLength:{self.MaxByteStringLength}',
+            f'MaxArrayLength:{self.MaxArrayLength}',
+            f'MaxMessageSize:{self.MaxMessageSize}',
+            f'MaxBufferSize:{self.MaxBufferSize}',
+            f'ChannelLifetime:{self.ChannelLifetime}',
+            f'SecurityTokenLifetime:{self.SecurityTokenLifetime})'
+        ))
 
     __repr__ = __str__
 
 
 class SupportedProfile(FrozenClass):
-    '''
+    """
     :ivar OrganizationUri:
     :vartype OrganizationUri: String
     :ivar ProfileId:
@@ -4674,7 +4811,7 @@ class SupportedProfile(FrozenClass):
     :vartype ComplianceLevel: ComplianceLevel
     :ivar UnsupportedUnitIds:
     :vartype UnsupportedUnitIds: String
-    '''
+    """
 
     ua_types = [
         ('OrganizationUri', 'String'),
@@ -4683,7 +4820,7 @@ class SupportedProfile(FrozenClass):
         ('ComplianceDate', 'DateTime'),
         ('ComplianceLevel', 'ComplianceLevel'),
         ('UnsupportedUnitIds', 'ListOfString'),
-               ]
+    ]
 
     def __init__(self):
         self.OrganizationUri = None
@@ -4695,18 +4832,20 @@ class SupportedProfile(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SupportedProfile(' + 'OrganizationUri:' + str(self.OrganizationUri) + ', ' + \
-               'ProfileId:' + str(self.ProfileId) + ', ' + \
-               'ComplianceTool:' + str(self.ComplianceTool) + ', ' + \
-               'ComplianceDate:' + str(self.ComplianceDate) + ', ' + \
-               'ComplianceLevel:' + str(self.ComplianceLevel) + ', ' + \
-               'UnsupportedUnitIds:' + str(self.UnsupportedUnitIds) + ')'
+        return ', '.join((
+            f'SupportedProfile(OrganizationUri:{self.OrganizationUri}',
+            f'ProfileId:{self.ProfileId}',
+            f'ComplianceTool:{self.ComplianceTool}',
+            f'ComplianceDate:{self.ComplianceDate}',
+            f'ComplianceLevel:{self.ComplianceLevel}',
+            f'UnsupportedUnitIds:{self.UnsupportedUnitIds})'
+        ))
 
     __repr__ = __str__
 
 
 class SoftwareCertificate(FrozenClass):
-    '''
+    """
     :ivar ProductName:
     :vartype ProductName: String
     :ivar ProductUri:
@@ -4727,7 +4866,7 @@ class SoftwareCertificate(FrozenClass):
     :vartype IssueDate: DateTime
     :ivar SupportedProfiles:
     :vartype SupportedProfiles: SupportedProfile
-    '''
+    """
 
     ua_types = [
         ('ProductName', 'String'),
@@ -4740,7 +4879,7 @@ class SoftwareCertificate(FrozenClass):
         ('IssuedBy', 'String'),
         ('IssueDate', 'DateTime'),
         ('SupportedProfiles', 'ListOfSupportedProfile'),
-               ]
+    ]
 
     def __init__(self):
         self.ProductName = None
@@ -4756,35 +4895,37 @@ class SoftwareCertificate(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SoftwareCertificate(' + 'ProductName:' + str(self.ProductName) + ', ' + \
-               'ProductUri:' + str(self.ProductUri) + ', ' + \
-               'VendorName:' + str(self.VendorName) + ', ' + \
-               'VendorProductCertificate:' + str(self.VendorProductCertificate) + ', ' + \
-               'SoftwareVersion:' + str(self.SoftwareVersion) + ', ' + \
-               'BuildNumber:' + str(self.BuildNumber) + ', ' + \
-               'BuildDate:' + str(self.BuildDate) + ', ' + \
-               'IssuedBy:' + str(self.IssuedBy) + ', ' + \
-               'IssueDate:' + str(self.IssueDate) + ', ' + \
-               'SupportedProfiles:' + str(self.SupportedProfiles) + ')'
+        return ', '.join((
+            f'SoftwareCertificate(ProductName:{self.ProductName}',
+            f'ProductUri:{self.ProductUri}',
+            f'VendorName:{self.VendorName}',
+            f'VendorProductCertificate:{self.VendorProductCertificate}',
+            f'SoftwareVersion:{self.SoftwareVersion}',
+            f'BuildNumber:{self.BuildNumber}',
+            f'BuildDate:{self.BuildDate}',
+            f'IssuedBy:{self.IssuedBy}',
+            f'IssueDate:{self.IssueDate}',
+            f'SupportedProfiles:{self.SupportedProfiles})'
+        ))
 
     __repr__ = __str__
 
 
 class QueryDataDescription(FrozenClass):
-    '''
+    """
     :ivar RelativePath:
     :vartype RelativePath: RelativePath
     :ivar AttributeId:
     :vartype AttributeId: UInt32
     :ivar IndexRange:
     :vartype IndexRange: String
-    '''
+    """
 
     ua_types = [
         ('RelativePath', 'RelativePath'),
         ('AttributeId', 'UInt32'),
         ('IndexRange', 'String'),
-               ]
+    ]
 
     def __init__(self):
         self.RelativePath = RelativePath()
@@ -4793,28 +4934,30 @@ class QueryDataDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryDataDescription(' + 'RelativePath:' + str(self.RelativePath) + ', ' + \
-               'AttributeId:' + str(self.AttributeId) + ', ' + \
-               'IndexRange:' + str(self.IndexRange) + ')'
+        return ', '.join((
+            f'QueryDataDescription(RelativePath:{self.RelativePath}',
+            f'AttributeId:{self.AttributeId}',
+            f'IndexRange:{self.IndexRange})'
+        ))
 
     __repr__ = __str__
 
 
 class NodeTypeDescription(FrozenClass):
-    '''
+    """
     :ivar TypeDefinitionNode:
     :vartype TypeDefinitionNode: ExpandedNodeId
     :ivar IncludeSubTypes:
     :vartype IncludeSubTypes: Boolean
     :ivar DataToReturn:
     :vartype DataToReturn: QueryDataDescription
-    '''
+    """
 
     ua_types = [
         ('TypeDefinitionNode', 'ExpandedNodeId'),
         ('IncludeSubTypes', 'Boolean'),
         ('DataToReturn', 'ListOfQueryDataDescription'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeDefinitionNode = ExpandedNodeId()
@@ -4823,28 +4966,30 @@ class NodeTypeDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'NodeTypeDescription(' + 'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', ' + \
-               'IncludeSubTypes:' + str(self.IncludeSubTypes) + ', ' + \
-               'DataToReturn:' + str(self.DataToReturn) + ')'
+        return ', '.join((
+            f'NodeTypeDescription(TypeDefinitionNode:{self.TypeDefinitionNode}',
+            f'IncludeSubTypes:{self.IncludeSubTypes}',
+            f'DataToReturn:{self.DataToReturn})'
+        ))
 
     __repr__ = __str__
 
 
 class QueryDataSet(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: ExpandedNodeId
     :ivar TypeDefinitionNode:
     :vartype TypeDefinitionNode: ExpandedNodeId
     :ivar Values:
     :vartype Values: Variant
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'ExpandedNodeId'),
         ('TypeDefinitionNode', 'ExpandedNodeId'),
         ('Values', 'ListOfVariant'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = ExpandedNodeId()
@@ -4853,15 +4998,17 @@ class QueryDataSet(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryDataSet(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', ' + \
-               'Values:' + str(self.Values) + ')'
+        return ', '.join((
+            f'QueryDataSet(NodeId:{self.NodeId}',
+            f'TypeDefinitionNode:{self.TypeDefinitionNode}',
+            f'Values:{self.Values})'
+        ))
 
     __repr__ = __str__
 
 
 class NodeReference(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar ReferenceTypeId:
@@ -4870,14 +5017,14 @@ class NodeReference(FrozenClass):
     :vartype IsForward: Boolean
     :ivar ReferencedNodeIds:
     :vartype ReferencedNodeIds: NodeId
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
         ('ReferenceTypeId', 'NodeId'),
         ('IsForward', 'Boolean'),
         ('ReferencedNodeIds', 'ListOfNodeId'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = NodeId()
@@ -4887,26 +5034,28 @@ class NodeReference(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'NodeReference(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-               'IsForward:' + str(self.IsForward) + ', ' + \
-               'ReferencedNodeIds:' + str(self.ReferencedNodeIds) + ')'
+        return ', '.join((
+            f'NodeReference(NodeId:{self.NodeId}',
+            f'ReferenceTypeId:{self.ReferenceTypeId}',
+            f'IsForward:{self.IsForward}',
+            f'ReferencedNodeIds:{self.ReferencedNodeIds})'
+        ))
 
     __repr__ = __str__
 
 
 class ContentFilterElement(FrozenClass):
-    '''
+    """
     :ivar FilterOperator:
     :vartype FilterOperator: FilterOperator
     :ivar FilterOperands:
     :vartype FilterOperands: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('FilterOperator', 'FilterOperator'),
         ('FilterOperands', 'ListOfExtensionObject'),
-               ]
+    ]
 
     def __init__(self):
         self.FilterOperator = FilterOperator(0)
@@ -4914,74 +5063,73 @@ class ContentFilterElement(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ContentFilterElement(' + 'FilterOperator:' + str(self.FilterOperator) + ', ' + \
-               'FilterOperands:' + str(self.FilterOperands) + ')'
+        return f'ContentFilterElement(FilterOperator:{self.FilterOperator}, FilterOperands:{self.FilterOperands})'
 
     __repr__ = __str__
 
 
 class ContentFilter(FrozenClass):
-    '''
+    """
     :ivar Elements:
     :vartype Elements: ContentFilterElement
-    '''
+    """
 
     ua_types = [
         ('Elements', 'ListOfContentFilterElement'),
-               ]
+    ]
 
     def __init__(self):
         self.Elements = []
         self._freeze = True
 
     def __str__(self):
-        return 'ContentFilter(' + 'Elements:' + str(self.Elements) + ')'
+        return f'ContentFilter(Elements:{self.Elements})'
 
     __repr__ = __str__
 
 
 class ElementOperand(FrozenClass):
-    '''
+    """
     :ivar Index:
     :vartype Index: UInt32
-    '''
+    """
 
     ua_types = [
         ('Index', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.Index = 0
         self._freeze = True
 
     def __str__(self):
-        return 'ElementOperand(' + 'Index:' + str(self.Index) + ')'
+        return f'ElementOperand(Index:{self.Index})'
 
     __repr__ = __str__
 
 
 class LiteralOperand(FrozenClass):
-    '''
+    """
     :ivar Value:
     :vartype Value: Variant
-    '''
+    """
 
     ua_types = [
         ('Value', 'Variant'),
-               ]
+    ]
 
     def __init__(self):
         self.Value = Variant()
         self._freeze = True
 
     def __str__(self):
-        return 'LiteralOperand(' + 'Value:' + str(self.Value) + ')'
+        return f'LiteralOperand(Value:{self.Value})'
 
     __repr__ = __str__
 
 
 class AttributeOperand(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar Alias:
@@ -4992,7 +5140,7 @@ class AttributeOperand(FrozenClass):
     :vartype AttributeId: UInt32
     :ivar IndexRange:
     :vartype IndexRange: String
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -5000,7 +5148,7 @@ class AttributeOperand(FrozenClass):
         ('BrowsePath', 'RelativePath'),
         ('AttributeId', 'UInt32'),
         ('IndexRange', 'String'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = NodeId()
@@ -5011,17 +5159,19 @@ class AttributeOperand(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AttributeOperand(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'Alias:' + str(self.Alias) + ', ' + \
-               'BrowsePath:' + str(self.BrowsePath) + ', ' + \
-               'AttributeId:' + str(self.AttributeId) + ', ' + \
-               'IndexRange:' + str(self.IndexRange) + ')'
+        return ', '.join((
+            f'AttributeOperand(NodeId:{self.NodeId}',
+            f'Alias:{self.Alias}',
+            f'BrowsePath:{self.BrowsePath}',
+            f'AttributeId:{self.AttributeId}',
+            f'IndexRange:{self.IndexRange})'
+        ))
 
     __repr__ = __str__
 
 
 class SimpleAttributeOperand(FrozenClass):
-    '''
+    """
     :ivar TypeDefinitionId:
     :vartype TypeDefinitionId: NodeId
     :ivar BrowsePath:
@@ -5030,14 +5180,14 @@ class SimpleAttributeOperand(FrozenClass):
     :vartype AttributeId: UInt32
     :ivar IndexRange:
     :vartype IndexRange: String
-    '''
+    """
 
     ua_types = [
         ('TypeDefinitionId', 'NodeId'),
         ('BrowsePath', 'ListOfQualifiedName'),
         ('AttributeId', 'UInt32'),
         ('IndexRange', 'String'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeDefinitionId = NodeId()
@@ -5047,29 +5197,31 @@ class SimpleAttributeOperand(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SimpleAttributeOperand(' + 'TypeDefinitionId:' + str(self.TypeDefinitionId) + ', ' + \
-               'BrowsePath:' + str(self.BrowsePath) + ', ' + \
-               'AttributeId:' + str(self.AttributeId) + ', ' + \
-               'IndexRange:' + str(self.IndexRange) + ')'
+        return ', '.join((
+            f'SimpleAttributeOperand(TypeDefinitionId:{self.TypeDefinitionId}',
+            f'BrowsePath:{self.BrowsePath}',
+            f'AttributeId:{self.AttributeId}',
+            f'IndexRange:{self.IndexRange})'
+        ))
 
     __repr__ = __str__
 
 
 class ContentFilterElementResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar OperandStatusCodes:
     :vartype OperandStatusCodes: StatusCode
     :ivar OperandDiagnosticInfos:
     :vartype OperandDiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
         ('OperandStatusCodes', 'ListOfStatusCode'),
         ('OperandDiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -5078,25 +5230,27 @@ class ContentFilterElementResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ContentFilterElementResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'OperandStatusCodes:' + str(self.OperandStatusCodes) + ', ' + \
-               'OperandDiagnosticInfos:' + str(self.OperandDiagnosticInfos) + ')'
+        return ', '.join((
+            f'ContentFilterElementResult(StatusCode:{self.StatusCode}',
+            f'OperandStatusCodes:{self.OperandStatusCodes}',
+            f'OperandDiagnosticInfos:{self.OperandDiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class ContentFilterResult(FrozenClass):
-    '''
+    """
     :ivar ElementResults:
     :vartype ElementResults: ContentFilterElementResult
     :ivar ElementDiagnosticInfos:
     :vartype ElementDiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('ElementResults', 'ListOfContentFilterElementResult'),
         ('ElementDiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.ElementResults = []
@@ -5104,27 +5258,29 @@ class ContentFilterResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ContentFilterResult(' + 'ElementResults:' + str(self.ElementResults) + ', ' + \
-               'ElementDiagnosticInfos:' + str(self.ElementDiagnosticInfos) + ')'
+        return ', '.join((
+            f'ContentFilterResult(ElementResults:{self.ElementResults}',
+            f'ElementDiagnosticInfos:{self.ElementDiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class ParsingResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar DataStatusCodes:
     :vartype DataStatusCodes: StatusCode
     :ivar DataDiagnosticInfos:
     :vartype DataDiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
         ('DataStatusCodes', 'ListOfStatusCode'),
         ('DataDiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -5133,15 +5289,17 @@ class ParsingResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ParsingResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'DataStatusCodes:' + str(self.DataStatusCodes) + ', ' + \
-               'DataDiagnosticInfos:' + str(self.DataDiagnosticInfos) + ')'
+        return ', '.join((
+            f'ParsingResult(StatusCode:{self.StatusCode}',
+            f'DataStatusCodes:{self.DataStatusCodes}',
+            f'DataDiagnosticInfos:{self.DataDiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class QueryFirstParameters(FrozenClass):
-    '''
+    """
     :ivar View:
     :vartype View: ViewDescription
     :ivar NodeTypes:
@@ -5152,7 +5310,7 @@ class QueryFirstParameters(FrozenClass):
     :vartype MaxDataSetsToReturn: UInt32
     :ivar MaxReferencesToReturn:
     :vartype MaxReferencesToReturn: UInt32
-    '''
+    """
 
     ua_types = [
         ('View', 'ViewDescription'),
@@ -5160,7 +5318,7 @@ class QueryFirstParameters(FrozenClass):
         ('Filter', 'ContentFilter'),
         ('MaxDataSetsToReturn', 'UInt32'),
         ('MaxReferencesToReturn', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.View = ViewDescription()
@@ -5171,30 +5329,32 @@ class QueryFirstParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryFirstParameters(' + 'View:' + str(self.View) + ', ' + \
-               'NodeTypes:' + str(self.NodeTypes) + ', ' + \
-               'Filter:' + str(self.Filter) + ', ' + \
-               'MaxDataSetsToReturn:' + str(self.MaxDataSetsToReturn) + ', ' + \
-               'MaxReferencesToReturn:' + str(self.MaxReferencesToReturn) + ')'
+        return ', '.join((
+            f'QueryFirstParameters(View:{self.View}',
+            f'NodeTypes:{self.NodeTypes}',
+            f'Filter:{self.Filter}',
+            f'MaxDataSetsToReturn:{self.MaxDataSetsToReturn}',
+            f'MaxReferencesToReturn:{self.MaxReferencesToReturn})'
+        ))
 
     __repr__ = __str__
 
 
 class QueryFirstRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: QueryFirstParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'QueryFirstParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.QueryFirstRequest_Encoding_DefaultBinary)
@@ -5203,15 +5363,17 @@ class QueryFirstRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryFirstRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'QueryFirstRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class QueryFirstResult(FrozenClass):
-    '''
+    """
     :ivar QueryDataSets:
     :vartype QueryDataSets: QueryDataSet
     :ivar ContinuationPoint:
@@ -5222,7 +5384,7 @@ class QueryFirstResult(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     :ivar FilterResult:
     :vartype FilterResult: ContentFilterResult
-    '''
+    """
 
     ua_types = [
         ('QueryDataSets', 'ListOfQueryDataSet'),
@@ -5230,7 +5392,7 @@ class QueryFirstResult(FrozenClass):
         ('ParsingResults', 'ListOfParsingResult'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
         ('FilterResult', 'ContentFilterResult'),
-               ]
+    ]
 
     def __init__(self):
         self.QueryDataSets = []
@@ -5241,30 +5403,32 @@ class QueryFirstResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryFirstResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', ' + \
-               'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
-               'ParsingResults:' + str(self.ParsingResults) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ', ' + \
-               'FilterResult:' + str(self.FilterResult) + ')'
+        return ', '.join((
+            f'QueryFirstResult(QueryDataSets:{self.QueryDataSets}',
+            f'ContinuationPoint:{self.ContinuationPoint}',
+            f'ParsingResults:{self.ParsingResults}',
+            f'DiagnosticInfos:{self.DiagnosticInfos}',
+            f'FilterResult:{self.FilterResult})'
+        ))
 
     __repr__ = __str__
 
 
 class QueryFirstResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: QueryFirstResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'QueryFirstResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.QueryFirstResponse_Encoding_DefaultBinary)
@@ -5273,25 +5437,27 @@ class QueryFirstResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryFirstResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'QueryFirstResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class QueryNextParameters(FrozenClass):
-    '''
+    """
     :ivar ReleaseContinuationPoint:
     :vartype ReleaseContinuationPoint: Boolean
     :ivar ContinuationPoint:
     :vartype ContinuationPoint: ByteString
-    '''
+    """
 
     ua_types = [
         ('ReleaseContinuationPoint', 'Boolean'),
         ('ContinuationPoint', 'ByteString'),
-               ]
+    ]
 
     def __init__(self):
         self.ReleaseContinuationPoint = True
@@ -5299,27 +5465,29 @@ class QueryNextParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryNextParameters(' + 'ReleaseContinuationPoint:' + str(self.ReleaseContinuationPoint) + ', ' + \
-               'ContinuationPoint:' + str(self.ContinuationPoint) + ')'
+        return ', '.join((
+            f'QueryNextParameters(ReleaseContinuationPoint:{self.ReleaseContinuationPoint}',
+            f'ContinuationPoint:{self.ContinuationPoint})'
+        ))
 
     __repr__ = __str__
 
 
 class QueryNextRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: QueryNextParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'QueryNextParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.QueryNextRequest_Encoding_DefaultBinary)
@@ -5328,25 +5496,27 @@ class QueryNextRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryNextRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'QueryNextRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class QueryNextResult(FrozenClass):
-    '''
+    """
     :ivar QueryDataSets:
     :vartype QueryDataSets: QueryDataSet
     :ivar RevisedContinuationPoint:
     :vartype RevisedContinuationPoint: ByteString
-    '''
+    """
 
     ua_types = [
         ('QueryDataSets', 'ListOfQueryDataSet'),
         ('RevisedContinuationPoint', 'ByteString'),
-               ]
+    ]
 
     def __init__(self):
         self.QueryDataSets = []
@@ -5354,27 +5524,29 @@ class QueryNextResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryNextResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', ' + \
-               'RevisedContinuationPoint:' + str(self.RevisedContinuationPoint) + ')'
+        return ', '.join((
+            f'QueryNextResult(QueryDataSets:{self.QueryDataSets}',
+            f'RevisedContinuationPoint:{self.RevisedContinuationPoint})'
+        ))
 
     __repr__ = __str__
 
 
 class QueryNextResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: QueryNextResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'QueryNextResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.QueryNextResponse_Encoding_DefaultBinary)
@@ -5383,15 +5555,17 @@ class QueryNextResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryNextResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'QueryNextResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class ReadValueId(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar AttributeId:
@@ -5400,14 +5574,14 @@ class ReadValueId(FrozenClass):
     :vartype IndexRange: String
     :ivar DataEncoding:
     :vartype DataEncoding: QualifiedName
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
         ('AttributeId', 'UInt32'),
         ('IndexRange', 'String'),
         ('DataEncoding', 'QualifiedName'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = NodeId()
@@ -5417,29 +5591,31 @@ class ReadValueId(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadValueId(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'AttributeId:' + str(self.AttributeId) + ', ' + \
-               'IndexRange:' + str(self.IndexRange) + ', ' + \
-               'DataEncoding:' + str(self.DataEncoding) + ')'
+        return ', '.join((
+            f'ReadValueId(NodeId:{self.NodeId}',
+            f'AttributeId:{self.AttributeId}',
+            f'IndexRange:{self.IndexRange}',
+            f'DataEncoding:{self.DataEncoding})'
+        ))
 
     __repr__ = __str__
 
 
 class ReadParameters(FrozenClass):
-    '''
+    """
     :ivar MaxAge:
     :vartype MaxAge: Double
     :ivar TimestampsToReturn:
     :vartype TimestampsToReturn: TimestampsToReturn
     :ivar NodesToRead:
     :vartype NodesToRead: ReadValueId
-    '''
+    """
 
     ua_types = [
         ('MaxAge', 'Double'),
         ('TimestampsToReturn', 'TimestampsToReturn'),
         ('NodesToRead', 'ListOfReadValueId'),
-               ]
+    ]
 
     def __init__(self):
         self.MaxAge = 0
@@ -5448,28 +5624,30 @@ class ReadParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadParameters(' + 'MaxAge:' + str(self.MaxAge) + ', ' + \
-               'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
-               'NodesToRead:' + str(self.NodesToRead) + ')'
+        return ', '.join((
+            f'ReadParameters(MaxAge:{self.MaxAge}',
+            f'TimestampsToReturn:{self.TimestampsToReturn}',
+            f'NodesToRead:{self.NodesToRead})'
+        ))
 
     __repr__ = __str__
 
 
 class ReadRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: ReadParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'ReadParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ReadRequest_Encoding_DefaultBinary)
@@ -5478,15 +5656,17 @@ class ReadRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'ReadRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class ReadResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -5495,14 +5675,14 @@ class ReadResponse(FrozenClass):
     :vartype Results: DataValue
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfDataValue'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ReadResponse_Encoding_DefaultBinary)
@@ -5512,16 +5692,18 @@ class ReadResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'ReadResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class HistoryReadValueId(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar IndexRange:
@@ -5530,14 +5712,14 @@ class HistoryReadValueId(FrozenClass):
     :vartype DataEncoding: QualifiedName
     :ivar ContinuationPoint:
     :vartype ContinuationPoint: ByteString
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
         ('IndexRange', 'String'),
         ('DataEncoding', 'QualifiedName'),
         ('ContinuationPoint', 'ByteString'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = NodeId()
@@ -5547,29 +5729,31 @@ class HistoryReadValueId(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryReadValueId(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'IndexRange:' + str(self.IndexRange) + ', ' + \
-               'DataEncoding:' + str(self.DataEncoding) + ', ' + \
-               'ContinuationPoint:' + str(self.ContinuationPoint) + ')'
+        return ', '.join((
+            f'HistoryReadValueId(NodeId:{self.NodeId}',
+            f'IndexRange:{self.IndexRange}',
+            f'DataEncoding:{self.DataEncoding}',
+            f'ContinuationPoint:{self.ContinuationPoint})'
+        ))
 
     __repr__ = __str__
 
 
 class HistoryReadResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar ContinuationPoint:
     :vartype ContinuationPoint: ByteString
     :ivar HistoryData:
     :vartype HistoryData: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
         ('ContinuationPoint', 'ByteString'),
         ('HistoryData', 'ExtensionObject'),
-               ]
+    ]
 
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -5578,31 +5762,33 @@ class HistoryReadResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryReadResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
-               'HistoryData:' + str(self.HistoryData) + ')'
+        return ', '.join((
+            f'HistoryReadResult(StatusCode:{self.StatusCode}',
+            f'ContinuationPoint:{self.ContinuationPoint}',
+            f'HistoryData:{self.HistoryData})'
+        ))
 
     __repr__ = __str__
 
 
 class HistoryReadDetails(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
-               ]
+    ]
 
     def __init__(self):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryReadDetails(' +  + ')'
+        return 'HistoryReadDetails()'
 
     __repr__ = __str__
 
 
 class ReadEventDetails(FrozenClass):
-    '''
+    """
     :ivar NumValuesPerNode:
     :vartype NumValuesPerNode: UInt32
     :ivar StartTime:
@@ -5611,14 +5797,14 @@ class ReadEventDetails(FrozenClass):
     :vartype EndTime: DateTime
     :ivar Filter:
     :vartype Filter: EventFilter
-    '''
+    """
 
     ua_types = [
         ('NumValuesPerNode', 'UInt32'),
         ('StartTime', 'DateTime'),
         ('EndTime', 'DateTime'),
         ('Filter', 'EventFilter'),
-               ]
+    ]
 
     def __init__(self):
         self.NumValuesPerNode = 0
@@ -5628,16 +5814,18 @@ class ReadEventDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadEventDetails(' + 'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', ' + \
-               'StartTime:' + str(self.StartTime) + ', ' + \
-               'EndTime:' + str(self.EndTime) + ', ' + \
-               'Filter:' + str(self.Filter) + ')'
+        return ', '.join((
+            f'ReadEventDetails(NumValuesPerNode:{self.NumValuesPerNode}',
+            f'StartTime:{self.StartTime}',
+            f'EndTime:{self.EndTime}',
+            f'Filter:{self.Filter})'
+        ))
 
     __repr__ = __str__
 
 
 class ReadRawModifiedDetails(FrozenClass):
-    '''
+    """
     :ivar IsReadModified:
     :vartype IsReadModified: Boolean
     :ivar StartTime:
@@ -5648,7 +5836,7 @@ class ReadRawModifiedDetails(FrozenClass):
     :vartype NumValuesPerNode: UInt32
     :ivar ReturnBounds:
     :vartype ReturnBounds: Boolean
-    '''
+    """
 
     ua_types = [
         ('IsReadModified', 'Boolean'),
@@ -5656,7 +5844,7 @@ class ReadRawModifiedDetails(FrozenClass):
         ('EndTime', 'DateTime'),
         ('NumValuesPerNode', 'UInt32'),
         ('ReturnBounds', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.IsReadModified = True
@@ -5667,17 +5855,19 @@ class ReadRawModifiedDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadRawModifiedDetails(' + 'IsReadModified:' + str(self.IsReadModified) + ', ' + \
-               'StartTime:' + str(self.StartTime) + ', ' + \
-               'EndTime:' + str(self.EndTime) + ', ' + \
-               'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', ' + \
-               'ReturnBounds:' + str(self.ReturnBounds) + ')'
+        return ', '.join((
+            f'ReadRawModifiedDetails(IsReadModified:{self.IsReadModified}',
+            f'StartTime:{self.StartTime}',
+            f'EndTime:{self.EndTime}',
+            f'NumValuesPerNode:{self.NumValuesPerNode}',
+            f'ReturnBounds:{self.ReturnBounds})'
+        ))
 
     __repr__ = __str__
 
 
 class ReadProcessedDetails(FrozenClass):
-    '''
+    """
     :ivar StartTime:
     :vartype StartTime: DateTime
     :ivar EndTime:
@@ -5688,7 +5878,7 @@ class ReadProcessedDetails(FrozenClass):
     :vartype AggregateType: NodeId
     :ivar AggregateConfiguration:
     :vartype AggregateConfiguration: AggregateConfiguration
-    '''
+    """
 
     ua_types = [
         ('StartTime', 'DateTime'),
@@ -5696,7 +5886,7 @@ class ReadProcessedDetails(FrozenClass):
         ('ProcessingInterval', 'Double'),
         ('AggregateType', 'ListOfNodeId'),
         ('AggregateConfiguration', 'AggregateConfiguration'),
-               ]
+    ]
 
     def __init__(self):
         self.StartTime = datetime.utcnow()
@@ -5707,27 +5897,29 @@ class ReadProcessedDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadProcessedDetails(' + 'StartTime:' + str(self.StartTime) + ', ' + \
-               'EndTime:' + str(self.EndTime) + ', ' + \
-               'ProcessingInterval:' + str(self.ProcessingInterval) + ', ' + \
-               'AggregateType:' + str(self.AggregateType) + ', ' + \
-               'AggregateConfiguration:' + str(self.AggregateConfiguration) + ')'
+        return ', '.join((
+            f'ReadProcessedDetails(StartTime:{self.StartTime}',
+            f'EndTime:{self.EndTime}',
+            f'ProcessingInterval:{self.ProcessingInterval}',
+            f'AggregateType:{self.AggregateType}',
+            f'AggregateConfiguration:{self.AggregateConfiguration})'
+        ))
 
     __repr__ = __str__
 
 
 class ReadAtTimeDetails(FrozenClass):
-    '''
+    """
     :ivar ReqTimes:
     :vartype ReqTimes: DateTime
     :ivar UseSimpleBounds:
     :vartype UseSimpleBounds: Boolean
-    '''
+    """
 
     ua_types = [
         ('ReqTimes', 'ListOfDateTime'),
         ('UseSimpleBounds', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.ReqTimes = []
@@ -5735,47 +5927,46 @@ class ReadAtTimeDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadAtTimeDetails(' + 'ReqTimes:' + str(self.ReqTimes) + ', ' + \
-               'UseSimpleBounds:' + str(self.UseSimpleBounds) + ')'
+        return f'ReadAtTimeDetails(ReqTimes:{self.ReqTimes}, UseSimpleBounds:{self.UseSimpleBounds})'
 
     __repr__ = __str__
 
 
 class HistoryData(FrozenClass):
-    '''
+    """
     :ivar DataValues:
     :vartype DataValues: DataValue
-    '''
+    """
 
     ua_types = [
         ('DataValues', 'ListOfDataValue'),
-               ]
+    ]
 
     def __init__(self):
         self.DataValues = []
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryData(' + 'DataValues:' + str(self.DataValues) + ')'
+        return f'HistoryData(DataValues:{self.DataValues})'
 
     __repr__ = __str__
 
 
 class ModificationInfo(FrozenClass):
-    '''
+    """
     :ivar ModificationTime:
     :vartype ModificationTime: DateTime
     :ivar UpdateType:
     :vartype UpdateType: HistoryUpdateType
     :ivar UserName:
     :vartype UserName: String
-    '''
+    """
 
     ua_types = [
         ('ModificationTime', 'DateTime'),
         ('UpdateType', 'HistoryUpdateType'),
         ('UserName', 'String'),
-               ]
+    ]
 
     def __init__(self):
         self.ModificationTime = datetime.utcnow()
@@ -5784,25 +5975,27 @@ class ModificationInfo(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModificationInfo(' + 'ModificationTime:' + str(self.ModificationTime) + ', ' + \
-               'UpdateType:' + str(self.UpdateType) + ', ' + \
-               'UserName:' + str(self.UserName) + ')'
+        return ', '.join((
+            f'ModificationInfo(ModificationTime:{self.ModificationTime}',
+            f'UpdateType:{self.UpdateType}',
+            f'UserName:{self.UserName})'
+        ))
 
     __repr__ = __str__
 
 
 class HistoryModifiedData(FrozenClass):
-    '''
+    """
     :ivar DataValues:
     :vartype DataValues: DataValue
     :ivar ModificationInfos:
     :vartype ModificationInfos: ModificationInfo
-    '''
+    """
 
     ua_types = [
         ('DataValues', 'ListOfDataValue'),
         ('ModificationInfos', 'ListOfModificationInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.DataValues = []
@@ -5810,34 +6003,33 @@ class HistoryModifiedData(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryModifiedData(' + 'DataValues:' + str(self.DataValues) + ', ' + \
-               'ModificationInfos:' + str(self.ModificationInfos) + ')'
+        return f'HistoryModifiedData(DataValues:{self.DataValues}, ModificationInfos:{self.ModificationInfos})'
 
     __repr__ = __str__
 
 
 class HistoryEvent(FrozenClass):
-    '''
+    """
     :ivar Events:
     :vartype Events: HistoryEventFieldList
-    '''
+    """
 
     ua_types = [
         ('Events', 'ListOfHistoryEventFieldList'),
-               ]
+    ]
 
     def __init__(self):
         self.Events = []
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryEvent(' + 'Events:' + str(self.Events) + ')'
+        return f'HistoryEvent(Events:{self.Events})'
 
     __repr__ = __str__
 
 
 class HistoryReadParameters(FrozenClass):
-    '''
+    """
     :ivar HistoryReadDetails:
     :vartype HistoryReadDetails: ExtensionObject
     :ivar TimestampsToReturn:
@@ -5846,14 +6038,14 @@ class HistoryReadParameters(FrozenClass):
     :vartype ReleaseContinuationPoints: Boolean
     :ivar NodesToRead:
     :vartype NodesToRead: HistoryReadValueId
-    '''
+    """
 
     ua_types = [
         ('HistoryReadDetails', 'ExtensionObject'),
         ('TimestampsToReturn', 'TimestampsToReturn'),
         ('ReleaseContinuationPoints', 'Boolean'),
         ('NodesToRead', 'ListOfHistoryReadValueId'),
-               ]
+    ]
 
     def __init__(self):
         self.HistoryReadDetails = ExtensionObject()
@@ -5863,29 +6055,31 @@ class HistoryReadParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryReadParameters(' + 'HistoryReadDetails:' + str(self.HistoryReadDetails) + ', ' + \
-               'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
-               'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', ' + \
-               'NodesToRead:' + str(self.NodesToRead) + ')'
+        return ', '.join((
+            f'HistoryReadParameters(HistoryReadDetails:{self.HistoryReadDetails}',
+            f'TimestampsToReturn:{self.TimestampsToReturn}',
+            f'ReleaseContinuationPoints:{self.ReleaseContinuationPoints}',
+            f'NodesToRead:{self.NodesToRead})'
+        ))
 
     __repr__ = __str__
 
 
 class HistoryReadRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: HistoryReadParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'HistoryReadParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.HistoryReadRequest_Encoding_DefaultBinary)
@@ -5894,15 +6088,17 @@ class HistoryReadRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryReadRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'HistoryReadRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class HistoryReadResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -5911,14 +6107,14 @@ class HistoryReadResponse(FrozenClass):
     :vartype Results: HistoryReadResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfHistoryReadResult'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.HistoryReadResponse_Encoding_DefaultBinary)
@@ -5928,16 +6124,18 @@ class HistoryReadResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryReadResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'HistoryReadResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Results:{self.Results}',
+            F'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class WriteValue(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar AttributeId:
@@ -5946,14 +6144,14 @@ class WriteValue(FrozenClass):
     :vartype IndexRange: String
     :ivar Value:
     :vartype Value: DataValue
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
         ('AttributeId', 'UInt32'),
         ('IndexRange', 'String'),
         ('Value', 'DataValue'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = NodeId()
@@ -5963,49 +6161,51 @@ class WriteValue(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'WriteValue(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'AttributeId:' + str(self.AttributeId) + ', ' + \
-               'IndexRange:' + str(self.IndexRange) + ', ' + \
-               'Value:' + str(self.Value) + ')'
+        return ', '.join((
+            f'WriteValue(NodeId:{self.NodeId}',
+            f'AttributeId:{self.AttributeId}',
+            f'IndexRange:{self.IndexRange}',
+            f'Value:{self.Value})'
+        ))
 
     __repr__ = __str__
 
 
 class WriteParameters(FrozenClass):
-    '''
+    """
     :ivar NodesToWrite:
     :vartype NodesToWrite: WriteValue
-    '''
+    """
 
     ua_types = [
         ('NodesToWrite', 'ListOfWriteValue'),
-               ]
+    ]
 
     def __init__(self):
         self.NodesToWrite = []
         self._freeze = True
 
     def __str__(self):
-        return 'WriteParameters(' + 'NodesToWrite:' + str(self.NodesToWrite) + ')'
+        return f'WriteParameters(NodesToWrite:{self.NodesToWrite})'
 
     __repr__ = __str__
 
 
 class WriteRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: WriteParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'WriteParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.WriteRequest_Encoding_DefaultBinary)
@@ -6014,15 +6214,17 @@ class WriteRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'WriteRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'WriteRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class WriteResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -6031,14 +6233,14 @@ class WriteResponse(FrozenClass):
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.WriteResponse_Encoding_DefaultBinary)
@@ -6048,49 +6250,51 @@ class WriteResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'WriteResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'WriteResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class HistoryUpdateDetails(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = NodeId()
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryUpdateDetails(' + 'NodeId:' + str(self.NodeId) + ')'
+        return f'HistoryUpdateDetails(NodeId:{self.NodeId})'
 
     __repr__ = __str__
 
 
 class UpdateDataDetails(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar PerformInsertReplace:
     :vartype PerformInsertReplace: PerformUpdateType
     :ivar UpdateValues:
     :vartype UpdateValues: DataValue
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
         ('PerformInsertReplace', 'PerformUpdateType'),
         ('UpdateValues', 'ListOfDataValue'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = NodeId()
@@ -6099,28 +6303,30 @@ class UpdateDataDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UpdateDataDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
-               'UpdateValues:' + str(self.UpdateValues) + ')'
+        return ', '.join((
+            f'UpdateDataDetails(NodeId:{self.NodeId}',
+            f'PerformInsertReplace:{self.PerformInsertReplace}',
+            f'UpdateValues:{self.UpdateValues})'
+        ))
 
     __repr__ = __str__
 
 
 class UpdateStructureDataDetails(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar PerformInsertReplace:
     :vartype PerformInsertReplace: PerformUpdateType
     :ivar UpdateValues:
     :vartype UpdateValues: DataValue
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
         ('PerformInsertReplace', 'PerformUpdateType'),
         ('UpdateValues', 'ListOfDataValue'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = NodeId()
@@ -6129,15 +6335,17 @@ class UpdateStructureDataDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UpdateStructureDataDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
-               'UpdateValues:' + str(self.UpdateValues) + ')'
+        return ', '.join((
+            f'UpdateStructureDataDetails(NodeId:{self.NodeId}',
+            f'PerformInsertReplace:{self.PerformInsertReplace}',
+            f'UpdateValues:{self.UpdateValues})'
+        ))
 
     __repr__ = __str__
 
 
 class UpdateEventDetails(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar PerformInsertReplace:
@@ -6146,14 +6354,14 @@ class UpdateEventDetails(FrozenClass):
     :vartype Filter: EventFilter
     :ivar EventData:
     :vartype EventData: HistoryEventFieldList
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
         ('PerformInsertReplace', 'PerformUpdateType'),
         ('Filter', 'EventFilter'),
         ('EventData', 'ListOfHistoryEventFieldList'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = NodeId()
@@ -6163,16 +6371,18 @@ class UpdateEventDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UpdateEventDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
-               'Filter:' + str(self.Filter) + ', ' + \
-               'EventData:' + str(self.EventData) + ')'
+        return ', '.join((
+            f'UpdateEventDetails(NodeId:{self.NodeId}',
+            f'PerformInsertReplace:{self.PerformInsertReplace}',
+            f'Filter:{self.Filter}',
+            f'EventData:{self.EventData})'
+        ))
 
     __repr__ = __str__
 
 
 class DeleteRawModifiedDetails(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar IsDeleteModified:
@@ -6181,14 +6391,14 @@ class DeleteRawModifiedDetails(FrozenClass):
     :vartype StartTime: DateTime
     :ivar EndTime:
     :vartype EndTime: DateTime
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
         ('IsDeleteModified', 'Boolean'),
         ('StartTime', 'DateTime'),
         ('EndTime', 'DateTime'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = NodeId()
@@ -6198,26 +6408,28 @@ class DeleteRawModifiedDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteRawModifiedDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'IsDeleteModified:' + str(self.IsDeleteModified) + ', ' + \
-               'StartTime:' + str(self.StartTime) + ', ' + \
-               'EndTime:' + str(self.EndTime) + ')'
+        return ', '.join((
+            f'DeleteRawModifiedDetails(NodeId:{self.NodeId}',
+            f'IsDeleteModified:{self.IsDeleteModified}',
+            f'StartTime:{self.StartTime}',
+            f'EndTime:{self.EndTime})'
+        ))
 
     __repr__ = __str__
 
 
 class DeleteAtTimeDetails(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar ReqTimes:
     :vartype ReqTimes: DateTime
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
         ('ReqTimes', 'ListOfDateTime'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = NodeId()
@@ -6225,24 +6437,23 @@ class DeleteAtTimeDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteAtTimeDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'ReqTimes:' + str(self.ReqTimes) + ')'
+        return f'DeleteAtTimeDetails(NodeId:{self.NodeId}, ReqTimes:{self.ReqTimes})'
 
     __repr__ = __str__
 
 
 class DeleteEventDetails(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar EventIds:
     :vartype EventIds: ByteString
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
         ('EventIds', 'ListOfByteString'),
-               ]
+    ]
 
     def __init__(self):
         self.NodeId = NodeId()
@@ -6250,27 +6461,26 @@ class DeleteEventDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteEventDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'EventIds:' + str(self.EventIds) + ')'
+        return f'DeleteEventDetails(NodeId:{self.NodeId}, EventIds:{self.EventIds})'
 
     __repr__ = __str__
 
 
 class HistoryUpdateResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar OperationResults:
     :vartype OperationResults: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
         ('OperationResults', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -6279,48 +6489,50 @@ class HistoryUpdateResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryUpdateResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'OperationResults:' + str(self.OperationResults) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'HistoryUpdateResult(StatusCode:{self.StatusCode}',
+            f'OperationResults:{self.OperationResults}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class HistoryUpdateParameters(FrozenClass):
-    '''
+    """
     :ivar HistoryUpdateDetails:
     :vartype HistoryUpdateDetails: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('HistoryUpdateDetails', 'ListOfExtensionObject'),
-               ]
+    ]
 
     def __init__(self):
         self.HistoryUpdateDetails = []
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryUpdateParameters(' + 'HistoryUpdateDetails:' + str(self.HistoryUpdateDetails) + ')'
+        return f'HistoryUpdateParameters(HistoryUpdateDetails:{self.HistoryUpdateDetails})'
 
     __repr__ = __str__
 
 
 class HistoryUpdateRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: HistoryUpdateParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'HistoryUpdateParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.HistoryUpdateRequest_Encoding_DefaultBinary)
@@ -6329,15 +6541,17 @@ class HistoryUpdateRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryUpdateRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'HistoryUpdateRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class HistoryUpdateResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -6346,14 +6560,14 @@ class HistoryUpdateResponse(FrozenClass):
     :vartype Results: HistoryUpdateResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfHistoryUpdateResult'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.HistoryUpdateResponse_Encoding_DefaultBinary)
@@ -6363,29 +6577,31 @@ class HistoryUpdateResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryUpdateResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'HistoryUpdateResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class CallMethodRequest(FrozenClass):
-    '''
+    """
     :ivar ObjectId:
     :vartype ObjectId: NodeId
     :ivar MethodId:
     :vartype MethodId: NodeId
     :ivar InputArguments:
     :vartype InputArguments: Variant
-    '''
+    """
 
     ua_types = [
         ('ObjectId', 'NodeId'),
         ('MethodId', 'NodeId'),
         ('InputArguments', 'ListOfVariant'),
-               ]
+    ]
 
     def __init__(self):
         self.ObjectId = NodeId()
@@ -6394,15 +6610,17 @@ class CallMethodRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CallMethodRequest(' + 'ObjectId:' + str(self.ObjectId) + ', ' + \
-               'MethodId:' + str(self.MethodId) + ', ' + \
-               'InputArguments:' + str(self.InputArguments) + ')'
+        return ', '.join((
+            f'CallMethodRequest(ObjectId:{self.ObjectId}',
+            f'MethodId:{self.MethodId}',
+            f'InputArguments:{self.InputArguments})'
+        ))
 
     __repr__ = __str__
 
 
 class CallMethodResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar InputArgumentResults:
@@ -6411,14 +6629,14 @@ class CallMethodResult(FrozenClass):
     :vartype InputArgumentDiagnosticInfos: DiagnosticInfo
     :ivar OutputArguments:
     :vartype OutputArguments: Variant
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
         ('InputArgumentResults', 'ListOfStatusCode'),
         ('InputArgumentDiagnosticInfos', 'ListOfDiagnosticInfo'),
         ('OutputArguments', 'ListOfVariant'),
-               ]
+    ]
 
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -6428,49 +6646,51 @@ class CallMethodResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CallMethodResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'InputArgumentResults:' + str(self.InputArgumentResults) + ', ' + \
-               'InputArgumentDiagnosticInfos:' + str(self.InputArgumentDiagnosticInfos) + ', ' + \
-               'OutputArguments:' + str(self.OutputArguments) + ')'
+        return ', '.join((
+            f'CallMethodResult(StatusCode:{self.StatusCode}',
+            f'InputArgumentResults:{self.InputArgumentResults}',
+            f'InputArgumentDiagnosticInfos:{self.InputArgumentDiagnosticInfos}',
+            f'OutputArguments:{self.OutputArguments})'
+        ))
 
     __repr__ = __str__
 
 
 class CallParameters(FrozenClass):
-    '''
+    """
     :ivar MethodsToCall:
     :vartype MethodsToCall: CallMethodRequest
-    '''
+    """
 
     ua_types = [
         ('MethodsToCall', 'ListOfCallMethodRequest'),
-               ]
+    ]
 
     def __init__(self):
         self.MethodsToCall = []
         self._freeze = True
 
     def __str__(self):
-        return 'CallParameters(' + 'MethodsToCall:' + str(self.MethodsToCall) + ')'
+        return f'CallParameters(MethodsToCall:{self.MethodsToCall})'
 
     __repr__ = __str__
 
 
 class CallRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: CallParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'CallParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CallRequest_Encoding_DefaultBinary)
@@ -6479,15 +6699,17 @@ class CallRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CallRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'CallRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class CallResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -6496,14 +6718,14 @@ class CallResponse(FrozenClass):
     :vartype Results: CallMethodResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfCallMethodResult'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CallResponse_Encoding_DefaultBinary)
@@ -6513,45 +6735,47 @@ class CallResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CallResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'CallResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class MonitoringFilter(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
-               ]
+    ]
 
     def __init__(self):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoringFilter(' +  + ')'
+        return 'MonitoringFilter()'
 
     __repr__ = __str__
 
 
 class DataChangeFilter(FrozenClass):
-    '''
+    """
     :ivar Trigger:
     :vartype Trigger: DataChangeTrigger
     :ivar DeadbandType:
     :vartype DeadbandType: UInt32
     :ivar DeadbandValue:
     :vartype DeadbandValue: Double
-    '''
+    """
 
     ua_types = [
         ('Trigger', 'DataChangeTrigger'),
         ('DeadbandType', 'UInt32'),
         ('DeadbandValue', 'Double'),
-               ]
+    ]
 
     def __init__(self):
         self.Trigger = DataChangeTrigger(0)
@@ -6560,25 +6784,27 @@ class DataChangeFilter(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataChangeFilter(' + 'Trigger:' + str(self.Trigger) + ', ' + \
-               'DeadbandType:' + str(self.DeadbandType) + ', ' + \
-               'DeadbandValue:' + str(self.DeadbandValue) + ')'
+        return ', '.join((
+            f'DataChangeFilter(Trigger:{self.Trigger}',
+            f'DeadbandType:{self.DeadbandType}',
+            f'DeadbandValue:{self.DeadbandValue})'
+        ))
 
     __repr__ = __str__
 
 
 class EventFilter(FrozenClass):
-    '''
+    """
     :ivar SelectClauses:
     :vartype SelectClauses: SimpleAttributeOperand
     :ivar WhereClause:
     :vartype WhereClause: ContentFilter
-    '''
+    """
 
     ua_types = [
         ('SelectClauses', 'ListOfSimpleAttributeOperand'),
         ('WhereClause', 'ContentFilter'),
-               ]
+    ]
 
     def __init__(self):
         self.SelectClauses = []
@@ -6586,14 +6812,13 @@ class EventFilter(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EventFilter(' + 'SelectClauses:' + str(self.SelectClauses) + ', ' + \
-               'WhereClause:' + str(self.WhereClause) + ')'
+        return f'EventFilter(SelectClauses:{self.SelectClauses}, WhereClause:{self.WhereClause})'
 
     __repr__ = __str__
 
 
 class AggregateConfiguration(FrozenClass):
-    '''
+    """
     :ivar UseServerCapabilitiesDefaults:
     :vartype UseServerCapabilitiesDefaults: Boolean
     :ivar TreatUncertainAsBad:
@@ -6604,7 +6829,7 @@ class AggregateConfiguration(FrozenClass):
     :vartype PercentDataGood: Byte
     :ivar UseSlopedExtrapolation:
     :vartype UseSlopedExtrapolation: Boolean
-    '''
+    """
 
     ua_types = [
         ('UseServerCapabilitiesDefaults', 'Boolean'),
@@ -6612,7 +6837,7 @@ class AggregateConfiguration(FrozenClass):
         ('PercentDataBad', 'Byte'),
         ('PercentDataGood', 'Byte'),
         ('UseSlopedExtrapolation', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.UseServerCapabilitiesDefaults = True
@@ -6623,17 +6848,19 @@ class AggregateConfiguration(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AggregateConfiguration(' + 'UseServerCapabilitiesDefaults:' + str(self.UseServerCapabilitiesDefaults) + ', ' + \
-               'TreatUncertainAsBad:' + str(self.TreatUncertainAsBad) + ', ' + \
-               'PercentDataBad:' + str(self.PercentDataBad) + ', ' + \
-               'PercentDataGood:' + str(self.PercentDataGood) + ', ' + \
-               'UseSlopedExtrapolation:' + str(self.UseSlopedExtrapolation) + ')'
+        return ', '.join((
+            f'AggregateConfiguration(UseServerCapabilitiesDefaults:{self.UseServerCapabilitiesDefaults}',
+            f'TreatUncertainAsBad:{self.TreatUncertainAsBad}',
+            f'PercentDataBad:{self.PercentDataBad}',
+            f'PercentDataGood:{self.PercentDataGood}',
+            f'UseSlopedExtrapolation:{self.UseSlopedExtrapolation})'
+        ))
 
     __repr__ = __str__
 
 
 class AggregateFilter(FrozenClass):
-    '''
+    """
     :ivar StartTime:
     :vartype StartTime: DateTime
     :ivar AggregateType:
@@ -6642,14 +6869,14 @@ class AggregateFilter(FrozenClass):
     :vartype ProcessingInterval: Double
     :ivar AggregateConfiguration:
     :vartype AggregateConfiguration: AggregateConfiguration
-    '''
+    """
 
     ua_types = [
         ('StartTime', 'DateTime'),
         ('AggregateType', 'NodeId'),
         ('ProcessingInterval', 'Double'),
         ('AggregateConfiguration', 'AggregateConfiguration'),
-               ]
+    ]
 
     def __init__(self):
         self.StartTime = datetime.utcnow()
@@ -6659,45 +6886,47 @@ class AggregateFilter(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AggregateFilter(' + 'StartTime:' + str(self.StartTime) + ', ' + \
-               'AggregateType:' + str(self.AggregateType) + ', ' + \
-               'ProcessingInterval:' + str(self.ProcessingInterval) + ', ' + \
-               'AggregateConfiguration:' + str(self.AggregateConfiguration) + ')'
+        return ', '.join((
+            f'AggregateFilter(StartTime:{self.StartTime}',
+            f'AggregateType:{self.AggregateType}',
+            f'ProcessingInterval:{self.ProcessingInterval}',
+            f'AggregateConfiguration:{self.AggregateConfiguration})'
+        ))
 
     __repr__ = __str__
 
 
 class MonitoringFilterResult(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
-               ]
+    ]
 
     def __init__(self):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoringFilterResult(' +  + ')'
+        return 'MonitoringFilterResult()'
 
     __repr__ = __str__
 
 
 class EventFilterResult(FrozenClass):
-    '''
+    """
     :ivar SelectClauseResults:
     :vartype SelectClauseResults: StatusCode
     :ivar SelectClauseDiagnosticInfos:
     :vartype SelectClauseDiagnosticInfos: DiagnosticInfo
     :ivar WhereClauseResult:
     :vartype WhereClauseResult: ContentFilterResult
-    '''
+    """
 
     ua_types = [
         ('SelectClauseResults', 'ListOfStatusCode'),
         ('SelectClauseDiagnosticInfos', 'ListOfDiagnosticInfo'),
         ('WhereClauseResult', 'ContentFilterResult'),
-               ]
+    ]
 
     def __init__(self):
         self.SelectClauseResults = []
@@ -6706,28 +6935,30 @@ class EventFilterResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EventFilterResult(' + 'SelectClauseResults:' + str(self.SelectClauseResults) + ', ' + \
-               'SelectClauseDiagnosticInfos:' + str(self.SelectClauseDiagnosticInfos) + ', ' + \
-               'WhereClauseResult:' + str(self.WhereClauseResult) + ')'
+        return ', '.join((
+            f'EventFilterResult(SelectClauseResults:{self.SelectClauseResults}',
+            f'SelectClauseDiagnosticInfos:{self.SelectClauseDiagnosticInfos}',
+            f'WhereClauseResult:{self.WhereClauseResult})'
+        ))
 
     __repr__ = __str__
 
 
 class AggregateFilterResult(FrozenClass):
-    '''
+    """
     :ivar RevisedStartTime:
     :vartype RevisedStartTime: DateTime
     :ivar RevisedProcessingInterval:
     :vartype RevisedProcessingInterval: Double
     :ivar RevisedAggregateConfiguration:
     :vartype RevisedAggregateConfiguration: AggregateConfiguration
-    '''
+    """
 
     ua_types = [
         ('RevisedStartTime', 'DateTime'),
         ('RevisedProcessingInterval', 'Double'),
         ('RevisedAggregateConfiguration', 'AggregateConfiguration'),
-               ]
+    ]
 
     def __init__(self):
         self.RevisedStartTime = datetime.utcnow()
@@ -6736,15 +6967,17 @@ class AggregateFilterResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AggregateFilterResult(' + 'RevisedStartTime:' + str(self.RevisedStartTime) + ', ' + \
-               'RevisedProcessingInterval:' + str(self.RevisedProcessingInterval) + ', ' + \
-               'RevisedAggregateConfiguration:' + str(self.RevisedAggregateConfiguration) + ')'
+        return ', '.join((
+            f'AggregateFilterResult(RevisedStartTime:{self.RevisedStartTime}',
+            f'RevisedProcessingInterval:{self.RevisedProcessingInterval}',
+            f'RevisedAggregateConfiguration:{self.RevisedAggregateConfiguration})'
+        ))
 
     __repr__ = __str__
 
 
 class MonitoringParameters(FrozenClass):
-    '''
+    """
     :ivar ClientHandle:
     :vartype ClientHandle: UInt32
     :ivar SamplingInterval:
@@ -6755,7 +6988,7 @@ class MonitoringParameters(FrozenClass):
     :vartype QueueSize: UInt32
     :ivar DiscardOldest:
     :vartype DiscardOldest: Boolean
-    '''
+    """
 
     ua_types = [
         ('ClientHandle', 'UInt32'),
@@ -6763,7 +6996,7 @@ class MonitoringParameters(FrozenClass):
         ('Filter', 'ExtensionObject'),
         ('QueueSize', 'UInt32'),
         ('DiscardOldest', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.ClientHandle = 0
@@ -6774,30 +7007,32 @@ class MonitoringParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoringParameters(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
-               'SamplingInterval:' + str(self.SamplingInterval) + ', ' + \
-               'Filter:' + str(self.Filter) + ', ' + \
-               'QueueSize:' + str(self.QueueSize) + ', ' + \
-               'DiscardOldest:' + str(self.DiscardOldest) + ')'
+        return ', '.join((
+            f'MonitoringParameters(ClientHandle:{self.ClientHandle}',
+            f'SamplingInterval:{self.SamplingInterval}',
+            f'Filter:{self.Filter}',
+            f'QueueSize:{self.QueueSize}',
+            f'DiscardOldest:{self.DiscardOldest})'
+        ))
 
     __repr__ = __str__
 
 
 class MonitoredItemCreateRequest(FrozenClass):
-    '''
+    """
     :ivar ItemToMonitor:
     :vartype ItemToMonitor: ReadValueId
     :ivar MonitoringMode:
     :vartype MonitoringMode: MonitoringMode
     :ivar RequestedParameters:
     :vartype RequestedParameters: MonitoringParameters
-    '''
+    """
 
     ua_types = [
         ('ItemToMonitor', 'ReadValueId'),
         ('MonitoringMode', 'MonitoringMode'),
         ('RequestedParameters', 'MonitoringParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.ItemToMonitor = ReadValueId()
@@ -6806,15 +7041,17 @@ class MonitoredItemCreateRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoredItemCreateRequest(' + 'ItemToMonitor:' + str(self.ItemToMonitor) + ', ' + \
-               'MonitoringMode:' + str(self.MonitoringMode) + ', ' + \
-               'RequestedParameters:' + str(self.RequestedParameters) + ')'
+        return ', '.join((
+            f'MonitoredItemCreateRequest(ItemToMonitor:{self.ItemToMonitor}',
+            f'MonitoringMode:{self.MonitoringMode}',
+            f'RequestedParameters:{self.RequestedParameters})'
+        ))
 
     __repr__ = __str__
 
 
 class MonitoredItemCreateResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar MonitoredItemId:
@@ -6825,7 +7062,7 @@ class MonitoredItemCreateResult(FrozenClass):
     :vartype RevisedQueueSize: UInt32
     :ivar FilterResult:
     :vartype FilterResult: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
@@ -6833,7 +7070,7 @@ class MonitoredItemCreateResult(FrozenClass):
         ('RevisedSamplingInterval', 'Double'),
         ('RevisedQueueSize', 'UInt32'),
         ('FilterResult', 'ExtensionObject'),
-               ]
+    ]
 
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -6844,30 +7081,32 @@ class MonitoredItemCreateResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoredItemCreateResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'MonitoredItemId:' + str(self.MonitoredItemId) + ', ' + \
-               'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', ' + \
-               'RevisedQueueSize:' + str(self.RevisedQueueSize) + ', ' + \
-               'FilterResult:' + str(self.FilterResult) + ')'
+        return ', '.join((
+            f'MonitoredItemCreateResult(StatusCode:{self.StatusCode}',
+            f'MonitoredItemId:{self.MonitoredItemId}',
+            f'RevisedSamplingInterval:{self.RevisedSamplingInterval}',
+            f'RevisedQueueSize:{self.RevisedQueueSize}',
+            f'FilterResult:{self.FilterResult})'
+        ))
 
     __repr__ = __str__
 
 
 class CreateMonitoredItemsParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar TimestampsToReturn:
     :vartype TimestampsToReturn: TimestampsToReturn
     :ivar ItemsToCreate:
     :vartype ItemsToCreate: MonitoredItemCreateRequest
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
         ('TimestampsToReturn', 'TimestampsToReturn'),
         ('ItemsToCreate', 'ListOfMonitoredItemCreateRequest'),
-               ]
+    ]
 
     def __init__(self):
         self.SubscriptionId = 0
@@ -6876,28 +7115,30 @@ class CreateMonitoredItemsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
-               'ItemsToCreate:' + str(self.ItemsToCreate) + ')'
+        return ', '.join((
+            f'CreateMonitoredItemsParameters(SubscriptionId:{self.SubscriptionId}',
+            f'TimestampsToReturn:{self.TimestampsToReturn}',
+            f'ItemsToCreate:{self.ItemsToCreate})'
+        ))
 
     __repr__ = __str__
 
 
 class CreateMonitoredItemsRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: CreateMonitoredItemsParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'CreateMonitoredItemsParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateMonitoredItemsRequest_Encoding_DefaultBinary)
@@ -6906,15 +7147,17 @@ class CreateMonitoredItemsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'CreateMonitoredItemsRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class CreateMonitoredItemsResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -6923,14 +7166,14 @@ class CreateMonitoredItemsResponse(FrozenClass):
     :vartype Results: MonitoredItemCreateResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfMonitoredItemCreateResult'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateMonitoredItemsResponse_Encoding_DefaultBinary)
@@ -6940,26 +7183,28 @@ class CreateMonitoredItemsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'CreateMonitoredItemsResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class MonitoredItemModifyRequest(FrozenClass):
-    '''
+    """
     :ivar MonitoredItemId:
     :vartype MonitoredItemId: UInt32
     :ivar RequestedParameters:
     :vartype RequestedParameters: MonitoringParameters
-    '''
+    """
 
     ua_types = [
         ('MonitoredItemId', 'UInt32'),
         ('RequestedParameters', 'MonitoringParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.MonitoredItemId = 0
@@ -6967,14 +7212,16 @@ class MonitoredItemModifyRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoredItemModifyRequest(' + 'MonitoredItemId:' + str(self.MonitoredItemId) + ', ' + \
-               'RequestedParameters:' + str(self.RequestedParameters) + ')'
+        return ', '.join((
+            f'MonitoredItemModifyRequest(MonitoredItemId:{self.MonitoredItemId}',
+            f'RequestedParameters:{self.RequestedParameters})'
+        ))
 
     __repr__ = __str__
 
 
 class MonitoredItemModifyResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar RevisedSamplingInterval:
@@ -6983,14 +7230,14 @@ class MonitoredItemModifyResult(FrozenClass):
     :vartype RevisedQueueSize: UInt32
     :ivar FilterResult:
     :vartype FilterResult: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
         ('RevisedSamplingInterval', 'Double'),
         ('RevisedQueueSize', 'UInt32'),
         ('FilterResult', 'ExtensionObject'),
-               ]
+    ]
 
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -7000,29 +7247,31 @@ class MonitoredItemModifyResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoredItemModifyResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', ' + \
-               'RevisedQueueSize:' + str(self.RevisedQueueSize) + ', ' + \
-               'FilterResult:' + str(self.FilterResult) + ')'
+        return ', '.join((
+            f'MonitoredItemModifyResult(StatusCode:{self.StatusCode}',
+            f'RevisedSamplingInterval:{self.RevisedSamplingInterval}',
+            f'RevisedQueueSize:{self.RevisedQueueSize}',
+            f'FilterResult:{self.FilterResult})'
+        ))
 
     __repr__ = __str__
 
 
 class ModifyMonitoredItemsParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar TimestampsToReturn:
     :vartype TimestampsToReturn: TimestampsToReturn
     :ivar ItemsToModify:
     :vartype ItemsToModify: MonitoredItemModifyRequest
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
         ('TimestampsToReturn', 'TimestampsToReturn'),
         ('ItemsToModify', 'ListOfMonitoredItemModifyRequest'),
-               ]
+    ]
 
     def __init__(self):
         self.SubscriptionId = 0
@@ -7031,28 +7280,30 @@ class ModifyMonitoredItemsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModifyMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
-               'ItemsToModify:' + str(self.ItemsToModify) + ')'
+        return ', '.join((
+            f'ModifyMonitoredItemsParameters(SubscriptionId:{self.SubscriptionId}',
+            f'TimestampsToReturn:{self.TimestampsToReturn}',
+            f'ItemsToModify:{self.ItemsToModify})'
+        ))
 
     __repr__ = __str__
 
 
 class ModifyMonitoredItemsRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: ModifyMonitoredItemsParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'ModifyMonitoredItemsParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ModifyMonitoredItemsRequest_Encoding_DefaultBinary)
@@ -7061,15 +7312,17 @@ class ModifyMonitoredItemsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModifyMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'ModifyMonitoredItemsRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class ModifyMonitoredItemsResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -7078,14 +7331,14 @@ class ModifyMonitoredItemsResponse(FrozenClass):
     :vartype Results: MonitoredItemModifyResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfMonitoredItemModifyResult'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ModifyMonitoredItemsResponse_Encoding_DefaultBinary)
@@ -7095,29 +7348,31 @@ class ModifyMonitoredItemsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModifyMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'ModifyMonitoredItemsResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class SetMonitoringModeParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar MonitoringMode:
     :vartype MonitoringMode: MonitoringMode
     :ivar MonitoredItemIds:
     :vartype MonitoredItemIds: UInt32
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
         ('MonitoringMode', 'MonitoringMode'),
         ('MonitoredItemIds', 'ListOfUInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.SubscriptionId = 0
@@ -7126,28 +7381,30 @@ class SetMonitoringModeParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetMonitoringModeParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'MonitoringMode:' + str(self.MonitoringMode) + ', ' + \
-               'MonitoredItemIds:' + str(self.MonitoredItemIds) + ')'
+        return ', '.join((
+            f'SetMonitoringModeParameters(SubscriptionId:{self.SubscriptionId}',
+            f'MonitoringMode:{self.MonitoringMode}',
+            f'MonitoredItemIds:{self.MonitoredItemIds})'
+        ))
 
     __repr__ = __str__
 
 
 class SetMonitoringModeRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: SetMonitoringModeParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'SetMonitoringModeParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetMonitoringModeRequest_Encoding_DefaultBinary)
@@ -7156,25 +7413,27 @@ class SetMonitoringModeRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetMonitoringModeRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'SetMonitoringModeRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class SetMonitoringModeResult(FrozenClass):
-    '''
+    """
     :ivar Results:
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('Results', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.Results = []
@@ -7182,27 +7441,26 @@ class SetMonitoringModeResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetMonitoringModeResult(' + 'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'SetMonitoringModeResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class SetMonitoringModeResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: SetMonitoringModeResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'SetMonitoringModeResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetMonitoringModeResponse_Encoding_DefaultBinary)
@@ -7211,15 +7469,17 @@ class SetMonitoringModeResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetMonitoringModeResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'SetMonitoringModeResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class SetTriggeringParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar TriggeringItemId:
@@ -7228,14 +7488,14 @@ class SetTriggeringParameters(FrozenClass):
     :vartype LinksToAdd: UInt32
     :ivar LinksToRemove:
     :vartype LinksToRemove: UInt32
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
         ('TriggeringItemId', 'UInt32'),
         ('LinksToAdd', 'ListOfUInt32'),
         ('LinksToRemove', 'ListOfUInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.SubscriptionId = 0
@@ -7245,29 +7505,31 @@ class SetTriggeringParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetTriggeringParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'TriggeringItemId:' + str(self.TriggeringItemId) + ', ' + \
-               'LinksToAdd:' + str(self.LinksToAdd) + ', ' + \
-               'LinksToRemove:' + str(self.LinksToRemove) + ')'
+        return ', '.join((
+            f'SetTriggeringParameters(SubscriptionId:{self.SubscriptionId}',
+            f'TriggeringItemId:{self.TriggeringItemId}',
+            f'LinksToAdd:{self.LinksToAdd}',
+            f'LinksToRemove:{self.LinksToRemove})'
+        ))
 
     __repr__ = __str__
 
 
 class SetTriggeringRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: SetTriggeringParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'SetTriggeringParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetTriggeringRequest_Encoding_DefaultBinary)
@@ -7276,15 +7538,17 @@ class SetTriggeringRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetTriggeringRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'SetTriggeringRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class SetTriggeringResult(FrozenClass):
-    '''
+    """
     :ivar AddResults:
     :vartype AddResults: StatusCode
     :ivar AddDiagnosticInfos:
@@ -7293,14 +7557,14 @@ class SetTriggeringResult(FrozenClass):
     :vartype RemoveResults: StatusCode
     :ivar RemoveDiagnosticInfos:
     :vartype RemoveDiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('AddResults', 'ListOfStatusCode'),
         ('AddDiagnosticInfos', 'ListOfDiagnosticInfo'),
         ('RemoveResults', 'ListOfStatusCode'),
         ('RemoveDiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.AddResults = []
@@ -7310,29 +7574,31 @@ class SetTriggeringResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetTriggeringResult(' + 'AddResults:' + str(self.AddResults) + ', ' + \
-               'AddDiagnosticInfos:' + str(self.AddDiagnosticInfos) + ', ' + \
-               'RemoveResults:' + str(self.RemoveResults) + ', ' + \
-               'RemoveDiagnosticInfos:' + str(self.RemoveDiagnosticInfos) + ')'
+        return ', '.join((
+            f'SetTriggeringResult(AddResults:{self.AddResults}',
+            f'AddDiagnosticInfos:{self.AddDiagnosticInfos}',
+            f'RemoveResults:{self.RemoveResults}',
+            f'RemoveDiagnosticInfos:{self.RemoveDiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class SetTriggeringResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: SetTriggeringResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'SetTriggeringResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetTriggeringResponse_Encoding_DefaultBinary)
@@ -7341,25 +7607,27 @@ class SetTriggeringResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetTriggeringResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'SetTriggeringResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class DeleteMonitoredItemsParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar MonitoredItemIds:
     :vartype MonitoredItemIds: UInt32
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
         ('MonitoredItemIds', 'ListOfUInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.SubscriptionId = 0
@@ -7367,27 +7635,29 @@ class DeleteMonitoredItemsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'MonitoredItemIds:' + str(self.MonitoredItemIds) + ')'
+        return ', '.join((
+            f'DeleteMonitoredItemsParameters(SubscriptionId:{self.SubscriptionId}',
+            f'MonitoredItemIds:{self.MonitoredItemIds})'
+        ))
 
     __repr__ = __str__
 
 
 class DeleteMonitoredItemsRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: DeleteMonitoredItemsParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'DeleteMonitoredItemsParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteMonitoredItemsRequest_Encoding_DefaultBinary)
@@ -7396,15 +7666,17 @@ class DeleteMonitoredItemsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'DeleteMonitoredItemsRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class DeleteMonitoredItemsResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -7413,14 +7685,14 @@ class DeleteMonitoredItemsResponse(FrozenClass):
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteMonitoredItemsResponse_Encoding_DefaultBinary)
@@ -7430,16 +7702,18 @@ class DeleteMonitoredItemsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'DeleteMonitoredItemsResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class CreateSubscriptionParameters(FrozenClass):
-    '''
+    """
     :ivar RequestedPublishingInterval:
     :vartype RequestedPublishingInterval: Double
     :ivar RequestedLifetimeCount:
@@ -7452,7 +7726,7 @@ class CreateSubscriptionParameters(FrozenClass):
     :vartype PublishingEnabled: Boolean
     :ivar Priority:
     :vartype Priority: Byte
-    '''
+    """
 
     ua_types = [
         ('RequestedPublishingInterval', 'Double'),
@@ -7461,7 +7735,7 @@ class CreateSubscriptionParameters(FrozenClass):
         ('MaxNotificationsPerPublish', 'UInt32'),
         ('PublishingEnabled', 'Boolean'),
         ('Priority', 'Byte'),
-               ]
+    ]
 
     def __init__(self):
         self.RequestedPublishingInterval = 0
@@ -7473,31 +7747,33 @@ class CreateSubscriptionParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSubscriptionParameters(' + 'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', ' + \
-               'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', ' + \
-               'RequestedMaxKeepAliveCount:' + str(self.RequestedMaxKeepAliveCount) + ', ' + \
-               'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
-               'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
-               'Priority:' + str(self.Priority) + ')'
+        return ', '.join((
+            f'CreateSubscriptionParameters(RequestedPublishingInterval:{self.RequestedPublishingInterval}',
+            f'RequestedLifetimeCount:{self.RequestedLifetimeCount}',
+            f'RequestedMaxKeepAliveCount:{self.RequestedMaxKeepAliveCount}',
+            f'MaxNotificationsPerPublish:{self.MaxNotificationsPerPublish}',
+            f'PublishingEnabled:{self.PublishingEnabled}',
+            f'Priority:{self.Priority})'
+        ))
 
     __repr__ = __str__
 
 
 class CreateSubscriptionRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: CreateSubscriptionParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'CreateSubscriptionParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateSubscriptionRequest_Encoding_DefaultBinary)
@@ -7506,15 +7782,17 @@ class CreateSubscriptionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'CreateSubscriptionRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class CreateSubscriptionResult(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar RevisedPublishingInterval:
@@ -7523,14 +7801,14 @@ class CreateSubscriptionResult(FrozenClass):
     :vartype RevisedLifetimeCount: UInt32
     :ivar RevisedMaxKeepAliveCount:
     :vartype RevisedMaxKeepAliveCount: UInt32
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
         ('RevisedPublishingInterval', 'Double'),
         ('RevisedLifetimeCount', 'UInt32'),
         ('RevisedMaxKeepAliveCount', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.SubscriptionId = 0
@@ -7540,29 +7818,31 @@ class CreateSubscriptionResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSubscriptionResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', ' + \
-               'RevisedLifetimeCount:' + str(self.RevisedLifetimeCount) + ', ' + \
-               'RevisedMaxKeepAliveCount:' + str(self.RevisedMaxKeepAliveCount) + ')'
+        return ', '.join((
+            f'CreateSubscriptionResult(SubscriptionId:{self.SubscriptionId}',
+            f'RevisedPublishingInterval:{self.RevisedPublishingInterval}',
+            f'RevisedLifetimeCount:{self.RevisedLifetimeCount}',
+            f'RevisedMaxKeepAliveCount:{self.RevisedMaxKeepAliveCount})'
+        ))
 
     __repr__ = __str__
 
 
 class CreateSubscriptionResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: CreateSubscriptionResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'CreateSubscriptionResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateSubscriptionResponse_Encoding_DefaultBinary)
@@ -7571,15 +7851,17 @@ class CreateSubscriptionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'CreateSubscriptionResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class ModifySubscriptionParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar RequestedPublishingInterval:
@@ -7592,7 +7874,7 @@ class ModifySubscriptionParameters(FrozenClass):
     :vartype MaxNotificationsPerPublish: UInt32
     :ivar Priority:
     :vartype Priority: Byte
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
@@ -7601,7 +7883,7 @@ class ModifySubscriptionParameters(FrozenClass):
         ('RequestedMaxKeepAliveCount', 'UInt32'),
         ('MaxNotificationsPerPublish', 'UInt32'),
         ('Priority', 'Byte'),
-               ]
+    ]
 
     def __init__(self):
         self.SubscriptionId = 0
@@ -7613,31 +7895,33 @@ class ModifySubscriptionParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModifySubscriptionParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', ' + \
-               'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', ' + \
-               'RequestedMaxKeepAliveCount:' + str(self.RequestedMaxKeepAliveCount) + ', ' + \
-               'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
-               'Priority:' + str(self.Priority) + ')'
+        return ', '.join((
+            f'ModifySubscriptionParameters(SubscriptionId:{self.SubscriptionId}',
+            f'RequestedPublishingInterval:{self.RequestedPublishingInterval}',
+            f'RequestedLifetimeCount:{self.RequestedLifetimeCount}',
+            f'RequestedMaxKeepAliveCount:{self.RequestedMaxKeepAliveCount}',
+            f'MaxNotificationsPerPublish:{self.MaxNotificationsPerPublish}',
+            f'Priority:{self.Priority})'
+        ))
 
     __repr__ = __str__
 
 
 class ModifySubscriptionRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: ModifySubscriptionParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'ModifySubscriptionParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ModifySubscriptionRequest_Encoding_DefaultBinary)
@@ -7646,28 +7930,30 @@ class ModifySubscriptionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModifySubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'ModifySubscriptionRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class ModifySubscriptionResult(FrozenClass):
-    '''
+    """
     :ivar RevisedPublishingInterval:
     :vartype RevisedPublishingInterval: Double
     :ivar RevisedLifetimeCount:
     :vartype RevisedLifetimeCount: UInt32
     :ivar RevisedMaxKeepAliveCount:
     :vartype RevisedMaxKeepAliveCount: UInt32
-    '''
+    """
 
     ua_types = [
         ('RevisedPublishingInterval', 'Double'),
         ('RevisedLifetimeCount', 'UInt32'),
         ('RevisedMaxKeepAliveCount', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.RevisedPublishingInterval = 0
@@ -7676,28 +7962,30 @@ class ModifySubscriptionResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModifySubscriptionResult(' + 'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', ' + \
-               'RevisedLifetimeCount:' + str(self.RevisedLifetimeCount) + ', ' + \
-               'RevisedMaxKeepAliveCount:' + str(self.RevisedMaxKeepAliveCount) + ')'
+        return ', '.join((
+            f'ModifySubscriptionResult(RevisedPublishingInterval:{self.RevisedPublishingInterval}',
+            f'RevisedLifetimeCount:{self.RevisedLifetimeCount}',
+            f'RevisedMaxKeepAliveCount:{self.RevisedMaxKeepAliveCount})'
+        ))
 
     __repr__ = __str__
 
 
 class ModifySubscriptionResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: ModifySubscriptionResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'ModifySubscriptionResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ModifySubscriptionResponse_Encoding_DefaultBinary)
@@ -7706,25 +7994,27 @@ class ModifySubscriptionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModifySubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'ModifySubscriptionResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class SetPublishingModeParameters(FrozenClass):
-    '''
+    """
     :ivar PublishingEnabled:
     :vartype PublishingEnabled: Boolean
     :ivar SubscriptionIds:
     :vartype SubscriptionIds: UInt32
-    '''
+    """
 
     ua_types = [
         ('PublishingEnabled', 'Boolean'),
         ('SubscriptionIds', 'ListOfUInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.PublishingEnabled = True
@@ -7732,27 +8022,29 @@ class SetPublishingModeParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetPublishingModeParameters(' + 'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
-               'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
+        return ', '.join((
+            f'SetPublishingModeParameters(PublishingEnabled:{self.PublishingEnabled}',
+            f'SubscriptionIds:{self.SubscriptionIds})'
+        ))
 
     __repr__ = __str__
 
 
 class SetPublishingModeRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: SetPublishingModeParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'SetPublishingModeParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetPublishingModeRequest_Encoding_DefaultBinary)
@@ -7761,25 +8053,27 @@ class SetPublishingModeRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetPublishingModeRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'SetPublishingModeRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class SetPublishingModeResult(FrozenClass):
-    '''
+    """
     :ivar Results:
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('Results', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.Results = []
@@ -7787,27 +8081,26 @@ class SetPublishingModeResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetPublishingModeResult(' + 'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'SetPublishingModeResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class SetPublishingModeResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: SetPublishingModeResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'SetPublishingModeResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetPublishingModeResponse_Encoding_DefaultBinary)
@@ -7816,28 +8109,30 @@ class SetPublishingModeResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetPublishingModeResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'SetPublishingModeResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class NotificationMessage(FrozenClass):
-    '''
+    """
     :ivar SequenceNumber:
     :vartype SequenceNumber: UInt32
     :ivar PublishTime:
     :vartype PublishTime: DateTime
     :ivar NotificationData:
     :vartype NotificationData: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('SequenceNumber', 'UInt32'),
         ('PublishTime', 'DateTime'),
         ('NotificationData', 'ListOfExtensionObject'),
-               ]
+    ]
 
     def __init__(self):
         self.SequenceNumber = 0
@@ -7846,41 +8141,44 @@ class NotificationMessage(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'NotificationMessage(' + 'SequenceNumber:' + str(self.SequenceNumber) + ', ' + \
-               'PublishTime:' + str(self.PublishTime) + ', ' + \
-               'NotificationData:' + str(self.NotificationData) + ')'
+        return ', '.join((
+            f'NotificationMessage(SequenceNumber:{self.SequenceNumber}',
+            f'PublishTime:{self.PublishTime}',
+            f'NotificationData:{self.NotificationData})'
+
+        ))
 
     __repr__ = __str__
 
 
 class NotificationData(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
-               ]
+    ]
 
     def __init__(self):
         self._freeze = True
 
     def __str__(self):
-        return 'NotificationData(' +  + ')'
+        return 'NotificationData()'
 
     __repr__ = __str__
 
 
 class DataChangeNotification(FrozenClass):
-    '''
+    """
     :ivar MonitoredItems:
     :vartype MonitoredItems: MonitoredItemNotification
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('MonitoredItems', 'ListOfMonitoredItemNotification'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.MonitoredItems = []
@@ -7888,24 +8186,23 @@ class DataChangeNotification(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataChangeNotification(' + 'MonitoredItems:' + str(self.MonitoredItems) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'DataChangeNotification(MonitoredItems:{self.MonitoredItems}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class MonitoredItemNotification(FrozenClass):
-    '''
+    """
     :ivar ClientHandle:
     :vartype ClientHandle: UInt32
     :ivar Value:
     :vartype Value: DataValue
-    '''
+    """
 
     ua_types = [
         ('ClientHandle', 'UInt32'),
         ('Value', 'DataValue'),
-               ]
+    ]
 
     def __init__(self):
         self.ClientHandle = 0
@@ -7913,44 +8210,43 @@ class MonitoredItemNotification(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoredItemNotification(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
-               'Value:' + str(self.Value) + ')'
+        return f'MonitoredItemNotification(ClientHandle:{self.ClientHandle}, Value:{self.Value})'
 
     __repr__ = __str__
 
 
 class EventNotificationList(FrozenClass):
-    '''
+    """
     :ivar Events:
     :vartype Events: EventFieldList
-    '''
+    """
 
     ua_types = [
         ('Events', 'ListOfEventFieldList'),
-               ]
+    ]
 
     def __init__(self):
         self.Events = []
         self._freeze = True
 
     def __str__(self):
-        return 'EventNotificationList(' + 'Events:' + str(self.Events) + ')'
+        return f'EventNotificationList(Events:{self.Events})'
 
     __repr__ = __str__
 
 
 class EventFieldList(FrozenClass):
-    '''
+    """
     :ivar ClientHandle:
     :vartype ClientHandle: UInt32
     :ivar EventFields:
     :vartype EventFields: Variant
-    '''
+    """
 
     ua_types = [
         ('ClientHandle', 'UInt32'),
         ('EventFields', 'ListOfVariant'),
-               ]
+    ]
 
     def __init__(self):
         self.ClientHandle = 0
@@ -7958,44 +8254,43 @@ class EventFieldList(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EventFieldList(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
-               'EventFields:' + str(self.EventFields) + ')'
+        return f'EventFieldList(ClientHandle:{self.ClientHandle}, EventFields:{self.EventFields})'
 
     __repr__ = __str__
 
 
 class HistoryEventFieldList(FrozenClass):
-    '''
+    """
     :ivar EventFields:
     :vartype EventFields: Variant
-    '''
+    """
 
     ua_types = [
         ('EventFields', 'ListOfVariant'),
-               ]
+    ]
 
     def __init__(self):
         self.EventFields = []
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryEventFieldList(' + 'EventFields:' + str(self.EventFields) + ')'
+        return f'HistoryEventFieldList(EventFields:{self.EventFields})'
 
     __repr__ = __str__
 
 
 class StatusChangeNotification(FrozenClass):
-    '''
+    """
     :ivar Status:
     :vartype Status: StatusCode
     :ivar DiagnosticInfo:
     :vartype DiagnosticInfo: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('Status', 'StatusCode'),
         ('DiagnosticInfo', 'DiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.Status = StatusCode()
@@ -8003,24 +8298,23 @@ class StatusChangeNotification(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'StatusChangeNotification(' + 'Status:' + str(self.Status) + ', ' + \
-               'DiagnosticInfo:' + str(self.DiagnosticInfo) + ')'
+        return f'StatusChangeNotification(Status:{self.Status}, DiagnosticInfo:{self.DiagnosticInfo})'
 
     __repr__ = __str__
 
 
 class SubscriptionAcknowledgement(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar SequenceNumber:
     :vartype SequenceNumber: UInt32
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
         ('SequenceNumber', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.SubscriptionId = 0
@@ -8028,47 +8322,49 @@ class SubscriptionAcknowledgement(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SubscriptionAcknowledgement(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'SequenceNumber:' + str(self.SequenceNumber) + ')'
+        return ', '.join((
+            f'SubscriptionAcknowledgement(SubscriptionId:{self.SubscriptionId}',
+            f'SequenceNumber:{self.SequenceNumber})'
+        ))
 
     __repr__ = __str__
 
 
 class PublishParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionAcknowledgements:
     :vartype SubscriptionAcknowledgements: SubscriptionAcknowledgement
-    '''
+    """
 
     ua_types = [
         ('SubscriptionAcknowledgements', 'ListOfSubscriptionAcknowledgement'),
-               ]
+    ]
 
     def __init__(self):
         self.SubscriptionAcknowledgements = []
         self._freeze = True
 
     def __str__(self):
-        return 'PublishParameters(' + 'SubscriptionAcknowledgements:' + str(self.SubscriptionAcknowledgements) + ')'
+        return f'PublishParameters(SubscriptionAcknowledgements:{self.SubscriptionAcknowledgements})'
 
     __repr__ = __str__
 
 
 class PublishRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: PublishParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'PublishParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.PublishRequest_Encoding_DefaultBinary)
@@ -8077,15 +8373,17 @@ class PublishRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PublishRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'PublishRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class PublishResult(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar AvailableSequenceNumbers:
@@ -8098,7 +8396,7 @@ class PublishResult(FrozenClass):
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
@@ -8107,7 +8405,7 @@ class PublishResult(FrozenClass):
         ('NotificationMessage', 'NotificationMessage'),
         ('Results', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.SubscriptionId = 0
@@ -8119,31 +8417,33 @@ class PublishResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PublishResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ', ' + \
-               'MoreNotifications:' + str(self.MoreNotifications) + ', ' + \
-               'NotificationMessage:' + str(self.NotificationMessage) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'PublishResult(SubscriptionId:{self.SubscriptionId}',
+            f'AvailableSequenceNumbers:{self.AvailableSequenceNumbers}',
+            f'MoreNotifications:{self.MoreNotifications}',
+            f'NotificationMessage:{self.NotificationMessage}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class PublishResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: PublishResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'PublishResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.PublishResponse_Encoding_DefaultBinary)
@@ -8152,25 +8452,27 @@ class PublishResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PublishResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'PublishResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class RepublishParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar RetransmitSequenceNumber:
     :vartype RetransmitSequenceNumber: UInt32
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
         ('RetransmitSequenceNumber', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.SubscriptionId = 0
@@ -8178,27 +8480,29 @@ class RepublishParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RepublishParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'RetransmitSequenceNumber:' + str(self.RetransmitSequenceNumber) + ')'
+        return ', '.join((
+            f'RepublishParameters(SubscriptionId:{self.SubscriptionId}',
+            f'RetransmitSequenceNumber:{self.RetransmitSequenceNumber})'
+        ))
 
     __repr__ = __str__
 
 
 class RepublishRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: RepublishParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'RepublishParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RepublishRequest_Encoding_DefaultBinary)
@@ -8207,28 +8511,30 @@ class RepublishRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RepublishRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'RepublishRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class RepublishResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar NotificationMessage:
     :vartype NotificationMessage: NotificationMessage
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('NotificationMessage', 'NotificationMessage'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RepublishResponse_Encoding_DefaultBinary)
@@ -8237,25 +8543,27 @@ class RepublishResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RepublishResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'NotificationMessage:' + str(self.NotificationMessage) + ')'
+        return ', '.join((
+            f'RepublishResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'NotificationMessage:{self.NotificationMessage})'
+        ))
 
     __repr__ = __str__
 
 
 class TransferResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar AvailableSequenceNumbers:
     :vartype AvailableSequenceNumbers: UInt32
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
         ('AvailableSequenceNumbers', 'ListOfUInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -8263,24 +8571,26 @@ class TransferResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TransferResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ')'
+        return ', '.join((
+            f'TransferResult(StatusCode:{self.StatusCode}',
+            f'AvailableSequenceNumbers:{self.AvailableSequenceNumbers})'
+        ))
 
     __repr__ = __str__
 
 
 class TransferSubscriptionsParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionIds:
     :vartype SubscriptionIds: UInt32
     :ivar SendInitialValues:
     :vartype SendInitialValues: Boolean
-    '''
+    """
 
     ua_types = [
         ('SubscriptionIds', 'ListOfUInt32'),
         ('SendInitialValues', 'Boolean'),
-               ]
+    ]
 
     def __init__(self):
         self.SubscriptionIds = []
@@ -8288,27 +8598,29 @@ class TransferSubscriptionsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TransferSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ', ' + \
-               'SendInitialValues:' + str(self.SendInitialValues) + ')'
+        return ', '.join((
+            f'TransferSubscriptionsParameters(SubscriptionIds:{self.SubscriptionIds}',
+            f'SendInitialValues:{self.SendInitialValues})'
+        ))
 
     __repr__ = __str__
 
 
 class TransferSubscriptionsRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: TransferSubscriptionsParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'TransferSubscriptionsParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TransferSubscriptionsRequest_Encoding_DefaultBinary)
@@ -8317,25 +8629,27 @@ class TransferSubscriptionsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TransferSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'TransferSubscriptionsRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class TransferSubscriptionsResult(FrozenClass):
-    '''
+    """
     :ivar Results:
     :vartype Results: TransferResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('Results', 'ListOfTransferResult'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.Results = []
@@ -8343,27 +8657,26 @@ class TransferSubscriptionsResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TransferSubscriptionsResult(' + 'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'TransferSubscriptionsResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class TransferSubscriptionsResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: TransferSubscriptionsResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Parameters', 'TransferSubscriptionsResult'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TransferSubscriptionsResponse_Encoding_DefaultBinary)
@@ -8372,48 +8685,50 @@ class TransferSubscriptionsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TransferSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'TransferSubscriptionsResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class DeleteSubscriptionsParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionIds:
     :vartype SubscriptionIds: UInt32
-    '''
+    """
 
     ua_types = [
         ('SubscriptionIds', 'ListOfUInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.SubscriptionIds = []
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
+        return f'DeleteSubscriptionsParameters(SubscriptionIds:{self.SubscriptionIds})'
 
     __repr__ = __str__
 
 
 class DeleteSubscriptionsRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: DeleteSubscriptionsParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('RequestHeader', 'RequestHeader'),
         ('Parameters', 'DeleteSubscriptionsParameters'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary)
@@ -8422,15 +8737,17 @@ class DeleteSubscriptionsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return ', '.join((
+            f'DeleteSubscriptionsRequest(TypeId:{self.TypeId}',
+            f'RequestHeader:{self.RequestHeader}',
+            f'Parameters:{self.Parameters})'
+        ))
 
     __repr__ = __str__
 
 
 class DeleteSubscriptionsResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -8439,14 +8756,14 @@ class DeleteSubscriptionsResponse(FrozenClass):
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
         ('ResponseHeader', 'ResponseHeader'),
         ('Results', 'ListOfStatusCode'),
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsResponse_Encoding_DefaultBinary)
@@ -8456,16 +8773,18 @@ class DeleteSubscriptionsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return ', '.join((
+            f'DeleteSubscriptionsResponse(TypeId:{self.TypeId}',
+            f'ResponseHeader:{self.ResponseHeader}',
+            f'Results:{self.Results}',
+            f'DiagnosticInfos:{self.DiagnosticInfos})'
+        ))
 
     __repr__ = __str__
 
 
 class BuildInfo(FrozenClass):
-    '''
+    """
     :ivar ProductUri:
     :vartype ProductUri: String
     :ivar ManufacturerName:
@@ -8478,7 +8797,7 @@ class BuildInfo(FrozenClass):
     :vartype BuildNumber: String
     :ivar BuildDate:
     :vartype BuildDate: DateTime
-    '''
+    """
 
     ua_types = [
         ('ProductUri', 'String'),
@@ -8487,7 +8806,7 @@ class BuildInfo(FrozenClass):
         ('SoftwareVersion', 'String'),
         ('BuildNumber', 'String'),
         ('BuildDate', 'DateTime'),
-               ]
+    ]
 
     def __init__(self):
         self.ProductUri = None
@@ -8499,31 +8818,33 @@ class BuildInfo(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BuildInfo(' + 'ProductUri:' + str(self.ProductUri) + ', ' + \
-               'ManufacturerName:' + str(self.ManufacturerName) + ', ' + \
-               'ProductName:' + str(self.ProductName) + ', ' + \
-               'SoftwareVersion:' + str(self.SoftwareVersion) + ', ' + \
-               'BuildNumber:' + str(self.BuildNumber) + ', ' + \
-               'BuildDate:' + str(self.BuildDate) + ')'
+        return ', '.join((
+            f'BuildInfo(ProductUri:{self.ProductUri}',
+            f'ManufacturerName:{self.ManufacturerName}',
+            f'ProductName:{self.ProductName}',
+            f'SoftwareVersion:{self.SoftwareVersion}',
+            f'BuildNumber:{self.BuildNumber}',
+            f'BuildDate:{self.BuildDate})'
+        ))
 
     __repr__ = __str__
 
 
 class RedundantServerDataType(FrozenClass):
-    '''
+    """
     :ivar ServerId:
     :vartype ServerId: String
     :ivar ServiceLevel:
     :vartype ServiceLevel: Byte
     :ivar ServerState:
     :vartype ServerState: ServerState
-    '''
+    """
 
     ua_types = [
         ('ServerId', 'String'),
         ('ServiceLevel', 'Byte'),
         ('ServerState', 'ServerState'),
-               ]
+    ]
 
     def __init__(self):
         self.ServerId = None
@@ -8532,45 +8853,47 @@ class RedundantServerDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RedundantServerDataType(' + 'ServerId:' + str(self.ServerId) + ', ' + \
-               'ServiceLevel:' + str(self.ServiceLevel) + ', ' + \
-               'ServerState:' + str(self.ServerState) + ')'
+        return ', '.join((
+            f'RedundantServerDataType(ServerId:{self.ServerId}',
+            f'ServiceLevel:{self.ServiceLevel}',
+            f'ServerState:{self.ServerState})'
+        ))
 
     __repr__ = __str__
 
 
 class EndpointUrlListDataType(FrozenClass):
-    '''
+    """
     :ivar EndpointUrlList:
     :vartype EndpointUrlList: String
-    '''
+    """
 
     ua_types = [
         ('EndpointUrlList', 'ListOfString'),
-               ]
+    ]
 
     def __init__(self):
         self.EndpointUrlList = []
         self._freeze = True
 
     def __str__(self):
-        return 'EndpointUrlListDataType(' + 'EndpointUrlList:' + str(self.EndpointUrlList) + ')'
+        return f'EndpointUrlListDataType(EndpointUrlList:{self.EndpointUrlList})'
 
     __repr__ = __str__
 
 
 class NetworkGroupDataType(FrozenClass):
-    '''
+    """
     :ivar ServerUri:
     :vartype ServerUri: String
     :ivar NetworkPaths:
     :vartype NetworkPaths: EndpointUrlListDataType
-    '''
+    """
 
     ua_types = [
         ('ServerUri', 'String'),
         ('NetworkPaths', 'ListOfEndpointUrlListDataType'),
-               ]
+    ]
 
     def __init__(self):
         self.ServerUri = None
@@ -8578,14 +8901,13 @@ class NetworkGroupDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'NetworkGroupDataType(' + 'ServerUri:' + str(self.ServerUri) + ', ' + \
-               'NetworkPaths:' + str(self.NetworkPaths) + ')'
+        return f'NetworkGroupDataType(ServerUri:{self.ServerUri}, NetworkPaths:{self.NetworkPaths})'
 
     __repr__ = __str__
 
 
 class SamplingIntervalDiagnosticsDataType(FrozenClass):
-    '''
+    """
     :ivar SamplingInterval:
     :vartype SamplingInterval: Double
     :ivar MonitoredItemCount:
@@ -8594,14 +8916,14 @@ class SamplingIntervalDiagnosticsDataType(FrozenClass):
     :vartype MaxMonitoredItemCount: UInt32
     :ivar DisabledMonitoredItemCount:
     :vartype DisabledMonitoredItemCount: UInt32
-    '''
+    """
 
     ua_types = [
         ('SamplingInterval', 'Double'),
         ('MonitoredItemCount', 'UInt32'),
         ('MaxMonitoredItemCount', 'UInt32'),
         ('DisabledMonitoredItemCount', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.SamplingInterval = 0
@@ -8611,16 +8933,18 @@ class SamplingIntervalDiagnosticsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SamplingIntervalDiagnosticsDataType(' + 'SamplingInterval:' + str(self.SamplingInterval) + ', ' + \
-               'MonitoredItemCount:' + str(self.MonitoredItemCount) + ', ' + \
-               'MaxMonitoredItemCount:' + str(self.MaxMonitoredItemCount) + ', ' + \
-               'DisabledMonitoredItemCount:' + str(self.DisabledMonitoredItemCount) + ')'
+        return ', '.join((
+            f'SamplingIntervalDiagnosticsDataType(SamplingInterval:{self.SamplingInterval}',
+            f'MonitoredItemCount:{self.MonitoredItemCount}',
+            f'MaxMonitoredItemCount:{self.MaxMonitoredItemCount}',
+            f'DisabledMonitoredItemCount:{self.DisabledMonitoredItemCount})'
+        ))
 
     __repr__ = __str__
 
 
 class ServerDiagnosticsSummaryDataType(FrozenClass):
-    '''
+    """
     :ivar ServerViewCount:
     :vartype ServerViewCount: UInt32
     :ivar CurrentSessionCount:
@@ -8645,7 +8969,7 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
     :vartype SecurityRejectedRequestsCount: UInt32
     :ivar RejectedRequestsCount:
     :vartype RejectedRequestsCount: UInt32
-    '''
+    """
 
     ua_types = [
         ('ServerViewCount', 'UInt32'),
@@ -8660,7 +8984,7 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
         ('PublishingIntervalCount', 'UInt32'),
         ('SecurityRejectedRequestsCount', 'UInt32'),
         ('RejectedRequestsCount', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.ServerViewCount = 0
@@ -8678,24 +9002,26 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ServerDiagnosticsSummaryDataType(' + 'ServerViewCount:' + str(self.ServerViewCount) + ', ' + \
-               'CurrentSessionCount:' + str(self.CurrentSessionCount) + ', ' + \
-               'CumulatedSessionCount:' + str(self.CumulatedSessionCount) + ', ' + \
-               'SecurityRejectedSessionCount:' + str(self.SecurityRejectedSessionCount) + ', ' + \
-               'RejectedSessionCount:' + str(self.RejectedSessionCount) + ', ' + \
-               'SessionTimeoutCount:' + str(self.SessionTimeoutCount) + ', ' + \
-               'SessionAbortCount:' + str(self.SessionAbortCount) + ', ' + \
-               'CurrentSubscriptionCount:' + str(self.CurrentSubscriptionCount) + ', ' + \
-               'CumulatedSubscriptionCount:' + str(self.CumulatedSubscriptionCount) + ', ' + \
-               'PublishingIntervalCount:' + str(self.PublishingIntervalCount) + ', ' + \
-               'SecurityRejectedRequestsCount:' + str(self.SecurityRejectedRequestsCount) + ', ' + \
-               'RejectedRequestsCount:' + str(self.RejectedRequestsCount) + ')'
+        return ', '.join((
+            f'ServerDiagnosticsSummaryDataType(ServerViewCount:{self.ServerViewCount}',
+            f'CurrentSessionCount:{self.CurrentSessionCount}',
+            f'CumulatedSessionCount:{self.CumulatedSessionCount}',
+            f'SecurityRejectedSessionCount:{self.SecurityRejectedSessionCount}',
+            f'RejectedSessionCount:{self.RejectedSessionCount}',
+            f'SessionTimeoutCount:{self.SessionTimeoutCount}',
+            f'SessionAbortCount:{self.SessionAbortCount}',
+            f'CurrentSubscriptionCount:{self.CurrentSubscriptionCount}',
+            f'CumulatedSubscriptionCount:{self.CumulatedSubscriptionCount}',
+            f'PublishingIntervalCount:{self.PublishingIntervalCount}',
+            f'SecurityRejectedRequestsCount:{self.SecurityRejectedRequestsCount}',
+            f'RejectedRequestsCount:{self.RejectedRequestsCount})'
+        ))
 
     __repr__ = __str__
 
 
 class ServerStatusDataType(FrozenClass):
-    '''
+    """
     :ivar StartTime:
     :vartype StartTime: DateTime
     :ivar CurrentTime:
@@ -8708,7 +9034,7 @@ class ServerStatusDataType(FrozenClass):
     :vartype SecondsTillShutdown: UInt32
     :ivar ShutdownReason:
     :vartype ShutdownReason: LocalizedText
-    '''
+    """
 
     ua_types = [
         ('StartTime', 'DateTime'),
@@ -8717,7 +9043,7 @@ class ServerStatusDataType(FrozenClass):
         ('BuildInfo', 'BuildInfo'),
         ('SecondsTillShutdown', 'UInt32'),
         ('ShutdownReason', 'LocalizedText'),
-               ]
+    ]
 
     def __init__(self):
         self.StartTime = datetime.utcnow()
@@ -8729,18 +9055,20 @@ class ServerStatusDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ServerStatusDataType(' + 'StartTime:' + str(self.StartTime) + ', ' + \
-               'CurrentTime:' + str(self.CurrentTime) + ', ' + \
-               'State:' + str(self.State) + ', ' + \
-               'BuildInfo:' + str(self.BuildInfo) + ', ' + \
-               'SecondsTillShutdown:' + str(self.SecondsTillShutdown) + ', ' + \
-               'ShutdownReason:' + str(self.ShutdownReason) + ')'
+        return ', '.join((
+            f'ServerStatusDataType(StartTime:{self.StartTime}',
+            f'CurrentTime:{self.CurrentTime}',
+            f'State:{self.State}',
+            f'BuildInfo:{self.BuildInfo}',
+            f'SecondsTillShutdown:{self.SecondsTillShutdown}',
+            f'ShutdownReason:{self.ShutdownReason})'
+        ))
 
     __repr__ = __str__
 
 
 class SessionDiagnosticsDataType(FrozenClass):
-    '''
+    """
     :ivar SessionId:
     :vartype SessionId: NodeId
     :ivar SessionName:
@@ -8827,7 +9155,7 @@ class SessionDiagnosticsDataType(FrozenClass):
     :vartype RegisterNodesCount: ServiceCounterDataType
     :ivar UnregisterNodesCount:
     :vartype UnregisterNodesCount: ServiceCounterDataType
-    '''
+    """
 
     ua_types = [
         ('SessionId', 'NodeId'),
@@ -8873,7 +9201,7 @@ class SessionDiagnosticsDataType(FrozenClass):
         ('QueryNextCount', 'ServiceCounterDataType'),
         ('RegisterNodesCount', 'ServiceCounterDataType'),
         ('UnregisterNodesCount', 'ServiceCounterDataType'),
-               ]
+    ]
 
     def __init__(self):
         self.SessionId = NodeId()
@@ -8922,55 +9250,57 @@ class SessionDiagnosticsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SessionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
-               'SessionName:' + str(self.SessionName) + ', ' + \
-               'ClientDescription:' + str(self.ClientDescription) + ', ' + \
-               'ServerUri:' + str(self.ServerUri) + ', ' + \
-               'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
-               'ActualSessionTimeout:' + str(self.ActualSessionTimeout) + ', ' + \
-               'MaxResponseMessageSize:' + str(self.MaxResponseMessageSize) + ', ' + \
-               'ClientConnectionTime:' + str(self.ClientConnectionTime) + ', ' + \
-               'ClientLastContactTime:' + str(self.ClientLastContactTime) + ', ' + \
-               'CurrentSubscriptionsCount:' + str(self.CurrentSubscriptionsCount) + ', ' + \
-               'CurrentMonitoredItemsCount:' + str(self.CurrentMonitoredItemsCount) + ', ' + \
-               'CurrentPublishRequestsInQueue:' + str(self.CurrentPublishRequestsInQueue) + ', ' + \
-               'TotalRequestCount:' + str(self.TotalRequestCount) + ', ' + \
-               'UnauthorizedRequestCount:' + str(self.UnauthorizedRequestCount) + ', ' + \
-               'ReadCount:' + str(self.ReadCount) + ', ' + \
-               'HistoryReadCount:' + str(self.HistoryReadCount) + ', ' + \
-               'WriteCount:' + str(self.WriteCount) + ', ' + \
-               'HistoryUpdateCount:' + str(self.HistoryUpdateCount) + ', ' + \
-               'CallCount:' + str(self.CallCount) + ', ' + \
-               'CreateMonitoredItemsCount:' + str(self.CreateMonitoredItemsCount) + ', ' + \
-               'ModifyMonitoredItemsCount:' + str(self.ModifyMonitoredItemsCount) + ', ' + \
-               'SetMonitoringModeCount:' + str(self.SetMonitoringModeCount) + ', ' + \
-               'SetTriggeringCount:' + str(self.SetTriggeringCount) + ', ' + \
-               'DeleteMonitoredItemsCount:' + str(self.DeleteMonitoredItemsCount) + ', ' + \
-               'CreateSubscriptionCount:' + str(self.CreateSubscriptionCount) + ', ' + \
-               'ModifySubscriptionCount:' + str(self.ModifySubscriptionCount) + ', ' + \
-               'SetPublishingModeCount:' + str(self.SetPublishingModeCount) + ', ' + \
-               'PublishCount:' + str(self.PublishCount) + ', ' + \
-               'RepublishCount:' + str(self.RepublishCount) + ', ' + \
-               'TransferSubscriptionsCount:' + str(self.TransferSubscriptionsCount) + ', ' + \
-               'DeleteSubscriptionsCount:' + str(self.DeleteSubscriptionsCount) + ', ' + \
-               'AddNodesCount:' + str(self.AddNodesCount) + ', ' + \
-               'AddReferencesCount:' + str(self.AddReferencesCount) + ', ' + \
-               'DeleteNodesCount:' + str(self.DeleteNodesCount) + ', ' + \
-               'DeleteReferencesCount:' + str(self.DeleteReferencesCount) + ', ' + \
-               'BrowseCount:' + str(self.BrowseCount) + ', ' + \
-               'BrowseNextCount:' + str(self.BrowseNextCount) + ', ' + \
-               'TranslateBrowsePathsToNodeIdsCount:' + str(self.TranslateBrowsePathsToNodeIdsCount) + ', ' + \
-               'QueryFirstCount:' + str(self.QueryFirstCount) + ', ' + \
-               'QueryNextCount:' + str(self.QueryNextCount) + ', ' + \
-               'RegisterNodesCount:' + str(self.RegisterNodesCount) + ', ' + \
-               'UnregisterNodesCount:' + str(self.UnregisterNodesCount) + ')'
+        return ', '.join((
+            f'SessionDiagnosticsDataType(SessionId:{self.SessionId}',
+            f'SessionName:{self.SessionName}',
+            f'ClientDescription:{self.ClientDescription}',
+            f'ServerUri:{self.ServerUri}',
+            f'EndpointUrl:{self.EndpointUrl}',
+            f'LocaleIds:{self.LocaleIds}',
+            f'ActualSessionTimeout:{self.ActualSessionTimeout}',
+            f'MaxResponseMessageSize:{self.MaxResponseMessageSize}',
+            f'ClientConnectionTime:{self.ClientConnectionTime}',
+            f'ClientLastContactTime:{self.ClientLastContactTime}',
+            f'CurrentSubscriptionsCount:{self.CurrentSubscriptionsCount}',
+            f'CurrentMonitoredItemsCount:{self.CurrentMonitoredItemsCount}',
+            f'CurrentPublishRequestsInQueue:{self.CurrentPublishRequestsInQueue}',
+            f'TotalRequestCount:{self.TotalRequestCount}',
+            f'UnauthorizedRequestCount:{self.UnauthorizedRequestCount}',
+            f'ReadCount:{self.ReadCount}',
+            f'HistoryReadCount:{self.HistoryReadCount}',
+            f'WriteCount:{self.WriteCount}',
+            f'HistoryUpdateCount:{self.HistoryUpdateCount}',
+            f'CallCount:{self.CallCount}',
+            f'CreateMonitoredItemsCount:{self.CreateMonitoredItemsCount}',
+            f'ModifyMonitoredItemsCount:{self.ModifyMonitoredItemsCount}',
+            f'SetMonitoringModeCount:{self.SetMonitoringModeCount}',
+            f'SetTriggeringCount:{self.SetTriggeringCount}',
+            f'DeleteMonitoredItemsCount:{self.DeleteMonitoredItemsCount}',
+            f'CreateSubscriptionCount:{self.CreateSubscriptionCount}',
+            f'ModifySubscriptionCount:{self.ModifySubscriptionCount}',
+            f'SetPublishingModeCount:{self.SetPublishingModeCount}',
+            f'PublishCount:{self.PublishCount}',
+            f'RepublishCount:{self.RepublishCount}',
+            f'TransferSubscriptionsCount:{self.TransferSubscriptionsCount}',
+            f'DeleteSubscriptionsCount:{self.DeleteSubscriptionsCount}',
+            f'AddNodesCount:{self.AddNodesCount}',
+            f'AddReferencesCount:{self.AddReferencesCount}',
+            f'DeleteNodesCount:{self.DeleteNodesCount}',
+            f'DeleteReferencesCount:{self.DeleteReferencesCount}',
+            f'BrowseCount:{self.BrowseCount}',
+            f'BrowseNextCount:{self.BrowseNextCount}',
+            f'TranslateBrowsePathsToNodeIdsCount:{self.TranslateBrowsePathsToNodeIdsCount}',
+            f'QueryFirstCount:{self.QueryFirstCount}',
+            f'QueryNextCount:{self.QueryNextCount}',
+            f'RegisterNodesCount:{self.RegisterNodesCount}',
+            f'UnregisterNodesCount:{self.UnregisterNodesCount})'
+        ))
 
     __repr__ = __str__
 
 
 class SessionSecurityDiagnosticsDataType(FrozenClass):
-    '''
+    """
     :ivar SessionId:
     :vartype SessionId: NodeId
     :ivar ClientUserIdOfSession:
@@ -8989,7 +9319,7 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
     :vartype SecurityPolicyUri: String
     :ivar ClientCertificate:
     :vartype ClientCertificate: ByteString
-    '''
+    """
 
     ua_types = [
         ('SessionId', 'NodeId'),
@@ -9001,7 +9331,7 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
         ('SecurityMode', 'MessageSecurityMode'),
         ('SecurityPolicyUri', 'String'),
         ('ClientCertificate', 'ByteString'),
-               ]
+    ]
 
     def __init__(self):
         self.SessionId = NodeId()
@@ -9016,31 +9346,33 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SessionSecurityDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
-               'ClientUserIdOfSession:' + str(self.ClientUserIdOfSession) + ', ' + \
-               'ClientUserIdHistory:' + str(self.ClientUserIdHistory) + ', ' + \
-               'AuthenticationMechanism:' + str(self.AuthenticationMechanism) + ', ' + \
-               'Encoding:' + str(self.Encoding) + ', ' + \
-               'TransportProtocol:' + str(self.TransportProtocol) + ', ' + \
-               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
-               'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', ' + \
-               'ClientCertificate:' + str(self.ClientCertificate) + ')'
+        return ', '.join((
+            f'SessionSecurityDiagnosticsDataType(SessionId:{self.SessionId}',
+            f'ClientUserIdOfSession:{self.ClientUserIdOfSession}',
+            f'ClientUserIdHistory:{self.ClientUserIdHistory}',
+            f'AuthenticationMechanism:{self.AuthenticationMechanism}',
+            f'Encoding:{self.Encoding}',
+            f'TransportProtocol:{self.TransportProtocol}',
+            f'SecurityMode:{self.SecurityMode}',
+            f'SecurityPolicyUri:{self.SecurityPolicyUri}',
+            f'ClientCertificate:{self.ClientCertificate})'
+        ))
 
     __repr__ = __str__
 
 
 class ServiceCounterDataType(FrozenClass):
-    '''
+    """
     :ivar TotalCount:
     :vartype TotalCount: UInt32
     :ivar ErrorCount:
     :vartype ErrorCount: UInt32
-    '''
+    """
 
     ua_types = [
         ('TotalCount', 'UInt32'),
         ('ErrorCount', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.TotalCount = 0
@@ -9048,24 +9380,23 @@ class ServiceCounterDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ServiceCounterDataType(' + 'TotalCount:' + str(self.TotalCount) + ', ' + \
-               'ErrorCount:' + str(self.ErrorCount) + ')'
+        return f'ServiceCounterDataType(TotalCount:{self.TotalCount}, ErrorCount:{self.ErrorCount})'
 
     __repr__ = __str__
 
 
 class StatusResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar DiagnosticInfo:
     :vartype DiagnosticInfo: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
         ('DiagnosticInfo', 'DiagnosticInfo'),
-               ]
+    ]
 
     def __init__(self):
         self.StatusCode = StatusCode()
@@ -9073,14 +9404,13 @@ class StatusResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'StatusResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'DiagnosticInfo:' + str(self.DiagnosticInfo) + ')'
+        return f'StatusResult(StatusCode:{self.StatusCode}, DiagnosticInfo:{self.DiagnosticInfo})'
 
     __repr__ = __str__
 
 
 class SubscriptionDiagnosticsDataType(FrozenClass):
-    '''
+    """
     :ivar SessionId:
     :vartype SessionId: NodeId
     :ivar SubscriptionId:
@@ -9143,7 +9473,7 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
     :vartype NextSequenceNumber: UInt32
     :ivar EventQueueOverFlowCount:
     :vartype EventQueueOverFlowCount: UInt32
-    '''
+    """
 
     ua_types = [
         ('SessionId', 'NodeId'),
@@ -9177,7 +9507,7 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
         ('MonitoringQueueOverflowCount', 'UInt32'),
         ('NextSequenceNumber', 'UInt32'),
         ('EventQueueOverFlowCount', 'UInt32'),
-               ]
+    ]
 
     def __init__(self):
         self.SessionId = NodeId()
@@ -9214,56 +9544,58 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SubscriptionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
-               'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'Priority:' + str(self.Priority) + ', ' + \
-               'PublishingInterval:' + str(self.PublishingInterval) + ', ' + \
-               'MaxKeepAliveCount:' + str(self.MaxKeepAliveCount) + ', ' + \
-               'MaxLifetimeCount:' + str(self.MaxLifetimeCount) + ', ' + \
-               'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
-               'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
-               'ModifyCount:' + str(self.ModifyCount) + ', ' + \
-               'EnableCount:' + str(self.EnableCount) + ', ' + \
-               'DisableCount:' + str(self.DisableCount) + ', ' + \
-               'RepublishRequestCount:' + str(self.RepublishRequestCount) + ', ' + \
-               'RepublishMessageRequestCount:' + str(self.RepublishMessageRequestCount) + ', ' + \
-               'RepublishMessageCount:' + str(self.RepublishMessageCount) + ', ' + \
-               'TransferRequestCount:' + str(self.TransferRequestCount) + ', ' + \
-               'TransferredToAltClientCount:' + str(self.TransferredToAltClientCount) + ', ' + \
-               'TransferredToSameClientCount:' + str(self.TransferredToSameClientCount) + ', ' + \
-               'PublishRequestCount:' + str(self.PublishRequestCount) + ', ' + \
-               'DataChangeNotificationsCount:' + str(self.DataChangeNotificationsCount) + ', ' + \
-               'EventNotificationsCount:' + str(self.EventNotificationsCount) + ', ' + \
-               'NotificationsCount:' + str(self.NotificationsCount) + ', ' + \
-               'LatePublishRequestCount:' + str(self.LatePublishRequestCount) + ', ' + \
-               'CurrentKeepAliveCount:' + str(self.CurrentKeepAliveCount) + ', ' + \
-               'CurrentLifetimeCount:' + str(self.CurrentLifetimeCount) + ', ' + \
-               'UnacknowledgedMessageCount:' + str(self.UnacknowledgedMessageCount) + ', ' + \
-               'DiscardedMessageCount:' + str(self.DiscardedMessageCount) + ', ' + \
-               'MonitoredItemCount:' + str(self.MonitoredItemCount) + ', ' + \
-               'DisabledMonitoredItemCount:' + str(self.DisabledMonitoredItemCount) + ', ' + \
-               'MonitoringQueueOverflowCount:' + str(self.MonitoringQueueOverflowCount) + ', ' + \
-               'NextSequenceNumber:' + str(self.NextSequenceNumber) + ', ' + \
-               'EventQueueOverFlowCount:' + str(self.EventQueueOverFlowCount) + ')'
+        return ', '.join((
+            f'SubscriptionDiagnosticsDataType(SessionId:{self.SessionId}',
+            f'SubscriptionId:{self.SubscriptionId}',
+            f'Priority:{self.Priority}',
+            f'PublishingInterval:{self.PublishingInterval}',
+            f'MaxKeepAliveCount:{self.MaxKeepAliveCount}',
+            f'MaxLifetimeCount:{self.MaxLifetimeCount}',
+            f'MaxNotificationsPerPublish:{self.MaxNotificationsPerPublish}',
+            f'PublishingEnabled:{self.PublishingEnabled}',
+            f'ModifyCount:{self.ModifyCount}',
+            f'EnableCount:{self.EnableCount}',
+            f'DisableCount:{self.DisableCount}',
+            f'RepublishRequestCount:{self.RepublishRequestCount}',
+            f'RepublishMessageRequestCount:{self.RepublishMessageRequestCount}',
+            f'RepublishMessageCount:{self.RepublishMessageCount}',
+            f'TransferRequestCount:{self.TransferRequestCount}',
+            f'TransferredToAltClientCount:{self.TransferredToAltClientCount}',
+            f'TransferredToSameClientCount:{self.TransferredToSameClientCount}',
+            f'PublishRequestCount:{self.PublishRequestCount}',
+            f'DataChangeNotificationsCount:{self.DataChangeNotificationsCount}',
+            f'EventNotificationsCount:{self.EventNotificationsCount}',
+            f'NotificationsCount:{self.NotificationsCount}',
+            f'LatePublishRequestCount:{self.LatePublishRequestCount}',
+            f'CurrentKeepAliveCount:{self.CurrentKeepAliveCount}',
+            f'CurrentLifetimeCount:{self.CurrentLifetimeCount}',
+            f'UnacknowledgedMessageCount:{self.UnacknowledgedMessageCount}',
+            f'DiscardedMessageCount:{self.DiscardedMessageCount}',
+            f'MonitoredItemCount:{self.MonitoredItemCount}',
+            f'DisabledMonitoredItemCount:{self.DisabledMonitoredItemCount}',
+            f'MonitoringQueueOverflowCount:{self.MonitoringQueueOverflowCount}',
+            f'NextSequenceNumber:{self.NextSequenceNumber}',
+            f'EventQueueOverFlowCount:{self.EventQueueOverFlowCount})'
+        ))
 
     __repr__ = __str__
 
 
 class ModelChangeStructureDataType(FrozenClass):
-    '''
+    """
     :ivar Affected:
     :vartype Affected: NodeId
     :ivar AffectedType:
     :vartype AffectedType: NodeId
     :ivar Verb:
     :vartype Verb: Byte
-    '''
+    """
 
     ua_types = [
         ('Affected', 'NodeId'),
         ('AffectedType', 'NodeId'),
         ('Verb', 'Byte'),
-               ]
+    ]
 
     def __init__(self):
         self.Affected = NodeId()
@@ -9272,25 +9604,27 @@ class ModelChangeStructureDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModelChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', ' + \
-               'AffectedType:' + str(self.AffectedType) + ', ' + \
-               'Verb:' + str(self.Verb) + ')'
+        return ', '.join((
+            f'ModelChangeStructureDataType(Affected:{self.Affected}',
+            f'AffectedType:{self.AffectedType}',
+            f'Verb:{self.Verb})'
+        ))
 
     __repr__ = __str__
 
 
 class SemanticChangeStructureDataType(FrozenClass):
-    '''
+    """
     :ivar Affected:
     :vartype Affected: NodeId
     :ivar AffectedType:
     :vartype AffectedType: NodeId
-    '''
+    """
 
     ua_types = [
         ('Affected', 'NodeId'),
         ('AffectedType', 'NodeId'),
-               ]
+    ]
 
     def __init__(self):
         self.Affected = NodeId()
@@ -9298,24 +9632,23 @@ class SemanticChangeStructureDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SemanticChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', ' + \
-               'AffectedType:' + str(self.AffectedType) + ')'
+        return f'SemanticChangeStructureDataType(Affected:{self.Affected}, AffectedType:{self.AffectedType})'
 
     __repr__ = __str__
 
 
 class Range(FrozenClass):
-    '''
+    """
     :ivar Low:
     :vartype Low: Double
     :ivar High:
     :vartype High: Double
-    '''
+    """
 
     ua_types = [
         ('Low', 'Double'),
         ('High', 'Double'),
-               ]
+    ]
 
     def __init__(self):
         self.Low = 0
@@ -9323,14 +9656,13 @@ class Range(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'Range(' + 'Low:' + str(self.Low) + ', ' + \
-               'High:' + str(self.High) + ')'
+        return f'Range(Low:{self.Low}, High:{self.High})'
 
     __repr__ = __str__
 
 
 class EUInformation(FrozenClass):
-    '''
+    """
     :ivar NamespaceUri:
     :vartype NamespaceUri: String
     :ivar UnitId:
@@ -9339,14 +9671,14 @@ class EUInformation(FrozenClass):
     :vartype DisplayName: LocalizedText
     :ivar Description:
     :vartype Description: LocalizedText
-    '''
+    """
 
     ua_types = [
         ('NamespaceUri', 'String'),
         ('UnitId', 'Int32'),
         ('DisplayName', 'LocalizedText'),
         ('Description', 'LocalizedText'),
-               ]
+    ]
 
     def __init__(self):
         self.NamespaceUri = None
@@ -9356,26 +9688,28 @@ class EUInformation(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EUInformation(' + 'NamespaceUri:' + str(self.NamespaceUri) + ', ' + \
-               'UnitId:' + str(self.UnitId) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ')'
+        return ', '.join((
+            f'EUInformation(NamespaceUri:{self.NamespaceUri}',
+            f'UnitId:{self.UnitId}',
+            f'DisplayName:{self.DisplayName}',
+            f'Description:{self.Description})'
+        ))
 
     __repr__ = __str__
 
 
 class ComplexNumberType(FrozenClass):
-    '''
+    """
     :ivar Real:
     :vartype Real: Float
     :ivar Imaginary:
     :vartype Imaginary: Float
-    '''
+    """
 
     ua_types = [
         ('Real', 'Float'),
         ('Imaginary', 'Float'),
-               ]
+    ]
 
     def __init__(self):
         self.Real = 0
@@ -9383,24 +9717,23 @@ class ComplexNumberType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ComplexNumberType(' + 'Real:' + str(self.Real) + ', ' + \
-               'Imaginary:' + str(self.Imaginary) + ')'
+        return f'ComplexNumberType(Real:{self.Real}, Imaginary:{self.Imaginary})'
 
     __repr__ = __str__
 
 
 class DoubleComplexNumberType(FrozenClass):
-    '''
+    """
     :ivar Real:
     :vartype Real: Double
     :ivar Imaginary:
     :vartype Imaginary: Double
-    '''
+    """
 
     ua_types = [
         ('Real', 'Double'),
         ('Imaginary', 'Double'),
-               ]
+    ]
 
     def __init__(self):
         self.Real = 0
@@ -9408,14 +9741,13 @@ class DoubleComplexNumberType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DoubleComplexNumberType(' + 'Real:' + str(self.Real) + ', ' + \
-               'Imaginary:' + str(self.Imaginary) + ')'
+        return f'DoubleComplexNumberType(Real:{self.Real}, Imaginary:{self.Imaginary})'
 
     __repr__ = __str__
 
 
 class AxisInformation(FrozenClass):
-    '''
+    """
     :ivar EngineeringUnits:
     :vartype EngineeringUnits: EUInformation
     :ivar EURange:
@@ -9426,7 +9758,7 @@ class AxisInformation(FrozenClass):
     :vartype AxisScaleType: AxisScaleEnumeration
     :ivar AxisSteps:
     :vartype AxisSteps: Double
-    '''
+    """
 
     ua_types = [
         ('EngineeringUnits', 'EUInformation'),
@@ -9434,7 +9766,7 @@ class AxisInformation(FrozenClass):
         ('Title', 'LocalizedText'),
         ('AxisScaleType', 'AxisScaleEnumeration'),
         ('AxisSteps', 'ListOfDouble'),
-               ]
+    ]
 
     def __init__(self):
         self.EngineeringUnits = EUInformation()
@@ -9445,27 +9777,29 @@ class AxisInformation(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AxisInformation(' + 'EngineeringUnits:' + str(self.EngineeringUnits) + ', ' + \
-               'EURange:' + str(self.EURange) + ', ' + \
-               'Title:' + str(self.Title) + ', ' + \
-               'AxisScaleType:' + str(self.AxisScaleType) + ', ' + \
-               'AxisSteps:' + str(self.AxisSteps) + ')'
+        return ', '.join((
+            f'AxisInformation(EngineeringUnits:{self.EngineeringUnits}',
+            f'EURange:{self.EURange}',
+            f'Title:{self.Title}',
+            f'AxisScaleType:{self.AxisScaleType}',
+            f'AxisSteps:{self.AxisSteps})'
+        ))
 
     __repr__ = __str__
 
 
 class XVType(FrozenClass):
-    '''
+    """
     :ivar X:
     :vartype X: Double
     :ivar Value:
     :vartype Value: Float
-    '''
+    """
 
     ua_types = [
         ('X', 'Double'),
         ('Value', 'Float'),
-               ]
+    ]
 
     def __init__(self):
         self.X = 0
@@ -9473,14 +9807,13 @@ class XVType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'XVType(' + 'X:' + str(self.X) + ', ' + \
-               'Value:' + str(self.Value) + ')'
+        return f'XVType(X:{self.X}, Value:{self.Value})'
 
     __repr__ = __str__
 
 
 class ProgramDiagnosticDataType(FrozenClass):
-    '''
+    """
     :ivar CreateSessionId:
     :vartype CreateSessionId: NodeId
     :ivar CreateClientName:
@@ -9501,7 +9834,7 @@ class ProgramDiagnosticDataType(FrozenClass):
     :vartype LastMethodCallTime: DateTime
     :ivar LastMethodReturnStatus:
     :vartype LastMethodReturnStatus: StatusResult
-    '''
+    """
 
     ua_types = [
         ('CreateSessionId', 'NodeId'),
@@ -9514,7 +9847,7 @@ class ProgramDiagnosticDataType(FrozenClass):
         ('LastMethodOutputArguments', 'ListOfArgument'),
         ('LastMethodCallTime', 'DateTime'),
         ('LastMethodReturnStatus', 'StatusResult'),
-               ]
+    ]
 
     def __init__(self):
         self.CreateSessionId = NodeId()
@@ -9530,35 +9863,37 @@ class ProgramDiagnosticDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ProgramDiagnosticDataType(' + 'CreateSessionId:' + str(self.CreateSessionId) + ', ' + \
-               'CreateClientName:' + str(self.CreateClientName) + ', ' + \
-               'InvocationCreationTime:' + str(self.InvocationCreationTime) + ', ' + \
-               'LastTransitionTime:' + str(self.LastTransitionTime) + ', ' + \
-               'LastMethodCall:' + str(self.LastMethodCall) + ', ' + \
-               'LastMethodSessionId:' + str(self.LastMethodSessionId) + ', ' + \
-               'LastMethodInputArguments:' + str(self.LastMethodInputArguments) + ', ' + \
-               'LastMethodOutputArguments:' + str(self.LastMethodOutputArguments) + ', ' + \
-               'LastMethodCallTime:' + str(self.LastMethodCallTime) + ', ' + \
-               'LastMethodReturnStatus:' + str(self.LastMethodReturnStatus) + ')'
+        return ', '.join((
+            f'ProgramDiagnosticDataType(CreateSessionId:{self.CreateSessionId}',
+            f'CreateClientName:{self.CreateClientName}',
+            f'InvocationCreationTime:{self.InvocationCreationTime}',
+            f'LastTransitionTime:{self.LastTransitionTime}',
+            f'LastMethodCall:{self.LastMethodCall}',
+            f'LastMethodSessionId:{self.LastMethodSessionId}',
+            f'LastMethodInputArguments:{self.LastMethodInputArguments}',
+            f'LastMethodOutputArguments:{self.LastMethodOutputArguments}',
+            f'LastMethodCallTime:{self.LastMethodCallTime}',
+            f'LastMethodReturnStatus:{self.LastMethodReturnStatus})'
+        ))
 
     __repr__ = __str__
 
 
 class Annotation(FrozenClass):
-    '''
+    """
     :ivar Message:
     :vartype Message: String
     :ivar UserName:
     :vartype UserName: String
     :ivar AnnotationTime:
     :vartype AnnotationTime: DateTime
-    '''
+    """
 
     ua_types = [
         ('Message', 'String'),
         ('UserName', 'String'),
         ('AnnotationTime', 'DateTime'),
-               ]
+    ]
 
     def __init__(self):
         self.Message = None
@@ -9567,9 +9902,11 @@ class Annotation(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'Annotation(' + 'Message:' + str(self.Message) + ', ' + \
-               'UserName:' + str(self.UserName) + ', ' + \
-               'AnnotationTime:' + str(self.AnnotationTime) + ')'
+        return ', '.join((
+            f'Annotation(Message:{self.Message}',
+            f'UserName:{self.UserName}',
+            f'AnnotationTime:{self.AnnotationTime})'
+        ))
 
     __repr__ = __str__
 
