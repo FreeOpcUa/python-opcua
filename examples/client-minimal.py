@@ -2,10 +2,38 @@
 import asyncio
 import logging
 
-from opcua import Client
+from opcua import Client, Node, ua
 
 logging.basicConfig(level=logging.INFO)
 _logger = logging.getLogger('opcua')
+
+
+async def browse_nodes(node: Node):
+    """
+    Build a nested node tree dict by recursion (filtered by OPC UA objects and variables).
+    """
+    node_class = await node.get_node_class()
+    children = []
+    for child in await node.get_children():
+        if await child.get_node_class() in [ua.NodeClass.Object, ua.NodeClass.Variable]:
+            children.append(
+                await browse_nodes(child)
+            )
+    if node_class != ua.NodeClass.Variable:
+        var_type = None
+    else:
+        try:
+            var_type = (await node.get_data_type_as_variant_type()).value
+        except ua.UaError:
+            _logger.warning('Node Variable Type coudl not be determined for %r', node)
+            var_type = None
+    return {
+        'id': node.nodeid.to_string(),
+        'name': (await node.get_display_name()).Text,
+        'cls': node_class.value,
+        'children': children,
+        'type': var_type,
+    }
 
 
 async def task(loop):
@@ -31,8 +59,8 @@ async def task(loop):
             # var.set_value(3.9) # set node value using implicit data type
 
             # Now getting a variable node using its browse path
-            myvar = await root.get_child(['0:Objects', '2:MyObject', '2:MyVariable'])
-            _logger.info('myvar is: %r', myvar)
+            tree = await browse_nodes(client.get_objects_node())
+            _logger.info('Node tree: %r', tree)
     except Exception:
         _logger.exception('error')
 
