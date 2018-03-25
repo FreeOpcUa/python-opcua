@@ -44,9 +44,8 @@ class UTC(tzinfo):
         return timedelta(0)
 
 
-
-# method copied from David Buxton <david@gasmark6.com> sample code
 def datetime_to_win_epoch(dt):
+    """method copied from David Buxton <david@gasmark6.com> sample code"""
     if (dt.tzinfo is None) or (dt.tzinfo.utcoffset(dt) is None):
         dt = dt.replace(tzinfo=UTC())
     ft = EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
@@ -62,7 +61,7 @@ def win_epoch_to_datetime(epch):
         return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch // 10)
     except OverflowError:
         # FILETIMEs after 31 Dec 9999 can't be converted to datetime
-        logger.warning("datetime overflow: %s", epch)
+        logger.warning('datetime overflow: %s', epch)
         return datetime(MAXYEAR, 12, 31, 23, 59, 59, 999999)
 
 
@@ -76,18 +75,18 @@ class _FrozenClass(object):
 
     def __setattr__(self, key, value):
         if self._freeze and not hasattr(self, key):
-            raise TypeError("Error adding member '{0}' to class '{1}', class is frozen, members are {2}".format(
-                key, self.__class__.__name__, self.__dict__.keys()))
+            raise TypeError(f"Error adding member '{key}' to class '{self.__class__.__name__}', class is frozen, members are {self.__dict__.keys()}")
         object.__setattr__(self, key, value)
 
 
-if "PYOPCUA_NO_TYPO_CHECK" in os.environ:
+if 'PYOPCUA_NO_TYPO_CHECK' in os.environ:
     # typo check is cpu consuming, but it will make debug easy.
     # if typo check is not need (in production), please set env PYOPCUA_NO_TYPO_CHECK.
-    # this will make all uatype class inherit from object intead of _FrozenClass
+    # this will make all uatype class inherit from object instead of _FrozenClass
     # and skip the typo check.
     FrozenClass = object
 else:
+    logger.warning('uaypes typo checking is active')
     FrozenClass = _FrozenClass
 
 
@@ -113,7 +112,7 @@ class _MaskEnum(IntEnum):
     def parse_bitfield(cls, the_int):
         """ Take an integer and interpret it as a set of enum values. """
         if not isinstance(the_int, int):
-            raise ValueError("Argument should be an int, we received {} fo type {}".format(the_int, type(the_int)))
+            raise ValueError(f"Argument should be an int, we received {the_int} fo type {type(the_int)}")
 
         return {cls(b) for b in cls._bits(the_int)}
 
@@ -245,7 +244,7 @@ class StatusCode(FrozenClass):
             return True
 
     def __str__(self):
-        return 'StatusCode({0})'.format(self.name)
+        return f'StatusCode({self.name})'
 
     __repr__ = __str__
 
@@ -348,7 +347,7 @@ class NodeId(FrozenClass):
         try:
             return NodeId._from_string(string)
         except ValueError as ex:
-            raise UaStringParsingError("Error parsing string {0}".format(string), ex)
+            raise UaStringParsingError(f"Error parsing string {string}", ex)
 
     @staticmethod
     def _from_string(string):
@@ -383,7 +382,7 @@ class NodeId(FrozenClass):
             elif k == "nsu":
                 nsu = v
         if identifier is None:
-            raise UaStringParsingError("Could not find identifier in string: " + string)
+            raise UaStringParsingError(f"Could not find identifier in string: {string}")
         nodeid = NodeId(identifier, namespace, ntype)
         nodeid.NamespaceUri = nsu
         nodeid.ServerIndex = srv
@@ -414,7 +413,7 @@ class NodeId(FrozenClass):
         return ";".join(string)
 
     def __str__(self):
-        return "{0}NodeId({1})".format(self.NodeIdType.name, self.to_string())
+        return f"{self.NodeIdType.name}NodeId({self.to_string()})"
 
     __repr__ = __str__
 
@@ -483,7 +482,7 @@ class QualifiedName(FrozenClass):
                 idx, name = string.split(":", 1)
                 idx = int(idx)
             except (TypeError, ValueError) as ex:
-                raise UaStringParsingError("Error parsing string {0}".format(string), ex)
+                raise UaStringParsingError(f"Error parsing string {string}", ex)
         else:
             idx = 0
             name = string
@@ -498,14 +497,14 @@ class QualifiedName(FrozenClass):
 
     def __lt__(self, other):
         if not isinstance(other, QualifiedName):
-            raise TypeError("Cannot compare QualifiedName and {0}".format(other))
+            raise TypeError(f"Cannot compare QualifiedName and {other}")
         if self.NamespaceIndex == other.NamespaceIndex:
             return self.Name < other.Name
         else:
             return self.NamespaceIndex < other.NamespaceIndex
 
     def __str__(self):
-        return 'QualifiedName({0}:{1})'.format(self.NamespaceIndex, self.Name)
+        return f'QualifiedName({self.NamespaceIndex}:{self.Name})'
 
     __repr__ = __str__
 
@@ -528,7 +527,7 @@ class LocalizedText(FrozenClass):
     def __init__(self, text=None):
         self.Encoding = 0
         if text is not None and not isinstance(text, str):
-            raise ValueError("A LocalizedText object takes a string as argument, not a {}, {}".format(text, type(text)))
+            raise ValueError(f"A LocalizedText object takes a string as argument, not a {text}, {type(text)}")
         self.Text = text
         if self.Text:
             self.Encoding |= (1 << 1)
@@ -542,9 +541,7 @@ class LocalizedText(FrozenClass):
         return self.Text
 
     def __str__(self):
-        return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', ' + \
-            'Locale:' + str(self.Locale) + ', ' + \
-            'Text:' + str(self.Text) +')'
+        return f'LocalizedText(Encoding:{self.Encoding}, Locale:{self.Locale}, Text:{self.Text})'
 
     __repr__ = __str__
 
@@ -588,8 +585,7 @@ class ExtensionObject(FrozenClass):
 
     def __str__(self):
         size = len(self.Body) if self.Body is not None else None
-        return 'ExtensionObject(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-            'Encoding:' + str(self.Encoding) + ', ' + str(size) + ' bytes)'
+        return f'ExtensionObject(TypeId:{self.TypeId}, Encoding:{self.Encoding}, {size} bytes)'
 
     __repr__ = __str__
 
@@ -666,11 +662,10 @@ class VariantTypeCustom(object):
         self.name = "Custom"
         self.value = val
         if self.value > 0b00111111:
-            raise UaError(
-                "Cannot create VariantType. VariantType must be {0} > x > {1}, received {2}".format(0b111111, 25, val))
+            raise UaError(f"Cannot create VariantType. VariantType must be {0b111111} > x > {25}, received {val}")
 
     def __str__(self):
-        return "VariantType.Custom:{0}".format(self.value)
+        return f"VariantType.Custom:{self.value}"
 
     __repr__ = __str__
 
@@ -713,7 +708,7 @@ class Variant(FrozenClass):
             self.VariantType = self._guess_type(self.Value)
         if self.Value is None and not self.is_array and self.VariantType not in (VariantType.Null, VariantType.String,
                                                                                  VariantType.DateTime):
-            raise UaError("Non array Variant of type {0} cannot have value None".format(self.VariantType))
+            raise UaError(f"Non array Variant of type {self.VariantType} cannot have value None")
         if self.Dimensions is None and isinstance(self.Value, (list, tuple)):
             dims = get_shape(self.Value)
             if len(dims) > 1:
@@ -732,7 +727,7 @@ class Variant(FrozenClass):
             error_val = val
         while isinstance(val, (list, tuple)):
             if len(val) == 0:
-                raise UaError("could not guess UA type of variable {0}".format(error_val))
+                raise UaError(f"could not guess UA type of variable {error_val}")
             val = val[0]
         if val is None:
             return VariantType.Null
@@ -759,10 +754,10 @@ class Variant(FrozenClass):
                 except AttributeError:
                     return VariantType.ExtensionObject
             else:
-                raise UaError("Could not guess UA type of {0} with type {1}, specify UA type".format(val, type(val)))
+                raise UaError(f"Could not guess UA type of {val} with type {type(val)}, specify UA type")
 
     def __str__(self):
-        return "Variant(val:{0!s},type:{1})".format(self.Value, self.VariantType)
+        return f"Variant(val:{self.Value!s},type:{self.VariantType})"
 
     __repr__ = __str__
 
@@ -863,19 +858,18 @@ class DataValue(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        s = 'DataValue(Value:{0}'.format(self.Value)
+        s = []
         if self.StatusCode is not None:
-            s += ', StatusCode:{0}'.format(self.StatusCode)
+            s.append(f', StatusCode:{self.StatusCode}')
         if self.SourceTimestamp is not None:
-            s += ', SourceTimestamp:{0}'.format(self.SourceTimestamp)
+            s.append(f', SourceTimestamp:{self.SourceTimestamp}')
         if self.ServerTimestamp is not None:
-            s += ', ServerTimestamp:{0}'.format(self.ServerTimestamp)
+            s.append(f', ServerTimestamp:{self.ServerTimestamp}')
         if self.SourcePicoseconds is not None:
-            s += ', SourcePicoseconds:{0}'.format(self.SourcePicoseconds)
+            s.append(f', SourcePicoseconds:{self.SourcePicoseconds}')
         if self.ServerPicoseconds is not None:
-            s += ', ServerPicoseconds:{0}'.format(self.ServerPicoseconds)
-        s += ')'
-        return s
+            s.append(f', ServerPicoseconds:{self.ServerPicoseconds}')
+        return f'DataValue(Value:{self.Value}{"".join(s)})'
 
     __repr__ = __str__
 
@@ -937,7 +931,7 @@ def get_default_value(vtype):
     elif vtype == VariantType.Variant:
         return Variant()
     else:
-        raise RuntimeError("function take a uatype as argument, got:", vtype)
+        raise RuntimeError(f"function take a uatype as argument, got: {vtype}")
 
 
 # These dictionnaries are used to register extensions classes for automatic

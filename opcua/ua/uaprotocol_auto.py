@@ -166,14 +166,11 @@ class UserTokenType(IntEnum):
     :vartype Certificate: 2
     :ivar IssuedToken:
     :vartype IssuedToken: 3
-    :ivar Kerberos:
-    :vartype Kerberos: 4
     """
     Anonymous = 0
     UserName = 1
     Certificate = 2
     IssuedToken = 3
-    Kerberos = 4
 
 
 class SecurityTokenRequestType(IntEnum):
@@ -378,10 +375,13 @@ class BrowseDirection(IntEnum):
     :vartype Inverse: 1
     :ivar Both:
     :vartype Both: 2
+    :ivar Invalid:
+    :vartype Invalid: 3
     """
     Forward = 0
     Inverse = 1
     Both = 2
+    Invalid = 3
 
 
 class BrowseResultMask(IntEnum):
@@ -419,23 +419,6 @@ class BrowseResultMask(IntEnum):
     All = 63
     ReferenceTypeInfo = 3
     TargetInfo = 60
-
-
-class ComplianceLevel(IntEnum):
-    """
-    :ivar Untested:
-    :vartype Untested: 0
-    :ivar Partial:
-    :vartype Partial: 1
-    :ivar SelfTested:
-    :vartype SelfTested: 2
-    :ivar Certified:
-    :vartype Certified: 3
-    """
-    Untested = 0
-    Partial = 1
-    SelfTested = 2
-    Certified = 3
 
 
 class FilterOperator(IntEnum):
@@ -507,11 +490,14 @@ class TimestampsToReturn(IntEnum):
     :vartype Both: 2
     :ivar Neither:
     :vartype Neither: 3
+    :ivar Invalid:
+    :vartype Invalid: 4
     """
     Source = 0
     Server = 1
     Both = 2
     Neither = 3
+    Invalid = 4
 
 
 class HistoryUpdateType(IntEnum):
@@ -588,22 +574,6 @@ class DeadbandType(IntEnum):
     None_ = 0
     Absolute = 1
     Percent = 2
-
-
-class EnumeratedTestType(IntEnum):
-    """
-    A simple enumerated type used for testing.
-
-    :ivar Red:
-    :vartype Red: 1
-    :ivar Yellow:
-    :vartype Yellow: 4
-    :ivar Green:
-    :vartype Green: 5
-    """
-    Red = 1
-    Yellow = 4
-    Green = 5
 
 
 class RedundancySupport(IntEnum):
@@ -2263,30 +2233,6 @@ class X509IdentityToken(FrozenClass):
 
     def __str__(self):
         return f'X509IdentityToken(PolicyId:{self.PolicyId}, CertificateData:{self.CertificateData})'
-
-    __repr__ = __str__
-
-
-class KerberosIdentityToken(FrozenClass):
-    """
-    :ivar PolicyId:
-    :vartype PolicyId: String
-    :ivar TicketData:
-    :vartype TicketData: ByteString
-    """
-
-    ua_types = [
-        ('PolicyId', 'String'),
-        ('TicketData', 'ByteString'),
-               ]
-
-    def __init__(self):
-        self.PolicyId = None
-        self.TicketData = None
-        self._freeze = True
-
-    def __str__(self):
-        return f'KerberosIdentityToken(PolicyId:{self.PolicyId}, TicketData:{self.TicketData})'
 
     __repr__ = __str__
 
@@ -4359,102 +4305,6 @@ class EndpointConfiguration(FrozenClass):
 
     def __str__(self):
         return f'EndpointConfiguration(OperationTimeout:{self.OperationTimeout}, UseBinaryEncoding:{self.UseBinaryEncoding}, MaxStringLength:{self.MaxStringLength}, MaxByteStringLength:{self.MaxByteStringLength}, MaxArrayLength:{self.MaxArrayLength}, MaxMessageSize:{self.MaxMessageSize}, MaxBufferSize:{self.MaxBufferSize}, ChannelLifetime:{self.ChannelLifetime}, SecurityTokenLifetime:{self.SecurityTokenLifetime})'
-
-    __repr__ = __str__
-
-
-class SupportedProfile(FrozenClass):
-    """
-    :ivar OrganizationUri:
-    :vartype OrganizationUri: String
-    :ivar ProfileId:
-    :vartype ProfileId: String
-    :ivar ComplianceTool:
-    :vartype ComplianceTool: String
-    :ivar ComplianceDate:
-    :vartype ComplianceDate: DateTime
-    :ivar ComplianceLevel:
-    :vartype ComplianceLevel: ComplianceLevel
-    :ivar UnsupportedUnitIds:
-    :vartype UnsupportedUnitIds: String
-    """
-
-    ua_types = [
-        ('OrganizationUri', 'String'),
-        ('ProfileId', 'String'),
-        ('ComplianceTool', 'String'),
-        ('ComplianceDate', 'DateTime'),
-        ('ComplianceLevel', 'ComplianceLevel'),
-        ('UnsupportedUnitIds', 'ListOfString'),
-               ]
-
-    def __init__(self):
-        self.OrganizationUri = None
-        self.ProfileId = None
-        self.ComplianceTool = None
-        self.ComplianceDate = datetime.utcnow()
-        self.ComplianceLevel = ComplianceLevel(0)
-        self.UnsupportedUnitIds = []
-        self._freeze = True
-
-    def __str__(self):
-        return f'SupportedProfile(OrganizationUri:{self.OrganizationUri}, ProfileId:{self.ProfileId}, ComplianceTool:{self.ComplianceTool}, ComplianceDate:{self.ComplianceDate}, ComplianceLevel:{self.ComplianceLevel}, UnsupportedUnitIds:{self.UnsupportedUnitIds})'
-
-    __repr__ = __str__
-
-
-class SoftwareCertificate(FrozenClass):
-    """
-    :ivar ProductName:
-    :vartype ProductName: String
-    :ivar ProductUri:
-    :vartype ProductUri: String
-    :ivar VendorName:
-    :vartype VendorName: String
-    :ivar VendorProductCertificate:
-    :vartype VendorProductCertificate: ByteString
-    :ivar SoftwareVersion:
-    :vartype SoftwareVersion: String
-    :ivar BuildNumber:
-    :vartype BuildNumber: String
-    :ivar BuildDate:
-    :vartype BuildDate: DateTime
-    :ivar IssuedBy:
-    :vartype IssuedBy: String
-    :ivar IssueDate:
-    :vartype IssueDate: DateTime
-    :ivar SupportedProfiles:
-    :vartype SupportedProfiles: SupportedProfile
-    """
-
-    ua_types = [
-        ('ProductName', 'String'),
-        ('ProductUri', 'String'),
-        ('VendorName', 'String'),
-        ('VendorProductCertificate', 'ByteString'),
-        ('SoftwareVersion', 'String'),
-        ('BuildNumber', 'String'),
-        ('BuildDate', 'DateTime'),
-        ('IssuedBy', 'String'),
-        ('IssueDate', 'DateTime'),
-        ('SupportedProfiles', 'ListOfSupportedProfile'),
-               ]
-
-    def __init__(self):
-        self.ProductName = None
-        self.ProductUri = None
-        self.VendorName = None
-        self.VendorProductCertificate = None
-        self.SoftwareVersion = None
-        self.BuildNumber = None
-        self.BuildDate = datetime.utcnow()
-        self.IssuedBy = None
-        self.IssueDate = datetime.utcnow()
-        self.SupportedProfiles = []
-        self._freeze = True
-
-    def __str__(self):
-        return f'SoftwareCertificate(ProductName:{self.ProductName}, ProductUri:{self.ProductUri}, VendorName:{self.VendorName}, VendorProductCertificate:{self.VendorProductCertificate}, SoftwareVersion:{self.SoftwareVersion}, BuildNumber:{self.BuildNumber}, BuildDate:{self.BuildDate}, IssuedBy:{self.IssuedBy}, IssueDate:{self.IssueDate}, SupportedProfiles:{self.SupportedProfiles})'
 
     __repr__ = __str__
 
@@ -9004,9 +8854,6 @@ extension_object_ids['UserNameIdentityToken'] = nid
 nid = FourByteNodeId(ObjectIds.X509IdentityToken_Encoding_DefaultBinary)
 extension_object_classes[nid] = X509IdentityToken
 extension_object_ids['X509IdentityToken'] = nid
-nid = FourByteNodeId(ObjectIds.KerberosIdentityToken_Encoding_DefaultBinary)
-extension_object_classes[nid] = KerberosIdentityToken
-extension_object_ids['KerberosIdentityToken'] = nid
 nid = FourByteNodeId(ObjectIds.IssuedIdentityToken_Encoding_DefaultBinary)
 extension_object_classes[nid] = IssuedIdentityToken
 extension_object_ids['IssuedIdentityToken'] = nid
@@ -9154,12 +9001,6 @@ extension_object_ids['UnregisterNodesResponse'] = nid
 nid = FourByteNodeId(ObjectIds.EndpointConfiguration_Encoding_DefaultBinary)
 extension_object_classes[nid] = EndpointConfiguration
 extension_object_ids['EndpointConfiguration'] = nid
-nid = FourByteNodeId(ObjectIds.SupportedProfile_Encoding_DefaultBinary)
-extension_object_classes[nid] = SupportedProfile
-extension_object_ids['SupportedProfile'] = nid
-nid = FourByteNodeId(ObjectIds.SoftwareCertificate_Encoding_DefaultBinary)
-extension_object_classes[nid] = SoftwareCertificate
-extension_object_ids['SoftwareCertificate'] = nid
 nid = FourByteNodeId(ObjectIds.QueryDataDescription_Encoding_DefaultBinary)
 extension_object_classes[nid] = QueryDataDescription
 extension_object_ids['QueryDataDescription'] = nid

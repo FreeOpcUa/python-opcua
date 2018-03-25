@@ -27,7 +27,7 @@ class Primitives(Primitives1):
     DateTime = 0
 
 
-class CodeGenerator(object):
+class CodeGenerator:
 
     def __init__(self, model, output):
         self.model = model
@@ -38,7 +38,7 @@ class CodeGenerator(object):
 
     def run(self):
         print('Writting python protocol code to ', self.output_path)
-        self.output_file = open(self.output_path, 'w')
+        self.output_file = open(self.output_path, 'w', encoding='utf-8')
         self.make_header()
         for enum in self.model.enums:
             if enum.name not in IgnoredEnums:
@@ -65,8 +65,8 @@ class CodeGenerator(object):
 
     def write(self, line):
         if line:
-            line = self.indent * self.iidx + line
-        self.output_file.write(line + "\n")
+            line = f'{self.indent * self.iidx}{line}'
+        self.output_file.write(f'{line}\n')
 
     def make_header(self):
         self.write('"""')
