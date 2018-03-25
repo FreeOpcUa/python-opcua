@@ -1,3 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ * Copyright (c) 2005-2018 The OPC Foundation, Inc. All rights reserved.
+ *
+ * OPC Foundation MIT License 1.00
+ * 
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * The complete license agreement can be found here:
+ * http://opcfoundation.org/License/MIT/1.00/
+-->
+
 <xs:schema
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:ua="http://opcfoundation.org/UA/2008/02/Types.xsd"
@@ -1026,7 +1056,6 @@
       <xs:enumeration value="UserName_1" />
       <xs:enumeration value="Certificate_2" />
       <xs:enumeration value="IssuedToken_3" />
-      <xs:enumeration value="Kerberos_4" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="UserTokenType" type="tns:UserTokenType" />
@@ -1379,17 +1408,6 @@
     </xs:complexContent>
   </xs:complexType>
   <xs:element name="X509IdentityToken" type="tns:X509IdentityToken" />
-
-  <xs:complexType name="KerberosIdentityToken">
-    <xs:complexContent mixed="false">
-      <xs:extension base="tns:UserIdentityToken">
-        <xs:sequence>
-          <xs:element name="TicketData" type="xs:base64Binary" minOccurs="0" nillable="true" />
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:element name="KerberosIdentityToken" type="tns:KerberosIdentityToken" />
 
   <xs:complexType name="IssuedIdentityToken">
     <xs:annotation>
@@ -1893,6 +1911,7 @@
       <xs:enumeration value="Forward_0" />
       <xs:enumeration value="Inverse_1" />
       <xs:enumeration value="Both_2" />
+      <xs:enumeration value="Invalid_3" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="BrowseDirection" type="tns:BrowseDirection" />
@@ -2223,51 +2242,6 @@
   </xs:complexType>
   <xs:element name="ListOfEndpointConfiguration" type="tns:ListOfEndpointConfiguration" nillable="true"></xs:element>
 
-  <xs:simpleType  name="ComplianceLevel">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="Untested_0" />
-      <xs:enumeration value="Partial_1" />
-      <xs:enumeration value="SelfTested_2" />
-      <xs:enumeration value="Certified_3" />
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:element name="ComplianceLevel" type="tns:ComplianceLevel" />
-
-  <xs:complexType name="SupportedProfile">
-    <xs:sequence>
-      <xs:element name="OrganizationUri" type="xs:string" minOccurs="0" nillable="true" />
-      <xs:element name="ProfileId" type="xs:string" minOccurs="0" nillable="true" />
-      <xs:element name="ComplianceTool" type="xs:string" minOccurs="0" nillable="true" />
-      <xs:element name="ComplianceDate" type="xs:dateTime" minOccurs="0" />
-      <xs:element name="ComplianceLevel" type="tns:ComplianceLevel" minOccurs="0" />
-      <xs:element name="UnsupportedUnitIds" type="ua:ListOfString" minOccurs="0" nillable="true" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="SupportedProfile" type="tns:SupportedProfile" />
-
-  <xs:complexType name="ListOfSupportedProfile">
-    <xs:sequence>
-      <xs:element name="SupportedProfile" type="tns:SupportedProfile" minOccurs="0" maxOccurs="unbounded" nillable="true" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ListOfSupportedProfile" type="tns:ListOfSupportedProfile" nillable="true"></xs:element>
-
-  <xs:complexType name="SoftwareCertificate">
-    <xs:sequence>
-      <xs:element name="ProductName" type="xs:string" minOccurs="0" nillable="true" />
-      <xs:element name="ProductUri" type="xs:string" minOccurs="0" nillable="true" />
-      <xs:element name="VendorName" type="xs:string" minOccurs="0" nillable="true" />
-      <xs:element name="VendorProductCertificate" type="xs:base64Binary" minOccurs="0" nillable="true" />
-      <xs:element name="SoftwareVersion" type="xs:string" minOccurs="0" nillable="true" />
-      <xs:element name="BuildNumber" type="xs:string" minOccurs="0" nillable="true" />
-      <xs:element name="BuildDate" type="xs:dateTime" minOccurs="0" />
-      <xs:element name="IssuedBy" type="xs:string" minOccurs="0" nillable="true" />
-      <xs:element name="IssueDate" type="xs:dateTime" minOccurs="0" />
-      <xs:element name="SupportedProfiles" type="tns:ListOfSupportedProfile" minOccurs="0" nillable="true" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="SoftwareCertificate" type="tns:SoftwareCertificate" />
-
   <xs:complexType name="QueryDataDescription">
     <xs:sequence>
       <xs:element name="RelativePath" type="tns:RelativePath" minOccurs="0" nillable="true" />
@@ -2538,6 +2512,7 @@
       <xs:enumeration value="Server_1" />
       <xs:enumeration value="Both_2" />
       <xs:enumeration value="Neither_3" />
+      <xs:enumeration value="Invalid_4" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="TimestampsToReturn" type="tns:TimestampsToReturn" />
@@ -3500,25 +3475,6 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="DeleteSubscriptionsResponse" type="tns:DeleteSubscriptionsResponse" />
-
-  <xs:simpleType  name="EnumeratedTestType">
-    <xs:annotation>
-      <xs:documentation>A simple enumerated type used for testing.</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="Red_1" />
-      <xs:enumeration value="Yellow_4" />
-      <xs:enumeration value="Green_5" />
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:element name="EnumeratedTestType" type="tns:EnumeratedTestType" />
-
-  <xs:complexType name="ListOfEnumeratedTestType">
-    <xs:sequence>
-      <xs:element name="EnumeratedTestType" type="tns:EnumeratedTestType" minOccurs="0" maxOccurs="unbounded" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ListOfEnumeratedTestType" type="tns:ListOfEnumeratedTestType" nillable="true"></xs:element>
 
   <xs:complexType name="BuildInfo">
     <xs:sequence>

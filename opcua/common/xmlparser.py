@@ -62,7 +62,7 @@ class NodeData(object):
         self.definition = []
 
     def __str__(self):
-        return "NodeData(nodeid:{0})".format(self.nodeid)
+        return f"NodeData(nodeid:{self.nodeid})"
     __repr__ = __str__
 
 
@@ -83,7 +83,7 @@ class ExtObj(object):
         self.body = {}
 
     def __str__(self):
-        return "ExtObj({0}, {1})".format(self.objname, self.body)
+        return f"ExtObj({self.objname}, {self.body})"
     __repr__ = __str__
 
 

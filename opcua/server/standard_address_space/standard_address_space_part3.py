@@ -622,7 +622,6 @@ def create_standard_address_space_Part3(server):
     attrs = ua.ReferenceTypeAttributes()
     attrs.Description = ua.LocalizedText("The abstract base type for all references.")
     attrs.DisplayName = ua.LocalizedText("References")
-    attrs.InverseName = ua.LocalizedText("References")
     attrs.IsAbstract = True
     attrs.Symmetric = True
     node.NodeAttributes = attrs
@@ -854,7 +853,7 @@ def create_standard_address_space_Part3(server):
     node.RequestedNewNodeId = ua.NodeId.from_string("i=3065")
     node.BrowseName = ua.QualifiedName.from_string("AlwaysGeneratesEvent")
     node.NodeClass = ua.NodeClass.ReferenceType
-    node.ParentNodeId = ua.NodeId.from_string("i=32")
+    node.ParentNodeId = ua.NodeId.from_string("i=41")
     node.ReferenceTypeId = ua.NodeId.from_string("i=45")
     attrs = ua.ReferenceTypeAttributes()
     attrs.Description = ua.LocalizedText("The type for references from a node to an event type that is always raised by node.")
@@ -868,7 +867,7 @@ def create_standard_address_space_Part3(server):
     ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
     ref.SourceNodeId = ua.NodeId.from_string("i=3065")
     ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=32")
+    ref.TargetNodeId = ua.NodeId.from_string("i=41")
     refs.append(ref)
     server.add_references(refs)
    
@@ -903,7 +902,7 @@ def create_standard_address_space_Part3(server):
     attrs = ua.ReferenceTypeAttributes()
     attrs.Description = ua.LocalizedText("The type for non-looping hierarchical references that are used to define sub types.")
     attrs.DisplayName = ua.LocalizedText("HasSubtype")
-    attrs.InverseName = ua.LocalizedText("HasSupertype")
+    attrs.InverseName = ua.LocalizedText("SubtypeOf")
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []

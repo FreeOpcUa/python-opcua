@@ -1,3 +1,5 @@
+import os
+#os.environ['PYOPCUA_NO_TYPO_CHECK'] = 'True'
 
 import asyncio
 import logging
@@ -6,6 +8,7 @@ from opcua import Client, Node, ua
 
 logging.basicConfig(level=logging.INFO)
 _logger = logging.getLogger('opcua')
+
 
 
 async def browse_nodes(node: Node):

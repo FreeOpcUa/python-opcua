@@ -1,7 +1,36 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<UANodeSet xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" LastModified="2015-08-18T00:23:00Z" xmlns="http://opcfoundation.org/UA/2011/03/UANodeSet.xsd">
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ * Copyright (c) 2005-2018 The OPC Foundation, Inc. All rights reserved.
+ *
+ * OPC Foundation MIT License 1.00
+ * 
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * The complete license agreement can be found here:
+ * http://opcfoundation.org/License/MIT/1.00/
+-->
+
+<UANodeSet xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" LastModified="2013-12-02T00:00:00Z" xmlns="http://opcfoundation.org/UA/2011/03/UANodeSet.xsd">
   <Models>
-    <Model ModelUri="http://opcfoundation.org/UA/" Version="1.02" PublicationDate="2015-08-17T17:23:51.6181753-07:00" />
+    <Model ModelUri="http://opcfoundation.org/UA/" Version="1.02" PublicationDate="2013-12-02T00:00:00Z" />
   </Models>
   <Aliases>
     <Alias Alias="Boolean">i=1</Alias>
@@ -252,9 +281,6 @@
       <Field Name="IssuedToken" Value="3">
         <Description>A user identified by WS-Security XML token.</Description>
       </Field>
-      <Field Name="Kerberos" Value="4">
-        <Description>A user identified by Kerberos ticket.</Description>
-      </Field>
     </Definition>
   </UADataType>
   <UAVariable NodeId="i=7596" BrowseName="EnumStrings" ParentNodeId="i=303" DataType="LocalizedText" ValueRank="1">
@@ -285,11 +311,6 @@
           <Locale>
           </Locale>
           <Text>IssuedToken</Text>
-        </LocalizedText>
-        <LocalizedText>
-          <Locale>
-          </Locale>
-          <Text>Kerberos</Text>
         </LocalizedText>
       </ListOfLocalizedText>
     </Value>
@@ -513,15 +534,6 @@
       <Field Name="CertificateData" DataType="i=15">
         <Description>The certificate.</Description>
       </Field>
-    </Definition>
-  </UADataType>
-  <UADataType NodeId="i=12504" BrowseName="KerberosIdentityToken">
-    <DisplayName>KerberosIdentityToken</DisplayName>
-    <References>
-      <Reference ReferenceType="HasSubtype" IsForward="false">i=316</Reference>
-    </References>
-    <Definition Name="KerberosIdentityToken" BaseType="KerberosIdentityToken">
-      <Field Name="TicketData" DataType="i=15" />
     </Definition>
   </UADataType>
   <UADataType NodeId="i=938" BrowseName="IssuedIdentityToken">
@@ -2029,83 +2041,6 @@
       <Field Name="SecurityTokenLifetime" DataType="i=6" />
     </Definition>
   </UADataType>
-  <UADataType NodeId="i=334" BrowseName="ComplianceLevel">
-    <DisplayName>ComplianceLevel</DisplayName>
-    <References>
-      <Reference ReferenceType="HasProperty">i=7599</Reference>
-      <Reference ReferenceType="HasSubtype" IsForward="false">i=29</Reference>
-    </References>
-    <Definition Name="ComplianceLevel">
-      <Field Name="Untested" Value="0" />
-      <Field Name="Partial" Value="1" />
-      <Field Name="SelfTested" Value="2" />
-      <Field Name="Certified" Value="3" />
-    </Definition>
-  </UADataType>
-  <UAVariable NodeId="i=7599" BrowseName="EnumStrings" ParentNodeId="i=334" DataType="LocalizedText" ValueRank="1">
-    <DisplayName>EnumStrings</DisplayName>
-    <References>
-      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
-      <Reference ReferenceType="HasModellingRule">i=78</Reference>
-      <Reference ReferenceType="HasProperty" IsForward="false">i=334</Reference>
-    </References>
-    <Value>
-      <ListOfLocalizedText xmlns="http://opcfoundation.org/UA/2008/02/Types.xsd">
-        <LocalizedText>
-          <Locale>
-          </Locale>
-          <Text>Untested</Text>
-        </LocalizedText>
-        <LocalizedText>
-          <Locale>
-          </Locale>
-          <Text>Partial</Text>
-        </LocalizedText>
-        <LocalizedText>
-          <Locale>
-          </Locale>
-          <Text>SelfTested</Text>
-        </LocalizedText>
-        <LocalizedText>
-          <Locale>
-          </Locale>
-          <Text>Certified</Text>
-        </LocalizedText>
-      </ListOfLocalizedText>
-    </Value>
-  </UAVariable>
-  <UADataType NodeId="i=335" BrowseName="SupportedProfile">
-    <DisplayName>SupportedProfile</DisplayName>
-    <References>
-      <Reference ReferenceType="HasSubtype" IsForward="false">i=22</Reference>
-    </References>
-    <Definition Name="SupportedProfile">
-      <Field Name="OrganizationUri" DataType="i=12" />
-      <Field Name="ProfileId" DataType="i=12" />
-      <Field Name="ComplianceTool" DataType="i=12" />
-      <Field Name="ComplianceDate" DataType="i=294" />
-      <Field Name="ComplianceLevel" DataType="i=334" />
-      <Field Name="UnsupportedUnitIds" DataType="i=12" ValueRank="1" />
-    </Definition>
-  </UADataType>
-  <UADataType NodeId="i=341" BrowseName="SoftwareCertificate">
-    <DisplayName>SoftwareCertificate</DisplayName>
-    <References>
-      <Reference ReferenceType="HasSubtype" IsForward="false">i=22</Reference>
-    </References>
-    <Definition Name="SoftwareCertificate">
-      <Field Name="ProductName" DataType="i=12" />
-      <Field Name="ProductUri" DataType="i=12" />
-      <Field Name="VendorName" DataType="i=12" />
-      <Field Name="VendorProductCertificate" DataType="i=15" />
-      <Field Name="SoftwareVersion" DataType="i=12" />
-      <Field Name="BuildNumber" DataType="i=12" />
-      <Field Name="BuildDate" DataType="i=294" />
-      <Field Name="IssuedBy" DataType="i=12" />
-      <Field Name="IssueDate" DataType="i=13" />
-      <Field Name="SupportedProfiles" DataType="i=335" ValueRank="1" />
-    </Definition>
-  </UADataType>
   <UADataType NodeId="i=576" BrowseName="FilterOperator">
     <DisplayName>FilterOperator</DisplayName>
     <References>
@@ -2624,14 +2559,6 @@
       <Reference ReferenceType="HasTypeDefinition">i=76</Reference>
     </References>
   </UAObject>
-  <UAObject NodeId="i=12505" BrowseName="Default XML" SymbolicName="DefaultXml">
-    <DisplayName>Default XML</DisplayName>
-    <References>
-      <Reference ReferenceType="HasEncoding" IsForward="false">i=12504</Reference>
-      <Reference ReferenceType="HasDescription">i=12506</Reference>
-      <Reference ReferenceType="HasTypeDefinition">i=76</Reference>
-    </References>
-  </UAObject>
   <UAObject NodeId="i=939" BrowseName="Default XML" SymbolicName="DefaultXml">
     <DisplayName>Default XML</DisplayName>
     <References>
@@ -2693,22 +2620,6 @@
     <References>
       <Reference ReferenceType="HasEncoding" IsForward="false">i=331</Reference>
       <Reference ReferenceType="HasDescription">i=8321</Reference>
-      <Reference ReferenceType="HasTypeDefinition">i=76</Reference>
-    </References>
-  </UAObject>
-  <UAObject NodeId="i=336" BrowseName="Default XML" SymbolicName="DefaultXml">
-    <DisplayName>Default XML</DisplayName>
-    <References>
-      <Reference ReferenceType="HasEncoding" IsForward="false">i=335</Reference>
-      <Reference ReferenceType="HasDescription">i=8324</Reference>
-      <Reference ReferenceType="HasTypeDefinition">i=76</Reference>
-    </References>
-  </UAObject>
-  <UAObject NodeId="i=342" BrowseName="Default XML" SymbolicName="DefaultXml">
-    <DisplayName>Default XML</DisplayName>
-    <References>
-      <Reference ReferenceType="HasEncoding" IsForward="false">i=341</Reference>
-      <Reference ReferenceType="HasDescription">i=8330</Reference>
       <Reference ReferenceType="HasTypeDefinition">i=76</Reference>
     </References>
   </UAObject>
@@ -2904,14 +2815,6 @@
       <Reference ReferenceType="HasTypeDefinition">i=76</Reference>
     </References>
   </UAObject>
-  <UAObject NodeId="i=12509" BrowseName="Default Binary" SymbolicName="DefaultBinary">
-    <DisplayName>Default Binary</DisplayName>
-    <References>
-      <Reference ReferenceType="HasEncoding" IsForward="false">i=12504</Reference>
-      <Reference ReferenceType="HasDescription">i=12510</Reference>
-      <Reference ReferenceType="HasTypeDefinition">i=76</Reference>
-    </References>
-  </UAObject>
   <UAObject NodeId="i=940" BrowseName="Default Binary" SymbolicName="DefaultBinary">
     <DisplayName>Default Binary</DisplayName>
     <References>
@@ -2973,22 +2876,6 @@
     <References>
       <Reference ReferenceType="HasEncoding" IsForward="false">i=331</Reference>
       <Reference ReferenceType="HasDescription">i=7686</Reference>
-      <Reference ReferenceType="HasTypeDefinition">i=76</Reference>
-    </References>
-  </UAObject>
-  <UAObject NodeId="i=337" BrowseName="Default Binary" SymbolicName="DefaultBinary">
-    <DisplayName>Default Binary</DisplayName>
-    <References>
-      <Reference ReferenceType="HasEncoding" IsForward="false">i=335</Reference>
-      <Reference ReferenceType="HasDescription">i=7689</Reference>
-      <Reference ReferenceType="HasTypeDefinition">i=76</Reference>
-    </References>
-  </UAObject>
-  <UAObject NodeId="i=343" BrowseName="Default Binary" SymbolicName="DefaultBinary">
-    <DisplayName>Default Binary</DisplayName>
-    <References>
-      <Reference ReferenceType="HasEncoding" IsForward="false">i=341</Reference>
-      <Reference ReferenceType="HasDescription">i=7695</Reference>
       <Reference ReferenceType="HasTypeDefinition">i=76</Reference>
     </References>
   </UAObject>

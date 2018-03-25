@@ -9,35 +9,36 @@ OPC_TCP_SCHEME = 'opc.tcp'
 
 
 class Hello(uatypes.FrozenClass):
-
-    ua_types = (('ProtocolVersion', 'UInt32'), ('ReceiveBufferSize', 'UInt32'), ('SendBufferSize', 'UInt32'),
-                ('MaxMessageSize', 'UInt32'), ('MaxChunkCount', 'UInt32'), ('EndpointUrl', 'String'), )
+    ua_types = (
+        ('ProtocolVersion', 'UInt32'), ('ReceiveBufferSize', 'UInt32'), ('SendBufferSize', 'UInt32'),
+        ('MaxMessageSize', 'UInt32'), ('MaxChunkCount', 'UInt32'), ('EndpointUrl', 'String'),
+    )
 
     def __init__(self):
         self.ProtocolVersion = 0
         self.ReceiveBufferSize = 65536
         self.SendBufferSize = 65536
-        self.MaxMessageSize = 0 # No limits
-        self.MaxChunkCount = 0 # No limits
+        self.MaxMessageSize = 0  # No limits
+        self.MaxChunkCount = 0  # No limits
         self.EndpointUrl = ""
         self._freeze = True
 
 
-class MessageType(object):
-    Invalid = b"INV"  # FIXME: check value
-    Hello = b"HEL"
-    Acknowledge = b"ACK"
-    Error = b"ERR"
-    SecureOpen = b"OPN"
-    SecureClose = b"CLO"
-    SecureMessage = b"MSG"
+class MessageType:
+    Invalid = b'INV'  # FIXME: check value
+    Hello = b'HEL'
+    Acknowledge = b'ACK'
+    Error = b'ERR'
+    SecureOpen = b'OPN'
+    SecureClose = b'CLO'
+    SecureMessage = b'MSG'
 
 
-class ChunkType(object):
-    Invalid = b"0"  # FIXME check
-    Single = b"F"
-    Intermediate = b"C"
-    Abort = b"A"  # when an error occurred and the Message is aborted (body is ErrorMessage)
+class ChunkType:
+    Invalid = b'0'  # FIXME check
+    Single = b'F'
+    Intermediate = b'C'
+    Abort = b'A'  # when an error occurred and the Message is aborted (body is ErrorMessage)
 
 
 class Header(uatypes.FrozenClass):
@@ -57,15 +58,13 @@ class Header(uatypes.FrozenClass):
         return struct.calcsize("<3scII")
 
     def __str__(self):
-        return "Header(type:{0}, chunk_type:{1}, body_size:{2}, channel:{3})".format(
-            self.MessageType, self.ChunkType, self.body_size, self.ChannelId)
+        return f'Header(type:{self.MessageType}, chunk_type:{self.ChunkType}, body_size:{self.body_size}, channel:{self.ChannelId})'
 
     __repr__ = __str__
 
 
 class ErrorMessage(uatypes.FrozenClass):
-
-    ua_types = (('Error', 'StatusCode'), ('Reason', 'String'), )
+    ua_types = (('Error', 'StatusCode'), ('Reason', 'String'),)
 
     def __init__(self):
         self.Error = uatypes.StatusCode()
@@ -73,19 +72,18 @@ class ErrorMessage(uatypes.FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return "MessageAbort(error:{0}, reason:{1})".format(self.Error, self.Reason)
+        return f'MessageAbort(error:{self.Error}, reason:{self.Reason})'
 
     __repr__ = __str__
 
 
 class Acknowledge(uatypes.FrozenClass):
-
     ua_types = [
-        ("ProtocolVersion", "UInt32"),
-        ("ReceiveBufferSize", "UInt32"),
-        ("SendBufferSize", "UInt32"),
-        ("MaxMessageSize", "UInt32"),
-        ("MaxChunkCount", "UInt32"),
+        ('ProtocolVersion', 'UInt32'),
+        ('ReceiveBufferSize', 'UInt32'),
+        ('SendBufferSize', 'UInt32'),
+        ('MaxMessageSize', 'UInt32'),
+        ('MaxChunkCount', 'UInt32'),
     ]
 
     def __init__(self):
@@ -98,15 +96,14 @@ class Acknowledge(uatypes.FrozenClass):
 
 
 class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
-
     ua_types = [
-        ("SecurityPolicyURI", "String"),
-        ("SenderCertificate", "ByteString"),
-        ("ReceiverCertificateThumbPrint", "ByteString"),
+        ('SecurityPolicyURI', 'String'),
+        ('SenderCertificate', 'ByteString'),
+        ('ReceiverCertificateThumbPrint', 'ByteString'),
     ]
 
     def __init__(self):
-        self.SecurityPolicyURI = "http://opcfoundation.org/UA/SecurityPolicy#None"
+        self.SecurityPolicyURI = 'http://opcfoundation.org/UA/SecurityPolicy#None'
         self.SenderCertificate = None
         self.ReceiverCertificateThumbPrint = None
         self._freeze = True
@@ -114,16 +111,14 @@ class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
     def __str__(self):
         size1 = len(self.SenderCertificate) if self.SenderCertificate is not None else None
         size2 = len(self.ReceiverCertificateThumbPrint) if self.ReceiverCertificateThumbPrint is not None else None
-        return "{0}(SecurityPolicy:{1}, certificatesize:{2}, receiverCertificatesize:{3} )".format(
-            self.__class__.__name__, self.SecurityPolicyURI, size1, size2)
+        return f'{self.__class__.__name__}(SecurityPolicy:{self.SecurityPolicyURI}, certificatesize:{size2}, receiverCertificatesize:{size2} )'
 
     __repr__ = __str__
 
 
 class SymmetricAlgorithmHeader(uatypes.FrozenClass):
-
     ua_types = [
-        ("TokenId", "UInt32"),
+        ('TokenId', 'UInt32'),
     ]
 
     def __init__(self):
@@ -132,19 +127,18 @@ class SymmetricAlgorithmHeader(uatypes.FrozenClass):
 
     @staticmethod
     def max_size():
-        return struct.calcsize("<I")
+        return struct.calcsize('<I')
 
     def __str__(self):
-        return "{0}(TokenId:{1} )".format(self.__class__.__name__, self.TokenId)
+        return f'{self.__class__.__name__}(TokenId:{self.TokenId} )'
 
     __repr__ = __str__
 
 
 class SequenceHeader(uatypes.FrozenClass):
-
     ua_types = [
-        ("SequenceNumber", "UInt32"),
-        ("RequestId", "UInt32"),
+        ('SequenceNumber', 'UInt32'),
+        ('RequestId', 'UInt32'),
     ]
 
     def __init__(self):
@@ -154,11 +148,10 @@ class SequenceHeader(uatypes.FrozenClass):
 
     @staticmethod
     def max_size():
-        return struct.calcsize("<II")
+        return struct.calcsize('<II')
 
     def __str__(self):
-        return "{0}(SequenceNumber:{1}, RequestId:{2} )".format(self.__class__.__name__, self.SequenceNumber,
-                                                                self.RequestId)
+        return f'{self.__class__.__name__}(SequenceNumber:{self.SequenceNumber}, RequestId:{self.RequestId} )'
 
     __repr__ = __str__
 
@@ -219,11 +212,11 @@ class CryptographyNone:
         return data
 
 
-class SecurityPolicy(object):
+class SecurityPolicy:
     """
     Base class for security policy
     """
-    URI = "http://opcfoundation.org/UA/SecurityPolicy#None"
+    URI = 'http://opcfoundation.org/UA/SecurityPolicy#None'
     signature_key_size = 0
     symmetric_key_size = 0
 
@@ -238,7 +231,7 @@ class SecurityPolicy(object):
         pass
 
 
-class SecurityPolicyFactory(object):
+class SecurityPolicyFactory:
     """
     Helper class for creating server-side SecurityPolicy.
     Server has one certificate and private key, but needs a separate
@@ -261,7 +254,7 @@ class SecurityPolicyFactory(object):
             return self.cls(peer_certificate, self.certificate, self.private_key, self.mode)
 
 
-class Message(object):
+class Message:
     def __init__(self, chunks):
         self._chunks = chunks
 
@@ -356,7 +349,7 @@ class XmlElement(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'XmlElement(' + 'Value:' + str(self.Value) + ')'
+        return f'XmlElement(Value:{self.Value})'
 
     __repr__ = __str__
 
