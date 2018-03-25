@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 _logger = logging.getLogger('opcua')
 
 
-async def _browse_nodes(node: Node):
+async def browse_nodes(node: Node):
     """
     Build a nested node tree dict by recursion (filtered by OPC UA objects and variables).
     """
@@ -16,7 +16,7 @@ async def _browse_nodes(node: Node):
     for child in await node.get_children():
         if await child.get_node_class() in [ua.NodeClass.Object, ua.NodeClass.Variable]:
             children.append(
-                await _browse_nodes(child)
+                await browse_nodes(child)
             )
     if node_class != ua.NodeClass.Variable:
         var_type = None
@@ -35,11 +35,6 @@ async def _browse_nodes(node: Node):
     }
 
 
-async def create_node_tree(client):
-    """coroutine"""
-    return await _browse_nodes(client.get_objects_node())
-
-
 async def task(loop):
     url = "opc.tcp://192.168.2.213:4840"
     # url = "opc.tcp://localhost:4840/freeopcua/server/"
@@ -56,7 +51,7 @@ async def task(loop):
         # Node objects have methods to read and write node attributes as well as browse or populate address space
         _logger.info("Children of root are: %r", await root.get_children())
 
-        tree = await create_node_tree(client)
+        tree = await browse_nodes(client.get_objects_node())
         _logger.info('Node tree: %r', tree)
     except Exception:
         _logger.exception('error')
