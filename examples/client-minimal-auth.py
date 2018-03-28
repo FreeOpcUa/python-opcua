@@ -1,9 +1,12 @@
+import os
+os.environ['PYOPCUA_NO_TYPO_CHECK'] = 'True'
+
 import asyncio
 import logging
 
 from opcua import Client, Node, ua
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 _logger = logging.getLogger('opcua')
 
 
@@ -24,7 +27,7 @@ async def browse_nodes(node: Node):
         try:
             var_type = (await node.get_data_type_as_variant_type()).value
         except ua.UaError:
-            _logger.warning('Node Variable Type coudl not be determined for %r', node)
+            _logger.warning('Node Variable Type could not be determined for %r', node)
             var_type = None
     return {
         'id': node.nodeid.to_string(),

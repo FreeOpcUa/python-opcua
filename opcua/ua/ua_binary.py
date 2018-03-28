@@ -79,7 +79,7 @@ class _String(object):
 class _Null(object):
     @staticmethod
     def pack(data):
-        return b""
+        return b''
 
     @staticmethod
     def unpack(data):
@@ -131,8 +131,8 @@ class _Primitive1(object):
     def pack_array(self, data):
         if data is None:
             return Primitives.Int32.pack(-1)
-        sizedata = Primitives.Int32.pack(len(data))
-        return sizedata + struct.pack(self._fmt.format(len(data)), *data)
+        size_data = Primitives.Int32.pack(len(data))
+        return size_data + struct.pack(self._fmt.format(len(data)), *data)
 
     def unpack_array(self, data, length):
         if length == -1:
@@ -143,18 +143,18 @@ class _Primitive1(object):
 
 
 class Primitives1(object):
-    SByte = _Primitive1("<{:d}b")
-    Int16 = _Primitive1("<{:d}h")
-    Int32 = _Primitive1("<{:d}i")
-    Int64 = _Primitive1("<{:d}q")
-    Byte = _Primitive1("<{:d}B")
+    SByte = _Primitive1('<{:d}b')
+    Int16 = _Primitive1('<{:d}h')
+    Int32 = _Primitive1('<{:d}i')
+    Int64 = _Primitive1('<{:d}q')
+    Byte = _Primitive1('<{:d}B')
     Char = Byte
-    UInt16 = _Primitive1("<{:d}H")
-    UInt32 = _Primitive1("<{:d}I")
-    UInt64 = _Primitive1("<{:d}Q")
-    Boolean = _Primitive1("<{:d}?")
-    Double = _Primitive1("<{:d}d")
-    Float = _Primitive1("<{:d}f")
+    UInt16 = _Primitive1('<{:d}H')
+    UInt32 = _Primitive1('<{:d}I')
+    UInt64 = _Primitive1('<{:d}Q')
+    Boolean = _Primitive1('<{:d}?')
+    Double = _Primitive1('<{:d}d')
+    Float = _Primitive1('<{:d}f')
 
 
 class Primitives(Primitives1):
@@ -196,16 +196,16 @@ def unpack_uatype(vtype, data):
         return variant_from_binary(data)
     else:
         if hasattr(ua, vtype.name):
-            klass = getattr(ua, vtype.name)
-            return struct_from_binary(klass, data)
+            cls = getattr(ua, vtype.name)
+            return struct_from_binary(cls, data)
         else:
-            raise UaError("Cannot unpack unknown variant type {0!s}".format(vtype))
+            raise UaError(f'Cannot unpack unknown variant type {vtype}')
 
 
 def pack_uatype_array(vtype, array):
     if hasattr(Primitives1, vtype.name):
-        dataType = getattr(Primitives1, vtype.name)
-        return dataType.pack_array(array)
+        data_type = getattr(Primitives1, vtype.name)
+        return data_type.pack_array(array)
     if array is None:
         return b'\xff\xff\xff\xff'
     length = len(array)
@@ -219,9 +219,9 @@ def unpack_uatype_array(vtype, data):
     if length == -1:
         return None
     elif hasattr(Primitives1, vtype.name):
-        dataType = getattr(Primitives1, vtype.name)
+        data_type = getattr(Primitives1, vtype.name)
         # Remark: works without tuple conversion to list.
-        return list(dataType.unpack_array(data, length))
+        return list(data_type.unpack_array(data, length))
     else:
         # Revert to slow serial unpacking.
         return [unpack_uatype(vtype, data) for _ in range(length)]
@@ -254,7 +254,7 @@ def to_binary(uatype, val):
     """
     Pack a python object to binary given a string defining its type
     """
-    if uatype.startswith("ListOf"):
+    if uatype.startswith('ListOf'):
         #if isinstance(val, (list, tuple)):
         return list_to_binary(uatype[6:], val)
     elif type(uatype) is str and hasattr(ua.VariantType, uatype):
@@ -268,43 +268,42 @@ def to_binary(uatype, val):
         return nodeid_to_binary(val)
     elif isinstance(val, ua.Variant):
         return variant_to_binary(val)
-    elif hasattr(val, "ua_types"):
+    elif hasattr(val, 'ua_types'):
         return struct_to_binary(val)
     else:
-        raise UaError("No known way to pack {} of type {} to ua binary".format(val, uatype))
+        raise UaError(f'No known way to pack {val} of type {uatype} to ua binary'
 
 
 def list_to_binary(uatype, val):
     if val is None:
         return Primitives.Int32.pack(-1)
     if hasattr(Primitives1, uatype):
-        dataType = getattr(Primitives1, uatype)
-        return dataType.pack_array(val)
-    datasize = Primitives.Int32.pack(len(val))
+        data_type = getattr(Primitives1, uatype)
+        return data_type.pack_array(val)
+    data_size = Primitives.Int32.pack(len(val))
     pack = [to_binary(uatype, el) for el in val]
-    pack.insert(0, datasize)
+    pack.insert(0, data_size)
     return b''.join(pack)
 
 
 def nodeid_to_binary(nodeid):
-    data = None
     if nodeid.NodeIdType == ua.NodeIdType.TwoByte:
-        data = struct.pack("<BB", nodeid.NodeIdType.value, nodeid.Identifier)
+        data = struct.pack('<BB', nodeid.NodeIdType.value, nodeid.Identifier)
     elif nodeid.NodeIdType == ua.NodeIdType.FourByte:
-        data = struct.pack("<BBH", nodeid.NodeIdType.value, nodeid.NamespaceIndex, nodeid.Identifier)
+        data = struct.pack('<BBH', nodeid.NodeIdType.value, nodeid.NamespaceIndex, nodeid.Identifier)
     elif nodeid.NodeIdType == ua.NodeIdType.Numeric:
-        data = struct.pack("<BHI", nodeid.NodeIdType.value, nodeid.NamespaceIndex, nodeid.Identifier)
+        data = struct.pack('<BHI', nodeid.NodeIdType.value, nodeid.NamespaceIndex, nodeid.Identifier)
     elif nodeid.NodeIdType == ua.NodeIdType.String:
-        data = struct.pack("<BH", nodeid.NodeIdType.value, nodeid.NamespaceIndex) + \
+        data = struct.pack('<BH', nodeid.NodeIdType.value, nodeid.NamespaceIndex) + \
             Primitives.String.pack(nodeid.Identifier)
     elif nodeid.NodeIdType == ua.NodeIdType.ByteString:
-        data = struct.pack("<BH", nodeid.NodeIdType.value, nodeid.NamespaceIndex) + \
+        data = struct.pack('<BH', nodeid.NodeIdType.value, nodeid.NamespaceIndex) + \
             Primitives.Bytes.pack(nodeid.Identifier)
     elif nodeid.NodeIdType == ua.NodeIdType.Guid:
-        data = struct.pack("<BH", nodeid.NodeIdType.value, nodeid.NamespaceIndex) + \
+        data = struct.pack('<BH', nodeid.NodeIdType.value, nodeid.NamespaceIndex) + \
                Primitives.Guid.pack(nodeid.Identifier)
     else:
-        raise UaError("Unknown NodeIdType: {} for NodeId: {}".format(nodeid.NodeIdType, nodeid))
+        raise UaError(f'Unknown NodeIdType: {nodeid.NodeIdType} for NodeId: {nodeid}')
     # Add NamespaceUri and ServerIndex in case we have an ExpandedNodeId
     if nodeid.NamespaceUri:
         data = bytearray(data)
@@ -339,7 +338,7 @@ def nodeid_from_binary(data):
         nid.NamespaceIndex = Primitives.UInt16.unpack(data)
         nid.Identifier = Primitives.Guid.unpack(data)
     else:
-        raise UaError("Unknown NodeId encoding: " + str(nid.NodeIdType))
+        raise UaError(f'Unknown NodeId encoding: {nid.NodeIdType}')
 
     if test_bit(encoding, 7):
         nid.NamespaceUri = Primitives.String.unpack(data)
@@ -405,9 +404,9 @@ def extensionobject_from_binary(data):
     Returns an object, or None if TypeId is zero
     """
     typeid = nodeid_from_binary(data)
-    Encoding = ord(data.read(1))
+    encoding = ord(data.read(1))
     body = None
-    if Encoding & (1 << 0):
+    if encoding & (1 << 0):
         length = Primitives.Int32.unpack(data)
         if length < 1:
             body = Buffer(b"")
@@ -417,14 +416,14 @@ def extensionobject_from_binary(data):
     if typeid.Identifier == 0:
         return None
     elif typeid in ua.extension_object_classes:
-        klass = ua.extension_object_classes[typeid]
+        cls = ua.extension_object_classes[typeid]
         if body is None:
-            raise UaError("parsing ExtensionObject {0} without data".format(klass.__name__))
-        return from_binary(klass, body)
+            raise UaError(f'parsing ExtensionObject {cls.__name__)} without data'
+        return from_binary(cls, body)
     else:
         e = ua.ExtensionObject()
         e.TypeId = typeid
-        e.Encoding = Encoding
+        e.Encoding = encoding
         if body is not None:
             e.Body = body.read(len(body))
         return e
