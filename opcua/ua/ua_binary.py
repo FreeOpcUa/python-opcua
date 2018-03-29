@@ -418,7 +418,7 @@ def extensionobject_from_binary(data):
     elif typeid in ua.extension_object_classes:
         cls = ua.extension_object_classes[typeid]
         if body is None:
-            raise UaError(f'parsing ExtensionObject {cls.__name__)} without data')
+            raise UaError(f'parsing ExtensionObject {cls.__name__} without data')
         return from_binary(cls, body)
     else:
         e = ua.ExtensionObject()
