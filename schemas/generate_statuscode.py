@@ -8,7 +8,7 @@ def status_codes():
         name, val, doc = line.split(",", 2)
         additional[int(val, 0)] = (name, val, doc)
 
-    inputfile = open("StatusCodes.csv")
+    inputfile = open("StatusCode.csv")
     result = []
     for line in inputfile:
         name, val, doc = line.split(",", 2)

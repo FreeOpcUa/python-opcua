@@ -7,8 +7,6 @@
   xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 >
-  <!-- This File was generated on 2015-08-18 and supports the specifications supported by the UA SDK v1.1.335.1. -->
-
   <wsdl:types>
     <xsd:schema targetNamespace="http://opcfoundation.org/UA/2008/02/Types.xsd/Imports">
       <xsd:import schemaLocation="http://opcfoundation.org/UA/2008/02/Types.xsd" namespace="http://opcfoundation.org/UA/2008/02/Types.xsd"/>
