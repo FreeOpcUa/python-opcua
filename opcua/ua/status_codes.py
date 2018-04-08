@@ -28,6 +28,7 @@ class StatusCodes(object):
     BadDataTypeIdUnknown = 0x80110000
     BadCertificateInvalid = 0x80120000
     BadSecurityChecksFailed = 0x80130000
+    BadCertificatePolicyCheckFailed = 0x81140000
     BadCertificateTimeInvalid = 0x80140000
     BadCertificateIssuerTimeInvalid = 0x80150000
     BadCertificateHostNameInvalid = 0x80160000
@@ -54,6 +55,9 @@ class StatusCodes(object):
     BadTimestampsToReturnInvalid = 0x802B0000
     BadRequestCancelledByClient = 0x802C0000
     BadTooManyArguments = 0x80E50000
+    BadLicenseExpired = 0x810E0000
+    BadLicenseLimitsExceeded = 0x810F0000
+    BadLicenseNotAvailable = 0x81100000
     GoodSubscriptionTransferred = 0x002D0000
     GoodCompletesAsynchronously = 0x002E0000
     GoodOverload = 0x002F0000
@@ -93,6 +97,7 @@ class StatusCodes(object):
     BadReferenceTypeIdInvalid = 0x804C0000
     BadBrowseDirectionInvalid = 0x804D0000
     BadNodeNotInView = 0x804E0000
+    BadNumericOverflow = 0x81120000
     BadServerUriInvalid = 0x804F0000
     BadServerNameMissing = 0x80500000
     BadDiscoveryUrlMissing = 0x80510000
@@ -143,6 +148,7 @@ class StatusCodes(object):
     BadTypeMismatch = 0x80740000
     BadMethodInvalid = 0x80750000
     BadArgumentsMissing = 0x80760000
+    BadNotExecutable = 0x81110000
     BadTooManySubscriptions = 0x80770000
     BadTooManyPublishRequests = 0x80780000
     BadNoSubscription = 0x80790000
@@ -150,6 +156,7 @@ class StatusCodes(object):
     BadMessageNotAvailable = 0x807B0000
     BadInsufficientClientProfile = 0x807C0000
     BadStateNotActive = 0x80BF0000
+    BadAlreadyExists = 0x81150000
     BadTcpServerTooBusy = 0x807D0000
     BadTcpMessageTypeInvalid = 0x807E0000
     BadTcpSecureChannelUnknown = 0x807F0000
@@ -209,6 +216,7 @@ class StatusCodes(object):
     BadAggregateConfigurationRejected = 0x80DA0000
     GoodDataIgnored = 0x00D90000
     BadRequestNotAllowed = 0x80E40000
+    BadRequestNotComplete = 0x81130000
     GoodEdited = 0x00DC0000
     GoodPostActionFailed = 0x00DD0000
     UncertainDominantValueChanged = 0x40DE0000
@@ -261,15 +269,16 @@ code_to_name_doc = {
     0x80110000: ('BadDataTypeIdUnknown', 'The extension object cannot be (de)serialized because the data type id is not recognized.'),
     0x80120000: ('BadCertificateInvalid', 'The certificate provided as a parameter is not valid.'),
     0x80130000: ('BadSecurityChecksFailed', 'An error occurred verifying security.'),
-    0x80140000: ('BadCertificateTimeInvalid', 'The Certificate has expired or is not yet valid.'),
-    0x80150000: ('BadCertificateIssuerTimeInvalid', 'An Issuer Certificate has expired or is not yet valid.'),
-    0x80160000: ('BadCertificateHostNameInvalid', 'The HostName used to connect to a Server does not match a HostName in the Certificate.'),
-    0x80170000: ('BadCertificateUriInvalid', 'The URI specified in the ApplicationDescription does not match the URI in the Certificate.'),
-    0x80180000: ('BadCertificateUseNotAllowed', 'The Certificate may not be used for the requested operation.'),
-    0x80190000: ('BadCertificateIssuerUseNotAllowed', 'The Issuer Certificate may not be used for the requested operation.'),
-    0x801A0000: ('BadCertificateUntrusted', 'The Certificate is not trusted.'),
-    0x801B0000: ('BadCertificateRevocationUnknown', 'It was not possible to determine if the Certificate has been revoked.'),
-    0x801C0000: ('BadCertificateIssuerRevocationUnknown', 'It was not possible to determine if the Issuer Certificate has been revoked.'),
+    0x81140000: ('BadCertificatePolicyCheckFailed', 'The certificate does not meet the requirements of the security policy.'),
+    0x80140000: ('BadCertificateTimeInvalid', 'The certificate has expired or is not yet valid.'),
+    0x80150000: ('BadCertificateIssuerTimeInvalid', 'An issuer certificate has expired or is not yet valid.'),
+    0x80160000: ('BadCertificateHostNameInvalid', 'The HostName used to connect to a server does not match a HostName in the certificate.'),
+    0x80170000: ('BadCertificateUriInvalid', 'The URI specified in the ApplicationDescription does not match the URI in the certificate.'),
+    0x80180000: ('BadCertificateUseNotAllowed', 'The certificate may not be used for the requested operation.'),
+    0x80190000: ('BadCertificateIssuerUseNotAllowed', 'The issuer certificate may not be used for the requested operation.'),
+    0x801A0000: ('BadCertificateUntrusted', 'The certificate is not trusted.'),
+    0x801B0000: ('BadCertificateRevocationUnknown', 'It was not possible to determine if the certificate has been revoked.'),
+    0x801C0000: ('BadCertificateIssuerRevocationUnknown', 'It was not possible to determine if the issuer certificate has been revoked.'),
     0x801D0000: ('BadCertificateRevoked', 'The certificate has been revoked.'),
     0x801E0000: ('BadCertificateIssuerRevoked', 'The issuer certificate has been revoked.'),
     0x810D0000: ('BadCertificateChainIncomplete', 'The certificate chain is incomplete.'),
@@ -287,6 +296,9 @@ code_to_name_doc = {
     0x802B0000: ('BadTimestampsToReturnInvalid', 'The timestamps to return parameter is invalid.'),
     0x802C0000: ('BadRequestCancelledByClient', 'The request was cancelled by the client.'),
     0x80E50000: ('BadTooManyArguments', 'Too many arguments were provided.'),
+    0x810E0000: ('BadLicenseExpired', 'The server requires a license to operate in general or to perform a service or operation, but existing license is expired.'),
+    0x810F0000: ('BadLicenseLimitsExceeded', 'The server has limits on number of allowed operations / objects, based on installed licenses, and these limits where exceeded.'),
+    0x81100000: ('BadLicenseNotAvailable', 'The server does not have a license which is required to operate in general or to perform a service or operation.'),
     0x002D0000: ('GoodSubscriptionTransferred', 'The subscription was transferred to another session.'),
     0x002E0000: ('GoodCompletesAsynchronously', 'The processing will complete asynchronously.'),
     0x002F0000: ('GoodOverload', 'Sampling has slowed down due to resource limitations.'),
@@ -326,18 +338,19 @@ code_to_name_doc = {
     0x804C0000: ('BadReferenceTypeIdInvalid', 'The operation could not be processed because all continuation points have been allocated.'),
     0x804D0000: ('BadBrowseDirectionInvalid', 'The browse direction is not valid.'),
     0x804E0000: ('BadNodeNotInView', 'The node is not part of the view.'),
+    0x81120000: ('BadNumericOverflow', 'The number was not accepted because of a numeric overflow.'),
     0x804F0000: ('BadServerUriInvalid', 'The ServerUri is not a valid URI.'),
     0x80500000: ('BadServerNameMissing', 'No ServerName was specified.'),
     0x80510000: ('BadDiscoveryUrlMissing', 'No DiscoveryUrl was specified.'),
     0x80520000: ('BadSempahoreFileMissing', 'The semaphore file specified by the client is not valid.'),
     0x80530000: ('BadRequestTypeInvalid', 'The security token request type is not valid.'),
-    0x80540000: ('BadSecurityModeRejected', 'The security mode does not meet the requirements set by the Server.'),
-    0x80550000: ('BadSecurityPolicyRejected', 'The security policy does not meet the requirements set by the Server.'),
+    0x80540000: ('BadSecurityModeRejected', 'The security mode does not meet the requirements set by the server.'),
+    0x80550000: ('BadSecurityPolicyRejected', 'The security policy does not meet the requirements set by the server.'),
     0x80560000: ('BadTooManySessions', 'The server has reached its maximum number of sessions.'),
     0x80570000: ('BadUserSignatureInvalid', 'The user token signature is missing or invalid.'),
     0x80580000: ('BadApplicationSignatureInvalid', 'The signature generated with the client certificate is missing or invalid.'),
     0x80590000: ('BadNoValidCertificates', 'The client did not provide at least one software certificate that is valid and meets the profile requirements for the server.'),
-    0x80C60000: ('BadIdentityChangeNotSupported', 'The Server does not support changing the user identity assigned to the session.'),
+    0x80C60000: ('BadIdentityChangeNotSupported', 'The server does not support changing the user identity assigned to the session.'),
     0x805A0000: ('BadRequestCancelledByRequest', 'The request was cancelled by the client with the Cancel service.'),
     0x805B0000: ('BadParentNodeIdInvalid', 'The parent node id does not to refer to a valid node.'),
     0x805C0000: ('BadReferenceNotAllowed', 'The reference could not be created because it violates constraints imposed by the data model.'),
@@ -372,24 +385,26 @@ code_to_name_doc = {
     0x80710000: ('BadHistoryOperationInvalid', 'The history details parameter is not valid.'),
     0x80720000: ('BadHistoryOperationUnsupported', 'The server does not support the requested operation.'),
     0x80BD0000: ('BadInvalidTimestampArgument', 'The defined timestamp to return was invalid.'),
-    0x80730000: ('BadWriteNotSupported', 'The server not does support writing the combination of value, status and timestamps provided.'),
+    0x80730000: ('BadWriteNotSupported', 'The server does not support writing the combination of value, status and timestamps provided.'),
     0x80740000: ('BadTypeMismatch', 'The value supplied for the attribute is not of the same type as the attribute"s value.'),
     0x80750000: ('BadMethodInvalid', 'The method id does not refer to a method for the specified object.'),
     0x80760000: ('BadArgumentsMissing', 'The client did not specify all of the input arguments for the method.'),
+    0x81110000: ('BadNotExecutable', 'The executable attribute does not allow the execution of the method.'),
     0x80770000: ('BadTooManySubscriptions', 'The server has reached its  maximum number of subscriptions.'),
     0x80780000: ('BadTooManyPublishRequests', 'The server has reached the maximum number of queued publish requests.'),
     0x80790000: ('BadNoSubscription', 'There is no subscription available for this session.'),
     0x807A0000: ('BadSequenceNumberUnknown', 'The sequence number is unknown to the server.'),
     0x807B0000: ('BadMessageNotAvailable', 'The requested notification message is no longer available.'),
-    0x807C0000: ('BadInsufficientClientProfile', 'The Client of the current Session does not support one or more Profiles that are necessary for the Subscription.'),
+    0x807C0000: ('BadInsufficientClientProfile', 'The client of the current session does not support one or more Profiles that are necessary for the subscription.'),
     0x80BF0000: ('BadStateNotActive', 'The sub-state machine is not currently active.'),
+    0x81150000: ('BadAlreadyExists', 'An equivalent rule already exists.'),
     0x807D0000: ('BadTcpServerTooBusy', 'The server cannot process the request because it is too busy.'),
     0x807E0000: ('BadTcpMessageTypeInvalid', 'The type of the message specified in the header invalid.'),
     0x807F0000: ('BadTcpSecureChannelUnknown', 'The SecureChannelId and/or TokenId are not currently in use.'),
     0x80800000: ('BadTcpMessageTooLarge', 'The size of the message specified in the header is too large.'),
     0x80810000: ('BadTcpNotEnoughResources', 'There are not enough resources to process the request.'),
     0x80820000: ('BadTcpInternalError', 'An internal error occurred.'),
-    0x80830000: ('BadTcpEndpointUrlInvalid', 'The Server does not recognize the QueryString specified.'),
+    0x80830000: ('BadTcpEndpointUrlInvalid', 'The server does not recognize the QueryString specified.'),
     0x80840000: ('BadRequestInterrupted', 'The request could not be sent because of a network interruption.'),
     0x80850000: ('BadRequestTimeout', 'Timeout occurred while processing the request.'),
     0x80860000: ('BadSecureChannelClosed', 'The secure channel has been closed.'),
@@ -442,6 +457,7 @@ code_to_name_doc = {
     0x80DA0000: ('BadAggregateConfigurationRejected', 'The aggregate configuration is not valid for specified node.'),
     0x00D90000: ('GoodDataIgnored', 'The request pecifies fields which are not valid for the EventType or cannot be saved by the historian.'),
     0x80E40000: ('BadRequestNotAllowed', 'The request was rejected by the server because it did not meet the criteria set by the server.'),
+    0x81130000: ('BadRequestNotComplete', 'The request has not been processed by the server yet.'),
     0x00DC0000: ('GoodEdited', 'The value does not come from the real source and has been edited by the server.'),
     0x00DD0000: ('GoodPostActionFailed', 'There was an error in execution of these post-actions.'),
     0x40DE0000: ('UncertainDominantValueChanged', 'The related EngineeringUnit has been changed but the Variable Value is still provided based on the previous unit.'),
