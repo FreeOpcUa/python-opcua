@@ -6,7 +6,7 @@ import logging
 
 from opcua import Client, Node, ua
 
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.INFO)
 _logger = logging.getLogger('opcua')
 
 
