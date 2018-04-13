@@ -298,6 +298,7 @@ class Parser(object):
         tree = ET.parse(self.path)
         root = tree.getroot()
         self.add_extension_object()
+        self.add_data_type_definition()
         for child in root:
             tag = child.tag[40:]
             if tag == "StructuredType":
@@ -335,6 +336,12 @@ class Parser(object):
         obj.fields.append(f)
         self.model.struct_list.append(obj.name)
 
+        self.model.structs.append(obj)
+
+    def add_data_type_definition(self):
+        obj = Struct()
+        obj.name = "DataTypeDefinition"
+        self.model.struct_list.append(obj.name)
         self.model.structs.append(obj)
 
     def parse_struct(self, child):
