@@ -302,7 +302,7 @@ class XmlTests(object):
         self._test_xml_var_type(o, "enum")
 
     def test_xml_enumvalues(self):
-        o = self.opc.nodes.objects.add_variable(2, "xmlenumvalues", 0, varianttype=ua.VariantType.Int32, datatype=ua.ObjectIds.AttributeWriteMask)
+        o = self.opc.nodes.objects.add_variable(2, "xmlenumvalues", 0, varianttype=ua.VariantType.UInt32, datatype=ua.ObjectIds.AttributeWriteMask)
         self._test_xml_var_type(o, "enumvalues")
 
     def test_xml_custom_uint32(self):
