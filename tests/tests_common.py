@@ -955,7 +955,7 @@ class CommonTests(object):
             ua.ObjectIds.Structure: ua.VariantType.ExtensionObject,
             ua.ObjectIds.EnumValueType: ua.VariantType.ExtensionObject,
             ua.ObjectIds.Enumeration: ua.VariantType.Int32,  # enumeration
-            ua.ObjectIds.AttributeWriteMask: ua.VariantType.Int32,  # enumeration
+            ua.ObjectIds.AttributeWriteMask: ua.VariantType.UInt32,
             ua.ObjectIds.AxisScaleEnumeration: ua.VariantType.Int32  # enumeration
         }
         for dt, vdt in test_data.items():
