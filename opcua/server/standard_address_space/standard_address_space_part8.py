@@ -1384,7 +1384,7 @@ def create_standard_address_space_Part8(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = ua.LocalizedText("EnumStrings")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = [ua.LocalizedText("Linear"),ua.LocalizedText("Log"),ua.LocalizedText("Ln")]
+    attrs.Value = [ua.LocalizedText('Linear'),ua.LocalizedText('Log'),ua.LocalizedText('Ln')]
     attrs.ValueRank = 1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1489,6 +1489,222 @@ def create_standard_address_space_Part8(server):
     ref.SourceNodeId = ua.NodeId.from_string("i=12080")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=22")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=886")
+    node.BrowseName = ua.QualifiedName.from_string("Default Binary")
+    node.NodeClass = ua.NodeClass.Object
+    node.ParentNodeId = ua.NodeId.from_string("i=884")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    node.TypeDefinition = ua.NodeId.from_string("i=76")
+    attrs = ua.ObjectAttributes()
+    attrs.DisplayName = ua.LocalizedText("Default Binary")
+    attrs.EventNotifier = 0
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=886")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=884")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
+    ref.SourceNodeId = ua.NodeId.from_string("i=886")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=8238")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=886")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=889")
+    node.BrowseName = ua.QualifiedName.from_string("Default Binary")
+    node.NodeClass = ua.NodeClass.Object
+    node.ParentNodeId = ua.NodeId.from_string("i=887")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    node.TypeDefinition = ua.NodeId.from_string("i=76")
+    attrs = ua.ObjectAttributes()
+    attrs.DisplayName = ua.LocalizedText("Default Binary")
+    attrs.EventNotifier = 0
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=889")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=887")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
+    ref.SourceNodeId = ua.NodeId.from_string("i=889")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=8241")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=889")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12181")
+    node.BrowseName = ua.QualifiedName.from_string("Default Binary")
+    node.NodeClass = ua.NodeClass.Object
+    node.ParentNodeId = ua.NodeId.from_string("i=12171")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    node.TypeDefinition = ua.NodeId.from_string("i=76")
+    attrs = ua.ObjectAttributes()
+    attrs.DisplayName = ua.LocalizedText("Default Binary")
+    attrs.EventNotifier = 0
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12181")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12171")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12181")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12183")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12181")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12182")
+    node.BrowseName = ua.QualifiedName.from_string("Default Binary")
+    node.NodeClass = ua.NodeClass.Object
+    node.ParentNodeId = ua.NodeId.from_string("i=12172")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    node.TypeDefinition = ua.NodeId.from_string("i=76")
+    attrs = ua.ObjectAttributes()
+    attrs.DisplayName = ua.LocalizedText("Default Binary")
+    attrs.EventNotifier = 0
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12182")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12172")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12182")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12186")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12182")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12089")
+    node.BrowseName = ua.QualifiedName.from_string("Default Binary")
+    node.NodeClass = ua.NodeClass.Object
+    node.ParentNodeId = ua.NodeId.from_string("i=12079")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    node.TypeDefinition = ua.NodeId.from_string("i=76")
+    attrs = ua.ObjectAttributes()
+    attrs.DisplayName = ua.LocalizedText("Default Binary")
+    attrs.EventNotifier = 0
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12089")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12079")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12089")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12091")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12089")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
+    refs.append(ref)
+    server.add_references(refs)
+   
+    node = ua.AddNodesItem()
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=12090")
+    node.BrowseName = ua.QualifiedName.from_string("Default Binary")
+    node.NodeClass = ua.NodeClass.Object
+    node.ParentNodeId = ua.NodeId.from_string("i=12080")
+    node.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    node.TypeDefinition = ua.NodeId.from_string("i=76")
+    attrs = ua.ObjectAttributes()
+    attrs.DisplayName = ua.LocalizedText("Default Binary")
+    attrs.EventNotifier = 0
+    node.NodeAttributes = attrs
+    server.add_nodes([node])
+    refs = []
+    ref = ua.AddReferencesItem()
+    ref.IsForward = False
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12090")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12080")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12090")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=12094")
+    refs.append(ref)
+    ref = ua.AddReferencesItem()
+    ref.IsForward = True
+    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
+    ref.SourceNodeId = ua.NodeId.from_string("i=12090")
+    ref.TargetNodeClass = ua.NodeClass.DataType
+    ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
@@ -1709,14 +1925,14 @@ def create_standard_address_space_Part8(server):
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=886")
-    node.BrowseName = ua.QualifiedName.from_string("Default Binary")
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=15375")
+    node.BrowseName = ua.QualifiedName.from_string("Default JSON")
     node.NodeClass = ua.NodeClass.Object
     node.ParentNodeId = ua.NodeId.from_string("i=884")
     node.ReferenceTypeId = ua.NodeId.from_string("i=38")
     node.TypeDefinition = ua.NodeId.from_string("i=76")
     attrs = ua.ObjectAttributes()
-    attrs.DisplayName = ua.LocalizedText("Default Binary")
+    attrs.DisplayName = ua.LocalizedText("Default JSON")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1724,35 +1940,28 @@ def create_standard_address_space_Part8(server):
     ref = ua.AddReferencesItem()
     ref.IsForward = False
     ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
-    ref.SourceNodeId = ua.NodeId.from_string("i=886")
+    ref.SourceNodeId = ua.NodeId.from_string("i=15375")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=884")
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
-    ref.SourceNodeId = ua.NodeId.from_string("i=886")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=8238")
-    refs.append(ref)
-    ref = ua.AddReferencesItem()
-    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=886")
+    ref.SourceNodeId = ua.NodeId.from_string("i=15375")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=889")
-    node.BrowseName = ua.QualifiedName.from_string("Default Binary")
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=15376")
+    node.BrowseName = ua.QualifiedName.from_string("Default JSON")
     node.NodeClass = ua.NodeClass.Object
     node.ParentNodeId = ua.NodeId.from_string("i=887")
     node.ReferenceTypeId = ua.NodeId.from_string("i=38")
     node.TypeDefinition = ua.NodeId.from_string("i=76")
     attrs = ua.ObjectAttributes()
-    attrs.DisplayName = ua.LocalizedText("Default Binary")
+    attrs.DisplayName = ua.LocalizedText("Default JSON")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1760,35 +1969,28 @@ def create_standard_address_space_Part8(server):
     ref = ua.AddReferencesItem()
     ref.IsForward = False
     ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
-    ref.SourceNodeId = ua.NodeId.from_string("i=889")
+    ref.SourceNodeId = ua.NodeId.from_string("i=15376")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=887")
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
-    ref.SourceNodeId = ua.NodeId.from_string("i=889")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=8241")
-    refs.append(ref)
-    ref = ua.AddReferencesItem()
-    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=889")
+    ref.SourceNodeId = ua.NodeId.from_string("i=15376")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=12181")
-    node.BrowseName = ua.QualifiedName.from_string("Default Binary")
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=15377")
+    node.BrowseName = ua.QualifiedName.from_string("Default JSON")
     node.NodeClass = ua.NodeClass.Object
     node.ParentNodeId = ua.NodeId.from_string("i=12171")
     node.ReferenceTypeId = ua.NodeId.from_string("i=38")
     node.TypeDefinition = ua.NodeId.from_string("i=76")
     attrs = ua.ObjectAttributes()
-    attrs.DisplayName = ua.LocalizedText("Default Binary")
+    attrs.DisplayName = ua.LocalizedText("Default JSON")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1796,35 +1998,28 @@ def create_standard_address_space_Part8(server):
     ref = ua.AddReferencesItem()
     ref.IsForward = False
     ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
-    ref.SourceNodeId = ua.NodeId.from_string("i=12181")
+    ref.SourceNodeId = ua.NodeId.from_string("i=15377")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12171")
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
-    ref.SourceNodeId = ua.NodeId.from_string("i=12181")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=12183")
-    refs.append(ref)
-    ref = ua.AddReferencesItem()
-    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=12181")
+    ref.SourceNodeId = ua.NodeId.from_string("i=15377")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=12182")
-    node.BrowseName = ua.QualifiedName.from_string("Default Binary")
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=15378")
+    node.BrowseName = ua.QualifiedName.from_string("Default JSON")
     node.NodeClass = ua.NodeClass.Object
     node.ParentNodeId = ua.NodeId.from_string("i=12172")
     node.ReferenceTypeId = ua.NodeId.from_string("i=38")
     node.TypeDefinition = ua.NodeId.from_string("i=76")
     attrs = ua.ObjectAttributes()
-    attrs.DisplayName = ua.LocalizedText("Default Binary")
+    attrs.DisplayName = ua.LocalizedText("Default JSON")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1832,35 +2027,28 @@ def create_standard_address_space_Part8(server):
     ref = ua.AddReferencesItem()
     ref.IsForward = False
     ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
-    ref.SourceNodeId = ua.NodeId.from_string("i=12182")
+    ref.SourceNodeId = ua.NodeId.from_string("i=15378")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12172")
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
-    ref.SourceNodeId = ua.NodeId.from_string("i=12182")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=12186")
-    refs.append(ref)
-    ref = ua.AddReferencesItem()
-    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=12182")
+    ref.SourceNodeId = ua.NodeId.from_string("i=15378")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=12089")
-    node.BrowseName = ua.QualifiedName.from_string("Default Binary")
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=15379")
+    node.BrowseName = ua.QualifiedName.from_string("Default JSON")
     node.NodeClass = ua.NodeClass.Object
     node.ParentNodeId = ua.NodeId.from_string("i=12079")
     node.ReferenceTypeId = ua.NodeId.from_string("i=38")
     node.TypeDefinition = ua.NodeId.from_string("i=76")
     attrs = ua.ObjectAttributes()
-    attrs.DisplayName = ua.LocalizedText("Default Binary")
+    attrs.DisplayName = ua.LocalizedText("Default JSON")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1868,35 +2056,28 @@ def create_standard_address_space_Part8(server):
     ref = ua.AddReferencesItem()
     ref.IsForward = False
     ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
-    ref.SourceNodeId = ua.NodeId.from_string("i=12089")
+    ref.SourceNodeId = ua.NodeId.from_string("i=15379")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12079")
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
-    ref.SourceNodeId = ua.NodeId.from_string("i=12089")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=12091")
-    refs.append(ref)
-    ref = ua.AddReferencesItem()
-    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=12089")
+    ref.SourceNodeId = ua.NodeId.from_string("i=15379")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=12090")
-    node.BrowseName = ua.QualifiedName.from_string("Default Binary")
+    node.RequestedNewNodeId = ua.NodeId.from_string("i=15380")
+    node.BrowseName = ua.QualifiedName.from_string("Default JSON")
     node.NodeClass = ua.NodeClass.Object
     node.ParentNodeId = ua.NodeId.from_string("i=12080")
     node.ReferenceTypeId = ua.NodeId.from_string("i=38")
     node.TypeDefinition = ua.NodeId.from_string("i=76")
     attrs = ua.ObjectAttributes()
-    attrs.DisplayName = ua.LocalizedText("Default Binary")
+    attrs.DisplayName = ua.LocalizedText("Default JSON")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1904,21 +2085,14 @@ def create_standard_address_space_Part8(server):
     ref = ua.AddReferencesItem()
     ref.IsForward = False
     ref.ReferenceTypeId = ua.NodeId.from_string("i=38")
-    ref.SourceNodeId = ua.NodeId.from_string("i=12090")
+    ref.SourceNodeId = ua.NodeId.from_string("i=15380")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=12080")
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=39")
-    ref.SourceNodeId = ua.NodeId.from_string("i=12090")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=12094")
-    refs.append(ref)
-    ref = ua.AddReferencesItem()
-    ref.IsForward = True
     ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=12090")
+    ref.SourceNodeId = ua.NodeId.from_string("i=15380")
     ref.TargetNodeClass = ua.NodeClass.DataType
     ref.TargetNodeId = ua.NodeId.from_string("i=76")
     refs.append(ref)

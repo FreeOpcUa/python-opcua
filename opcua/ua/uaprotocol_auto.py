@@ -40,6 +40,29 @@ class OpenFileMode(IntEnum):
     Append = 8
 
 
+class IdentityCriteriaType(IntEnum):
+    '''
+    :ivar UserName:
+    :vartype UserName: 1
+    :ivar Thumbprint:
+    :vartype Thumbprint: 2
+    :ivar Role:
+    :vartype Role: 3
+    :ivar GroupId:
+    :vartype GroupId: 4
+    :ivar Anonymous:
+    :vartype Anonymous: 5
+    :ivar AuthenticatedUser:
+    :vartype AuthenticatedUser: 6
+    '''
+    UserName = 1
+    Thumbprint = 2
+    Role = 3
+    GroupId = 4
+    Anonymous = 5
+    AuthenticatedUser = 6
+
+
 class TrustListMasks(IntEnum):
     '''
     :ivar None_:
@@ -61,6 +84,237 @@ class TrustListMasks(IntEnum):
     IssuerCertificates = 4
     IssuerCrls = 8
     All = 15
+
+
+class PubSubState(IntEnum):
+    '''
+    :ivar Disabled:
+    :vartype Disabled: 0
+    :ivar Paused:
+    :vartype Paused: 1
+    :ivar Operational:
+    :vartype Operational: 2
+    :ivar Error:
+    :vartype Error: 3
+    '''
+    Disabled = 0
+    Paused = 1
+    Operational = 2
+    Error = 3
+
+
+class DataSetFieldFlags(IntEnum):
+    '''
+    :ivar PromotedField:
+    :vartype PromotedField: 1
+    '''
+    PromotedField = 1
+
+
+class DataSetFieldContentMask(IntEnum):
+    '''
+    :ivar StatusCode:
+    :vartype StatusCode: 1
+    :ivar SourceTimestamp:
+    :vartype SourceTimestamp: 2
+    :ivar ServerTimestamp:
+    :vartype ServerTimestamp: 4
+    :ivar SourcePicoSeconds:
+    :vartype SourcePicoSeconds: 8
+    :ivar ServerPicoSeconds:
+    :vartype ServerPicoSeconds: 16
+    :ivar RawDataEncoding:
+    :vartype RawDataEncoding: 32
+    '''
+    StatusCode = 1
+    SourceTimestamp = 2
+    ServerTimestamp = 4
+    SourcePicoSeconds = 8
+    ServerPicoSeconds = 16
+    RawDataEncoding = 32
+
+
+class OverrideValueHandling(IntEnum):
+    '''
+    :ivar Disabled:
+    :vartype Disabled: 0
+    :ivar LastUseableValue:
+    :vartype LastUseableValue: 1
+    :ivar OverrideValue:
+    :vartype OverrideValue: 2
+    '''
+    Disabled = 0
+    LastUseableValue = 1
+    OverrideValue = 2
+
+
+class DataSetOrderingType(IntEnum):
+    '''
+    :ivar Undefined:
+    :vartype Undefined: 0
+    :ivar AscendingWriterId:
+    :vartype AscendingWriterId: 1
+    :ivar AscendingWriterIdSingle:
+    :vartype AscendingWriterIdSingle: 2
+    '''
+    Undefined = 0
+    AscendingWriterId = 1
+    AscendingWriterIdSingle = 2
+
+
+class UadpNetworkMessageContentMask(IntEnum):
+    '''
+    :ivar PublisherId:
+    :vartype PublisherId: 1
+    :ivar GroupHeader:
+    :vartype GroupHeader: 2
+    :ivar WriterGroupId:
+    :vartype WriterGroupId: 4
+    :ivar GroupVersion:
+    :vartype GroupVersion: 8
+    :ivar NetworkMessageNumber:
+    :vartype NetworkMessageNumber: 16
+    :ivar SequenceNumber:
+    :vartype SequenceNumber: 32
+    :ivar PayloadHeader:
+    :vartype PayloadHeader: 64
+    :ivar Timestamp:
+    :vartype Timestamp: 128
+    :ivar Picoseconds:
+    :vartype Picoseconds: 256
+    :ivar DataSetClassId:
+    :vartype DataSetClassId: 512
+    :ivar PromotedFields:
+    :vartype PromotedFields: 1024
+    '''
+    PublisherId = 1
+    GroupHeader = 2
+    WriterGroupId = 4
+    GroupVersion = 8
+    NetworkMessageNumber = 16
+    SequenceNumber = 32
+    PayloadHeader = 64
+    Timestamp = 128
+    Picoseconds = 256
+    DataSetClassId = 512
+    PromotedFields = 1024
+
+
+class UadpDataSetMessageContentMask(IntEnum):
+    '''
+    :ivar Timestamp:
+    :vartype Timestamp: 1
+    :ivar PicoSeconds:
+    :vartype PicoSeconds: 2
+    :ivar Status:
+    :vartype Status: 4
+    :ivar MajorVersion:
+    :vartype MajorVersion: 8
+    :ivar MinorVersion:
+    :vartype MinorVersion: 16
+    :ivar SequenceNumber:
+    :vartype SequenceNumber: 32
+    '''
+    Timestamp = 1
+    PicoSeconds = 2
+    Status = 4
+    MajorVersion = 8
+    MinorVersion = 16
+    SequenceNumber = 32
+
+
+class JsonNetworkMessageContentMask(IntEnum):
+    '''
+    :ivar NetworkMessageHeader:
+    :vartype NetworkMessageHeader: 1
+    :ivar DataSetMessageHeader:
+    :vartype DataSetMessageHeader: 2
+    :ivar SingleDataSetMessage:
+    :vartype SingleDataSetMessage: 4
+    :ivar PublisherId:
+    :vartype PublisherId: 8
+    :ivar DataSetClassId:
+    :vartype DataSetClassId: 16
+    :ivar ReplyTo:
+    :vartype ReplyTo: 32
+    '''
+    NetworkMessageHeader = 1
+    DataSetMessageHeader = 2
+    SingleDataSetMessage = 4
+    PublisherId = 8
+    DataSetClassId = 16
+    ReplyTo = 32
+
+
+class JsonDataSetMessageContentMask(IntEnum):
+    '''
+    :ivar DataSetWriterId:
+    :vartype DataSetWriterId: 1
+    :ivar MetaDataVersion:
+    :vartype MetaDataVersion: 2
+    :ivar SequenceNumber:
+    :vartype SequenceNumber: 4
+    :ivar Timestamp:
+    :vartype Timestamp: 8
+    :ivar Status:
+    :vartype Status: 16
+    '''
+    DataSetWriterId = 1
+    MetaDataVersion = 2
+    SequenceNumber = 4
+    Timestamp = 8
+    Status = 16
+
+
+class BrokerTransportQualityOfService(IntEnum):
+    '''
+    :ivar NotSpecified:
+    :vartype NotSpecified: 0
+    :ivar BestEffort:
+    :vartype BestEffort: 1
+    :ivar AtLeastOnce:
+    :vartype AtLeastOnce: 2
+    :ivar AtMostOnce:
+    :vartype AtMostOnce: 3
+    :ivar ExactlyOnce:
+    :vartype ExactlyOnce: 4
+    '''
+    NotSpecified = 0
+    BestEffort = 1
+    AtLeastOnce = 2
+    AtMostOnce = 3
+    ExactlyOnce = 4
+
+
+class DiagnosticsLevel(IntEnum):
+    '''
+    :ivar Basic:
+    :vartype Basic: 0
+    :ivar Advanced:
+    :vartype Advanced: 1
+    :ivar Info:
+    :vartype Info: 2
+    :ivar Log:
+    :vartype Log: 3
+    :ivar Debug:
+    :vartype Debug: 4
+    '''
+    Basic = 0
+    Advanced = 1
+    Info = 2
+    Log = 3
+    Debug = 4
+
+
+class PubSubDiagnosticsCounterClassification(IntEnum):
+    '''
+    :ivar Information:
+    :vartype Information: 0
+    :ivar Error:
+    :vartype Error: 1
+    '''
+    Information = 0
+    Error = 1
 
 
 class IdType(IntEnum):
@@ -116,6 +370,98 @@ class NodeClass(IntEnum):
     View = 128
 
 
+class AccessLevelType(IntEnum):
+    '''
+    :ivar None_:
+    :vartype None_: 0
+    :ivar CurrentRead:
+    :vartype CurrentRead: 1
+    :ivar CurrentWrite:
+    :vartype CurrentWrite: 2
+    :ivar HistoryRead:
+    :vartype HistoryRead: 4
+    :ivar HistoryWrite:
+    :vartype HistoryWrite: 16
+    :ivar StatusWrite:
+    :vartype StatusWrite: 32
+    :ivar TimestampWrite:
+    :vartype TimestampWrite: 64
+    '''
+    None_ = 0
+    CurrentRead = 1
+    CurrentWrite = 2
+    HistoryRead = 4
+    HistoryWrite = 16
+    StatusWrite = 32
+    TimestampWrite = 64
+
+
+class AccessLevelExType(IntEnum):
+    '''
+    :ivar None_:
+    :vartype None_: 0
+    :ivar CurrentRead:
+    :vartype CurrentRead: 1
+    :ivar CurrentWrite:
+    :vartype CurrentWrite: 2
+    :ivar HistoryRead:
+    :vartype HistoryRead: 4
+    :ivar HistoryWrite:
+    :vartype HistoryWrite: 16
+    :ivar StatusWrite:
+    :vartype StatusWrite: 32
+    :ivar TimestampWrite:
+    :vartype TimestampWrite: 64
+    :ivar NonatomicRead:
+    :vartype NonatomicRead: 65536
+    :ivar NonatomicWrite:
+    :vartype NonatomicWrite: 131072
+    :ivar WriteFullArrayOnly:
+    :vartype WriteFullArrayOnly: 262144
+    '''
+    None_ = 0
+    CurrentRead = 1
+    CurrentWrite = 2
+    HistoryRead = 4
+    HistoryWrite = 16
+    StatusWrite = 32
+    TimestampWrite = 64
+    NonatomicRead = 65536
+    NonatomicWrite = 131072
+    WriteFullArrayOnly = 262144
+
+
+class EventNotifierType(IntEnum):
+    '''
+    :ivar None_:
+    :vartype None_: 0
+    :ivar SubscribeToEvents:
+    :vartype SubscribeToEvents: 1
+    :ivar HistoryRead:
+    :vartype HistoryRead: 4
+    :ivar HistoryWrite:
+    :vartype HistoryWrite: 8
+    '''
+    None_ = 0
+    SubscribeToEvents = 1
+    HistoryRead = 4
+    HistoryWrite = 8
+
+
+class StructureType(IntEnum):
+    '''
+    :ivar Structure:
+    :vartype Structure: 0
+    :ivar StructureWithOptionalFields:
+    :vartype StructureWithOptionalFields: 1
+    :ivar Union:
+    :vartype Union: 2
+    '''
+    Structure = 0
+    StructureWithOptionalFields = 1
+    Union = 2
+
+
 class ApplicationType(IntEnum):
     '''
     The types of applications.
@@ -166,14 +512,11 @@ class UserTokenType(IntEnum):
     :vartype Certificate: 2
     :ivar IssuedToken:
     :vartype IssuedToken: 3
-    :ivar Kerberos:
-    :vartype Kerberos: 4
     '''
     Anonymous = 0
     UserName = 1
     Certificate = 2
     IssuedToken = 3
-    Kerberos = 4
 
 
 class SecurityTokenRequestType(IntEnum):
@@ -239,24 +582,30 @@ class NodeAttributesMask(IntEnum):
     :vartype WriteMask: 1048576
     :ivar Value:
     :vartype Value: 2097152
+    :ivar DataTypeDefinition:
+    :vartype DataTypeDefinition: 4194304
+    :ivar RolePermissions:
+    :vartype RolePermissions: 8388608
+    :ivar AccessRestrictions:
+    :vartype AccessRestrictions: 16777216
     :ivar All:
-    :vartype All: 4194303
+    :vartype All: 33554431
     :ivar BaseNode:
-    :vartype BaseNode: 1335396
+    :vartype BaseNode: 26501220
     :ivar Object:
-    :vartype Object: 1335524
-    :ivar ObjectTypeOrDataType:
-    :vartype ObjectTypeOrDataType: 1337444
+    :vartype Object: 26501348
+    :ivar ObjectType:
+    :vartype ObjectType: 26503268
     :ivar Variable:
-    :vartype Variable: 4026999
+    :vartype Variable: 26571383
     :ivar VariableType:
-    :vartype VariableType: 3958902
+    :vartype VariableType: 28600438
     :ivar Method:
-    :vartype Method: 1466724
+    :vartype Method: 26632548
     :ivar ReferenceType:
-    :vartype ReferenceType: 1371236
+    :vartype ReferenceType: 26537060
     :ivar View:
-    :vartype View: 1335532
+    :vartype View: 26501356
     '''
     None_ = 0
     AccessLevel = 1
@@ -281,15 +630,18 @@ class NodeAttributesMask(IntEnum):
     ValueRank = 524288
     WriteMask = 1048576
     Value = 2097152
-    All = 4194303
-    BaseNode = 1335396
-    Object = 1335524
-    ObjectTypeOrDataType = 1337444
-    Variable = 4026999
-    VariableType = 3958902
-    Method = 1466724
-    ReferenceType = 1371236
-    View = 1335532
+    DataTypeDefinition = 4194304
+    RolePermissions = 8388608
+    AccessRestrictions = 16777216
+    All = 33554431
+    BaseNode = 26501220
+    Object = 26501348
+    ObjectType = 26503268
+    Variable = 26571383
+    VariableType = 28600438
+    Method = 26632548
+    ReferenceType = 26537060
+    View = 26501356
 
 
 class AttributeWriteMask(IntEnum):
@@ -342,6 +694,14 @@ class AttributeWriteMask(IntEnum):
     :vartype WriteMask: 1048576
     :ivar ValueForVariableType:
     :vartype ValueForVariableType: 2097152
+    :ivar DataTypeDefinition:
+    :vartype DataTypeDefinition: 4194304
+    :ivar RolePermissions:
+    :vartype RolePermissions: 8388608
+    :ivar AccessRestrictions:
+    :vartype AccessRestrictions: 16777216
+    :ivar AccessLevelEx:
+    :vartype AccessLevelEx: 33554432
     '''
     None_ = 0
     AccessLevel = 1
@@ -366,6 +726,10 @@ class AttributeWriteMask(IntEnum):
     ValueRank = 524288
     WriteMask = 1048576
     ValueForVariableType = 2097152
+    DataTypeDefinition = 4194304
+    RolePermissions = 8388608
+    AccessRestrictions = 16777216
+    AccessLevelEx = 33554432
 
 
 class BrowseDirection(IntEnum):
@@ -378,10 +742,13 @@ class BrowseDirection(IntEnum):
     :vartype Inverse: 1
     :ivar Both:
     :vartype Both: 2
+    :ivar Invalid:
+    :vartype Invalid: 3
     '''
     Forward = 0
     Inverse = 1
     Both = 2
+    Invalid = 3
 
 
 class BrowseResultMask(IntEnum):
@@ -419,23 +786,6 @@ class BrowseResultMask(IntEnum):
     All = 63
     ReferenceTypeInfo = 3
     TargetInfo = 60
-
-
-class ComplianceLevel(IntEnum):
-    '''
-    :ivar Untested:
-    :vartype Untested: 0
-    :ivar Partial:
-    :vartype Partial: 1
-    :ivar SelfTested:
-    :vartype SelfTested: 2
-    :ivar Certified:
-    :vartype Certified: 3
-    '''
-    Untested = 0
-    Partial = 1
-    SelfTested = 2
-    Certified = 3
 
 
 class FilterOperator(IntEnum):
@@ -507,11 +857,14 @@ class TimestampsToReturn(IntEnum):
     :vartype Both: 2
     :ivar Neither:
     :vartype Neither: 3
+    :ivar Invalid:
+    :vartype Invalid: 4
     '''
     Source = 0
     Server = 1
     Both = 2
     Neither = 3
+    Invalid = 4
 
 
 class HistoryUpdateType(IntEnum):
@@ -588,22 +941,6 @@ class DeadbandType(IntEnum):
     None_ = 0
     Absolute = 1
     Percent = 2
-
-
-class EnumeratedTestType(IntEnum):
-    '''
-    A simple enumerated type used for testing.
-
-    :ivar Red:
-    :vartype Red: 1
-    :ivar Yellow:
-    :vartype Yellow: 4
-    :ivar Green:
-    :vartype Green: 5
-    '''
-    Red = 1
-    Yellow = 4
-    Green = 5
 
 
 class RedundancySupport(IntEnum):
@@ -712,6 +1049,22 @@ class ExceptionDeviationFormat(IntEnum):
     Unknown = 4
 
 
+class DataTypeDefinition(FrozenClass):
+    '''
+    '''
+
+    ua_types = [
+               ]
+
+    def __init__(self):
+        self._freeze = True
+
+    def __str__(self):
+        return 'DataTypeDefinition(' +  + ')'
+
+    __repr__ = __str__
+
+
 class DiagnosticInfo(FrozenClass):
     '''
     A recursive structure containing diagnostic information associated with a status code.
@@ -778,6 +1131,91 @@ class DiagnosticInfo(FrozenClass):
     __repr__ = __str__
 
 
+class KeyValuePair(FrozenClass):
+    '''
+    :ivar Key:
+    :vartype Key: QualifiedName
+    :ivar Value:
+    :vartype Value: Variant
+    '''
+
+    ua_types = [
+        ('Key', 'QualifiedName'),
+        ('Value', 'Variant'),
+               ]
+
+    def __init__(self):
+        self.Key = QualifiedName()
+        self.Value = Variant()
+        self._freeze = True
+
+    def __str__(self):
+        return 'KeyValuePair(' + 'Key:' + str(self.Key) + ', ' + \
+               'Value:' + str(self.Value) + ')'
+
+    __repr__ = __str__
+
+
+class EndpointType(FrozenClass):
+    '''
+    :ivar EndpointUrl:
+    :vartype EndpointUrl: String
+    :ivar SecurityMode:
+    :vartype SecurityMode: MessageSecurityMode
+    :ivar SecurityPolicyUri:
+    :vartype SecurityPolicyUri: String
+    :ivar TransportProfileUri:
+    :vartype TransportProfileUri: String
+    '''
+
+    ua_types = [
+        ('EndpointUrl', 'String'),
+        ('SecurityMode', 'MessageSecurityMode'),
+        ('SecurityPolicyUri', 'String'),
+        ('TransportProfileUri', 'String'),
+               ]
+
+    def __init__(self):
+        self.EndpointUrl = None
+        self.SecurityMode = MessageSecurityMode(0)
+        self.SecurityPolicyUri = None
+        self.TransportProfileUri = None
+        self._freeze = True
+
+    def __str__(self):
+        return 'EndpointType(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
+               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
+               'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', ' + \
+               'TransportProfileUri:' + str(self.TransportProfileUri) + ')'
+
+    __repr__ = __str__
+
+
+class IdentityMappingRuleType(FrozenClass):
+    '''
+    :ivar CriteriaType:
+    :vartype CriteriaType: IdentityCriteriaType
+    :ivar Criteria:
+    :vartype Criteria: String
+    '''
+
+    ua_types = [
+        ('CriteriaType', 'IdentityCriteriaType'),
+        ('Criteria', 'String'),
+               ]
+
+    def __init__(self):
+        self.CriteriaType = IdentityCriteriaType(0)
+        self.Criteria = None
+        self._freeze = True
+
+    def __str__(self):
+        return 'IdentityMappingRuleType(' + 'CriteriaType:' + str(self.CriteriaType) + ', ' + \
+               'Criteria:' + str(self.Criteria) + ')'
+
+    __repr__ = __str__
+
+
 class TrustListDataType(FrozenClass):
     '''
     :ivar SpecifiedLists:
@@ -814,6 +1252,1812 @@ class TrustListDataType(FrozenClass):
                'TrustedCrls:' + str(self.TrustedCrls) + ', ' + \
                'IssuerCertificates:' + str(self.IssuerCertificates) + ', ' + \
                'IssuerCrls:' + str(self.IssuerCrls) + ')'
+
+    __repr__ = __str__
+
+
+class DecimalDataType(FrozenClass):
+    '''
+    :ivar Scale:
+    :vartype Scale: Int16
+    :ivar Value:
+    :vartype Value: ByteString
+    '''
+
+    ua_types = [
+        ('Scale', 'Int16'),
+        ('Value', 'ByteString'),
+               ]
+
+    def __init__(self):
+        self.Scale = 0
+        self.Value = None
+        self._freeze = True
+
+    def __str__(self):
+        return 'DecimalDataType(' + 'Scale:' + str(self.Scale) + ', ' + \
+               'Value:' + str(self.Value) + ')'
+
+    __repr__ = __str__
+
+
+class DataTypeSchemaHeader(FrozenClass):
+    '''
+    :ivar Namespaces:
+    :vartype Namespaces: String
+    :ivar StructureDataTypes:
+    :vartype StructureDataTypes: StructureDescription
+    :ivar EnumDataTypes:
+    :vartype EnumDataTypes: EnumDescription
+    :ivar SimpleDataTypes:
+    :vartype SimpleDataTypes: SimpleTypeDescription
+    '''
+
+    ua_types = [
+        ('Namespaces', 'ListOfString'),
+        ('StructureDataTypes', 'ListOfStructureDescription'),
+        ('EnumDataTypes', 'ListOfEnumDescription'),
+        ('SimpleDataTypes', 'ListOfSimpleTypeDescription'),
+               ]
+
+    def __init__(self):
+        self.Namespaces = []
+        self.StructureDataTypes = []
+        self.EnumDataTypes = []
+        self.SimpleDataTypes = []
+        self._freeze = True
+
+    def __str__(self):
+        return 'DataTypeSchemaHeader(' + 'Namespaces:' + str(self.Namespaces) + ', ' + \
+               'StructureDataTypes:' + str(self.StructureDataTypes) + ', ' + \
+               'EnumDataTypes:' + str(self.EnumDataTypes) + ', ' + \
+               'SimpleDataTypes:' + str(self.SimpleDataTypes) + ')'
+
+    __repr__ = __str__
+
+
+class DataTypeDescription(FrozenClass):
+    '''
+    :ivar DataTypeId:
+    :vartype DataTypeId: NodeId
+    :ivar Name:
+    :vartype Name: QualifiedName
+    '''
+
+    ua_types = [
+        ('DataTypeId', 'NodeId'),
+        ('Name', 'QualifiedName'),
+               ]
+
+    def __init__(self):
+        self.DataTypeId = NodeId()
+        self.Name = QualifiedName()
+        self._freeze = True
+
+    def __str__(self):
+        return 'DataTypeDescription(' + 'DataTypeId:' + str(self.DataTypeId) + ', ' + \
+               'Name:' + str(self.Name) + ')'
+
+    __repr__ = __str__
+
+
+class StructureDescription(FrozenClass):
+    '''
+    :ivar DataTypeId:
+    :vartype DataTypeId: NodeId
+    :ivar Name:
+    :vartype Name: QualifiedName
+    :ivar StructureDefinition:
+    :vartype StructureDefinition: StructureDefinition
+    '''
+
+    ua_types = [
+        ('DataTypeId', 'NodeId'),
+        ('Name', 'QualifiedName'),
+        ('StructureDefinition', 'StructureDefinition'),
+               ]
+
+    def __init__(self):
+        self.DataTypeId = NodeId()
+        self.Name = QualifiedName()
+        self.StructureDefinition = StructureDefinition()
+        self._freeze = True
+
+    def __str__(self):
+        return 'StructureDescription(' + 'DataTypeId:' + str(self.DataTypeId) + ', ' + \
+               'Name:' + str(self.Name) + ', ' + \
+               'StructureDefinition:' + str(self.StructureDefinition) + ')'
+
+    __repr__ = __str__
+
+
+class EnumDescription(FrozenClass):
+    '''
+    :ivar DataTypeId:
+    :vartype DataTypeId: NodeId
+    :ivar Name:
+    :vartype Name: QualifiedName
+    :ivar EnumDefinition:
+    :vartype EnumDefinition: EnumDefinition
+    :ivar BuiltInType:
+    :vartype BuiltInType: Byte
+    '''
+
+    ua_types = [
+        ('DataTypeId', 'NodeId'),
+        ('Name', 'QualifiedName'),
+        ('EnumDefinition', 'EnumDefinition'),
+        ('BuiltInType', 'Byte'),
+               ]
+
+    def __init__(self):
+        self.DataTypeId = NodeId()
+        self.Name = QualifiedName()
+        self.EnumDefinition = EnumDefinition()
+        self.BuiltInType = 0
+        self._freeze = True
+
+    def __str__(self):
+        return 'EnumDescription(' + 'DataTypeId:' + str(self.DataTypeId) + ', ' + \
+               'Name:' + str(self.Name) + ', ' + \
+               'EnumDefinition:' + str(self.EnumDefinition) + ', ' + \
+               'BuiltInType:' + str(self.BuiltInType) + ')'
+
+    __repr__ = __str__
+
+
+class SimpleTypeDescription(FrozenClass):
+    '''
+    :ivar DataTypeId:
+    :vartype DataTypeId: NodeId
+    :ivar Name:
+    :vartype Name: QualifiedName
+    :ivar BaseDataType:
+    :vartype BaseDataType: NodeId
+    :ivar BuiltInType:
+    :vartype BuiltInType: Byte
+    '''
+
+    ua_types = [
+        ('DataTypeId', 'NodeId'),
+        ('Name', 'QualifiedName'),
+        ('BaseDataType', 'NodeId'),
+        ('BuiltInType', 'Byte'),
+               ]
+
+    def __init__(self):
+        self.DataTypeId = NodeId()
+        self.Name = QualifiedName()
+        self.BaseDataType = NodeId()
+        self.BuiltInType = 0
+        self._freeze = True
+
+    def __str__(self):
+        return 'SimpleTypeDescription(' + 'DataTypeId:' + str(self.DataTypeId) + ', ' + \
+               'Name:' + str(self.Name) + ', ' + \
+               'BaseDataType:' + str(self.BaseDataType) + ', ' + \
+               'BuiltInType:' + str(self.BuiltInType) + ')'
+
+    __repr__ = __str__
+
+
+class UABinaryFileDataType(FrozenClass):
+    '''
+    :ivar Namespaces:
+    :vartype Namespaces: String
+    :ivar StructureDataTypes:
+    :vartype StructureDataTypes: StructureDescription
+    :ivar EnumDataTypes:
+    :vartype EnumDataTypes: EnumDescription
+    :ivar SimpleDataTypes:
+    :vartype SimpleDataTypes: SimpleTypeDescription
+    :ivar SchemaLocation:
+    :vartype SchemaLocation: String
+    :ivar FileHeader:
+    :vartype FileHeader: KeyValuePair
+    :ivar Body:
+    :vartype Body: Variant
+    '''
+
+    ua_types = [
+        ('Namespaces', 'ListOfString'),
+        ('StructureDataTypes', 'ListOfStructureDescription'),
+        ('EnumDataTypes', 'ListOfEnumDescription'),
+        ('SimpleDataTypes', 'ListOfSimpleTypeDescription'),
+        ('SchemaLocation', 'String'),
+        ('FileHeader', 'ListOfKeyValuePair'),
+        ('Body', 'Variant'),
+               ]
+
+    def __init__(self):
+        self.Namespaces = []
+        self.StructureDataTypes = []
+        self.EnumDataTypes = []
+        self.SimpleDataTypes = []
+        self.SchemaLocation = None
+        self.FileHeader = []
+        self.Body = Variant()
+        self._freeze = True
+
+    def __str__(self):
+        return 'UABinaryFileDataType(' + 'Namespaces:' + str(self.Namespaces) + ', ' + \
+               'StructureDataTypes:' + str(self.StructureDataTypes) + ', ' + \
+               'EnumDataTypes:' + str(self.EnumDataTypes) + ', ' + \
+               'SimpleDataTypes:' + str(self.SimpleDataTypes) + ', ' + \
+               'SchemaLocation:' + str(self.SchemaLocation) + ', ' + \
+               'FileHeader:' + str(self.FileHeader) + ', ' + \
+               'Body:' + str(self.Body) + ')'
+
+    __repr__ = __str__
+
+
+class DataSetMetaDataType(FrozenClass):
+    '''
+    :ivar Namespaces:
+    :vartype Namespaces: String
+    :ivar StructureDataTypes:
+    :vartype StructureDataTypes: StructureDescription
+    :ivar EnumDataTypes:
+    :vartype EnumDataTypes: EnumDescription
+    :ivar SimpleDataTypes:
+    :vartype SimpleDataTypes: SimpleTypeDescription
+    :ivar Name:
+    :vartype Name: String
+    :ivar Description:
+    :vartype Description: LocalizedText
+    :ivar Fields:
+    :vartype Fields: FieldMetaData
+    :ivar DataSetClassId:
+    :vartype DataSetClassId: Guid
+    :ivar ConfigurationVersion:
+    :vartype ConfigurationVersion: ConfigurationVersionDataType
+    '''
+
+    ua_types = [
+        ('Namespaces', 'ListOfString'),
+        ('StructureDataTypes', 'ListOfStructureDescription'),
+        ('EnumDataTypes', 'ListOfEnumDescription'),
+        ('SimpleDataTypes', 'ListOfSimpleTypeDescription'),
+        ('Name', 'String'),
+        ('Description', 'LocalizedText'),
+        ('Fields', 'ListOfFieldMetaData'),
+        ('DataSetClassId', 'Guid'),
+        ('ConfigurationVersion', 'ConfigurationVersionDataType'),
+               ]
+
+    def __init__(self):
+        self.Namespaces = []
+        self.StructureDataTypes = []
+        self.EnumDataTypes = []
+        self.SimpleDataTypes = []
+        self.Name = None
+        self.Description = LocalizedText()
+        self.Fields = []
+        self.DataSetClassId = Guid()
+        self.ConfigurationVersion = ConfigurationVersionDataType()
+        self._freeze = True
+
+    def __str__(self):
+        return 'DataSetMetaDataType(' + 'Namespaces:' + str(self.Namespaces) + ', ' + \
+               'StructureDataTypes:' + str(self.StructureDataTypes) + ', ' + \
+               'EnumDataTypes:' + str(self.EnumDataTypes) + ', ' + \
+               'SimpleDataTypes:' + str(self.SimpleDataTypes) + ', ' + \
+               'Name:' + str(self.Name) + ', ' + \
+               'Description:' + str(self.Description) + ', ' + \
+               'Fields:' + str(self.Fields) + ', ' + \
+               'DataSetClassId:' + str(self.DataSetClassId) + ', ' + \
+               'ConfigurationVersion:' + str(self.ConfigurationVersion) + ')'
+
+    __repr__ = __str__
+
+
+class FieldMetaData(FrozenClass):
+    '''
+    :ivar Name:
+    :vartype Name: String
+    :ivar Description:
+    :vartype Description: LocalizedText
+    :ivar FieldFlags:
+    :vartype FieldFlags: DataSetFieldFlags
+    :ivar BuiltInType:
+    :vartype BuiltInType: Byte
+    :ivar DataType:
+    :vartype DataType: NodeId
+    :ivar ValueRank:
+    :vartype ValueRank: Int32
+    :ivar ArrayDimensions:
+    :vartype ArrayDimensions: UInt32
+    :ivar MaxStringLength:
+    :vartype MaxStringLength: UInt32
+    :ivar DataSetFieldId:
+    :vartype DataSetFieldId: Guid
+    :ivar Properties:
+    :vartype Properties: KeyValuePair
+    '''
+
+    ua_types = [
+        ('Name', 'String'),
+        ('Description', 'LocalizedText'),
+        ('FieldFlags', 'DataSetFieldFlags'),
+        ('BuiltInType', 'Byte'),
+        ('DataType', 'NodeId'),
+        ('ValueRank', 'Int32'),
+        ('ArrayDimensions', 'ListOfUInt32'),
+        ('MaxStringLength', 'UInt32'),
+        ('DataSetFieldId', 'Guid'),
+        ('Properties', 'ListOfKeyValuePair'),
+               ]
+
+    def __init__(self):
+        self.Name = None
+        self.Description = LocalizedText()
+        self.FieldFlags = DataSetFieldFlags(0)
+        self.BuiltInType = 0
+        self.DataType = NodeId()
+        self.ValueRank = 0
+        self.ArrayDimensions = []
+        self.MaxStringLength = 0
+        self.DataSetFieldId = Guid()
+        self.Properties = []
+        self._freeze = True
+
+    def __str__(self):
+        return 'FieldMetaData(' + 'Name:' + str(self.Name) + ', ' + \
+               'Description:' + str(self.Description) + ', ' + \
+               'FieldFlags:' + str(self.FieldFlags) + ', ' + \
+               'BuiltInType:' + str(self.BuiltInType) + ', ' + \
+               'DataType:' + str(self.DataType) + ', ' + \
+               'ValueRank:' + str(self.ValueRank) + ', ' + \
+               'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
+               'MaxStringLength:' + str(self.MaxStringLength) + ', ' + \
+               'DataSetFieldId:' + str(self.DataSetFieldId) + ', ' + \
+               'Properties:' + str(self.Properties) + ')'
+
+    __repr__ = __str__
+
+
+class ConfigurationVersionDataType(FrozenClass):
+    '''
+    :ivar MajorVersion:
+    :vartype MajorVersion: UInt32
+    :ivar MinorVersion:
+    :vartype MinorVersion: UInt32
+    '''
+
+    ua_types = [
+        ('MajorVersion', 'UInt32'),
+        ('MinorVersion', 'UInt32'),
+               ]
+
+    def __init__(self):
+        self.MajorVersion = 0
+        self.MinorVersion = 0
+        self._freeze = True
+
+    def __str__(self):
+        return 'ConfigurationVersionDataType(' + 'MajorVersion:' + str(self.MajorVersion) + ', ' + \
+               'MinorVersion:' + str(self.MinorVersion) + ')'
+
+    __repr__ = __str__
+
+
+class PublishedDataSetDataType(FrozenClass):
+    '''
+    :ivar Name:
+    :vartype Name: String
+    :ivar DataSetFolder:
+    :vartype DataSetFolder: String
+    :ivar DataSetMetaData:
+    :vartype DataSetMetaData: DataSetMetaDataType
+    :ivar ExtensionFields:
+    :vartype ExtensionFields: KeyValuePair
+    :ivar DataSetSource:
+    :vartype DataSetSource: ExtensionObject
+    '''
+
+    ua_types = [
+        ('Name', 'String'),
+        ('DataSetFolder', 'ListOfString'),
+        ('DataSetMetaData', 'DataSetMetaDataType'),
+        ('ExtensionFields', 'ListOfKeyValuePair'),
+        ('DataSetSource', 'ExtensionObject'),
+               ]
+
+    def __init__(self):
+        self.Name = None
+        self.DataSetFolder = []
+        self.DataSetMetaData = DataSetMetaDataType()
+        self.ExtensionFields = []
+        self.DataSetSource = ExtensionObject()
+        self._freeze = True
+
+    def __str__(self):
+        return 'PublishedDataSetDataType(' + 'Name:' + str(self.Name) + ', ' + \
+               'DataSetFolder:' + str(self.DataSetFolder) + ', ' + \
+               'DataSetMetaData:' + str(self.DataSetMetaData) + ', ' + \
+               'ExtensionFields:' + str(self.ExtensionFields) + ', ' + \
+               'DataSetSource:' + str(self.DataSetSource) + ')'
+
+    __repr__ = __str__
+
+
+class PublishedDataSetSourceDataType(FrozenClass):
+    '''
+    '''
+
+    ua_types = [
+               ]
+
+    def __init__(self):
+        self._freeze = True
+
+    def __str__(self):
+        return 'PublishedDataSetSourceDataType(' +  + ')'
+
+    __repr__ = __str__
+
+
+class PublishedVariableDataType(FrozenClass):
+    '''
+    :ivar PublishedVariable:
+    :vartype PublishedVariable: NodeId
+    :ivar AttributeId:
+    :vartype AttributeId: UInt32
+    :ivar SamplingIntervalHint:
+    :vartype SamplingIntervalHint: Double
+    :ivar DeadbandType:
+    :vartype DeadbandType: UInt32
+    :ivar DeadbandValue:
+    :vartype DeadbandValue: Double
+    :ivar IndexRange:
+    :vartype IndexRange: String
+    :ivar SubstituteValue:
+    :vartype SubstituteValue: Variant
+    :ivar MetaDataProperties:
+    :vartype MetaDataProperties: QualifiedName
+    '''
+
+    ua_types = [
+        ('PublishedVariable', 'NodeId'),
+        ('AttributeId', 'UInt32'),
+        ('SamplingIntervalHint', 'Double'),
+        ('DeadbandType', 'UInt32'),
+        ('DeadbandValue', 'Double'),
+        ('IndexRange', 'String'),
+        ('SubstituteValue', 'Variant'),
+        ('MetaDataProperties', 'ListOfQualifiedName'),
+               ]
+
+    def __init__(self):
+        self.PublishedVariable = NodeId()
+        self.AttributeId = 0
+        self.SamplingIntervalHint = 0
+        self.DeadbandType = 0
+        self.DeadbandValue = 0
+        self.IndexRange = None
+        self.SubstituteValue = Variant()
+        self.MetaDataProperties = []
+        self._freeze = True
+
+    def __str__(self):
+        return 'PublishedVariableDataType(' + 'PublishedVariable:' + str(self.PublishedVariable) + ', ' + \
+               'AttributeId:' + str(self.AttributeId) + ', ' + \
+               'SamplingIntervalHint:' + str(self.SamplingIntervalHint) + ', ' + \
+               'DeadbandType:' + str(self.DeadbandType) + ', ' + \
+               'DeadbandValue:' + str(self.DeadbandValue) + ', ' + \
+               'IndexRange:' + str(self.IndexRange) + ', ' + \
+               'SubstituteValue:' + str(self.SubstituteValue) + ', ' + \
+               'MetaDataProperties:' + str(self.MetaDataProperties) + ')'
+
+    __repr__ = __str__
+
+
+class PublishedDataItemsDataType(FrozenClass):
+    '''
+    :ivar PublishedData:
+    :vartype PublishedData: PublishedVariableDataType
+    '''
+
+    ua_types = [
+        ('PublishedData', 'ListOfPublishedVariableDataType'),
+               ]
+
+    def __init__(self):
+        self.PublishedData = []
+        self._freeze = True
+
+    def __str__(self):
+        return 'PublishedDataItemsDataType(' + 'PublishedData:' + str(self.PublishedData) + ')'
+
+    __repr__ = __str__
+
+
+class PublishedEventsDataType(FrozenClass):
+    '''
+    :ivar EventNotifier:
+    :vartype EventNotifier: NodeId
+    :ivar SelectedFields:
+    :vartype SelectedFields: SimpleAttributeOperand
+    :ivar Filter:
+    :vartype Filter: ContentFilter
+    '''
+
+    ua_types = [
+        ('EventNotifier', 'NodeId'),
+        ('SelectedFields', 'ListOfSimpleAttributeOperand'),
+        ('Filter', 'ContentFilter'),
+               ]
+
+    def __init__(self):
+        self.EventNotifier = NodeId()
+        self.SelectedFields = []
+        self.Filter = ContentFilter()
+        self._freeze = True
+
+    def __str__(self):
+        return 'PublishedEventsDataType(' + 'EventNotifier:' + str(self.EventNotifier) + ', ' + \
+               'SelectedFields:' + str(self.SelectedFields) + ', ' + \
+               'Filter:' + str(self.Filter) + ')'
+
+    __repr__ = __str__
+
+
+class DataSetWriterDataType(FrozenClass):
+    '''
+    :ivar Name:
+    :vartype Name: String
+    :ivar Enabled:
+    :vartype Enabled: Boolean
+    :ivar DataSetWriterId:
+    :vartype DataSetWriterId: UInt16
+    :ivar DataSetFieldContentMask:
+    :vartype DataSetFieldContentMask: DataSetFieldContentMask
+    :ivar KeyFrameCount:
+    :vartype KeyFrameCount: UInt32
+    :ivar DataSetName:
+    :vartype DataSetName: String
+    :ivar DataSetWriterProperties:
+    :vartype DataSetWriterProperties: KeyValuePair
+    :ivar TransportSettings:
+    :vartype TransportSettings: ExtensionObject
+    :ivar MessageSettings:
+    :vartype MessageSettings: ExtensionObject
+    '''
+
+    ua_types = [
+        ('Name', 'String'),
+        ('Enabled', 'Boolean'),
+        ('DataSetWriterId', 'UInt16'),
+        ('DataSetFieldContentMask', 'DataSetFieldContentMask'),
+        ('KeyFrameCount', 'UInt32'),
+        ('DataSetName', 'String'),
+        ('DataSetWriterProperties', 'ListOfKeyValuePair'),
+        ('TransportSettings', 'ExtensionObject'),
+        ('MessageSettings', 'ExtensionObject'),
+               ]
+
+    def __init__(self):
+        self.Name = None
+        self.Enabled = True
+        self.DataSetWriterId = 0
+        self.DataSetFieldContentMask = DataSetFieldContentMask(0)
+        self.KeyFrameCount = 0
+        self.DataSetName = None
+        self.DataSetWriterProperties = []
+        self.TransportSettings = ExtensionObject()
+        self.MessageSettings = ExtensionObject()
+        self._freeze = True
+
+    def __str__(self):
+        return 'DataSetWriterDataType(' + 'Name:' + str(self.Name) + ', ' + \
+               'Enabled:' + str(self.Enabled) + ', ' + \
+               'DataSetWriterId:' + str(self.DataSetWriterId) + ', ' + \
+               'DataSetFieldContentMask:' + str(self.DataSetFieldContentMask) + ', ' + \
+               'KeyFrameCount:' + str(self.KeyFrameCount) + ', ' + \
+               'DataSetName:' + str(self.DataSetName) + ', ' + \
+               'DataSetWriterProperties:' + str(self.DataSetWriterProperties) + ', ' + \
+               'TransportSettings:' + str(self.TransportSettings) + ', ' + \
+               'MessageSettings:' + str(self.MessageSettings) + ')'
+
+    __repr__ = __str__
+
+
+class DataSetWriterTransportDataType(FrozenClass):
+    '''
+    '''
+
+    ua_types = [
+               ]
+
+    def __init__(self):
+        self._freeze = True
+
+    def __str__(self):
+        return 'DataSetWriterTransportDataType(' +  + ')'
+
+    __repr__ = __str__
+
+
+class DataSetWriterMessageDataType(FrozenClass):
+    '''
+    '''
+
+    ua_types = [
+               ]
+
+    def __init__(self):
+        self._freeze = True
+
+    def __str__(self):
+        return 'DataSetWriterMessageDataType(' +  + ')'
+
+    __repr__ = __str__
+
+
+class PubSubGroupDataType(FrozenClass):
+    '''
+    :ivar Name:
+    :vartype Name: String
+    :ivar Enabled:
+    :vartype Enabled: Boolean
+    :ivar SecurityMode:
+    :vartype SecurityMode: MessageSecurityMode
+    :ivar SecurityGroupId:
+    :vartype SecurityGroupId: String
+    :ivar SecurityKeyServices:
+    :vartype SecurityKeyServices: EndpointDescription
+    :ivar MaxNetworkMessageSize:
+    :vartype MaxNetworkMessageSize: UInt32
+    :ivar GroupProperties:
+    :vartype GroupProperties: KeyValuePair
+    '''
+
+    ua_types = [
+        ('Name', 'String'),
+        ('Enabled', 'Boolean'),
+        ('SecurityMode', 'MessageSecurityMode'),
+        ('SecurityGroupId', 'String'),
+        ('SecurityKeyServices', 'ListOfEndpointDescription'),
+        ('MaxNetworkMessageSize', 'UInt32'),
+        ('GroupProperties', 'ListOfKeyValuePair'),
+               ]
+
+    def __init__(self):
+        self.Name = None
+        self.Enabled = True
+        self.SecurityMode = MessageSecurityMode(0)
+        self.SecurityGroupId = None
+        self.SecurityKeyServices = []
+        self.MaxNetworkMessageSize = 0
+        self.GroupProperties = []
+        self._freeze = True
+
+    def __str__(self):
+        return 'PubSubGroupDataType(' + 'Name:' + str(self.Name) + ', ' + \
+               'Enabled:' + str(self.Enabled) + ', ' + \
+               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
+               'SecurityGroupId:' + str(self.SecurityGroupId) + ', ' + \
+               'SecurityKeyServices:' + str(self.SecurityKeyServices) + ', ' + \
+               'MaxNetworkMessageSize:' + str(self.MaxNetworkMessageSize) + ', ' + \
+               'GroupProperties:' + str(self.GroupProperties) + ')'
+
+    __repr__ = __str__
+
+
+class WriterGroupDataType(FrozenClass):
+    '''
+    :ivar Name:
+    :vartype Name: String
+    :ivar Enabled:
+    :vartype Enabled: Boolean
+    :ivar SecurityMode:
+    :vartype SecurityMode: MessageSecurityMode
+    :ivar SecurityGroupId:
+    :vartype SecurityGroupId: String
+    :ivar SecurityKeyServices:
+    :vartype SecurityKeyServices: EndpointDescription
+    :ivar MaxNetworkMessageSize:
+    :vartype MaxNetworkMessageSize: UInt32
+    :ivar GroupProperties:
+    :vartype GroupProperties: KeyValuePair
+    :ivar WriterGroupId:
+    :vartype WriterGroupId: UInt16
+    :ivar PublishingInterval:
+    :vartype PublishingInterval: Double
+    :ivar KeepAliveTime:
+    :vartype KeepAliveTime: Double
+    :ivar Priority:
+    :vartype Priority: Byte
+    :ivar LocaleIds:
+    :vartype LocaleIds: String
+    :ivar TransportSettings:
+    :vartype TransportSettings: ExtensionObject
+    :ivar MessageSettings:
+    :vartype MessageSettings: ExtensionObject
+    :ivar DataSetWriters:
+    :vartype DataSetWriters: DataSetWriterDataType
+    '''
+
+    ua_types = [
+        ('Name', 'String'),
+        ('Enabled', 'Boolean'),
+        ('SecurityMode', 'MessageSecurityMode'),
+        ('SecurityGroupId', 'String'),
+        ('SecurityKeyServices', 'ListOfEndpointDescription'),
+        ('MaxNetworkMessageSize', 'UInt32'),
+        ('GroupProperties', 'ListOfKeyValuePair'),
+        ('WriterGroupId', 'UInt16'),
+        ('PublishingInterval', 'Double'),
+        ('KeepAliveTime', 'Double'),
+        ('Priority', 'Byte'),
+        ('LocaleIds', 'ListOfString'),
+        ('TransportSettings', 'ExtensionObject'),
+        ('MessageSettings', 'ExtensionObject'),
+        ('DataSetWriters', 'ListOfDataSetWriterDataType'),
+               ]
+
+    def __init__(self):
+        self.Name = None
+        self.Enabled = True
+        self.SecurityMode = MessageSecurityMode(0)
+        self.SecurityGroupId = None
+        self.SecurityKeyServices = []
+        self.MaxNetworkMessageSize = 0
+        self.GroupProperties = []
+        self.WriterGroupId = 0
+        self.PublishingInterval = 0
+        self.KeepAliveTime = 0
+        self.Priority = 0
+        self.LocaleIds = []
+        self.TransportSettings = ExtensionObject()
+        self.MessageSettings = ExtensionObject()
+        self.DataSetWriters = []
+        self._freeze = True
+
+    def __str__(self):
+        return 'WriterGroupDataType(' + 'Name:' + str(self.Name) + ', ' + \
+               'Enabled:' + str(self.Enabled) + ', ' + \
+               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
+               'SecurityGroupId:' + str(self.SecurityGroupId) + ', ' + \
+               'SecurityKeyServices:' + str(self.SecurityKeyServices) + ', ' + \
+               'MaxNetworkMessageSize:' + str(self.MaxNetworkMessageSize) + ', ' + \
+               'GroupProperties:' + str(self.GroupProperties) + ', ' + \
+               'WriterGroupId:' + str(self.WriterGroupId) + ', ' + \
+               'PublishingInterval:' + str(self.PublishingInterval) + ', ' + \
+               'KeepAliveTime:' + str(self.KeepAliveTime) + ', ' + \
+               'Priority:' + str(self.Priority) + ', ' + \
+               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
+               'TransportSettings:' + str(self.TransportSettings) + ', ' + \
+               'MessageSettings:' + str(self.MessageSettings) + ', ' + \
+               'DataSetWriters:' + str(self.DataSetWriters) + ')'
+
+    __repr__ = __str__
+
+
+class WriterGroupTransportDataType(FrozenClass):
+    '''
+    '''
+
+    ua_types = [
+               ]
+
+    def __init__(self):
+        self._freeze = True
+
+    def __str__(self):
+        return 'WriterGroupTransportDataType(' +  + ')'
+
+    __repr__ = __str__
+
+
+class WriterGroupMessageDataType(FrozenClass):
+    '''
+    '''
+
+    ua_types = [
+               ]
+
+    def __init__(self):
+        self._freeze = True
+
+    def __str__(self):
+        return 'WriterGroupMessageDataType(' +  + ')'
+
+    __repr__ = __str__
+
+
+class PubSubConnectionDataType(FrozenClass):
+    '''
+    :ivar Name:
+    :vartype Name: String
+    :ivar Enabled:
+    :vartype Enabled: Boolean
+    :ivar PublisherId:
+    :vartype PublisherId: Variant
+    :ivar TransportProfileUri:
+    :vartype TransportProfileUri: String
+    :ivar Address:
+    :vartype Address: ExtensionObject
+    :ivar ConnectionProperties:
+    :vartype ConnectionProperties: KeyValuePair
+    :ivar TransportSettings:
+    :vartype TransportSettings: ExtensionObject
+    :ivar WriterGroups:
+    :vartype WriterGroups: WriterGroupDataType
+    :ivar ReaderGroups:
+    :vartype ReaderGroups: ReaderGroupDataType
+    '''
+
+    ua_types = [
+        ('Name', 'String'),
+        ('Enabled', 'Boolean'),
+        ('PublisherId', 'Variant'),
+        ('TransportProfileUri', 'String'),
+        ('Address', 'ExtensionObject'),
+        ('ConnectionProperties', 'ListOfKeyValuePair'),
+        ('TransportSettings', 'ExtensionObject'),
+        ('WriterGroups', 'ListOfWriterGroupDataType'),
+        ('ReaderGroups', 'ListOfReaderGroupDataType'),
+               ]
+
+    def __init__(self):
+        self.Name = None
+        self.Enabled = True
+        self.PublisherId = Variant()
+        self.TransportProfileUri = None
+        self.Address = ExtensionObject()
+        self.ConnectionProperties = []
+        self.TransportSettings = ExtensionObject()
+        self.WriterGroups = []
+        self.ReaderGroups = []
+        self._freeze = True
+
+    def __str__(self):
+        return 'PubSubConnectionDataType(' + 'Name:' + str(self.Name) + ', ' + \
+               'Enabled:' + str(self.Enabled) + ', ' + \
+               'PublisherId:' + str(self.PublisherId) + ', ' + \
+               'TransportProfileUri:' + str(self.TransportProfileUri) + ', ' + \
+               'Address:' + str(self.Address) + ', ' + \
+               'ConnectionProperties:' + str(self.ConnectionProperties) + ', ' + \
+               'TransportSettings:' + str(self.TransportSettings) + ', ' + \
+               'WriterGroups:' + str(self.WriterGroups) + ', ' + \
+               'ReaderGroups:' + str(self.ReaderGroups) + ')'
+
+    __repr__ = __str__
+
+
+class ConnectionTransportDataType(FrozenClass):
+    '''
+    '''
+
+    ua_types = [
+               ]
+
+    def __init__(self):
+        self._freeze = True
+
+    def __str__(self):
+        return 'ConnectionTransportDataType(' +  + ')'
+
+    __repr__ = __str__
+
+
+class NetworkAddressDataType(FrozenClass):
+    '''
+    :ivar NetworkInterface:
+    :vartype NetworkInterface: String
+    '''
+
+    ua_types = [
+        ('NetworkInterface', 'String'),
+               ]
+
+    def __init__(self):
+        self.NetworkInterface = None
+        self._freeze = True
+
+    def __str__(self):
+        return 'NetworkAddressDataType(' + 'NetworkInterface:' + str(self.NetworkInterface) + ')'
+
+    __repr__ = __str__
+
+
+class NetworkAddressUrlDataType(FrozenClass):
+    '''
+    :ivar NetworkInterface:
+    :vartype NetworkInterface: String
+    :ivar Url:
+    :vartype Url: String
+    '''
+
+    ua_types = [
+        ('NetworkInterface', 'String'),
+        ('Url', 'String'),
+               ]
+
+    def __init__(self):
+        self.NetworkInterface = None
+        self.Url = None
+        self._freeze = True
+
+    def __str__(self):
+        return 'NetworkAddressUrlDataType(' + 'NetworkInterface:' + str(self.NetworkInterface) + ', ' + \
+               'Url:' + str(self.Url) + ')'
+
+    __repr__ = __str__
+
+
+class ReaderGroupDataType(FrozenClass):
+    '''
+    :ivar Name:
+    :vartype Name: String
+    :ivar Enabled:
+    :vartype Enabled: Boolean
+    :ivar SecurityMode:
+    :vartype SecurityMode: MessageSecurityMode
+    :ivar SecurityGroupId:
+    :vartype SecurityGroupId: String
+    :ivar SecurityKeyServices:
+    :vartype SecurityKeyServices: EndpointDescription
+    :ivar MaxNetworkMessageSize:
+    :vartype MaxNetworkMessageSize: UInt32
+    :ivar GroupProperties:
+    :vartype GroupProperties: KeyValuePair
+    :ivar TransportSettings:
+    :vartype TransportSettings: ExtensionObject
+    :ivar MessageSettings:
+    :vartype MessageSettings: ExtensionObject
+    :ivar DataSetReaders:
+    :vartype DataSetReaders: DataSetReaderDataType
+    '''
+
+    ua_types = [
+        ('Name', 'String'),
+        ('Enabled', 'Boolean'),
+        ('SecurityMode', 'MessageSecurityMode'),
+        ('SecurityGroupId', 'String'),
+        ('SecurityKeyServices', 'ListOfEndpointDescription'),
+        ('MaxNetworkMessageSize', 'UInt32'),
+        ('GroupProperties', 'ListOfKeyValuePair'),
+        ('TransportSettings', 'ExtensionObject'),
+        ('MessageSettings', 'ExtensionObject'),
+        ('DataSetReaders', 'ListOfDataSetReaderDataType'),
+               ]
+
+    def __init__(self):
+        self.Name = None
+        self.Enabled = True
+        self.SecurityMode = MessageSecurityMode(0)
+        self.SecurityGroupId = None
+        self.SecurityKeyServices = []
+        self.MaxNetworkMessageSize = 0
+        self.GroupProperties = []
+        self.TransportSettings = ExtensionObject()
+        self.MessageSettings = ExtensionObject()
+        self.DataSetReaders = []
+        self._freeze = True
+
+    def __str__(self):
+        return 'ReaderGroupDataType(' + 'Name:' + str(self.Name) + ', ' + \
+               'Enabled:' + str(self.Enabled) + ', ' + \
+               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
+               'SecurityGroupId:' + str(self.SecurityGroupId) + ', ' + \
+               'SecurityKeyServices:' + str(self.SecurityKeyServices) + ', ' + \
+               'MaxNetworkMessageSize:' + str(self.MaxNetworkMessageSize) + ', ' + \
+               'GroupProperties:' + str(self.GroupProperties) + ', ' + \
+               'TransportSettings:' + str(self.TransportSettings) + ', ' + \
+               'MessageSettings:' + str(self.MessageSettings) + ', ' + \
+               'DataSetReaders:' + str(self.DataSetReaders) + ')'
+
+    __repr__ = __str__
+
+
+class ReaderGroupTransportDataType(FrozenClass):
+    '''
+    '''
+
+    ua_types = [
+               ]
+
+    def __init__(self):
+        self._freeze = True
+
+    def __str__(self):
+        return 'ReaderGroupTransportDataType(' +  + ')'
+
+    __repr__ = __str__
+
+
+class ReaderGroupMessageDataType(FrozenClass):
+    '''
+    '''
+
+    ua_types = [
+               ]
+
+    def __init__(self):
+        self._freeze = True
+
+    def __str__(self):
+        return 'ReaderGroupMessageDataType(' +  + ')'
+
+    __repr__ = __str__
+
+
+class DataSetReaderDataType(FrozenClass):
+    '''
+    :ivar Name:
+    :vartype Name: String
+    :ivar Enabled:
+    :vartype Enabled: Boolean
+    :ivar PublisherId:
+    :vartype PublisherId: Variant
+    :ivar WriterGroupId:
+    :vartype WriterGroupId: UInt16
+    :ivar DataSetWriterId:
+    :vartype DataSetWriterId: UInt16
+    :ivar DataSetMetaData:
+    :vartype DataSetMetaData: DataSetMetaDataType
+    :ivar DataSetFieldContentMask:
+    :vartype DataSetFieldContentMask: DataSetFieldContentMask
+    :ivar MessageReceiveTimeout:
+    :vartype MessageReceiveTimeout: Double
+    :ivar SecurityMode:
+    :vartype SecurityMode: MessageSecurityMode
+    :ivar SecurityGroupId:
+    :vartype SecurityGroupId: String
+    :ivar SecurityKeyServices:
+    :vartype SecurityKeyServices: EndpointDescription
+    :ivar DataSetReaderProperties:
+    :vartype DataSetReaderProperties: KeyValuePair
+    :ivar TransportSettings:
+    :vartype TransportSettings: ExtensionObject
+    :ivar MessageSettings:
+    :vartype MessageSettings: ExtensionObject
+    :ivar SubscribedDataSet:
+    :vartype SubscribedDataSet: ExtensionObject
+    '''
+
+    ua_types = [
+        ('Name', 'String'),
+        ('Enabled', 'Boolean'),
+        ('PublisherId', 'Variant'),
+        ('WriterGroupId', 'UInt16'),
+        ('DataSetWriterId', 'UInt16'),
+        ('DataSetMetaData', 'DataSetMetaDataType'),
+        ('DataSetFieldContentMask', 'DataSetFieldContentMask'),
+        ('MessageReceiveTimeout', 'Double'),
+        ('SecurityMode', 'MessageSecurityMode'),
+        ('SecurityGroupId', 'String'),
+        ('SecurityKeyServices', 'ListOfEndpointDescription'),
+        ('DataSetReaderProperties', 'ListOfKeyValuePair'),
+        ('TransportSettings', 'ExtensionObject'),
+        ('MessageSettings', 'ExtensionObject'),
+        ('SubscribedDataSet', 'ExtensionObject'),
+               ]
+
+    def __init__(self):
+        self.Name = None
+        self.Enabled = True
+        self.PublisherId = Variant()
+        self.WriterGroupId = 0
+        self.DataSetWriterId = 0
+        self.DataSetMetaData = DataSetMetaDataType()
+        self.DataSetFieldContentMask = DataSetFieldContentMask(0)
+        self.MessageReceiveTimeout = 0
+        self.SecurityMode = MessageSecurityMode(0)
+        self.SecurityGroupId = None
+        self.SecurityKeyServices = []
+        self.DataSetReaderProperties = []
+        self.TransportSettings = ExtensionObject()
+        self.MessageSettings = ExtensionObject()
+        self.SubscribedDataSet = ExtensionObject()
+        self._freeze = True
+
+    def __str__(self):
+        return 'DataSetReaderDataType(' + 'Name:' + str(self.Name) + ', ' + \
+               'Enabled:' + str(self.Enabled) + ', ' + \
+               'PublisherId:' + str(self.PublisherId) + ', ' + \
+               'WriterGroupId:' + str(self.WriterGroupId) + ', ' + \
+               'DataSetWriterId:' + str(self.DataSetWriterId) + ', ' + \
+               'DataSetMetaData:' + str(self.DataSetMetaData) + ', ' + \
+               'DataSetFieldContentMask:' + str(self.DataSetFieldContentMask) + ', ' + \
+               'MessageReceiveTimeout:' + str(self.MessageReceiveTimeout) + ', ' + \
+               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
+               'SecurityGroupId:' + str(self.SecurityGroupId) + ', ' + \
+               'SecurityKeyServices:' + str(self.SecurityKeyServices) + ', ' + \
+               'DataSetReaderProperties:' + str(self.DataSetReaderProperties) + ', ' + \
+               'TransportSettings:' + str(self.TransportSettings) + ', ' + \
+               'MessageSettings:' + str(self.MessageSettings) + ', ' + \
+               'SubscribedDataSet:' + str(self.SubscribedDataSet) + ')'
+
+    __repr__ = __str__
+
+
+class DataSetReaderTransportDataType(FrozenClass):
+    '''
+    '''
+
+    ua_types = [
+               ]
+
+    def __init__(self):
+        self._freeze = True
+
+    def __str__(self):
+        return 'DataSetReaderTransportDataType(' +  + ')'
+
+    __repr__ = __str__
+
+
+class DataSetReaderMessageDataType(FrozenClass):
+    '''
+    '''
+
+    ua_types = [
+               ]
+
+    def __init__(self):
+        self._freeze = True
+
+    def __str__(self):
+        return 'DataSetReaderMessageDataType(' +  + ')'
+
+    __repr__ = __str__
+
+
+class SubscribedDataSetDataType(FrozenClass):
+    '''
+    '''
+
+    ua_types = [
+               ]
+
+    def __init__(self):
+        self._freeze = True
+
+    def __str__(self):
+        return 'SubscribedDataSetDataType(' +  + ')'
+
+    __repr__ = __str__
+
+
+class TargetVariablesDataType(FrozenClass):
+    '''
+    :ivar TargetVariables:
+    :vartype TargetVariables: FieldTargetDataType
+    '''
+
+    ua_types = [
+        ('TargetVariables', 'ListOfFieldTargetDataType'),
+               ]
+
+    def __init__(self):
+        self.TargetVariables = []
+        self._freeze = True
+
+    def __str__(self):
+        return 'TargetVariablesDataType(' + 'TargetVariables:' + str(self.TargetVariables) + ')'
+
+    __repr__ = __str__
+
+
+class FieldTargetDataType(FrozenClass):
+    '''
+    :ivar DataSetFieldId:
+    :vartype DataSetFieldId: Guid
+    :ivar ReceiverIndexRange:
+    :vartype ReceiverIndexRange: String
+    :ivar TargetNodeId:
+    :vartype TargetNodeId: NodeId
+    :ivar AttributeId:
+    :vartype AttributeId: UInt32
+    :ivar WriteIndexRange:
+    :vartype WriteIndexRange: String
+    :ivar OverrideValueHandling:
+    :vartype OverrideValueHandling: OverrideValueHandling
+    :ivar OverrideValue:
+    :vartype OverrideValue: Variant
+    '''
+
+    ua_types = [
+        ('DataSetFieldId', 'Guid'),
+        ('ReceiverIndexRange', 'String'),
+        ('TargetNodeId', 'NodeId'),
+        ('AttributeId', 'UInt32'),
+        ('WriteIndexRange', 'String'),
+        ('OverrideValueHandling', 'OverrideValueHandling'),
+        ('OverrideValue', 'Variant'),
+               ]
+
+    def __init__(self):
+        self.DataSetFieldId = Guid()
+        self.ReceiverIndexRange = None
+        self.TargetNodeId = NodeId()
+        self.AttributeId = 0
+        self.WriteIndexRange = None
+        self.OverrideValueHandling = OverrideValueHandling(0)
+        self.OverrideValue = Variant()
+        self._freeze = True
+
+    def __str__(self):
+        return 'FieldTargetDataType(' + 'DataSetFieldId:' + str(self.DataSetFieldId) + ', ' + \
+               'ReceiverIndexRange:' + str(self.ReceiverIndexRange) + ', ' + \
+               'TargetNodeId:' + str(self.TargetNodeId) + ', ' + \
+               'AttributeId:' + str(self.AttributeId) + ', ' + \
+               'WriteIndexRange:' + str(self.WriteIndexRange) + ', ' + \
+               'OverrideValueHandling:' + str(self.OverrideValueHandling) + ', ' + \
+               'OverrideValue:' + str(self.OverrideValue) + ')'
+
+    __repr__ = __str__
+
+
+class SubscribedDataSetMirrorDataType(FrozenClass):
+    '''
+    :ivar ParentNodeName:
+    :vartype ParentNodeName: String
+    :ivar RolePermissions:
+    :vartype RolePermissions: RolePermissionType
+    '''
+
+    ua_types = [
+        ('ParentNodeName', 'String'),
+        ('RolePermissions', 'ListOfRolePermissionType'),
+               ]
+
+    def __init__(self):
+        self.ParentNodeName = None
+        self.RolePermissions = []
+        self._freeze = True
+
+    def __str__(self):
+        return 'SubscribedDataSetMirrorDataType(' + 'ParentNodeName:' + str(self.ParentNodeName) + ', ' + \
+               'RolePermissions:' + str(self.RolePermissions) + ')'
+
+    __repr__ = __str__
+
+
+class PubSubConfigurationDataType(FrozenClass):
+    '''
+    :ivar PublishedDataSets:
+    :vartype PublishedDataSets: PublishedDataSetDataType
+    :ivar Connections:
+    :vartype Connections: PubSubConnectionDataType
+    :ivar Enabled:
+    :vartype Enabled: Boolean
+    '''
+
+    ua_types = [
+        ('PublishedDataSets', 'ListOfPublishedDataSetDataType'),
+        ('Connections', 'ListOfPubSubConnectionDataType'),
+        ('Enabled', 'Boolean'),
+               ]
+
+    def __init__(self):
+        self.PublishedDataSets = []
+        self.Connections = []
+        self.Enabled = True
+        self._freeze = True
+
+    def __str__(self):
+        return 'PubSubConfigurationDataType(' + 'PublishedDataSets:' + str(self.PublishedDataSets) + ', ' + \
+               'Connections:' + str(self.Connections) + ', ' + \
+               'Enabled:' + str(self.Enabled) + ')'
+
+    __repr__ = __str__
+
+
+class UadpWriterGroupMessageDataType(FrozenClass):
+    '''
+    :ivar GroupVersion:
+    :vartype GroupVersion: UInt32
+    :ivar DataSetOrdering:
+    :vartype DataSetOrdering: DataSetOrderingType
+    :ivar NetworkMessageContentMask:
+    :vartype NetworkMessageContentMask: UadpNetworkMessageContentMask
+    :ivar SamplingOffset:
+    :vartype SamplingOffset: Double
+    :ivar PublishingOffset:
+    :vartype PublishingOffset: Double
+    '''
+
+    ua_types = [
+        ('GroupVersion', 'UInt32'),
+        ('DataSetOrdering', 'DataSetOrderingType'),
+        ('NetworkMessageContentMask', 'UadpNetworkMessageContentMask'),
+        ('SamplingOffset', 'Double'),
+        ('PublishingOffset', 'ListOfDouble'),
+               ]
+
+    def __init__(self):
+        self.GroupVersion = 0
+        self.DataSetOrdering = DataSetOrderingType(0)
+        self.NetworkMessageContentMask = UadpNetworkMessageContentMask(0)
+        self.SamplingOffset = 0
+        self.PublishingOffset = []
+        self._freeze = True
+
+    def __str__(self):
+        return 'UadpWriterGroupMessageDataType(' + 'GroupVersion:' + str(self.GroupVersion) + ', ' + \
+               'DataSetOrdering:' + str(self.DataSetOrdering) + ', ' + \
+               'NetworkMessageContentMask:' + str(self.NetworkMessageContentMask) + ', ' + \
+               'SamplingOffset:' + str(self.SamplingOffset) + ', ' + \
+               'PublishingOffset:' + str(self.PublishingOffset) + ')'
+
+    __repr__ = __str__
+
+
+class UadpDataSetWriterMessageDataType(FrozenClass):
+    '''
+    :ivar DataSetMessageContentMask:
+    :vartype DataSetMessageContentMask: UadpDataSetMessageContentMask
+    :ivar ConfiguredSize:
+    :vartype ConfiguredSize: UInt16
+    :ivar NetworkMessageNumber:
+    :vartype NetworkMessageNumber: UInt16
+    :ivar DataSetOffset:
+    :vartype DataSetOffset: UInt16
+    '''
+
+    ua_types = [
+        ('DataSetMessageContentMask', 'UadpDataSetMessageContentMask'),
+        ('ConfiguredSize', 'UInt16'),
+        ('NetworkMessageNumber', 'UInt16'),
+        ('DataSetOffset', 'UInt16'),
+               ]
+
+    def __init__(self):
+        self.DataSetMessageContentMask = UadpDataSetMessageContentMask(0)
+        self.ConfiguredSize = 0
+        self.NetworkMessageNumber = 0
+        self.DataSetOffset = 0
+        self._freeze = True
+
+    def __str__(self):
+        return 'UadpDataSetWriterMessageDataType(' + 'DataSetMessageContentMask:' + str(self.DataSetMessageContentMask) + ', ' + \
+               'ConfiguredSize:' + str(self.ConfiguredSize) + ', ' + \
+               'NetworkMessageNumber:' + str(self.NetworkMessageNumber) + ', ' + \
+               'DataSetOffset:' + str(self.DataSetOffset) + ')'
+
+    __repr__ = __str__
+
+
+class UadpDataSetReaderMessageDataType(FrozenClass):
+    '''
+    :ivar GroupVersion:
+    :vartype GroupVersion: UInt32
+    :ivar NetworkMessageNumber:
+    :vartype NetworkMessageNumber: UInt16
+    :ivar DataSetOffset:
+    :vartype DataSetOffset: UInt16
+    :ivar DataSetClassId:
+    :vartype DataSetClassId: Guid
+    :ivar NetworkMessageContentMask:
+    :vartype NetworkMessageContentMask: UadpNetworkMessageContentMask
+    :ivar DataSetMessageContentMask:
+    :vartype DataSetMessageContentMask: UadpDataSetMessageContentMask
+    :ivar PublishingInterval:
+    :vartype PublishingInterval: Double
+    :ivar ReceiveOffset:
+    :vartype ReceiveOffset: Double
+    :ivar ProcessingOffset:
+    :vartype ProcessingOffset: Double
+    '''
+
+    ua_types = [
+        ('GroupVersion', 'UInt32'),
+        ('NetworkMessageNumber', 'UInt16'),
+        ('DataSetOffset', 'UInt16'),
+        ('DataSetClassId', 'Guid'),
+        ('NetworkMessageContentMask', 'UadpNetworkMessageContentMask'),
+        ('DataSetMessageContentMask', 'UadpDataSetMessageContentMask'),
+        ('PublishingInterval', 'Double'),
+        ('ReceiveOffset', 'Double'),
+        ('ProcessingOffset', 'Double'),
+               ]
+
+    def __init__(self):
+        self.GroupVersion = 0
+        self.NetworkMessageNumber = 0
+        self.DataSetOffset = 0
+        self.DataSetClassId = Guid()
+        self.NetworkMessageContentMask = UadpNetworkMessageContentMask(0)
+        self.DataSetMessageContentMask = UadpDataSetMessageContentMask(0)
+        self.PublishingInterval = 0
+        self.ReceiveOffset = 0
+        self.ProcessingOffset = 0
+        self._freeze = True
+
+    def __str__(self):
+        return 'UadpDataSetReaderMessageDataType(' + 'GroupVersion:' + str(self.GroupVersion) + ', ' + \
+               'NetworkMessageNumber:' + str(self.NetworkMessageNumber) + ', ' + \
+               'DataSetOffset:' + str(self.DataSetOffset) + ', ' + \
+               'DataSetClassId:' + str(self.DataSetClassId) + ', ' + \
+               'NetworkMessageContentMask:' + str(self.NetworkMessageContentMask) + ', ' + \
+               'DataSetMessageContentMask:' + str(self.DataSetMessageContentMask) + ', ' + \
+               'PublishingInterval:' + str(self.PublishingInterval) + ', ' + \
+               'ReceiveOffset:' + str(self.ReceiveOffset) + ', ' + \
+               'ProcessingOffset:' + str(self.ProcessingOffset) + ')'
+
+    __repr__ = __str__
+
+
+class JsonWriterGroupMessageDataType(FrozenClass):
+    '''
+    :ivar NetworkMessageContentMask:
+    :vartype NetworkMessageContentMask: JsonNetworkMessageContentMask
+    '''
+
+    ua_types = [
+        ('NetworkMessageContentMask', 'JsonNetworkMessageContentMask'),
+               ]
+
+    def __init__(self):
+        self.NetworkMessageContentMask = JsonNetworkMessageContentMask(0)
+        self._freeze = True
+
+    def __str__(self):
+        return 'JsonWriterGroupMessageDataType(' + 'NetworkMessageContentMask:' + str(self.NetworkMessageContentMask) + ')'
+
+    __repr__ = __str__
+
+
+class JsonDataSetWriterMessageDataType(FrozenClass):
+    '''
+    :ivar DataSetMessageContentMask:
+    :vartype DataSetMessageContentMask: JsonDataSetMessageContentMask
+    '''
+
+    ua_types = [
+        ('DataSetMessageContentMask', 'JsonDataSetMessageContentMask'),
+               ]
+
+    def __init__(self):
+        self.DataSetMessageContentMask = JsonDataSetMessageContentMask(0)
+        self._freeze = True
+
+    def __str__(self):
+        return 'JsonDataSetWriterMessageDataType(' + 'DataSetMessageContentMask:' + str(self.DataSetMessageContentMask) + ')'
+
+    __repr__ = __str__
+
+
+class JsonDataSetReaderMessageDataType(FrozenClass):
+    '''
+    :ivar NetworkMessageContentMask:
+    :vartype NetworkMessageContentMask: JsonNetworkMessageContentMask
+    :ivar DataSetMessageContentMask:
+    :vartype DataSetMessageContentMask: JsonDataSetMessageContentMask
+    '''
+
+    ua_types = [
+        ('NetworkMessageContentMask', 'JsonNetworkMessageContentMask'),
+        ('DataSetMessageContentMask', 'JsonDataSetMessageContentMask'),
+               ]
+
+    def __init__(self):
+        self.NetworkMessageContentMask = JsonNetworkMessageContentMask(0)
+        self.DataSetMessageContentMask = JsonDataSetMessageContentMask(0)
+        self._freeze = True
+
+    def __str__(self):
+        return 'JsonDataSetReaderMessageDataType(' + 'NetworkMessageContentMask:' + str(self.NetworkMessageContentMask) + ', ' + \
+               'DataSetMessageContentMask:' + str(self.DataSetMessageContentMask) + ')'
+
+    __repr__ = __str__
+
+
+class DatagramConnectionTransportDataType(FrozenClass):
+    '''
+    :ivar DiscoveryAddress:
+    :vartype DiscoveryAddress: ExtensionObject
+    '''
+
+    ua_types = [
+        ('DiscoveryAddress', 'ExtensionObject'),
+               ]
+
+    def __init__(self):
+        self.DiscoveryAddress = ExtensionObject()
+        self._freeze = True
+
+    def __str__(self):
+        return 'DatagramConnectionTransportDataType(' + 'DiscoveryAddress:' + str(self.DiscoveryAddress) + ')'
+
+    __repr__ = __str__
+
+
+class DatagramWriterGroupTransportDataType(FrozenClass):
+    '''
+    :ivar MessageRepeatCount:
+    :vartype MessageRepeatCount: Byte
+    :ivar MessageRepeatDelay:
+    :vartype MessageRepeatDelay: Double
+    '''
+
+    ua_types = [
+        ('MessageRepeatCount', 'Byte'),
+        ('MessageRepeatDelay', 'Double'),
+               ]
+
+    def __init__(self):
+        self.MessageRepeatCount = 0
+        self.MessageRepeatDelay = 0
+        self._freeze = True
+
+    def __str__(self):
+        return 'DatagramWriterGroupTransportDataType(' + 'MessageRepeatCount:' + str(self.MessageRepeatCount) + ', ' + \
+               'MessageRepeatDelay:' + str(self.MessageRepeatDelay) + ')'
+
+    __repr__ = __str__
+
+
+class BrokerConnectionTransportDataType(FrozenClass):
+    '''
+    :ivar ResourceUri:
+    :vartype ResourceUri: String
+    :ivar AuthenticationProfileUri:
+    :vartype AuthenticationProfileUri: String
+    '''
+
+    ua_types = [
+        ('ResourceUri', 'String'),
+        ('AuthenticationProfileUri', 'String'),
+               ]
+
+    def __init__(self):
+        self.ResourceUri = None
+        self.AuthenticationProfileUri = None
+        self._freeze = True
+
+    def __str__(self):
+        return 'BrokerConnectionTransportDataType(' + 'ResourceUri:' + str(self.ResourceUri) + ', ' + \
+               'AuthenticationProfileUri:' + str(self.AuthenticationProfileUri) + ')'
+
+    __repr__ = __str__
+
+
+class BrokerWriterGroupTransportDataType(FrozenClass):
+    '''
+    :ivar QueueName:
+    :vartype QueueName: String
+    :ivar ResourceUri:
+    :vartype ResourceUri: String
+    :ivar AuthenticationProfileUri:
+    :vartype AuthenticationProfileUri: String
+    :ivar RequestedDeliveryGuarantee:
+    :vartype RequestedDeliveryGuarantee: BrokerTransportQualityOfService
+    '''
+
+    ua_types = [
+        ('QueueName', 'String'),
+        ('ResourceUri', 'String'),
+        ('AuthenticationProfileUri', 'String'),
+        ('RequestedDeliveryGuarantee', 'BrokerTransportQualityOfService'),
+               ]
+
+    def __init__(self):
+        self.QueueName = None
+        self.ResourceUri = None
+        self.AuthenticationProfileUri = None
+        self.RequestedDeliveryGuarantee = BrokerTransportQualityOfService(0)
+        self._freeze = True
+
+    def __str__(self):
+        return 'BrokerWriterGroupTransportDataType(' + 'QueueName:' + str(self.QueueName) + ', ' + \
+               'ResourceUri:' + str(self.ResourceUri) + ', ' + \
+               'AuthenticationProfileUri:' + str(self.AuthenticationProfileUri) + ', ' + \
+               'RequestedDeliveryGuarantee:' + str(self.RequestedDeliveryGuarantee) + ')'
+
+    __repr__ = __str__
+
+
+class BrokerDataSetWriterTransportDataType(FrozenClass):
+    '''
+    :ivar QueueName:
+    :vartype QueueName: String
+    :ivar ResourceUri:
+    :vartype ResourceUri: String
+    :ivar AuthenticationProfileUri:
+    :vartype AuthenticationProfileUri: String
+    :ivar MetaDataQueueName:
+    :vartype MetaDataQueueName: String
+    :ivar MetaDataUpdateTime:
+    :vartype MetaDataUpdateTime: Double
+    '''
+
+    ua_types = [
+        ('QueueName', 'String'),
+        ('ResourceUri', 'String'),
+        ('AuthenticationProfileUri', 'String'),
+        ('MetaDataQueueName', 'String'),
+        ('MetaDataUpdateTime', 'Double'),
+               ]
+
+    def __init__(self):
+        self.QueueName = None
+        self.ResourceUri = None
+        self.AuthenticationProfileUri = None
+        self.MetaDataQueueName = None
+        self.MetaDataUpdateTime = 0
+        self._freeze = True
+
+    def __str__(self):
+        return 'BrokerDataSetWriterTransportDataType(' + 'QueueName:' + str(self.QueueName) + ', ' + \
+               'ResourceUri:' + str(self.ResourceUri) + ', ' + \
+               'AuthenticationProfileUri:' + str(self.AuthenticationProfileUri) + ', ' + \
+               'MetaDataQueueName:' + str(self.MetaDataQueueName) + ', ' + \
+               'MetaDataUpdateTime:' + str(self.MetaDataUpdateTime) + ')'
+
+    __repr__ = __str__
+
+
+class BrokerDataSetReaderTransportDataType(FrozenClass):
+    '''
+    :ivar QueueName:
+    :vartype QueueName: String
+    :ivar ResourceUri:
+    :vartype ResourceUri: String
+    :ivar AuthenticationProfileUri:
+    :vartype AuthenticationProfileUri: String
+    :ivar RequestedDeliveryGuarantee:
+    :vartype RequestedDeliveryGuarantee: BrokerTransportQualityOfService
+    :ivar MetaDataQueueName:
+    :vartype MetaDataQueueName: String
+    '''
+
+    ua_types = [
+        ('QueueName', 'String'),
+        ('ResourceUri', 'String'),
+        ('AuthenticationProfileUri', 'String'),
+        ('RequestedDeliveryGuarantee', 'BrokerTransportQualityOfService'),
+        ('MetaDataQueueName', 'String'),
+               ]
+
+    def __init__(self):
+        self.QueueName = None
+        self.ResourceUri = None
+        self.AuthenticationProfileUri = None
+        self.RequestedDeliveryGuarantee = BrokerTransportQualityOfService(0)
+        self.MetaDataQueueName = None
+        self._freeze = True
+
+    def __str__(self):
+        return 'BrokerDataSetReaderTransportDataType(' + 'QueueName:' + str(self.QueueName) + ', ' + \
+               'ResourceUri:' + str(self.ResourceUri) + ', ' + \
+               'AuthenticationProfileUri:' + str(self.AuthenticationProfileUri) + ', ' + \
+               'RequestedDeliveryGuarantee:' + str(self.RequestedDeliveryGuarantee) + ', ' + \
+               'MetaDataQueueName:' + str(self.MetaDataQueueName) + ')'
+
+    __repr__ = __str__
+
+
+class RolePermissionType(FrozenClass):
+    '''
+    :ivar RoleId:
+    :vartype RoleId: NodeId
+    :ivar Permissions:
+    :vartype Permissions: UInt32
+    '''
+
+    ua_types = [
+        ('RoleId', 'NodeId'),
+        ('Permissions', 'UInt32'),
+               ]
+
+    def __init__(self):
+        self.RoleId = NodeId()
+        self.Permissions = 0
+        self._freeze = True
+
+    def __str__(self):
+        return 'RolePermissionType(' + 'RoleId:' + str(self.RoleId) + ', ' + \
+               'Permissions:' + str(self.Permissions) + ')'
+
+    __repr__ = __str__
+
+
+class StructureField(FrozenClass):
+    '''
+    :ivar Name:
+    :vartype Name: String
+    :ivar Description:
+    :vartype Description: LocalizedText
+    :ivar DataType:
+    :vartype DataType: NodeId
+    :ivar ValueRank:
+    :vartype ValueRank: Int32
+    :ivar ArrayDimensions:
+    :vartype ArrayDimensions: UInt32
+    :ivar MaxStringLength:
+    :vartype MaxStringLength: UInt32
+    :ivar IsOptional:
+    :vartype IsOptional: Boolean
+    '''
+
+    ua_types = [
+        ('Name', 'String'),
+        ('Description', 'LocalizedText'),
+        ('DataType', 'NodeId'),
+        ('ValueRank', 'Int32'),
+        ('ArrayDimensions', 'ListOfUInt32'),
+        ('MaxStringLength', 'UInt32'),
+        ('IsOptional', 'Boolean'),
+               ]
+
+    def __init__(self):
+        self.Name = None
+        self.Description = LocalizedText()
+        self.DataType = NodeId()
+        self.ValueRank = 0
+        self.ArrayDimensions = []
+        self.MaxStringLength = 0
+        self.IsOptional = True
+        self._freeze = True
+
+    def __str__(self):
+        return 'StructureField(' + 'Name:' + str(self.Name) + ', ' + \
+               'Description:' + str(self.Description) + ', ' + \
+               'DataType:' + str(self.DataType) + ', ' + \
+               'ValueRank:' + str(self.ValueRank) + ', ' + \
+               'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
+               'MaxStringLength:' + str(self.MaxStringLength) + ', ' + \
+               'IsOptional:' + str(self.IsOptional) + ')'
+
+    __repr__ = __str__
+
+
+class StructureDefinition(FrozenClass):
+    '''
+    :ivar DefaultEncodingId:
+    :vartype DefaultEncodingId: NodeId
+    :ivar BaseDataType:
+    :vartype BaseDataType: NodeId
+    :ivar StructureType:
+    :vartype StructureType: StructureType
+    :ivar Fields:
+    :vartype Fields: StructureField
+    '''
+
+    ua_types = [
+        ('DefaultEncodingId', 'NodeId'),
+        ('BaseDataType', 'NodeId'),
+        ('StructureType', 'StructureType'),
+        ('Fields', 'ListOfStructureField'),
+               ]
+
+    def __init__(self):
+        self.DefaultEncodingId = NodeId()
+        self.BaseDataType = NodeId()
+        self.StructureType = StructureType(0)
+        self.Fields = []
+        self._freeze = True
+
+    def __str__(self):
+        return 'StructureDefinition(' + 'DefaultEncodingId:' + str(self.DefaultEncodingId) + ', ' + \
+               'BaseDataType:' + str(self.BaseDataType) + ', ' + \
+               'StructureType:' + str(self.StructureType) + ', ' + \
+               'Fields:' + str(self.Fields) + ')'
+
+    __repr__ = __str__
+
+
+class EnumDefinition(FrozenClass):
+    '''
+    :ivar Fields:
+    :vartype Fields: EnumField
+    '''
+
+    ua_types = [
+        ('Fields', 'ListOfEnumField'),
+               ]
+
+    def __init__(self):
+        self.Fields = []
+        self._freeze = True
+
+    def __str__(self):
+        return 'EnumDefinition(' + 'Fields:' + str(self.Fields) + ')'
 
     __repr__ = __str__
 
@@ -888,6 +3132,41 @@ class EnumValueType(FrozenClass):
         return 'EnumValueType(' + 'Value:' + str(self.Value) + ', ' + \
                'DisplayName:' + str(self.DisplayName) + ', ' + \
                'Description:' + str(self.Description) + ')'
+
+    __repr__ = __str__
+
+
+class EnumField(FrozenClass):
+    '''
+    :ivar Value:
+    :vartype Value: Int64
+    :ivar DisplayName:
+    :vartype DisplayName: LocalizedText
+    :ivar Description:
+    :vartype Description: LocalizedText
+    :ivar Name:
+    :vartype Name: String
+    '''
+
+    ua_types = [
+        ('Value', 'Int64'),
+        ('DisplayName', 'LocalizedText'),
+        ('Description', 'LocalizedText'),
+        ('Name', 'String'),
+               ]
+
+    def __init__(self):
+        self.Value = 0
+        self.DisplayName = LocalizedText()
+        self.Description = LocalizedText()
+        self.Name = None
+        self._freeze = True
+
+    def __str__(self):
+        return 'EnumField(' + 'Value:' + str(self.Value) + ', ' + \
+               'DisplayName:' + str(self.DisplayName) + ', ' + \
+               'Description:' + str(self.Description) + ', ' + \
+               'Name:' + str(self.Name) + ')'
 
     __repr__ = __str__
 
@@ -1136,6 +3415,76 @@ class ServiceFault(FrozenClass):
     def __str__(self):
         return 'ServiceFault(' + 'TypeId:' + str(self.TypeId) + ', ' + \
                'ResponseHeader:' + str(self.ResponseHeader) + ')'
+
+    __repr__ = __str__
+
+
+class SessionlessInvokeRequestType(FrozenClass):
+    '''
+    :ivar UrisVersion:
+    :vartype UrisVersion: UInt32
+    :ivar NamespaceUris:
+    :vartype NamespaceUris: String
+    :ivar ServerUris:
+    :vartype ServerUris: String
+    :ivar LocaleIds:
+    :vartype LocaleIds: String
+    :ivar ServiceId:
+    :vartype ServiceId: UInt32
+    '''
+
+    ua_types = [
+        ('UrisVersion', 'ListOfUInt32'),
+        ('NamespaceUris', 'ListOfString'),
+        ('ServerUris', 'ListOfString'),
+        ('LocaleIds', 'ListOfString'),
+        ('ServiceId', 'UInt32'),
+               ]
+
+    def __init__(self):
+        self.UrisVersion = []
+        self.NamespaceUris = []
+        self.ServerUris = []
+        self.LocaleIds = []
+        self.ServiceId = 0
+        self._freeze = True
+
+    def __str__(self):
+        return 'SessionlessInvokeRequestType(' + 'UrisVersion:' + str(self.UrisVersion) + ', ' + \
+               'NamespaceUris:' + str(self.NamespaceUris) + ', ' + \
+               'ServerUris:' + str(self.ServerUris) + ', ' + \
+               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
+               'ServiceId:' + str(self.ServiceId) + ')'
+
+    __repr__ = __str__
+
+
+class SessionlessInvokeResponseType(FrozenClass):
+    '''
+    :ivar NamespaceUris:
+    :vartype NamespaceUris: String
+    :ivar ServerUris:
+    :vartype ServerUris: String
+    :ivar ServiceId:
+    :vartype ServiceId: UInt32
+    '''
+
+    ua_types = [
+        ('NamespaceUris', 'ListOfString'),
+        ('ServerUris', 'ListOfString'),
+        ('ServiceId', 'UInt32'),
+               ]
+
+    def __init__(self):
+        self.NamespaceUris = []
+        self.ServerUris = []
+        self.ServiceId = 0
+        self._freeze = True
+
+    def __str__(self):
+        return 'SessionlessInvokeResponseType(' + 'NamespaceUris:' + str(self.NamespaceUris) + ', ' + \
+               'ServerUris:' + str(self.ServerUris) + ', ' + \
+               'ServiceId:' + str(self.ServiceId) + ')'
 
     __repr__ = __str__
 
@@ -2394,31 +4743,6 @@ class X509IdentityToken(FrozenClass):
     __repr__ = __str__
 
 
-class KerberosIdentityToken(FrozenClass):
-    '''
-    :ivar PolicyId:
-    :vartype PolicyId: String
-    :ivar TicketData:
-    :vartype TicketData: ByteString
-    '''
-
-    ua_types = [
-        ('PolicyId', 'String'),
-        ('TicketData', 'ByteString'),
-               ]
-
-    def __init__(self):
-        self.PolicyId = None
-        self.TicketData = None
-        self._freeze = True
-
-    def __str__(self):
-        return 'KerberosIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-               'TicketData:' + str(self.TicketData) + ')'
-
-    __repr__ = __str__
-
-
 class IssuedIdentityToken(FrozenClass):
     '''
     A token representing a user identified by a WS-Security XML token.
@@ -3237,6 +5561,76 @@ class ViewAttributes(FrozenClass):
                'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
                'ContainsNoLoops:' + str(self.ContainsNoLoops) + ', ' + \
                'EventNotifier:' + str(self.EventNotifier) + ')'
+
+    __repr__ = __str__
+
+
+class GenericAttributeValue(FrozenClass):
+    '''
+    :ivar AttributeId:
+    :vartype AttributeId: UInt32
+    :ivar Value:
+    :vartype Value: Variant
+    '''
+
+    ua_types = [
+        ('AttributeId', 'UInt32'),
+        ('Value', 'Variant'),
+               ]
+
+    def __init__(self):
+        self.AttributeId = 0
+        self.Value = Variant()
+        self._freeze = True
+
+    def __str__(self):
+        return 'GenericAttributeValue(' + 'AttributeId:' + str(self.AttributeId) + ', ' + \
+               'Value:' + str(self.Value) + ')'
+
+    __repr__ = __str__
+
+
+class GenericAttributes(FrozenClass):
+    '''
+    :ivar SpecifiedAttributes:
+    :vartype SpecifiedAttributes: UInt32
+    :ivar DisplayName:
+    :vartype DisplayName: LocalizedText
+    :ivar Description:
+    :vartype Description: LocalizedText
+    :ivar WriteMask:
+    :vartype WriteMask: UInt32
+    :ivar UserWriteMask:
+    :vartype UserWriteMask: UInt32
+    :ivar AttributeValues:
+    :vartype AttributeValues: GenericAttributeValue
+    '''
+
+    ua_types = [
+        ('SpecifiedAttributes', 'UInt32'),
+        ('DisplayName', 'LocalizedText'),
+        ('Description', 'LocalizedText'),
+        ('WriteMask', 'UInt32'),
+        ('UserWriteMask', 'UInt32'),
+        ('AttributeValues', 'ListOfGenericAttributeValue'),
+               ]
+
+    def __init__(self):
+        self.SpecifiedAttributes = 0
+        self.DisplayName = LocalizedText()
+        self.Description = LocalizedText()
+        self.WriteMask = 0
+        self.UserWriteMask = 0
+        self.AttributeValues = []
+        self._freeze = True
+
+    def __str__(self):
+        return 'GenericAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
+               'DisplayName:' + str(self.DisplayName) + ', ' + \
+               'Description:' + str(self.Description) + ', ' + \
+               'WriteMask:' + str(self.WriteMask) + ', ' + \
+               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
+               'AttributeValues:' + str(self.AttributeValues) + ')'
 
     __repr__ = __str__
 
@@ -4656,116 +7050,6 @@ class EndpointConfiguration(FrozenClass):
                'MaxBufferSize:' + str(self.MaxBufferSize) + ', ' + \
                'ChannelLifetime:' + str(self.ChannelLifetime) + ', ' + \
                'SecurityTokenLifetime:' + str(self.SecurityTokenLifetime) + ')'
-
-    __repr__ = __str__
-
-
-class SupportedProfile(FrozenClass):
-    '''
-    :ivar OrganizationUri:
-    :vartype OrganizationUri: String
-    :ivar ProfileId:
-    :vartype ProfileId: String
-    :ivar ComplianceTool:
-    :vartype ComplianceTool: String
-    :ivar ComplianceDate:
-    :vartype ComplianceDate: DateTime
-    :ivar ComplianceLevel:
-    :vartype ComplianceLevel: ComplianceLevel
-    :ivar UnsupportedUnitIds:
-    :vartype UnsupportedUnitIds: String
-    '''
-
-    ua_types = [
-        ('OrganizationUri', 'String'),
-        ('ProfileId', 'String'),
-        ('ComplianceTool', 'String'),
-        ('ComplianceDate', 'DateTime'),
-        ('ComplianceLevel', 'ComplianceLevel'),
-        ('UnsupportedUnitIds', 'ListOfString'),
-               ]
-
-    def __init__(self):
-        self.OrganizationUri = None
-        self.ProfileId = None
-        self.ComplianceTool = None
-        self.ComplianceDate = datetime.utcnow()
-        self.ComplianceLevel = ComplianceLevel(0)
-        self.UnsupportedUnitIds = []
-        self._freeze = True
-
-    def __str__(self):
-        return 'SupportedProfile(' + 'OrganizationUri:' + str(self.OrganizationUri) + ', ' + \
-               'ProfileId:' + str(self.ProfileId) + ', ' + \
-               'ComplianceTool:' + str(self.ComplianceTool) + ', ' + \
-               'ComplianceDate:' + str(self.ComplianceDate) + ', ' + \
-               'ComplianceLevel:' + str(self.ComplianceLevel) + ', ' + \
-               'UnsupportedUnitIds:' + str(self.UnsupportedUnitIds) + ')'
-
-    __repr__ = __str__
-
-
-class SoftwareCertificate(FrozenClass):
-    '''
-    :ivar ProductName:
-    :vartype ProductName: String
-    :ivar ProductUri:
-    :vartype ProductUri: String
-    :ivar VendorName:
-    :vartype VendorName: String
-    :ivar VendorProductCertificate:
-    :vartype VendorProductCertificate: ByteString
-    :ivar SoftwareVersion:
-    :vartype SoftwareVersion: String
-    :ivar BuildNumber:
-    :vartype BuildNumber: String
-    :ivar BuildDate:
-    :vartype BuildDate: DateTime
-    :ivar IssuedBy:
-    :vartype IssuedBy: String
-    :ivar IssueDate:
-    :vartype IssueDate: DateTime
-    :ivar SupportedProfiles:
-    :vartype SupportedProfiles: SupportedProfile
-    '''
-
-    ua_types = [
-        ('ProductName', 'String'),
-        ('ProductUri', 'String'),
-        ('VendorName', 'String'),
-        ('VendorProductCertificate', 'ByteString'),
-        ('SoftwareVersion', 'String'),
-        ('BuildNumber', 'String'),
-        ('BuildDate', 'DateTime'),
-        ('IssuedBy', 'String'),
-        ('IssueDate', 'DateTime'),
-        ('SupportedProfiles', 'ListOfSupportedProfile'),
-               ]
-
-    def __init__(self):
-        self.ProductName = None
-        self.ProductUri = None
-        self.VendorName = None
-        self.VendorProductCertificate = None
-        self.SoftwareVersion = None
-        self.BuildNumber = None
-        self.BuildDate = datetime.utcnow()
-        self.IssuedBy = None
-        self.IssueDate = datetime.utcnow()
-        self.SupportedProfiles = []
-        self._freeze = True
-
-    def __str__(self):
-        return 'SoftwareCertificate(' + 'ProductName:' + str(self.ProductName) + ', ' + \
-               'ProductUri:' + str(self.ProductUri) + ', ' + \
-               'VendorName:' + str(self.VendorName) + ', ' + \
-               'VendorProductCertificate:' + str(self.VendorProductCertificate) + ', ' + \
-               'SoftwareVersion:' + str(self.SoftwareVersion) + ', ' + \
-               'BuildNumber:' + str(self.BuildNumber) + ', ' + \
-               'BuildDate:' + str(self.BuildDate) + ', ' + \
-               'IssuedBy:' + str(self.IssuedBy) + ', ' + \
-               'IssueDate:' + str(self.IssueDate) + ', ' + \
-               'SupportedProfiles:' + str(self.SupportedProfiles) + ')'
 
     __repr__ = __str__
 
@@ -9544,6 +11828,81 @@ class ProgramDiagnosticDataType(FrozenClass):
     __repr__ = __str__
 
 
+class ProgramDiagnostic2DataType(FrozenClass):
+    '''
+    :ivar CreateSessionId:
+    :vartype CreateSessionId: NodeId
+    :ivar CreateClientName:
+    :vartype CreateClientName: String
+    :ivar InvocationCreationTime:
+    :vartype InvocationCreationTime: DateTime
+    :ivar LastTransitionTime:
+    :vartype LastTransitionTime: DateTime
+    :ivar LastMethodCall:
+    :vartype LastMethodCall: String
+    :ivar LastMethodSessionId:
+    :vartype LastMethodSessionId: NodeId
+    :ivar LastMethodInputArguments:
+    :vartype LastMethodInputArguments: Argument
+    :ivar LastMethodOutputArguments:
+    :vartype LastMethodOutputArguments: Argument
+    :ivar LastMethodInputValues:
+    :vartype LastMethodInputValues: Variant
+    :ivar LastMethodOutputValues:
+    :vartype LastMethodOutputValues: Variant
+    :ivar LastMethodCallTime:
+    :vartype LastMethodCallTime: DateTime
+    :ivar LastMethodReturnStatus:
+    :vartype LastMethodReturnStatus: StatusResult
+    '''
+
+    ua_types = [
+        ('CreateSessionId', 'NodeId'),
+        ('CreateClientName', 'String'),
+        ('InvocationCreationTime', 'DateTime'),
+        ('LastTransitionTime', 'DateTime'),
+        ('LastMethodCall', 'String'),
+        ('LastMethodSessionId', 'NodeId'),
+        ('LastMethodInputArguments', 'ListOfArgument'),
+        ('LastMethodOutputArguments', 'ListOfArgument'),
+        ('LastMethodInputValues', 'ListOfVariant'),
+        ('LastMethodOutputValues', 'ListOfVariant'),
+        ('LastMethodCallTime', 'DateTime'),
+        ('LastMethodReturnStatus', 'StatusResult'),
+               ]
+
+    def __init__(self):
+        self.CreateSessionId = NodeId()
+        self.CreateClientName = None
+        self.InvocationCreationTime = datetime.utcnow()
+        self.LastTransitionTime = datetime.utcnow()
+        self.LastMethodCall = None
+        self.LastMethodSessionId = NodeId()
+        self.LastMethodInputArguments = []
+        self.LastMethodOutputArguments = []
+        self.LastMethodInputValues = []
+        self.LastMethodOutputValues = []
+        self.LastMethodCallTime = datetime.utcnow()
+        self.LastMethodReturnStatus = StatusResult()
+        self._freeze = True
+
+    def __str__(self):
+        return 'ProgramDiagnostic2DataType(' + 'CreateSessionId:' + str(self.CreateSessionId) + ', ' + \
+               'CreateClientName:' + str(self.CreateClientName) + ', ' + \
+               'InvocationCreationTime:' + str(self.InvocationCreationTime) + ', ' + \
+               'LastTransitionTime:' + str(self.LastTransitionTime) + ', ' + \
+               'LastMethodCall:' + str(self.LastMethodCall) + ', ' + \
+               'LastMethodSessionId:' + str(self.LastMethodSessionId) + ', ' + \
+               'LastMethodInputArguments:' + str(self.LastMethodInputArguments) + ', ' + \
+               'LastMethodOutputArguments:' + str(self.LastMethodOutputArguments) + ', ' + \
+               'LastMethodInputValues:' + str(self.LastMethodInputValues) + ', ' + \
+               'LastMethodOutputValues:' + str(self.LastMethodOutputValues) + ', ' + \
+               'LastMethodCallTime:' + str(self.LastMethodCallTime) + ', ' + \
+               'LastMethodReturnStatus:' + str(self.LastMethodReturnStatus) + ')'
+
+    __repr__ = __str__
+
+
 class Annotation(FrozenClass):
     '''
     :ivar Message:
@@ -9574,15 +11933,180 @@ class Annotation(FrozenClass):
     __repr__ = __str__
 
 
+nid = FourByteNodeId(ObjectIds.KeyValuePair_Encoding_DefaultBinary)
+extension_object_classes[nid] = KeyValuePair
+extension_object_ids['KeyValuePair'] = nid
+nid = FourByteNodeId(ObjectIds.EndpointType_Encoding_DefaultBinary)
+extension_object_classes[nid] = EndpointType
+extension_object_ids['EndpointType'] = nid
+nid = FourByteNodeId(ObjectIds.IdentityMappingRuleType_Encoding_DefaultBinary)
+extension_object_classes[nid] = IdentityMappingRuleType
+extension_object_ids['IdentityMappingRuleType'] = nid
 nid = FourByteNodeId(ObjectIds.TrustListDataType_Encoding_DefaultBinary)
 extension_object_classes[nid] = TrustListDataType
 extension_object_ids['TrustListDataType'] = nid
+nid = FourByteNodeId(ObjectIds.DecimalDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = DecimalDataType
+extension_object_ids['DecimalDataType'] = nid
+nid = FourByteNodeId(ObjectIds.DataTypeSchemaHeader_Encoding_DefaultBinary)
+extension_object_classes[nid] = DataTypeSchemaHeader
+extension_object_ids['DataTypeSchemaHeader'] = nid
+nid = FourByteNodeId(ObjectIds.DataTypeDescription_Encoding_DefaultBinary)
+extension_object_classes[nid] = DataTypeDescription
+extension_object_ids['DataTypeDescription'] = nid
+nid = FourByteNodeId(ObjectIds.StructureDescription_Encoding_DefaultBinary)
+extension_object_classes[nid] = StructureDescription
+extension_object_ids['StructureDescription'] = nid
+nid = FourByteNodeId(ObjectIds.EnumDescription_Encoding_DefaultBinary)
+extension_object_classes[nid] = EnumDescription
+extension_object_ids['EnumDescription'] = nid
+nid = FourByteNodeId(ObjectIds.SimpleTypeDescription_Encoding_DefaultBinary)
+extension_object_classes[nid] = SimpleTypeDescription
+extension_object_ids['SimpleTypeDescription'] = nid
+nid = FourByteNodeId(ObjectIds.UABinaryFileDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = UABinaryFileDataType
+extension_object_ids['UABinaryFileDataType'] = nid
+nid = FourByteNodeId(ObjectIds.DataSetMetaDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = DataSetMetaDataType
+extension_object_ids['DataSetMetaDataType'] = nid
+nid = FourByteNodeId(ObjectIds.FieldMetaData_Encoding_DefaultBinary)
+extension_object_classes[nid] = FieldMetaData
+extension_object_ids['FieldMetaData'] = nid
+nid = FourByteNodeId(ObjectIds.ConfigurationVersionDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = ConfigurationVersionDataType
+extension_object_ids['ConfigurationVersionDataType'] = nid
+nid = FourByteNodeId(ObjectIds.PublishedDataSetDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = PublishedDataSetDataType
+extension_object_ids['PublishedDataSetDataType'] = nid
+nid = FourByteNodeId(ObjectIds.PublishedDataSetSourceDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = PublishedDataSetSourceDataType
+extension_object_ids['PublishedDataSetSourceDataType'] = nid
+nid = FourByteNodeId(ObjectIds.PublishedVariableDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = PublishedVariableDataType
+extension_object_ids['PublishedVariableDataType'] = nid
+nid = FourByteNodeId(ObjectIds.PublishedDataItemsDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = PublishedDataItemsDataType
+extension_object_ids['PublishedDataItemsDataType'] = nid
+nid = FourByteNodeId(ObjectIds.PublishedEventsDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = PublishedEventsDataType
+extension_object_ids['PublishedEventsDataType'] = nid
+nid = FourByteNodeId(ObjectIds.DataSetWriterDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = DataSetWriterDataType
+extension_object_ids['DataSetWriterDataType'] = nid
+nid = FourByteNodeId(ObjectIds.DataSetWriterTransportDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = DataSetWriterTransportDataType
+extension_object_ids['DataSetWriterTransportDataType'] = nid
+nid = FourByteNodeId(ObjectIds.DataSetWriterMessageDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = DataSetWriterMessageDataType
+extension_object_ids['DataSetWriterMessageDataType'] = nid
+nid = FourByteNodeId(ObjectIds.PubSubGroupDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = PubSubGroupDataType
+extension_object_ids['PubSubGroupDataType'] = nid
+nid = FourByteNodeId(ObjectIds.WriterGroupDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = WriterGroupDataType
+extension_object_ids['WriterGroupDataType'] = nid
+nid = FourByteNodeId(ObjectIds.WriterGroupTransportDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = WriterGroupTransportDataType
+extension_object_ids['WriterGroupTransportDataType'] = nid
+nid = FourByteNodeId(ObjectIds.WriterGroupMessageDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = WriterGroupMessageDataType
+extension_object_ids['WriterGroupMessageDataType'] = nid
+nid = FourByteNodeId(ObjectIds.PubSubConnectionDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = PubSubConnectionDataType
+extension_object_ids['PubSubConnectionDataType'] = nid
+nid = FourByteNodeId(ObjectIds.ConnectionTransportDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = ConnectionTransportDataType
+extension_object_ids['ConnectionTransportDataType'] = nid
+nid = FourByteNodeId(ObjectIds.NetworkAddressDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = NetworkAddressDataType
+extension_object_ids['NetworkAddressDataType'] = nid
+nid = FourByteNodeId(ObjectIds.NetworkAddressUrlDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = NetworkAddressUrlDataType
+extension_object_ids['NetworkAddressUrlDataType'] = nid
+nid = FourByteNodeId(ObjectIds.ReaderGroupDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = ReaderGroupDataType
+extension_object_ids['ReaderGroupDataType'] = nid
+nid = FourByteNodeId(ObjectIds.ReaderGroupTransportDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = ReaderGroupTransportDataType
+extension_object_ids['ReaderGroupTransportDataType'] = nid
+nid = FourByteNodeId(ObjectIds.ReaderGroupMessageDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = ReaderGroupMessageDataType
+extension_object_ids['ReaderGroupMessageDataType'] = nid
+nid = FourByteNodeId(ObjectIds.DataSetReaderDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = DataSetReaderDataType
+extension_object_ids['DataSetReaderDataType'] = nid
+nid = FourByteNodeId(ObjectIds.DataSetReaderTransportDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = DataSetReaderTransportDataType
+extension_object_ids['DataSetReaderTransportDataType'] = nid
+nid = FourByteNodeId(ObjectIds.DataSetReaderMessageDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = DataSetReaderMessageDataType
+extension_object_ids['DataSetReaderMessageDataType'] = nid
+nid = FourByteNodeId(ObjectIds.SubscribedDataSetDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = SubscribedDataSetDataType
+extension_object_ids['SubscribedDataSetDataType'] = nid
+nid = FourByteNodeId(ObjectIds.TargetVariablesDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = TargetVariablesDataType
+extension_object_ids['TargetVariablesDataType'] = nid
+nid = FourByteNodeId(ObjectIds.FieldTargetDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = FieldTargetDataType
+extension_object_ids['FieldTargetDataType'] = nid
+nid = FourByteNodeId(ObjectIds.SubscribedDataSetMirrorDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = SubscribedDataSetMirrorDataType
+extension_object_ids['SubscribedDataSetMirrorDataType'] = nid
+nid = FourByteNodeId(ObjectIds.PubSubConfigurationDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = PubSubConfigurationDataType
+extension_object_ids['PubSubConfigurationDataType'] = nid
+nid = FourByteNodeId(ObjectIds.UadpWriterGroupMessageDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = UadpWriterGroupMessageDataType
+extension_object_ids['UadpWriterGroupMessageDataType'] = nid
+nid = FourByteNodeId(ObjectIds.UadpDataSetWriterMessageDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = UadpDataSetWriterMessageDataType
+extension_object_ids['UadpDataSetWriterMessageDataType'] = nid
+nid = FourByteNodeId(ObjectIds.UadpDataSetReaderMessageDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = UadpDataSetReaderMessageDataType
+extension_object_ids['UadpDataSetReaderMessageDataType'] = nid
+nid = FourByteNodeId(ObjectIds.JsonWriterGroupMessageDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = JsonWriterGroupMessageDataType
+extension_object_ids['JsonWriterGroupMessageDataType'] = nid
+nid = FourByteNodeId(ObjectIds.JsonDataSetWriterMessageDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = JsonDataSetWriterMessageDataType
+extension_object_ids['JsonDataSetWriterMessageDataType'] = nid
+nid = FourByteNodeId(ObjectIds.JsonDataSetReaderMessageDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = JsonDataSetReaderMessageDataType
+extension_object_ids['JsonDataSetReaderMessageDataType'] = nid
+nid = FourByteNodeId(ObjectIds.DatagramConnectionTransportDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = DatagramConnectionTransportDataType
+extension_object_ids['DatagramConnectionTransportDataType'] = nid
+nid = FourByteNodeId(ObjectIds.DatagramWriterGroupTransportDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = DatagramWriterGroupTransportDataType
+extension_object_ids['DatagramWriterGroupTransportDataType'] = nid
+nid = FourByteNodeId(ObjectIds.BrokerConnectionTransportDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = BrokerConnectionTransportDataType
+extension_object_ids['BrokerConnectionTransportDataType'] = nid
+nid = FourByteNodeId(ObjectIds.BrokerWriterGroupTransportDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = BrokerWriterGroupTransportDataType
+extension_object_ids['BrokerWriterGroupTransportDataType'] = nid
+nid = FourByteNodeId(ObjectIds.BrokerDataSetWriterTransportDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = BrokerDataSetWriterTransportDataType
+extension_object_ids['BrokerDataSetWriterTransportDataType'] = nid
+nid = FourByteNodeId(ObjectIds.BrokerDataSetReaderTransportDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = BrokerDataSetReaderTransportDataType
+extension_object_ids['BrokerDataSetReaderTransportDataType'] = nid
+nid = FourByteNodeId(ObjectIds.RolePermissionType_Encoding_DefaultBinary)
+extension_object_classes[nid] = RolePermissionType
+extension_object_ids['RolePermissionType'] = nid
+nid = FourByteNodeId(ObjectIds.StructureField_Encoding_DefaultBinary)
+extension_object_classes[nid] = StructureField
+extension_object_ids['StructureField'] = nid
 nid = FourByteNodeId(ObjectIds.Argument_Encoding_DefaultBinary)
 extension_object_classes[nid] = Argument
 extension_object_ids['Argument'] = nid
 nid = FourByteNodeId(ObjectIds.EnumValueType_Encoding_DefaultBinary)
 extension_object_classes[nid] = EnumValueType
 extension_object_ids['EnumValueType'] = nid
+nid = FourByteNodeId(ObjectIds.EnumField_Encoding_DefaultBinary)
+extension_object_classes[nid] = EnumField
+extension_object_ids['EnumField'] = nid
 nid = FourByteNodeId(ObjectIds.OptionSet_Encoding_DefaultBinary)
 extension_object_classes[nid] = OptionSet
 extension_object_ids['OptionSet'] = nid
@@ -9604,6 +12128,12 @@ extension_object_ids['ResponseHeader'] = nid
 nid = FourByteNodeId(ObjectIds.ServiceFault_Encoding_DefaultBinary)
 extension_object_classes[nid] = ServiceFault
 extension_object_ids['ServiceFault'] = nid
+nid = FourByteNodeId(ObjectIds.SessionlessInvokeRequestType_Encoding_DefaultBinary)
+extension_object_classes[nid] = SessionlessInvokeRequestType
+extension_object_ids['SessionlessInvokeRequestType'] = nid
+nid = FourByteNodeId(ObjectIds.SessionlessInvokeResponseType_Encoding_DefaultBinary)
+extension_object_classes[nid] = SessionlessInvokeResponseType
+extension_object_ids['SessionlessInvokeResponseType'] = nid
 nid = FourByteNodeId(ObjectIds.FindServersRequest_Encoding_DefaultBinary)
 extension_object_classes[nid] = FindServersRequest
 extension_object_ids['FindServersRequest'] = nid
@@ -9691,9 +12221,6 @@ extension_object_ids['UserNameIdentityToken'] = nid
 nid = FourByteNodeId(ObjectIds.X509IdentityToken_Encoding_DefaultBinary)
 extension_object_classes[nid] = X509IdentityToken
 extension_object_ids['X509IdentityToken'] = nid
-nid = FourByteNodeId(ObjectIds.KerberosIdentityToken_Encoding_DefaultBinary)
-extension_object_classes[nid] = KerberosIdentityToken
-extension_object_ids['KerberosIdentityToken'] = nid
 nid = FourByteNodeId(ObjectIds.IssuedIdentityToken_Encoding_DefaultBinary)
 extension_object_classes[nid] = IssuedIdentityToken
 extension_object_ids['IssuedIdentityToken'] = nid
@@ -9742,6 +12269,12 @@ extension_object_ids['DataTypeAttributes'] = nid
 nid = FourByteNodeId(ObjectIds.ViewAttributes_Encoding_DefaultBinary)
 extension_object_classes[nid] = ViewAttributes
 extension_object_ids['ViewAttributes'] = nid
+nid = FourByteNodeId(ObjectIds.GenericAttributeValue_Encoding_DefaultBinary)
+extension_object_classes[nid] = GenericAttributeValue
+extension_object_ids['GenericAttributeValue'] = nid
+nid = FourByteNodeId(ObjectIds.GenericAttributes_Encoding_DefaultBinary)
+extension_object_classes[nid] = GenericAttributes
+extension_object_ids['GenericAttributes'] = nid
 nid = FourByteNodeId(ObjectIds.AddNodesItem_Encoding_DefaultBinary)
 extension_object_classes[nid] = AddNodesItem
 extension_object_ids['AddNodesItem'] = nid
@@ -9841,12 +12374,6 @@ extension_object_ids['UnregisterNodesResponse'] = nid
 nid = FourByteNodeId(ObjectIds.EndpointConfiguration_Encoding_DefaultBinary)
 extension_object_classes[nid] = EndpointConfiguration
 extension_object_ids['EndpointConfiguration'] = nid
-nid = FourByteNodeId(ObjectIds.SupportedProfile_Encoding_DefaultBinary)
-extension_object_classes[nid] = SupportedProfile
-extension_object_ids['SupportedProfile'] = nid
-nid = FourByteNodeId(ObjectIds.SoftwareCertificate_Encoding_DefaultBinary)
-extension_object_classes[nid] = SoftwareCertificate
-extension_object_ids['SoftwareCertificate'] = nid
 nid = FourByteNodeId(ObjectIds.QueryDataDescription_Encoding_DefaultBinary)
 extension_object_classes[nid] = QueryDataDescription
 extension_object_ids['QueryDataDescription'] = nid
@@ -10201,6 +12728,9 @@ extension_object_ids['XVType'] = nid
 nid = FourByteNodeId(ObjectIds.ProgramDiagnosticDataType_Encoding_DefaultBinary)
 extension_object_classes[nid] = ProgramDiagnosticDataType
 extension_object_ids['ProgramDiagnosticDataType'] = nid
+nid = FourByteNodeId(ObjectIds.ProgramDiagnostic2DataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = ProgramDiagnostic2DataType
+extension_object_ids['ProgramDiagnostic2DataType'] = nid
 nid = FourByteNodeId(ObjectIds.Annotation_Encoding_DefaultBinary)
 extension_object_classes[nid] = Annotation
 extension_object_ids['Annotation'] = nid
