@@ -187,6 +187,12 @@ class NodeManagementService(object):
             results.append(self._add_node(item, user))
         return results
 
+    def try_add_nodes(self, addnodeitems, user=User.Admin):
+        for item in addnodeitems:
+            ret = self._add_node(item, user)
+            if not ret.StatusCode.is_good():
+                yield item
+
     def _add_node(self, item, user):
         result = ua.AddNodesResult()
 

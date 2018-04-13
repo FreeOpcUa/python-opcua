@@ -151,14 +151,14 @@ def create_standard_address_space_{self.part!s}(server):
                 self.writecode(indent, 'value = extobj')
                 self.writecode(indent, 'attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)')
             elif obj.valuetype == "ListOfLocalizedText":
-                value = [f'ua.LocalizedText({self.to_value(text)})' for text in obj.value]
+                value = [f'ua.LocalizedText({text!r})' for text in obj.value]
                 self.writecode(indent, f'attrs.Value = [{",".join(value)}]')
             else:
                 if obj.valuetype.startswith("ListOf"):
                     obj.valuetype = obj.valuetype[6:]
                 self.writecode(
                     indent,
-                    f'attrs.Value = ua.Variant({self.to_value(obj.value)}, ua.VariantType.{obj.valuetype})'
+                    f'attrs.Value = ua.Variant({obj.value!r}, ua.VariantType.{obj.valuetype})'
                 )
         if obj.rank:
             self.writecode(indent, f'attrs.ValueRank = {obj.rank}')
@@ -210,13 +210,6 @@ def create_standard_address_space_{self.part!s}(server):
         self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
-
-    def to_value(self, val):
-        # if type(val) in (str, unicode):
-        if isinstance(val, str):
-            return f'"{val}"'
-        else:
-            return val
 
     def make_method_code(self, obj):
         indent = "   "
