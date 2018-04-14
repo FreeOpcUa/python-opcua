@@ -458,7 +458,7 @@ class Client(object):
             # and EncryptionAlgorithm is null
             if self._password:
                 self.logger.warning("Sending plain-text password")
-                params.UserIdentityToken.Password = password
+                params.UserIdentityToken.Password = password.encode('utf8')
             params.UserIdentityToken.EncryptionAlgorithm = None
         elif self._password:
             data, uri = self._encrypt_password(password, policy_uri)
