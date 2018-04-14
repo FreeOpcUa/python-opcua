@@ -152,12 +152,12 @@ def create_standard_address_space_{0!s}(server):
                 self.writecode(indent, 'value = extobj')
                 self.writecode(indent, 'attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)')
             elif obj.valuetype == "ListOfLocalizedText":
-                value = ['ua.LocalizedText({0})'.format(self.to_value(text)) for text in obj.value]
+                value = ['ua.LocalizedText({0})'.format(repr(text)) for text in obj.value]
                 self.writecode(indent, 'attrs.Value = [{}]'.format(','.join(value)))
             else:
                 if obj.valuetype.startswith("ListOf"):
                     obj.valuetype = obj.valuetype[6:]
-                self.writecode(indent, 'attrs.Value = ua.Variant({0}, ua.VariantType.{1})'.format(self.to_value(obj.value), obj.valuetype))
+                self.writecode(indent, 'attrs.Value = ua.Variant({0}, ua.VariantType.{1})'.format(repr(obj.value), obj.valuetype))
         if obj.rank:
             self.writecode(indent, 'attrs.ValueRank = {0}'.format(obj.rank))
         if obj.accesslevel:
@@ -208,13 +208,6 @@ def create_standard_address_space_{0!s}(server):
         self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
-
-    def to_value(self, val):
-        # if type(val) in (str, unicode):
-        if isinstance(val, str):
-            return '"' + val + '"'
-        else:
-            return val
 
     def make_method_code(self, obj):
         indent = "   "

@@ -41,6 +41,7 @@ class AuditSecurityEvent(AuditEvent):
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditSecurityEvent, self).__init__(sourcenode, message, severity)
         self.EventType = ua.NodeId(ua.ObjectIds.AuditSecurityEventType)
+        self.add_property('StatusCodeId', None, ua.VariantType.StatusCode)
 
 class AuditChannelEvent(AuditSecurityEvent):
     """
@@ -373,7 +374,7 @@ class AuditConditionCommentEvent(AuditConditionEvent):
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionCommentEvent, self).__init__(sourcenode, message, severity)
         self.EventType = ua.NodeId(ua.ObjectIds.AuditConditionCommentEventType)
-        self.add_property('EventId', None, ua.VariantType.ByteString)
+        self.add_property('ConditionEventId', None, ua.VariantType.ByteString)
         self.add_property('Comment', None, ua.VariantType.LocalizedText)
 
 class AuditHistoryEventUpdateEvent(AuditHistoryUpdateEvent):
@@ -474,7 +475,7 @@ class AuditConditionAcknowledgeEvent(AuditConditionEvent):
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionAcknowledgeEvent, self).__init__(sourcenode, message, severity)
         self.EventType = ua.NodeId(ua.ObjectIds.AuditConditionAcknowledgeEventType)
-        self.add_property('EventId', None, ua.VariantType.ByteString)
+        self.add_property('ConditionEventId', None, ua.VariantType.ByteString)
         self.add_property('Comment', None, ua.VariantType.LocalizedText)
 
 class AuditConditionConfirmEvent(AuditConditionEvent):
@@ -484,7 +485,7 @@ class AuditConditionConfirmEvent(AuditConditionEvent):
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionConfirmEvent, self).__init__(sourcenode, message, severity)
         self.EventType = ua.NodeId(ua.ObjectIds.AuditConditionConfirmEventType)
-        self.add_property('EventId', None, ua.VariantType.ByteString)
+        self.add_property('ConditionEventId', None, ua.VariantType.ByteString)
         self.add_property('Comment', None, ua.VariantType.LocalizedText)
 
 class AuditConditionShelvingEvent(AuditConditionEvent):
@@ -541,6 +542,101 @@ class CertificateUpdatedAuditEvent(AuditUpdateMethodEvent):
         self.EventType = ua.NodeId(ua.ObjectIds.CertificateUpdatedAuditEventType)
         self.add_property('CertificateGroup', ua.NodeId(ua.ObjectIds.CertificateUpdatedAuditEventType), ua.VariantType.NodeId)
         self.add_property('CertificateType', ua.NodeId(ua.ObjectIds.CertificateUpdatedAuditEventType), ua.VariantType.NodeId)
+
+class AuditConditionResetEvent(AuditConditionEvent):
+    """
+    AuditConditionResetEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(AuditConditionResetEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.AuditConditionResetEventType)
+
+class PubSubStatusEvent(SystemEvent):
+    """
+    PubSubStatusEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(PubSubStatusEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.PubSubStatusEventType)
+        self.add_property('ConnectionId', ua.NodeId(ua.ObjectIds.PubSubStatusEventType), ua.VariantType.NodeId)
+        self.add_property('GroupId', ua.NodeId(ua.ObjectIds.PubSubStatusEventType), ua.VariantType.NodeId)
+        self.add_property('State', None, ua.NodeId(ua.ObjectIds.PubSubState))
+
+class PubSubTransportLimitsExceedEvent(PubSubStatusEvent):
+    """
+    PubSubTransportLimitsExceedEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(PubSubTransportLimitsExceedEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.PubSubTransportLimitsExceedEventType)
+        self.add_property('Actual', None, ua.VariantType.UInt32)
+        self.add_property('Maximum', None, ua.VariantType.UInt32)
+
+class PubSubCommunicationFailureEvent(PubSubStatusEvent):
+    """
+    PubSubCommunicationFailureEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(PubSubCommunicationFailureEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.PubSubCommunicationFailureEventType)
+        self.add_property('Error', None, ua.VariantType.StatusCode)
+
+class AuditConditionSuppressEvent(AuditConditionEvent):
+    """
+    AuditConditionSuppressEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(AuditConditionSuppressEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.AuditConditionSuppressEventType)
+
+class AuditConditionSilenceEvent(AuditConditionEvent):
+    """
+    AuditConditionSilenceEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(AuditConditionSilenceEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.AuditConditionSilenceEventType)
+
+class AuditConditionOutOfServiceEvent(AuditConditionEvent):
+    """
+    AuditConditionOutOfServiceEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(AuditConditionOutOfServiceEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.AuditConditionOutOfServiceEventType)
+
+class RoleMappingRuleChangedAuditEvent(AuditUpdateMethodEvent):
+    """
+    RoleMappingRuleChangedAuditEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(RoleMappingRuleChangedAuditEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.RoleMappingRuleChangedAuditEventType)
+
+class KeyCredentialAuditEvent(AuditUpdateMethodEvent):
+    """
+    KeyCredentialAuditEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(KeyCredentialAuditEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.KeyCredentialAuditEventType)
+        self.add_property('ResourceUri', None, ua.VariantType.String)
+
+class KeyCredentialUpdatedAuditEvent(KeyCredentialAuditEvent):
+    """
+    KeyCredentialUpdatedAuditEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(KeyCredentialUpdatedAuditEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.KeyCredentialUpdatedAuditEventType)
+
+class KeyCredentialDeletedAuditEvent(KeyCredentialAuditEvent):
+    """
+    KeyCredentialDeletedAuditEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(KeyCredentialDeletedAuditEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.KeyCredentialDeletedAuditEventType)
 
 
 IMPLEMENTED_EVENTS = {
@@ -601,4 +697,15 @@ IMPLEMENTED_EVENTS = {
     ua.ObjectIds.AuditProgramTransitionEventType: AuditProgramTransitionEvent,
     ua.ObjectIds.TrustListUpdatedAuditEventType: TrustListUpdatedAuditEvent,
     ua.ObjectIds.CertificateUpdatedAuditEventType: CertificateUpdatedAuditEvent,
+    ua.ObjectIds.AuditConditionResetEventType: AuditConditionResetEvent,
+    ua.ObjectIds.PubSubStatusEventType: PubSubStatusEvent,
+    ua.ObjectIds.PubSubTransportLimitsExceedEventType: PubSubTransportLimitsExceedEvent,
+    ua.ObjectIds.PubSubCommunicationFailureEventType: PubSubCommunicationFailureEvent,
+    ua.ObjectIds.AuditConditionSuppressEventType: AuditConditionSuppressEvent,
+    ua.ObjectIds.AuditConditionSilenceEventType: AuditConditionSilenceEvent,
+    ua.ObjectIds.AuditConditionOutOfServiceEventType: AuditConditionOutOfServiceEvent,
+    ua.ObjectIds.RoleMappingRuleChangedAuditEventType: RoleMappingRuleChangedAuditEvent,
+    ua.ObjectIds.KeyCredentialAuditEventType: KeyCredentialAuditEvent,
+    ua.ObjectIds.KeyCredentialUpdatedAuditEventType: KeyCredentialUpdatedAuditEvent,
+    ua.ObjectIds.KeyCredentialDeletedAuditEventType: KeyCredentialDeletedAuditEvent,
     }
