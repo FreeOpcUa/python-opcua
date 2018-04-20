@@ -197,9 +197,11 @@ class MonitoredItemService(object):
                 mdata.mvalue.set_current_value(value.Value.Value)
                 if mdata.filter:
                     deadband_flag_pass = self.deadband_callback(mdata.mvalue, mdata.filter)
+                    trigger_flag_pass = self.datachange_trigger_callback(mdata.mvalue, mdata.filter.Trigger)
                 else:
                     deadband_flag_pass = True
-                if deadband_flag_pass:
+                    trigger_flag_pass = self.datachange_trigger_callback(mdata.mvalue, ua.DataChangeTrigger.StatusValue)
+                if deadband_flag_pass and trigger_flag_pass:
                     event.ClientHandle = mdata.client_handle
                     event.Value = value
                     self.isub.enqueue_datachange_event(mid, event, mdata.queue_size)
@@ -215,6 +217,13 @@ class MonitoredItemService(object):
             return True
         else:
             return False
+
+    def datachange_trigger_callback(self, values, trigger):
+        if trigger == ua.DataChangeTrigger.StatusValue and \
+                values.get_current_value() == values.get_old_value():
+            return False
+        else:
+            return True
 
     def trigger_event(self, event):
         with self._lock:
