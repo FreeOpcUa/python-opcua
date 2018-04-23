@@ -640,7 +640,9 @@ class AddressSpace(object):
             attval = node.attributes[attr]
             old = attval.value
             attval.value = value
-            cbs = list(attval.datachange_callbacks.items())
+            cbs = []
+            if old.SourceTimestamp != value.SourceTimestamp or old.ServerTimestamp != value.ServerTimestamp:
+                cbs = list(attval.datachange_callbacks.items())
 
         for k, v in cbs:
             try:
