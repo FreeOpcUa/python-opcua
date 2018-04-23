@@ -157,6 +157,48 @@ class SubscriptionTests(object):
         self.assertEqual(myhandler.datachange_count, 4)
         sub.delete()
 
+    def test_subscription_count_timestamp_trigger(self):
+        myhandler = MySubHandlerCounter()
+        sub = self.opc.create_subscription(1, myhandler)
+        o = self.opc.get_objects_node()
+        var = o.add_variable(3, 'SubVarCounter', 0.1)
+        sub.subscribe_data_timestamp_change(var)
+        nb = 12
+        for i in range(nb):
+            val = var.get_value()
+            var.set_value(val +1)
+        time.sleep(0.2)  # let last event arrive
+        self.assertEqual(myhandler.datachange_count, nb + 1)
+        sub.delete()
+
+    def test_subscription_count_timestamp_trigger_no_change(self):
+        myhandler = MySubHandlerCounter()
+        sub = self.opc.create_subscription(1, myhandler)
+        o = self.opc.get_objects_node()
+        var = o.add_variable(3, 'SubVarCounter', 0.1)
+        sub.subscribe_data_timestamp_change(var)
+        nb = 12
+        for i in range(nb):
+            val = var.get_value()
+            var.set_value(val)
+        time.sleep(0.2)  # let last event arrive
+        self.assertEqual(myhandler.datachange_count, nb + 1)
+        sub.delete()
+
+    def test_subscription_count_timestamp_trigger_same_timestamp(self):
+        myhandler = MySubHandlerCounter()
+        sub = self.opc.create_subscription(1, myhandler)
+        o = self.opc.get_objects_node()
+        var = o.add_variable(3, 'SubVarCounter', 0.1)
+        sub.subscribe_data_timestamp_change(var)
+        nb = 12
+        for i in range(nb):
+            val = var.get_data_value() # use exactly the same value including timestamps
+            var.set_value(val)
+        time.sleep(0.2)  # let last event arrive
+        self.assertEqual(myhandler.datachange_count, 1)
+        sub.delete()
+
     def test_subscription_overload_simple(self):
         nb = 10
         myhandler = MySubHandler()
@@ -502,7 +544,7 @@ class SubscriptionTests(object):
         propertystring2 = "This is my test 2"
         evgen2.event.PropertyNum = propertynum2
         evgen2.event.PropertyString = propertystring2
-        
+
         for i in range(3):
             evgen1.trigger()
             evgen2.trigger()
@@ -560,7 +602,7 @@ class SubscriptionTests(object):
         propertystring3 = "This is my test 3"
         evgen3.event.PropertyNum3 = propertynum3
         evgen3.event.PropertyString = propertystring2
-        
+
         for i in range(3):
             evgen1.trigger()
             evgen2.trigger()
