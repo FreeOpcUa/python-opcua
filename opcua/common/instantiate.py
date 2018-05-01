@@ -4,17 +4,15 @@ Instantiate a new node and its child nodes from a node type.
 
 import logging
 
-
 from opcua import Node
 from opcua import ua
 from opcua.common import ua_utils
 from opcua.common.copy_node import _rdesc_from_node, _read_and_copy_attrs
 
-
 logger = logging.getLogger(__name__)
 
 
-def instantiate(parent, node_type, nodeid=None, bname=None, dname=None, idx=0):
+def instantiate(parent, node_type, nodeid=None, bname=None, dname=None, idx=0, instantiate_optional=True):
     """
     instantiate a node type under a parent node.
     nodeid and browse name of new node can be specified, or just namespace index
@@ -31,11 +29,27 @@ def instantiate(parent, node_type, nodeid=None, bname=None, dname=None, idx=0):
     elif isinstance(bname, str):
         bname = ua.QualifiedName.from_string(bname)
 
-    nodeids = _instantiate_node(parent.server, Node(parent.server, rdesc.NodeId), parent.nodeid, rdesc, nodeid, bname, dname=dname, toplevel=True)
+    nodeids = _instantiate_node(
+        parent.server,
+        Node(parent.server, rdesc.NodeId),
+        parent.nodeid,
+        rdesc,
+        nodeid,
+        bname,
+        dname=dname,
+        instantiate_optional=instantiate_optional)
     return [Node(parent.server, nid) for nid in nodeids]
 
 
-def _instantiate_node(server, node_type, parentid, rdesc, nodeid, bname, dname=None, recursive=True, toplevel=False):
+def _instantiate_node(server,
+                      node_type,
+                      parentid,
+                      rdesc,
+                      nodeid,
+                      bname,
+                      dname=None,
+                      recursive=True,
+                      instantiate_optional=True):
     """
     instantiate a node type under parent
     """
@@ -53,10 +67,10 @@ def _instantiate_node(server, node_type, parentid, rdesc, nodeid, bname, dname=N
     elif rdesc.NodeClass in (ua.NodeClass.Variable, ua.NodeClass.VariableType):
         addnode.NodeClass = ua.NodeClass.Variable
         _read_and_copy_attrs(node_type, ua.VariableAttributes(), addnode)
-    elif rdesc.NodeClass in (ua.NodeClass.Method,):
+    elif rdesc.NodeClass in (ua.NodeClass.Method, ):
         addnode.NodeClass = ua.NodeClass.Method
         _read_and_copy_attrs(node_type, ua.MethodAttributes(), addnode)
-    elif rdesc.NodeClass in (ua.NodeClass.DataType,):
+    elif rdesc.NodeClass in (ua.NodeClass.DataType, ):
         addnode.NodeClass = ua.NodeClass.DataType
         _read_and_copy_attrs(node_type, ua.DataTypeAttributes(), addnode)
     else:
@@ -80,20 +94,33 @@ def _instantiate_node(server, node_type, parentid, rdesc, nodeid, bname, dname=N
 
                     c_node_type = Node(server, c_rdesc.NodeId)
                     refs = c_node_type.get_referenced_nodes(refs=ua.ObjectIds.HasModellingRule)
-                    # exclude nodes without ModellingRule at top-level
-                    if toplevel and len(refs) == 0:
+                    if not refs:
+                        # spec says to ignore nodes without modelling rules
+                        logger.info("Instantiate: Skip node without modelling rule %s as part of %s", c_rdesc.BrowseName, addnode.BrowseName)
                         continue
-                    # skip optional elements (server policy)
-                    if len(refs) == 1 and refs[0].nodeid == ua.NodeId(ua.ObjectIds.ModellingRule_Optional):
-                        logger.info("Will not instantiate optional node %s as part of %s", c_rdesc.BrowseName, addnode.BrowseName)
+                        # exclude nodes with optional ModellingRule if requested
+                    if not instantiate_optional and refs[0].nodeid == ua.NodeId(ua.ObjectIds.ModellingRule_Optional):
+                        logger.info("Instantiate: Skip optional node %s as part of %s", c_rdesc.BrowseName, addnode.BrowseName)
                         continue
 
                     # if root node being instantiated has a String NodeId, create the children with a String NodeId
                     if res.AddedNodeId.NodeIdType is ua.NodeIdType.String:
                         inst_nodeid = res.AddedNodeId.Identifier + "." + c_rdesc.BrowseName.Name
-                        nodeids = _instantiate_node(server, c_node_type, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(identifier=inst_nodeid, namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
+                        nodeids = _instantiate_node(
+                            server,
+                            c_node_type,
+                            res.AddedNodeId,
+                            c_rdesc,
+                            nodeid=ua.NodeId(identifier=inst_nodeid, namespaceidx=res.AddedNodeId.NamespaceIndex),
+                            bname=c_rdesc.BrowseName)
                     else:
-                        nodeids = _instantiate_node(server, c_node_type, res.AddedNodeId, c_rdesc, nodeid=ua.NodeId(namespaceidx=res.AddedNodeId.NamespaceIndex), bname=c_rdesc.BrowseName)
+                        nodeids = _instantiate_node(
+                            server,
+                            c_node_type,
+                            res.AddedNodeId,
+                            c_rdesc,
+                            nodeid=ua.NodeId(namespaceidx=res.AddedNodeId.NamespaceIndex),
+                            bname=c_rdesc.BrowseName)
                     added_nodes.extend(nodeids)
 
     return added_nodes
