@@ -74,10 +74,11 @@ if __name__ == "__main__":
 
     # create a new node type we can instantiate in our address space
     dev = server.nodes.base_object_type.add_object_type(0, "MyDevice")
-    dev.add_variable(0, "sensor1", 1.0)
-    dev.add_property(0, "device_id", "0340")
+    dev.add_variable(0, "sensor1", 1.0).set_modelling_rule(True)
+    dev.add_property(0, "device_id", "0340").set_modelling_rule(True)
     ctrl = dev.add_object(0, "controller")
-    ctrl.add_property(0, "state", "Idle")
+    ctrl.set_modelling_rule(True)
+    ctrl.add_property(0, "state", "Idle").set_modelling_rule(True)
 
     # populating our address space
 
