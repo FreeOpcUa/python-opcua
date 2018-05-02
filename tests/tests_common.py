@@ -61,22 +61,6 @@ def add_server_methods(srv):
     o = srv.get_objects_node()
     v = o.add_method(ua.NodeId("ServerMethodTuple", 2), ua.QualifiedName('ServerMethodTuple', 2), func5, [], [ua.VariantType.Int64, ua.VariantType.Int64, ua.VariantType.Int64])
 
-def _test_modelling_rules(test, parent, mandatory, result):
-    f = parent.add_folder(3, 'MyFolder')
-    f.set_modelling_rule(mandatory)
-    test.assertEqual(f.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
-
-    o = parent.add_object(3, 'MyObject')
-    o.set_modelling_rule(mandatory)
-    test.assertEqual(o.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
-
-    v = parent.add_variable(3, 'MyVariable', 6)
-    v.set_modelling_rule(mandatory)
-    test.assertEqual(v.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
-
-    p = parent.add_property(3, 'MyProperty', 10)
-    p.set_modelling_rule(mandatory)
-    test.assertEqual(p.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
 
 
 class CommonTests(object):
@@ -607,78 +591,25 @@ class CommonTests(object):
         self.assertTrue(v in childs)
         self.assertTrue(p in childs)
 
-    def test_add_nodes_modelling_rules_type_default(self):
-        base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
-        custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
+    def test_modelling_rules(self):
+        obj = self.opc.nodes.base_object_type.add_object_type(2, 'MyFooObjectType')
+        v = obj.add_variable(2, "myvar", 1.1)
+        v.set_modelling_rule(True)
+        p = obj.add_property(2, "myvar", 1.1)
+        p.set_modelling_rule(False)
 
-        result = [self.opc.get_node(ua.ObjectIds.ModellingRule_Mandatory)]
+        refs = obj.get_referenced_nodes(refs=ua.ObjectIds.HasModellingRule)
+        self.assertEqual(len(refs), 0)
 
-        f = custom_otype.add_folder(3, 'MyFolder')
-        self.assertEqual(f.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
+        refs = v.get_referenced_nodes(refs=ua.ObjectIds.HasModellingRule)
+        self.assertEqual(refs[0], self.opc.get_node(ua.ObjectIds.ModellingRule_Mandatory))
 
-        o = custom_otype.add_object(3, 'MyObject')
-        self.assertEqual(o.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
+        refs = p.get_referenced_nodes(refs=ua.ObjectIds.HasModellingRule)
+        self.assertEqual(refs[0], self.opc.get_node(ua.ObjectIds.ModellingRule_Optional))
 
-        v = custom_otype.add_variable(3, 'MyVariable', 6)
-        self.assertEqual(v.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
-
-        p = custom_otype.add_property(3, 'MyProperty', 10)
-        self.assertEqual(p.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
-
-        m = base_otype.get_child(['2:ObjectWithMethodsType', '2:ServerMethodDefault'])
-        self.assertEqual(m.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
-
-        objects = self.opc.get_objects_node()
-        c = objects.get_child(['2:ObjectWithMethods', '2:ServerMethodDefault'])
-
-    def test_add_nodes_modelling_rules_type_true(self):
-        base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
-        custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
-
-        result = [self.opc.get_node(ua.ObjectIds.ModellingRule_Mandatory)]
-        _test_modelling_rules(self, custom_otype, True, result)
-
-        m = base_otype.get_child(['2:ObjectWithMethodsType', '2:ServerMethodMandatory'])
-        self.assertEqual(m.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
-
-        objects = self.opc.get_objects_node()
-        objects.get_child(['2:ObjectWithMethods', '2:ServerMethodMandatory'])
-
-
-    def test_add_nodes_modelling_rules_type_false(self):
-        base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
-        custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
-
-        result = [self.opc.get_node(ua.ObjectIds.ModellingRule_Optional)]
-        _test_modelling_rules(self, custom_otype, False, result)
-
-        m = base_otype.get_child(['2:ObjectWithMethodsType', '2:ServerMethodOptional'])
-        self.assertEqual(m.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
-
-    def test_add_nodes_modelling_rules_type_none(self):
-        base_otype= self.opc.get_node(ua.ObjectIds.BaseObjectType)
-        custom_otype = base_otype.add_object_type(2, 'MyFooObjectType')
-
-        result = []
-        _test_modelling_rules(self, custom_otype, None, result)
-
-        m = base_otype.get_child(['2:ObjectWithMethodsType', '2:ServerMethodNone'])
-        self.assertEqual(m.get_referenced_nodes(ua.ObjectIds.HasModellingRule), result)
-
-    def test_add_nodes_modelling_rules_folder_true(self):
-        objects = self.opc.get_objects_node()
-        folder = objects.add_folder(3, 'MyFolder')
-        _test_modelling_rules(self, folder, True, [])
-
-    def test_add_nodes_modelling_rules_folder_false(self):
-        objects = self.opc.get_objects_node()
-        folder = objects.add_folder(3, 'MyFolder')
-        _test_modelling_rules(self, folder, False, [])
-
-    def test_add_nodes_modelling_rules_folder_none(self):
-        objects = self.opc.get_objects_node()
-        folder = objects.add_folder(3, 'MyFolder')
-        _test_modelling_rules(self, folder, None, [])
+        p.set_modelling_rule(None)
+        refs = p.get_referenced_nodes(refs=ua.ObjectIds.HasModellingRule)
+        self.assertEqual(len(refs), 0)
 
     def test_incl_subtypes(self):
         base_type = self.opc.get_root_node().get_child(["0:Types", "0:ObjectTypes", "0:BaseObjectType"])
@@ -798,18 +729,24 @@ class CommonTests(object):
         # Create device type
         dev_t = self.opc.nodes.base_object_type.add_object_type(0, "MyDevice")
         v_t = dev_t.add_variable(0, "sensor", 1.0)
+        v_t.set_modelling_rule(True)
         p_t = dev_t.add_property(0, "sensor_id", "0340")
+        p_t.set_modelling_rule(True)
         ctrl_t = dev_t.add_object(0, "controller")
+        ctrl_t.set_modelling_rule(True)
         v_opt_t = dev_t.add_variable(0, "vendor", 1.0)
         v_opt_t.set_modelling_rule(False)
         v_none_t = dev_t.add_variable(0, "model", 1.0)
         v_none_t.set_modelling_rule(None)
         prop_t = ctrl_t.add_property(0, "state", "Running")
+        prop_t.set_modelling_rule(True)
 
         # Create device sutype
         devd_t = dev_t.add_object_type(0, "MyDeviceDervived")
         v_t = devd_t.add_variable(0, "childparam", 1.0)
+        v_t.set_modelling_rule(True)
         p_t = devd_t.add_property(0, "sensorx_id", "0340")
+        p_t.set_modelling_rule(True)
 
         # instanciate device
         nodes = instantiate(self.opc.nodes.objects, dev_t, bname="2:Device0001")
@@ -840,9 +777,13 @@ class CommonTests(object):
         # Create device type
         dev_t = self.opc.nodes.base_object_type.add_object_type(0, "MyDevice2")
         v_t = dev_t.add_variable(0, "sensor", 1.0)
+        v_t.set_modelling_rule(True)
         p_t = dev_t.add_property(0, "sensor_id", "0340")
+        p_t.set_modelling_rule(True)
         ctrl_t = dev_t.add_object(0, "controller")
+        ctrl_t.set_modelling_rule(True)
         prop_t = ctrl_t.add_property(0, "state", "Running")
+        prop_t.set_modelling_rule(True)
 
         # instanciate device
         nodes = instantiate(self.opc.nodes.objects, dev_t, nodeid=ua.NodeId("InstDevice", 2, ua.NodeIdType.String), bname="2:InstDevice")
