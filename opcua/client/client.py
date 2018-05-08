@@ -524,12 +524,12 @@ class Client(object):
     def delete_nodes(self, nodes, recursive=False):
         return delete_nodes(self.uaclient, nodes, recursive)
 
-    def import_xml(self, path):
+    def import_xml(self, path=None, xmlstring=None):
         """
         Import nodes defined in xml
         """
         importer = XmlImporter(self)
-        return importer.import_xml(path)
+        return importer.import_xml(path, xmlstring)
 
     def export_xml(self, nodes, path):
         """

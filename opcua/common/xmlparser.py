@@ -89,13 +89,16 @@ class ExtObj(object):
 
 class XMLParser(object):
 
-    def __init__(self, xmlpath):
+    def __init__(self, xmlpath=None, xmlstring=None):
         self.logger = logging.getLogger(__name__)
         self._retag = re.compile(r"(\{.*\})(.*)")
         self.path = xmlpath
 
-        self.tree = ET.parse(xmlpath)
-        self.root = self.tree.getroot()
+        if xmlstring:
+            self.root = ET.fromstring(xmlstring)
+        else:
+            self.root = ET.parse(xmlpath).getroot()
+
         # FIXME: hard to get these xml namespaces with ElementTree, we may have to shift to lxml
         self.ns = {
             'base': "http://opcfoundation.org/UA/2011/03/UANodeSet.xsd",
