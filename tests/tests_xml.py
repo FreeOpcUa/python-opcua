@@ -349,11 +349,7 @@ class XmlTests(object):
         </UANodeSet>
         """
 
-        fp = open('tmp_test_import-nillable.xml', 'w')
-        fp.write(xml)
-        fp.close()
-        # TODO: when the xml parser also support loading from string, remove write to file
-        _new_nodes = self.opc.import_xml('tmp_test_import-nillable.xml')
+        _new_nodes = self.opc.import_xml(xmlstring=xml)
         var_string = self.opc.get_node(ua.NodeId('test_xml.string.nillabel', 2))
         var_bool = self.opc.get_node(ua.NodeId('test_xml.bool.nillabel', 2))
         self.assertEqual(var_string.get_value(), None)

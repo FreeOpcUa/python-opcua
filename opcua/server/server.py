@@ -425,12 +425,12 @@ class Server(object):
 
         return custom_t
 
-    def import_xml(self, path):
+    def import_xml(self, path=None, xmlstring=None):
         """
         Import nodes defined in xml
         """
         importer = XmlImporter(self)
-        return importer.import_xml(path)
+        return importer.import_xml(path, xmlstring)
 
     def export_xml(self, nodes, path):
         """
