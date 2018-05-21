@@ -265,3 +265,12 @@ def get_default_value(uatype):
         return getattr(ua, uatype)()
 
 
+def data_type_to_string(dtype):
+    # we could just display browse name of node but it requires a query
+    if dtype.Identifier in ua.ObjectIdNames:
+        string = ua.ObjectIdNames[dtype.Identifier]
+    else:
+        string = dtype.to_string()
+    return string
+
+
