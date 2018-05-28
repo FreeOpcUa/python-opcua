@@ -47,7 +47,7 @@ class KeepAlive(Thread):
 
         # some server support no timeout, but we do not trust them
         if self.timeout == 0:
-            self.timeout = 3600000 # 1 hour
+            self.timeout = 3600000  # 1 hour
 
     def run(self):
         self.logger.debug("starting keepalive thread with period of %s milliseconds", self.timeout)
@@ -95,7 +95,7 @@ class Client(object):
         """
         self.logger = logging.getLogger(__name__)
         self.server_url = urlparse(url)
-        #take initial username and password from the url
+        # take initial username and password from the url
         self._username = self.server_url.username
         self._password = self.server_url.password
         self.name = "Pure Python Client"
@@ -104,8 +104,8 @@ class Client(object):
         self.product_uri = "urn:freeopcua.github.no:client"
         self.security_policy = ua.SecurityPolicy()
         self.secure_channel_id = None
-        self.secure_channel_timeout = 3600000 # 1 hour
-        self.session_timeout = 3600000 # 1 hour
+        self.secure_channel_timeout = 3600000  # 1 hour
+        self.session_timeout = 3600000  # 1 hour
         self._policy_ids = []
         self.uaclient = UaClient(timeout)
         self.user_certificate = None
@@ -114,9 +114,8 @@ class Client(object):
         self._session_counter = 1
         self.keepalive = None
         self.nodes = Shortcuts(self.uaclient)
-        self.max_messagesize = 0 # No limits
-        self.max_chunkcount = 0 # No limits
-
+        self.max_messagesize = 0  # No limits
+        self.max_chunkcount = 0  # No limits
 
     def __enter__(self):
         self.connect()
@@ -149,7 +148,7 @@ class Client(object):
         Set user password for the connection.
         initial password from the URL will be overwritten
         """
-        self._password = pwd   
+        self._password = pwd
 
     def set_security_string(self, string):
         """
@@ -254,8 +253,8 @@ class Client(object):
             self.send_hello()
             self.open_secure_channel()
             self.create_session()
-        except:
-            self.disconnect_socket() # clean up open socket
+        except Exception:
+            self.disconnect_socket()  # clean up open socket
             raise
         self.activate_session(username=self._username, password=self._password, certificate=self.user_certificate)
 
@@ -298,7 +297,7 @@ class Client(object):
         params.SecurityMode = self.security_policy.Mode
         params.RequestedLifetime = self.secure_channel_timeout
         nonce = utils.create_nonce(self.security_policy.symmetric_key_size)   # length should be equal to the length of key of symmetric encryption
-        params.ClientNonce = nonce	# this nonce is used to create a symmetric key
+        params.ClientNonce = nonce  # this nonce is used to create a symmetric key
         result = self.uaclient.open_secure_channel(params)
         self.security_policy.make_symmetric_key(nonce, result.ServerNonce)
         self.secure_channel_timeout = result.SecurityToken.RevisedLifetime
@@ -568,5 +567,3 @@ class Client(object):
 
     def load_type_definitions(self, nodes=None):
         return load_type_definitions(self, nodes)
-
-
