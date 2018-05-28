@@ -142,11 +142,11 @@ class UASocketProtocol(asyncio.Protocol):
         return hdr
 
     def disconnect_socket(self):
-        self.logger.info("stop request")
+        self.logger.info("Request to close socket received")
         if self.transport:
             self.transport.close()
         else:
-            self.logger.warning('disconnect_socket was called but transport is None')
+            self.logger.warning("disconnect_socket was called but transport is None")
 
     async def send_hello(self, url, max_messagesize=0, max_chunkcount=0):
         hello = ua.Hello()
