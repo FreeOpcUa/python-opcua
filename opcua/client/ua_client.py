@@ -137,7 +137,8 @@ class UASocketClient(object):
         """
         self.logger.info("opening connection")
         sock = socket.create_connection((host, port))
-        sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)  # nodelay ncessary to avoid packing in one frame, some servers do not like it
+        # nodelay ncessary to avoid packing in one frame, some servers do not like it
+        sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self._socket = ua.utils.SocketWrapper(sock)
         self.start()
 

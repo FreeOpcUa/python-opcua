@@ -296,7 +296,8 @@ class Client(object):
             params.RequestType = ua.SecurityTokenRequestType.Renew
         params.SecurityMode = self.security_policy.Mode
         params.RequestedLifetime = self.secure_channel_timeout
-        nonce = utils.create_nonce(self.security_policy.symmetric_key_size)   # length should be equal to the length of key of symmetric encryption
+        # length should be equal to the length of key of symmetric encryption
+        nonce = utils.create_nonce(self.security_policy.symmetric_key_size)
         params.ClientNonce = nonce  # this nonce is used to create a symmetric key
         result = self.uaclient.open_secure_channel(params)
         self.security_policy.make_symmetric_key(nonce, result.ServerNonce)
@@ -360,7 +361,8 @@ class Client(object):
         desc.ApplicationType = ua.ApplicationType.Client
 
         params = ua.CreateSessionParameters()
-        nonce = utils.create_nonce(32)  # at least 32 random bytes for server to prove possession of private key (specs part 4, 5.6.2.2)
+        # at least 32 random bytes for server to prove possession of private key (specs part 4, 5.6.2.2)
+        nonce = utils.create_nonce(32)
         params.ClientNonce = nonce
         params.ClientCertificate = self.security_policy.client_certificate
         params.ClientDescription = desc
@@ -383,7 +385,8 @@ class Client(object):
         ep = Client.find_endpoint(response.ServerEndpoints, self.security_policy.Mode, self.security_policy.URI)
         self._policy_ids = ep.UserIdentityTokens
         self.session_timeout = response.RevisedSessionTimeout
-        self.keepalive = KeepAlive(self, min(self.session_timeout, self.secure_channel_timeout) * 0.7)  # 0.7 is from spec
+        self.keepalive = KeepAlive(
+            self, min(self.session_timeout, self.secure_channel_timeout) * 0.7)  # 0.7 is from spec
         self.keepalive.start()
         return response
 
