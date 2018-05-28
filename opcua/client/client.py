@@ -101,7 +101,7 @@ class Client(object):
         self.name = "Pure Python Client"
         self.description = self.name
         self.application_uri = "urn:freeopcua:client"
-        self.product_uri = "urn:freeopcua.github.no:client"
+        self.product_uri = "urn:freeopcua.github.io:client"
         self.security_policy = ua.SecurityPolicy()
         self.secure_channel_id = None
         self.secure_channel_timeout = 3600000  # 1 hour

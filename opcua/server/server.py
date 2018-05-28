@@ -78,7 +78,7 @@ class Server(object):
         self.logger = logging.getLogger(__name__)
         self.endpoint = urlparse("opc.tcp://0.0.0.0:4840/freeopcua/server/")
         self._application_uri = "urn:freeopcua:python:server"
-        self.product_uri = "urn:freeopcua.github.no:python:server"
+        self.product_uri = "urn:freeopcua.github.io:python:server"
         self.name = "FreeOpcUa Python Server"
         self.application_type = ua.ApplicationType.ClientAndServer
         self.default_timeout = 3600000
