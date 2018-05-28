@@ -3,6 +3,8 @@ import unittest
 from opcua import Client
 from opcua import Server
 from opcua import ua
+from opcua.client.ua_client import UASocketClient
+from opcua.common.utils import SocketWrapper
 
 from tests_subscriptions import SubscriptionTests
 from tests_common import CommonTests, add_server_methods
@@ -105,7 +107,19 @@ class TestClient(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
             Alldue the server trace is also visible on the console.
             The client only 'sees' an TimeoutError
         '''
-        nenumstrings = self.opc.get_node(ua.ObjectIds.AxisScaleEnumeration_EnumStrings)
+        nenumstrings = self.clt.get_node(ua.ObjectIds.AxisScaleEnumeration_EnumStrings)
         with self.assertNotRaises(Exception):
             value = ua.Variant(nenumstrings.get_value())
+            
+    def test_uasocketclient_connect_disconnect(self):
+        """Initialize, connect, and disconnect a UaSocketClient
+        """
+        uaclt = UASocketClient()
+        uaclt.connect_socket('127.0.0.1', port_num1)
+        self.assertTrue(uaclt._thread.is_alive())
+        self.assertIsInstance(uaclt._socket, SocketWrapper)
+        
+        # disconnect_socket() should shut down the receiving thread
+        uaclt.disconnect_socket()
+        self.assertFalse(uaclt._thread.is_alive())
 
