@@ -481,8 +481,9 @@ class Client(object):
         """
         Close session
         """
-        if self.keepalive:
+        if self.keepalive and self.keepalive.is_alive():
             self.keepalive.stop()
+            self.keepalive.join()
         return self.uaclient.close_session(True)
 
     def get_root_node(self):
