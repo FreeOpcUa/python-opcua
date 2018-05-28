@@ -139,12 +139,14 @@ class UASocketClient(object):
         self.start()
 
     def disconnect_socket(self):
-        self.logger.info("stop request")
+        self.logger.info("Request to close socket received")
         self._do_stop = True
         self._socket.socket.shutdown(socket.SHUT_RDWR)
         self._socket.socket.close()
+        self.logger.info("Socket closed, waiting for receiver thread to terminate...")
         if self._thread and self._thread.is_alive():
             self._thread.join()
+        self.logger.info("Done closing socket: Receiving thread terminated, socket disconnected")
 
     def send_hello(self, url, max_messagesize = 0, max_chunkcount = 0):
         hello = ua.Hello()
