@@ -143,6 +143,8 @@ class UASocketClient(object):
         self._do_stop = True
         self._socket.socket.shutdown(socket.SHUT_RDWR)
         self._socket.socket.close()
+        if self._thread and self._thread.is_alive():
+            self._thread.join()
 
     def send_hello(self, url, max_messagesize = 0, max_chunkcount = 0):
         hello = ua.Hello()
