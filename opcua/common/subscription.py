@@ -93,8 +93,8 @@ class Subscription(object):
         # Launching two publish requests is a heuristic. We try to ensure
         # that the server always has at least one publish request in the queue,
         # even after it just replied to a publish request.
-        await self.server.publish()
-        await self.server.publish()
+        self.loop.create_task(self.server.publish())
+        self.loop.create_task(self.server.publish())
 
     def delete(self):
         """
