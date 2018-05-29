@@ -38,6 +38,7 @@ class KeepAlive(Thread):
             in milliseconds.
         """
         Thread.__init__(self)
+        self.daemon = True
         self.logger = logging.getLogger(__name__)
 
         self.client = client
