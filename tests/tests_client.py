@@ -113,6 +113,14 @@ class TestClient(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         nenumstrings = self.clt.get_node(ua.ObjectIds.AxisScaleEnumeration_EnumStrings)
         with self.assertNotRaises(Exception):
             value = ua.Variant(nenumstrings.get_value())
+            
+    def test_custom_enum_struct(self):
+        self.ro_clt.load_type_definitions()
+        ns = self.ro_clt.get_namespace_index('http://yourorganisation.org/struct_enum_example/')
+        myvar = self.ro_clt.get_node(ua.NodeId(6009, ns))
+        val = myvar.get_value()
+        self.assertEqual(val.IntVal1, 242)
+        self.assertEqual(val.EnumVal, ua.ExampleEnum.EnumVal2)
 
     def test_uasocketclient_connect_disconnect(self):
         """Initialize, connect, and disconnect a UaSocketClient
