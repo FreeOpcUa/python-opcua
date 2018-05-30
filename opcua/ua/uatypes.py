@@ -262,7 +262,7 @@ class NodeIdType(IntEnum):
     ByteString = 5
 
 
-class NodeId(FrozenClass):
+class NodeId(object):
     """
     NodeId Object
 
@@ -290,8 +290,6 @@ class NodeId(FrozenClass):
         self.NamespaceUri = ""
         self.ServerIndex = 0
         self._freeze = True
-        if not isinstance(self.NamespaceIndex, int):
-            raise UaError("NamespaceIndex must be an int")
         if self.Identifier is None:
             self.Identifier = 0
             self.NodeIdType = NodeIdType.TwoByte
@@ -308,25 +306,19 @@ class NodeId(FrozenClass):
             else:
                 raise UaError("NodeId: Could not guess type of NodeId, set NodeIdType")
 
-    def _key(self):
-        if self.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte, NodeIdType.Numeric):
-            # twobyte, fourbyte and numeric may represent the same node
-            return (NodeIdType.Numeric, self.NamespaceIndex, self.Identifier)
-        return (self.NodeIdType, self.NamespaceIndex, self.Identifier)
-
     def __eq__(self, node):
-        return isinstance(node, NodeId) and self._key() == node._key()
+        return isinstance(node, NodeId) and self.NamespaceIndex == node.NamespaceIndex and self.Identifier == node.Identifier
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __hash__(self):
-        return hash(self._key())
+        return hash((self.NamespaceIndex, self.Identifier))
 
     def __lt__(self, other):
         if not isinstance(other, NodeId):
             raise AttributeError("Can only compare to NodeId")
-        return self._key() < other._key()
+        return (self.NodeIdType, self.NamespaceIndex, self.Identifier) < (other.NodeIdType, other.NamespaceIndex, other.Identifier)
 
     def is_null(self):
         if self.NamespaceIndex != 0:
