@@ -81,14 +81,12 @@ class _FrozenClass(object):
         object.__setattr__(self, key, value)
 
 
-if "PYOPCUA_NO_TYPO_CHECK" in os.environ:
+if "PYOPCUA_TYPO_CHECK" in os.environ:
     # typo check is cpu consuming, but it will make debug easy.
-    # if typo check is not need (in production), please set env PYOPCUA_NO_TYPO_CHECK.
-    # this will make all uatype class inherit from object intead of _FrozenClass
-    # and skip the typo check.
-    FrozenClass = object
-else:
+    # set PYOPCUA_TYPO_CHECK will make all uatype classes inherit from _FrozenClass
     FrozenClass = _FrozenClass
+else:
+    FrozenClass = object
 
 
 class ValueRank(IntEnum):
