@@ -20,7 +20,7 @@ class PostponeReferences(object):
         #self.add_nodes = self.server.add_nodes
 
     def add_nodes(self,nodes):
-        self.postponed_nodes.extend(self.server.try_add_nodes(nodes))
+        self.postponed_nodes.extend(self.server.try_add_nodes(nodes, check=False))
 
     def add_references(self, refs):
         self.postponed_refs.extend(self.server.try_add_references(refs))
@@ -33,7 +33,7 @@ class PostponeReferences(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is None and exc_val is None:
-            remaining_nodes = list(self.server.try_add_nodes(self.postponed_nodes))
+            remaining_nodes = list(self.server.try_add_nodes(self.postponed_nodes, check=False))
             assert len(remaining_nodes) == 0, remaining_nodes
             remaining_refs = list(self.server.try_add_references(self.postponed_refs))
             assert len(remaining_refs) == 0, remaining_refs
