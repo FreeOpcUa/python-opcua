@@ -14,7 +14,7 @@ def _to_val(objs, attr, val):
     for o in objs[1:]:
         cls = getattr(ua, _get_uatype_name(cls, o))
     if cls == ua.NodeId:
-        return "ua.NodeId.from_string('val')"
+        return "NodeId.from_string('val')"
     return ua_type_to_python(val, _get_uatype_name(cls, attr))
 
 
@@ -32,6 +32,51 @@ def ua_type_to_python(val, uatype):
         return f"b'{val}'"
     else:
         return val
+
+
+def bname_code(string):
+    if ":" in string:
+        idx, name = string.split(":", 1)
+    else:
+        idx = 0
+        name = string
+    return f"QualifiedName('{name}', {idx})"
+
+
+def nodeid_code(string):
+    l = string.split(";")
+    identifier = None
+    namespace = 0
+    ntype = None
+    srv = None
+    nsu = None
+    for el in l:
+        if not el:
+            continue
+        k, v = el.split("=", 1)
+        k = k.strip()
+        v = v.strip()
+        if k == "ns":
+            namespace = v
+        elif k == "i":
+            ntype = "NumericNodeId"
+            identifier = v
+        elif k == "s":
+            ntype = "StringNodeId"
+            identifier = f"'{v}'"
+        elif k == "g":
+            ntype = "GuidNodeId"
+            identifier = f"b'{v}'"
+        elif k == "b":
+            ntype = "ByteStringNodeId"
+            identifier = f"b'{v}'"
+        elif k == "srv":
+            srv = v
+        elif k == "nsu":
+            nsu = v
+    if identifier is None:
+        raise Exception("Could not find identifier in string: " + string)
+    return f"{ntype}({identifier}, {namespace})"
 
 
 class CodeGenerator(object):
@@ -79,6 +124,8 @@ It is automatically generated from opcfoundation.org schemas.
 """
 
 from opcua import ua
+from opcua.ua import NodeId, QualifiedName, NumericNodeId, StringNodeId, GuidNodeId
+from opcua.ua import NodeClass, LocalizedText
 
 
 def create_standard_address_space_{self.part!s}(server):
@@ -86,27 +133,27 @@ def create_standard_address_space_{self.part!s}(server):
 
     def make_node_code(self, obj, indent):
         self.writecode(indent, 'node = ua.AddNodesItem()')
-        self.writecode(indent, f'node.RequestedNewNodeId = ua.NodeId.from_string("{obj.nodeid}")')
-        self.writecode(indent, f'node.BrowseName = ua.QualifiedName.from_string("{obj.browsename}")')
-        self.writecode(indent, f'node.NodeClass = ua.NodeClass.{obj.nodetype[2:]}')
+        self.writecode(indent, 'node.RequestedNewNodeId = {}'.format(nodeid_code(obj.nodeid)))
+        self.writecode(indent, 'node.BrowseName = {}'.format(bname_code(obj.browsename)))
+        self.writecode(indent, 'node.NodeClass = NodeClass.{0}'.format(obj.nodetype[2:]))
         if obj.parent and obj.parentlink:
-            self.writecode(indent, f'node.ParentNodeId = ua.NodeId.from_string("{obj.parent}")')
-            self.writecode(indent, f'node.ReferenceTypeId = {self.to_ref_type(obj.parentlink)}')
+            self.writecode(indent, 'node.ParentNodeId = {}'.format(nodeid_code(obj.parent)))
+            self.writecode(indent, 'node.ReferenceTypeId = {0}'.format(self.to_ref_type(obj.parentlink)))
         if obj.typedef:
-            self.writecode(indent, f'node.TypeDefinition = ua.NodeId.from_string("{obj.typedef}")')
+            self.writecode(indent, 'node.TypeDefinition = {}'.format(nodeid_code(obj.typedef)))
 
     def to_data_type(self, nodeid):
         if not nodeid:
             return "ua.NodeId(ua.ObjectIds.String)"
         if "=" in nodeid:
-            return f'ua.NodeId.from_string("{nodeid}")'
+            return nodeid_code(nodeid)
         else:
             return f'ua.NodeId(ua.ObjectIds.{nodeid})'
 
     def to_ref_type(self, nodeid):
         if "=" not in nodeid:
             nodeid = self.parser.get_aliases()[nodeid]
-        return f'ua.NodeId.from_string("{nodeid}")'
+        return nodeid_code(nodeid)
 
     def make_object_code(self, obj):
         indent = "   "
@@ -114,9 +161,9 @@ def create_standard_address_space_{self.part!s}(server):
         self.make_node_code(obj, indent)
         self.writecode(indent, 'attrs = ua.ObjectAttributes()')
         if obj.desc:
-            self.writecode(indent, f'attrs.Description = ua.LocalizedText("{obj.desc}")')
-        self.writecode(indent, f'attrs.DisplayName = ua.LocalizedText("{obj.displayname}")')
-        self.writecode(indent, f'attrs.EventNotifier = {obj.eventnotifier}')
+            self.writecode(indent, 'attrs.Description = LocalizedText("{0}")'.format(obj.desc))
+        self.writecode(indent, 'attrs.DisplayName = LocalizedText("{0}")'.format(obj.displayname))
+        self.writecode(indent, 'attrs.EventNotifier = {0}'.format(obj.eventnotifier))
         self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
@@ -127,18 +174,18 @@ def create_standard_address_space_{self.part!s}(server):
         self.make_node_code(obj, indent)
         self.writecode(indent, 'attrs = ua.ObjectTypeAttributes()')
         if obj.desc:
-            self.writecode(indent, f'attrs.Description = ua.LocalizedText("{obj.desc}")')
-        self.writecode(indent, f'attrs.DisplayName = ua.LocalizedText("{obj.displayname}")')
-        self.writecode(indent, f'attrs.IsAbstract = {obj.abstract}')
+            self.writecode(indent, 'attrs.Description = LocalizedText("{0}")'.format(obj.desc))
+        self.writecode(indent, 'attrs.DisplayName = LocalizedText("{0}")'.format(obj.displayname))
+        self.writecode(indent, 'attrs.IsAbstract = {0}'.format(obj.abstract))
         self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
 
     def make_common_variable_code(self, indent, obj):
         if obj.desc:
-            self.writecode(indent, f'attrs.Description = ua.LocalizedText("{obj.desc}")')
-        self.writecode(indent, f'attrs.DisplayName = ua.LocalizedText("{obj.displayname}")')
-        self.writecode(indent, f'attrs.DataType = {self.to_data_type(obj.datatype)}')
+            self.writecode(indent, 'attrs.Description = LocalizedText("{0}")'.format(obj.desc))
+        self.writecode(indent, 'attrs.DisplayName = LocalizedText("{0}")'.format(obj.displayname))
+        self.writecode(indent, 'attrs.DataType = {0}'.format(self.to_data_type(obj.datatype)))
         if obj.value is not None:
             if obj.valuetype == "ListOfExtensionObject":
                 self.writecode(indent, 'value = []')
@@ -151,8 +198,8 @@ def create_standard_address_space_{self.part!s}(server):
                 self.writecode(indent, 'value = extobj')
                 self.writecode(indent, 'attrs.Value = ua.Variant(value, ua.VariantType.ExtensionObject)')
             elif obj.valuetype == "ListOfLocalizedText":
-                value = [f'ua.LocalizedText({text!r})' for text in obj.value]
-                self.writecode(indent, f'attrs.Value = [{",".join(value)}]')
+                value = ['LocalizedText({0})'.format(repr(text)) for text in obj.value]
+                self.writecode(indent, 'attrs.Value = [{}]'.format(','.join(value)))
             else:
                 if obj.valuetype.startswith("ListOf"):
                     obj.valuetype = obj.valuetype[6:]
@@ -177,8 +224,8 @@ def create_standard_address_space_{self.part!s}(server):
                     val = _to_val([extobj.objname], k, v)
                     self.writecode(indent, f'extobj.{k} = {v}')
                 else:
-                    if k == "DataType":  # hack for strange nodeid xml format
-                        self.writecode(indent, f'extobj.{k} = ua.NodeId.from_string("{v[0][1]}")')
+                    if k == "DataType":  #hack for strange nodeid xml format
+                        self.writecode(indent, 'extobj.{0} = {1}'.format(k, nodeid_code(v[0][1])))
                         continue
                     for k2, v2 in v:
                         val2 = _to_val([extobj.objname, k], k2, v2)
@@ -202,8 +249,8 @@ def create_standard_address_space_{self.part!s}(server):
         self.make_node_code(obj, indent)
         self.writecode(indent, 'attrs = ua.VariableTypeAttributes()')
         if obj.desc:
-            self.writecode(indent, f'attrs.Description = ua.LocalizedText("{obj.desc}")')
-        self.writecode(indent, f'attrs.DisplayName = ua.LocalizedText("{obj.displayname}")')
+            self.writecode(indent, 'attrs.Description = LocalizedText("{0}")'.format(obj.desc))
+        self.writecode(indent, 'attrs.DisplayName = LocalizedText("{0}")'.format(obj.displayname))
         if obj.abstract:
             self.writecode(indent, f'attrs.IsAbstract = {obj.abstract}')
         self.make_common_variable_code(indent, obj)
@@ -217,8 +264,8 @@ def create_standard_address_space_{self.part!s}(server):
         self.make_node_code(obj, indent)
         self.writecode(indent, 'attrs = ua.MethodAttributes()')
         if obj.desc:
-            self.writecode(indent, f'attrs.Description = ua.LocalizedText("{obj.desc}")')
-        self.writecode(indent, f'attrs.DisplayName = ua.LocalizedText("{obj.displayname}")')
+            self.writecode(indent, 'attrs.Description = LocalizedText("{0}")'.format(obj.desc))
+        self.writecode(indent, 'attrs.DisplayName = LocalizedText("{0}")'.format(obj.displayname))
         self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
@@ -229,10 +276,10 @@ def create_standard_address_space_{self.part!s}(server):
         self.make_node_code(obj, indent)
         self.writecode(indent, 'attrs = ua.ReferenceTypeAttributes()')
         if obj.desc:
-            self.writecode(indent, f'attrs.Description = ua.LocalizedText("{obj.desc}")')
-        self.writecode(indent, f'attrs.DisplayName = ua.LocalizedText("{obj.displayname}")')
-        if obj.inversename:
-            self.writecode(indent, f'attrs.InverseName = ua.LocalizedText("{obj.inversename}")')
+            self.writecode(indent, 'attrs.Description = LocalizedText("{0}")'.format(obj.desc))
+        self.writecode(indent, 'attrs.DisplayName = LocalizedText("{0}")'.format(obj.displayname))
+        if obj. inversename:
+            self.writecode(indent, 'attrs.InverseName = LocalizedText("{0}")'.format(obj.inversename))
         if obj.abstract:
             self.writecode(indent, f'attrs.IsAbstract = {obj.abstract}')
         if obj.symmetric:
@@ -247,8 +294,8 @@ def create_standard_address_space_{self.part!s}(server):
         self.make_node_code(obj, indent)
         self.writecode(indent, 'attrs = ua.DataTypeAttributes()')
         if obj.desc:
-            self.writecode(indent, f'attrs.Description = ua.LocalizedText("{obj.desc}")')
-        self.writecode(indent, f'attrs.DisplayName = ua.LocalizedText("{obj.displayname}")')
+            self.writecode(indent, u'attrs.Description = LocalizedText("{0}")'.format(obj.desc))
+        self.writecode(indent, 'attrs.DisplayName = LocalizedText("{0}")'.format(obj.displayname))
         if obj.abstract:
             self.writecode(indent, f'attrs.IsAbstract = {obj.abstract}')
         self.writecode(indent, 'node.NodeAttributes = attrs')
@@ -261,11 +308,11 @@ def create_standard_address_space_{self.part!s}(server):
         self.writecode(indent, "refs = []")
         for ref in obj.refs:
             self.writecode(indent, 'ref = ua.AddReferencesItem()')
-            self.writecode(indent, f'ref.IsForward = {ref.forward}')
-            self.writecode(indent, f'ref.ReferenceTypeId = {self.to_ref_type(ref.reftype)}')
-            self.writecode(indent, f'ref.SourceNodeId = ua.NodeId.from_string("{obj.nodeid}")')
-            self.writecode(indent, 'ref.TargetNodeClass = ua.NodeClass.DataType')
-            self.writecode(indent, f'ref.TargetNodeId = ua.NodeId.from_string("{ref.target}")')
+            self.writecode(indent, 'ref.IsForward = {0}'.format(ref.forward))
+            self.writecode(indent, 'ref.ReferenceTypeId = {0}'.format(self.to_ref_type(ref.reftype)))
+            self.writecode(indent, 'ref.SourceNodeId = {0}'.format(nodeid_code(obj.nodeid)))
+            self.writecode(indent, 'ref.TargetNodeClass = NodeClass.DataType')
+            self.writecode(indent, 'ref.TargetNodeId = {0}'.format(nodeid_code(ref.target)))
             self.writecode(indent, "refs.append(ref)")
         self.writecode(indent, 'server.add_references(refs)')
 
