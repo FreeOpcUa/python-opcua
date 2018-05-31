@@ -327,6 +327,11 @@ class Server:
         Create a subscription.
         returns a Subscription object which allow
         to subscribe to events or data on server
+        period is in milliseconds
+        handler is a python object with following methods:
+            def datachange_notification(self, node, val, data):
+            def event_notification(self, event):
+            def status_change_notification(self, status):
         """
         params = ua.CreateSubscriptionParameters()
         params.RequestedPublishingInterval = period
