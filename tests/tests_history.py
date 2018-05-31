@@ -260,7 +260,7 @@ class TestHistoryLimitsCommon(unittest.TestCase):
 
     def addValue(self, age):
         value = ua.DataValue()
-        value.ServerTimestamp = datetime.utcnow() - timedelta(hours = age)
+        value.SourceTimestamp = datetime.utcnow() - timedelta(hours = age)
         self.history.save_node_value(self.id, value)
 
     def test_count_limit(self):

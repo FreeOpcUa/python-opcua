@@ -91,12 +91,12 @@ class HistorySQLite(HistoryStorageInterface):
             if period:
                 # after the insert, if a period was specified delete all records older than period
                 date_limit = datetime.utcnow() - period
-                execute_sql_delete('ServerTimestamp < ?', (date_limit,))
+                execute_sql_delete('SourceTimestamp < ?', (date_limit,))
 
             if count:
                 # ensure that no more than count records are stored for the specified node
-                execute_sql_delete('ServerTimestamp = (SELECT CASE WHEN COUNT(*) > ? '
-                                   'THEN MIN(ServerTimestamp) ELSE NULL END FROM "{tn}")', (count,))
+                execute_sql_delete('SourceTimestamp = (SELECT CASE WHEN COUNT(*) > ? '
+                                   'THEN MIN(SourceTimestamp) ELSE NULL END FROM "{tn}")', (count,))
 
     def read_node_history(self, node_id, start, end, nb_values):
         with self._lock:
@@ -110,13 +110,13 @@ class HistorySQLite(HistoryStorageInterface):
 
             # select values from the database; recreate UA Variant from binary
             try:
-                for row in _c_read.execute('SELECT * FROM "{tn}" WHERE "ServerTimestamp" BETWEEN ? AND ? '
+                for row in _c_read.execute('SELECT * FROM "{tn}" WHERE "SourceTimestamp" BETWEEN ? AND ? '
                                            'ORDER BY "_Id" {dir} LIMIT ?'.format(tn=table, dir=order),
                                            (start_time, end_time, limit,)):
 
                     # rebuild the data value object
                     dv = ua.DataValue(variant_from_binary(Buffer(row[6])))
-                    dv.ServerTimestamp = row[1]
+                    dv.SourceTimestamp = row[1]
                     dv.SourceTimestamp = row[2]
                     dv.StatusCode = ua.StatusCode(row[3])
 
@@ -127,7 +127,7 @@ class HistorySQLite(HistoryStorageInterface):
 
             if nb_values:
                 if len(results) > nb_values:
-                    cont = results[nb_values].ServerTimestamp
+                    cont = results[nb_values].SourceTimestamp
 
                 results = results[:nb_values]
 

@@ -39,7 +39,7 @@ class HistoryStorageInterface(object):
         nb_values is the max number of values to read. Ignored if 0
         Start time and end time are inclusive
         Returns a list of DataValues and a continuation point which
-        is None if all nodes are read or the ServerTimeStamp of the last rejected DataValue
+        is None if all nodes are read or the SourceTimeStamp of the last rejected DataValue
         """
         raise NotImplementedError
 
@@ -62,7 +62,7 @@ class HistoryStorageInterface(object):
         Called when a client make a history read request for events
         Start time and end time are inclusive
         Returns a list of Events and a continuation point which
-        is None if all events are read or the ServerTimeStamp of the last rejected event
+        is None if all events are read or the SourceTimeStamp of the last rejected event
         """
         raise NotImplementedError
 
@@ -98,7 +98,7 @@ class HistoryDict(HistoryStorageInterface):
         data.append(datavalue)
         now = datetime.utcnow()
         if period:
-            while len(data) and now - data[0].ServerTimestamp > period:
+            while len(data) and now - data[0].SourceTimestamp > period:
                 data.pop(0)
         if count and len(data) > count:
             data.pop(0)
@@ -114,16 +114,16 @@ class HistoryDict(HistoryStorageInterface):
             if end is None:
                 end = ua.get_win_epoch()
             if start == ua.get_win_epoch():
-                results = [dv for dv in reversed(self._datachanges[node_id]) if start <= dv.ServerTimestamp]
+                results = [dv for dv in reversed(self._datachanges[node_id]) if start <= dv.SourceTimestamp]
             elif end == ua.get_win_epoch():
-                results = [dv for dv in self._datachanges[node_id] if start <= dv.ServerTimestamp]
+                results = [dv for dv in self._datachanges[node_id] if start <= dv.SourceTimestamp]
             elif start > end:
-                results = [dv for dv in reversed(self._datachanges[node_id]) if end <= dv.ServerTimestamp <= start]
+                results = [dv for dv in reversed(self._datachanges[node_id]) if end <= dv.SourceTimestamp <= start]
 
             else:
-                results = [dv for dv in self._datachanges[node_id] if start <= dv.ServerTimestamp <= end]
+                results = [dv for dv in self._datachanges[node_id] if start <= dv.SourceTimestamp <= end]
             if nb_values and len(results) > nb_values:
-                cont = results[nb_values + 1].ServerTimestamp
+                cont = results[nb_values + 1].SourceTimestamp
                 results = results[:nb_values]
             return results, cont
 
@@ -139,7 +139,7 @@ class HistoryDict(HistoryStorageInterface):
         period, count = self._events_periods[event.SourceNode]
         now = datetime.utcnow()
         if period:
-            while len(evts) and now - evts[0].ServerTimestamp > period:
+            while len(evts) and now - evts[0].SourceTimestamp > period:
                 evts.pop(0)
         if count and len(evts) > count:
             evts.pop(0)

@@ -230,7 +230,7 @@ class NodeManagementService(object):
 
         nodedata = NodeData(item.RequestedNewNodeId)
 
-        self._add_node_attributes(nodedata, item)
+        self._add_node_attributes(nodedata, item, add_timestamps=check)
 
         # now add our node to db
         self._aspace[nodedata.nodeid] = nodedata
@@ -248,7 +248,7 @@ class NodeManagementService(object):
 
         return result
 
-    def _add_node_attributes(self, nodedata, item):
+    def _add_node_attributes(self, nodedata, item, add_timestamps):
         # add common attrs
         nodedata.attributes[ua.AttributeIds.NodeId] = AttributeValue(
             ua.DataValue(ua.Variant(nodedata.nodeid, ua.VariantType.NodeId))
@@ -260,7 +260,7 @@ class NodeManagementService(object):
             ua.DataValue(ua.Variant(item.NodeClass, ua.VariantType.Int32))
         )
         # add requested attrs
-        self._add_nodeattributes(item.NodeAttributes, nodedata)
+        self._add_nodeattributes(item.NodeAttributes, nodedata, add_timestamps)
 
     def _add_unique_reference(self, nodedata, desc):
         for r in nodedata.references:
@@ -404,14 +404,15 @@ class NodeManagementService(object):
             self._delete_unique_reference(item, True)
         return self._delete_unique_reference(item)
 
-    def _add_node_attr(self, item, nodedata, name, vtype=None):
+    def _add_node_attr(self, item, nodedata, name, vtype=None, add_timestamps=False):
         if item.SpecifiedAttributes & getattr(ua.NodeAttributesMask, name):
             dv = ua.DataValue(ua.Variant(getattr(item, name), vtype))
-            dv.ServerTimestamp = datetime.utcnow()
-            dv.SourceTimestamp = datetime.utcnow()
+            if add_timestamps:
+                # dv.ServerTimestamp = datetime.utcnow()  # Disabled until someone explains us it should be there
+                dv.SourceTimestamp = datetime.utcnow()
             nodedata.attributes[getattr(ua.AttributeIds, name)] = AttributeValue(dv)
 
-    def _add_nodeattributes(self, item, nodedata):
+    def _add_nodeattributes(self, item, nodedata, add_timestamps):
         self._add_node_attr(item, nodedata, "AccessLevel", ua.VariantType.Byte)
         self._add_node_attr(item, nodedata, "ArrayDimensions", ua.VariantType.UInt32)
         self._add_node_attr(item, nodedata, "BrowseName", ua.VariantType.QualifiedName)
@@ -434,7 +435,7 @@ class NodeManagementService(object):
         self._add_node_attr(item, nodedata, "ValueRank", ua.VariantType.Int32)
         self._add_node_attr(item, nodedata, "WriteMask", ua.VariantType.UInt32)
         self._add_node_attr(item, nodedata, "UserWriteMask", ua.VariantType.UInt32)
-        self._add_node_attr(item, nodedata, "Value")
+        self._add_node_attr(item, nodedata, "Value", add_timestamps=add_timestamps)
 
 
 class MethodService(object):
