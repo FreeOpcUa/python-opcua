@@ -288,9 +288,9 @@ def list_to_binary(uatype, val):
 
 def nodeid_to_binary(nodeid):
     if nodeid.NodeIdType == ua.NodeIdType.TwoByte:
-        data = struct.pack('<BB', nodeid.NodeIdType.value, nodeid.Identifier)
+        return struct.pack('<BB', nodeid.NodeIdType.value, nodeid.Identifier)
     elif nodeid.NodeIdType == ua.NodeIdType.FourByte:
-        data = struct.pack('<BBH', nodeid.NodeIdType.value, nodeid.NamespaceIndex, nodeid.Identifier)
+        return struct.pack('<BBH', nodeid.NodeIdType.value, nodeid.NamespaceIndex, nodeid.Identifier)
     elif nodeid.NodeIdType == ua.NodeIdType.Numeric:
         data = struct.pack('<BHI', nodeid.NodeIdType.value, nodeid.NamespaceIndex, nodeid.Identifier)
     elif nodeid.NodeIdType == ua.NodeIdType.String:
