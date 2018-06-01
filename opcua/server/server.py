@@ -3,7 +3,7 @@ High level interface to pure python OPC-UA server
 """
 
 import logging
-from datetime import timedelta
+from datetime import timedelta, datetime
 try:
     from urllib.parse import urlparse
 except ImportError:
@@ -80,6 +80,7 @@ class Server(object):
         self._application_uri = "urn:freeopcua:python:server"
         self.product_uri = "urn:freeopcua.github.io:python:server"
         self.name = "FreeOpcUa Python Server"
+        self.manufacturer_name = "FreeOpcUa"
         self.application_type = ua.ApplicationType.ClientAndServer
         self.default_timeout = 3600000
         if iserver is not None:
@@ -98,6 +99,19 @@ class Server(object):
         self.set_application_uri(self._application_uri)
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
         sa_node.set_value([self._application_uri])
+        status_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus))
+        build_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_BuildInfo))
+        status = ua.ServerStatusDataType()
+        status.BuildInfo.ProductUri = self.product_uri
+        status.BuildInfo.ManufacturerName = self.manufacturer_name
+        status.BuildInfo.ProductName = self.name
+        status.BuildInfo.SoftwareVersion = "1.0pre"
+        status.BuildInfo.BuildNumber = "0"
+        status.BuildInfo.BuildDate = datetime.now()
+        status.SecondsTillShutdown = 0
+        status_node.set_value(status)
+        build_node.set_value(status.BuildInfo)
+
 
     def __enter__(self):
         self.start()
