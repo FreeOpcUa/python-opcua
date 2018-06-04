@@ -341,7 +341,8 @@ class XMLParser(object):
             if ref.attrib["ReferenceType"] == "HasTypeDefinition":
                 obj.typedef = ref.text
             elif not struct.forward:
-                if not obj.parent:
-                    obj.parent = ref.text
+                # Rmq: parent giving as ParentNodeId misses the ref type, so better to prioritize the ref descr
+                #if not obj.parent:
+                obj.parent = ref.text
                 if obj.parent == ref.text:
                     obj.parentlink = ref.attrib["ReferenceType"]
