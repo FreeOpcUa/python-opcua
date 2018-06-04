@@ -494,7 +494,8 @@ class AddressSpace(object):
 
     def __getitem__(self, nodeid):
         with self._lock:
-            return self._nodes.__getitem__(nodeid)
+            if nodeid in self._nodes:
+                return self._nodes.__getitem__(nodeid)
 
     def get(self, nodeid):
         with self._lock:
