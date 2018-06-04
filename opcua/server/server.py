@@ -91,9 +91,7 @@ class Server:
         self.private_key = None
         self._policies = []
         self.nodes = Shortcuts(self.iserver.isession)
-        self._security_endpoints = [
-            "None", "Basic128Rsa15_Sign", "Basic128Rsa15_SignAndEncrypt", "Basic256_Sign", "Basic256_SignAndEncrypt"
-        ]
+        self._security_endpoints = ["Basic256_Sign", "Basic256_SignAndEncrypt"]
         self._policyIDs = ["Anonymous", "Basic256", "Basic128", "Username"]
 
     async def init(self, shelf_file=None):
@@ -260,54 +258,38 @@ class Server:
                     "Creating an open endpoint to the server, although encrypted endpoints are enabled.")
 
         if self.certificate and self.private_key:
-            if "Basic128Rsa15_Sign" in self._security_endpoints:
-                self._set_endpoints(
-                    security_policies.SecurityPolicyBasic128Rsa15,
-                    ua.MessageSecurityMode.SignAndEncrypt)
-                self._policies.append(
-                    ua.SecurityPolicyFactory(
-                        security_policies.SecurityPolicyBasic128Rsa15,
-                        ua.MessageSecurityMode.SignAndEncrypt,
-                        self.certificate,
-                        self.private_key
-                    )
-                )
-            if "Basic128Rsa15_SignAndEncrypt" in self._security_endpoints:
-                self._set_endpoints(
-                    security_policies.SecurityPolicyBasic128Rsa15,
-                    ua.MessageSecurityMode.Sign)
-                self._policies.append(
-                    ua.SecurityPolicyFactory(
-                        security_policies.SecurityPolicyBasic128Rsa15,
-                        ua.MessageSecurityMode.Sign,
-                        self.certificate,
-                        self.private_key
-                    )
-                )
-            if "Basic256_Sign" in self._security_endpoints:
-                self._set_endpoints(
-                    security_policies.SecurityPolicyBasic256,
-                    ua.MessageSecurityMode.SignAndEncrypt)
-                self._policies.append(
-                    ua.SecurityPolicyFactory(
-                        security_policies.SecurityPolicyBasic256,
-                        ua.MessageSecurityMode.SignAndEncrypt,
-                        self.certificate,
-                        self.private_key
-                    )
-                )
-            if "Basic256_SignAndEncrypt" in self._security_endpoints:
-                self._set_endpoints(
-                    security_policies.SecurityPolicyBasic256,
-                    ua.MessageSecurityMode.Sign)
-                self._policies.append(
-                    ua.SecurityPolicyFactory(
-                        security_policies.SecurityPolicyBasic256,
-                        ua.MessageSecurityMode.Sign,
-                        self.certificate,
-                        self.private_key
-                    )
-                )
+            if "Basic128Rsa15_SignAndEncrypt" in self._security_policy:
+                self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
+                                    ua.MessageSecurityMode.SignAndEncrypt)
+                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
+                                                           ua.MessageSecurityMode.SignAndEncrypt,
+                                                           self.certificate,
+                                                           self.private_key)
+                                 )
+            if "Basic128Rsa15_Sign" in self._security_policy:
+                self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
+                                    ua.MessageSecurityMode.Sign)
+                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
+                                                           ua.MessageSecurityMode.Sign,
+                                                           self.certificate,
+                                                           self.private_key)
+                                 )
+            if "Basic256_SignAndEncrypt" in self._security_policy:
+                self._set_endpoints(security_policies.SecurityPolicyBasic256,
+                                    ua.MessageSecurityMode.SignAndEncrypt)
+                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
+                                                           ua.MessageSecurityMode.SignAndEncrypt,
+                                                           self.certificate,
+                                                           self.private_key)
+                                 )
+            if "Basic256_Sign" in self._security_policy:
+                self._set_endpoints(security_policies.SecurityPolicyBasic256,
+                                    ua.MessageSecurityMode.Sign)
+                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
+                                                           ua.MessageSecurityMode.Sign,
+                                                           self.certificate,
+                                                           self.private_key)
+                                 )
 
     def _set_endpoints(self, policy=ua.SecurityPolicy, mode=ua.MessageSecurityMode.None_):
         idtokens = []
