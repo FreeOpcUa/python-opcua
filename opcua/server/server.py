@@ -100,8 +100,8 @@ class Server(object):
         sa_node.set_value([self._application_uri])
 
         # enable all endpoints by default
-        self._security_policy = ["None", "Basic128Rsa15_Sign",
-                                    "Basic128Rsa15_SignAndEncrypt", 
+        self._security_policy = [#"None", "Basic128Rsa15_Sign",
+                                 #   "Basic128Rsa15_SignAndEncrypt", 
                                     "Basic256_Sign", "Basic256_SignAndEncrypt"]
         self._policyIDs = ["Anonymous", "Basic256", "Basic128", "Username"]
 
@@ -228,7 +228,6 @@ class Server(object):
         """
         self._security_policy = security_policy
 
-
     def set_security_IDs(self, policyIDs):
         """
             Method setting up the security endpoints for identification
@@ -255,7 +254,7 @@ class Server(object):
                 self.logger.warning("Creating an open endpoint to the server, although encrypted endpoints are enabled.")
 
         if self.certificate and self.private_key:
-            if "Basic128Rsa15_Sign" in self._security_policy:
+            if "Basic128Rsa15_SignAndEncrypt" in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
                                     ua.MessageSecurityMode.SignAndEncrypt)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
@@ -263,7 +262,7 @@ class Server(object):
                                                            self.certificate,
                                                            self.private_key)
                                  )
-            if "Basic128Rsa15_SignAndEncrypt" in self._security_policy:
+            if "Basic128Rsa15_Sign" in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
                                     ua.MessageSecurityMode.Sign)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
@@ -271,7 +270,7 @@ class Server(object):
                                                            self.certificate,
                                                            self.private_key)
                                  )
-            if "Basic256_Sign" in self._security_policy:
+            if "Basic256_SignAndEncrypt" in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic256,
                                     ua.MessageSecurityMode.SignAndEncrypt)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
@@ -279,7 +278,7 @@ class Server(object):
                                                            self.certificate,
                                                            self.private_key)
                                  )
-            if "Basic256_SignAndEncrypt" in self._security_policy:
+            if "Basic256_Sign" in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic256,
                                     ua.MessageSecurityMode.Sign)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
