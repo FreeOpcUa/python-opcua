@@ -1,7 +1,11 @@
+from threading import Thread
 import sys
 sys.path.insert(0, "..")
 import logging
 from datetime import datetime
+import time
+from math import sin
+from threading import Timer
 
 try:
     from IPython import embed
@@ -49,6 +53,23 @@ def multiply(parent, x, y):
     return x * y
 
 
+class VarUpdater(Thread):
+    def __init__(self, var):
+        Thread.__init__(self)
+        self._stopev = False
+        self.var = var
+
+    def stop(self):
+        self._stopev = True
+
+    def run(self):
+        while not self._stopev:
+            v = sin(time.time() / 10)
+            self.var.set_value(v)
+            time.sleep(0.1)
+
+
+
 if __name__ == "__main__":
     # optional: setup logging
     logging.basicConfig(level=logging.WARN)
@@ -90,6 +111,7 @@ if __name__ == "__main__":
     # create directly some objects and variables
     myobj = server.nodes.objects.add_object(idx, "MyObject")
     myvar = myobj.add_variable(idx, "MyVariable", 6.7)
+    mysin = myobj.add_variable(idx, "MySin", 0, ua.VariantType.Float)
     myvar.set_writable()    # Set MyVariable to be writable by clients
     mystringvar = myobj.add_variable(idx, "MyStringVariable", "Really nice string")
     mystringvar.set_writable()    # Set MyVariable to be writable by clients
@@ -113,6 +135,8 @@ if __name__ == "__main__":
     # starting!
     server.start()
     print("Available loggers are: ", logging.Logger.manager.loggerDict.keys())
+    vup = VarUpdater(mysin)  # just  a stupide class update a variable
+    vup.start()
     try:
         # enable following if you want to subscribe to nodes on server side
         #handler = SubHandler()
@@ -124,4 +148,5 @@ if __name__ == "__main__":
 
         embed()
     finally:
+        vup.stop()
         server.stop()
