@@ -329,6 +329,18 @@ class UaProcessor(object):
             self.logger.info("sending create subscription response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
+        elif typeid == ua.NodeId(ua.ObjectIds.ModifySubscriptionRequest_Encoding_DefaultBinary):
+            self.logger.info("modify subscription request")
+            params = struct_from_binary(ua.ModifySubscriptionParameters, body)
+
+            result = self.session.modify_subscription(params, self.forward_publish_response)
+
+            response = ua.ModifySubscriptionResponse()
+            response.Parameters = result
+
+            self.logger.info("sending modify subscription response")
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
         elif typeid == ua.NodeId(ua.ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary):
             self.logger.info("delete subscriptions request")
             params = struct_from_binary(ua.DeleteSubscriptionsParameters, body)

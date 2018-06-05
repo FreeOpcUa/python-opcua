@@ -356,6 +356,9 @@ class InternalSession(object):
             self.subscriptions.append(result.SubscriptionId)
         return result
 
+    def modify_subscription(self, params, callback):
+        return self.subscription_service.modify_subscription(params, callback)
+
     def create_monitored_items(self, params):
         subscription_result = self.subscription_service.create_monitored_items(params)
         self.iserver.server_callback_dispatcher.dispatch(
