@@ -2,6 +2,7 @@
 from concurrent.futures import Future, TimeoutError
 import time
 from datetime import datetime, timedelta
+from copy import copy
 
 import opcua
 from opcua import ua
@@ -121,8 +122,9 @@ class SubscriptionTests(object):
         nb = 12
         for i in range(nb):
             val = var.get_value()
+            val = copy(val)  # we do not want to modify object in our db, we need a copy in order to generate event
             val.append(i)
-            var.set_value(val)
+            var.set_value(copy(val))
         time.sleep(0.2)  # let last event arrive
         self.assertEqual(myhandler.datachange_count, nb + 1)
         sub.delete()
@@ -149,6 +151,7 @@ class SubscriptionTests(object):
         sub.subscribe_data_change(var)
         while True:
             val = var.get_value()
+            val = copy(val)  # we do not want to modify object in our db, we need a copy in order to generate event
             val.pop()
             var.set_value(val, ua.VariantType.Double)
             if not val:

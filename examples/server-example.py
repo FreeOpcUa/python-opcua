@@ -1,11 +1,11 @@
 from threading import Thread
-import sys
-sys.path.insert(0, "..")
+import copy
 import logging
 from datetime import datetime
 import time
 from math import sin
-from threading import Timer
+import sys
+sys.path.insert(0, "..")
 
 try:
     from IPython import embed
@@ -13,9 +13,9 @@ except ImportError:
     import code
 
     def embed():
-        vars = globals()
-        vars.update(locals())
-        shell = code.InteractiveConsole(vars)
+        myvars = globals()
+        myvars.update(locals())
+        shell = code.InteractiveConsole(myvars)
         shell.interact()
 
 
@@ -149,6 +149,10 @@ if __name__ == "__main__":
         #sub = server.create_subscription(500, handler)
         #handle = sub.subscribe_data_change(myvar)
         # trigger event, all subscribed clients wil receive it
+        var = myarrayvar.get_value()  # return a ref to value in db server side! not a copy!
+        var = copy.copy(var)  # WARNING: we need to copy before writting again otherwise no data change event will be generated
+        var.append(9.3)
+        myarrayvar.set_value(var)
         mydevice_var.set_value("Running")
         myevgen.trigger(message="This is BaseEvent")
 
