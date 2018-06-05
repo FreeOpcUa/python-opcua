@@ -114,10 +114,9 @@ class Server(object):
 
 
         # enable all endpoints by default
-        self._security_policy = [#"None", "Basic128Rsa15_Sign",
-                                 #   "Basic128Rsa15_SignAndEncrypt", 
-                                    "Basic256_Sign", "Basic256_SignAndEncrypt"]
-        self._policyIDs = ["Anonymous", "Basic256", "Basic128", "Username"]
+        self._security_policy = ["None", "Basic128Rsa15_Sign", "Basic128Rsa15_SignAndEncrypt", "Basic256_Sign", "Basic256_SignAndEncrypt"]
+        self._policyIDs = ["Anonymous", "Username"]
+        #self._policyIDs = ["Anonymous", "Basic256", "Basic128", "Username"]
 
     def __enter__(self):
         self.start()
