@@ -44,6 +44,7 @@ if __name__ == "__main__":
     # client = Client("opc.tcp://admin@localhost:4840/freeopcua/server/") #connect using a user
     try:
         client.connect()
+        client.load_type_definitions()  # load definition of server specific structures/extension objects
 
         # Client has a few methods to get proxy to UA nodes that should always be in address space such as Root or Objects
         root = client.get_root_node()
