@@ -6,6 +6,7 @@ from threading import RLock
 import logging
 
 from opcua import ua
+from opcua.common import utils
 from opcua.server.internal_subscription import InternalSubscription
 
 
@@ -34,6 +35,21 @@ class SubscriptionService(object):
             self.subscriptions[result.SubscriptionId] = sub
 
             return result
+
+    def modify_subscription(self, params, callback):
+        # Requested params are ignored, result = params set during create_subscription.
+        self.logger.info("modify subscription with callback: %s", callback)
+        result = ua.ModifySubscriptionResult()
+        try:
+            with self._lock:
+                sub = self.subscriptions[params.SubscriptionId]
+                result.RevisedPublishingInterval = sub.data.RevisedPublishingInterval
+                result.RevisedLifetimeCount = sub.data.RevisedLifetimeCount
+                result.RevisedMaxKeepAliveCount = sub.data.RevisedMaxKeepAliveCount
+
+                return result
+        except KeyError:
+            raise utils.ServiceError(ua.StatusCodes.BadSubscriptionIdInvalid)
 
     def delete_subscriptions(self, ids):
         self.logger.info("delete subscriptions: %s", ids)
