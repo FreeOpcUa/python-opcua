@@ -263,42 +263,47 @@ class Server(object):
         if "None" in self._security_policy:
             self._set_endpoints()
             self._policies = [ua.SecurityPolicyFactory()]
-            if (len(self._security_policy)>1) and self.private_key:
+
+        if self._security_policy != ["None"]:
+            if not (self.certificate and self.private_key):
+                self.logger.warning("Endpoints other than open requested but private key and certificate are not set.")
+                return
+
+            if "None" in self._security_policy:
                 self.logger.warning("Creating an open endpoint to the server, although encrypted endpoints are enabled.")
 
-        if self.certificate and self.private_key:
             if "Basic128Rsa15_SignAndEncrypt" in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
                                     ua.MessageSecurityMode.SignAndEncrypt)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
-                                                           ua.MessageSecurityMode.SignAndEncrypt,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
+                                                               ua.MessageSecurityMode.SignAndEncrypt,
+                                                               self.certificate,
+                                                               self.private_key)
+                                     )
             if "Basic128Rsa15_Sign" in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
                                     ua.MessageSecurityMode.Sign)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
-                                                           ua.MessageSecurityMode.Sign,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
+                                                               ua.MessageSecurityMode.Sign,
+                                                               self.certificate,
+                                                               self.private_key)
+                                     )
             if "Basic256_SignAndEncrypt" in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic256,
                                     ua.MessageSecurityMode.SignAndEncrypt)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
-                                                           ua.MessageSecurityMode.SignAndEncrypt,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
+                                                               ua.MessageSecurityMode.SignAndEncrypt,
+                                                               self.certificate,
+                                                               self.private_key)
+                                     )
             if "Basic256_Sign" in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic256,
                                     ua.MessageSecurityMode.Sign)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
-                                                           ua.MessageSecurityMode.Sign,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
+                                                               ua.MessageSecurityMode.Sign,
+                                                               self.certificate,
+                                                               self.private_key)
+                                     )
 
     def _set_endpoints(self, policy=ua.SecurityPolicy, mode=ua.MessageSecurityMode.None_):
         idtokens = []
