@@ -957,3 +957,24 @@ def get_extensionobject_class_type(typeid):
         return extension_object_classes[typeid]
     else:
         return None
+
+
+class SecurityPolicyType(Enum):
+    """
+    The supported types of SecurityPolicy.
+    
+    "None"
+    "Basic128Rsa15_Sign"
+    "Basic128Rsa15_SignAndEncrypt"
+    "Basic256_Sign"
+    "Basic256_SignAndEncrypt"
+
+    :ivar Variant:
+    :ivar DiagnosticInfo:
+    """
+
+    NoSecurity = 0
+    Basic128Rsa15_Sign = 1
+    Basic128Rsa15_SignAndEncrypt = 2
+    Basic256_Sign = 3
+    Basic256_SignAndEncrypt = 4
