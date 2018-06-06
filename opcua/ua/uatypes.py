@@ -969,8 +969,6 @@ class SecurityPolicyType(Enum):
     "Basic256_Sign"
     "Basic256_SignAndEncrypt"
 
-    :ivar Variant:
-    :ivar DiagnosticInfo:
     """
 
     NoSecurity = 0

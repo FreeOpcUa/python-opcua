@@ -89,7 +89,12 @@ if __name__ == "__main__":
     server.set_endpoint("opc.tcp://0.0.0.0:4840/freeopcua/server/")
     server.set_server_name("FreeOpcUa Example Server")
     # set all possible endpoint policies for clients to connect through
-    server.set_security_policy([0, 1, 2, 3, 4])
+    server.set_security_policy([
+                ua.SecurityPolicyType.NoSecurity,
+                ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt,
+                ua.SecurityPolicyType.Basic128Rsa15_Sign,
+                ua.SecurityPolicyType.Basic256_SignAndEncrypt,
+                ua.SecurityPolicyType.Basic256_Sign])
 
     # setup our own namespace
     uri = "http://examples.freeopcua.github.io"
