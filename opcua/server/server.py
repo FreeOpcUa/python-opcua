@@ -114,9 +114,14 @@ class Server(object):
 
 
         # enable all endpoints by default
-        self._security_policy = ["None", "Basic128Rsa15_Sign", "Basic128Rsa15_SignAndEncrypt", "Basic256_Sign", "Basic256_SignAndEncrypt"]
-        self._policyIDs = ["Anonymous", "Username"]
-        #self._policyIDs = ["Anonymous", "Basic256", "Basic128", "Username"]
+        self._security_policy = [
+                        ua.SecurityPolicyType.NoSecurity,
+                        ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt,
+                        ua.SecurityPolicyType.Basic128Rsa15_Sign,
+                        ua.SecurityPolicyType.Basic256_SignAndEncrypt,
+                        ua.SecurityPolicyType.Basic256_Sign
+                                ]
+        self._policyIDs = ["Anonymous", "Basic256", "Basic128", "Username"]
 
     def __enter__(self):
         self.start()
@@ -221,22 +226,22 @@ class Server(object):
     def set_security_policy(self, security_policy):
         """
             Method setting up the security policies for connections
-            to the server. During server object initialization, all
-            possible endpoints are enabled:
+            to the server, where security_policy is a list of integers.
+            During server initialization, all endpoints are enabled:
 
-                security_policy = ["None",
-                                    "Basic128Rsa15_Sign",
-                                    "Basic128Rsa15_SignAndEncrypt", 
-                                    "Basic256_Sign",
-                                    "Basic256_SignAndEncrypt"]
-
-            where security_policy is a list of strings. "None" enables an 
-            endpoint without any security.
+                security_policy = [
+                            ua.SecurityPolicyType.NoSecurity,
+                            ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt,
+                            ua.SecurityPolicyType.Basic128Rsa15_Sign,
+                            ua.SecurityPolicyType.Basic256_SignAndEncrypt,
+                            ua.SecurityPolicyType.Basic256_Sign
+                                ]
 
             E.g. to limit the number of endpoints and disable no encryption:
 
-                set_security_policy(["Basic256_Sign", 
-                                        "Basic256_SignAndEncrypt"])
+                set_security_policy([
+                            ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt
+                            ua.SecurityPolicyType.Basic256_SignAndEncrypt])
 
         """
         self._security_policy = security_policy
@@ -260,19 +265,19 @@ class Server(object):
 
     def _setup_server_nodes(self):
         # to be called just before starting server since it needs all parameters to be setup
-        if "None" in self._security_policy:
+        if ua.SecurityPolicyType.NoSecurity in self._security_policy:
             self._set_endpoints()
             self._policies = [ua.SecurityPolicyFactory()]
 
-        if self._security_policy != ["None"]:
+        if self._security_policy != [ua.SecurityPolicyType.NoSecurity]:
             if not (self.certificate and self.private_key):
                 self.logger.warning("Endpoints other than open requested but private key and certificate are not set.")
                 return
 
-            if "None" in self._security_policy:
+            if ua.SecurityPolicyType.NoSecurity in self._security_policy:
                 self.logger.warning("Creating an open endpoint to the server, although encrypted endpoints are enabled.")
 
-            if "Basic128Rsa15_SignAndEncrypt" in self._security_policy:
+            if ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
                                     ua.MessageSecurityMode.SignAndEncrypt)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
@@ -280,7 +285,7 @@ class Server(object):
                                                                self.certificate,
                                                                self.private_key)
                                      )
-            if "Basic128Rsa15_Sign" in self._security_policy:
+            if ua.SecurityPolicyType.Basic128Rsa15_Sign in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
                                     ua.MessageSecurityMode.Sign)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
@@ -288,7 +293,7 @@ class Server(object):
                                                                self.certificate,
                                                                self.private_key)
                                      )
-            if "Basic256_SignAndEncrypt" in self._security_policy:
+            if ua.SecurityPolicyType.Basic256_SignAndEncrypt in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic256,
                                     ua.MessageSecurityMode.SignAndEncrypt)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
@@ -296,7 +301,7 @@ class Server(object):
                                                                self.certificate,
                                                                self.private_key)
                                      )
-            if "Basic256_Sign" in self._security_policy:
+            if ua.SecurityPolicyType.Basic256_Sign in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic256,
                                     ua.MessageSecurityMode.Sign)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
