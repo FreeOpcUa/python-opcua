@@ -1,0 +1,257 @@
+<?xml version='1.0' encoding='utf-8'?>
+<UANodeSet xmlns="http://opcfoundation.org/UA/2011/03/UANodeSet.xsd" xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <NamespaceUris>
+    <Uri />
+    <Uri>iab_namespace</Uri>
+  </NamespaceUris>
+  <Aliases>
+    <Alias Alias="Float">i=10</Alias>
+    <Alias Alias="String">i=12</Alias>
+    <Alias Alias="Organizes">i=35</Alias>
+    <Alias Alias="HasTypeDefinition">i=40</Alias>
+    <Alias Alias="HasProperty">i=46</Alias>
+    <Alias Alias="HasComponent">i=47</Alias>
+  </Aliases>
+  <UAObject BrowseName="2:iab" NodeId="ns=2;i=1" ParentNodeId="i=85">
+    <DisplayName>iab</DisplayName>
+    <Description>The base type for all object nodes.</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="Organizes">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=58</Reference>
+      <Reference ReferenceType="HasComponent">ns=2;i=2</Reference>
+      <Reference ReferenceType="HasComponent">ns=2;i=3</Reference>
+      <Reference ReferenceType="HasComponent">ns=2;i=4</Reference>
+      <Reference ReferenceType="HasComponent">ns=2;i=5</Reference>
+    </References>
+  </UAObject>
+  <UAObject BrowseName="2:Analytics" NodeId="ns=2;i=2" ParentNodeId="ns=2;i=1">
+    <DisplayName>Analytics</DisplayName>
+    <Description>The base type for all object nodes.</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=2;i=1</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=58</Reference>
+      <Reference ReferenceType="HasComponent">ns=2;i=6</Reference>
+    </References>
+  </UAObject>
+  <UAObject BrowseName="2:cRIO" NodeId="ns=2;i=3" ParentNodeId="ns=2;i=1">
+    <DisplayName>cRIO</DisplayName>
+    <Description>The base type for all object nodes.</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=2;i=1</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=58</Reference>
+      <Reference ReferenceType="HasComponent">ns=2;i=10</Reference>
+    </References>
+  </UAObject>
+  <UAObject BrowseName="2:Twin" NodeId="ns=2;i=4" ParentNodeId="ns=2;i=1">
+    <DisplayName>Twin</DisplayName>
+    <Description>The base type for all object nodes.</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=2;i=1</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=58</Reference>
+      <Reference ReferenceType="HasComponent">ns=2;i=19</Reference>
+    </References>
+  </UAObject>
+  <UAObject BrowseName="2:Customer" NodeId="ns=2;i=5" ParentNodeId="ns=2;i=1">
+    <DisplayName>Customer</DisplayName>
+    <Description>The base type for all object nodes.</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=2;i=1</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=58</Reference>
+      <Reference ReferenceType="HasComponent">ns=2;i=20</Reference>
+    </References>
+  </UAObject>
+  <UAObject BrowseName="2:Measurement_stats" NodeId="ns=2;i=6" ParentNodeId="ns=2;i=2">
+    <DisplayName>Measurement_stats</DisplayName>
+    <Description>Measurement_stats</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=2;i=2</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=61</Reference>
+      <Reference ReferenceType="HasComponent">ns=2;i=7</Reference>
+      <Reference ReferenceType="HasComponent">ns=2;i=21</Reference>
+    </References>
+  </UAObject>
+  <UAVariable AccessLevel="15" BrowseName="2:temp_mean" DataType="Float" NodeId="ns=2;i=7" ParentNodeId="ns=2;i=6" UserAccessLevel="15">
+    <DisplayName>temp_mean</DisplayName>
+    <Description>temp_mean</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=2;i=6</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+      <Reference ReferenceType="HasProperty">ns=2;i=8</Reference>
+      <Reference ReferenceType="HasProperty">ns=2;i=9</Reference>
+    </References>
+    <Value>
+      <uax:Float>9.99</uax:Float>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="2:aproperty_float" DataType="Float" NodeId="ns=2;i=8" ParentNodeId="ns=2;i=7">
+    <DisplayName>aproperty_float</DisplayName>
+    <Description>aproperty_float</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">ns=2;i=7</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+    </References>
+    <Value>
+      <uax:Float>9.99</uax:Float>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="2:aproperty_string" DataType="String" NodeId="ns=2;i=9" ParentNodeId="ns=2;i=7">
+    <DisplayName>aproperty_string</DisplayName>
+    <Description>aproperty_string</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">ns=2;i=7</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+    </References>
+    <Value>
+      <uax:String>9.99</uax:String>
+    </Value>
+  </UAVariable>
+  <UAObject BrowseName="2:measurements" NodeId="ns=2;i=10" ParentNodeId="ns=2;i=3">
+    <DisplayName>measurements</DisplayName>
+    <Description>measurements</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=2;i=3</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=61</Reference>
+      <Reference ReferenceType="HasComponent">ns=2;i=12</Reference>
+      <Reference ReferenceType="HasComponent">ns=2;i=15</Reference>
+      <Reference ReferenceType="HasProperty">ns=2;i=18</Reference>
+      <Reference ReferenceType="HasComponent">ns=2;s=testvariable</Reference>
+      <Reference ReferenceType="HasComponent">ns=2;s=anothertest</Reference>
+    </References>
+  </UAObject>
+  <UAVariable AccessLevel="15" BrowseName="2:temperature" DataType="Float" Historizing="True" NodeId="ns=2;i=12" ParentNodeId="ns=2;i=10" UserAccessLevel="15">
+    <DisplayName>temperature</DisplayName>
+    <Description>temperature</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=2;i=10</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+      <Reference ReferenceType="HasProperty">ns=2;i=13</Reference>
+      <Reference ReferenceType="HasProperty">ns=2;i=14</Reference>
+    </References>
+    <Value>
+      <uax:Float>9.99</uax:Float>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="2:range" DataType="Float" NodeId="ns=2;i=13" ParentNodeId="ns=2;i=12">
+    <DisplayName>range</DisplayName>
+    <Description>range</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">ns=2;i=12</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+    </References>
+    <Value>
+      <uax:Float>9.99</uax:Float>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="2:accuracy" DataType="Float" NodeId="ns=2;i=14" ParentNodeId="ns=2;i=12">
+    <DisplayName>accuracy</DisplayName>
+    <Description>accuracy</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">ns=2;i=12</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+    </References>
+    <Value>
+      <uax:Float>9.99</uax:Float>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="15" BrowseName="2:vibration" DataType="Float" Historizing="True" NodeId="ns=2;i=15" ParentNodeId="ns=2;i=10" UserAccessLevel="15">
+    <DisplayName>vibration</DisplayName>
+    <Description>vibration</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=2;i=10</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+      <Reference ReferenceType="HasProperty">ns=2;i=16</Reference>
+      <Reference ReferenceType="HasProperty">ns=2;i=17</Reference>
+    </References>
+    <Value>
+      <uax:Float>9.99</uax:Float>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="2:range" DataType="Float" NodeId="ns=2;i=16" ParentNodeId="ns=2;i=15">
+    <DisplayName>range</DisplayName>
+    <Description>range</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">ns=2;i=15</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+    </References>
+    <Value>
+      <uax:Float>9.99</uax:Float>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="2:accuracy" DataType="Float" NodeId="ns=2;i=17" ParentNodeId="ns=2;i=15">
+    <DisplayName>accuracy</DisplayName>
+    <Description>accuracy</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">ns=2;i=15</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+    </References>
+    <Value>
+      <uax:Float>9.99</uax:Float>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="2:timestep" DataType="Float" NodeId="ns=2;i=18" ParentNodeId="ns=2;i=10">
+    <DisplayName>timestep</DisplayName>
+    <Description>timestep</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">ns=2;i=10</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+    </References>
+    <Value>
+      <uax:Float>9.99</uax:Float>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="2:testvariable" DataType="Float" NodeId="ns=2;i=19" ParentNodeId="ns=2;i=4">
+    <DisplayName>testvariable</DisplayName>
+    <Description>testvariable</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=2;i=4</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Float>9.99</uax:Float>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="2:testvariable" DataType="Float" NodeId="ns=2;i=20" ParentNodeId="ns=2;i=5">
+    <DisplayName>testvariable</DisplayName>
+    <Description>testvariable</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=2;i=5</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Float>9.99</uax:Float>
+    </Value>
+  </UAVariable>
+  <UAVariable AccessLevel="15" BrowseName="2:vibration_something" DataType="Float" NodeId="ns=2;i=21" ParentNodeId="ns=2;i=6" UserAccessLevel="15">
+    <DisplayName>vibration_something</DisplayName>
+    <Description>vibration_something</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=2;i=6</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Float>9.99</uax:Float>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="2:testvariable" DataType="Float" Historizing="True" NodeId="ns=2;s=testvariable" ParentNodeId="ns=2;i=10">
+    <DisplayName>testvariable</DisplayName>
+    <Description>testvariable</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=2;i=10</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Float>9.99</uax:Float>
+    </Value>
+  </UAVariable>
+  <UAVariable BrowseName="2:anothertest" DataType="Float" NodeId="ns=2;s=anothertest" ParentNodeId="ns=2;i=10" UserAccessLevel="15">
+    <DisplayName>anothertest</DisplayName>
+    <Description>anothertest</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">ns=2;i=10</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=63</Reference>
+    </References>
+    <Value>
+      <uax:Float>9.99</uax:Float>
+    </Value>
+  </UAVariable>
+</UANodeSet>
