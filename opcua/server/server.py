@@ -217,22 +217,22 @@ class Server:
     def set_security_policy(self, security_policy):
         """
             Method setting up the security policies for connections
-            to the server. During server object initialization, all
-            possible endpoints are enabled:
+            to the server, where security_policy is a list of integers.
+            During server initialization, all endpoints are enabled:
 
-                security_policy = ["None",
-                                    "Basic128Rsa15_Sign",
-                                    "Basic128Rsa15_SignAndEncrypt",
-                                    "Basic256_Sign",
-                                    "Basic256_SignAndEncrypt"]
-
-            where security_policy is a list of strings. "None" enables an
-            endpoint without any security.
+                security_policy = [
+                            ua.SecurityPolicyType.NoSecurity,
+                            ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt,
+                            ua.SecurityPolicyType.Basic128Rsa15_Sign,
+                            ua.SecurityPolicyType.Basic256_SignAndEncrypt,
+                            ua.SecurityPolicyType.Basic256_Sign
+                                ]
 
             E.g. to limit the number of endpoints and disable no encryption:
 
-                set_security_policy(["Basic256_Sign",
-                                        "Basic256_SignAndEncrypt"])
+                set_security_policy([
+                            ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt
+                            ua.SecurityPolicyType.Basic256_SignAndEncrypt])
 
         """
         self._security_policy = security_policy
@@ -266,33 +266,32 @@ class Server:
                 return
 
             if ua.SecurityPolicyType.NoSecurity in self._security_policy:
-                self.logger.warning(
-                    "Creating an open endpoint to the server, although encrypted endpoints are enabled.")
+                self.logger.warning("Creating an open endpoint to the server, although encrypted endpoints are enabled.")
 
             if ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
                     ua.MessageSecurityMode.SignAndEncrypt)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
-                    ua.MessageSecurityMode.SignAndEncrypt,
-                    self.certificate,
-                    self.private_key)
-                )
+                                                               ua.MessageSecurityMode.SignAndEncrypt,
+                                                               self.certificate,
+                                                               self.private_key)
+                                     )
             if ua.SecurityPolicyType.Basic128Rsa15_Sign in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
                     ua.MessageSecurityMode.Sign)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
-                    ua.MessageSecurityMode.Sign,
-                    self.certificate,
-                    self.private_key)
-                )
+                                                               ua.MessageSecurityMode.Sign,
+                                                               self.certificate,
+                                                               self.private_key)
+                                     )
             if ua.SecurityPolicyType.Basic256_SignAndEncrypt in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic256,
                     ua.MessageSecurityMode.SignAndEncrypt)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
-                    ua.MessageSecurityMode.SignAndEncrypt,
-                    self.certificate,
-                    self.private_key)
-                )
+                                                               ua.MessageSecurityMode.SignAndEncrypt,
+                                                               self.certificate,
+                                                               self.private_key)
+                                     )
             if ua.SecurityPolicyType.Basic256_Sign in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic256,
                     ua.MessageSecurityMode.Sign)
