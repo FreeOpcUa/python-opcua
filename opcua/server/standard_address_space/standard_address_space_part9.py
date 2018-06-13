@@ -1043,7 +1043,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("TrueState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Enabled')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Enabled"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -1081,7 +1081,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("FalseState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Disabled')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Disabled"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -2055,7 +2055,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("TrueState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Active')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Active"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -2093,7 +2093,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("FalseState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Inactive')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Inactive"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -2736,7 +2736,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("TrueState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Acknowledged')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Acknowledged"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -2774,7 +2774,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("FalseState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Unacknowledged')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Unacknowledged"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -2958,7 +2958,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("TrueState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Confirmed')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Confirmed"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -2996,7 +2996,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("FalseState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Unconfirmed')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Unconfirmed"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -3750,7 +3750,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("TrueState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Active')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Active"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -3788,7 +3788,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("FalseState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Inactive')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Inactive"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -4009,7 +4009,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("TrueState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Suppressed')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Suppressed"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -4047,7 +4047,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("FalseState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Unsuppressed')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Unsuppressed"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -4224,7 +4224,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("TrueState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Out of Service')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Out of Service"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -4262,7 +4262,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("FalseState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'In Service')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("In Service"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -5069,7 +5069,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("TrueState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Silenced')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Silenced"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -5107,7 +5107,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("FalseState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Not Silenced')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Not Silenced"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -5431,7 +5431,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("TrueState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Latched')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Latched"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -5469,7 +5469,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("FalseState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Unlatched')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Unlatched"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -10547,7 +10547,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("TrueState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'HighHigh active')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("HighHigh active"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -10585,7 +10585,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("FalseState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'HighHigh inactive')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("HighHigh inactive"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -10769,7 +10769,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("TrueState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'High active')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("High active"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -10807,7 +10807,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("FalseState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'High inactive')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("High inactive"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -10991,7 +10991,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("TrueState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Low active')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Low active"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -11029,7 +11029,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("FalseState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'Low inactive')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("Low inactive"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -11213,7 +11213,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("TrueState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'LowLow active')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("LowLow active"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
@@ -11251,7 +11251,7 @@ def create_standard_address_space_Part9(server):
     attrs = ua.VariableAttributes()
     attrs.DisplayName = LocalizedText("FalseState")
     attrs.DataType = ua.NodeId(ua.ObjectIds.LocalizedText)
-    attrs.Value = ua.Variant([('Locale', 'en'), ('Text', 'LowLow inactive')], ua.VariantType.LocalizedText)
+    attrs.Value = ua.Variant(LocalizedText("LowLow inactive"), ua.VariantType.LocalizedText)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
     server.add_nodes([node])
