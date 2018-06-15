@@ -360,8 +360,10 @@ class Server(object):
         self._setup_server_nodes()
         self.iserver.start()
         try:
-            self.bserver = BinaryServer(self.iserver, self.endpoint.hostname, self.endpoint.port)
+            if not self.bserver:
+                self.bserver = BinaryServer(self.iserver, self.endpoint.hostname, self.endpoint.port)
             self.bserver.set_policies(self._policies)
+            self.bserver.set_loop(self.iserver.loop)
             self.bserver.start()
         except Exception as exp:
             self.iserver.stop()
@@ -374,6 +376,7 @@ class Server(object):
         for client in self._discovery_clients.values():
             client.disconnect()
         self.bserver.stop()
+        self.bserver.set_loop(None)
         self.iserver.stop()
 
     def get_root_node(self):
