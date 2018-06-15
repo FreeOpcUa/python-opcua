@@ -22,7 +22,7 @@ from opcua.client.client import Client
 from opcua.crypto import security_policies
 from opcua.common.event_objects import BaseEvent
 from opcua.common.shortcuts import Shortcuts
-from opcua.common.structures import load_type_definitions
+from opcua.common.structures import load_type_definitions, load_enums
 from opcua.common.xmlexporter import XmlExporter
 from opcua.common.xmlimporter import XmlImporter
 from opcua.common.ua_utils import get_nodes_of_namespace
@@ -620,4 +620,15 @@ class Server(object):
         self.iserver.isession.add_method_callback(node.nodeid, callback)
 
     def load_type_definitions(self, nodes=None):
+        """
+        load custom structures from our server.
+        Server side this can be used to create python objects from custom structures
+        imported through xml into server
+        """
         return load_type_definitions(self, nodes)
+
+    def load_enums(self):
+        """
+        load UA structures and generate python Enums in ua module for custom enums in server
+        """
+        return load_enums(self)

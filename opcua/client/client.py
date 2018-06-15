@@ -16,7 +16,7 @@ from opcua.common.subscription import Subscription
 from opcua.common import utils
 from opcua.crypto import security_policies
 from opcua.common.shortcuts import Shortcuts
-from opcua.common.structures import load_type_definitions
+from opcua.common.structures import load_type_definitions, load_enums
 use_crypto = True
 try:
     from opcua.crypto import uacrypto
@@ -570,4 +570,16 @@ class Client(object):
         return len(uries) - 1
 
     def load_type_definitions(self, nodes=None):
+        """
+        Load custom types (custom structures/extension objects) definition from server
+        Generate Python classes for custom structures/extension objects defined in server
+        These classes will available in ua module
+        """
         return load_type_definitions(self, nodes)
+
+    def load_enums(self):
+        """
+        generate Python enums for custom enums on server.
+        This enums will be available in ua module
+        """
+        return load_enums(self)
