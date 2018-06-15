@@ -91,13 +91,16 @@ class BinaryServer(object):
         self.hostname = hostname
         self.port = port
         self.iserver = internal_server
-        self.loop = internal_server.loop
+        self.loop = None
         self._server = None
         self._policies = []
         self.clients = []
 
     def set_policies(self, policies):
         self._policies = policies
+
+    def set_loop(self, loop):
+        self.loop = loop
 
     def start(self):
         prop = dict(
@@ -128,3 +131,4 @@ class BinaryServer(object):
         if self._server:
             self.loop.call_soon(self._server.close)
             self.loop.run_coro_and_wait(self._server.wait_closed())
+        self.loop = None

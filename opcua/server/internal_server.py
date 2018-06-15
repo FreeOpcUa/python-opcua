@@ -65,9 +65,9 @@ class InternalServer(object):
 
         self.load_standard_address_space(shelffile)
 
-        self.loop = utils.ThreadLoop()
+        self.loop = None
         self.asyncio_transports = []
-        self.subscription_service = SubscriptionService(self.loop, self.aspace)
+        self.subscription_service = SubscriptionService(self.aspace)
 
         self.history_manager = HistoryManager(self)
 
@@ -131,7 +131,9 @@ class InternalServer(object):
         self.logger.info("starting internal server")
         for edp in self.endpoints:
             self._known_servers[edp.Server.ApplicationUri] = ServerDesc(edp.Server)
+        self.loop = utils.ThreadLoop()
         self.loop.start()
+        self.subscription_service.set_loop(self.loop)
         Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_State)).set_value(0, ua.VariantType.Int32)
         Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_StartTime)).set_value(datetime.utcnow())
         if not self.disabled_clock:
@@ -140,7 +142,10 @@ class InternalServer(object):
     def stop(self):
         self.logger.info("stopping internal server")
         self.isession.close_session()
-        self.loop.stop()
+        if self.loop:
+            self.loop.stop()
+            self.loop = None
+        self.subscription_service.set_loop(None)
         self.history_manager.stop()
 
     def _set_current_time(self):
