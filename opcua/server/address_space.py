@@ -518,7 +518,14 @@ class AddressSpace(object):
         if idx in self._nodeid_counter:
             self._nodeid_counter[idx] += 1
         else:
-            self._nodeid_counter[idx] = 1
+            # from 1 start may causes maximum recursion depth exceeded exception,
+            #  if there are lots of nodes already in address space
+            # here get the biggest number from the address space, and add one
+            identifier_list = sorted([i.Identifier for i in self._nodes.keys() if i.NamespaceIndex == idx])
+            if identifier_list:
+                self._nodeid_counter[idx] = identifier_list[-1]
+            else:
+                self._nodeid_counter[idx] = 1
         nodeid = ua.NodeId(self._nodeid_counter[idx], idx)
         with self._lock:  # OK since reentrant lock
             while True:

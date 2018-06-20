@@ -39,7 +39,8 @@ def get_default_value(uatype, enums):
         return 0
     elif uatype in enums:
         return "ua." + uatype + "(" + enums[uatype] + ")"
-    elif issubclass(eval("ua."+uatype), IntEnum):
+    # Cause an exception when an uatype is not registered yet...
+    elif uatype in ua.__dict__ and issubclass(eval("ua."+uatype), IntEnum):
         return "ua." + uatype + "(" + list(eval("ua."+uatype))[0] + ")"
     else:
         return "ua." + uatype + "()"
