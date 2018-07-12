@@ -2,6 +2,7 @@ import unittest
 import os
 import shelve
 import time
+from enum import Enum, EnumMeta
 
 from tests_common import CommonTests, add_server_methods
 from tests_xml import XmlTests
@@ -480,6 +481,38 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
 
         self.assertRaises(ValueError, ua_utils.get_nodes_of_namespace, self.opc, namespaces='non_existing_ns')
 
+    def test_load_enum_strings(self):
+        dt = self.opc.nodes.enum_data_type.add_data_type(0, "MyStringEnum")
+        dt.add_variable(0, "EnumStrings", [ua.LocalizedText("e1"), ua.LocalizedText("e2"), ua.LocalizedText("e3"), ua.LocalizedText("e 4")])
+        self.opc.load_enums()
+        e = getattr(ua, "MyStringEnum")
+        self.assertIsInstance(e, EnumMeta)
+        self.assertTrue(hasattr(e, "e1"))
+        self.assertTrue(hasattr(e, "e4"))
+        self.assertEqual(getattr(e, "e4"), 3)
+
+    def test_load_enum_values(self):
+        dt = self.opc.nodes.enum_data_type.add_data_type(0, "MyValuesEnum")
+        v1 = ua.EnumValueType()
+        v1.DisplayName.Text = "v1"
+        v1.Value = 2
+        v2 = ua.EnumValueType()
+        v2.DisplayName.Text = "v2"
+        v2.Value = 3
+        v3 = ua.EnumValueType()
+        v3.DisplayName.Text = "v 3 "
+        v3.Value = 4
+        dt.add_variable(0, "EnumValues", [v1, v2, v3])
+        self.opc.load_enums()
+        e = getattr(ua, "MyValuesEnum")
+        self.assertIsInstance(e, EnumMeta)
+        self.assertTrue(hasattr(e, "v1"))
+        self.assertTrue(hasattr(e, "v3"))
+        self.assertEqual(getattr(e, "v3"), 4)
+
+
+
+
 def check_eventgenerator_SourceServer(test, evgen):
     server = test.opc.get_server_node()
     test.assertEqual(evgen.event.SourceName, server.get_browse_name().Name)
@@ -561,6 +594,7 @@ class TestServerCaching(unittest.TestCase):
         self.assertEqual(server.get_node(id).get_value(), 123)
 
         os.remove(path)
+
 
 class TestServerStartError(unittest.TestCase):
 
