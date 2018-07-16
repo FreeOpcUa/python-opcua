@@ -332,7 +332,7 @@ def load_enums(server, env=None):
             try:
                 c = _get_enum_values(name, node)
             except ua.UaError as ex:
-                logger.warning("Node %s, %s under DataTypes/Enumeration, does not seem to have a child called EnumString or EumValue: %s", name, node, ex)
+                logger.info("Node %s, %s under DataTypes/Enumeration, does not seem to have a child called EnumString or EumValue: %s", name, node, ex)
                 continue
         if not hasattr(ua, c.name):
             model.append(c)
