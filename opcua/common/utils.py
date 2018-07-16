@@ -168,7 +168,7 @@ class ThreadLoop(threading.Thread):
 
     def _create_task(self, future, coro, cb=None):
         #task = self.loop.create_task(coro)
-        task = asyncio.async(coro, loop=self.loop) 
+        task = asyncio.ensure_future(coro, loop=self.loop) 
         if cb:
             task.add_done_callback(cb)
         future.set_result(task)
