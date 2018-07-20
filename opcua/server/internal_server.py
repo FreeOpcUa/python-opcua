@@ -87,7 +87,7 @@ class InternalServer(object):
         ns_node.set_value(uries)
 
     def load_standard_address_space(self, shelffile=None):
-        if shelffile is not None and os.path.isfile(shelffile):
+        if (shelffile is not None) and (os.path.isfile(shelffile) or os.path.isfile(shelffile+".db")):
             # import address space from shelf
             self.aspace.load_aspace_shelf(shelffile)
         else:
