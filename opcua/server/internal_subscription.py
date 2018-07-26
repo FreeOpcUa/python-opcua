@@ -335,16 +335,18 @@ class InternalSubscription(object):
     def _pop_triggered_datachanges(self, result):
         if self._triggered_datachanges:
             notif = ua.DataChangeNotification()
-            notif.MonitoredItems = [item for sublist in self._triggered_datachanges.values() for item in sublist]
-            self._triggered_datachanges = {}
+            with self._lock:
+                notif.MonitoredItems = [item for sublist in self._triggered_datachanges.values() for item in sublist]
+                self._triggered_datachanges = {}
             self.logger.debug("sending datachanges notification with %s events", len(notif.MonitoredItems))
             result.NotificationMessage.NotificationData.append(notif)
 
     def _pop_triggered_events(self, result):
         if self._triggered_events:
             notif = ua.EventNotificationList()
-            notif.Events = [item for sublist in self._triggered_events.values() for item in sublist]
-            self._triggered_events = {}
+            with self._lock:
+                notif.Events = [item for sublist in self._triggered_events.values() for item in sublist]
+                self._triggered_events = {}
             result.NotificationMessage.NotificationData.append(notif)
             self.logger.debug("sending event notification with %s events", len(notif.Events))
 
@@ -360,15 +362,15 @@ class InternalSubscription(object):
         with self._lock:
             self._publish_cycles_count = 0
             for nb in acks:
-                if nb in self._not_acknowledged_results:
-                    self._not_acknowledged_results.pop(nb)
+                self._not_acknowledged_results.pop(nb, None)
 
     def republish(self, nb):
         self.logger.info("re-publish request for ack %s in subscription %s", nb, self)
         with self._lock:
-            if nb in self._not_acknowledged_results:
+            notificationMessage = self._not_acknowledged_results.pop(nb, None)
+            if notificationMessage:
                 self.logger.info("re-publishing ack %s in subscription %s", nb, self)
-                return self._not_acknowledged_results[nb].NotificationMessage
+                return notificationMessage
             else:
                 self.logger.info("Error request to re-published non existing ack %s in subscription %s", nb, self)
                 return ua.NotificationMessage()
@@ -383,13 +385,14 @@ class InternalSubscription(object):
         self._triggered_statuschanges.append(code)
 
     def _enqueue_event(self, mid, eventdata, size, queue):
-        if mid not in queue:
-            queue[mid] = [eventdata]
-            return
-        if size != 0:
-            if len(queue[mid]) >= size:
-                queue[mid].pop(0)
-        queue[mid].append(eventdata)
+        with self._lock:
+            if mid not in queue:
+                queue[mid] = [eventdata]
+                return
+            if size != 0:
+                if len(queue[mid]) >= size:
+                    queue[mid].pop(0)
+            queue[mid].append(eventdata)
 
 
 class WhereClauseEvaluator(object):
