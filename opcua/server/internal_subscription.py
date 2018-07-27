@@ -335,18 +335,16 @@ class InternalSubscription(object):
     def _pop_triggered_datachanges(self, result):
         if self._triggered_datachanges:
             notif = ua.DataChangeNotification()
-            with self._lock:
-                notif.MonitoredItems = [item for sublist in self._triggered_datachanges.values() for item in sublist]
-                self._triggered_datachanges = {}
+            notif.MonitoredItems = [item for sublist in self._triggered_datachanges.values() for item in sublist]
+            self._triggered_datachanges = {}
             self.logger.debug("sending datachanges notification with %s events", len(notif.MonitoredItems))
             result.NotificationMessage.NotificationData.append(notif)
 
     def _pop_triggered_events(self, result):
         if self._triggered_events:
             notif = ua.EventNotificationList()
-            with self._lock:
-                notif.Events = [item for sublist in self._triggered_events.values() for item in sublist]
-                self._triggered_events = {}
+            notif.Events = [item for sublist in self._triggered_events.values() for item in sublist]
+            self._triggered_events = {}
             result.NotificationMessage.NotificationData.append(notif)
             self.logger.debug("sending event notification with %s events", len(notif.Events))
 
