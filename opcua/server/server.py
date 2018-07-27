@@ -381,7 +381,6 @@ class Server(object):
         for client in self._discovery_clients.values():
             client.disconnect()
         self.bserver.stop()
-        self.bserver.set_loop(None)
         self.iserver.stop()
 
     def get_root_node(self):
