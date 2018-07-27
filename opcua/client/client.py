@@ -58,7 +58,11 @@ class KeepAlive(Thread):
             if self._dostop:
                 break
             self.logger.debug("renewing channel")
-            self.client.open_secure_channel(renew=True)
+            try:
+                self.client.open_secure_channel(renew=True)
+            except ConnectionError as e:
+                self.logger.debug('keepalive failed: {:s}'.format(str(e)))
+                break
             val = server_state.get_value()
             self.logger.debug("server state is: %s ", val)
         self.logger.debug("keepalive thread has stopped")
