@@ -1,5 +1,6 @@
 from __future__ import division  # support for python2
 from threading import Thread, Condition
+import concurrent.futures
 import logging
 try:
     from urllib.parse import urlparse
@@ -60,8 +61,8 @@ class KeepAlive(Thread):
             self.logger.debug("renewing channel")
             try:
                 self.client.open_secure_channel(renew=True)
-            except ConnectionError as e:
-                self.logger.debug('keepalive failed: {:s}'.format(str(e)))
+            except concurrent.futures.TimeoutError:
+                self.logger.debug("keepalive failed: timeout on open_secure_channel()")
                 break
             val = server_state.get_value()
             self.logger.debug("server state is: %s ", val)

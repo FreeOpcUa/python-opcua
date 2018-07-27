@@ -5,7 +5,7 @@ Low level binary client
 import logging
 import socket
 from threading import Thread, Lock
-from concurrent.futures import Future, TimeoutError
+from concurrent.futures import Future
 from functools import partial
 
 from opcua import ua
@@ -173,10 +173,7 @@ class UASocketClient(object):
 
         # FIXME: we have a race condition here
         # we can get a packet with the new token id before we reach to store it..
-        try:
-            response = struct_from_binary(ua.OpenSecureChannelResponse, future.result(self.timeout))
-        except TimeoutError:
-            raise ConnectionError('OpenSecureChannelRequest() timeout')
+        response = struct_from_binary(ua.OpenSecureChannelResponse, future.result(self.timeout))
         response.ResponseHeader.ServiceResult.check()
         self._connection.set_channel(response.Parameters)
         return response.Parameters
