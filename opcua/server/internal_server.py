@@ -4,7 +4,7 @@ Can be used on server side or to implement binary/https opc-ua servers
 """
 
 from datetime import datetime, timedelta
-from copy import copy, deepcopy
+from copy import copy
 import os
 import logging
 from threading import Lock
