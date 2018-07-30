@@ -635,7 +635,7 @@ class Node:
             await self.add_reference(rule, ua.ObjectIds.HasModellingRule, True, False)
 
     def add_folder(self, nodeid, bname):
-        return  opcua.common.manage_nodes.create_folder(self, nodeid, bname)
+        return opcua.common.manage_nodes.create_folder(self, nodeid, bname)
 
     def add_object(self, nodeid, bname, objecttype=None):
         return opcua.common.manage_nodes.create_object(self, nodeid, bname, objecttype)
