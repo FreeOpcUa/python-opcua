@@ -62,8 +62,8 @@ async def test_objects_anonymous(server, client):
         await objects.add_folder(3, 'MyFolder')
 
 
-async def test_folder_anonymous(server, client):
-    objects = client.get_objects_node()
+async def test_folder_anonymous(server, admin_client, client):
+    objects = admin_client.get_objects_node()
     f = await objects.add_folder(3, 'MyFolderRO')
     f_ro = client.get_node(f.nodeid)
     assert f == f_ro

@@ -313,6 +313,7 @@ class Node:
         """
         return properties of node.
         properties are child nodes with a reference of type HasProperty and a NodeClass of Variable
+        COROUTINE
         """
         return self.get_children(refs=ua.ObjectIds.HasProperty, nodeclassmask=ua.NodeClass.Variable)
 

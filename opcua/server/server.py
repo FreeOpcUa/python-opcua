@@ -455,17 +455,17 @@ class Server:
         await ev_gen.set_source(source)
         return ev_gen
 
-    def create_custom_data_type(self, idx, name, basetype=ua.ObjectIds.BaseDataType, properties=None):
+    async def create_custom_data_type(self, idx, name, basetype=ua.ObjectIds.BaseDataType, properties=None):
         if properties is None:
             properties = []
-        return self._create_custom_type(idx, name, basetype, properties, [], [])
+        return await self._create_custom_type(idx, name, basetype, properties, [], [])
 
-    def create_custom_event_type(self, idx, name, basetype=ua.ObjectIds.BaseEventType, properties=None):
+    async def create_custom_event_type(self, idx, name, basetype=ua.ObjectIds.BaseEventType, properties=None):
         if properties is None:
             properties = []
-        return self._create_custom_type(idx, name, basetype, properties, [], [])
+        return await self._create_custom_type(idx, name, basetype, properties, [], [])
 
-    def create_custom_object_type(self, idx, name, basetype=ua.ObjectIds.BaseObjectType, properties=None,
+    async def create_custom_object_type(self, idx, name, basetype=ua.ObjectIds.BaseObjectType, properties=None,
                                   variables=None, methods=None):
         if properties is None:
             properties = []
@@ -473,12 +473,12 @@ class Server:
             variables = []
         if methods is None:
             methods = []
-        return self._create_custom_type(idx, name, basetype, properties, variables, methods)
+        return await self._create_custom_type(idx, name, basetype, properties, variables, methods)
 
     # def create_custom_reference_type(self, idx, name, basetype=ua.ObjectIds.BaseReferenceType, properties=[]):
     # return self._create_custom_type(idx, name, basetype, properties)
 
-    def create_custom_variable_type(self, idx, name, basetype=ua.ObjectIds.BaseVariableType, properties=None,
+    async def create_custom_variable_type(self, idx, name, basetype=ua.ObjectIds.BaseVariableType, properties=None,
                                     variables=None, methods=None):
         if properties is None:
             properties = []
@@ -486,7 +486,7 @@ class Server:
             variables = []
         if methods is None:
             methods = []
-        return self._create_custom_type(idx, name, basetype, properties, variables, methods)
+        return await self._create_custom_type(idx, name, basetype, properties, variables, methods)
 
     async def _create_custom_type(self, idx, name, basetype, properties, variables, methods):
         if isinstance(basetype, Node):
