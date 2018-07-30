@@ -275,5 +275,3 @@ def data_type_to_string(dtype):
     else:
         string = dtype.to_string()
     return string
-
-
