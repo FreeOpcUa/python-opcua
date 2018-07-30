@@ -91,9 +91,9 @@ class Server:
         self.private_key = None
         self._policies = []
         self.nodes = Shortcuts(self.iserver.isession)
-        self.security_endpoints = ["None", "Basic128Rsa15_Sign",
-            "Basic128Rsa15_SignAndEncrypt",
-            "Basic256_Sign", "Basic256_SignAndEncrypt"]
+        self.security_endpoints = [
+            "None", "Basic128Rsa15_Sign", "Basic128Rsa15_SignAndEncrypt", "Basic256_Sign", "Basic256_SignAndEncrypt"
+        ]
         self.policyIDs = ["Anonymous", "Basic256", "Basic128", "Username"]
 
     async def init(self, shelf_file=None):
@@ -218,37 +218,54 @@ class Server:
 
         if self.certificate and self.private_key:
             if "Basic128Rsa15_Sign" in self.security_endpoints:
-                self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
-                                    ua.MessageSecurityMode.SignAndEncrypt)
-                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
-                                                           ua.MessageSecurityMode.SignAndEncrypt,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
+                self._set_endpoints(
+                    security_policies.SecurityPolicyBasic128Rsa15,
+                    ua.MessageSecurityMode.SignAndEncrypt)
+                self._policies.append(
+                    ua.SecurityPolicyFactory(
+                        security_policies.SecurityPolicyBasic128Rsa15,
+                        ua.MessageSecurityMode.SignAndEncrypt,
+                        self.certificate,
+                        self.private_key
+                    )
+                )
             if "Basic128Rsa15_SignAndEncrypt" in self.security_endpoints:
-                self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
-                                    ua.MessageSecurityMode.Sign)
-                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
-                                                           ua.MessageSecurityMode.Sign,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
+                self._set_endpoints(
+                    security_policies.SecurityPolicyBasic128Rsa15,
+                    ua.MessageSecurityMode.Sign)
+                self._policies.append(
+                    ua.SecurityPolicyFactory(
+                        security_policies.SecurityPolicyBasic128Rsa15,
+                        ua.MessageSecurityMode.Sign,
+                        self.certificate,
+                        self.private_key
+                    )
+                )
             if "Basic256_Sign" in self.security_endpoints:
-                self._set_endpoints(security_policies.SecurityPolicyBasic256,
-                                    ua.MessageSecurityMode.SignAndEncrypt)
-                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
-                                                           ua.MessageSecurityMode.SignAndEncrypt,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
+                self._set_endpoints(
+                    security_policies.SecurityPolicyBasic256,
+                    ua.MessageSecurityMode.SignAndEncrypt)
+                self._policies.append(
+                    ua.SecurityPolicyFactory(
+                        security_policies.SecurityPolicyBasic256,
+                        ua.MessageSecurityMode.SignAndEncrypt,
+                        self.certificate,
+                        self.private_key
+                    )
+                )
             if "Basic256_SignAndEncrypt" in self.security_endpoints:
-                self._set_endpoints(security_policies.SecurityPolicyBasic256,
-                                    ua.MessageSecurityMode.Sign)
-                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
-                                                           ua.MessageSecurityMode.Sign,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
+                self._set_endpoints(
+                    security_policies.SecurityPolicyBasic256,
+                    ua.MessageSecurityMode.Sign)
+                self._policies.append(
+                    ua.SecurityPolicyFactory(
+                        security_policies.SecurityPolicyBasic256,
+                        ua.MessageSecurityMode.Sign,
+                        self.certificate,
+                        self.private_key
+                    )
+                )
+
     def _set_endpoints(self, policy=ua.SecurityPolicy, mode=ua.MessageSecurityMode.None_):
         idtokens = []
         if "Anonymous" in self.policyIDs:
@@ -414,7 +431,7 @@ class Server:
         return self._create_custom_type(idx, name, basetype, properties, [], [])
 
     def create_custom_object_type(self, idx, name, basetype=ua.ObjectIds.BaseObjectType, properties=None,
-            variables=None, methods=None):
+                                  variables=None, methods=None):
         if properties is None:
             properties = []
         if variables is None:
@@ -427,7 +444,7 @@ class Server:
     # return self._create_custom_type(idx, name, basetype, properties)
 
     def create_custom_variable_type(self, idx, name, basetype=ua.ObjectIds.BaseVariableType, properties=None,
-            variables=None, methods=None):
+                                    variables=None, methods=None):
         if properties is None:
             properties = []
         if variables is None:
@@ -448,7 +465,8 @@ class Server:
             datatype = None
             if len(prop) > 2:
                 datatype = prop[2]
-            await custom_t.add_property(idx, prop[0], ua.get_default_value(prop[1]), varianttype=prop[1], datatype=datatype)
+            await custom_t.add_property(idx, prop[0], ua.get_default_value(prop[1]), varianttype=prop[1],
+                datatype=datatype)
         for variable in variables:
             datatype = None
             if len(variable) > 2:
