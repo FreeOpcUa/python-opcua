@@ -91,7 +91,7 @@ class Server:
         self.private_key = None
         self._policies = []
         self.nodes = Shortcuts(self.iserver.isession)
-        self._security_endpoints = ["Basic256_Sign", "Basic256_SignAndEncrypt"]
+        self._security_policy = ["Basic256_Sign", "Basic256_SignAndEncrypt"]
         self._policyIDs = ["Anonymous", "Basic256", "Basic128", "Username"]
 
     async def init(self, shelf_file=None):
