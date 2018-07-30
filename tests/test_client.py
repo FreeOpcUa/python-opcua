@@ -9,6 +9,7 @@ from opcua import ua
 from .tests_subscriptions import SubscriptionTests
 from .tests_common import CommonTests, add_server_methods
 from .tests_xml import XmlTests
+from .tests_enum_struct import add_server_custom_enum_struct
 
 port_num1 = 48510
 _logger = logging.getLogger(__name__)
@@ -40,6 +41,7 @@ async def server():
     await srv.init()
     srv.set_endpoint(f'opc.tcp://127.0.0.1:{port_num1}')
     await add_server_methods(srv)
+    await add_server_custom_enum_struct(srv)
     await srv.start()
     yield srv
     # stop the server
@@ -115,3 +117,12 @@ async def test_enumstrings_getvalue(server, client):
     """
     nenumstrings = client.get_node(ua.ObjectIds.AxisScaleEnumeration_EnumStrings)
     value = ua.Variant(await nenumstrings.get_value())
+
+
+async def test_custom_enum_struct(server, client):
+    client.load_type_definitions()
+    ns = await client.get_namespace_index('http://yourorganisation.org/struct_enum_example/')
+    myvar = client.get_node(ua.NodeId(6009, ns))
+    val = await myvar.get_value()
+    assert 242 == val.IntVal1
+    assert ua.ExampleEnum.EnumVal2 == val.EnumVal
