@@ -108,8 +108,8 @@ class Server:
         status.BuildInfo.BuildNumber = "0"
         status.BuildInfo.BuildDate = datetime.now()
         status.SecondsTillShutdown = 0
-        status_node.set_value(status)
-        build_node.set_value(status.BuildInfo)
+        await status_node.set_value(status)
+        await build_node.set_value(status.BuildInfo)
 
     async def __aenter__(self):
         await self.start()
