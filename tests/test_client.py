@@ -119,7 +119,7 @@ async def test_enumstrings_getvalue(server, client):
 
 
 async def test_custom_enum_struct(server, client):
-    client.load_type_definitions()
+    await client.load_type_definitions()
     ns = await client.get_namespace_index('http://yourorganisation.org/struct_enum_example/')
     myvar = client.get_node(ua.NodeId(6009, ns))
     val = await myvar.get_value()

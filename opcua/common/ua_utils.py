@@ -230,7 +230,7 @@ async def get_base_data_type(datatype):
     raise ua.UaError("Datatype must be a subtype of builtin types {0!s}".format(datatype))
 
 
-def get_nodes_of_namespace(server, namespaces=None):
+async def get_nodes_of_namespace(server, namespaces=None):
     """
     Get the nodes of one or more namespaces .      
     Args:
@@ -241,7 +241,7 @@ def get_nodes_of_namespace(server, namespaces=None):
     """
     if namespaces is None:
         namespaces = []
-    ns_available = server.get_namespace_array()
+    ns_available = await server.get_namespace_array()
 
     if not namespaces:
         namespaces = ns_available[1:]

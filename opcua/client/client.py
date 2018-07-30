@@ -515,6 +515,7 @@ class Client(object):
         return subscription
 
     def get_namespace_array(self):
+        """COROUTINE"""
         ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         return ns_node.get_value()
 
@@ -555,4 +556,5 @@ class Client(object):
         return len(uries) - 1
 
     def load_type_definitions(self, nodes=None):
+        """COROUTINE"""
         return load_type_definitions(self, nodes)

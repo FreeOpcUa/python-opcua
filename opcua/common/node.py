@@ -247,7 +247,6 @@ class Node:
         attributeid is a member of ua.AttributeIds
         datavalue is a ua.DataValue object
         """
-        _logger.info('Node set_attribute %r %r %r', self, attributeid, datavalue)
         attr = ua.WriteValue()
         attr.NodeId = self.nodeid
         attr.AttributeId = attributeid

@@ -90,7 +90,7 @@ class Tests(unittest.TestCase):
 
     @connect
     def test_get_namespace_array(self, client):
-        array = client.get_namespace_array()
+        array = await client.get_namespace_array()
         self.assertTrue(len(array) > 0)
 
     @connect

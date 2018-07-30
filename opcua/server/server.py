@@ -528,7 +528,7 @@ class Server:
         exp.build_etree(nodes)
         return exp.write_xml(path)
 
-    def export_xml_by_ns(self, path, namespaces=None):
+    async def export_xml_by_ns(self, path, namespaces=None):
         """
         Export nodes of one or more namespaces to an XML file.
         Namespaces used by nodes are always exported for consistency.
@@ -541,7 +541,7 @@ class Server:
         """
         if namespaces is None:
             namespaces = []
-        nodes = get_nodes_of_namespace(self, namespaces)
+        nodes = await get_nodes_of_namespace(self, namespaces)
         self.export_xml(nodes, path)
 
     def delete_nodes(self, nodes, recursive=False):
@@ -618,4 +618,5 @@ class Server:
         self.iserver.isession.add_method_callback(node.nodeid, callback)
 
     def load_type_definitions(self, nodes=None):
+        """COROUTINE"""
         return load_type_definitions(self, nodes)

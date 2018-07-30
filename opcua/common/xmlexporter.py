@@ -87,7 +87,7 @@ class XmlExporter(object):
             addr_idx_to_xml_idx[addr_idx] = xml_idx + 1
         return addr_idx_to_xml_idx
 
-    def _get_ns_idxs_of_nodes(self, nodes):
+    async def _get_ns_idxs_of_nodes(self, nodes):
         """
         get a list of all indexes used or references by nodes
         """
@@ -95,7 +95,7 @@ class XmlExporter(object):
         for node in nodes:
             node_idxs = [node.nodeid.NamespaceIndex]
             node_idxs.append(node.get_browse_name().NamespaceIndex)
-            node_idxs.extend(ref.NodeId.NamespaceIndex for ref in node.get_references())
+            node_idxs.extend(ref.NodeId.NamespaceIndex for ref in await node.get_references())
             node_idxs = list(set(node_idxs))  # remove duplicates
             for i in node_idxs:
                 if i != 0 and i not in idxs:
@@ -329,8 +329,8 @@ class XmlExporter(object):
         # insert behind the namespace element
         self.etree.getroot().insert(1, aliases_el)
 
-    def _add_ref_els(self, parent_el, obj):
-        refs = obj.get_references()
+    async def _add_ref_els(self, parent_el, obj):
+        refs = await obj.get_references()
         refs_el = Et.SubElement(parent_el, 'References')
 
         for ref in refs:

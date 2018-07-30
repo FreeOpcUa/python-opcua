@@ -236,7 +236,7 @@ from opcua import ua
                 return
 
 
-def load_type_definitions(server, nodes=None):
+async def load_type_definitions(server, nodes=None):
     """
     Download xml from given variable node defining custom structures.
     If no node is given, attemps to import variables from all nodes under
@@ -247,14 +247,14 @@ def load_type_definitions(server, nodes=None):
     """
     if nodes is None:
         nodes = []
-        for desc in server.nodes.opc_binary.get_children_descriptions():
+        for desc in await server.nodes.opc_binary.get_children_descriptions():
             if desc.BrowseName != ua.QualifiedName("Opc.Ua"):
                 nodes.append(server.get_node(desc.NodeId))
     
     structs_dict = {}
     generators = []
     for node in nodes:
-        xml = node.get_value()
+        xml = await node.get_value()
         xml = xml.decode("utf-8")
         generator = StructGenerator()
         generators.append(generator)
@@ -270,9 +270,9 @@ def load_type_definitions(server, nodes=None):
 
         # register classes
         # every children of our node should represent a class
-        for ndesc in node.get_children_descriptions():
+        for ndesc in await node.get_children_descriptions():
             ndesc_node = server.get_node(ndesc.NodeId)
-            ref_desc_list = ndesc_node.get_references(refs=ua.ObjectIds.HasDescription, direction=ua.BrowseDirection.Inverse)
+            ref_desc_list = await ndesc_node.get_references(refs=ua.ObjectIds.HasDescription, direction=ua.BrowseDirection.Inverse)
             if ref_desc_list:  #some server put extra things here
                 name = _clean_name(ndesc.BrowseName.Name)
                 if not name in structs_dict:

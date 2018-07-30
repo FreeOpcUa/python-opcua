@@ -257,7 +257,7 @@ def uawrite():
     print(args)
 
 
-def uals():
+async def uals():
     parser = argparse.ArgumentParser(description="Browse OPC-UA node and print result")
     add_common_args(parser)
     parser.add_argument("-l",
@@ -277,46 +277,46 @@ def uals():
         args.long_format = 1
 
     client = Client(args.url, timeout=args.timeout)
-    client.set_security_string(args.security)
-    client.connect()
+    await client.set_security_string(args.security)
+    await client.connect()
     try:
         node = get_node(client, args)
         print("Browsing node {0} at {1}\n".format(node, args.url))
         if args.long_format == 0:
-            _lsprint_0(node, args.depth - 1)
+            await _lsprint_0(node, args.depth - 1)
         elif args.long_format == 1:
-            _lsprint_1(node, args.depth - 1)
+            await _lsprint_1(node, args.depth - 1)
         else:
             _lsprint_long(node, args.depth - 1)
     finally:
-        client.disconnect()
+        await client.disconnect()
     sys.exit(0)
     print(args)
 
 
-def _lsprint_0(node, depth, indent=""):
+async def _lsprint_0(node, depth, indent=""):
     if not indent:
         print("{0:30} {1:25}".format("DisplayName", "NodeId"))
         print("")
-    for desc in node.get_children_descriptions():
+    for desc in await node.get_children_descriptions():
         print("{0}{1:30} {2:25}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string()))
         if depth:
-            _lsprint_0(Node(node.server, desc.NodeId), depth - 1, indent + "  ")
+            await _lsprint_0(Node(node.server, desc.NodeId), depth - 1, indent + "  ")
 
 
-def _lsprint_1(node, depth, indent=""):
+async def _lsprint_1(node, depth, indent=""):
     if not indent:
         print("{0:30} {1:25} {2:25} {3:25}".format("DisplayName", "NodeId", "BrowseName", "Value"))
         print("")
 
-    for desc in node.get_children_descriptions():
+    for desc in await node.get_children_descriptions():
         if desc.NodeClass == ua.NodeClass.Variable:
-            val = Node(node.server, desc.NodeId).get_value()
+            val = await Node(node.server, desc.NodeId).get_value()
             print("{0}{1:30} {2!s:25} {3!s:25}, {4!s:3}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string(), desc.BrowseName.to_string(), val))
         else:
             print("{0}{1:30} {2!s:25} {3!s:25}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string(), desc.BrowseName.to_string()))
         if depth:
-            _lsprint_1(Node(node.server, desc.NodeId), depth - 1, indent + "  ")
+            await _lsprint_1(Node(node.server, desc.NodeId), depth - 1, indent + "  ")
 
 
 def _lsprint_long(pnode, depth, indent=""):
