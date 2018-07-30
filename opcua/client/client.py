@@ -77,6 +77,7 @@ class Client(object):
         """
         Find endpoint with required security mode and policy URI
         """
+        _logger.info('find_endpoint %r %r %r', endpoints, security_mode, policy_uri)
         for ep in endpoints:
             if (ep.EndpointUrl.startswith(ua.OPC_TCP_SCHEME) and
                     ep.SecurityMode == security_mode and
@@ -527,6 +528,7 @@ class Client(object):
     def import_xml(self, path=None, xmlstring=None):
         """
         Import nodes defined in xml
+        COROUTINE
         """
         importer = XmlImporter(self)
         return importer.import_xml(path, xmlstring)

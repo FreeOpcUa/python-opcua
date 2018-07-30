@@ -26,14 +26,14 @@ class XmlImporter(object):
         self.aliases = {}
         self.refs = None
 
-    def _map_namespaces(self, namespaces_uris):
+    async def _map_namespaces(self, namespaces_uris):
         """
         creates a mapping between the namespaces in the xml file and in the server.
         if not present the namespace is registered.
         """
         namespaces = {}
         for ns_index, ns_uri in enumerate(namespaces_uris):
-            ns_server_index = self.server.register_namespace(ns_uri)
+            ns_server_index = await self.server.register_namespace(ns_uri)
             namespaces[ns_index + 1] = ns_server_index
         return namespaces
 
@@ -46,14 +46,14 @@ class XmlImporter(object):
             aliases_mapped[alias] = self.to_nodeid(node_id)
         return aliases_mapped
 
-    def import_xml(self, xmlpath=None, xmlstring=None):
+    async def import_xml(self, xmlpath=None, xmlstring=None):
         """
         import xml and return added nodes
         """
         self.logger.info("Importing XML file %s", xmlpath)
         self.parser = xmlparser.XMLParser(xmlpath, xmlstring)
 
-        self.namespaces = self._map_namespaces(self.parser.get_used_namespaces())
+        self.namespaces = await self._map_namespaces(self.parser.get_used_namespaces())
         self.aliases = self._map_aliases(self.parser.get_aliases())
         self.refs = []
 
@@ -64,49 +64,50 @@ class XmlImporter(object):
         nodes = []
         for nodedata in nodes_parsed:  # self.parser:
             try:
-                node = self._add_node_data(nodedata)
+                node = await self._add_node_data(nodedata)
             except Exception:
                 self.logger.warning("failure adding node %s", nodedata)
                 raise
             nodes.append(node)
 
         self.refs, remaining_refs = [], self.refs
-        self._add_references(remaining_refs)
+        await self._add_references(remaining_refs)
         if len(self.refs) != 0:
             self.logger.warning("The following references could not be imported and are probaly broken: %s", self.refs) 
 
         return nodes
 
-    def _add_node_data(self, nodedata):
+    async def _add_node_data(self, nodedata):
         if nodedata.nodetype == 'UAObject':
-            node = self.add_object(nodedata)
+            node = await self.add_object(nodedata)
         elif nodedata.nodetype == 'UAObjectType':
-            node = self.add_object_type(nodedata)
+            node = await self.add_object_type(nodedata)
         elif nodedata.nodetype == 'UAVariable':
-            node = self.add_variable(nodedata)
+            node = await self.add_variable(nodedata)
         elif nodedata.nodetype == 'UAVariableType':
-            node = self.add_variable_type(nodedata)
+            node = await self.add_variable_type(nodedata)
         elif nodedata.nodetype == 'UAReferenceType':
-            node = self.add_reference_type(nodedata)
+            node = await self.add_reference_type(nodedata)
         elif nodedata.nodetype == 'UADataType':
-            node = self.add_datatype(nodedata)
+            node = await self.add_datatype(nodedata)
         elif nodedata.nodetype == 'UAMethod':
-            node = self.add_method(nodedata)
+            node = await self.add_method(nodedata)
         else:
-            self.logger.warning("Not implemented node type: %s ", nodedata.nodetype)
+            raise ValueError(f"Not implemented node type: {nodedata.nodetype} ")
         return node
 
     def _add_node(self, node):
+        """COROUTINE"""
         if isinstance(self.server, opcua.server.server.Server):
             return self.server.iserver.isession.add_nodes([node])
         else:
             return self.server.uaclient.add_nodes([node])
 
-    def _add_references(self, refs):
+    async def _add_references(self, refs):
         if isinstance(self.server, opcua.server.server.Server):
-            res = self.server.iserver.isession.add_references(refs)
+            res = await self.server.iserver.isession.add_references(refs)
         else:
-            res = self.server.uaclient.add_references(refs)
+            res = await self.server.uaclient.add_references(refs)
 
         for sc, ref in zip(res, refs):
             if not sc.is_good():
@@ -170,7 +171,7 @@ class XmlImporter(object):
     def to_nodeid(self, nodeid):
         return self._migrate_ns(self._to_nodeid(nodeid))
 
-    def add_object(self, obj):
+    async def add_object(self, obj):
         node = self._get_node(obj)
         attrs = ua.ObjectAttributes()
         if obj.desc:
@@ -178,12 +179,12 @@ class XmlImporter(object):
         attrs.DisplayName = ua.LocalizedText(obj.displayname)
         attrs.EventNotifier = obj.eventnotifier
         node.NodeAttributes = attrs
-        res = self._add_node(node)
-        self._add_refs(obj)
+        res = await self._add_node(node)
+        await self._add_refs(obj)
         res[0].StatusCode.check()
         return res[0].AddedNodeId
 
-    def add_object_type(self, obj):
+    async def add_object_type(self, obj):
         node = self._get_node(obj)
         attrs = ua.ObjectTypeAttributes()
         if obj.desc:
@@ -191,12 +192,12 @@ class XmlImporter(object):
         attrs.DisplayName = ua.LocalizedText(obj.displayname)
         attrs.IsAbstract = obj.abstract
         node.NodeAttributes = attrs
-        res = self._add_node(node)
-        self._add_refs(obj)
+        res = await self._add_node(node)
+        await self._add_refs(obj)
         res[0].StatusCode.check()
         return res[0].AddedNodeId
 
-    def add_variable(self, obj):
+    async def add_variable(self, obj):
         node = self._get_node(obj)
         attrs = ua.VariableAttributes()
         if obj.desc:
@@ -216,14 +217,14 @@ class XmlImporter(object):
         if obj.dimensions:
             attrs.ArrayDimensions = obj.dimensions
         node.NodeAttributes = attrs
-        res = self._add_node(node)
-        self._add_refs(obj)
+        res = await self._add_node(node)
+        await self._add_refs(obj)
         res[0].StatusCode.check()
         return res[0].AddedNodeId
 
     def _get_ext_class(self, name):
         if hasattr(ua, name):
-            return  getattr(ua, name)
+            return getattr(ua, name)
         elif name in self.aliases.keys():
             nodeid = self.aliases[name]
             class_type = ua.uatypes.get_extensionobject_class_type(nodeid)
@@ -319,7 +320,7 @@ class XmlImporter(object):
         else:
             return ua.Variant(obj.value, getattr(ua.VariantType, obj.valuetype))
 
-    def add_variable_type(self, obj):
+    async def add_variable_type(self, obj):
         node = self._get_node(obj)
         attrs = ua.VariableTypeAttributes()
         if obj.desc:
@@ -336,11 +337,11 @@ class XmlImporter(object):
             attrs.ArrayDimensions = obj.dimensions
         node.NodeAttributes = attrs
         res = self._add_node(node)
-        self._add_refs(obj)
+        await self._add_refs(obj)
         res[0].StatusCode.check()
         return res[0].AddedNodeId
 
-    def add_method(self, obj):
+    async def add_method(self, obj):
         node = self._get_node(obj)
         attrs = ua.MethodAttributes()
         if obj.desc:
@@ -355,12 +356,12 @@ class XmlImporter(object):
         if obj.dimensions:
             attrs.ArrayDimensions = obj.dimensions
         node.NodeAttributes = attrs
-        res = self._add_node(node)
-        self._add_refs(obj)
+        res = await self._add_node(node)
+        await self._add_refs(obj)
         res[0].StatusCode.check()
         return res[0].AddedNodeId
 
-    def add_reference_type(self, obj):
+    async def add_reference_type(self, obj):
         node = self._get_node(obj)
         attrs = ua.ReferenceTypeAttributes()
         if obj.desc:
@@ -373,12 +374,12 @@ class XmlImporter(object):
         if obj.symmetric:
             attrs.Symmetric = obj.symmetric
         node.NodeAttributes = attrs
-        res = self._add_node(node)
-        self._add_refs(obj)
+        res = await self._add_node(node)
+        await self._add_refs(obj)
         res[0].StatusCode.check()
         return res[0].AddedNodeId
 
-    def add_datatype(self, obj):
+    async def add_datatype(self, obj):
         node = self._get_node(obj)
         attrs = ua.DataTypeAttributes()
         if obj.desc:
@@ -387,12 +388,12 @@ class XmlImporter(object):
         if obj.abstract:
             attrs.IsAbstract = obj.abstract
         node.NodeAttributes = attrs
-        res = self._add_node(node)
-        self._add_refs(obj)
+        res = await self._add_node(node)
+        await self._add_refs(obj)
         res[0].StatusCode.check()
         return res[0].AddedNodeId
 
-    def _add_refs(self, obj):
+    async def _add_refs(self, obj):
         if not obj.refs:
             return
         refs = []
@@ -404,7 +405,7 @@ class XmlImporter(object):
             ref.TargetNodeClass = ua.NodeClass.DataType
             ref.TargetNodeId = self.to_nodeid(data.target)
             refs.append(ref)
-        self._add_references(refs)
+        await self._add_references(refs)
 
     def _sort_nodes_by_parentid(self, ndatas):
         """

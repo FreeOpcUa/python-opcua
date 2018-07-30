@@ -91,13 +91,19 @@ class Server:
         self.private_key = None
         self._policies = []
         self.nodes = Shortcuts(self.iserver.isession)
-        self._security_policy = ["Basic256_Sign", "Basic256_SignAndEncrypt"]
+        self._security_policy = [
+            ua.SecurityPolicyType.NoSecurity,
+            ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt,
+            ua.SecurityPolicyType.Basic128Rsa15_Sign,
+            ua.SecurityPolicyType.Basic256_SignAndEncrypt,
+            ua.SecurityPolicyType.Basic256_Sign
+        ]
         self._policyIDs = ["Anonymous", "Basic256", "Basic128", "Username"]
 
     async def init(self, shelf_file=None):
         await self.iserver.init(shelf_file)
         # setup some expected values
-        self.set_application_uri(self._application_uri)
+        await self.set_application_uri(self._application_uri)
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
         await sa_node.set_value([self._application_uri])
         status_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus))
@@ -136,7 +142,7 @@ class Server:
         """
         self.iserver.disabled_clock = val
 
-    def set_application_uri(self, uri):
+    async def set_application_uri(self, uri):
         """
         Set application/server URI.
         This uri is supposed to be unique. If you intent to register
@@ -250,46 +256,51 @@ class Server:
 
     async def _setup_server_nodes(self):
         # to be called just before starting server since it needs all parameters to be setup
-        if "None" in self._security_policy:
+        if ua.SecurityPolicyType.NoSecurity in self._security_policy:
             self._set_endpoints()
             self._policies = [ua.SecurityPolicyFactory()]
-            if (len(self._security_policy) > 1) and self.private_key:
+
+        if self._security_policy != [ua.SecurityPolicyType.NoSecurity]:
+            if not (self.certificate and self.private_key):
+                self.logger.warning("Endpoints other than open requested but private key and certificate are not set.")
+                return
+
+            if ua.SecurityPolicyType.NoSecurity in self._security_policy:
                 self.logger.warning(
                     "Creating an open endpoint to the server, although encrypted endpoints are enabled.")
 
-        if self.certificate and self.private_key:
-            if "Basic128Rsa15_SignAndEncrypt" in self._security_policy:
+            if ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
-                                    ua.MessageSecurityMode.SignAndEncrypt)
+                    ua.MessageSecurityMode.SignAndEncrypt)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
-                                                           ua.MessageSecurityMode.SignAndEncrypt,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
-            if "Basic128Rsa15_Sign" in self._security_policy:
+                    ua.MessageSecurityMode.SignAndEncrypt,
+                    self.certificate,
+                    self.private_key)
+                )
+            if ua.SecurityPolicyType.Basic128Rsa15_Sign in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
-                                    ua.MessageSecurityMode.Sign)
+                    ua.MessageSecurityMode.Sign)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
-                                                           ua.MessageSecurityMode.Sign,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
-            if "Basic256_SignAndEncrypt" in self._security_policy:
+                    ua.MessageSecurityMode.Sign,
+                    self.certificate,
+                    self.private_key)
+                )
+            if ua.SecurityPolicyType.Basic256_SignAndEncrypt in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic256,
-                                    ua.MessageSecurityMode.SignAndEncrypt)
+                    ua.MessageSecurityMode.SignAndEncrypt)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
-                                                           ua.MessageSecurityMode.SignAndEncrypt,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
-            if "Basic256_Sign" in self._security_policy:
+                    ua.MessageSecurityMode.SignAndEncrypt,
+                    self.certificate,
+                    self.private_key)
+                )
+            if ua.SecurityPolicyType.Basic256_Sign in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic256,
-                                    ua.MessageSecurityMode.Sign)
+                    ua.MessageSecurityMode.Sign)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
-                                                           ua.MessageSecurityMode.Sign,
-                                                           self.certificate,
-                                                           self.private_key)
-                                 )
+                    ua.MessageSecurityMode.Sign,
+                    self.certificate,
+                    self.private_key)
+                )
 
     def _set_endpoints(self, policy=ua.SecurityPolicy, mode=ua.MessageSecurityMode.None_):
         idtokens = []
@@ -503,12 +514,12 @@ class Server:
             await custom_t.add_method(idx, method[0], method[1], method[2], method[3])
         return custom_t
 
-    def import_xml(self, path=None, xmlstring=None):
+    async def import_xml(self, path=None, xmlstring=None):
         """
         Import nodes defined in xml
         """
         importer = XmlImporter(self)
-        return importer.import_xml(path, xmlstring)
+        return await importer.import_xml(path, xmlstring)
 
     def export_xml(self, nodes, path):
         """

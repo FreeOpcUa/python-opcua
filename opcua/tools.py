@@ -468,7 +468,7 @@ def uaclient():
     sys.exit(0)
 
 
-def uaserver():
+async def uaserver():
     parser = argparse.ArgumentParser(description="Run an example OPC-UA server. By importing xml definition and using uawrite command line, it is even possible to expose real data using this server")
     # we setup a server, this is a bit different from other tool so we do not reuse common arguments
     parser.add_argument("-u",
@@ -506,15 +506,16 @@ def uaserver():
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
     server = Server()
+    await server.init()
     server.set_endpoint(args.url)
     if args.certificate:
-        server.load_certificate(args.certificate)
+        await server.load_certificate(args.certificate)
     if args.private_key:
-        server.load_private_key(args.private_key)
+        await server.load_private_key(args.private_key)
     server.disable_clock(args.disable_clock)
     server.set_server_name("FreeOpcUa Example Server")
     if args.xml:
-        server.import_xml(args.xml)
+        await server.import_xml(args.xml)
     if args.populate:
         @uamethod
         def multiply(parent, x, y):
@@ -522,7 +523,7 @@ def uaserver():
             return x * y
 
         uri = "http://examples.freeopcua.github.io"
-        idx = server.register_namespace(uri)
+        idx = await server.register_namespace(uri)
         objects = server.get_objects_node()
         myobj = objects.add_object(idx, "MyObject")
         mywritablevar = myobj.add_variable(idx, "MyWritableVariable", 6.7)
@@ -532,7 +533,7 @@ def uaserver():
         myprop = myobj.add_property(idx, "MyProperty", "I am a property")
         mymethod = myobj.add_method(idx, "MyMethod", multiply, [ua.VariantType.Double, ua.VariantType.Int64], [ua.VariantType.Double])
 
-    server.start()
+    await server.start()
     try:
         if args.shell:
             embed()
@@ -547,7 +548,7 @@ def uaserver():
             while True:
                 time.sleep(1)
     finally:
-        server.stop()
+        await server.stop()
     sys.exit(0)
 
 

@@ -6,14 +6,13 @@ from opcua import Client
 from opcua import Server
 from opcua import ua
 
-from .tests_subscriptions import SubscriptionTests
-from .tests_common import CommonTests, add_server_methods
-from .tests_xml import XmlTests
+from .tests_common import add_server_methods
 from .tests_enum_struct import add_server_custom_enum_struct
 
 port_num1 = 48510
 _logger = logging.getLogger(__name__)
 pytestmark = pytest.mark.asyncio
+
 
 @pytest.fixture()
 async def admin_client():

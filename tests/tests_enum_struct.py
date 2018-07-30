@@ -35,7 +35,7 @@ class ExampleStruct(uatypes.FrozenClass):
 
 async def add_server_custom_enum_struct(server: Server):
     # import some nodes from xml
-    server.import_xml("tests/enum_struct_test_nodes.xml")
+    await server.import_xml("tests/enum_struct_test_nodes.xml")
     ns = await server.get_namespace_index('http://yourorganisation.org/struct_enum_example/')
     uatypes.register_extension_object('ExampleStruct', ua.NodeId(5001, ns), ExampleStruct)
     val = ua.ExampleStruct()

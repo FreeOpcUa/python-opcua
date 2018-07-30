@@ -1,14 +1,14 @@
 
 import pickle
 import shelve
-import asyncio
 import logging
 import collections
-from threading import RLock
 from datetime import datetime
 
 from opcua import ua
 from opcua.server.users import User
+
+_logger = logging.getLogger(__name__)
 
 
 class AttributeValue(object):

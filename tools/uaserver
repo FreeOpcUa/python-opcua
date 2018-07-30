@@ -2,10 +2,14 @@
 
 import sys
 import os
+import asyncio
+import logging
+logging.basicConfig(level=logging.DEBUG)
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
 
 from opcua.tools import uaserver
 
 
 if __name__ == "__main__":
-    uaserver()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(uaserver())

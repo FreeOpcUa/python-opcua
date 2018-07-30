@@ -47,7 +47,7 @@ async def discovery_server():
     # start our own server
     srv = Server()
     await srv.init()
-    srv.set_application_uri('urn:freeopcua:python:discovery')
+    await srv.set_application_uri('urn:freeopcua:python:discovery')
     srv.set_endpoint(f'opc.tcp://127.0.0.1:{port_discovery}')
     await srv.start()
     yield srv

@@ -247,6 +247,7 @@ class Node:
         attributeid is a member of ua.AttributeIds
         datavalue is a ua.DataValue object
         """
+        _logger.info('Node set_attribute %r %r %r', self, attributeid, datavalue)
         attr = ua.WriteValue()
         attr.NodeId = self.nodeid
         attr.AttributeId = attributeid
@@ -619,7 +620,7 @@ class Node:
         results = await self.server.add_references(params)
         _check_results(results, len(params))
 
-    def set_modelling_rule(self, mandatory):
+    async def set_modelling_rule(self, mandatory):
         """
         Add a modelling rule reference to Node.
         When creating a new object type, its variable and child nodes will not
