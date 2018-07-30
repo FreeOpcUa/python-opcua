@@ -8,7 +8,7 @@ import logging
 import os
 import shelve
 
-from .tests_common import CommonTests, add_server_methods
+from .test_common import add_server_methods
 from .tests_xml import XmlTests
 from .tests_subscriptions import SubscriptionTests
 from datetime import timedelta, datetime
