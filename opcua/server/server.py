@@ -131,12 +131,12 @@ class Server:
         """
         self._application_uri = uri
         ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
-        uries = ns_node.get_value()
+        uries = await ns_node.get_value()
         if len(uries) > 1:
             uries[1] = uri  # application uri is always namespace 1
         else:
             uries.append(uri)
-        ns_node.set_value(uries)
+        await ns_node.set_value(uries)
 
     def find_servers(self, uris=None):
         """
