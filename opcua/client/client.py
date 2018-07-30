@@ -204,10 +204,10 @@ class Client(object):
             await self.send_hello()
             await self.open_secure_channel()
             await self.create_session()
-        except Exception as e:
+        except Exception:
             # clean up open socket
             self.disconnect_socket()
-            raise e
+            raise
         await self.activate_session(username=self._username, password=self._password, certificate=self.user_certificate)
 
     async def disconnect(self):
