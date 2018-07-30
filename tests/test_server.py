@@ -179,21 +179,21 @@ async def test_references_for_added_nodes_method(server):
                                          includesubtypes=False)
     assert o in nodes
     assert await m.get_parent() == o
-    
+
 
 async def test_get_event_from_type_node_BaseEvent(server):
     """
     This should work for following BaseEvent tests to work
     (maybe to write it a bit differentlly since they are not independent) 
     """
-    ev = opcua.common.events.get_event_obj_from_type_node(
+    ev = await opcua.common.events.get_event_obj_from_type_node(
         opcua.Node(server.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType))
     )
     check_base_event(ev)
 
 
 async def test_get_event_from_type_node_Inhereted_AuditEvent(server):
-    ev = opcua.common.events.get_event_obj_from_type_node(
+    ev = await opcua.common.events.get_event_obj_from_type_node(
         opcua.Node(server.iserver.isession, ua.NodeId(ua.ObjectIds.AuditEventType))
     )
     # we did not receive event
@@ -210,7 +210,7 @@ async def test_get_event_from_type_node_Inhereted_AuditEvent(server):
 
 
 async def test_get_event_from_type_node_MultiInhereted_AuditOpenSecureChannelEvent(server):
-    ev = opcua.common.events.get_event_obj_from_type_node(
+    ev = await opcua.common.events.get_event_obj_from_type_node(
         opcua.Node(server.iserver.isession, ua.NodeId(ua.ObjectIds.AuditOpenSecureChannelEventType))
     )
     assert ev is not None
@@ -246,35 +246,42 @@ async def test_eventgenerator_BaseEvent_Node(server):
     await check_eventgenerator_BaseEvent(evgen, server)
     await check_eventgenerator_SourceServer(evgen, server)
 
+
 async def test_eventgenerator_BaseEvent_NodeId(server):
     evgen = await server.get_event_generator(ua.NodeId(ua.ObjectIds.BaseEventType))
     await check_eventgenerator_BaseEvent(evgen, server)
     await check_eventgenerator_SourceServer(evgen, server)
+
 
 async def test_eventgenerator_BaseEvent_ObjectIds(server):
     evgen = await server.get_event_generator(ua.ObjectIds.BaseEventType)
     await check_eventgenerator_BaseEvent(evgen, server)
     await check_eventgenerator_SourceServer(evgen, server)
 
+
 async def test_eventgenerator_BaseEvent_Identifier(server):
     evgen = await server.get_event_generator(2041)
     await check_eventgenerator_BaseEvent(evgen, server)
     await check_eventgenerator_SourceServer(evgen, server)
+
 
 async def test_eventgenerator_sourceServer_Node(server):
     evgen = await server.get_event_generator(source=opcua.Node(server.iserver.isession, ua.NodeId(ua.ObjectIds.Server)))
     await check_eventgenerator_BaseEvent(evgen, server)
     await check_eventgenerator_SourceServer(evgen, server)
 
+
 async def test_eventgenerator_sourceServer_NodeId(server):
     evgen = await server.get_event_generator(source=ua.NodeId(ua.ObjectIds.Server))
     await check_eventgenerator_BaseEvent(evgen, server)
     await check_eventgenerator_SourceServer(evgen, server)
 
+
 async def test_eventgenerator_sourceServer_ObjectIds(server):
     evgen = await server.get_event_generator(source=ua.ObjectIds.Server)
     await check_eventgenerator_BaseEvent(evgen, server)
     await check_eventgenerator_SourceServer(evgen, server)
+
 
 async def test_eventgenerator_sourceMyObject(server):
     objects = server.get_objects_node()
@@ -283,6 +290,7 @@ async def test_eventgenerator_sourceMyObject(server):
     await check_eventgenerator_BaseEvent(evgen, server)
     await check_event_generator_object(evgen, o)
 
+
 async def test_eventgenerator_source_collision(server):
     objects = server.get_objects_node()
     o = await objects.add_object(3, 'MyObject')
@@ -290,6 +298,7 @@ async def test_eventgenerator_source_collision(server):
     evgen = await server.get_event_generator(event, ua.ObjectIds.Server)
     await check_eventgenerator_BaseEvent(evgen, server)
     await check_event_generator_object(evgen, o)
+
 
 async def test_eventgenerator_InheritedEvent(server):
     evgen = await server.get_event_generator(ua.ObjectIds.AuditEventType)
@@ -306,188 +315,207 @@ async def test_eventgenerator_InheritedEvent(server):
     assert ev.ClientAuditEntryId is None
     assert ev.ClientUserId is None
 
+
 async def test_eventgenerator_MultiInheritedEvent(server):
-        evgen = await server.get_event_generator(ua.ObjectIds.AuditOpenSecureChannelEventType)
-        await check_eventgenerator_SourceServer(evgen, server)
-        ev = evgen.event
-        assert ev is not None  # we did not receive event
-        assert isinstance(ev, BaseEvent)
-        assert isinstance(ev, AuditEvent)
-        assert isinstance(ev, AuditSecurityEvent)
-        assert isinstance(ev, AuditChannelEvent)
-        assert isinstance(ev, AuditOpenSecureChannelEvent)
-        assert ua.NodeId(ua.ObjectIds.AuditOpenSecureChannelEventType) == ev.EventType
-        assert 1 == ev.Severity
-        assert ev.ClientCertificate is None
-        assert ev.ClientCertificateThumbprint is None
-        assert ev.RequestType is None
-        assert ev.SecurityPolicyUri is None
-        assert ev.SecurityMode is None
-        assert ev.RequestedLifetime is None
+    evgen = await server.get_event_generator(ua.ObjectIds.AuditOpenSecureChannelEventType)
+    await check_eventgenerator_SourceServer(evgen, server)
+    ev = evgen.event
+    assert ev is not None  # we did not receive event
+    assert isinstance(ev, BaseEvent)
+    assert isinstance(ev, AuditEvent)
+    assert isinstance(ev, AuditSecurityEvent)
+    assert isinstance(ev, AuditChannelEvent)
+    assert isinstance(ev, AuditOpenSecureChannelEvent)
+    assert ua.NodeId(ua.ObjectIds.AuditOpenSecureChannelEventType) == ev.EventType
+    assert 1 == ev.Severity
+    assert ev.ClientCertificate is None
+    assert ev.ClientCertificateThumbprint is None
+    assert ev.RequestType is None
+    assert ev.SecurityPolicyUri is None
+    assert ev.SecurityMode is None
+    assert ev.RequestedLifetime is None
 
 
 # For the custom events all posibilites are tested. For other custom types only one test case is done since they are using the same code
 async def test_create_custom_data_type_ObjectId(server):
-    type = await server.create_custom_data_type(2, 'MyDataType', ua.ObjectIds.BaseDataType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+    type = await server.create_custom_data_type(2, 'MyDataType', ua.ObjectIds.BaseDataType,
+                                                [('PropertyNum', ua.VariantType.Int32),
+                                                 ('PropertyString', ua.VariantType.String)])
     await check_custom_type(type, ua.ObjectIds.BaseDataType, server)
 
+
 async def test_create_custom_event_type_ObjectId(server):
-    type = await server.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+    type = await server.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType,
+                                                 [('PropertyNum', ua.VariantType.Int32),
+                                                  ('PropertyString', ua.VariantType.String)])
     await check_custom_type(type, ua.ObjectIds.BaseEventType, server)
+
 
 async def test_create_custom_object_type_ObjectId(server):
     def func(parent, variant):
         return [ua.Variant(ret, ua.VariantType.Boolean)]
+
     properties = [('PropertyNum', ua.VariantType.Int32),
                   ('PropertyString', ua.VariantType.String)]
     variables = [('VariableString', ua.VariantType.String),
                  ('MyEnumVar', ua.VariantType.Int32, ua.NodeId(ua.ObjectIds.ApplicationType))]
     methods = [('MyMethod', func, [ua.VariantType.Int64], [ua.VariantType.Boolean])]
     node_type = await server.create_custom_object_type(2, 'MyObjectType', ua.ObjectIds.BaseObjectType, properties,
-                                                 variables, methods)
+                                                       variables, methods)
     await check_custom_type(node_type, ua.ObjectIds.BaseObjectType, server)
     variables = await node_type.get_variables()
     assert await node_type.get_child("2:VariableString") in variables
-    assert ua.VariantType.String == (await(await node_type.get_child("2:VariableString")).get_data_value()).Value.VariantType
+    assert ua.VariantType.String == (
+        await(await node_type.get_child("2:VariableString")).get_data_value()).Value.VariantType
     assert await node_type.get_child("2:MyEnumVar") in variables
     assert ua.VariantType.Int32 == (await(await node_type.get_child("2:MyEnumVar")).get_data_value()).Value.VariantType
     assert ua.NodeId(ua.ObjectIds.ApplicationType) == await (await node_type.get_child("2:MyEnumVar")).get_data_type()
     methods = await node_type.get_methods()
     assert await node_type.get_child("2:MyMethod") in methods
 
+
 async def test_create_custom_variable_type_ObjectId(server):
-    type = await server.create_custom_variable_type(2, 'MyVariableType', ua.ObjectIds.BaseVariableType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+    type = await server.create_custom_variable_type(2, 'MyVariableType', ua.ObjectIds.BaseVariableType,
+                                                    [('PropertyNum', ua.VariantType.Int32),
+                                                     ('PropertyString', ua.VariantType.String)])
     await check_custom_type(type, ua.ObjectIds.BaseVariableType, server)
 
+
 async def test_create_custom_event_type_NodeId(server):
-    etype = await server.create_custom_event_type(2, 'MyEvent', ua.NodeId(ua.ObjectIds.BaseEventType), [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+    etype = await server.create_custom_event_type(2, 'MyEvent', ua.NodeId(ua.ObjectIds.BaseEventType),
+                                                  [('PropertyNum', ua.VariantType.Int32),
+                                                   ('PropertyString', ua.VariantType.String)])
     await check_custom_type(etype, ua.ObjectIds.BaseVariableType, server)
+
 
 async def test_create_custom_event_type_Node(server):
-    etype = await server.create_custom_event_type(2, 'MyEvent', opcua.Node(server.iserver.isession, ua.NodeId(ua.ObjectIds.BaseEventType)), [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+    etype = await server.create_custom_event_type(2, 'MyEvent', opcua.Node(server.iserver.isession,
+                                                                           ua.NodeId(ua.ObjectIds.BaseEventType)),
+                                                  [('PropertyNum', ua.VariantType.Int32),
+                                                   ('PropertyString', ua.VariantType.String)])
     await check_custom_type(etype, ua.ObjectIds.BaseVariableType, server)
 
-"""
-    
 
-    def test_get_event_from_type_node_CustomEvent(self):
-        etype = server.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+async def test_get_event_from_type_node_CustomEvent(server):
+    etype = await server.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType,
+                                                  [('PropertyNum', ua.VariantType.Int32),
+                                                   ('PropertyString', ua.VariantType.String)])
+    ev = await opcua.common.events.get_event_obj_from_type_node(etype)
+    check_custom_event(ev, etype)
+    assert 0 == ev.PropertyNum
+    assert ev.PropertyString is None
 
-        ev = opcua.common.events.get_event_obj_from_type_node(etype)
-        check_custom_event(self, ev, etype)
-        self.assertEqual(ev.PropertyNum, 0)
-        self.assertEqual(ev.PropertyString, None)
 
-    def test_eventgenerator_customEvent(self):
-        etype = server.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+async def test_eventgenerator_customEvent(server):
+    etype = await server.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType,
+                                                  [('PropertyNum', ua.VariantType.Int32),
+                                                   ('PropertyString', ua.VariantType.String)])
+    evgen = await server.get_event_generator(etype, ua.ObjectIds.Server)
+    check_eventgenerator_CustomEvent(evgen, etype, server)
+    await check_eventgenerator_SourceServer(evgen, server)
+    assert 0 == evgen.event.PropertyNum
+    assert evgen.event.PropertyString is None
 
-        evgen = server.get_event_generator(etype, ua.ObjectIds.Server)
-        check_eventgenerator_CustomEvent(self, evgen, etype)
-        check_eventgenerator_SourceServer(self, evgen)
 
-        self.assertEqual(evgen.event.PropertyNum, 0)
-        self.assertEqual(evgen.event.PropertyString, None)
+async def test_eventgenerator_double_customEvent(server):
+    event1 = await server.create_custom_event_type(3, 'MyEvent1', ua.ObjectIds.BaseEventType,
+                                                   [('PropertyNum', ua.VariantType.Int32),
+                                                    ('PropertyString', ua.VariantType.String)])
+    event2 = await server.create_custom_event_type(4, 'MyEvent2', event1, [('PropertyBool', ua.VariantType.Boolean),
+                                                                           ('PropertyInt', ua.VariantType.Int32)])
+    evgen = await server.get_event_generator(event2, ua.ObjectIds.Server)
+    check_eventgenerator_CustomEvent(evgen, event2, server)
+    await check_eventgenerator_SourceServer(evgen, server)
+    # Properties from MyEvent1
+    assert 0 == evgen.event.PropertyNum
+    assert evgen.event.PropertyString is None
+    # Properties from MyEvent2
+    assert not evgen.event.PropertyBool
+    assert 0 == evgen.event.PropertyInt
 
-    def test_eventgenerator_double_customEvent(self):
-        event1 = server.create_custom_event_type(3, 'MyEvent1', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
 
-        event2 = server.create_custom_event_type(4, 'MyEvent2', event1, [('PropertyBool', ua.VariantType.Boolean), ('PropertyInt', ua.VariantType.Int32)])
+async def test_eventgenerator_customEvent_MyObject(server):
+    objects = server.get_objects_node()
+    o = await objects.add_object(3, 'MyObject')
+    etype = await server.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType,
+                                                  [('PropertyNum', ua.VariantType.Int32),
+                                                   ('PropertyString', ua.VariantType.String)])
 
-        evgen = server.get_event_generator(event2, ua.ObjectIds.Server)
-        check_eventgenerator_CustomEvent(self, evgen, event2)
-        check_eventgenerator_SourceServer(self, evgen)
+    evgen = await server.get_event_generator(etype, o)
+    check_eventgenerator_CustomEvent(evgen, etype, server)
+    await check_event_generator_object(evgen, o)
+    assert 0 == evgen.event.PropertyNum
+    assert evgen.event.PropertyString is None
 
-        # Properties from MyEvent1
-        self.assertEqual(evgen.event.PropertyNum, 0)
-        self.assertEqual(evgen.event.PropertyString, None)
 
-         # Properties from MyEvent2
-        self.assertEqual(evgen.event.PropertyBool, False)
-        self.assertEqual(evgen.event.PropertyInt, 0)
+async def test_context_manager():
+    # Context manager calls start() and stop()
+    state = [0]
 
-    def test_eventgenerator_customEvent_MyObject(self):
-        objects = server.get_objects_node()
-        o = objects.add_object(3, 'MyObject')
-        etype = server.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
+    async def increment_state(self, *args, **kwargs):
+        state[0] += 1
 
-        evgen = server.get_event_generator(etype, o)
-        check_eventgenerator_CustomEvent(self, evgen, etype)
-        check_event_generator_object(self, evgen, o)
+    # create server and replace instance methods with dummy methods
+    server = Server()
+    server.start = increment_state.__get__(server)
+    server.stop = increment_state.__get__(server)
+    assert state[0] == 0
+    async with server:
+        # test if server started
+        assert 1 == state[0]
+    # test if server stopped
+    assert 2 == state[0]
 
-        self.assertEqual(evgen.event.PropertyNum, 0)
-        self.assertEqual(evgen.event.PropertyString, None)
 
-    def test_context_manager(self):
-        # Context manager calls start() and stop()
-        state = [0]
-        def increment_state(self, *args, **kwargs):
-            state[0] += 1
+async def test_get_node_by_ns(server):
+    def get_ns_of_nodes(nodes):
+        ns_list = set()
+        for node in nodes:
+            ns_list.add(node.nodeid.NamespaceIndex)
+        return ns_list
 
-        # create server and replace instance methods with dummy methods
-        server = Server()
-        server.start = increment_state.__get__(server)
-        server.stop = increment_state.__get__(server)
+    # incase other testss created nodes  in unregistered namespace
+    _idx_d = await server.register_namespace('dummy1')
+    _idx_d = await server.register_namespace('dummy2')
+    _idx_d = await server.register_namespace('dummy3')
+    # create the test namespaces and vars
+    idx_a = await server.register_namespace('a')
+    idx_b = await server.register_namespace('b')
+    idx_c = await server.register_namespace('c')
+    o = server.get_objects_node()
+    _myvar2 = await o.add_variable(idx_a, "MyBoolVar2", True)
+    _myvar3 = await o.add_variable(idx_b, "MyBoolVar3", True)
+    _myvar4 = await o.add_variable(idx_c, "MyBoolVar4", True)
+    # the tests
+    nodes = await ua_utils.get_nodes_of_namespace(server, namespaces=[idx_a, idx_b, idx_c])
+    assert 3 == len(nodes)
+    assert set([idx_a, idx_b, idx_c]) == get_ns_of_nodes(nodes)
 
-        assert state[0] == 0
-        with server:
-            # test if server started
-            self.assertEqual(state[0], 1)
-        # test if server stopped
-        self.assertEqual(state[0], 2)
+    nodes = await ua_utils.get_nodes_of_namespace(server, namespaces=[idx_a])
+    assert 1 == len(nodes)
+    assert set([idx_a]) == get_ns_of_nodes(nodes)
 
-    def test_get_node_by_ns(self):
+    nodes = await ua_utils.get_nodes_of_namespace(server, namespaces=[idx_b])
+    assert 1 == len(nodes)
+    assert set([idx_b]) == get_ns_of_nodes(nodes)
 
-        def get_ns_of_nodes(nodes):
-            ns_list = set()
-            for node in nodes:
-                ns_list.add(node.nodeid.NamespaceIndex)
-            return ns_list
+    nodes = await ua_utils.get_nodes_of_namespace(server, namespaces=['a'])
+    assert 1 == len(nodes)
+    assert set([idx_a]) == get_ns_of_nodes(nodes)
 
-        # incase other testss created nodes  in unregistered namespace
-        _idx_d = server.register_namespace('dummy1')
-        _idx_d = server.register_namespace('dummy2')
-        _idx_d = server.register_namespace('dummy3')
+    nodes = await ua_utils.get_nodes_of_namespace(server, namespaces=['a', 'c'])
+    assert 2 == len(nodes)
+    assert set([idx_a, idx_c]) == get_ns_of_nodes(nodes)
 
-        # create the test namespaces and vars
-        idx_a = server.register_namespace('a')
-        idx_b = server.register_namespace('b')
-        idx_c = server.register_namespace('c')
-        o = server.get_objects_node()
-        _myvar2 = o.add_variable(idx_a, "MyBoolVar2", True)
-        _myvar3 = o.add_variable(idx_b, "MyBoolVar3", True)
-        _myvar4 = o.add_variable(idx_c, "MyBoolVar4", True)
+    nodes = await ua_utils.get_nodes_of_namespace(server, namespaces='b')
+    assert 1 == len(nodes)
+    assert set([idx_b]) == get_ns_of_nodes(nodes)
 
-        # the tests
-        nodes = ua_utils.get_nodes_of_namespace(server, namespaces=[idx_a, idx_b, idx_c])
-        self.assertEqual(len(nodes), 3)
-        self.assertEqual(get_ns_of_nodes(nodes), set([idx_a, idx_b, idx_c]))
-
-        nodes = ua_utils.get_nodes_of_namespace(server, namespaces=[idx_a])
-        self.assertEqual(len(nodes), 1)
-        self.assertEqual(get_ns_of_nodes(nodes), set([idx_a]))
-
-        nodes = ua_utils.get_nodes_of_namespace(server, namespaces=[idx_b])
-        self.assertEqual(len(nodes), 1)
-        self.assertEqual(get_ns_of_nodes(nodes), set([idx_b]))
-
-        nodes = ua_utils.get_nodes_of_namespace(server, namespaces=['a'])
-        self.assertEqual(len(nodes), 1)
-        self.assertEqual(get_ns_of_nodes(nodes), set([idx_a]))
-
-        nodes = ua_utils.get_nodes_of_namespace(server, namespaces=['a', 'c'])
-        self.assertEqual(len(nodes), 2)
-        self.assertEqual(get_ns_of_nodes(nodes), set([idx_a, idx_c]))
-
-        nodes = ua_utils.get_nodes_of_namespace(server, namespaces='b')
-        self.assertEqual(len(nodes), 1)
-        self.assertEqual(get_ns_of_nodes(nodes), set([idx_b]))
-
-        nodes = ua_utils.get_nodes_of_namespace(server, namespaces=idx_b)
-        self.assertEqual(len(nodes), 1)
-        self.assertEqual(get_ns_of_nodes(nodes), set([idx_b]))
-
-        self.assertRaises(ValueError, ua_utils.get_nodes_of_namespace, server, namespaces='non_existing_ns')
-"""
+    nodes = await ua_utils.get_nodes_of_namespace(server, namespaces=idx_b)
+    assert 1 == len(nodes)
+    assert set([idx_b]) == get_ns_of_nodes(nodes)
+    with pytest.raises(ValueError):
+        await ua_utils.get_nodes_of_namespace(server, namespaces='non_existing_ns')
 
 
 async def check_eventgenerator_SourceServer(evgen, server: Server):
@@ -554,6 +582,7 @@ async def check_custom_type(type, base_type, server: Server):
     assert await type.get_child("2:PropertyString") in properties
     assert (await(await type.get_child("2:PropertyString")).get_data_value()).Value.VariantType == ua.VariantType.String
 
+
 """
 class TestServerCaching(unittest.TestCase):
     def runTest(self):
@@ -573,7 +602,7 @@ class TestServerCaching(unittest.TestCase):
 
         # ensure that we are actually loading from the cache
         server = Server(shelffile=path)
-        self.assertEqual(server.get_node(id).get_value(), 123)
+        assert server.get_node(id).get_value(), 123)
 
         os.remove(path)
 

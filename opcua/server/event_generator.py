@@ -8,7 +8,7 @@ from opcua.common import events
 from opcua.common import event_objects
 
 
-class EventGenerator(object):
+class EventGenerator:
 
     """
     Create an event based on an event type. Per default is BaseEventType used.
@@ -21,12 +21,14 @@ class EventGenerator(object):
         etype: The event type, either an objectId, a NodeId or a Node object
     """
 
-    def __init__(self, isession, etype=None):
-        if not etype:
-            etype = event_objects.BaseEvent()
+    def __init__(self, isession):
         self.logger = logging.getLogger(__name__)
         self.isession = isession
         self.event = None
+
+    async def init(self, etype=None):
+        if not etype:
+            etype = event_objects.BaseEvent()
         node = None
         if isinstance(etype, event_objects.BaseEvent):
             self.event = etype
@@ -37,7 +39,7 @@ class EventGenerator(object):
         else:
             node = Node(self.isession, ua.NodeId(etype))
         if node:
-            self.event = events.get_event_obj_from_type_node(node)
+            self.event = await events.get_event_obj_from_type_node(node)
 
     async def set_source(self, source=ua.ObjectIds.Server):
         if isinstance(source, Node):
