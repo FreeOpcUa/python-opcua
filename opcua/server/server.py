@@ -233,7 +233,6 @@ class Server:
         """
         self._security_policy = security_policy
 
-
     def set_security_IDs(self, policyIDs):
         """
             Method setting up the security endpoints for identification
@@ -256,8 +255,9 @@ class Server:
         if "None" in self._security_policy:
             self._set_endpoints()
             self._policies = [ua.SecurityPolicyFactory()]
-            if (len(self._security_policy)>1) and self.private_key:
-                self.logger.warning("Creating an open endpoint to the server, although encrypted endpoints are enabled.")
+            if (len(self._security_policy) > 1) and self.private_key:
+                self.logger.warning(
+                    "Creating an open endpoint to the server, although encrypted endpoints are enabled.")
 
         if self.certificate and self.private_key:
             if "Basic128Rsa15_Sign" in self._security_endpoints:
