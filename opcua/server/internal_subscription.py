@@ -50,7 +50,6 @@ class MonitoredItemService(object):
         self.logger = logging.getLogger(__name__ + "." + str(isub.data.SubscriptionId))
         self.isub = isub
         self.aspace = aspace
-        self._lock = RLock()
         self._monitored_items = {}
         self._monitored_events = {}
         self._monitored_datachange = {}
@@ -62,11 +61,11 @@ class MonitoredItemService(object):
     def create_monitored_items(self, params):
         results = []
         for item in params.ItemsToCreate:
-            with self._lock:
-                if item.ItemToMonitor.AttributeId == ua.AttributeIds.EventNotifier:
-                    result = self._create_events_monitored_item(item)
-                else:
-                    result = self._create_data_change_monitored_item(item)
+            #with self._lock:
+            if item.ItemToMonitor.AttributeId == ua.AttributeIds.EventNotifier:
+                result = self._create_events_monitored_item(item)
+            else:
+                result = self._create_data_change_monitored_item(item)
             results.append(result)
         return results
 
@@ -82,19 +81,19 @@ class MonitoredItemService(object):
         self.datachange_callback(handle, variant)
 
     def _modify_monitored_item(self, params):
-        with self._lock:
-            for mdata in self._monitored_items.values():
-                result = ua.MonitoredItemModifyResult()
-                if mdata.monitored_item_id == params.MonitoredItemId:
-                    result.RevisedSamplingInterval = params.RequestedParameters.SamplingInterval
-                    result.RevisedQueueSize = params.RequestedParameters.QueueSize
-                    if params.RequestedParameters.Filter is not None:
-                        mdata.filter = params.RequestedParameters.Filter
-                    mdata.queue_size = params.RequestedParameters.QueueSize
-                    return result
+        #with self._lock:
+        for mdata in self._monitored_items.values():
             result = ua.MonitoredItemModifyResult()
-            result.StatusCode(ua.StatusCodes.BadMonitoredItemIdInvalid)
-            return result
+            if mdata.monitored_item_id == params.MonitoredItemId:
+                result.RevisedSamplingInterval = params.RequestedParameters.SamplingInterval
+                result.RevisedQueueSize = params.RequestedParameters.QueueSize
+                if params.RequestedParameters.Filter is not None:
+                    mdata.filter = params.RequestedParameters.Filter
+                mdata.queue_size = params.RequestedParameters.QueueSize
+                return result
+        result = ua.MonitoredItemModifyResult()
+        result.StatusCode(ua.StatusCodes.BadMonitoredItemIdInvalid)
+        return result
 
     def _commit_monitored_item(self, result, mdata):
         if result.StatusCode.is_good():
@@ -159,11 +158,11 @@ class MonitoredItemService(object):
 
     def delete_monitored_items(self, ids):
         self.logger.debug("delete monitored items %s", ids)
-        with self._lock:
-            results = []
-            for mid in ids:
-                results.append(self._delete_monitored_items(mid))
-            return results
+        #with self._lock:
+        results = []
+        for mid in ids:
+            results.append(self._delete_monitored_items(mid))
+        return results
 
     def _delete_monitored_items(self, mid):
         if mid not in self._monitored_items:
@@ -191,18 +190,18 @@ class MonitoredItemService(object):
             self.logger.info("subscription %s: datachange callback called with handle '%s' and value '%s'", self,
                              handle, value.Value)
             event = ua.MonitoredItemNotification()
-            with self._lock:
-                mid = self._monitored_datachange[handle]
-                mdata = self._monitored_items[mid]
-                mdata.mvalue.set_current_value(value.Value.Value)
-                if mdata.filter:
-                    deadband_flag_pass = self.deadband_callback(mdata.mvalue, mdata.filter)
-                else:
-                    deadband_flag_pass = True
-                if deadband_flag_pass:
-                    event.ClientHandle = mdata.client_handle
-                    event.Value = value
-                    self.isub.enqueue_datachange_event(mid, event, mdata.queue_size)
+            #with self._lock:
+            mid = self._monitored_datachange[handle]
+            mdata = self._monitored_items[mid]
+            mdata.mvalue.set_current_value(value.Value.Value)
+            if mdata.filter:
+                deadband_flag_pass = self.deadband_callback(mdata.mvalue, mdata.filter)
+            else:
+                deadband_flag_pass = True
+            if deadband_flag_pass:
+                event.ClientHandle = mdata.client_handle
+                event.Value = value
+                self.isub.enqueue_datachange_event(mid, event, mdata.queue_size)
 
     def deadband_callback(self, values, flt):
         if flt.DeadbandType == ua.DeadbandType.None_ or values.get_old_value() is None:
@@ -217,16 +216,16 @@ class MonitoredItemService(object):
             return False
 
     def trigger_event(self, event):
-        with self._lock:
-            if event.SourceNode not in self._monitored_events:
-                self.logger.debug("%s has no subscription for events %s from node: %s",
-                                  self, event, event.SourceNode)
-                return False
-            self.logger.debug("%s has subscription for events %s from node: %s",
+        #with self._lock:
+        if event.SourceNode not in self._monitored_events:
+            self.logger.debug("%s has no subscription for events %s from node: %s",
                               self, event, event.SourceNode)
-            mids = self._monitored_events[event.SourceNode]
-            for mid in mids:
-                self._trigger_event(event, mid)
+            return False
+        self.logger.debug("%s has subscription for events %s from node: %s",
+                          self, event, event.SourceNode)
+        mids = self._monitored_events[event.SourceNode]
+        for mid in mids:
+            self._trigger_event(event, mid)
 
     def _trigger_event(self, event, mid):
         if mid not in self._monitored_items:

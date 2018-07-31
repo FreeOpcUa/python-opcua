@@ -131,7 +131,7 @@ async def test_server_method(server):
 
     o = server.get_objects_node()
     v = await o.add_method(3, 'Method1', func, [ua.VariantType.Int64], [ua.VariantType.Int64])
-    result = o.call_method(v, ua.Variant(2.1))
+    result = await o.call_method(v, ua.Variant(2.1))
     assert result == 4.2
 
 

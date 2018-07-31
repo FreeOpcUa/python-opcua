@@ -1,6 +1,6 @@
 import time
 from datetime import datetime, timedelta
-import unittest
+import pytest
 
 from opcua import Client
 from opcua import Server
@@ -9,10 +9,7 @@ from opcua import ua
 from opcua.server.history_sql import HistorySQLite
 from opcua.server.history import HistoryDict
 
-from tests_common import CommonTests, add_server_methods
-
-from opcua.common.events import get_event_properties_from_type_node as get_props
-
+pytestmark = pytest.mark.asyncio
 port_num1 = 48530
 port_num2 = 48530
 

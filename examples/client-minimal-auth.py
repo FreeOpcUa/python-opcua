@@ -35,7 +35,7 @@ async def browse_nodes(node: Node):
 
 
 async def task(loop):
-    url = "opc.tcp://192.168.2.213:4840"
+    url = "opc.tcp://192.168.2.64:4840"
     # url = "opc.tcp://localhost:4840/freeopcua/server/"
     try:
         client = Client(url=url)
