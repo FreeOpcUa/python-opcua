@@ -23,13 +23,9 @@ from opcua.common.structures import load_type_definitions
 from opcua.common.xmlexporter import XmlExporter
 from opcua.common.xmlimporter import XmlImporter
 from opcua.common.ua_utils import get_nodes_of_namespace
+from opcua.crypto import uacrypto
 
-use_crypto = True
-try:
-    from opcua.crypto import uacrypto
-except ImportError:
-    logging.getLogger(__name__).warning("cryptography is not installed, use of crypto disabled")
-    use_crypto = False
+_logger = logging.getLogger(__name__)
 
 
 class Server:
@@ -159,7 +155,7 @@ class Server:
             uries.append(uri)
         await ns_node.set_value(uries)
 
-    def find_servers(self, uris=None):
+    async def find_servers(self, uris=None):
         """
         find_servers. mainly implemented for symmetry with client
         """
@@ -211,8 +207,8 @@ class Server:
     def set_endpoint(self, url):
         self.endpoint = urlparse(url)
 
-    def get_endpoints(self):
-        return self.iserver.get_endpoints()
+    async def get_endpoints(self):
+        return await self.iserver.get_endpoints()
 
     def set_security_policy(self, security_policy):
         """
@@ -545,8 +541,8 @@ class Server:
         nodes = await get_nodes_of_namespace(self, namespaces)
         self.export_xml(nodes, path)
 
-    def delete_nodes(self, nodes, recursive=False):
-        return delete_nodes(self.iserver.isession, nodes, recursive)
+    async def delete_nodes(self, nodes, recursive=False):
+        return await delete_nodes(self.iserver.isession, nodes, recursive)
 
     async def historize_node_data_change(self, node, period=timedelta(days=7), count=0):
         """

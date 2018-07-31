@@ -22,7 +22,7 @@ async def opc(request):
         await srv.start()
         # start client
         # long timeout since travis (automated testing) can be really slow
-        clt = Client(f'opc.tcp://127.0.0.1:{port_num}', timeout=10)
+        clt = Client(f'opc.tcp://admin@127.0.0.1:{port_num}', timeout=10)
         await clt.connect()
         yield clt
         await clt.disconnect()

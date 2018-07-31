@@ -405,15 +405,11 @@ class Node:
         Since address space may have circular references, a max length is specified
 
         """
-        path = []
-        for ref in await self._get_path(max_length):
-            path.append(Node(self.server, ref.NodeId))
+        path = await self._get_path(max_length)
+        path = [Node(self.server, ref.NodeId) for ref in path]
         path.append(self)
         if as_string:
-            str_path = []
-            for el in path:
-                name = await el.get_browse_name()
-                str_path.append(name.to_string())
+            path = [(await el.get_browse_name()).to_string() for el in path]
         return path
 
     async def _get_path(self, max_length=20):
@@ -598,7 +594,7 @@ class Node:
         else:
             raise ua.UaStatusCodeError(ua.StatusCodes.BadNotFound)
         ditem = self._fill_delete_reference_item(rdesc, bidirectional)
-        await self.server.delete_references([ditem])[0].check()
+        (await self.server.delete_references([ditem]))[0].check()
 
     async def add_reference(self, target, reftype, forward=True, bidirectional=True):
         """
@@ -660,6 +656,7 @@ class Node:
         return opcua.common.manage_nodes.create_method(self, *args)
 
     def add_reference_type(self, nodeid, bname, symmetric=True, inversename=None):
+        """COROUTINE"""
         return opcua.common.manage_nodes.create_reference_type(self, nodeid, bname, symmetric, inversename)
 
     def call_method(self, methodid, *args):

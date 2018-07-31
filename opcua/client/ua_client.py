@@ -103,7 +103,7 @@ class UASocketProtocol(asyncio.Protocol):
         self.transport.write(msg)
         return future
 
-    async def send_request(self, request, callback=None, timeout=1000, message_type=ua.MessageType.SecureMessage):
+    async def send_request(self, request, callback=None, timeout=10, message_type=ua.MessageType.SecureMessage):
         """
         Send a request to the server.
         Timeout is the timeout written in ua header.

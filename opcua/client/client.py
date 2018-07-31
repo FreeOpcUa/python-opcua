@@ -523,8 +523,8 @@ class Client(object):
         uries = await self.get_namespace_array()
         return uries.index(uri)
 
-    def delete_nodes(self, nodes, recursive=False):
-        return delete_nodes(self.uaclient, nodes, recursive)
+    async def delete_nodes(self, nodes, recursive=False):
+        return await delete_nodes(self.uaclient, nodes, recursive)
 
     def import_xml(self, path=None, xmlstring=None):
         """

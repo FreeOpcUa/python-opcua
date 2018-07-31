@@ -7,7 +7,7 @@ from opcua import Server
 from opcua import ua
 
 from .test_common import add_server_methods
-from .tests_enum_struct import add_server_custom_enum_struct
+from .util_enum_struct import add_server_custom_enum_struct
 
 port_num1 = 48510
 _logger = logging.getLogger(__name__)
