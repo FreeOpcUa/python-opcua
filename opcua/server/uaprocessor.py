@@ -4,13 +4,14 @@ from threading import RLock, Lock
 import time
 
 from opcua import ua
+from opcua.server.internal_server import InternalServer, InternalSession
 from opcua.ua.ua_binary import nodeid_from_binary, struct_from_binary
 from opcua.ua.ua_binary import struct_to_binary, uatcp_to_binary
 from opcua.common import utils
 from opcua.common.connection import SecureConnection
 
 
-class PublishRequestData(object):
+class PublishRequestData:
 
     def __init__(self):
         self.requesthdr = None
@@ -19,14 +20,14 @@ class PublishRequestData(object):
         self.timestamp = time.time()
 
 
-class UaProcessor(object):
+class UaProcessor:
 
-    def __init__(self, internal_server, socket):
+    def __init__(self, internal_server: InternalServer, socket):
         self.logger = logging.getLogger(__name__)
-        self.iserver = internal_server
+        self.iserver: InternalServer = internal_server
         self.name = socket.get_extra_info('peername')
         self.sockname = socket.get_extra_info('sockname')
-        self.session = None
+        self.session: InternalSession = None
         self.socket = socket
         self._datalock = RLock()
         self._publishdata_queue = []
@@ -119,7 +120,7 @@ class UaProcessor(object):
             # create the session on server
             self.session = self.iserver.create_session(self.name, external=True)
             # get a session creation result to send back
-            sessiondata = self.session.create_session(params, sockname=self.sockname)
+            sessiondata = await self.session.create_session(params, sockname=self.sockname)
             response = ua.CreateSessionResponse()
             response.Parameters = sessiondata
             response.Parameters.ServerCertificate = self._connection.security_policy.client_certificate
@@ -188,7 +189,7 @@ class UaProcessor(object):
         elif typeid == ua.NodeId(ua.ObjectIds.GetEndpointsRequest_Encoding_DefaultBinary):
             self.logger.info("get endpoints request")
             params = struct_from_binary(ua.GetEndpointsParameters, body)
-            endpoints = self.iserver.get_endpoints(params, sockname=self.sockname)
+            endpoints = await self.iserver.get_endpoints(params, sockname=self.sockname)
             response = ua.GetEndpointsResponse()
             response.Endpoints = endpoints
             self.logger.info("sending get endpoints response")

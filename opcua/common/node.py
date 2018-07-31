@@ -313,6 +313,7 @@ class Node:
         """
         return properties of node.
         properties are child nodes with a reference of type HasProperty and a NodeClass of Variable
+        COROUTINE
         """
         return self.get_children(refs=ua.ObjectIds.HasProperty, nodeclassmask=ua.NodeClass.Variable)
 
@@ -404,15 +405,11 @@ class Node:
         Since address space may have circular references, a max length is specified
 
         """
-        path = []
-        for ref in await self._get_path(max_length):
-            path.append(Node(self.server, ref.NodeId))
+        path = await self._get_path(max_length)
+        path = [Node(self.server, ref.NodeId) for ref in path]
         path.append(self)
         if as_string:
-            str_path = []
-            for el in path:
-                name = await el.get_browse_name()
-                str_path.append(name.to_string())
+            path = [(await el.get_browse_name()).to_string() for el in path]
         return path
 
     async def _get_path(self, max_length=20):
@@ -597,7 +594,7 @@ class Node:
         else:
             raise ua.UaStatusCodeError(ua.StatusCodes.BadNotFound)
         ditem = self._fill_delete_reference_item(rdesc, bidirectional)
-        await self.server.delete_references([ditem])[0].check()
+        (await self.server.delete_references([ditem]))[0].check()
 
     async def add_reference(self, target, reftype, forward=True, bidirectional=True):
         """
@@ -619,35 +616,29 @@ class Node:
         results = await self.server.add_references(params)
         _check_results(results, len(params))
 
-    async def _add_modelling_rule(self, parent, mandatory=True):
-        if mandatory is not None and await parent.get_node_class() == ua.NodeClass.ObjectType:
-            rule = ua.ObjectIds.ModellingRule_Mandatory if mandatory else ua.ObjectIds.ModellingRule_Optional
-            await self.add_reference(rule, ua.ObjectIds.HasModellingRule, True, False)
-        return self
-
     async def set_modelling_rule(self, mandatory):
-        parent = await self.get_parent()
-        if parent is None:
-            return ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
-        if await parent.get_node_class() != ua.NodeClass.ObjectType:
-            return ua.StatusCode(ua.StatusCodes.BadTypeMismatch)
+        """
+        Add a modelling rule reference to Node.
+        When creating a new object type, its variable and child nodes will not
+        be instanciated if they do not have modelling rule
+        if mandatory is None, the modelling rule is removed
+        """
         # remove all existing modelling rule
         rules = await self.get_references(ua.ObjectIds.HasModellingRule)
         await self.server.delete_references(list(map(self._fill_delete_reference_item, rules)))
-        await self._add_modelling_rule(parent, mandatory)
-        return ua.StatusCode()
+        # add new modelling rule as requested
+        if mandatory is not None:
+            rule = ua.ObjectIds.ModellingRule_Mandatory if mandatory else ua.ObjectIds.ModellingRule_Optional
+            await self.add_reference(rule, ua.ObjectIds.HasModellingRule, True, False)
 
-    async def add_folder(self, nodeid, bname):
-        folder = await opcua.common.manage_nodes.create_folder(self, nodeid, bname)
-        return await folder._add_modelling_rule(self)
+    def add_folder(self, nodeid, bname):
+        return opcua.common.manage_nodes.create_folder(self, nodeid, bname)
 
-    async def add_object(self, nodeid, bname, objecttype=None):
-        obj = await opcua.common.manage_nodes.create_object(self, nodeid, bname, objecttype)
-        return await obj._add_modelling_rule(self)
+    def add_object(self, nodeid, bname, objecttype=None):
+        return opcua.common.manage_nodes.create_object(self, nodeid, bname, objecttype)
 
-    async def add_variable(self, nodeid, bname, val, varianttype=None, datatype=None):
-        var = await opcua.common.manage_nodes.create_variable(self, nodeid, bname, val, varianttype, datatype)
-        return await var._add_modelling_rule(self)
+    def add_variable(self, nodeid, bname, val, varianttype=None, datatype=None):
+        return opcua.common.manage_nodes.create_variable(self, nodeid, bname, val, varianttype, datatype)
 
     def add_object_type(self, nodeid, bname):
         return opcua.common.manage_nodes.create_object_type(self, nodeid, bname)
@@ -658,15 +649,14 @@ class Node:
     def add_data_type(self, nodeid, bname, description=None):
         return opcua.common.manage_nodes.create_data_type(self, nodeid, bname, description=None)
 
-    async def add_property(self, nodeid, bname, val, varianttype=None, datatype=None):
-        prop = await opcua.common.manage_nodes.create_property(self, nodeid, bname, val, varianttype, datatype)
-        return await prop._add_modelling_rule(self)
+    def add_property(self, nodeid, bname, val, varianttype=None, datatype=None):
+        return opcua.common.manage_nodes.create_property(self, nodeid, bname, val, varianttype, datatype)
 
-    async def add_method(self, *args):
-        method = await opcua.common.manage_nodes.create_method(self, *args)
-        return await method._add_modelling_rule(self)
+    def add_method(self, *args):
+        return opcua.common.manage_nodes.create_method(self, *args)
 
     def add_reference_type(self, nodeid, bname, symmetric=True, inversename=None):
+        """COROUTINE"""
         return opcua.common.manage_nodes.create_reference_type(self, nodeid, bname, symmetric, inversename)
 
     def call_method(self, methodid, *args):

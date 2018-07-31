@@ -406,14 +406,14 @@ def _guess_datatype(variant):
         return ua.NodeId(getattr(ua.ObjectIds, variant.VariantType.name))
 
 
-def delete_nodes(server, nodes, recursive=False, delete_target_references=True):
+async def delete_nodes(server, nodes, recursive=False, delete_target_references=True):
     """
     Delete specified nodes. Optionally delete recursively all nodes with a
     downward hierachic references to the node
     """
     nodestodelete = []
     if recursive:
-        nodes += _add_childs(nodes)
+        nodes += await _add_childs(nodes)
     for mynode in nodes:
         it = ua.DeleteNodesItem()
         it.NodeId = mynode.nodeid
@@ -421,11 +421,11 @@ def delete_nodes(server, nodes, recursive=False, delete_target_references=True):
         nodestodelete.append(it)
     params = ua.DeleteNodesParameters()
     params.NodesToDelete = nodestodelete
-    return server.delete_nodes(params)
+    return await server.delete_nodes(params)
 
 
-def _add_childs(nodes):
+async def _add_childs(nodes):
     results = []
     for mynode in nodes[:]:
-        results += mynode.get_children()
+        results += await mynode.get_children()
     return results

@@ -31,15 +31,15 @@
 <opc:TypeDictionary
   xmlns:DI="http://opcfoundation.org/UA/DI/"
   xmlns:opc="http://opcfoundation.org/BinarySchema/"
-  xmlns:ua="http://opcfoundation.org/UA/2008/02/Types.bsd"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ua="http://opcfoundation.org/UA/"
   xmlns:tns="http://opcfoundation.org/UA/ADI/"
   DefaultByteOrder="LittleEndian"
-  TargetNamespace="http://opcfoundation.org/UA/ADI/"  
+  TargetNamespace="http://opcfoundation.org/UA/ADI/"
 >
   <opc:Import Namespace="http://opcfoundation.org/UA/DI/" Location="Opc.Ua.Di.BinarySchema.bsd"/>
   <opc:Import Namespace="http://opcfoundation.org/UA/" Location="Opc.Ua.BinarySchema.bsd"/>
-  
+
   <opc:EnumeratedType Name="ExecutionCycleEnumeration" LengthInBits="32">
     <opc:EnumeratedValue Name="IDLE" Value="0" />
     <opc:EnumeratedValue Name="DIAGNOSTIC" Value="1" />
@@ -54,53 +54,22 @@
     <opc:EnumeratedValue Name="SAMPLING_WITH_GRAB_SAMPLE" Value="32784" />
   </opc:EnumeratedType>
 
-  <opc:EnumeratedType Name="DiagnosticStatusEnumeration" LengthInBits="32">
-    <opc:EnumeratedValue Name="NORMAL" Value="0" />
-    <opc:EnumeratedValue Name="MAINTENANCE_REQUIRED" Value="1" />
-    <opc:EnumeratedValue Name="FAULT" Value="2" />
-  </opc:EnumeratedType>
-
   <opc:EnumeratedType Name="AcquisitionResultStatusEnumeration" LengthInBits="32">
-    <opc:EnumeratedValue Name="IN_PROGRESS" Value="0" />
+    <opc:EnumeratedValue Name="NOT_USED" Value="0" />
     <opc:EnumeratedValue Name="GOOD" Value="1" />
     <opc:EnumeratedValue Name="BAD" Value="2" />
     <opc:EnumeratedValue Name="UNKNOWN" Value="3" />
     <opc:EnumeratedValue Name="PARTIAL" Value="4" />
   </opc:EnumeratedType>
 
-  <opc:StructuredType Name="AxisInformation" BaseType="ua:ExtensionObject">
-    <opc:Documentation>Structure defining the information for auxiliary axis for array type variables.</opc:Documentation>
-    <opc:Field Name="EngineeringUnits" TypeName="ua:EUInformation" />
-    <opc:Field Name="EURange" TypeName="ua:Range" />
-    <opc:Field Name="title" TypeName="ua:LocalizedText" />
-    <opc:Field Name="axisScaleType" TypeName="tns:AxisScaleEnumeration" />
-    <opc:Field Name="NoOfaxisSteps" TypeName="opc:Int32" />
-    <opc:Field Name="axisSteps" TypeName="opc:Double" LengthField="NoOfaxisSteps" />
-  </opc:StructuredType>
-
-  <opc:EnumeratedType Name="AxisScaleEnumeration" LengthInBits="32">
-    <opc:Documentation>Identify on which type of axis the data shall be displayed.</opc:Documentation>
-    <opc:EnumeratedValue Name="LINEAR" Value="0" />
-    <opc:EnumeratedValue Name="LOG" Value="1" />
-    <opc:EnumeratedValue Name="LN" Value="2" />
+  <opc:EnumeratedType Name="AlarmStateEnumeration" LengthInBits="32">
+    <opc:EnumeratedValue Name="NORMAL_0" Value="0" />
+    <opc:EnumeratedValue Name="WARNING_LOW_1" Value="1" />
+    <opc:EnumeratedValue Name="WARNING_HIGH_2" Value="2" />
+    <opc:EnumeratedValue Name="WARNING_4" Value="4" />
+    <opc:EnumeratedValue Name="ALARM_LOW_8" Value="8" />
+    <opc:EnumeratedValue Name="ALARM_HIGH_16" Value="16" />
+    <opc:EnumeratedValue Name="ALARM_32" Value="32" />
   </opc:EnumeratedType>
 
-  <opc:StructuredType Name="XVType" BaseType="ua:ExtensionObject">
-    <opc:Documentation>Structure defining XY value like a list of peaks.</opc:Documentation>
-    <opc:Field Name="x" TypeName="opc:Double" />
-    <opc:Field Name="value" TypeName="opc:Float" />
-  </opc:StructuredType>
-
-  <opc:StructuredType Name="ComplexType" BaseType="ua:ExtensionObject">
-    <opc:Documentation>Structure defining double IEEE 32 bits complex value</opc:Documentation>
-    <opc:Field Name="Real" TypeName="opc:Float" />
-    <opc:Field Name="Imaginary" TypeName="opc:Float" />
-  </opc:StructuredType>
-
-  <opc:StructuredType Name="DoubleComplexType" BaseType="ua:ExtensionObject">
-    <opc:Documentation>Structure defining double IEEE 64 bits complex value</opc:Documentation>
-    <opc:Field Name="Real" TypeName="opc:Double" />
-    <opc:Field Name="Imaginary" TypeName="opc:Double" />
-  </opc:StructuredType>
-  
 </opc:TypeDictionary>

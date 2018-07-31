@@ -177,28 +177,29 @@ async def get_event_properties_from_type_node(node):
     return properties
 
 
-def get_event_obj_from_type_node(node):
+async def get_event_obj_from_type_node(node):
     """
     return an Event object from an event type node
     """
     if node.nodeid.Identifier in opcua.common.event_objects.IMPLEMENTED_EVENTS.keys():
         return opcua.common.event_objects.IMPLEMENTED_EVENTS[node.nodeid.Identifier]()
     else:
-        parent_identifier, parent_eventtype = _find_parent_eventtype(node)
+        parent_identifier, parent_eventtype = await _find_parent_eventtype(node)
 
         class CustomEvent(parent_eventtype):
 
             def __init__(self):
                 parent_eventtype.__init__(self)
                 self.EventType = node.nodeid
-                curr_node = node
 
+            async def init(self):
+                curr_node = node
                 while curr_node.nodeid.Identifier != parent_identifier:
-                    for prop in curr_node.get_properties():
-                        name = prop.get_browse_name().Name
-                        val = prop.get_data_value()
+                    for prop in await curr_node.get_properties():
+                        name = (await prop.get_browse_name()).Name
+                        val = await prop.get_data_value()
                         self.add_property(name, val.Value.Value, val.Value.VariantType)
-                    parents = curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
+                    parents = await curr_node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
 
                     if len(parents) != 1:  # Something went wrong
                         raise UaError("Parent of event type could notbe found")
@@ -206,17 +207,19 @@ def get_event_obj_from_type_node(node):
 
                 self._freeze = True
 
-    return CustomEvent()
+    ce = CustomEvent()
+    await ce.init()
+    return ce
 
 
-def _find_parent_eventtype(node):
+async def _find_parent_eventtype(node):
     """
     """
-    parents = node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
+    parents = await node.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
 
     if len(parents) != 1:   # Something went wrong
         raise UaError("Parent of event type could notbe found")
     if parents[0].nodeid.Identifier in opcua.common.event_objects.IMPLEMENTED_EVENTS.keys():
         return parents[0].nodeid.Identifier, opcua.common.event_objects.IMPLEMENTED_EVENTS[parents[0].nodeid.Identifier]
     else:
-        return _find_parent_eventtype(parents[0])
+        return await _find_parent_eventtype(parents[0])

@@ -6,7 +6,7 @@ from opcua import ua
 from opcua.common import node
 
 
-def call_method(parent, methodid, *args):
+async def call_method(parent, methodid, *args):
     """
     Call an OPC-UA method. methodid is browse name of child method or the
     nodeid of method as a NodeId object
@@ -14,7 +14,7 @@ def call_method(parent, methodid, *args):
     which may be of different types
     returns a list of values or a single value depending on the output of the method
     """
-    result = call_method_full(parent, methodid, *args)
+    result = await call_method_full(parent, methodid, *args)
 
     if len(result.OutputArguments) == 0:
         return None
@@ -24,7 +24,7 @@ def call_method(parent, methodid, *args):
         return result.OutputArguments
 
 
-def call_method_full(parent, methodid, *args):
+async def call_method_full(parent, methodid, *args):
     """
     Call an OPC-UA method. methodid is browse name of child method or the
     nodeid of method as a NodeId object
@@ -33,7 +33,7 @@ def call_method_full(parent, methodid, *args):
     returns a CallMethodResult object with converted OutputArguments
     """
     if isinstance(methodid, (str, ua.uatypes.QualifiedName)):
-        methodid = parent.get_child(methodid).nodeid
+        methodid = (await parent.get_child(methodid)).nodeid
     elif isinstance(methodid, node.Node):
         methodid = methodid.nodeid
 

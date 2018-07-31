@@ -6,13 +6,13 @@ from opcua import Client
 from opcua import Server
 from opcua import ua
 
-from .tests_subscriptions import SubscriptionTests
-from .tests_common import CommonTests, add_server_methods
-from .tests_xml import XmlTests
+from .test_common import add_server_methods
+from .util_enum_struct import add_server_custom_enum_struct
 
 port_num1 = 48510
 _logger = logging.getLogger(__name__)
 pytestmark = pytest.mark.asyncio
+
 
 @pytest.fixture()
 async def admin_client():
@@ -40,6 +40,7 @@ async def server():
     await srv.init()
     srv.set_endpoint(f'opc.tcp://127.0.0.1:{port_num1}')
     await add_server_methods(srv)
+    await add_server_custom_enum_struct(srv)
     await srv.start()
     yield srv
     # stop the server
@@ -61,8 +62,8 @@ async def test_objects_anonymous(server, client):
         await objects.add_folder(3, 'MyFolder')
 
 
-async def test_folder_anonymous(server, client):
-    objects = client.get_objects_node()
+async def test_folder_anonymous(server, admin_client, client):
+    objects = admin_client.get_objects_node()
     f = await objects.add_folder(3, 'MyFolderRO')
     f_ro = client.get_node(f.nodeid)
     assert f == f_ro
@@ -115,3 +116,12 @@ async def test_enumstrings_getvalue(server, client):
     """
     nenumstrings = client.get_node(ua.ObjectIds.AxisScaleEnumeration_EnumStrings)
     value = ua.Variant(await nenumstrings.get_value())
+
+
+async def test_custom_enum_struct(server, client):
+    await client.load_type_definitions()
+    ns = await client.get_namespace_index('http://yourorganisation.org/struct_enum_example/')
+    myvar = client.get_node(ua.NodeId(6009, ns))
+    val = await myvar.get_value()
+    assert 242 == val.IntVal1
+    assert ua.ExampleEnum.EnumVal2 == val.EnumVal

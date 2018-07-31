@@ -6,69 +6,71 @@ It is automatically generated from opcfoundation.org schemas.
 """
 
 from opcua import ua
+from opcua.ua import NodeId, QualifiedName, NumericNodeId, StringNodeId, GuidNodeId
+from opcua.ua import NodeClass, LocalizedText
 
 
 def create_standard_address_space_Part13(server):
   
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11187")
-    node.BrowseName = ua.QualifiedName.from_string("AggregateConfigurationType")
-    node.NodeClass = ua.NodeClass.ObjectType
-    node.ParentNodeId = ua.NodeId.from_string("i=58")
-    node.ReferenceTypeId = ua.NodeId.from_string("i=45")
+    node.RequestedNewNodeId = NumericNodeId(11187, 0)
+    node.BrowseName = QualifiedName('AggregateConfigurationType', 0)
+    node.NodeClass = NodeClass.ObjectType
+    node.ParentNodeId = NumericNodeId(58, 0)
+    node.ReferenceTypeId = NumericNodeId(45, 0)
     attrs = ua.ObjectTypeAttributes()
-    attrs.DisplayName = ua.LocalizedText("AggregateConfigurationType")
+    attrs.DisplayName = LocalizedText("AggregateConfigurationType")
     attrs.IsAbstract = False
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11187")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=11188")
+    ref.ReferenceTypeId = NumericNodeId(46, 0)
+    ref.SourceNodeId = NumericNodeId(11187, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(11188, 0)
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11187")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=11189")
+    ref.ReferenceTypeId = NumericNodeId(46, 0)
+    ref.SourceNodeId = NumericNodeId(11187, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(11189, 0)
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11187")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=11190")
+    ref.ReferenceTypeId = NumericNodeId(46, 0)
+    ref.SourceNodeId = NumericNodeId(11187, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(11190, 0)
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11187")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=11191")
+    ref.ReferenceTypeId = NumericNodeId(46, 0)
+    ref.SourceNodeId = NumericNodeId(11187, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(11191, 0)
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = False
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=45")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11187")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=58")
+    ref.ReferenceTypeId = NumericNodeId(45, 0)
+    ref.SourceNodeId = NumericNodeId(11187, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(58, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11188")
-    node.BrowseName = ua.QualifiedName.from_string("TreatUncertainAsBad")
-    node.NodeClass = ua.NodeClass.Variable
-    node.ParentNodeId = ua.NodeId.from_string("i=11187")
-    node.ReferenceTypeId = ua.NodeId.from_string("i=46")
-    node.TypeDefinition = ua.NodeId.from_string("i=68")
+    node.RequestedNewNodeId = NumericNodeId(11188, 0)
+    node.BrowseName = QualifiedName('TreatUncertainAsBad', 0)
+    node.NodeClass = NodeClass.Variable
+    node.ParentNodeId = NumericNodeId(11187, 0)
+    node.ReferenceTypeId = NumericNodeId(46, 0)
+    node.TypeDefinition = NumericNodeId(68, 0)
     attrs = ua.VariableAttributes()
-    attrs.DisplayName = ua.LocalizedText("TreatUncertainAsBad")
+    attrs.DisplayName = LocalizedText("TreatUncertainAsBad")
     attrs.DataType = ua.NodeId(ua.ObjectIds.Boolean)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
@@ -76,36 +78,36 @@ def create_standard_address_space_Part13(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11188")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11188, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(68, 0)
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11188")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    ref.ReferenceTypeId = NumericNodeId(37, 0)
+    ref.SourceNodeId = NumericNodeId(11188, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(78, 0)
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = False
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11188")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=11187")
+    ref.ReferenceTypeId = NumericNodeId(46, 0)
+    ref.SourceNodeId = NumericNodeId(11188, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(11187, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11189")
-    node.BrowseName = ua.QualifiedName.from_string("PercentDataBad")
-    node.NodeClass = ua.NodeClass.Variable
-    node.ParentNodeId = ua.NodeId.from_string("i=11187")
-    node.ReferenceTypeId = ua.NodeId.from_string("i=46")
-    node.TypeDefinition = ua.NodeId.from_string("i=68")
+    node.RequestedNewNodeId = NumericNodeId(11189, 0)
+    node.BrowseName = QualifiedName('PercentDataBad', 0)
+    node.NodeClass = NodeClass.Variable
+    node.ParentNodeId = NumericNodeId(11187, 0)
+    node.ReferenceTypeId = NumericNodeId(46, 0)
+    node.TypeDefinition = NumericNodeId(68, 0)
     attrs = ua.VariableAttributes()
-    attrs.DisplayName = ua.LocalizedText("PercentDataBad")
+    attrs.DisplayName = LocalizedText("PercentDataBad")
     attrs.DataType = ua.NodeId(ua.ObjectIds.Byte)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
@@ -113,36 +115,36 @@ def create_standard_address_space_Part13(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11189")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11189, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(68, 0)
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11189")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    ref.ReferenceTypeId = NumericNodeId(37, 0)
+    ref.SourceNodeId = NumericNodeId(11189, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(78, 0)
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = False
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11189")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=11187")
+    ref.ReferenceTypeId = NumericNodeId(46, 0)
+    ref.SourceNodeId = NumericNodeId(11189, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(11187, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11190")
-    node.BrowseName = ua.QualifiedName.from_string("PercentDataGood")
-    node.NodeClass = ua.NodeClass.Variable
-    node.ParentNodeId = ua.NodeId.from_string("i=11187")
-    node.ReferenceTypeId = ua.NodeId.from_string("i=46")
-    node.TypeDefinition = ua.NodeId.from_string("i=68")
+    node.RequestedNewNodeId = NumericNodeId(11190, 0)
+    node.BrowseName = QualifiedName('PercentDataGood', 0)
+    node.NodeClass = NodeClass.Variable
+    node.ParentNodeId = NumericNodeId(11187, 0)
+    node.ReferenceTypeId = NumericNodeId(46, 0)
+    node.TypeDefinition = NumericNodeId(68, 0)
     attrs = ua.VariableAttributes()
-    attrs.DisplayName = ua.LocalizedText("PercentDataGood")
+    attrs.DisplayName = LocalizedText("PercentDataGood")
     attrs.DataType = ua.NodeId(ua.ObjectIds.Byte)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
@@ -150,36 +152,36 @@ def create_standard_address_space_Part13(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11190")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11190, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(68, 0)
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11190")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    ref.ReferenceTypeId = NumericNodeId(37, 0)
+    ref.SourceNodeId = NumericNodeId(11190, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(78, 0)
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = False
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11190")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=11187")
+    ref.ReferenceTypeId = NumericNodeId(46, 0)
+    ref.SourceNodeId = NumericNodeId(11190, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(11187, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11191")
-    node.BrowseName = ua.QualifiedName.from_string("UseSlopedExtrapolation")
-    node.NodeClass = ua.NodeClass.Variable
-    node.ParentNodeId = ua.NodeId.from_string("i=11187")
-    node.ReferenceTypeId = ua.NodeId.from_string("i=46")
-    node.TypeDefinition = ua.NodeId.from_string("i=68")
+    node.RequestedNewNodeId = NumericNodeId(11191, 0)
+    node.BrowseName = QualifiedName('UseSlopedExtrapolation', 0)
+    node.NodeClass = NodeClass.Variable
+    node.ParentNodeId = NumericNodeId(11187, 0)
+    node.ReferenceTypeId = NumericNodeId(46, 0)
+    node.TypeDefinition = NumericNodeId(68, 0)
     attrs = ua.VariableAttributes()
-    attrs.DisplayName = ua.LocalizedText("UseSlopedExtrapolation")
+    attrs.DisplayName = LocalizedText("UseSlopedExtrapolation")
     attrs.DataType = ua.NodeId(ua.ObjectIds.Boolean)
     attrs.ValueRank = -1
     node.NodeAttributes = attrs
@@ -187,800 +189,800 @@ def create_standard_address_space_Part13(server):
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11191")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=68")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11191, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(68, 0)
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=37")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11191")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=78")
+    ref.ReferenceTypeId = NumericNodeId(37, 0)
+    ref.SourceNodeId = NumericNodeId(11191, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(78, 0)
     refs.append(ref)
     ref = ua.AddReferencesItem()
     ref.IsForward = False
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=46")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11191")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=11187")
+    ref.ReferenceTypeId = NumericNodeId(46, 0)
+    ref.SourceNodeId = NumericNodeId(11191, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(11187, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2341")
-    node.BrowseName = ua.QualifiedName.from_string("Interpolative")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2341, 0)
+    node.BrowseName = QualifiedName('Interpolative', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("At the beginning of each interval, retrieve the calculated value from the data points on either side of the requested timestamp.")
-    attrs.DisplayName = ua.LocalizedText("Interpolative")
+    attrs.Description = LocalizedText("At the beginning of each interval, retrieve the calculated value from the data points on either side of the requested timestamp.")
+    attrs.DisplayName = LocalizedText("Interpolative")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2341")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2341, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2342")
-    node.BrowseName = ua.QualifiedName.from_string("Average")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2342, 0)
+    node.BrowseName = QualifiedName('Average', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the average value of the data over the interval.")
-    attrs.DisplayName = ua.LocalizedText("Average")
+    attrs.Description = LocalizedText("Retrieve the average value of the data over the interval.")
+    attrs.DisplayName = LocalizedText("Average")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2342")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2342, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2343")
-    node.BrowseName = ua.QualifiedName.from_string("TimeAverage")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2343, 0)
+    node.BrowseName = QualifiedName('TimeAverage', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the time weighted average data over the interval using Interpolated Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("TimeAverage")
+    attrs.Description = LocalizedText("Retrieve the time weighted average data over the interval using Interpolated Bounding Values.")
+    attrs.DisplayName = LocalizedText("TimeAverage")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2343")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2343, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11285")
-    node.BrowseName = ua.QualifiedName.from_string("TimeAverage2")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11285, 0)
+    node.BrowseName = QualifiedName('TimeAverage2', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the time weighted average data over the interval using Simple Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("TimeAverage2")
+    attrs.Description = LocalizedText("Retrieve the time weighted average data over the interval using Simple Bounding Values.")
+    attrs.DisplayName = LocalizedText("TimeAverage2")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11285")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11285, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2344")
-    node.BrowseName = ua.QualifiedName.from_string("Total")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2344, 0)
+    node.BrowseName = QualifiedName('Total', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the total (time integral) of the data over the interval using Interpolated Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("Total")
+    attrs.Description = LocalizedText("Retrieve the total (time integral) of the data over the interval using Interpolated Bounding Values.")
+    attrs.DisplayName = LocalizedText("Total")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2344")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2344, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11304")
-    node.BrowseName = ua.QualifiedName.from_string("Total2")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11304, 0)
+    node.BrowseName = QualifiedName('Total2', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the total (time integral) of the data over the interval using Simple Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("Total2")
+    attrs.Description = LocalizedText("Retrieve the total (time integral) of the data over the interval using Simple Bounding Values.")
+    attrs.DisplayName = LocalizedText("Total2")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11304")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11304, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2346")
-    node.BrowseName = ua.QualifiedName.from_string("Minimum")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2346, 0)
+    node.BrowseName = QualifiedName('Minimum', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the minimum raw value in the interval with the timestamp of the start of the interval.")
-    attrs.DisplayName = ua.LocalizedText("Minimum")
+    attrs.Description = LocalizedText("Retrieve the minimum raw value in the interval with the timestamp of the start of the interval.")
+    attrs.DisplayName = LocalizedText("Minimum")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2346")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2346, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2347")
-    node.BrowseName = ua.QualifiedName.from_string("Maximum")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2347, 0)
+    node.BrowseName = QualifiedName('Maximum', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the maximum raw value in the interval with the timestamp of the start of the interval.")
-    attrs.DisplayName = ua.LocalizedText("Maximum")
+    attrs.Description = LocalizedText("Retrieve the maximum raw value in the interval with the timestamp of the start of the interval.")
+    attrs.DisplayName = LocalizedText("Maximum")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2347")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2347, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2348")
-    node.BrowseName = ua.QualifiedName.from_string("MinimumActualTime")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2348, 0)
+    node.BrowseName = QualifiedName('MinimumActualTime', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the minimum value in the interval and the Timestamp of the minimum value.")
-    attrs.DisplayName = ua.LocalizedText("MinimumActualTime")
+    attrs.Description = LocalizedText("Retrieve the minimum value in the interval and the Timestamp of the minimum value.")
+    attrs.DisplayName = LocalizedText("MinimumActualTime")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2348")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2348, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2349")
-    node.BrowseName = ua.QualifiedName.from_string("MaximumActualTime")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2349, 0)
+    node.BrowseName = QualifiedName('MaximumActualTime', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the maximum value in the interval and the Timestamp of the maximum value.")
-    attrs.DisplayName = ua.LocalizedText("MaximumActualTime")
+    attrs.Description = LocalizedText("Retrieve the maximum value in the interval and the Timestamp of the maximum value.")
+    attrs.DisplayName = LocalizedText("MaximumActualTime")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2349")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2349, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2350")
-    node.BrowseName = ua.QualifiedName.from_string("Range")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2350, 0)
+    node.BrowseName = QualifiedName('Range', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the difference between the minimum and maximum Value over the interval.")
-    attrs.DisplayName = ua.LocalizedText("Range")
+    attrs.Description = LocalizedText("Retrieve the difference between the minimum and maximum Value over the interval.")
+    attrs.DisplayName = LocalizedText("Range")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2350")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2350, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11286")
-    node.BrowseName = ua.QualifiedName.from_string("Minimum2")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11286, 0)
+    node.BrowseName = QualifiedName('Minimum2', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the minimum value in the interval including the Simple Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("Minimum2")
+    attrs.Description = LocalizedText("Retrieve the minimum value in the interval including the Simple Bounding Values.")
+    attrs.DisplayName = LocalizedText("Minimum2")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11286")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11286, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11287")
-    node.BrowseName = ua.QualifiedName.from_string("Maximum2")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11287, 0)
+    node.BrowseName = QualifiedName('Maximum2', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the maximum value in the interval including the Simple Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("Maximum2")
+    attrs.Description = LocalizedText("Retrieve the maximum value in the interval including the Simple Bounding Values.")
+    attrs.DisplayName = LocalizedText("Maximum2")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11287")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11287, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11305")
-    node.BrowseName = ua.QualifiedName.from_string("MinimumActualTime2")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11305, 0)
+    node.BrowseName = QualifiedName('MinimumActualTime2', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the minimum value with the actual timestamp including the Simple Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("MinimumActualTime2")
+    attrs.Description = LocalizedText("Retrieve the minimum value with the actual timestamp including the Simple Bounding Values.")
+    attrs.DisplayName = LocalizedText("MinimumActualTime2")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11305")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11305, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11306")
-    node.BrowseName = ua.QualifiedName.from_string("MaximumActualTime2")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11306, 0)
+    node.BrowseName = QualifiedName('MaximumActualTime2', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the maximum value with the actual timestamp including the Simple Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("MaximumActualTime2")
+    attrs.Description = LocalizedText("Retrieve the maximum value with the actual timestamp including the Simple Bounding Values.")
+    attrs.DisplayName = LocalizedText("MaximumActualTime2")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11306")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11306, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11288")
-    node.BrowseName = ua.QualifiedName.from_string("Range2")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11288, 0)
+    node.BrowseName = QualifiedName('Range2', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the difference between the Minimum2 and Maximum2 value over the interval.")
-    attrs.DisplayName = ua.LocalizedText("Range2")
+    attrs.Description = LocalizedText("Retrieve the difference between the Minimum2 and Maximum2 value over the interval.")
+    attrs.DisplayName = LocalizedText("Range2")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11288")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11288, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2351")
-    node.BrowseName = ua.QualifiedName.from_string("AnnotationCount")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2351, 0)
+    node.BrowseName = QualifiedName('AnnotationCount', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the number of Annotations in the interval.")
-    attrs.DisplayName = ua.LocalizedText("AnnotationCount")
+    attrs.Description = LocalizedText("Retrieve the number of Annotations in the interval.")
+    attrs.DisplayName = LocalizedText("AnnotationCount")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2351")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2351, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2352")
-    node.BrowseName = ua.QualifiedName.from_string("Count")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2352, 0)
+    node.BrowseName = QualifiedName('Count', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the number of raw values over the interval.")
-    attrs.DisplayName = ua.LocalizedText("Count")
+    attrs.Description = LocalizedText("Retrieve the number of raw values over the interval.")
+    attrs.DisplayName = LocalizedText("Count")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2352")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2352, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11307")
-    node.BrowseName = ua.QualifiedName.from_string("DurationInStateZero")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11307, 0)
+    node.BrowseName = QualifiedName('DurationInStateZero', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the time a Boolean or numeric was in a zero state using Simple Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("DurationInStateZero")
+    attrs.Description = LocalizedText("Retrieve the time a Boolean or numeric was in a zero state using Simple Bounding Values.")
+    attrs.DisplayName = LocalizedText("DurationInStateZero")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11307")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11307, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11308")
-    node.BrowseName = ua.QualifiedName.from_string("DurationInStateNonZero")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11308, 0)
+    node.BrowseName = QualifiedName('DurationInStateNonZero', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the time a Boolean or numeric was in a non-zero state using Simple Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("DurationInStateNonZero")
+    attrs.Description = LocalizedText("Retrieve the time a Boolean or numeric was in a non-zero state using Simple Bounding Values.")
+    attrs.DisplayName = LocalizedText("DurationInStateNonZero")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11308")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11308, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2355")
-    node.BrowseName = ua.QualifiedName.from_string("NumberOfTransitions")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2355, 0)
+    node.BrowseName = QualifiedName('NumberOfTransitions', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the number of changes between zero and non-zero that a Boolean or Numeric value experienced in the interval.")
-    attrs.DisplayName = ua.LocalizedText("NumberOfTransitions")
+    attrs.Description = LocalizedText("Retrieve the number of changes between zero and non-zero that a Boolean or Numeric value experienced in the interval.")
+    attrs.DisplayName = LocalizedText("NumberOfTransitions")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2355")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2355, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2357")
-    node.BrowseName = ua.QualifiedName.from_string("Start")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2357, 0)
+    node.BrowseName = QualifiedName('Start', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the value at the beginning of the interval using Interpolated Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("Start")
+    attrs.Description = LocalizedText("Retrieve the value at the beginning of the interval using Interpolated Bounding Values.")
+    attrs.DisplayName = LocalizedText("Start")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2357")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2357, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2358")
-    node.BrowseName = ua.QualifiedName.from_string("End")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2358, 0)
+    node.BrowseName = QualifiedName('End', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the value at the end of the interval using Interpolated Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("End")
+    attrs.Description = LocalizedText("Retrieve the value at the end of the interval using Interpolated Bounding Values.")
+    attrs.DisplayName = LocalizedText("End")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2358")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2358, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2359")
-    node.BrowseName = ua.QualifiedName.from_string("Delta")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2359, 0)
+    node.BrowseName = QualifiedName('Delta', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the difference between the Start and End value in the interval.")
-    attrs.DisplayName = ua.LocalizedText("Delta")
+    attrs.Description = LocalizedText("Retrieve the difference between the Start and End value in the interval.")
+    attrs.DisplayName = LocalizedText("Delta")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2359")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2359, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11505")
-    node.BrowseName = ua.QualifiedName.from_string("StartBound")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11505, 0)
+    node.BrowseName = QualifiedName('StartBound', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the value at the beginning of the interval using Simple Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("StartBound")
+    attrs.Description = LocalizedText("Retrieve the value at the beginning of the interval using Simple Bounding Values.")
+    attrs.DisplayName = LocalizedText("StartBound")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11505")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11505, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11506")
-    node.BrowseName = ua.QualifiedName.from_string("EndBound")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11506, 0)
+    node.BrowseName = QualifiedName('EndBound', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the value at the end of the interval using Simple Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("EndBound")
+    attrs.Description = LocalizedText("Retrieve the value at the end of the interval using Simple Bounding Values.")
+    attrs.DisplayName = LocalizedText("EndBound")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11506")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11506, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11507")
-    node.BrowseName = ua.QualifiedName.from_string("DeltaBounds")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11507, 0)
+    node.BrowseName = QualifiedName('DeltaBounds', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the difference between the StartBound and EndBound value in the interval.")
-    attrs.DisplayName = ua.LocalizedText("DeltaBounds")
+    attrs.Description = LocalizedText("Retrieve the difference between the StartBound and EndBound value in the interval.")
+    attrs.DisplayName = LocalizedText("DeltaBounds")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11507")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11507, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2360")
-    node.BrowseName = ua.QualifiedName.from_string("DurationGood")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2360, 0)
+    node.BrowseName = QualifiedName('DurationGood', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the total duration of time in the interval during which the data is good.")
-    attrs.DisplayName = ua.LocalizedText("DurationGood")
+    attrs.Description = LocalizedText("Retrieve the total duration of time in the interval during which the data is good.")
+    attrs.DisplayName = LocalizedText("DurationGood")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2360")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2360, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2361")
-    node.BrowseName = ua.QualifiedName.from_string("DurationBad")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2361, 0)
+    node.BrowseName = QualifiedName('DurationBad', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the total duration of time in the interval during which the data is bad.")
-    attrs.DisplayName = ua.LocalizedText("DurationBad")
+    attrs.Description = LocalizedText("Retrieve the total duration of time in the interval during which the data is bad.")
+    attrs.DisplayName = LocalizedText("DurationBad")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2361")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2361, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2362")
-    node.BrowseName = ua.QualifiedName.from_string("PercentGood")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2362, 0)
+    node.BrowseName = QualifiedName('PercentGood', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the percent of data (0 to 100) in the interval which has a good StatusCode.")
-    attrs.DisplayName = ua.LocalizedText("PercentGood")
+    attrs.Description = LocalizedText("Retrieve the percent of data (0 to 100) in the interval which has a good StatusCode.")
+    attrs.DisplayName = LocalizedText("PercentGood")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2362")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2362, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2363")
-    node.BrowseName = ua.QualifiedName.from_string("PercentBad")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2363, 0)
+    node.BrowseName = QualifiedName('PercentBad', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the percent of data (0 to 100) in the interval which has a bad StatusCode.")
-    attrs.DisplayName = ua.LocalizedText("PercentBad")
+    attrs.Description = LocalizedText("Retrieve the percent of data (0 to 100) in the interval which has a bad StatusCode.")
+    attrs.DisplayName = LocalizedText("PercentBad")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2363")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2363, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=2364")
-    node.BrowseName = ua.QualifiedName.from_string("WorstQuality")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(2364, 0)
+    node.BrowseName = QualifiedName('WorstQuality', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the worst StatusCode of data in the interval.")
-    attrs.DisplayName = ua.LocalizedText("WorstQuality")
+    attrs.Description = LocalizedText("Retrieve the worst StatusCode of data in the interval.")
+    attrs.DisplayName = LocalizedText("WorstQuality")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=2364")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(2364, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11292")
-    node.BrowseName = ua.QualifiedName.from_string("WorstQuality2")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11292, 0)
+    node.BrowseName = QualifiedName('WorstQuality2', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the worst StatusCode of data in the interval including the Simple Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("WorstQuality2")
+    attrs.Description = LocalizedText("Retrieve the worst StatusCode of data in the interval including the Simple Bounding Values.")
+    attrs.DisplayName = LocalizedText("WorstQuality2")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11292")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11292, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11426")
-    node.BrowseName = ua.QualifiedName.from_string("StandardDeviationSample")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11426, 0)
+    node.BrowseName = QualifiedName('StandardDeviationSample', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the standard deviation for the interval for a sample of the population (n-1).")
-    attrs.DisplayName = ua.LocalizedText("StandardDeviationSample")
+    attrs.Description = LocalizedText("Retrieve the standard deviation for the interval for a sample of the population (n-1).")
+    attrs.DisplayName = LocalizedText("StandardDeviationSample")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11426")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11426, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11427")
-    node.BrowseName = ua.QualifiedName.from_string("StandardDeviationPopulation")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11427, 0)
+    node.BrowseName = QualifiedName('StandardDeviationPopulation', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the standard deviation for the interval for a complete population (n) which includes Simple Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("StandardDeviationPopulation")
+    attrs.Description = LocalizedText("Retrieve the standard deviation for the interval for a complete population (n) which includes Simple Bounding Values.")
+    attrs.DisplayName = LocalizedText("StandardDeviationPopulation")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11427")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11427, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11428")
-    node.BrowseName = ua.QualifiedName.from_string("VarianceSample")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11428, 0)
+    node.BrowseName = QualifiedName('VarianceSample', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the variance for the interval as calculated by the StandardDeviationSample.")
-    attrs.DisplayName = ua.LocalizedText("VarianceSample")
+    attrs.Description = LocalizedText("Retrieve the variance for the interval as calculated by the StandardDeviationSample.")
+    attrs.DisplayName = LocalizedText("VarianceSample")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11428")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11428, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)
    
     node = ua.AddNodesItem()
-    node.RequestedNewNodeId = ua.NodeId.from_string("i=11429")
-    node.BrowseName = ua.QualifiedName.from_string("VariancePopulation")
-    node.NodeClass = ua.NodeClass.Object
-    node.TypeDefinition = ua.NodeId.from_string("i=2340")
+    node.RequestedNewNodeId = NumericNodeId(11429, 0)
+    node.BrowseName = QualifiedName('VariancePopulation', 0)
+    node.NodeClass = NodeClass.Object
+    node.TypeDefinition = NumericNodeId(2340, 0)
     attrs = ua.ObjectAttributes()
-    attrs.Description = ua.LocalizedText("Retrieve the variance for the interval as calculated by the StandardDeviationPopulation which includes Simple Bounding Values.")
-    attrs.DisplayName = ua.LocalizedText("VariancePopulation")
+    attrs.Description = LocalizedText("Retrieve the variance for the interval as calculated by the StandardDeviationPopulation which includes Simple Bounding Values.")
+    attrs.DisplayName = LocalizedText("VariancePopulation")
     attrs.EventNotifier = 0
     node.NodeAttributes = attrs
     server.add_nodes([node])
     refs = []
     ref = ua.AddReferencesItem()
     ref.IsForward = True
-    ref.ReferenceTypeId = ua.NodeId.from_string("i=40")
-    ref.SourceNodeId = ua.NodeId.from_string("i=11429")
-    ref.TargetNodeClass = ua.NodeClass.DataType
-    ref.TargetNodeId = ua.NodeId.from_string("i=2340")
+    ref.ReferenceTypeId = NumericNodeId(40, 0)
+    ref.SourceNodeId = NumericNodeId(11429, 0)
+    ref.TargetNodeClass = NodeClass.DataType
+    ref.TargetNodeId = NumericNodeId(2340, 0)
     refs.append(ref)
     server.add_references(refs)

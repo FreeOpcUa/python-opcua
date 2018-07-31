@@ -49,8 +49,8 @@ class Client(object):
         self._password = self.server_url.password
         self.name = 'Pure Python Async. Client'
         self.description = self.name
-        self.application_uri = 'urn:freeopcua:client'
-        self.product_uri = 'urn:freeopcua.github.no:client'
+        self.application_uri = "urn:freeopcua:client"
+        self.product_uri = "urn:freeopcua.github.io:client"
         self.security_policy = ua.SecurityPolicy()
         self.secure_channel_id = None
         self.secure_channel_timeout = 3600000  # 1 hour
@@ -77,6 +77,7 @@ class Client(object):
         """
         Find endpoint with required security mode and policy URI
         """
+        _logger.info('find_endpoint %r %r %r', endpoints, security_mode, policy_uri)
         for ep in endpoints:
             if (ep.EndpointUrl.startswith(ua.OPC_TCP_SCHEME) and
                     ep.SecurityMode == security_mode and
@@ -156,11 +157,13 @@ class Client(object):
         Connect, ask server for endpoints, and disconnect
         """
         await self.connect_socket()
-        await self.send_hello()
-        await self.open_secure_channel()
-        endpoints = await self.get_endpoints()
-        await self.close_secure_channel()
-        self.disconnect_socket()
+        try:
+            await self.send_hello()
+            await self.open_secure_channel()
+            endpoints = await self.get_endpoints()
+            await self.close_secure_channel()
+        finally:
+            self.disconnect_socket()
         return endpoints
 
     async def connect_and_find_servers(self):
@@ -168,11 +171,13 @@ class Client(object):
         Connect, ask server for a list of known servers, and disconnect
         """
         await self.connect_socket()
-        await self.send_hello()
-        await self.open_secure_channel()  # spec says it should not be necessary to open channel
-        servers = await self.find_servers()
-        await self.close_secure_channel()
-        self.disconnect_socket()
+        try:
+            await self.send_hello()
+            await self.open_secure_channel()  # spec says it should not be necessary to open channel
+            servers = await self.find_servers()
+            await self.close_secure_channel()
+        finally:
+            self.disconnect_socket()
         return servers
 
     async def connect_and_find_servers_on_network(self):
@@ -180,11 +185,13 @@ class Client(object):
         Connect, ask server for a list of known servers on network, and disconnect
         """
         await self.connect_socket()
-        await self.send_hello()
-        await self.open_secure_channel()
-        servers = await self.find_servers_on_network()
-        await self.close_secure_channel()
-        self.disconnect_socket()
+        try:
+            await self.send_hello()
+            await self.open_secure_channel()
+            servers = await self.find_servers_on_network()
+            await self.close_secure_channel()
+        finally:
+            self.disconnect_socket()
         return servers
 
     async def connect(self):
@@ -194,9 +201,14 @@ class Client(object):
         """
         _logger.info('connect')
         await self.connect_socket()
-        await self.send_hello()
-        await self.open_secure_channel()
-        await self.create_session()
+        try:
+            await self.send_hello()
+            await self.open_secure_channel()
+            await self.create_session()
+        except Exception:
+            # clean up open socket
+            self.disconnect_socket()
+            raise
         await self.activate_session(username=self._username, password=self._password, certificate=self.user_certificate)
 
     async def disconnect(self):
@@ -406,11 +418,11 @@ class Client(object):
 
     def _add_anonymous_auth(self, params):
         params.UserIdentityToken = ua.AnonymousIdentityToken()
-        params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Anonymous, 'anonymous')
+        params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Anonymous, "anonymous")
 
     def _add_certificate_auth(self, params, certificate, challenge):
         params.UserIdentityToken = ua.X509IdentityToken()
-        params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Certificate, b"certificate_basic256")
+        params.UserIdentityToken.PolicyId = self.server_policy_id(ua.UserTokenType.Certificate, "certificate_basic256")
         params.UserIdentityToken.CertificateData = uacrypto.der_from_x509(certificate)
         # specs part 4, 5.6.3.1: the data to sign is created by appending
         # the last serverNonce to the serverCertificate
@@ -503,6 +515,7 @@ class Client(object):
         return subscription
 
     def get_namespace_array(self):
+        """COROUTINE"""
         ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         return ns_node.get_value()
 
@@ -510,15 +523,16 @@ class Client(object):
         uries = await self.get_namespace_array()
         return uries.index(uri)
 
-    def delete_nodes(self, nodes, recursive=False):
-        return delete_nodes(self.uaclient, nodes, recursive)
+    async def delete_nodes(self, nodes, recursive=False):
+        return await delete_nodes(self.uaclient, nodes, recursive)
 
-    def import_xml(self, path):
+    def import_xml(self, path=None, xmlstring=None):
         """
         Import nodes defined in xml
+        COROUTINE
         """
         importer = XmlImporter(self)
-        return importer.import_xml(path)
+        return importer.import_xml(path, xmlstring)
 
     def export_xml(self, nodes, path):
         """
@@ -542,4 +556,5 @@ class Client(object):
         return len(uries) - 1
 
     def load_type_definitions(self, nodes=None):
+        """COROUTINE"""
         return load_type_definitions(self, nodes)

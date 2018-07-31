@@ -16,7 +16,7 @@ class EventsCodeGenerator(object):
         root = tree.getroot()
         for child in root:
             if child.tag.endswith("UAObjectType"):
-                print child.attrib
+                print (child.attrib)
 
     def write(self, line):
         if line:
@@ -94,7 +94,7 @@ class EventsCodeGenerator(object):
     def generateEventsCode(self, model):
         self.output_file = open(self.output_file, "w")
         self.make_header()
-        for event in model.itervalues():
+        for event in model.values():
             if (event.browseName == "BaseEvent"):
                 self.generateEventclass(event)
             else:
@@ -104,7 +104,7 @@ class EventsCodeGenerator(object):
         self.write("")
         self.write("IMPLEMENTED_EVENTS = {")
         self.iidx += 1
-        for event in model.itervalues():
+        for event in model.values():
             self.write("ua.ObjectIds.{0}Type: {0},".format(event.browseName))
         self.write("}")
 

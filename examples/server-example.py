@@ -67,6 +67,13 @@ if __name__ == "__main__":
     #server.set_endpoint("opc.tcp://localhost:4840/freeopcua/server/")
     server.set_endpoint("opc.tcp://0.0.0.0:4840/freeopcua/server/")
     server.set_server_name("FreeOpcUa Example Server")
+    # set all possible endpoint policies for clients to connect through
+    server.set_security_policy([
+                ua.SecurityPolicyType.NoSecurity,
+                ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt,
+                ua.SecurityPolicyType.Basic128Rsa15_Sign,
+                ua.SecurityPolicyType.Basic256_SignAndEncrypt,
+                ua.SecurityPolicyType.Basic256_Sign])
 
     # setup our own namespace
     uri = "http://examples.freeopcua.github.io"
@@ -74,10 +81,11 @@ if __name__ == "__main__":
 
     # create a new node type we can instantiate in our address space
     dev = server.nodes.base_object_type.add_object_type(0, "MyDevice")
-    dev.add_variable(0, "sensor1", 1.0)
-    dev.add_property(0, "device_id", "0340")
+    dev.add_variable(0, "sensor1", 1.0).set_modelling_rule(True)
+    dev.add_property(0, "device_id", "0340").set_modelling_rule(True)
     ctrl = dev.add_object(0, "controller")
-    ctrl.add_property(0, "state", "Idle")
+    ctrl.set_modelling_rule(True)
+    ctrl.add_property(0, "state", "Idle").set_modelling_rule(True)
 
     # populating our address space
 

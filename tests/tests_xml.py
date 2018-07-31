@@ -302,7 +302,7 @@ class XmlTests(object):
         self._test_xml_var_type(o, "enum")
 
     def test_xml_enumvalues(self):
-        o = self.opc.nodes.objects.add_variable(2, "xmlenumvalues", 0, varianttype=ua.VariantType.Int32, datatype=ua.ObjectIds.AttributeWriteMask)
+        o = self.opc.nodes.objects.add_variable(2, "xmlenumvalues", 0, varianttype=ua.VariantType.UInt32, datatype=ua.ObjectIds.AttributeWriteMask)
         self._test_xml_var_type(o, "enumvalues")
 
     def test_xml_custom_uint32(self):
@@ -349,11 +349,7 @@ class XmlTests(object):
         </UANodeSet>
         """
 
-        fp = open('tmp_test_import-nillable.xml', 'w')
-        fp.write(xml)
-        fp.close()
-        # TODO: when the xml parser also support loading from string, remove write to file
-        _new_nodes = self.opc.import_xml('tmp_test_import-nillable.xml')
+        _new_nodes = self.opc.import_xml(xmlstring=xml)
         var_string = self.opc.get_node(ua.NodeId('test_xml.string.nillabel', 2))
         var_bool = self.opc.get_node(ua.NodeId('test_xml.bool.nillabel', 2))
         self.assertEqual(var_string.get_value(), None)

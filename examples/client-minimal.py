@@ -1,14 +1,9 @@
-import os
-#os.environ['PYOPCUA_NO_TYPO_CHECK'] = 'True'
-
 import asyncio
 import logging
-
 from opcua import Client, Node, ua
 
 logging.basicConfig(level=logging.INFO)
 _logger = logging.getLogger('opcua')
-
 
 
 async def browse_nodes(node: Node):
@@ -28,7 +23,7 @@ async def browse_nodes(node: Node):
         try:
             var_type = (await node.get_data_type_as_variant_type()).value
         except ua.UaError:
-            _logger.warning('Node Variable Type coudl not be determined for %r', node)
+            _logger.warning('Node Variable Type could not be determined for %r', node)
             var_type = None
     return {
         'id': node.nodeid.to_string(),
@@ -40,9 +35,9 @@ async def browse_nodes(node: Node):
 
 
 async def task(loop):
-    # url = 'opc.tcp://192.168.2.213:4840'
+    url = 'opc.tcp://192.168.2.64:4840'
     # url = 'opc.tcp://localhost:4840/freeopcua/server/'
-    url = 'opc.tcp://commsvr.com:51234/UA/CAS_UA_Server'
+    # url = 'opc.tcp://commsvr.com:51234/UA/CAS_UA_Server'
     try:
         async with Client(url=url) as client:
             # Client has a few methods to get proxy to UA nodes that should always be in address space such as Root or Objects

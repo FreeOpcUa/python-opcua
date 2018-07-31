@@ -257,7 +257,7 @@ def uawrite():
     print(args)
 
 
-def uals():
+async def uals():
     parser = argparse.ArgumentParser(description="Browse OPC-UA node and print result")
     add_common_args(parser)
     parser.add_argument("-l",
@@ -277,46 +277,46 @@ def uals():
         args.long_format = 1
 
     client = Client(args.url, timeout=args.timeout)
-    client.set_security_string(args.security)
-    client.connect()
+    await client.set_security_string(args.security)
+    await client.connect()
     try:
         node = get_node(client, args)
         print("Browsing node {0} at {1}\n".format(node, args.url))
         if args.long_format == 0:
-            _lsprint_0(node, args.depth - 1)
+            await _lsprint_0(node, args.depth - 1)
         elif args.long_format == 1:
-            _lsprint_1(node, args.depth - 1)
+            await _lsprint_1(node, args.depth - 1)
         else:
             _lsprint_long(node, args.depth - 1)
     finally:
-        client.disconnect()
+        await client.disconnect()
     sys.exit(0)
     print(args)
 
 
-def _lsprint_0(node, depth, indent=""):
+async def _lsprint_0(node, depth, indent=""):
     if not indent:
         print("{0:30} {1:25}".format("DisplayName", "NodeId"))
         print("")
-    for desc in node.get_children_descriptions():
+    for desc in await node.get_children_descriptions():
         print("{0}{1:30} {2:25}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string()))
         if depth:
-            _lsprint_0(Node(node.server, desc.NodeId), depth - 1, indent + "  ")
+            await _lsprint_0(Node(node.server, desc.NodeId), depth - 1, indent + "  ")
 
 
-def _lsprint_1(node, depth, indent=""):
+async def _lsprint_1(node, depth, indent=""):
     if not indent:
         print("{0:30} {1:25} {2:25} {3:25}".format("DisplayName", "NodeId", "BrowseName", "Value"))
         print("")
 
-    for desc in node.get_children_descriptions():
+    for desc in await node.get_children_descriptions():
         if desc.NodeClass == ua.NodeClass.Variable:
-            val = Node(node.server, desc.NodeId).get_value()
+            val = await Node(node.server, desc.NodeId).get_value()
             print("{0}{1:30} {2!s:25} {3!s:25}, {4!s:3}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string(), desc.BrowseName.to_string(), val))
         else:
             print("{0}{1:30} {2!s:25} {3!s:25}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string(), desc.BrowseName.to_string()))
         if depth:
-            _lsprint_1(Node(node.server, desc.NodeId), depth - 1, indent + "  ")
+            await _lsprint_1(Node(node.server, desc.NodeId), depth - 1, indent + "  ")
 
 
 def _lsprint_long(pnode, depth, indent=""):
@@ -468,7 +468,7 @@ def uaclient():
     sys.exit(0)
 
 
-def uaserver():
+async def uaserver():
     parser = argparse.ArgumentParser(description="Run an example OPC-UA server. By importing xml definition and using uawrite command line, it is even possible to expose real data using this server")
     # we setup a server, this is a bit different from other tool so we do not reuse common arguments
     parser.add_argument("-u",
@@ -506,15 +506,16 @@ def uaserver():
     logging.basicConfig(format="%(levelname)s: %(message)s", level=getattr(logging, args.loglevel))
 
     server = Server()
+    await server.init()
     server.set_endpoint(args.url)
     if args.certificate:
-        server.load_certificate(args.certificate)
+        await server.load_certificate(args.certificate)
     if args.private_key:
-        server.load_private_key(args.private_key)
+        await server.load_private_key(args.private_key)
     server.disable_clock(args.disable_clock)
     server.set_server_name("FreeOpcUa Example Server")
     if args.xml:
-        server.import_xml(args.xml)
+        await server.import_xml(args.xml)
     if args.populate:
         @uamethod
         def multiply(parent, x, y):
@@ -522,7 +523,7 @@ def uaserver():
             return x * y
 
         uri = "http://examples.freeopcua.github.io"
-        idx = server.register_namespace(uri)
+        idx = await server.register_namespace(uri)
         objects = server.get_objects_node()
         myobj = objects.add_object(idx, "MyObject")
         mywritablevar = myobj.add_variable(idx, "MyWritableVariable", 6.7)
@@ -532,7 +533,7 @@ def uaserver():
         myprop = myobj.add_property(idx, "MyProperty", "I am a property")
         mymethod = myobj.add_method(idx, "MyMethod", multiply, [ua.VariantType.Double, ua.VariantType.Int64], [ua.VariantType.Double])
 
-    server.start()
+    await server.start()
     try:
         if args.shell:
             embed()
@@ -547,7 +548,7 @@ def uaserver():
             while True:
                 time.sleep(1)
     finally:
-        server.stop()
+        await server.stop()
     sys.exit(0)
 
 
