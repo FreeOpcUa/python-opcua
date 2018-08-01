@@ -1,7 +1,10 @@
+import os
 from opcua import ua
 from opcua.ua import uatypes
 from enum import IntEnum
 from opcua import Server
+
+TEST_DIR = os.path.dirname(__file__) + os.sep
 
 
 class ExampleEnum(IntEnum):
@@ -27,15 +30,14 @@ class ExampleStruct(uatypes.FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ExampleStruct(' + 'IntVal1:' + str(self.IntVal1) + ', ' + \
-               'EnumVal:' + str(self.EnumVal) + ')'
+        return f'ExampleStruct(IntVal1:{self.IntVal1}, EnumVal:{self.EnumVal})'
 
     __repr__ = __str__
 
 
 async def add_server_custom_enum_struct(server: Server):
     # import some nodes from xml
-    await server.import_xml("tests/enum_struct_test_nodes.xml")
+    await server.import_xml(f"{TEST_DIR}enum_struct_test_nodes.xml")
     ns = await server.get_namespace_index('http://yourorganisation.org/struct_enum_example/')
     uatypes.register_extension_object('ExampleStruct', ua.NodeId(5001, ns), ExampleStruct)
     val = ua.ExampleStruct()

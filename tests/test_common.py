@@ -583,17 +583,17 @@ async def test_method_array(opc):
     m = await o.get_child("2:ServerMethodArray")
     result = await o.call_method(m, "sin", ua.Variant(math.pi))
     assert result < 0.01
-    with pytest.raises(ua.UaStatusCodeError) as cm:
+    with pytest.raises(ua.UaStatusCodeError) as exc_info:
         await o.call_method(m, "cos", ua.Variant(math.pi))
-    assert ua.StatusCodes.BadInvalidArgument == cm.exception.code
-    with pytest.raises(ua.UaStatusCodeError) as cm:
+    assert ua.StatusCodes.BadInvalidArgument == exc_info.type.code
+    with pytest.raises(ua.UaStatusCodeError) as exc_info:
         await o.call_method(m, "panic", ua.Variant(math.pi))
-    assert ua.StatusCodes.BadOutOfMemory == cm.exception.code
+    assert ua.StatusCodes.BadOutOfMemory == exc_info.type.code
 
 
 async def test_method_array2(opc):
     o = opc.opc.get_objects_node()
-    m = o.get_child("2:ServerMethodArray2")
+    m = await o.get_child("2:ServerMethodArray2")
     result = await o.call_method(m, [1.1, 3.4, 9])
     assert [2.2, 6.8, 18] == result
     result = await call_method_full(o, m, [1.1, 3.4, 9])

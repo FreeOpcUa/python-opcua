@@ -96,11 +96,11 @@ class Subscription(object):
         self.loop.create_task(self.server.publish())
         self.loop.create_task(self.server.publish())
 
-    def delete(self):
+    async def delete(self):
         """
         Delete subscription on server. This is automatically done by Client and Server classes on exit
         """
-        results = self.server.delete_subscriptions([self.subscription_id])
+        results = await self.server.delete_subscriptions([self.subscription_id])
         results[0].check()
 
     def publish_callback(self, publishresult):

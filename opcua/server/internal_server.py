@@ -361,7 +361,7 @@ class InternalSession(object):
     def republish(self, params):
         return self.subscription_service.republish(params)
 
-    def delete_subscriptions(self, ids):
+    async def delete_subscriptions(self, ids):
         for i in ids:
             if i in self.subscriptions:
                 self.subscriptions.remove(i)

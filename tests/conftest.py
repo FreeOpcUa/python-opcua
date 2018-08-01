@@ -23,6 +23,7 @@ async def server():
     await srv.init()
     srv.set_endpoint(f'opc.tcp://127.0.0.1:{port_num}')
     await add_server_methods(srv)
+    await add_server_custom_enum_struct(srv)
     await srv.start()
     yield srv
     # stop the server
@@ -46,7 +47,7 @@ async def discovery_server():
 async def admin_client():
     # start admin client
     # long timeout since travis (automated testing) can be really slow
-    clt = Client(f'opc.tcp://admin@127.0.0.1:{port_num1}', timeout=10)
+    clt = Client(f'opc.tcp://admin@127.0.0.1:{port_num}', timeout=10)
     await clt.connect()
     yield clt
     await clt.disconnect()
@@ -55,7 +56,7 @@ async def admin_client():
 @pytest.fixture()
 async def client():
     # start anonymous client
-    ro_clt = Client(f'opc.tcp://127.0.0.1:{port_num1}')
+    ro_clt = Client(f'opc.tcp://127.0.0.1:{port_num}')
     await ro_clt.connect()
     yield ro_clt
     await ro_clt.disconnect()

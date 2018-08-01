@@ -521,6 +521,7 @@ class Client(object):
 
     async def get_namespace_index(self, uri):
         uries = await self.get_namespace_array()
+        _logger.info('get_namespace_index %s %r', type(uries), uries)
         return uries.index(uri)
 
     async def delete_nodes(self, nodes, recursive=False):

@@ -67,11 +67,11 @@ class MySubHandlerCounter():
 
 async def test_subscription_failure(opc):
     myhandler = MySubHandler()
-    o = opc.get_objects_node()
-    sub = await opc.create_subscription(100, myhandler)
+    o = opc.opc.get_objects_node()
+    sub = await opc.opc.create_subscription(100, myhandler)
     with pytest.raises(ua.UaStatusCodeError):
-        handle1 = sub.subscribe_data_change(o)  # we can only subscribe to variables so this should fail
-    sub.delete()
+        handle1 = await sub.subscribe_data_change(o)  # we can only subscribe to variables so this should fail
+    await sub.delete()
 
 
 async def test_subscription_overload(opc):
@@ -85,18 +85,18 @@ async def test_subscription_overload(opc):
         v = await o.add_variable(3, f'SubscriptionVariableOverload{i}', 99)
         variables.append(v)
     for i in range(nb):
-        sub.subscribe_data_change(variables)
+        await sub.subscribe_data_change(variables)
     for i in range(nb):
         for j in range(nb):
             await variables[i].set_value(j)
         s = await opc.opc.create_subscription(1, myhandler)
-        s.subscribe_data_change(variables)
+        await s.subscribe_data_change(variables)
         subs.append(s)
-        sub.subscribe_data_change(variables[i])
+        await sub.subscribe_data_change(variables[i])
     for i in range(nb):
         for j in range(nb):
             await variables[i].set_value(j)
-    sub.delete()
+    await sub.delete()
     for s in subs:
         s.delete()
 
@@ -113,7 +113,7 @@ async def test_subscription_count(opc):
         await var.set_value(val + 1)
     await sleep(0.2)  # let last event arrive
     assert nb + 1 == myhandler.datachange_count
-    sub.delete()
+    await sub.delete()
 
 
 async def test_subscription_count_list(opc):
@@ -129,7 +129,7 @@ async def test_subscription_count_list(opc):
         await var.set_value(val)
     await sleep(0.2)  # let last event arrive
     assert nb + 1 == myhandler.datachange_count
-    sub.delete()
+    await sub.delete()
 
 
 async def test_subscription_count_no_change(opc):
@@ -144,7 +144,7 @@ async def test_subscription_count_no_change(opc):
         var.set_value(val)
     await sleep(0.2)  # let last event arrive
     assert 1 == myhandler.datachange_count
-    sub.delete()
+    await sub.delete()
 
 
 async def test_subscription_count_empty(opc):
@@ -161,7 +161,7 @@ async def test_subscription_count_empty(opc):
             break
     await sleep(0.2)  # let last event arrive
     assert 4 == myhandler.datachange_count
-    sub.delete()
+    await sub.delete()
 
 
 async def test_subscription_overload_simple(opc):
@@ -174,7 +174,7 @@ async def test_subscription_overload_simple(opc):
         variables.append(await o.add_variable(3, f'SubVarOverload{i}', i))
     for i in range(nb):
         sub.subscribe_data_change(variables)
-    sub.delete()
+    await sub.delete()
 
 
 async def test_subscription_data_change(opc):
@@ -206,7 +206,7 @@ async def test_subscription_data_change(opc):
     await sub.unsubscribe(handle1)
     with pytest.raises(ua.UaStatusCodeError):
         await sub.unsubscribe(handle1)  # second try should fail
-    sub.delete()
+    await sub.delete()
     with pytest.raises(ua.UaStatusCodeError):
         await sub.unsubscribe(handle1)  # sub does not exist anymore
 
@@ -235,7 +235,7 @@ async def test_subscription_data_change_bool(opc):
     node, val, data = await myhandler.result()
     assert v1 == node
     assert val is False
-    sub.delete()  # should delete our monitoreditem too
+    await sub.delete()  # should delete our monitoreditem too
 
 
 async def test_subscription_data_change_many(opc):
@@ -270,7 +270,7 @@ async def test_subscription_data_change_many(opc):
             assert val == startv2
         else:
             raise RuntimeError("Error node {0} is neither {1} nor {2}".format(node, v1, v2))
-    sub.delete()
+    await sub.delete()
 
 
 async def test_subscribe_server_time(opc):
@@ -283,7 +283,7 @@ async def test_subscribe_server_time(opc):
     delta = datetime.utcnow() - val
     assert delta < timedelta(seconds=2)
     await sub.unsubscribe(handle)
-    sub.delete()
+    await sub.delete()
 
 
 async def test_create_delete_subscription(opc):
@@ -293,7 +293,7 @@ async def test_create_delete_subscription(opc):
     handle = await sub.subscribe_data_change(v)
     await sleep(0.1)
     await sub.unsubscribe(handle)
-    sub.delete()
+    await sub.delete()
 
 
 async def test_subscribe_events(opc):
@@ -301,7 +301,7 @@ async def test_subscribe_events(opc):
     handle = await sub.subscribe_events()
     await sleep(0.1)
     await sub.unsubscribe(handle)
-    sub.delete()
+    await sub.delete()
 
 
 async def test_subscribe_events_to_wrong_node(opc):
@@ -312,7 +312,7 @@ async def test_subscribe_events_to_wrong_node(opc):
     v = await o.add_variable(3, 'VariableNoEventNofierAttribute', 4)
     with pytest.raises(ua.UaStatusCodeError):
         handle = await sub.subscribe_events(v)
-    sub.delete()
+    await sub.delete()
 
 
 async def test_get_event_from_type_node_BaseEvent(opc):
@@ -355,7 +355,7 @@ async def test_events_default(opc):
     assert msg == ev.Message.Text
     assert tid == ev.Time
     await sub.unsubscribe(handle)
-    sub.delete()
+    await sub.delete()
 
 
 async def test_events_MyObject(opc):
@@ -377,7 +377,7 @@ async def test_events_MyObject(opc):
     assert msg == ev.Message.Text
     assert tid == ev.Time
     await sub.unsubscribe(handle)
-    sub.delete()
+    await sub.delete()
 
 
 async def test_events_wrong_source(opc):
@@ -393,7 +393,7 @@ async def test_events_wrong_source(opc):
     with pytest.raises(TimeoutError):  # we should not receive event
         ev = await myhandler.result()
     await sub.unsubscribe(handle)
-    sub.delete()
+    await sub.delete()
 
 
 async def test_events_CustomEvent(opc):
@@ -424,7 +424,7 @@ async def test_events_CustomEvent(opc):
     assert propertynum == ev.PropertyNum
     assert propertystring == ev.PropertyString
     sub.unsubscribe(handle)
-    sub.delete()
+    await sub.delete()
 
 
 async def test_events_CustomEvent_MyObject(opc):
@@ -455,7 +455,7 @@ async def test_events_CustomEvent_MyObject(opc):
     assert propertynum == ev.PropertyNum
     assert propertystring == ev.PropertyString
     sub.unsubscribe(handle)
-    sub.delete()
+    await sub.delete()
 
 
 async def test_several_different_events(opc):
@@ -498,7 +498,7 @@ async def test_several_different_events(opc):
     assert 4 == len(ev2s)
     assert 7 == len(ev1s)
     sub.unsubscribe(handle)
-    sub.delete()
+    await sub.delete()
 
 
 async def test_several_different_events_2(opc):
@@ -553,4 +553,4 @@ async def test_several_different_events_2(opc):
     assert 9999 == ev3s[-1].PropertyNum3
     assert ev1s[0].PropertyNum3 is None
     sub.unsubscribe(handle)
-    sub.delete()
+    await sub.delete()
