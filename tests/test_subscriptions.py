@@ -1,0 +1,556 @@
+import time
+import pytest
+from asyncio import Future, sleep, wait_for
+from datetime import datetime, timedelta
+
+import opcua
+from opcua import ua
+
+pytestmark = pytest.mark.asyncio
+
+
+class SubHandler:
+    """
+    Dummy subscription client
+    """
+
+    def datachange_notification(self, node, val, data):
+        pass
+
+    def event_notification(self, event):
+        pass
+
+
+class MySubHandler:
+    """
+    More advanced subscription client using Future, so we can wait for events in tests
+    """
+
+    def __init__(self):
+        self.future = Future()
+
+    def reset(self):
+        self.future = Future()
+
+    async def result(self):
+        return await wait_for(self.future, 2)
+
+    def datachange_notification(self, node, val, data):
+        self.future.set_result((node, val, data))
+
+    def event_notification(self, event):
+        self.future.set_result(event)
+
+
+class MySubHandler2:
+    def __init__(self):
+        self.results = []
+
+    def datachange_notification(self, node, val, data):
+        self.results.append((node, val))
+
+    def event_notification(self, event):
+        self.results.append(event)
+
+
+class MySubHandlerCounter():
+    def __init__(self):
+        self.datachange_count = 0
+        self.event_count = 0
+
+    def datachange_notification(self, node, val, data):
+        self.datachange_count += 1
+
+    def event_notification(self, event):
+        self.event_count += 1
+
+
+async def test_subscription_failure(opc):
+    myhandler = MySubHandler()
+    o = opc.get_objects_node()
+    sub = await opc.create_subscription(100, myhandler)
+    with pytest.raises(ua.UaStatusCodeError):
+        handle1 = sub.subscribe_data_change(o)  # we can only subscribe to variables so this should fail
+    sub.delete()
+
+
+async def test_subscription_overload(opc):
+    nb = 10
+    myhandler = MySubHandler()
+    o = opc.opc.get_objects_node()
+    sub = await opc.opc.create_subscription(1, myhandler)
+    variables = []
+    subs = []
+    for i in range(nb):
+        v = await o.add_variable(3, f'SubscriptionVariableOverload{i}', 99)
+        variables.append(v)
+    for i in range(nb):
+        sub.subscribe_data_change(variables)
+    for i in range(nb):
+        for j in range(nb):
+            await variables[i].set_value(j)
+        s = await opc.opc.create_subscription(1, myhandler)
+        s.subscribe_data_change(variables)
+        subs.append(s)
+        sub.subscribe_data_change(variables[i])
+    for i in range(nb):
+        for j in range(nb):
+            await variables[i].set_value(j)
+    sub.delete()
+    for s in subs:
+        s.delete()
+
+
+async def test_subscription_count(opc):
+    myhandler = MySubHandlerCounter()
+    sub = await opc.opc.create_subscription(1, myhandler)
+    o = opc.opc.get_objects_node()
+    var = await o.add_variable(3, 'SubVarCounter', 0.1)
+    sub.subscribe_data_change(var)
+    nb = 12
+    for i in range(nb):
+        val = await var.get_value()
+        await var.set_value(val + 1)
+    await sleep(0.2)  # let last event arrive
+    assert nb + 1 == myhandler.datachange_count
+    sub.delete()
+
+
+async def test_subscription_count_list(opc):
+    myhandler = MySubHandlerCounter()
+    sub = await opc.opc.create_subscription(1, myhandler)
+    o = opc.opc.get_objects_node()
+    var = await o.add_variable(3, 'SubVarCounter', [0.1, 0.2])
+    sub.subscribe_data_change(var)
+    nb = 12
+    for i in range(nb):
+        val = await var.get_value()
+        val.append(i)
+        await var.set_value(val)
+    await sleep(0.2)  # let last event arrive
+    assert nb + 1 == myhandler.datachange_count
+    sub.delete()
+
+
+async def test_subscription_count_no_change(opc):
+    myhandler = MySubHandlerCounter()
+    sub = opc.create_subscription(1, myhandler)
+    o = opc.get_objects_node()
+    var = o.add_variable(3, 'SubVarCounter', [0.1, 0.2])
+    sub.subscribe_data_change(var)
+    nb = 12
+    for i in range(nb):
+        val = var.get_value()
+        var.set_value(val)
+    await sleep(0.2)  # let last event arrive
+    assert 1 == myhandler.datachange_count
+    sub.delete()
+
+
+async def test_subscription_count_empty(opc):
+    myhandler = MySubHandlerCounter()
+    sub = await opc.opc.create_subscription(1, myhandler)
+    o = opc.opc.get_objects_node()
+    var = await o.add_variable(3, 'SubVarCounter', [0.1, 0.2, 0.3])
+    sub.subscribe_data_change(var)
+    while True:
+        val = await var.get_value()
+        val.pop()
+        await var.set_value(val, ua.VariantType.Double)
+        if not val:
+            break
+    await sleep(0.2)  # let last event arrive
+    assert 4 == myhandler.datachange_count
+    sub.delete()
+
+
+async def test_subscription_overload_simple(opc):
+    nb = 10
+    myhandler = MySubHandler()
+    o = opc.opc.get_objects_node()
+    sub = await opc.opc.create_subscription(1, myhandler)
+    variables = []
+    for i in range(nb):
+        variables.append(await o.add_variable(3, f'SubVarOverload{i}', i))
+    for i in range(nb):
+        sub.subscribe_data_change(variables)
+    sub.delete()
+
+
+async def test_subscription_data_change(opc):
+    """
+    test subscriptions. This is far too complicated for
+    a unittest but, setting up subscriptions requires a lot
+    of code, so when we first set it up, it is best
+    to test as many things as possible
+    """
+    myhandler = MySubHandler()
+    o = opc.opc.get_objects_node()
+    # subscribe to a variable
+    startv1 = [1, 2, 3]
+    v1 = await o.add_variable(3, 'SubscriptionVariableV1', startv1)
+    sub = await opc.opc.create_subscription(100, myhandler)
+    handle1 = await sub.subscribe_data_change(v1)
+    # Now check we get the start value
+    node, val, data = await myhandler.result()
+    assert startv1 == val
+    assert v1 == node
+    myhandler.reset()  # reset future object
+    # modify v1 and check we get value
+    await v1.set_value([5])
+    node, val, data = await myhandler.result()
+    assert v1 == node
+    assert [5] == val
+    with pytest.raises(ua.UaStatusCodeError):
+        await sub.unsubscribe(999)  # non existing handle
+    await sub.unsubscribe(handle1)
+    with pytest.raises(ua.UaStatusCodeError):
+        await sub.unsubscribe(handle1)  # second try should fail
+    sub.delete()
+    with pytest.raises(ua.UaStatusCodeError):
+        await sub.unsubscribe(handle1)  # sub does not exist anymore
+
+
+async def test_subscription_data_change_bool(opc):
+    """
+    test subscriptions. This is far too complicated for
+    a unittest but, setting up subscriptions requires a lot
+    of code, so when we first set it up, it is best
+    to test as many things as possible
+    """
+    myhandler = MySubHandler()
+    o = opc.opc.get_objects_node()
+    # subscribe to a variable
+    startv1 = True
+    v1 = await o.add_variable(3, 'SubscriptionVariableBool', startv1)
+    sub = await opc.opc.create_subscription(100, myhandler)
+    handle1 = await sub.subscribe_data_change(v1)
+    # Now check we get the start value
+    node, val, data = await myhandler.result()
+    assert startv1 == val
+    assert v1 == node
+    myhandler.reset()  # reset future object
+    # modify v1 and check we get value
+    await v1.set_value(False)
+    node, val, data = await myhandler.result()
+    assert v1 == node
+    assert val is False
+    sub.delete()  # should delete our monitoreditem too
+
+
+async def test_subscription_data_change_many(opc):
+    """
+    test subscriptions. This is far too complicated for
+    a unittest but, setting up subscriptions requires a lot
+    of code, so when we first set it up, it is best
+    to test as many things as possible
+    """
+    myhandler = MySubHandler2()
+    o = opc.opc.get_objects_node()
+    startv1 = True
+    v1 = await o.add_variable(3, 'SubscriptionVariableMany1', startv1)
+    startv2 = [1.22, 1.65]
+    v2 = await o.add_variable(3, 'SubscriptionVariableMany2', startv2)
+    sub = await opc.opc.create_subscription(100, myhandler)
+    handle1, handle2 = await sub.subscribe_data_change([v1, v2])
+    # Now check we get the start values
+    nodes = [v1, v2]
+    count = 0
+    while not len(myhandler.results) > 1:
+        count += 1
+        await sleep(0.1)
+        if count > 100:
+            raise RuntimeError("Did not get result from subscription")
+    for node, val in myhandler.results:
+        assert node in nodes
+        nodes.remove(node)
+        if node == v1:
+            assert val == startv1
+        elif node == v2:
+            assert val == startv2
+        else:
+            raise RuntimeError("Error node {0} is neither {1} nor {2}".format(node, v1, v2))
+    sub.delete()
+
+
+async def test_subscribe_server_time(opc):
+    myhandler = MySubHandler()
+    server_time_node = opc.opc.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
+    sub = await opc.opc.create_subscription(200, myhandler)
+    handle = await sub.subscribe_data_change(server_time_node)
+    node, val, data = await myhandler.result()
+    assert server_time_node == node
+    delta = datetime.utcnow() - val
+    assert delta < timedelta(seconds=2)
+    await sub.unsubscribe(handle)
+    sub.delete()
+
+
+async def test_create_delete_subscription(opc):
+    o = opc.opc.get_objects_node()
+    v = await o.add_variable(3, 'SubscriptionVariable', [1, 2, 3])
+    sub = await opc.opc.create_subscription(100, MySubHandler())
+    handle = await sub.subscribe_data_change(v)
+    await sleep(0.1)
+    await sub.unsubscribe(handle)
+    sub.delete()
+
+
+async def test_subscribe_events(opc):
+    sub = await opc.opc.create_subscription(100, MySubHandler())
+    handle = await sub.subscribe_events()
+    await sleep(0.1)
+    await sub.unsubscribe(handle)
+    sub.delete()
+
+
+async def test_subscribe_events_to_wrong_node(opc):
+    sub = await opc.opc.create_subscription(100, MySubHandler())
+    with pytest.raises(ua.UaStatusCodeError):
+        handle = await sub.subscribe_events(opc.opc.get_node("i=85"))
+    o = opc.opc.get_objects_node()
+    v = await o.add_variable(3, 'VariableNoEventNofierAttribute', 4)
+    with pytest.raises(ua.UaStatusCodeError):
+        handle = await sub.subscribe_events(v)
+    sub.delete()
+
+
+async def test_get_event_from_type_node_BaseEvent(opc):
+    etype = opc.opc.get_node(ua.ObjectIds.BaseEventType)
+    properties = await opcua.common.events.get_event_properties_from_type_node(etype)
+    for child in await etype.get_properties():
+        assert child in properties
+
+
+async def test_get_event_from_type_node_CustomEvent(opc):
+    etype = await opc.server.create_custom_event_type(
+        2, 'MyEvent', ua.ObjectIds.AuditEventType,
+        [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)]
+    )
+    properties = await opcua.common.events.get_event_properties_from_type_node(etype)
+    for child in await opc.opc.get_node(ua.ObjectIds.BaseEventType).get_properties():
+        assert child in properties
+    for child in await opc.opc.get_node(ua.ObjectIds.AuditEventType).get_properties():
+        assert child in properties
+    for child in await opc.opc.get_node(etype.nodeid).get_properties():
+        assert child in properties
+    assert await etype.get_child("2:PropertyNum") in properties
+    assert await etype.get_child("2:PropertyString") in properties
+
+
+async def test_events_default(opc):
+    evgen = await opc.server.get_event_generator()
+    myhandler = MySubHandler()
+    sub = await opc.opc.create_subscription(100, myhandler)
+    handle = await sub.subscribe_events()
+    tid = datetime.utcnow()
+    msg = "this is my msg "
+    evgen.trigger(tid, msg)
+    ev = await myhandler.result()
+    assert ev is not None  # we did not receive event
+    assert ua.NodeId(ua.ObjectIds.BaseEventType) == ev.EventType
+    assert 1 == ev.Severity
+    assert (await opc.opc.get_server_node().get_browse_name()).Name == ev.SourceName
+    assert opc.opc.get_server_node().nodeid == ev.SourceNode
+    assert msg == ev.Message.Text
+    assert tid == ev.Time
+    await sub.unsubscribe(handle)
+    sub.delete()
+
+
+async def test_events_MyObject(opc):
+    objects = opc.server.get_objects_node()
+    o = await objects.add_object(3, 'MyObject')
+    evgen = await opc.server.get_event_generator(source=o)
+    myhandler = MySubHandler()
+    sub = await opc.opc.create_subscription(100, myhandler)
+    handle = await sub.subscribe_events(o)
+    tid = datetime.utcnow()
+    msg = "this is my msg "
+    evgen.trigger(tid, msg)
+    ev = await myhandler.result()
+    assert ev is not None  # we did not receive event
+    assert ua.NodeId(ua.ObjectIds.BaseEventType) == ev.EventType
+    assert 1 == ev.Severity
+    assert 'MyObject' == ev.SourceName
+    assert o.nodeid == ev.SourceNode
+    assert msg == ev.Message.Text
+    assert tid == ev.Time
+    await sub.unsubscribe(handle)
+    sub.delete()
+
+
+async def test_events_wrong_source(opc):
+    objects = opc.server.get_objects_node()
+    o = await objects.add_object(3, 'MyObject')
+    evgen = await opc.server.get_event_generator(source=o)
+    myhandler = MySubHandler()
+    sub = await opc.opc.create_subscription(100, myhandler)
+    handle = await sub.subscribe_events()
+    tid = datetime.utcnow()
+    msg = "this is my msg "
+    evgen.trigger(tid, msg)
+    with pytest.raises(TimeoutError):  # we should not receive event
+        ev = await myhandler.result()
+    await sub.unsubscribe(handle)
+    sub.delete()
+
+
+async def test_events_CustomEvent(opc):
+    etype = opc.server.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType,
+                                              [('PropertyNum', ua.VariantType.Float),
+                                               ('PropertyString', ua.VariantType.String)])
+    evgen = opc.server.get_event_generator(etype)
+    myhandler = MySubHandler()
+    sub = opc.opc.create_subscription(100, myhandler)
+    handle = sub.subscribe_events(evtypes=etype)
+    propertynum = 2
+    propertystring = "This is my test"
+    evgen.event.PropertyNum = propertynum
+    evgen.event.PropertyString = propertystring
+    serverity = 500
+    evgen.event.Severity = serverity
+    tid = datetime.utcnow()
+    msg = "this is my msg "
+    evgen.trigger(tid, msg)
+    ev = await myhandler.result()
+    assert ev is not None  # we did not receive event
+    assert etype.nodeid == ev.EventType
+    assert serverity == ev.Severity
+    assert opc.opc.get_server_node().get_browse_name().Name == ev.SourceName
+    assert opc.opc.get_server_node().nodeid == ev.SourceNode
+    assert msg == ev.Message.Text
+    assert tid == ev.Time
+    assert propertynum == ev.PropertyNum
+    assert propertystring == ev.PropertyString
+    sub.unsubscribe(handle)
+    sub.delete()
+
+
+async def test_events_CustomEvent_MyObject(opc):
+    objects = opc.server.get_objects_node()
+    o = objects.add_object(3, 'MyObject')
+    etype = opc.server.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType,
+                                              [('PropertyNum', ua.VariantType.Float),
+                                               ('PropertyString', ua.VariantType.String)])
+    evgen = opc.server.get_event_generator(etype, o)
+    myhandler = MySubHandler()
+    sub = opc.opc.create_subscription(100, myhandler)
+    handle = sub.subscribe_events(o, etype)
+    propertynum = 2
+    propertystring = "This is my test"
+    evgen.event.PropertyNum = propertynum
+    evgen.event.PropertyString = propertystring
+    tid = datetime.utcnow()
+    msg = "this is my msg "
+    evgen.trigger(tid, msg)
+    ev = await myhandler.result()
+    assert ev is not None  # we did not receive event
+    assert etype.nodeid == ev.EventType
+    assert 1 == ev.Severity
+    assert 'MyObject' == ev.SourceName
+    assert o.nodeid == ev.SourceNode
+    assert msg == ev.Message.Text
+    assert tid == ev.Time
+    assert propertynum == ev.PropertyNum
+    assert propertystring == ev.PropertyString
+    sub.unsubscribe(handle)
+    sub.delete()
+
+
+async def test_several_different_events(opc):
+    objects = opc.server.get_objects_node()
+    o = objects.add_object(3, 'MyObject')
+    etype1 = opc.server.create_custom_event_type(2, 'MyEvent1', ua.ObjectIds.BaseEventType,
+                                               [('PropertyNum', ua.VariantType.Float),
+                                                ('PropertyString', ua.VariantType.String)])
+    evgen1 = await opc.server.get_event_generator(etype1, o)
+    etype2 = await opc.server.create_custom_event_type(2, 'MyEvent2', ua.ObjectIds.BaseEventType,
+                                               [('PropertyNum', ua.VariantType.Float),
+                                                ('PropertyString', ua.VariantType.String)])
+    evgen2 = await opc.server.get_event_generator(etype2, o)
+    myhandler = MySubHandler2()
+    sub = await opc.opc.create_subscription(100, myhandler)
+    handle = sub.subscribe_events(o, etype1)
+    propertynum1 = 1
+    propertystring1 = "This is my test 1"
+    evgen1.event.PropertyNum = propertynum1
+    evgen1.event.PropertyString = propertystring1
+    propertynum2 = 2
+    propertystring2 = "This is my test 2"
+    evgen2.event.PropertyNum = propertynum2
+    evgen2.event.PropertyString = propertystring2
+    for i in range(3):
+        evgen1.trigger()
+        evgen2.trigger()
+    await sleep(1)  # ToDo: replace
+    assert 3 == len(myhandler.results)
+    ev = myhandler.results[-1]
+    assert etype1.nodeid == ev.EventType
+    handle = sub.subscribe_events(o, etype2)
+    for i in range(4):
+        evgen1.trigger()
+        evgen2.trigger()
+    await sleep(1)  # ToDo: replace
+    ev1s = [ev for ev in myhandler.results if ev.EventType == etype1.nodeid]
+    ev2s = [ev for ev in myhandler.results if ev.EventType == etype2.nodeid]
+    assert 11 == len(myhandler.results)
+    assert 4 == len(ev2s)
+    assert 7 == len(ev1s)
+    sub.unsubscribe(handle)
+    sub.delete()
+
+
+async def test_several_different_events_2(opc):
+    objects = opc.server.get_objects_node()
+    o = objects.add_object(3, 'MyObject')
+    etype1 = opc.server.create_custom_event_type(
+        2, 'MyEvent1', ua.ObjectIds.BaseEventType,
+        [('PropertyNum', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)]
+    )
+    evgen1 = opc.server.get_event_generator(etype1, o)
+    etype2 = opc.server.create_custom_event_type(
+        2, 'MyEvent2', ua.ObjectIds.BaseEventType,
+        [('PropertyNum2', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)]
+    )
+    evgen2 = opc.server.get_event_generator(etype2, o)
+    etype3 = opc.server.create_custom_event_type(
+        2, 'MyEvent3', ua.ObjectIds.BaseEventType,
+        [('PropertyNum3', ua.VariantType.Float), ('PropertyString', ua.VariantType.String)]
+    )
+    evgen3 = opc.server.get_event_generator(etype3, o)
+    myhandler = MySubHandler2()
+    sub = opc.create_subscription(100, myhandler)
+    handle = sub.subscribe_events(o, [etype1, etype3])
+    propertynum1 = 1
+    propertystring1 = "This is my test 1"
+    evgen1.event.PropertyNum = propertynum1
+    evgen1.event.PropertyString = propertystring1
+    propertynum2 = 2
+    propertystring2 = "This is my test 2"
+    evgen2.event.PropertyNum2 = propertynum2
+    evgen2.event.PropertyString = propertystring2
+    propertynum3 = 3
+    propertystring3 = "This is my test 3"
+    evgen3.event.PropertyNum3 = propertynum3
+    evgen3.event.PropertyString = propertystring2
+    for i in range(3):
+        evgen1.trigger()
+        evgen2.trigger()
+        evgen3.trigger()
+    evgen3.event.PropertyNum3 = 9999
+    evgen3.trigger()
+    await sleep(1)
+    ev1s = [ev for ev in myhandler.results if ev.EventType == etype1.nodeid]
+    ev2s = [ev for ev in myhandler.results if ev.EventType == etype2.nodeid]
+    ev3s = [ev for ev in myhandler.results if ev.EventType == etype3.nodeid]
+    assert 7 == len(myhandler.results)
+    assert 3 == len(ev1s)
+    assert 0 == len(ev2s)
+    assert 4 == len(ev3s)
+    assert propertynum1 == ev1s[0].PropertyNum
+    assert propertynum3 == ev3s[0].PropertyNum3
+    assert 9999 == ev3s[-1].PropertyNum3
+    assert ev1s[0].PropertyNum3 is None
+    sub.unsubscribe(handle)
+    sub.delete()

@@ -7,12 +7,7 @@ import pytest
 import logging
 import os
 import shelve
-
-from .test_common import add_server_methods
-from .tests_xml import XmlTests
-from .tests_subscriptions import SubscriptionTests
-from datetime import timedelta, datetime
-from tempfile import NamedTemporaryFile
+from datetime import timedelta
 
 import opcua
 from opcua import Server
@@ -23,36 +18,8 @@ from opcua.common.event_objects import BaseEvent, AuditEvent, AuditChannelEvent,
     AuditOpenSecureChannelEvent
 from opcua.common import ua_utils
 
-port_num = 48540
-port_discovery = 48550
 pytestmark = pytest.mark.asyncio
 _logger = logging.getLogger(__name__)
-
-
-@pytest.fixture()
-async def server():
-    # start our own server
-    srv = Server()
-    await srv.init()
-    srv.set_endpoint(f'opc.tcp://127.0.0.1:{port_num}')
-    await add_server_methods(srv)
-    await srv.start()
-    yield srv
-    # stop the server
-    await srv.stop()
-
-
-@pytest.fixture()
-async def discovery_server():
-    # start our own server
-    srv = Server()
-    await srv.init()
-    await srv.set_application_uri('urn:freeopcua:python:discovery')
-    srv.set_endpoint(f'opc.tcp://127.0.0.1:{port_discovery}')
-    await srv.start()
-    yield srv
-    # stop the server
-    await srv.stop()
 
 
 async def test_discovery(server, discovery_server):

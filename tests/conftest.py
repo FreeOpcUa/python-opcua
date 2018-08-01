@@ -1,11 +1,15 @@
 import pytest
+from collections import namedtuple
 from opcua import Client
 from opcua import Server
 from .test_common import add_server_methods
+from .util_enum_struct import add_server_custom_enum_struct
 
-port_num1 = 48510
 port_num = 48540
+port_num1 = 48510
+port_discovery = 48550
 
+Opc = namedtuple('opc', ['opc', 'server'])
 
 def pytest_generate_tests(metafunc):
     if 'opc' in metafunc.fixturenames:
@@ -13,7 +17,57 @@ def pytest_generate_tests(metafunc):
 
 
 @pytest.fixture()
+async def server():
+    # start our own server
+    srv = Server()
+    await srv.init()
+    srv.set_endpoint(f'opc.tcp://127.0.0.1:{port_num}')
+    await add_server_methods(srv)
+    await srv.start()
+    yield srv
+    # stop the server
+    await srv.stop()
+
+
+@pytest.fixture()
+async def discovery_server():
+    # start our own server
+    srv = Server()
+    await srv.init()
+    await srv.set_application_uri('urn:freeopcua:python:discovery')
+    srv.set_endpoint(f'opc.tcp://127.0.0.1:{port_discovery}')
+    await srv.start()
+    yield srv
+    # stop the server
+    await srv.stop()
+
+
+@pytest.fixture()
+async def admin_client():
+    # start admin client
+    # long timeout since travis (automated testing) can be really slow
+    clt = Client(f'opc.tcp://admin@127.0.0.1:{port_num1}', timeout=10)
+    await clt.connect()
+    yield clt
+    await clt.disconnect()
+
+
+@pytest.fixture()
+async def client():
+    # start anonymous client
+    ro_clt = Client(f'opc.tcp://127.0.0.1:{port_num1}')
+    await ro_clt.connect()
+    yield ro_clt
+    await ro_clt.disconnect()
+
+
+@pytest.fixture()
 async def opc(request):
+    """
+    Fixture for tests that should run for both `Server` and `Client`
+    :param request:
+    :return:
+    """
     if request.param == 'client':
         srv = Server()
         await srv.init()
@@ -24,7 +78,7 @@ async def opc(request):
         # long timeout since travis (automated testing) can be really slow
         clt = Client(f'opc.tcp://admin@127.0.0.1:{port_num}', timeout=10)
         await clt.connect()
-        yield clt
+        yield Opc(clt, srv)
         await clt.disconnect()
         await srv.stop()
     elif request.param == 'server':
@@ -32,10 +86,10 @@ async def opc(request):
         # start our own server
         srv = Server()
         await srv.init()
-        srv.set_endpoint(f'opc.tcp://127.0.0.1:{port_num}')
+        srv.set_endpoint(f'opc.tcp://127.0.0.1:{port_num1}')
         await add_server_methods(srv)
         await srv.start()
-        yield srv
+        yield Opc(srv, srv)
         # stop the server
         await srv.stop()
     else:

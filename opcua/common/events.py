@@ -112,7 +112,7 @@ class Event(object):
 async def get_filter_from_event_type(eventtypes):
     evfilter = ua.EventFilter()
     evfilter.SelectClauses = await select_clauses_from_evtype(eventtypes)
-    evfilter.WhereClause = where_clause_from_evtype(eventtypes)
+    evfilter.WhereClause = await where_clause_from_evtype(eventtypes)
     return evfilter
 
 
@@ -121,19 +121,19 @@ async def select_clauses_from_evtype(evtypes):
     selected_paths = []
     for evtype in evtypes:
         for prop in await get_event_properties_from_type_node(evtype):
-            if prop.get_browse_name() not in selected_paths:
+            browse_name = await prop.get_browse_name()
+            if browse_name not in selected_paths:
                 op = ua.SimpleAttributeOperand()
                 op.AttributeId = ua.AttributeIds.Value
-                op.BrowsePath = [prop.get_browse_name()]
+                op.BrowsePath = [browse_name]
                 clauses.append(op)
-                selected_paths.append(prop.get_browse_name())
+                selected_paths.append(browse_name)
     return clauses
 
 
-def where_clause_from_evtype(evtypes):
+async def where_clause_from_evtype(evtypes):
     cf = ua.ContentFilter()
     el = ua.ContentFilterElement()
-    
     # operands can be ElementOperand, LiteralOperand, AttributeOperand, SimpleAttribute
     # Create a clause where the generate event type property EventType
     # must be a subtype of events in evtypes argument
@@ -144,20 +144,18 @@ def where_clause_from_evtype(evtypes):
     op.BrowsePath.append(ua.QualifiedName("EventType", 0))
     op.AttributeId = ua.AttributeIds.Value
     el.FilterOperands.append(op)
-
     # now create a list of all subtypes we want to accept
     subtypes = []
     for evtype in evtypes:
-        subtypes += [st.nodeid for st in ua_utils.get_node_subtypes(evtype)]
+        for st in await ua_utils.get_node_subtypes(evtype):
+            subtypes.append(st.nodeid)
     subtypes = list(set(subtypes))  # remove duplicates
     for subtypeid in subtypes:
         op = ua.LiteralOperand()
         op.Value = ua.Variant(subtypeid)
         el.FilterOperands.append(op)
-
     el.FilterOperator = ua.FilterOperator.InList
     cf.Elements.append(el)
-
     return cf
 
 
@@ -165,7 +163,7 @@ async def get_event_properties_from_type_node(node):
     properties = []
     curr_node = node
     while True:
-        properties.extend(curr_node.get_properties())
+        properties.extend(await curr_node.get_properties())
         if curr_node.nodeid.Identifier == ua.ObjectIds.BaseEventType:
             break
         parents = await curr_node.get_referenced_nodes(
