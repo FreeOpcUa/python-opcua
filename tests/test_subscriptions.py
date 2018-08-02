@@ -70,7 +70,8 @@ async def test_subscription_failure(opc):
     o = opc.opc.get_objects_node()
     sub = await opc.opc.create_subscription(100, myhandler)
     with pytest.raises(ua.UaStatusCodeError):
-        handle1 = await sub.subscribe_data_change(o)  # we can only subscribe to variables so this should fail
+        # we can only subscribe to variables so this should fail
+        handle1 = await sub.subscribe_data_change(o)
     await sub.delete()
 
 
@@ -106,7 +107,7 @@ async def test_subscription_count(opc):
     sub = await opc.opc.create_subscription(1, myhandler)
     o = opc.opc.get_objects_node()
     var = await o.add_variable(3, 'SubVarCounter', 0.1)
-    sub.subscribe_data_change(var)
+    await sub.subscribe_data_change(var)
     nb = 12
     for i in range(nb):
         val = await var.get_value()
@@ -121,7 +122,7 @@ async def test_subscription_count_list(opc):
     sub = await opc.opc.create_subscription(1, myhandler)
     o = opc.opc.get_objects_node()
     var = await o.add_variable(3, 'SubVarCounter', [0.1, 0.2])
-    sub.subscribe_data_change(var)
+    await sub.subscribe_data_change(var)
     nb = 12
     for i in range(nb):
         val = await var.get_value()
@@ -134,14 +135,14 @@ async def test_subscription_count_list(opc):
 
 async def test_subscription_count_no_change(opc):
     myhandler = MySubHandlerCounter()
-    sub = opc.create_subscription(1, myhandler)
+    sub = await opc.create_subscription(1, myhandler)
     o = opc.get_objects_node()
-    var = o.add_variable(3, 'SubVarCounter', [0.1, 0.2])
-    sub.subscribe_data_change(var)
+    var = await o.add_variable(3, 'SubVarCounter', [0.1, 0.2])
+    await sub.subscribe_data_change(var)
     nb = 12
     for i in range(nb):
-        val = var.get_value()
-        var.set_value(val)
+        val = await var.get_value()
+        await var.set_value(val)
     await sleep(0.2)  # let last event arrive
     assert 1 == myhandler.datachange_count
     await sub.delete()
@@ -152,7 +153,7 @@ async def test_subscription_count_empty(opc):
     sub = await opc.opc.create_subscription(1, myhandler)
     o = opc.opc.get_objects_node()
     var = await o.add_variable(3, 'SubVarCounter', [0.1, 0.2, 0.3])
-    sub.subscribe_data_change(var)
+    await sub.subscribe_data_change(var)
     while True:
         val = await var.get_value()
         val.pop()
@@ -173,7 +174,7 @@ async def test_subscription_overload_simple(opc):
     for i in range(nb):
         variables.append(await o.add_variable(3, f'SubVarOverload{i}', i))
     for i in range(nb):
-        sub.subscribe_data_change(variables)
+        await sub.subscribe_data_change(variables)
     await sub.delete()
 
 

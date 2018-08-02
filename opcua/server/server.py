@@ -60,7 +60,7 @@ class Server:
     :vartype nodes: Shortcuts
     """
 
-    def __init__(self, iserver=None):
+    def __init__(self, iserver: InternalServer=None):
         self.loop = asyncio.get_event_loop()
         self.logger = logging.getLogger(__name__)
         self.endpoint = urlparse("opc.tcp://0.0.0.0:4840/freeopcua/server/")
@@ -70,11 +70,8 @@ class Server:
         self.manufacturer_name = "FreeOpcUa"
         self.application_type = ua.ApplicationType.ClientAndServer
         self.default_timeout = 60 * 60 * 1000
-        if iserver is not None:
-            self.iserver = iserver
-        else:
-            self.iserver = InternalServer()
-        self.bserver = None
+        self.iserver = iserver if iserver else InternalServer()
+        self.bserver: BinaryServer = None
         self._discovery_clients = {}
         self._discovery_period = 60
         self.certificate = None

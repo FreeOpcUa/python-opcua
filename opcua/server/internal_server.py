@@ -28,13 +28,13 @@ class SessionState(Enum):
     Closed = 2
 
 
-class ServerDesc(object):
+class ServerDesc:
     def __init__(self, serv, cap=None):
         self.Server = serv
         self.Capabilities = cap
 
 
-class InternalServer(object):
+class InternalServer:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)

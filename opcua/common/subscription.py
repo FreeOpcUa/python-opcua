@@ -170,7 +170,7 @@ class Subscription:
 
     def subscribe_data_change(self, nodes, attr=ua.AttributeIds.Value):
         """
-        Coroutine
+        COROUTINE
         Subscribe for data change events for a node or list of nodes.
         default attribute is Value.
         Return a handle which can be used to unsubscribe
