@@ -450,7 +450,7 @@ class MethodService(object):
         self.logger = logging.getLogger(__name__)
         self._aspace = aspace
 
-    def call(self, methods):
+    async def call(self, methods):
         results = []
         for method in methods:
             results.append(self._call(method))

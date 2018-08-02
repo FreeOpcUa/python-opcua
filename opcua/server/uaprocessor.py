@@ -374,7 +374,7 @@ class UaProcessor:
         elif typeid == ua.NodeId(ua.ObjectIds.CallRequest_Encoding_DefaultBinary):
             self.logger.info("call request")
             params = struct_from_binary(ua.CallParameters, body)
-            results = self.session.call(params.MethodsToCall)
+            results = await self.session.call(params.MethodsToCall)
             response = ua.CallResponse()
             response.Results = results
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)

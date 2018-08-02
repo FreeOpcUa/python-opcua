@@ -334,6 +334,7 @@ class InternalSession:
         return self.aspace.add_method_callback(methodid, callback)
 
     def call(self, params):
+        """COROUTINE"""
         return self.iserver.method_service.call(params)
 
     async def create_subscription(self, params, callback):

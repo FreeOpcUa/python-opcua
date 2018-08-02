@@ -14,6 +14,7 @@ async def call_method(parent, methodid, *args):
     arguments are variants or python object convertible to variants.
     which may be of different types
     returns a list of values or a single value depending on the output of the method
+    : param: parent `Node`
     """
     result = await call_method_full(parent, methodid, *args)
 
@@ -32,6 +33,7 @@ async def call_method_full(parent, methodid, *args):
     arguments are variants or python object convertible to variants.
     which may be of different types
     returns a CallMethodResult object with converted OutputArguments
+    : param: parent `Node`
     """
     if isinstance(methodid, (str, ua.uatypes.QualifiedName)):
         methodid = (await parent.get_child(methodid)).nodeid
@@ -44,6 +46,13 @@ async def call_method_full(parent, methodid, *args):
 
 
 async def _call_method(server, parentnodeid, methodid, arguments):
+    """
+    :param server: `UaClient` or `InternalSession`
+    :param parentnodeid:
+    :param methodid:
+    :param arguments:
+    :return:
+    """
     request = ua.CallMethodRequest()
     request.ObjectId = parentnodeid
     request.MethodId = methodid
