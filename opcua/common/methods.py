@@ -3,7 +3,8 @@ High level method related functions
 """
 
 from opcua import ua
-from opcua.common import node
+
+__all__ = ["call_method", "call_method_full", "uamethod"]
 
 
 async def call_method(parent, methodid, *args):
@@ -34,7 +35,7 @@ async def call_method_full(parent, methodid, *args):
     """
     if isinstance(methodid, (str, ua.uatypes.QualifiedName)):
         methodid = (await parent.get_child(methodid)).nodeid
-    elif isinstance(methodid, node.Node):
+    elif hasattr(methodid, 'nodeid'):
         methodid = methodid.nodeid
 
     result = await _call_method(parent.server, parent.nodeid, methodid, to_variant(*args))

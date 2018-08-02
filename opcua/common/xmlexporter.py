@@ -9,12 +9,13 @@ from copy import copy
 import base64
 
 from opcua import ua
-from opcua.ua import object_ids as o_ids
-from opcua.common.ua_utils import get_base_data_type
-from opcua.ua.uatypes import extension_object_ids
+from ..ua import object_ids as o_ids
+from .ua_utils import get_base_data_type
+
+__all__ = ["XmlExporter"]
 
 
-class XmlExporter(object):
+class XmlExporter:
 
     ''' If it is required that for _extobj_to_etree members to the value should be written in a certain
         order it can be added to the dictionary below.    

@@ -6,17 +6,15 @@ import logging
 import uuid
 from copy import copy
 
-import opcua
 from opcua import ua
-from opcua.common import xmlparser
-from opcua.ua.uaerrors import UaError
+from .xmlparser import XMLParser, ua_type_to_python
+from ..ua.uaerrors import UaError
 
-import sys
 
-if sys.version_info.major > 2:
-    unicode = str
+__all__ = ["XmlImporter"]
 
-class XmlImporter(object):
+
+class XmlImporter:
 
     def __init__(self, server):
         self.logger = logging.getLogger(__name__)
@@ -51,7 +49,7 @@ class XmlImporter(object):
         import xml and return added nodes
         """
         self.logger.info("Importing XML file %s", xmlpath)
-        self.parser = xmlparser.XMLParser(xmlpath, xmlstring)
+        self.parser = XMLParser(xmlpath, xmlstring)
 
         self.namespaces = await self._map_namespaces(self.parser.get_used_namespaces())
         self.aliases = self._map_aliases(self.parser.get_aliases())
@@ -98,13 +96,13 @@ class XmlImporter(object):
 
     def _add_node(self, node):
         """COROUTINE"""
-        if isinstance(self.server, opcua.server.server.Server):
+        if hasattr(self.server, "iserver"):
             return self.server.iserver.isession.add_nodes([node])
         else:
             return self.server.uaclient.add_nodes([node])
 
     async def _add_references(self, refs):
-        if isinstance(self.server, opcua.server.server.Server):
+        if hasattr(self.server, "iserver"):
             res = await self.server.iserver.isession.add_references(refs)
         else:
             res = await self.server.uaclient.add_references(refs)
@@ -249,14 +247,14 @@ class XmlImporter(object):
         for name, uatype in obj.ua_types:
             if name == attname:
                 return uatype
-        raise UaError("Attribute '{}' defined in xml is not found in object '{}'".format(attname, ext))
+        raise UaError("Attribute '{}' defined in xml is not found in object '{}'".format(attname, obj))
 
     def _set_attr(self, obj, attname, val):
         # tow possible values:
         # either we get value directly
         # or a dict if it s an object or a list
-        if isinstance(val, (str, unicode)):
-            pval = xmlparser.ua_type_to_python(val, self._get_val_type(obj, attname))
+        if isinstance(val, str):
+            pval = ua_type_to_python(val, self._get_val_type(obj, attname))
             setattr(obj, attname, pval)
         else:
             # so we have either an object or a list...
@@ -274,7 +272,7 @@ class XmlImporter(object):
                 # we probably have a list
                 my_list = []
                 for vtype, v2 in val:
-                    my_list.append(xmlparser.ua_type_to_python(v2, vtype))
+                    my_list.append(ua_type_to_python(v2, vtype))
                 setattr(obj, attname, my_list)
             else:
                 for attname2, v2 in val:

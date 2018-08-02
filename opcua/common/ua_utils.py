@@ -9,9 +9,13 @@ import uuid
 import logging
 
 from opcua import ua
-from opcua.ua.uaerrors import UaError
 
 logger = logging.getLogger('__name__')
+__all__ = [
+    "val_to_string", "string_to_val", "string_to_variant", "get_node_children", "get_node_subtypes",
+    "get_node_supertype", "get_node_supertypes", "get_nodes_of_namespace", "get_base_data_type", "is_child_present",
+    "data_type_to_variant_type"
+]
 
 
 def val_to_string(val):
@@ -26,7 +30,7 @@ def val_to_string(val):
         res = []
         for v in val:
             res.append(val_to_string(v))
-        return "[" + ", ".join(res) + "]"
+        return "[{}]".format(", ".join(res))
 
     if hasattr(val, "to_string"):
         val = val.to_string()

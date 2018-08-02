@@ -1,14 +1,14 @@
 
 import logging
-from threading import RLock, Lock
+from threading import RLock
 import time
 
 from opcua import ua
-from opcua.server.internal_server import InternalServer, InternalSession
-from opcua.ua.ua_binary import nodeid_from_binary, struct_from_binary
-from opcua.ua.ua_binary import struct_to_binary, uatcp_to_binary
-from opcua.common import utils
-from opcua.common.connection import SecureConnection
+from ..ua.ua_binary import nodeid_from_binary, struct_from_binary, struct_to_binary, uatcp_to_binary
+from .internal_server import InternalServer, InternalSession
+from ..common import SecureConnection, ServiceError
+
+__all__ = ["UaProcessor"]
 
 
 class PublishRequestData:
@@ -21,7 +21,10 @@ class PublishRequestData:
 
 
 class UaProcessor:
-
+    """
+    ToDo: remove/replace Lock
+    ToDo: Refactor queues with asyncio.Queue
+    """
     def __init__(self, internal_server: InternalServer, socket):
         self.logger = logging.getLogger(__name__)
         self.iserver: InternalServer = internal_server
@@ -97,7 +100,7 @@ class UaProcessor:
             pass  # msg is a ChunkType.Intermediate of an ua.MessageType.SecureMessage
         else:
             self.logger.warning("Unsupported message type: %s", header.MessageType)
-            raise utils.ServiceError(ua.StatusCodes.BadTcpMessageTypeInvalid)
+            raise ServiceError(ua.StatusCodes.BadTcpMessageTypeInvalid)
         return True
 
     async def process_message(self, algohdr, seqhdr, body):
@@ -105,7 +108,7 @@ class UaProcessor:
         requesthdr = struct_from_binary(ua.RequestHeader, body)
         try:
             return await self._process_message(typeid, requesthdr, algohdr, seqhdr, body)
-        except utils.ServiceError as e:
+        except ServiceError as e:
             status = ua.StatusCode(e.code)
             response = ua.ServiceFault()
             response.ResponseHeader.ServiceResult = status
@@ -137,7 +140,7 @@ class UaProcessor:
         elif typeid == ua.NodeId(ua.ObjectIds.CloseSessionRequest_Encoding_DefaultBinary):
             self.logger.info("Close session request")
             deletesubs = ua.ua_binary.Primitives.Boolean.unpack(body)
-            self.session.close_session(deletesubs)
+            await self.session.close_session(deletesubs)
             response = ua.CloseSessionResponse()
             self.logger.info("sending close session response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
@@ -147,7 +150,7 @@ class UaProcessor:
             params = struct_from_binary(ua.ActivateSessionParameters, body)
             if not self.session:
                 self.logger.info("request to activate non-existing session")
-                raise utils.ServiceError(ua.StatusCodes.BadSessionIdInvalid)
+                raise ServiceError(ua.StatusCodes.BadSessionIdInvalid)
             if self._connection.security_policy.client_certificate is None:
                 data = self.session.nonce
             else:
@@ -377,15 +380,15 @@ class UaProcessor:
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
         else:
             self.logger.warning("Unknown message received %s", typeid)
-            raise utils.ServiceError(ua.StatusCodes.BadNotImplemented)
+            raise ServiceError(ua.StatusCodes.BadNotImplemented)
 
         return True
 
-    def close(self):
+    async def close(self):
         """
         to be called when client has disconnected to ensure we really close
         everything we should
         """
         self.logger.info("Cleanup client connection: %s", self.name)
         if self.session:
-            self.session.close_session(True)
+            await self.session.close_session(True)

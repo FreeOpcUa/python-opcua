@@ -10,12 +10,7 @@ import shelve
 from datetime import timedelta
 
 import opcua
-from opcua import Server
-from opcua import Client
-from opcua import ua
-from opcua import uamethod
-from opcua.common.event_objects import BaseEvent, AuditEvent, AuditChannelEvent, AuditSecurityEvent, \
-    AuditOpenSecureChannelEvent
+from opcua import Server, Client, ua, uamethod, BaseEvent, AuditEvent, AuditChannelEvent, AuditSecurityEvent, AuditOpenSecureChannelEvent
 from opcua.common import ua_utils
 
 pytestmark = pytest.mark.asyncio

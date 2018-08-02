@@ -3,22 +3,23 @@ parse xml file from opcua-spec
 """
 import logging
 from pytz import utc
-import uuid
 import re
-import sys
 import base64
 
 import xml.etree.ElementTree as ET
 
-from opcua.common import ua_utils
+from .ua_utils import string_to_val
 from opcua import ua
+
+__all__ = ["XMLParser"]
 
 
 def ua_type_to_python(val, uatype_as_str):
     """
     Converts a string value to a python value according to ua_utils.
     """
-    return ua_utils.string_to_val(val, getattr(ua.VariantType, uatype_as_str))
+    return string_to_val(val, getattr(ua.VariantType, uatype_as_str))
+
 
 def _to_bool(val):
     """
@@ -63,6 +64,7 @@ class NodeData(object):
 
     def __str__(self):
         return f"NodeData(nodeid:{self.nodeid})"
+
     __repr__ = __str__
 
 
@@ -84,6 +86,7 @@ class ExtObj(object):
 
     def __str__(self):
         return f"ExtObj({self.objname}, {self.body})"
+
     __repr__ = __str__
 
 
@@ -232,7 +235,7 @@ class XMLParser(object):
             obj.value = ua_type_to_python(val_el.text, ntag)
             # According to specs, DateTime should be either UTC or with a timezone.
             if obj.value.tzinfo is None or obj.value.tzinfo.utcoffset(obj.value) is None:
-                utc.localize(obj.value) # FIXME Forcing to UTC if unaware, maybe should raise?
+                utc.localize(obj.value)  # FIXME Forcing to UTC if unaware, maybe should raise?
         elif ntag == "ByteString":
             if val_el.text is None:
                 mytext = b""
@@ -245,7 +248,7 @@ class XMLParser(object):
             if mytext is None:
                 # Support importing null strings.
                 mytext = ""
-            #mytext = mytext.replace('\n', '').replace('\r', '')
+            # mytext = mytext.replace('\n', '').replace('\r', '')
             obj.value = mytext
         elif ntag == "Guid":
             self._parse_contained_value(val_el, obj)
@@ -342,7 +345,7 @@ class XMLParser(object):
                 obj.typedef = ref.text
             elif not struct.forward:
                 # Rmq: parent giving as ParentNodeId misses the ref type, so better to prioritize the ref descr
-                #if not obj.parent:
+                # if not obj.parent:
                 obj.parent = ref.text
                 if obj.parent == ref.text:
                     obj.parentlink = ref.attrib["ReferenceType"]

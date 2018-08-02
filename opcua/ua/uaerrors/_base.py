@@ -4,6 +4,7 @@ Define exceptions to be raised at various places in the stack
 
 from opcua.compat import with_metaclass
 
+
 class _AutoRegister(type):
     def __new__(mcs, name, bases, dict):
         SubClass = type.__new__(mcs, name, bases, dict)
@@ -19,6 +20,7 @@ class _AutoRegister(type):
                 subclasses[code] = SubClass
 
         return SubClass
+
 
 class UaError(RuntimeError):
     pass
@@ -80,6 +82,7 @@ class UaStatusCodeError(with_metaclass(_AutoRegister, UaError)):
         The code of the status error.
         """
         return self.args[0]
+
 
 class UaStringParsingError(UaError):
     pass

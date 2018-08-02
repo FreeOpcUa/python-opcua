@@ -3,8 +3,8 @@ High level functions to create nodes
 """
 import logging
 from opcua import ua
-from opcua.common import node
-from opcua.common.instantiate import instantiate
+from .instantiate_util import instantiate
+from .node_factory import make_node
 
 _logger = logging.getLogger(__name__)
 __all__ = [
@@ -48,7 +48,7 @@ async def create_folder(parent, nodeid, bname):
     or namespace index, name
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
-    return node.Node(
+    return make_node(
         parent.server,
         await _create_object(parent.server, parent.nodeid, nodeid, qname, ua.ObjectIds.FolderType)
     )
@@ -63,12 +63,12 @@ async def create_object(parent, nodeid, bname, objecttype=None):
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
     if objecttype is not None:
-        objecttype = node.Node(parent.server, objecttype)
+        objecttype = make_node(parent.server, objecttype)
         dname = ua.LocalizedText(bname)
         nodes = await instantiate(parent, objecttype, nodeid, bname=qname, dname=dname)
         return nodes[0]
     else:
-        return node.Node(
+        return make_node(
             parent.server,
             await _create_object(parent.server, parent.nodeid, nodeid, qname, ua.ObjectIds.BaseObjectType)
         )
@@ -86,7 +86,7 @@ async def create_property(parent, nodeid, bname, val, varianttype=None, datatype
         datatype = ua.NodeId(datatype, 0)
     if datatype and not isinstance(datatype, ua.NodeId):
         raise RuntimeError("datatype argument must be a nodeid or an int refering to a nodeid")
-    return node.Node(
+    return make_node(
         parent.server,
         await _create_variable(parent.server, parent.nodeid, nodeid, qname, var, datatype=datatype, isproperty=True)
     )
@@ -105,7 +105,7 @@ async def create_variable(parent, nodeid, bname, val, varianttype=None, datatype
     if datatype and not isinstance(datatype, ua.NodeId):
         raise RuntimeError("datatype argument must be a nodeid or an int refering to a nodeid")
 
-    return node.Node(
+    return make_node(
         parent.server,
         await _create_variable(parent.server, parent.nodeid, nodeid, qname, var, datatype=datatype, isproperty=False)
     )
@@ -123,7 +123,7 @@ async def create_variable_type(parent, nodeid, bname, datatype):
     if datatype and not isinstance(datatype, ua.NodeId):
         raise RuntimeError(
             "Data type argument must be a nodeid or an int refering to a nodeid, received: {}".format(datatype))
-    return node.Node(
+    return make_node(
         parent.server,
         await _create_variable_type(parent.server, parent.nodeid, nodeid, qname, datatype)
     )
@@ -136,7 +136,7 @@ async def create_reference_type(parent, nodeid, bname, symmetric=True, inversena
     or idx and name
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
-    return node.Node(
+    return make_node(
         parent.server,
         await _create_reference_type(parent.server, parent.nodeid, nodeid, qname, symmetric, inversename)
     )
@@ -149,7 +149,7 @@ async def create_object_type(parent, nodeid, bname):
     or namespace index, name
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
-    return node.Node(parent.server, await _create_object_type(parent.server, parent.nodeid, nodeid, qname))
+    return make_node(parent.server, await _create_object_type(parent.server, parent.nodeid, nodeid, qname))
 
 
 async def create_method(parent, *args):
@@ -172,7 +172,7 @@ async def create_method(parent, *args):
         outputs = args[4]
     else:
         outputs = []
-    return node.Node(parent.server, await _create_method(parent, nodeid, qname, callback, inputs, outputs))
+    return make_node(parent.server, await _create_method(parent, nodeid, qname, callback, inputs, outputs))
 
 
 async def _create_object(server, parentnodeid, nodeid, qname, objecttype):
@@ -180,7 +180,7 @@ async def _create_object(server, parentnodeid, nodeid, qname, objecttype):
     addnode.RequestedNewNodeId = nodeid
     addnode.BrowseName = qname
     addnode.ParentNodeId = parentnodeid
-    if await node.Node(server, parentnodeid).get_type_definition() == ua.NodeId(ua.ObjectIds.FolderType):
+    if await make_node(server, parentnodeid).get_type_definition() == ua.NodeId(ua.ObjectIds.FolderType):
         addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
     else:
         addnode.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasComponent)
@@ -334,7 +334,7 @@ async def create_data_type(parent, nodeid, bname, description=None):
     addnode.NodeAttributes = attrs
     results = await parent.server.add_nodes([addnode])
     results[0].StatusCode.check()
-    return node.Node(parent.server, results[0].AddedNodeId)
+    return make_node(parent.server, results[0].AddedNodeId)
 
 
 async def _create_method(parent, nodeid, qname, callback, inputs, outputs):
@@ -355,7 +355,7 @@ async def _create_method(parent, nodeid, qname, callback, inputs, outputs):
     addnode.NodeAttributes = attrs
     results = await parent.server.add_nodes([addnode])
     results[0].StatusCode.check()
-    method = node.Node(parent.server, results[0].AddedNodeId)
+    method = make_node(parent.server, results[0].AddedNodeId)
     if inputs:
         await create_property(
             method,

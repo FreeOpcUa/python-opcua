@@ -2,11 +2,13 @@ import copy
 
 from opcua import ua
 import opcua
-from opcua.ua.uaerrors import UaError
-from opcua.common import ua_utils
+from ..ua.uaerrors import UaError
+from .ua_utils import get_node_subtypes
+
+__all__ = ["Event", "get_event_obj_from_type_node", "get_event_properties_from_type_node"]
 
 
-class Event(object):
+class Event:
     """
     OPC UA Event object.
     This is class in inherited by the common event objects such as BaseEvent,
@@ -147,7 +149,7 @@ async def where_clause_from_evtype(evtypes):
     # now create a list of all subtypes we want to accept
     subtypes = []
     for evtype in evtypes:
-        for st in await ua_utils.get_node_subtypes(evtype):
+        for st in await get_node_subtypes(evtype):
             subtypes.append(st.nodeid)
     subtypes = list(set(subtypes))  # remove duplicates
     for subtypeid in subtypes:

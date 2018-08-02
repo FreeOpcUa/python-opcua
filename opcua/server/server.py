@@ -9,23 +9,17 @@ from urllib.parse import urlparse
 
 from opcua import ua
 # from opcua.binary_server import BinaryServer
-from opcua.server.binary_server_asyncio import BinaryServer
-from opcua.server.internal_server import InternalServer
-from opcua.server.event_generator import EventGenerator
-from opcua.common.node import Node
-from opcua.common.subscription import Subscription
-from opcua.common.manage_nodes import delete_nodes
-from opcua.client.client import Client
-from opcua.crypto import security_policies
-from opcua.common.event_objects import BaseEvent
-from opcua.common.shortcuts import Shortcuts
-from opcua.common.structures import load_type_definitions
-from opcua.common.xmlexporter import XmlExporter
-from opcua.common.xmlimporter import XmlImporter
-from opcua.common.ua_utils import get_nodes_of_namespace
-from opcua.crypto import uacrypto
+from .binary_server_asyncio import BinaryServer
+from .internal_server import InternalServer
+from .event_generator import EventGenerator
+from ..client import Client
+from ..common import Node, Subscription, delete_nodes, BaseEvent, Shortcuts, load_type_definitions, XmlExporter,\
+    XmlImporter, get_nodes_of_namespace
+
+from ..crypto import security_policies, uacrypto
 
 _logger = logging.getLogger(__name__)
+__all__ = ["Server"]
 
 
 class Server:
@@ -356,7 +350,7 @@ class Server:
             self.bserver.set_policies(self._policies)
             await self.bserver.start()
         except Exception as exp:
-            self.iserver.stop()
+            await self.iserver.stop()
             raise exp
 
     async def stop(self):
@@ -366,7 +360,7 @@ class Server:
         if self._discovery_clients:
             await asyncio.wait([client.disconnect() for client in self._discovery_clients.values()])
         await self.bserver.stop()
-        self.iserver.stop()
+        await self.iserver.stop()
 
     def get_root_node(self):
         """

@@ -1,5 +1,7 @@
-from opcua.ua import ObjectIds
-from opcua import Node
+from ..ua import ObjectIds
+from .node import Node
+
+__all__ = ["Shortcuts"]
 
 
 class Shortcuts(object):

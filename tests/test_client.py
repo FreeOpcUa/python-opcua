@@ -3,7 +3,6 @@ import logging
 import pytest
 
 from opcua import Client
-
 from opcua import ua
 
 _logger = logging.getLogger(__name__)

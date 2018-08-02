@@ -5,10 +5,11 @@ from threading import Lock
 import sqlite3
 
 from opcua import ua
-from opcua.ua.ua_binary import variant_from_binary, variant_to_binary
-from opcua.common.utils import Buffer
-from opcua.common import events
-from opcua.server.history import HistoryStorageInterface
+from ..ua.ua_binary import variant_from_binary, variant_to_binary
+from ..common import Buffer, Event, get_event_properties_from_type_node
+from .history import HistoryStorageInterface
+
+__all__ = ["HistorySQLite"]
 
 
 class HistorySQLite(HistoryStorageInterface):
@@ -220,7 +221,7 @@ class HistorySQLite(HistoryStorageInterface):
                         else:
                             fdict[clauses[i]] = ua.Variant(None)
 
-                    results.append(events.Event.from_field_dict(fdict))
+                    results.append(Event.from_field_dict(fdict))
 
             except sqlite3.Error as e:
                 self.logger.error('Historizing SQL Read Error events for node %s: %s', source_id, e)
@@ -248,7 +249,7 @@ class HistorySQLite(HistoryStorageInterface):
         # get all fields from the event types that are to be historized
         ev_aggregate_fields = []
         for event_type in evtypes:
-            ev_aggregate_fields.extend((events.get_event_properties_from_type_node(event_type)))
+            ev_aggregate_fields.extend((get_event_properties_from_type_node(event_type)))
 
         ev_fields = []
         for field in set(ev_aggregate_fields):

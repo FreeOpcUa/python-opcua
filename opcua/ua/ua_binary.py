@@ -8,12 +8,9 @@ import logging
 import uuid
 from enum import IntEnum, Enum
 
-from opcua.ua.uaerrors import UaError
-from opcua.common.utils import Buffer
+from .uaerrors import UaError
+from ..common.utils import Buffer
 from opcua import ua
-
-if sys.version_info.major > 2:
-    unicode = str
 
 logger = logging.getLogger('__name__')
 
@@ -458,17 +455,17 @@ def from_binary(uatype, data):
     """
     unpack data given an uatype as a string or a python class having a ua_types memeber
     """
-    if isinstance(uatype, (str, unicode)) and uatype.startswith("ListOf"):
+    if isinstance(uatype, str) and uatype.startswith("ListOf"):
         utype = uatype[6:]
         if hasattr(ua.VariantType, utype):
             vtype = getattr(ua.VariantType, utype)
             return unpack_uatype_array(vtype, data)
         size = Primitives.Int32.unpack(data)
         return [from_binary(utype, data) for _ in range(size)]
-    elif isinstance(uatype, (str, unicode)) and hasattr(ua.VariantType, uatype):
+    elif isinstance(uatype, str) and hasattr(ua.VariantType, uatype):
         vtype = getattr(ua.VariantType, uatype)
         return unpack_uatype(vtype, data)
-    elif isinstance(uatype, (str, unicode)) and hasattr(Primitives, uatype):
+    elif isinstance(uatype, str) and hasattr(Primitives, uatype):
         return getattr(Primitives, uatype).unpack(data)
     else:
         return struct_from_binary(uatype, data)
@@ -478,7 +475,7 @@ def struct_from_binary(objtype, data):
     """
     unpack an ua struct. Arguments are an objtype as Python class or string
     """
-    if isinstance(objtype, (unicode, str)):
+    if isinstance(objtype, str):
         objtype = getattr(ua, objtype)
     if issubclass(objtype, Enum):
         return objtype(Primitives.UInt32.unpack(data))

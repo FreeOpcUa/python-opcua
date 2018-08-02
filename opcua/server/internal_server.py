@@ -12,18 +12,14 @@ from urllib.parse import urlparse
 from datetime import datetime, timedelta
 
 from opcua import ua
-from opcua.common import utils
-from opcua.common.callback import CallbackType, ServerItemCallback, CallbackDispatcher
-from opcua.common.node import Node
-from opcua.server.history import HistoryManager
-from opcua.server.address_space import AddressSpace
-from opcua.server.address_space import AttributeService
-from opcua.server.address_space import ViewService
-from opcua.server.address_space import NodeManagementService
-from opcua.server.address_space import MethodService
-from opcua.server.subscription_service import SubscriptionService
-from opcua.server.standard_address_space import standard_address_space
-from opcua.server.users import User
+from ..common import CallbackType, ServerItemCallback, CallbackDispatcher, Node, create_nonce, ServiceError
+from .history import HistoryManager
+from .address_space import AddressSpace, AttributeService, ViewService, NodeManagementService, MethodService
+from .subscription_service import SubscriptionService
+from .standard_address_space import standard_address_space
+from .users import User
+
+__all__ = ["InternalServer"]
 
 
 class SessionState(Enum):
@@ -55,7 +51,7 @@ class InternalServer(object):
         self.node_mgt_service = NodeManagementService(self.aspace)
         self.loop = asyncio.get_event_loop()
         self.asyncio_transports = []
-        self.subscription_service = SubscriptionService(self.loop, self.aspace)
+        self.subscription_service: SubscriptionService = SubscriptionService(self.loop, self.aspace)
         self.history_manager = HistoryManager(self)
         # create a session to use on server side
         self.isession = InternalSession(self, self.aspace, self.subscription_service, "Internal", user=User.Admin)
@@ -123,9 +119,9 @@ class InternalServer(object):
         if not self.disabled_clock:
             self._set_current_time()
 
-    def stop(self):
+    async def stop(self):
         self.logger.info('stopping internal server')
-        self.isession.close_session()
+        await self.isession.close_session()
         self.history_manager.stop()
 
     def _set_current_time(self):
@@ -236,7 +232,7 @@ class InternalServer(object):
         self.server_callback_dispatcher.removeListener(event, handle)
 
 
-class InternalSession(object):
+class InternalSession:
     _counter = 10
     _auth_counter = 1000
 
@@ -272,23 +268,23 @@ class InternalSession(object):
         result.AuthenticationToken = self.authentication_token
         result.RevisedSessionTimeout = params.RequestedSessionTimeout
         result.MaxRequestMessageSize = 65536
-        self.nonce = utils.create_nonce(32)
+        self.nonce = create_nonce(32)
         result.ServerNonce = self.nonce
         result.ServerEndpoints = await self.get_endpoints(sockname=sockname)
 
         return result
 
-    def close_session(self, delete_subs=True):
+    async def close_session(self, delete_subs=True):
         self.logger.info('close session %s with subscriptions %s', self, self.subscriptions)
         self.state = SessionState.Closed
-        self.delete_subscriptions(self.subscriptions[:])
+        await self.delete_subscriptions(self.subscriptions[:])
 
     def activate_session(self, params):
         self.logger.info('activate session')
         result = ua.ActivateSessionResult()
         if self.state != SessionState.Created:
-            raise utils.ServiceError(ua.StatusCodes.BadSessionIdInvalid)
-        self.nonce = utils.create_nonce(32)
+            raise ServiceError(ua.StatusCodes.BadSessionIdInvalid)
+        self.nonce = create_nonce(32)
         result.ServerNonce = self.nonce
         for _ in params.ClientSoftwareCertificates:
             result.Results.append(ua.StatusCode())

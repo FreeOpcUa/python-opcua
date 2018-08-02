@@ -2,11 +2,12 @@ import hashlib
 from datetime import datetime
 import logging
 
-from opcua.ua.ua_binary import struct_from_binary, struct_to_binary, header_from_binary, header_to_binary
+from ..ua.ua_binary import struct_from_binary, struct_to_binary, header_from_binary, header_to_binary
 from opcua import ua
 
 
 logger = logging.getLogger('opcua.uaprotocol')
+__all__ = ["MessageChunk", "SecureConnection"]
 
 
 class MessageChunk(ua.FrozenClass):
@@ -127,7 +128,7 @@ class MessageChunk(ua.FrozenClass):
     __repr__ = __str__
 
 
-class SecureConnection(object):
+class SecureConnection:
     """
     Common logic for client and server
     """

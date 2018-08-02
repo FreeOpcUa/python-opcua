@@ -3,18 +3,11 @@ import logging
 from urllib.parse import urlparse
 
 from opcua import ua
-from opcua.client.ua_client import UaClient
-from opcua.common.xmlimporter import XmlImporter
-from opcua.common.xmlexporter import XmlExporter
-from opcua.common.node import Node
-from opcua.common.manage_nodes import delete_nodes
-from opcua.common.subscription import Subscription
-from opcua.common import utils
-from opcua.common.shortcuts import Shortcuts
-from opcua.common.structures import load_type_definitions
-from opcua.crypto import uacrypto, security_policies
+from .ua_client import UaClient
+from ..common import XmlImporter, XmlExporter, Node, delete_nodes, Subscription, Shortcuts, load_type_definitions, create_nonce
+from ..crypto import uacrypto, security_policies
 
-
+__all__ = ["Client"]
 _logger = logging.getLogger(__name__)
 asyncio.get_event_loop().set_debug(True)
 
@@ -47,7 +40,7 @@ class Client(object):
         # take initial username and password from the url
         self._username = self.server_url.username
         self._password = self.server_url.password
-        self.name = 'Pure Python Async. Client'
+        self.name = "Pure Python Async. Client"
         self.description = self.name
         self.application_uri = "urn:freeopcua:client"
         self.product_uri = "urn:freeopcua.github.io:client"
@@ -56,7 +49,7 @@ class Client(object):
         self.secure_channel_timeout = 3600000  # 1 hour
         self.session_timeout = 3600000  # 1 hour
         self._policy_ids = []
-        self.uaclient = UaClient(timeout)
+        self.uaclient: UaClient = UaClient(timeout)
         self.user_certificate = None
         self.user_private_key = None
         self._server_nonce = None
@@ -77,13 +70,13 @@ class Client(object):
         """
         Find endpoint with required security mode and policy URI
         """
-        _logger.info('find_endpoint %r %r %r', endpoints, security_mode, policy_uri)
+        _logger.info("find_endpoint %r %r %r", endpoints, security_mode, policy_uri)
         for ep in endpoints:
             if (ep.EndpointUrl.startswith(ua.OPC_TCP_SCHEME) and
                     ep.SecurityMode == security_mode and
                     ep.SecurityPolicyUri == policy_uri):
                 return ep
-        raise ua.UaError('No matching endpoints: {0}, {1}'.format(security_mode, policy_uri))
+        raise ua.UaError("No matching endpoints: {0}, {1}".format(security_mode, policy_uri))
 
     def set_user(self, username):
         """
@@ -98,7 +91,7 @@ class Client(object):
         initial password from the URL will be overwritten
         """
         if type(pwd) is not str:
-            raise TypeError('Password must be a string, got %s', type(pwd))
+            raise TypeError("Password must be a string, got %s", type(pwd))
         self._password = pwd
 
     async def set_security_string(self, string):
@@ -113,10 +106,10 @@ class Client(object):
         """
         if not string:
             return
-        parts = string.split(',')
+        parts = string.split(",")
         if len(parts) < 4:
-            raise ua.UaError('Wrong format: `{0}`, expected at least 4 comma-separated values'.format(string))
-        policy_class = getattr(security_policies, 'SecurityPolicy' + parts[0])
+            raise ua.UaError("Wrong format: `{}`, expected at least 4 comma-separated values".format(string))
+        policy_class = getattr(security_policies, "SecurityPolicy{}".format(parts[0]))
         mode = getattr(ua.MessageSecurityMode, parts[1])
         return await self.set_security(
             policy_class, parts[2], parts[3], parts[4] if len(parts) >= 5 else None, mode
@@ -199,7 +192,7 @@ class Client(object):
         High level method
         Connect, create and activate session
         """
-        _logger.info('connect')
+        _logger.info("connect")
         await self.connect_socket()
         try:
             await self.send_hello()
@@ -216,7 +209,7 @@ class Client(object):
         High level method
         Close session, secure channel and socket
         """
-        _logger.info('disconnect')
+        _logger.info("disconnect")
         try:
             await self.close_session()
             await self.close_secure_channel()
@@ -251,7 +244,7 @@ class Client(object):
         params.SecurityMode = self.security_policy.Mode
         params.RequestedLifetime = self.secure_channel_timeout
         # length should be equal to the length of key of symmetric encryption
-        nonce = utils.create_nonce(self.security_policy.symmetric_key_size)
+        nonce = create_nonce(self.security_policy.symmetric_key_size)
         params.ClientNonce = nonce  # this nonce is used to create a symmetric key
         result = await self.uaclient.open_secure_channel(params)
         self.security_policy.make_symmetric_key(nonce, result.ServerNonce)
@@ -315,12 +308,12 @@ class Client(object):
         desc.ApplicationType = ua.ApplicationType.Client
         params = ua.CreateSessionParameters()
         # at least 32 random bytes for server to prove possession of private key (specs part 4, 5.6.2.2)
-        nonce = utils.create_nonce(32)
+        nonce = create_nonce(32)
         params.ClientNonce = nonce
         params.ClientCertificate = self.security_policy.client_certificate
         params.ClientDescription = desc
         params.EndpointUrl = self.server_url.geturl()
-        params.SessionName = self.description + " Session" + str(self._session_counter)
+        params.SessionName = "{} Session{}".format(self.description, self._session_counter)
         # Requested maximum number of milliseconds that a Session should remain open without activity
         params.RequestedSessionTimeout = 60 * 60 * 1000
         params.MaxResponseMessageSize = 0  # means no max size
@@ -441,7 +434,7 @@ class Client(object):
             # and EncryptionAlgorithm is null
             if self._password:
                 self.logger.warning("Sending plain-text password")
-                params.UserIdentityToken.Password = password.encode('utf8')
+                params.UserIdentityToken.Password = password.encode("utf8")
             params.UserIdentityToken.EncryptionAlgorithm = None
         elif self._password:
             data, uri = self._encrypt_password(password, policy_uri)
@@ -471,7 +464,7 @@ class Client(object):
         return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.RootFolder))
 
     def get_objects_node(self):
-        self.logger.info('get_objects_node')
+        self.logger.info("get_objects_node")
         return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.ObjectsFolder))
 
     def get_server_node(self):
@@ -521,7 +514,7 @@ class Client(object):
 
     async def get_namespace_index(self, uri):
         uries = await self.get_namespace_array()
-        _logger.info('get_namespace_index %s %r', type(uries), uries)
+        _logger.info("get_namespace_index %s %r", type(uries), uries)
         return uries.index(uri)
 
     async def delete_nodes(self, nodes, recursive=False):

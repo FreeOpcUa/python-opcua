@@ -2,14 +2,18 @@
 server side implementation of subscription service
 """
 
-from threading import RLock
 import logging
 
 from opcua import ua
-from opcua.server.internal_subscription import InternalSubscription
+from .internal_subscription import InternalSubscription
+
+__all__ = ["SubscriptionService"]
 
 
-class SubscriptionService(object):
+class SubscriptionService:
+    """
+    ToDo: check if locks need to be replaced by asyncio.Lock
+    """
 
     def __init__(self, loop, aspace):
         self.logger = logging.getLogger(__name__)
@@ -24,7 +28,6 @@ class SubscriptionService(object):
         result.RevisedPublishingInterval = params.RequestedPublishingInterval
         result.RevisedLifetimeCount = params.RequestedLifetimeCount
         result.RevisedMaxKeepAliveCount = params.RequestedMaxKeepAliveCount
-        #with self._lock:
         self._sub_id_counter += 1
         result.SubscriptionId = self._sub_id_counter
 

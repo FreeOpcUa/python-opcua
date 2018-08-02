@@ -2,15 +2,14 @@
 server side implementation of a subscription object
 """
 
-from threading import RLock
 import logging
-# import copy
-# import traceback
 
 from opcua import ua
 
+__all__ = ["InternalSubscription", "WhereClauseEvaluator"]
 
-class MonitoredItemData(object):
+
+class MonitoredItemData:
 
     def __init__(self):
         self.client_handle = None
@@ -23,7 +22,7 @@ class MonitoredItemData(object):
         self.queue_size = 0
 
 
-class MonitoredItemValues(object):
+class MonitoredItemValues:
 
     def __init__(self):
         self.current_value = None
@@ -40,8 +39,7 @@ class MonitoredItemValues(object):
         return self.old_value
 
 
-class MonitoredItemService(object):
-
+class MonitoredItemService:
     """
     implement monitoreditem service for 1 subscription
     """
@@ -61,7 +59,7 @@ class MonitoredItemService(object):
     def create_monitored_items(self, params):
         results = []
         for item in params.ItemsToCreate:
-            #with self._lock:
+            # with self._lock:
             if item.ItemToMonitor.AttributeId == ua.AttributeIds.EventNotifier:
                 result = self._create_events_monitored_item(item)
             else:
@@ -81,7 +79,6 @@ class MonitoredItemService(object):
         self.datachange_callback(handle, variant)
 
     def _modify_monitored_item(self, params):
-        #with self._lock:
         for mdata in self._monitored_items.values():
             result = ua.MonitoredItemModifyResult()
             if mdata.monitored_item_id == params.MonitoredItemId:
@@ -119,8 +116,8 @@ class MonitoredItemService(object):
 
     def _create_events_monitored_item(self, params):
         self.logger.info("request to subscribe to events for node %s and attribute %s",
-                         params.ItemToMonitor.NodeId,
-                         params.ItemToMonitor.AttributeId)
+            params.ItemToMonitor.NodeId,
+            params.ItemToMonitor.AttributeId)
 
         result, mdata = self._make_monitored_item_common(params)
         ev_notify_byte = self.aspace.get_attribute_value(
@@ -139,8 +136,8 @@ class MonitoredItemService(object):
 
     def _create_data_change_monitored_item(self, params):
         self.logger.info("request to subscribe to datachange for node %s and attribute %s",
-                         params.ItemToMonitor.NodeId,
-                         params.ItemToMonitor.AttributeId)
+            params.ItemToMonitor.NodeId,
+            params.ItemToMonitor.AttributeId)
 
         result, mdata = self._make_monitored_item_common(params)
         result.FilterResult = params.RequestedParameters.Filter
@@ -158,7 +155,7 @@ class MonitoredItemService(object):
 
     def delete_monitored_items(self, ids):
         self.logger.debug("delete monitored items %s", ids)
-        #with self._lock:
+        # with self._lock:
         results = []
         for mid in ids:
             results.append(self._delete_monitored_items(mid))
@@ -184,13 +181,13 @@ class MonitoredItemService(object):
     def datachange_callback(self, handle, value, error=None):
         if error:
             self.logger.info("subscription %s: datachange callback called with handle '%s' and erorr '%s'", self,
-                             handle, error)
+                handle, error)
             self.trigger_statuschange(error)
         else:
             self.logger.info("subscription %s: datachange callback called with handle '%s' and value '%s'", self,
-                             handle, value.Value)
+                handle, value.Value)
             event = ua.MonitoredItemNotification()
-            #with self._lock:
+            # with self._lock:
             mid = self._monitored_datachange[handle]
             mdata = self._monitored_items[mid]
             mdata.mvalue.set_current_value(value.Value.Value)
@@ -216,13 +213,13 @@ class MonitoredItemService(object):
             return False
 
     def trigger_event(self, event):
-        #with self._lock:
+        # with self._lock:
         if event.SourceNode not in self._monitored_events:
             self.logger.debug("%s has no subscription for events %s from node: %s",
-                              self, event, event.SourceNode)
+                self, event, event.SourceNode)
             return False
         self.logger.debug("%s has subscription for events %s from node: %s",
-                          self, event, event.SourceNode)
+            self, event, event.SourceNode)
         mids = self._monitored_events[event.SourceNode]
         for mid in mids:
             self._trigger_event(event, mid)
@@ -230,7 +227,7 @@ class MonitoredItemService(object):
     def _trigger_event(self, event, mid):
         if mid not in self._monitored_items:
             self.logger.debug("Could not find monitored items for id %s for event %s in subscription %s",
-                              mid, event, self)
+                mid, event, self)
             return
         mdata = self._monitored_items[mid]
         if not mdata.where_clause_evaluator.eval(event):
@@ -245,7 +242,7 @@ class MonitoredItemService(object):
         self.isub.enqueue_statuschange(code)
 
 
-class InternalSubscription(object):
+class InternalSubscription:
 
     def __init__(self, subservice, data, addressspace, callback):
         self.logger = logging.getLogger(__name__)
@@ -255,7 +252,6 @@ class InternalSubscription(object):
         self.callback = callback
         self.monitored_item_srv = MonitoredItemService(self, addressspace)
         self.task = None
-        self._lock = RLock()
         self._triggered_datachanges = {}
         self._triggered_events = {}
         self._triggered_statuschanges = []
@@ -289,29 +285,27 @@ class InternalSubscription(object):
         self._subscription_loop()
 
     def has_published_results(self):
-        with self._lock:
-            if self._startup or self._triggered_datachanges or self._triggered_events:
-                return True
-            if self._keep_alive_count > self.data.RevisedMaxKeepAliveCount:
-                self.logger.debug("keep alive count %s is > than max keep alive count %s, sending publish event",
-                                  self._keep_alive_count, self.data.RevisedMaxKeepAliveCount)
-                return True
-            self._keep_alive_count += 1
-            return False
+        if self._startup or self._triggered_datachanges or self._triggered_events:
+            return True
+        if self._keep_alive_count > self.data.RevisedMaxKeepAliveCount:
+            self.logger.debug("keep alive count %s is > than max keep alive count %s, sending publish event",
+                self._keep_alive_count, self.data.RevisedMaxKeepAliveCount)
+            return True
+        self._keep_alive_count += 1
+        return False
 
     def publish_results(self):
         if self._publish_cycles_count > self.data.RevisedLifetimeCount:
             self.logger.warning("Subscription %s has expired, publish cycle count(%s) > lifetime count (%s)",
-                                self, self._publish_cycles_count, self.data.RevisedLifetimeCount)
+                self, self._publish_cycles_count, self.data.RevisedLifetimeCount)
             # FIXME this will never be send since we do not have publish request anyway
             self.monitored_item_srv.trigger_statuschange(ua.StatusCode(ua.StatusCodes.BadTimeout))
             self._stopev = True
         result = None
-        with self._lock:
-            if self.has_published_results():
-                # FIXME: should we pop a publish request here? or we do not care?
-                self._publish_cycles_count += 1
-                result = self._pop_publish_result()
+        if self.has_published_results():
+            # FIXME: should we pop a publish request here? or we do not care?
+            self._publish_cycles_count += 1
+            result = self._pop_publish_result()
         if result is not None:
             self.callback(result)
 
@@ -356,21 +350,20 @@ class InternalSubscription(object):
 
     def publish(self, acks):
         self.logger.info("publish request with acks %s", acks)
-        with self._lock:
-            self._publish_cycles_count = 0
-            for nb in acks:
-                if nb in self._not_acknowledged_results:
-                    self._not_acknowledged_results.pop(nb)
+
+        self._publish_cycles_count = 0
+        for nb in acks:
+            if nb in self._not_acknowledged_results:
+                self._not_acknowledged_results.pop(nb)
 
     def republish(self, nb):
         self.logger.info("re-publish request for ack %s in subscription %s", nb, self)
-        with self._lock:
-            if nb in self._not_acknowledged_results:
-                self.logger.info("re-publishing ack %s in subscription %s", nb, self)
-                return self._not_acknowledged_results[nb].NotificationMessage
-            else:
-                self.logger.info("Error request to re-published non existing ack %s in subscription %s", nb, self)
-                return ua.NotificationMessage()
+        if nb in self._not_acknowledged_results:
+            self.logger.info("re-publishing ack %s in subscription %s", nb, self)
+            return self._not_acknowledged_results[nb].NotificationMessage
+        else:
+            self.logger.info("Error request to re-published non existing ack %s in subscription %s", nb, self)
+            return ua.NotificationMessage()
 
     def enqueue_datachange_event(self, mid, eventdata, maxsize):
         self._enqueue_event(mid, eventdata, maxsize, self._triggered_datachanges)
@@ -391,7 +384,7 @@ class InternalSubscription(object):
         queue[mid].append(eventdata)
 
 
-class WhereClauseEvaluator(object):
+class WhereClauseEvaluator:
     def __init__(self, logger, aspace, whereclause):
         self.logger = logger
         self.elements = whereclause.Elements
@@ -405,7 +398,7 @@ class WhereClauseEvaluator(object):
             res = self._eval_el(0, event)
         except Exception as ex:
             self.logger.exception("Exception while evaluating WhereClause %s for event %s: %s",
-                                  self.elements, event, ex)
+                self.elements, event, ex)
             return False
         return res
 
@@ -473,6 +466,3 @@ class WhereClauseEvaluator(object):
         else:
             self.logger.warning("Where clause element % is not of a known type", op)
             raise NotImplementedError
-
-
-

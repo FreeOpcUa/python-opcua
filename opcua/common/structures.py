@@ -14,19 +14,20 @@ import uuid
 
 from lxml import objectify
 
-
-from opcua.ua.ua_binary import Primitives
 from opcua import ua
 
 from enum import IntEnum, EnumMeta
 
+__all__ = ["load_type_definitions"]
+
+
 def get_default_value(uatype, enums):
     if uatype == "String":
-        return "None" 
+        return "None"
     elif uatype == "Guid":
-        return "uuid.uuid4()" 
+        return "uuid.uuid4()"
     elif uatype in ("ByteString", "CharArray", "Char"):
-        return None 
+        return None
     elif uatype == "Boolean":
         return "True"
     elif uatype == "DateTime":
@@ -35,17 +36,18 @@ def get_default_value(uatype, enums):
         return 0
     elif uatype in enums:
         return "ua." + uatype + "(" + enums[uatype] + ")"
-    elif issubclass(eval("ua."+uatype), IntEnum):
-        return "ua." + uatype + "(" + list(eval("ua."+uatype))[0] + ")"
+    elif issubclass(eval("ua." + uatype), IntEnum):
+        return "ua." + uatype + "(" + list(eval("ua." + uatype))[0] + ")"
     else:
         return "ua." + uatype + "()"
 
+
 class EnumType(object):
-    def __init__(self, name ):
+    def __init__(self, name):
         self.name = name
-        self.fields= []
+        self.fields = []
         self.typeid = None
-        
+
     def get_code(self):
         code = """
 
@@ -63,14 +65,16 @@ class {0}(IntEnum):
             name = EnumeratedValue.Name
             value = EnumeratedValue.Value
             code += "    {} = {}\n".format(name, value)
-          
+
         return code
-        
+
+
 class EnumeratedValue(object):
     def __init__(self, name, value):
-        self.Name=name
-        self.Value=value
-        
+        self.Name = name
+        self.Value = value
+
+
 class Struct(object):
     def __init__(self, name):
         self.name = name
@@ -138,7 +142,7 @@ class StructGenerator(object):
                 intenum.fields.append(enumvalue)
                 enums[child.get("Name")] = value
             self.model.append(intenum)
-            
+
         for child in root.iter("{*}StructuredType"):
             struct = Struct(child.get("Name"))
             array = False
@@ -250,7 +254,7 @@ async def load_type_definitions(server, nodes=None):
         for desc in await server.nodes.opc_binary.get_children_descriptions():
             if desc.BrowseName != ua.QualifiedName("Opc.Ua"):
                 nodes.append(server.get_node(desc.NodeId))
-    
+
     structs_dict = {}
     generators = []
     for node in nodes:
@@ -262,21 +266,23 @@ async def load_type_definitions(server, nodes=None):
         # generate and execute new code on the fly
         generator.get_python_classes(structs_dict)
         # same but using a file that is imported. This can be usefull for debugging library
-        #name = node.get_browse_name().Name
+        # name = node.get_browse_name().Name
         # Make sure structure names do not contain charaters that cannot be used in Python class file names
-        #name = _clean_name(name)
-        #name = "structures_" + node.get_browse_name().Name
-        #generator.save_and_import(name + ".py", append_to=structs_dict)
+        # name = _clean_name(name)
+        # name = "structures_" + node.get_browse_name().Name
+        # generator.save_and_import(name + ".py", append_to=structs_dict)
 
         # register classes
         # every children of our node should represent a class
         for ndesc in await node.get_children_descriptions():
             ndesc_node = server.get_node(ndesc.NodeId)
-            ref_desc_list = await ndesc_node.get_references(refs=ua.ObjectIds.HasDescription, direction=ua.BrowseDirection.Inverse)
-            if ref_desc_list:  #some server put extra things here
+            ref_desc_list = await ndesc_node.get_references(refs=ua.ObjectIds.HasDescription,
+                direction=ua.BrowseDirection.Inverse)
+            if ref_desc_list:  # some server put extra things here
                 name = _clean_name(ndesc.BrowseName.Name)
                 if not name in structs_dict:
-                    logging.getLogger(__name__).warning("Error {} is found as child of binary definition node but is not found in xml".format(name))
+                    logging.getLogger(__name__).warning(
+                        "Error {} is found as child of binary definition node but is not found in xml".format(name))
                     continue
                 nodeid = ref_desc_list[0].NodeId
                 ua.register_extension_object(name, nodeid, structs_dict[name])

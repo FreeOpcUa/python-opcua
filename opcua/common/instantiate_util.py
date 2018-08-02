@@ -4,12 +4,13 @@ Instantiate a new node and its child nodes from a node type.
 
 import logging
 
-from opcua import Node
 from opcua import ua
-from opcua.common import ua_utils
-from opcua.common.copy_node import _rdesc_from_node, _read_and_copy_attrs
+from .ua_utils import get_node_supertypes, is_child_present
+from .copy_node_util import _rdesc_from_node, _read_and_copy_attrs
+from .node_factory import make_node
 
 logger = logging.getLogger(__name__)
+__all__ = ["instantiate"]
 
 
 async def instantiate(parent, node_type, nodeid=None, bname=None, dname=None, idx=0, instantiate_optional=True):
@@ -31,14 +32,14 @@ async def instantiate(parent, node_type, nodeid=None, bname=None, dname=None, id
 
     nodeids = await _instantiate_node(
         parent.server,
-        Node(parent.server, rdesc.NodeId),
+        make_node(parent.server, rdesc.NodeId),
         parent.nodeid,
         rdesc,
         nodeid,
         bname,
         dname=dname,
         instantiate_optional=instantiate_optional)
-    return [Node(parent.server, nid) for nid in nodeids]
+    return [make_node(parent.server, nid) for nid in nodeids]
 
 
 async def _instantiate_node(server,
@@ -83,14 +84,14 @@ async def _instantiate_node(server,
     added_nodes = [res.AddedNodeId]
 
     if recursive:
-        parents = await ua_utils.get_node_supertypes(node_type, includeitself=True)
-        node = Node(server, res.AddedNodeId)
+        parents = await get_node_supertypes(node_type, includeitself=True)
+        node = make_node(server, res.AddedNodeId)
         for parent in parents:
             descs = await parent.get_children_descriptions(includesubtypes=False)
             for c_rdesc in descs:
                 # skip items that already exists, prefer the 'lowest' one in object hierarchy
-                if not await ua_utils.is_child_present(node, c_rdesc.BrowseName):
-                    c_node_type = Node(server, c_rdesc.NodeId)
+                if not await is_child_present(node, c_rdesc.BrowseName):
+                    c_node_type = make_node(server, c_rdesc.NodeId)
                     refs = await c_node_type.get_referenced_nodes(refs=ua.ObjectIds.HasModellingRule)
                     if not refs:
                         # spec says to ignore nodes without modelling rules

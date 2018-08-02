@@ -1,4 +1,3 @@
-
 import pickle
 import shelve
 import logging
@@ -6,9 +5,13 @@ import collections
 from datetime import datetime
 
 from opcua import ua
-from opcua.server.users import User
+from .users import User
 
 _logger = logging.getLogger(__name__)
+__all__ = [
+    "AttributeValue", "NodeData", "AttributeService", "ViewService", "NodeManagementService", "MethodService",
+    "AddressSpace"
+]
 
 
 class AttributeValue(object):
@@ -20,6 +23,7 @@ class AttributeValue(object):
 
     def __str__(self):
         return "AttributeValue({0})".format(self.value)
+
     __repr__ = __str__
 
 
@@ -33,6 +37,7 @@ class NodeData(object):
 
     def __str__(self):
         return "NodeData(id:{0}, attrs:{1}, refs:{2})".format(self.nodeid, self.attributes, self.references)
+
     __repr__ = __str__
 
 
@@ -59,7 +64,8 @@ class AttributeService(object):
                     continue
                 al = self._aspace.get_attribute_value(writevalue.NodeId, ua.AttributeIds.AccessLevel)
                 ual = self._aspace.get_attribute_value(writevalue.NodeId, ua.AttributeIds.UserAccessLevel)
-                if not ua.ua_binary.test_bit(al.Value.Value, ua.AccessLevel.CurrentWrite) or not ua.ua_binary.test_bit(ual.Value.Value, ua.AccessLevel.CurrentWrite):
+                if not ua.ua_binary.test_bit(al.Value.Value, ua.AccessLevel.CurrentWrite) or not ua.ua_binary.test_bit(
+                        ual.Value.Value, ua.AccessLevel.CurrentWrite):
                     res.append(ua.StatusCode(ua.StatusCodes.BadUserAccessDenied))
                     continue
             res.append(self._aspace.set_attribute_value(writevalue.NodeId, writevalue.AttributeId, writevalue.Value))
@@ -215,7 +221,7 @@ class NodeManagementService(object):
 
         if item.ParentNodeId.is_null():
             self.logger.info("add_node: while adding node %s, requested parent node is null %s %s",
-                             item.RequestedNewNodeId, item.ParentNodeId, item.ParentNodeId.is_null())
+                item.RequestedNewNodeId, item.ParentNodeId, item.ParentNodeId.is_null())
             if check:
                 result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
                 return result
@@ -223,7 +229,7 @@ class NodeManagementService(object):
         parentdata = self._aspace.get(item.ParentNodeId)
         if parentdata is None and not item.ParentNodeId.is_null():
             self.logger.info("add_node: while adding node %s, requested parent node %s does not exists",
-                             item.RequestedNewNodeId, item.ParentNodeId)
+                item.RequestedNewNodeId, item.ParentNodeId)
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadParentNodeIdInvalid)
             return result
 
@@ -323,7 +329,7 @@ class NodeManagementService(object):
 
         self._delete_node_callbacks(self._aspace[item.NodeId])
 
-        del(self._aspace[item.NodeId])
+        del (self._aspace[item.NodeId])
 
         return ua.StatusCode()
 
@@ -334,7 +340,8 @@ class NodeManagementService(object):
                     callback(handle, None, ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown))
                     self._aspace.delete_datachange_callback(handle)
                 except Exception as ex:
-                    self.logger.exception("Error calling delete node callback callback %s, %s, %s", nodedata, ua.AttributeIds.Value, ex)
+                    self.logger.exception("Error calling delete node callback callback %s, %s, %s", nodedata,
+                        ua.AttributeIds.Value, ex)
 
     def add_references(self, refs, user=User.Admin):
         result = []
@@ -475,7 +482,6 @@ class MethodService(object):
 
 
 class AddressSpace(object):
-
     """
     The address space object stores all the nodes of the OPC-UA server
     and helper methods.
@@ -568,6 +574,7 @@ class AddressSpace(object):
         Note: Intended for slow devices, such as Raspberry Pi, to greatly improve start up time
         """
         raise NotImplementedError
+
         # ToDo: async friendly implementation - load all at once?
         class LazyLoadingDict(collections.MutableMapping):
             """
@@ -575,6 +582,7 @@ class AddressSpace(object):
             shelve to the cache dict. All user nodes are saved in the cache ONLY. Saving data back to the shelf
             is currently NOT supported
             """
+
             def __init__(self, source):
                 self.source = source  # python shelf
                 self.cache = {}  # internal dict

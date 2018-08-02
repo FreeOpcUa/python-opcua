@@ -6,17 +6,15 @@ import asyncio
 
 from opcua import ua
 import opcua.ua.ua_binary as uabin
-from opcua.server.uaprocessor import UaProcessor
+from .uaprocessor import UaProcessor
 
 logger = logging.getLogger(__name__)
+__all__ = ["BinaryServer"]
 
 
 class OPCUAProtocol(asyncio.Protocol):
     """
-    instanciated for every connection
-    defined as internal class since it needs access
-    to the internal server object
-    FIXME: find another solution
+    Instantiated for every connection.
     """
 
     def __init__(self, iserver=None, policies=None, clients=None):
@@ -47,7 +45,7 @@ class OPCUAProtocol(asyncio.Protocol):
         logger.info('Lost connection from %s, %s', self.peer_name, ex)
         self.transport.close()
         self.iserver.asyncio_transports.remove(self.transport)
-        self.processor.close()
+        self.loop.create_task(self.processor.close())
         if self in self.clients:
             self.clients.remove(self)
 

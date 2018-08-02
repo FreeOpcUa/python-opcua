@@ -1,4 +1,3 @@
-
 """
 server side implementation of callback event 
 """
@@ -6,8 +5,10 @@ server side implementation of callback event
 from collections import OrderedDict
 from enum import Enum
 
-class CallbackType(Enum):
+__all__ = ["CallbackType", "ServerItemCallback", "CallbackDispatcher"]
 
+
+class CallbackType(Enum):
     '''
     The possible types of a Callback type.
 
@@ -18,8 +19,7 @@ class CallbackType(Enum):
     Null = 0
     ItemSubscriptionCreated = 1
     ItemSubscriptionModified = 2
-    ItemSubscriptionDeleted= 3
-   
+    ItemSubscriptionDeleted = 3
 
 
 class Callback(object):
@@ -37,7 +37,7 @@ class ServerItemCallback(Callback):
     def __init__(self, request_params, response_params):
         self.request_params = request_params
         self.response_params = response_params
-        
+
 
 class CallbackSubscriberInterface(object):
     def getSubscribedEvents(self):
@@ -95,5 +95,3 @@ class CallbackDispatcher(object):
                         self.addListener(eventName, getattr(subscriber, listener[0]), priority)
             else:
                 raise ValueError('Invalid params for event "{0!s}"'.format(eventName))
-
-

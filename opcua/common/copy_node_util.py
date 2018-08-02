@@ -1,10 +1,11 @@
 import logging
 
 from opcua import ua
-from opcua.common.node import Node
+from .node_factory import make_node
 
 
 logger = logging.getLogger(__name__)
+__all__ = ["copy_node"]
 
 
 async def copy_node(parent, node, nodeid=None, recursive=True):
@@ -15,7 +16,7 @@ async def copy_node(parent, node, nodeid=None, recursive=True):
     if nodeid is None:
         nodeid = ua.NodeId(namespaceidx=node.nodeid.NamespaceIndex)
     added_nodeids = await _copy_node(parent.server, parent.nodeid, rdesc, nodeid, recursive)
-    return [Node(parent.server, nid) for nid in added_nodeids]
+    return [make_node(parent.server, nid) for nid in added_nodeids]
 
 
 async def _copy_node(server, parent_nodeid, rdesc, nodeid, recursive):
@@ -26,7 +27,7 @@ async def _copy_node(server, parent_nodeid, rdesc, nodeid, recursive):
     addnode.ReferenceTypeId = rdesc.ReferenceTypeId
     addnode.TypeDefinition = rdesc.TypeDefinition
     addnode.NodeClass = rdesc.NodeClass
-    node_to_copy = Node(server, rdesc.NodeId)
+    node_to_copy = make_node(server, rdesc.NodeId)
     attr_obj = getattr(ua, rdesc.NodeClass.name + "Attributes")
     await _read_and_copy_attrs(node_to_copy, attr_obj(), addnode)
     res = (await server.add_nodes([addnode]))[0]

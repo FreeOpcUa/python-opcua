@@ -5,7 +5,6 @@ implement ua datatypes
 import logging
 from enum import Enum, IntEnum
 from calendar import timegm
-import sys
 import os
 import uuid
 import re
@@ -13,15 +12,9 @@ import itertools
 from datetime import datetime, timedelta, MAXYEAR, tzinfo
 
 from opcua.ua import status_codes
-from opcua.ua import ObjectIds
-from opcua.ua.uaerrors import UaError
-from opcua.ua.uaerrors import UaStatusCodeError
-from opcua.ua.uaerrors import UaStringParsingError
+from .uaerrors import UaError, UaStatusCodeError, UaStringParsingError
 
 logger = logging.getLogger(__name__)
-
-if sys.version_info.major > 2:
-    unicode = str
 
 
 EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
@@ -729,7 +722,7 @@ class Variant(FrozenClass):
             return VariantType.Int32
         elif isinstance(val, int):
             return VariantType.Int64
-        elif isinstance(val, (str, unicode)):
+        elif isinstance(val, str):
             return VariantType.String
         elif isinstance(val, bytes):
             return VariantType.ByteString
@@ -752,7 +745,7 @@ class Variant(FrozenClass):
     __repr__ = __str__
 
     def to_binary(self):
-        from opcua.ua.ua_binary import variant_to_binary
+        from .ua_binary import variant_to_binary
         return variant_to_binary(self)
 
 

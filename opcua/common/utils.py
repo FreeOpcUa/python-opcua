@@ -3,20 +3,11 @@ Helper function and classes that do not rely on opcua library.
 Helper function and classes depending on ua object are in ua_utils.py
 """
 
-import logging
 import os
-from concurrent.futures import Future
-import functools
-import threading
-from socket import error as SocketError
 
-try:
-    import asyncio
-except ImportError:
-    import trollius as asyncio
+from ..ua.uaerrors import UaError
 
-
-from opcua.ua.uaerrors import UaError
+__all__ = ["ServiceError", "NotEnoughData", "SocketClosedException", "Buffer", "create_nonce"]
 
 
 class ServiceError(UaError):
@@ -33,7 +24,7 @@ class SocketClosedException(UaError):
     pass
 
 
-class Buffer(object):
+class Buffer:
 
     """
     alternative to io.BytesIO making debug easier
@@ -87,35 +78,6 @@ class Buffer(object):
             raise NotEnoughData("Not enough data left in buffer, request for {0}, we have {1}".format(size, self))
         self._size -= size
         self._cur_pos += size
-
-
-class SocketWrapper(object):
-    """
-    wrapper to make it possible to have same api for
-    normal sockets, socket from asyncio, StringIO, etc....
-    """
-
-    def __init__(self, sock):
-        self.socket = sock
-
-    def read(self, size):
-        """
-        Receive up to size bytes from socket
-        """
-        data = b''
-        while size > 0:
-            try:
-                chunk = self.socket.recv(size)
-            except (OSError, SocketError) as ex:
-                raise SocketClosedException("Server socket has closed", ex)
-            if not chunk:
-                raise SocketClosedException("Server socket has closed")
-            data += chunk
-            size -= len(chunk)
-        return data
-
-    def write(self, data):
-        self.socket.sendall(data)
 
 
 def create_nonce(size=32):

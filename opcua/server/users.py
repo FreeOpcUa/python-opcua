@@ -3,6 +3,9 @@ Implement user managent here
 """
 
 from enum import Enum
+__all__ = ["User"]
+
+
 class User(Enum):
     """
     Define some default users.
@@ -10,6 +13,3 @@ class User(Enum):
     Admin = 0
     Anonymous = 1
     User = 3
-
-
-

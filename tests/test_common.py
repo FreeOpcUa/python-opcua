@@ -11,12 +11,8 @@ from datetime import datetime
 from datetime import timedelta
 import math
 
-from opcua import ua
-from opcua import uamethod
-from opcua import instantiate
-from opcua import copy_node
+from opcua import ua, call_method_full, copy_node, uamethod, instantiate
 from opcua.common import ua_utils
-from opcua.common.methods import call_method_full
 
 pytestmark = pytest.mark.asyncio
 

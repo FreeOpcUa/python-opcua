@@ -3,12 +3,13 @@ Low level binary client
 """
 import asyncio
 import logging
-from functools import partial
 
 from opcua import ua
-from opcua.ua.ua_binary import struct_from_binary, uatcp_to_binary, struct_to_binary, nodeid_from_binary, header_from_binary
-from opcua.ua.uaerrors import UaError, BadTimeout, BadNoSubscription, BadSessionClosed
-from opcua.common.connection import SecureConnection
+from ..ua.ua_binary import struct_from_binary, uatcp_to_binary, struct_to_binary, nodeid_from_binary, header_from_binary
+from ..ua.uaerrors import UaError, BadTimeout, BadNoSubscription, BadSessionClosed
+from ..common import SecureConnection
+
+__all__ = ["UaClient"]
 
 
 class UASocketProtocol(asyncio.Protocol):
@@ -208,7 +209,7 @@ class UaClient:
         self._publish_callbacks = {}
         self._timeout = timeout
         self.security_policy = ua.SecurityPolicy()
-        self.protocol = None
+        self.protocol: UASocketProtocol = None
 
     def set_security(self, policy):
         self.security_policy = policy

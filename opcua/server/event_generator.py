@@ -4,8 +4,9 @@ import uuid
 
 from opcua import ua
 from opcua import Node
-from opcua.common import events
-from opcua.common import event_objects
+from ..common import get_event_obj_from_type_node, BaseEvent
+
+__all__ = ["EventGenerator"]
 
 
 class EventGenerator:
@@ -28,9 +29,9 @@ class EventGenerator:
 
     async def init(self, etype=None):
         if not etype:
-            etype = event_objects.BaseEvent()
+            etype = BaseEvent()
         node = None
-        if isinstance(etype, event_objects.BaseEvent):
+        if isinstance(etype, BaseEvent):
             self.event = etype
         elif isinstance(etype, Node):
             node = etype
@@ -39,7 +40,7 @@ class EventGenerator:
         else:
             node = Node(self.isession, ua.NodeId(etype))
         if node:
-            self.event = await events.get_event_obj_from_type_node(node)
+            self.event = await get_event_obj_from_type_node(node)
 
     async def set_source(self, source=ua.ObjectIds.Server):
         if isinstance(source, Node):

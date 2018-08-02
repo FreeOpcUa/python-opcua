@@ -1,17 +1,19 @@
 """
 high level interface to subscriptions
 """
-import time
 import asyncio
 import logging
 import collections
+from typing import Union
 
 from opcua import ua
-from opcua.common import events
-from opcua import Node
+from .events import Event, get_filter_from_event_type
+from .node import Node
+
+__all__ = ["Subscription"]
 
 
-class SubHandler(object):
+class SubHandler:
     """
     Subscription Handler. To receive events from server for a subscription
     This class is just a sample class. Whatever class having these methods can be used
@@ -42,7 +44,7 @@ class SubHandler(object):
         pass
 
 
-class SubscriptionItemData(object):
+class SubscriptionItemData:
     """
     To store useful data from a monitored item
     """
@@ -54,7 +56,7 @@ class SubscriptionItemData(object):
         self.mfilter = None
 
 
-class DataChangeNotif(object):
+class DataChangeNotif:
     """
     To be send to clients for every datachange notification from server
     """
@@ -67,7 +69,7 @@ class DataChangeNotif(object):
     __repr__ = __str__
 
 
-class Subscription(object):
+class Subscription:
     """
     Subscription object returned by Server or Client objects.
     The object represent a subscription to an opc-ua server.
@@ -145,7 +147,7 @@ class Subscription(object):
     def _call_event(self, eventlist):
         for event in eventlist.Events:
             data = self._monitored_items[event.ClientHandle]
-            result = events.Event.from_event_fields(data.mfilter.SelectClauses, event.EventFields)
+            result = Event.from_event_fields(data.mfilter.SelectClauses, event.EventFields)
             result.server_handle = data.server_handle
             if hasattr(self._handler, "event_notification"):
                 try:
@@ -190,7 +192,7 @@ class Subscription(object):
             if not type(evtypes) in (list, tuple):
                 evtypes = [evtypes]
             evtypes = [Node(self.server, evtype) for evtype in evtypes]
-            evfilter = await events.get_filter_from_event_type(evtypes)
+            evfilter = await get_filter_from_event_type(evtypes)
         return await self._subscribe(sourcenode, ua.AttributeIds.EventNotifier, evfilter, queuesize=queuesize)
 
     async def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):

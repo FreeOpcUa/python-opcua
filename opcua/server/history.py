@@ -2,9 +2,10 @@ import logging
 from datetime import timedelta
 from datetime import datetime
 
-from opcua import Subscription
 from opcua import ua
-from opcua.common import utils
+from ..common import Subscription, Buffer
+
+__all__ = ["HistoryManager", "HistoryStorageInterface", "HistoryDict"]
 
 
 class UaNodeAlreadyHistorizedError(ua.UaError):
@@ -308,7 +309,7 @@ class HistoryManager(object):
             # but they also say we can use cont point as timestamp to enable stateless
             # implementation. This is contradictory, so we assume details is
             # send correctly with continuation point
-            starttime = ua.ua_binary.Primitives.DateTime.unpack(utils.Buffer(rv.ContinuationPoint))
+            starttime = ua.ua_binary.Primitives.DateTime.unpack(Buffer(rv.ContinuationPoint))
 
         dv, cont = self.storage.read_node_history(rv.NodeId,
                                                   starttime,
@@ -327,7 +328,7 @@ class HistoryManager(object):
             # but they also say we can use cont point as timestamp to enable stateless
             # implementation. This is contradictory, so we assume details is
             # send correctly with continuation point
-            starttime = ua.ua_binary.Primitives.DateTime.unpack(utils.Buffer(rv.ContinuationPoint))
+            starttime = ua.ua_binary.Primitives.DateTime.unpack(Buffer(rv.ContinuationPoint))
 
         evts, cont = self.storage.read_event_history(rv.NodeId,
                                                      starttime,

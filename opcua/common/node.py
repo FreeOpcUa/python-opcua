@@ -5,10 +5,14 @@ and browse address space
 
 import logging
 from opcua import ua
-from opcua.common import events
-import opcua.common
+from .events import Event, get_filter_from_event_type
+from .ua_utils import data_type_to_variant_type
+from .manage_nodes import create_folder, create_object, create_object_type, create_variable, create_variable_type, \
+    create_data_type, create_property, delete_nodes, create_method, create_reference_type
+from .methods import call_method
 
 _logger = logging.getLogger(__name__)
+__all__ = ["Node"]
 
 
 def _check_results(results, reqlen=1):
@@ -51,7 +55,9 @@ class Node:
         elif isinstance(nodeid, int):
             self.nodeid = ua.NodeId(nodeid, 0)
         else:
-            raise ua.UaError("argument to node must be a NodeId object or a string defining a nodeid found {0} of type {1}".format(nodeid, type(nodeid)))
+            raise ua.UaError(
+                "argument to node must be a NodeId object or a string defining a nodeid found {0} of type {1}".format(
+                    nodeid, type(nodeid)))
 
     def __eq__(self, other):
         if isinstance(other, Node) and self.nodeid == other.nodeid:
@@ -63,6 +69,7 @@ class Node:
 
     def __str__(self):
         return "Node({0})".format(self.nodeid)
+
     __repr__ = __str__
 
     def __hash__(self):
@@ -97,7 +104,7 @@ class Node:
         may not be convertible to VariantType
         """
         result = await self.get_attribute(ua.AttributeIds.DataType)
-        return await opcua.common.ua_utils.data_type_to_variant_type(Node(self.server, result.Value.Value))
+        return await data_type_to_variant_type(Node(self.server, result.Value.Value))
 
     async def get_access_level(self):
         """
@@ -331,7 +338,8 @@ class Node:
         """
         return self.get_children(refs=ua.ObjectIds.HasComponent, nodeclassmask=ua.NodeClass.Method)
 
-    async def get_children_descriptions(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
+    async def get_children_descriptions(self, refs=ua.ObjectIds.HierarchicalReferences,
+                                        nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
         return await self.get_references(refs, ua.BrowseDirection.Forward, nodeclassmask, includesubtypes)
 
     def get_encoding_refs(self):
@@ -340,7 +348,8 @@ class Node:
     def get_description_refs(self):
         return self.get_referenced_nodes(ua.ObjectIds.HasDescription, ua.BrowseDirection.Forward)
 
-    async def get_references(self, refs=ua.ObjectIds.References, direction=ua.BrowseDirection.Both, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
+    async def get_references(self, refs=ua.ObjectIds.References, direction=ua.BrowseDirection.Both,
+                             nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
         """
         returns references of the node based on specific filter defined with:
 
@@ -374,7 +383,8 @@ class Node:
             references.extend(results[0].References)
         return references
 
-    async def get_referenced_nodes(self, refs=ua.ObjectIds.References, direction=ua.BrowseDirection.Both, nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
+    async def get_referenced_nodes(self, refs=ua.ObjectIds.References, direction=ua.BrowseDirection.Both,
+                                   nodeclassmask=ua.NodeClass.Unspecified, includesubtypes=True):
         """
         returns referenced nodes based on specific filter
         Paramters are the same as for get_references
@@ -391,7 +401,8 @@ class Node:
         """
         returns type definition of the node.
         """
-        references = await self.get_references(refs=ua.ObjectIds.HasTypeDefinition, direction=ua.BrowseDirection.Forward)
+        references = await self.get_references(refs=ua.ObjectIds.HasTypeDefinition,
+            direction=ua.BrowseDirection.Forward)
         if len(references) == 0:
             return None
         return references[0].NodeId
@@ -540,13 +551,13 @@ class Node:
         if not isinstance(evtypes, (list, tuple)):
             evtypes = [evtypes]
         evtypes = [Node(self.server, evtype) for evtype in evtypes]
-        evfilter = await events.get_filter_from_event_type(evtypes)
+        evfilter = await get_filter_from_event_type(evtypes)
         details.Filter = evfilter
         result = await self.history_read_events(details)
         event_res = []
         for res in result.HistoryData.Events:
             event_res.append(
-                await events.Event.from_event_fields(evfilter.SelectClauses, res.EventFields)
+                await Event.from_event_fields(evfilter.SelectClauses, res.EventFields)
             )
         return event_res
 
@@ -569,7 +580,7 @@ class Node:
         """
         Delete node from address space
         """
-        results = await opcua.common.manage_nodes.delete_nodes(self.server, [self], recursive, delete_references)
+        results = await delete_nodes(self.server, [self], recursive, delete_references)
         _check_results(results)
 
     def _fill_delete_reference_item(self, rdesc, bidirectional=False):
@@ -632,32 +643,32 @@ class Node:
             await self.add_reference(rule, ua.ObjectIds.HasModellingRule, True, False)
 
     def add_folder(self, nodeid, bname):
-        return opcua.common.manage_nodes.create_folder(self, nodeid, bname)
+        return create_folder(self, nodeid, bname)
 
     def add_object(self, nodeid, bname, objecttype=None):
-        return opcua.common.manage_nodes.create_object(self, nodeid, bname, objecttype)
+        return create_object(self, nodeid, bname, objecttype)
 
     def add_variable(self, nodeid, bname, val, varianttype=None, datatype=None):
-        return opcua.common.manage_nodes.create_variable(self, nodeid, bname, val, varianttype, datatype)
+        return create_variable(self, nodeid, bname, val, varianttype, datatype)
 
     def add_object_type(self, nodeid, bname):
-        return opcua.common.manage_nodes.create_object_type(self, nodeid, bname)
+        return create_object_type(self, nodeid, bname)
 
     def add_variable_type(self, nodeid, bname, datatype):
-        return opcua.common.manage_nodes.create_variable_type(self, nodeid, bname, datatype)
+        return create_variable_type(self, nodeid, bname, datatype)
 
     def add_data_type(self, nodeid, bname, description=None):
-        return opcua.common.manage_nodes.create_data_type(self, nodeid, bname, description=None)
+        return create_data_type(self, nodeid, bname, description=None)
 
     def add_property(self, nodeid, bname, val, varianttype=None, datatype=None):
-        return opcua.common.manage_nodes.create_property(self, nodeid, bname, val, varianttype, datatype)
+        return create_property(self, nodeid, bname, val, varianttype, datatype)
 
     def add_method(self, *args):
-        return opcua.common.manage_nodes.create_method(self, *args)
+        return create_method(self, *args)
 
     def add_reference_type(self, nodeid, bname, symmetric=True, inversename=None):
         """COROUTINE"""
-        return opcua.common.manage_nodes.create_reference_type(self, nodeid, bname, symmetric, inversename)
+        return create_reference_type(self, nodeid, bname, symmetric, inversename)
 
     def call_method(self, methodid, *args):
-        return opcua.common.methods.call_method(self, methodid, *args)
+        return call_method(self, methodid, *args)
