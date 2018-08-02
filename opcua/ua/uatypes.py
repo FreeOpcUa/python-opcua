@@ -104,7 +104,6 @@ class _MaskEnum(IntEnum):
         """ Take an integer and interpret it as a set of enum values. """
         if not isinstance(the_int, int):
             raise ValueError(f"Argument should be an int, we received {the_int} fo type {type(the_int)}")
-
         return {cls(b) for b in cls._bits(the_int)}
 
     @classmethod
@@ -113,8 +112,8 @@ class _MaskEnum(IntEnum):
         # make sure all elements are of the correct type (use itertools.tee in case we get passed an
         # iterator)
         iter1, iter2 = itertools.tee(iter(collection))
-        assert all(isinstance(x, cls) for x in iter1)
-
+        if not all(isinstance(x, cls) for x in iter1):
+            raise TypeError(f"All elements have to be of type {cls}")
         return sum(x.mask for x in iter2)
 
     @property
@@ -127,8 +126,8 @@ class _MaskEnum(IntEnum):
 
             e.g. bits(44) yields at 2, 3, 5
         """
-        assert n >= 0  # avoid infinite recursion
-
+        if not n >= 0:  # avoid infinite recursion
+            raise ValueError()
         pos = 0
         while n:
             if n & 0x1:

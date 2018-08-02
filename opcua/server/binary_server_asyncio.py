@@ -3,9 +3,10 @@ Socket server forwarding request to internal server
 """
 import logging
 import asyncio
+from typing import Union
 
-from opcua import ua
-import opcua.ua.ua_binary as uabin
+from ..ua.ua_binary import header_from_binary
+from ..common import Buffer, NotEnoughData
 from .uaprocessor import UaProcessor
 
 logger = logging.getLogger(__name__)
@@ -55,12 +56,12 @@ class OPCUAProtocol(asyncio.Protocol):
             self.receive_buffer = b''
         self._process_received_data(data)
 
-    def _process_received_data(self, data: bytes):
-        buf = ua.utils.Buffer(data)
+    def _process_received_data(self, data: Union[bytes, Buffer]):
+        buf = Buffer(data) if type(data) is bytes else data
         try:
             try:
-                header = uabin.header_from_binary(buf)
-            except ua.utils.NotEnoughData:
+                header = header_from_binary(buf)
+            except NotEnoughData:
                 logger.debug('Not enough data while parsing header from client, waiting for more')
                 self.receive_buffer = data + self.receive_buffer
                 return

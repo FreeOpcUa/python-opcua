@@ -34,7 +34,8 @@ class MessageChunk(ua.FrozenClass):
 
     @staticmethod
     def from_header_and_body(security_policy, header, buf):
-        assert len(buf) >= header.body_size, 'Full body expected here'
+        if not len(buf) >= header.body_size:
+            raise ValueError('Full body expected here')
         data = buf.copy(header.body_size)
         buf.skip(header.body_size)
         if header.MessageType in (ua.MessageType.SecureMessage, ua.MessageType.SecureClose):
@@ -219,7 +220,8 @@ class SecureConnection:
         return b"".join([chunk.to_binary() for chunk in chunks])
 
     def _check_incoming_chunk(self, chunk):
-        assert isinstance(chunk, MessageChunk), 'Expected chunk, got: {0}'.format(chunk)
+        if not isinstance(chunk, MessageChunk):
+            raise ValueError('Expected chunk, got: %r', chunk)
         if chunk.MessageHeader.MessageType != ua.MessageType.SecureOpen:
             if chunk.MessageHeader.ChannelId != self.channel.SecurityToken.ChannelId:
                 raise ua.UaError('Wrong channel id {0}, expected {1}'.format(

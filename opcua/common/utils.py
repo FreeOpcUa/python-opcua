@@ -4,9 +4,10 @@ Helper function and classes depending on ua object are in ua_utils.py
 """
 
 import os
-
+import logging
 from ..ua.uaerrors import UaError
 
+_logger = logging.getLogger(__name__)
 __all__ = ["ServiceError", "NotEnoughData", "SocketClosedException", "Buffer", "create_nonce"]
 
 
@@ -25,14 +26,12 @@ class SocketClosedException(UaError):
 
 
 class Buffer:
-
     """
     alternative to io.BytesIO making debug easier
-    and added a few conveniance methods
+    and added a few convenience methods
     """
 
     def __init__(self, data, start_pos=0, size=-1):
-        # self.logger = logging.getLogger(__name__)
         self._data = data
         self._cur_pos = start_pos
         if size == -1:

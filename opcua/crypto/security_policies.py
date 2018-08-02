@@ -101,8 +101,9 @@ class Cryptography(CryptographyNone):
         self.Verifier = None
         self.Encryptor = None
         self.Decryptor = None
-        assert mode in (MessageSecurityMode.Sign,
-                        MessageSecurityMode.SignAndEncrypt)
+        if mode not in (MessageSecurityMode.Sign,
+                        MessageSecurityMode.SignAndEncrypt):
+            raise ValueError(f"unknown security mode {mode}")
         self.is_encrypted = (mode == MessageSecurityMode.SignAndEncrypt)
 
     def plain_block_size(self):
@@ -154,7 +155,8 @@ class Cryptography(CryptographyNone):
 
     def encrypt(self, data):
         if self.is_encrypted:
-            assert len(data) % self.Encryptor.plain_block_size() == 0
+            if not len(data) % self.Encryptor.plain_block_size() == 0:
+                raise ValueError
             return self.Encryptor.encrypt(data)
         return data
 

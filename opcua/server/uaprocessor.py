@@ -76,7 +76,7 @@ class UaProcessor:
                 )
                 return
             # We pop left from the Publieh Request deque (FIFO)
-            requestdata = self._publish_requests.popleft(0)
+            requestdata = self._publish_requests.popleft()
             if (requestdata.requesthdr.TimeoutHint == 0 or
                     requestdata.requesthdr.TimeoutHint != 0 and
                     time.time() - requestdata.timestamp < requestdata.requesthdr.TimeoutHint / 1000):
@@ -361,9 +361,9 @@ class UaProcessor:
             self._publish_requests.append(data)
             # If there is an enqueued result forward it immediately
             if len(self._publish_results):
-                result = self._publish_results.popleft(0)
+                result = self._publish_results.popleft()
                 self.forward_publish_response(result)
-            self.session.publish(params.SubscriptionAcknowledgements)
+            await self.session.publish(params.SubscriptionAcknowledgements)
             _logger.info("publish forward to server")
 
         elif typeid == ua.NodeId(ua.ObjectIds.RepublishRequest_Encoding_DefaultBinary):

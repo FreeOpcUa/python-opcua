@@ -33,9 +33,11 @@ class PostponeReferences:
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is None and exc_val is None:
             remaining_nodes = list(self.server.try_add_nodes(self.postponed_nodes, check=False))
-            assert len(remaining_nodes) == 0, remaining_nodes
+            if len(remaining_nodes):
+                raise RuntimeError(f"There are remaining nodes: {remaining_nodes!r}")
             remaining_refs = list(self.server.try_add_references(self.postponed_refs))
-            assert len(remaining_refs) == 0, remaining_refs
+            if len(remaining_refs):
+                raise RuntimeError(f"There are remaining refs: {remaining_refs!r}")
 
 
 def fill_address_space(nodeservice):

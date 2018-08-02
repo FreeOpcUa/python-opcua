@@ -16,7 +16,8 @@ __all__ = ["Node"]
 
 
 def _check_results(results, reqlen=1):
-    assert len(results) == reqlen, results
+    if not len(results) == reqlen:
+        raise ValueError(results)
     for r in results:
         r.check()
 

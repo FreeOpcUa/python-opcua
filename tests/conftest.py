@@ -11,6 +11,7 @@ port_discovery = 48550
 
 Opc = namedtuple('opc', ['opc', 'server'])
 
+
 def pytest_generate_tests(metafunc):
     if 'opc' in metafunc.fixturenames:
         metafunc.parametrize('opc', ['client', 'server'], indirect=True)

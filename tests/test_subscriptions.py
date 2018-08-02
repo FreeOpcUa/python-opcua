@@ -53,7 +53,7 @@ class MySubHandler2:
         self.results.append(event)
 
 
-class MySubHandlerCounter():
+class MySubHandlerCounter:
     def __init__(self):
         self.datachange_count = 0
         self.event_count = 0
@@ -77,7 +77,7 @@ async def test_subscription_failure(opc):
 
 async def test_subscription_overload(opc):
     nb = 10
-    myhandler = MySubHandler()
+    myhandler = SubHandler()
     o = opc.opc.get_objects_node()
     sub = await opc.opc.create_subscription(1, myhandler)
     variables = []
