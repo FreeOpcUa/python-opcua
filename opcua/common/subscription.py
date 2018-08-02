@@ -273,7 +273,7 @@ class Subscription:
         params = ua.DeleteMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
         params.MonitoredItemIds = [handle]
-        results = self.server.delete_monitored_items(params)
+        results = await self.server.delete_monitored_items(params)
         results[0].check()
         for k, v in self._monitored_items.items():
             if v.server_handle == handle:
