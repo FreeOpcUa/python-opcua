@@ -44,21 +44,20 @@ def der_from_x509(certificate):
 
 
 def sign_sha1(private_key, data):
-    signer = private_key.signer(
+    return private_key.sign(
+        data,
         padding.PKCS1v15(),
         hashes.SHA1()
     )
-    signer.update(data)
-    return signer.finalize()
 
 
 def verify_sha1(certificate, data, signature):
-    verifier = certificate.public_key().verifier(
+    certificate.public_key().verify(
         signature,
+        data,
         padding.PKCS1v15(),
-        hashes.SHA1())
-    verifier.update(data)
-    verifier.verify()
+        hashes.SHA1()
+    )
 
 
 def encrypt_basic256(public_key, data):
