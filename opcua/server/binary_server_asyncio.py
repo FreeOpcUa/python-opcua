@@ -27,6 +27,7 @@ class OPCUAProtocol(asyncio.Protocol):
         self.iserver = iserver
         self.policies = policies
         self.clients = clients
+        self.messages = asyncio.Queue()
 
     def __str__(self):
         return 'OPCUAProtocol({}, {})'.format(self.peer_name, self.processor.session)
@@ -41,6 +42,7 @@ class OPCUAProtocol(asyncio.Protocol):
         self.processor.set_policies(self.policies)
         self.iserver.asyncio_transports.append(transport)
         self.clients.append(self)
+        self.loop.create_task(self._process_received_message())
 
     def connection_lost(self, ex):
         logger.info('Lost connection from %s, %s', self.peer_name, ex)
@@ -49,6 +51,7 @@ class OPCUAProtocol(asyncio.Protocol):
         self.loop.create_task(self.processor.close())
         if self in self.clients:
             self.clients.remove(self)
+        self.messages.put_nowait((None, None))
 
     def data_received(self, data):
         if self.receive_buffer:
@@ -59,6 +62,7 @@ class OPCUAProtocol(asyncio.Protocol):
     def _process_received_data(self, data: Union[bytes, Buffer]):
         buf = Buffer(data) if type(data) is bytes else data
         try:
+            # try to parse the incoming data
             try:
                 header = header_from_binary(buf)
             except NotEnoughData:
@@ -69,21 +73,30 @@ class OPCUAProtocol(asyncio.Protocol):
                 logger.debug('We did not receive enough data from client. Need %s got %s', header.body_size, len(buf))
                 self.receive_buffer = data + self.receive_buffer
                 return
-            self.loop.create_task(self._process_received_message(header, buf))
+            # a message has been received
+            self.messages.put_nowait((header, buf))
         except Exception:
             logger.exception('Exception raised while parsing message from client')
             return
 
-    async def _process_received_message(self, header, buf):
-        logger.debug('_process_received_message %s %s', header.body_size, len(buf))
-        ret = await self.processor.process(header, buf)
-        if not ret:
-            logger.info('processor returned False, we close connection from %s', self.peer_name)
-            self.transport.close()
-            return
-        if len(buf) != 0:
-            # There is data left in the buffer - process it
-            self._process_received_data(buf)
+    async def _process_received_message(self):
+        """
+        Take message from the queue and try to process it.
+        """
+        while True:
+            header, buf = await self.messages.get()
+            if header is None and buf is None:
+                # Connection was closed, end task
+                break
+            logger.debug('_process_received_message %s %s', header.body_size, len(buf))
+            ret = await self.processor.process(header, buf)
+            if not ret:
+                logger.info('processor returned False, we close connection from %s', self.peer_name)
+                self.transport.close()
+                return
+            if len(buf) != 0:
+                # There is data left in the buffer - process it
+                self._process_received_data(buf)
 
 
 class BinaryServer:
