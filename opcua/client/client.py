@@ -528,12 +528,12 @@ class Client(object):
         importer = XmlImporter(self)
         return importer.import_xml(path, xmlstring)
 
-    def export_xml(self, nodes, path):
+    async def export_xml(self, nodes, path):
         """
         Export defined nodes to xml
         """
         exp = XmlExporter(self)
-        exp.build_etree(nodes)
+        await exp.build_etree(nodes)
         return exp.write_xml(path)
 
     async def register_namespace(self, uri):
