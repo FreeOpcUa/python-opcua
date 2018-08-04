@@ -1510,13 +1510,13 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = 'EventId'
+    extobj.Name = EventId
     extobj.DataType = NumericNodeId(15, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'The identifier for the event to comment.'
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = 'Comment'
+    extobj.Name = Comment
     extobj.DataType = NumericNodeId(21, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'The comment to add to the condition.'
@@ -1602,7 +1602,7 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = 'SubscriptionId'
+    extobj.Name = SubscriptionId
     extobj.DataType = NumericNodeId(288, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'The identifier for the suscription to refresh.'
@@ -1688,13 +1688,13 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = 'SubscriptionId'
+    extobj.Name = SubscriptionId
     extobj.DataType = NumericNodeId(288, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'The identifier for the suscription to refresh.'
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = 'MonitoredItemId'
+    extobj.Name = MonitoredItemId
     extobj.DataType = NumericNodeId(288, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'The identifier for the monitored item to refresh.'
@@ -2396,7 +2396,7 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = 'SelectedResponse'
+    extobj.Name = SelectedResponse
     extobj.DataType = NumericNodeId(6, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'The response to the dialog condition.'
@@ -3077,13 +3077,13 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = 'EventId'
+    extobj.Name = EventId
     extobj.DataType = NumericNodeId(15, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'The identifier for the event to comment.'
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = 'Comment'
+    extobj.Name = Comment
     extobj.DataType = NumericNodeId(21, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'The comment to add to the condition.'
@@ -3169,13 +3169,13 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = 'EventId'
+    extobj.Name = EventId
     extobj.DataType = NumericNodeId(15, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'The identifier for the event to comment.'
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = 'Comment'
+    extobj.Name = Comment
     extobj.DataType = NumericNodeId(21, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'The comment to add to the condition.'
@@ -4671,7 +4671,7 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = 'ShelvingTime'
+    extobj.Name = ShelvingTime
     extobj.DataType = NumericNodeId(290, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'If not 0, this parameter specifies a fixed time for which the Alarm is to be shelved.'
@@ -7073,13 +7073,13 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = 'EventId'
+    extobj.Name = EventId
     extobj.DataType = NumericNodeId(15, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'The identifier for the event to comment.'
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = 'Comment'
+    extobj.Name = Comment
     extobj.DataType = NumericNodeId(21, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'The comment to add to the condition.'
@@ -7246,13 +7246,13 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = 'EventId'
+    extobj.Name = EventId
     extobj.DataType = NumericNodeId(15, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'The identifier for the event to comment.'
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = 'Comment'
+    extobj.Name = Comment
     extobj.DataType = NumericNodeId(21, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'The comment to add to the condition.'
@@ -8565,7 +8565,7 @@ def create_standard_address_space_Part9(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = 'ShelvingTime'
+    extobj.Name = ShelvingTime
     extobj.DataType = NumericNodeId(290, 0)
     extobj.ValueRank = -1
     extobj.Description.Text = 'If not 0, this parameter specifies a fixed time for which the Alarm is to be shelved.'
