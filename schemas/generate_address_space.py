@@ -222,7 +222,7 @@ def create_standard_address_space_{self.part!s}(server):
             for k, v in val:
                 if type(v) is str:
                     val = _to_val([extobj.objname], k, v)
-                    self.writecode(indent, f'extobj.{k} = {v}')
+                    self.writecode(indent, f'extobj.{k} = {val}')
                 else:
                     if k == "DataType":  #hack for strange nodeid xml format
                         self.writecode(indent, 'extobj.{0} = {1}'.format(k, nodeid_code(v[0][1])))
@@ -320,7 +320,7 @@ def create_standard_address_space_{self.part!s}(server):
 def save_aspace_to_disk():
     import os.path
     path = os.path.join('..', 'opcua', 'binary_address_space.pickle')
-    print('Savind standard address space to:', path)
+    print('Saving standard address space to:', path)
     sys.path.append('..')
     from opcua.server.standard_address_space import standard_address_space
     from opcua.server.address_space import NodeManagementService, AddressSpace

@@ -4169,7 +4169,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = SubscriptionId
+    extobj.Name = 'SubscriptionId'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -4213,12 +4213,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = ServerHandles
+    extobj.Name = 'ServerHandles'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = 1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = ClientHandles
+    extobj.Name = 'ClientHandles'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = 1
     value.append(extobj)
@@ -4296,7 +4296,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = SubscriptionId
+    extobj.Name = 'SubscriptionId'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -4381,12 +4381,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = SubscriptionId
+    extobj.Name = 'SubscriptionId'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = LifetimeInHours
+    extobj.Name = 'LifetimeInHours'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -4430,7 +4430,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RevisedLifetimeInHours
+    extobj.Name = 'RevisedLifetimeInHours'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -4508,27 +4508,27 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = State
+    extobj.Name = 'State'
     extobj.DataType = NumericNodeId(852, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = EstimatedReturnTime
+    extobj.Name = 'EstimatedReturnTime'
     extobj.DataType = NumericNodeId(13, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = SecondsTillShutdown
+    extobj.Name = 'SecondsTillShutdown'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = Reason
+    extobj.Name = 'Reason'
     extobj.DataType = NumericNodeId(21, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = Restart
+    extobj.Name = 'Restart'
     extobj.DataType = NumericNodeId(1, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -5319,12 +5319,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RoleName
+    extobj.Name = 'RoleName'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = NamespaceUri
+    extobj.Name = 'NamespaceUri'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -5368,7 +5368,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RoleNodeId
+    extobj.Name = 'RoleNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -5446,7 +5446,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RoleNodeId
+    extobj.Name = 'RoleNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -12603,7 +12603,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = Mode
+    extobj.Name = 'Mode'
     extobj.DataType = NumericNodeId(3, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -12647,7 +12647,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -12725,7 +12725,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -12810,12 +12810,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = Length
+    extobj.Name = 'Length'
     extobj.DataType = NumericNodeId(6, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -12859,7 +12859,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = Data
+    extobj.Name = 'Data'
     extobj.DataType = NumericNodeId(15, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -12937,12 +12937,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = Data
+    extobj.Name = 'Data'
     extobj.DataType = NumericNodeId(15, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -13027,7 +13027,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -13071,7 +13071,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = Position
+    extobj.Name = 'Position'
     extobj.DataType = NumericNodeId(9, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -13149,12 +13149,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = Position
+    extobj.Name = 'Position'
     extobj.DataType = NumericNodeId(9, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -13920,7 +13920,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = Mode
+    extobj.Name = 'Mode'
     extobj.DataType = NumericNodeId(3, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -13964,7 +13964,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -14042,7 +14042,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -14127,12 +14127,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = Length
+    extobj.Name = 'Length'
     extobj.DataType = NumericNodeId(6, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -14176,7 +14176,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = Data
+    extobj.Name = 'Data'
     extobj.DataType = NumericNodeId(15, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -14254,12 +14254,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = Data
+    extobj.Name = 'Data'
     extobj.DataType = NumericNodeId(15, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -14344,7 +14344,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -14388,7 +14388,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = Position
+    extobj.Name = 'Position'
     extobj.DataType = NumericNodeId(9, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -14466,12 +14466,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = Position
+    extobj.Name = 'Position'
     extobj.DataType = NumericNodeId(9, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -29761,12 +29761,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RoleName
+    extobj.Name = 'RoleName'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = NamespaceUri
+    extobj.Name = 'NamespaceUri'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -29803,7 +29803,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RoleNodeId
+    extobj.Name = 'RoleNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -29867,7 +29867,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RoleNodeId
+    extobj.Name = 'RoleNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -30954,7 +30954,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = SubscriptionId
+    extobj.Name = 'SubscriptionId'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -30991,12 +30991,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = ServerHandles
+    extobj.Name = 'ServerHandles'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = 1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = ClientHandles
+    extobj.Name = 'ClientHandles'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = 1
     value.append(extobj)
@@ -31060,7 +31060,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = SubscriptionId
+    extobj.Name = 'SubscriptionId'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -31131,12 +31131,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = SubscriptionId
+    extobj.Name = 'SubscriptionId'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = LifetimeInHours
+    extobj.Name = 'LifetimeInHours'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -31173,7 +31173,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RevisedLifetimeInHours
+    extobj.Name = 'RevisedLifetimeInHours'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -31237,27 +31237,27 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = State
+    extobj.Name = 'State'
     extobj.DataType = NumericNodeId(852, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = EstimatedReturnTime
+    extobj.Name = 'EstimatedReturnTime'
     extobj.DataType = NumericNodeId(13, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = SecondsTillShutdown
+    extobj.Name = 'SecondsTillShutdown'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = Reason
+    extobj.Name = 'Reason'
     extobj.DataType = NumericNodeId(21, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = Restart
+    extobj.Name = 'Restart'
     extobj.DataType = NumericNodeId(1, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -33156,7 +33156,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = DirectoryName
+    extobj.Name = 'DirectoryName'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -33200,7 +33200,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = DirectoryNodeId
+    extobj.Name = 'DirectoryNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -33285,12 +33285,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileName
+    extobj.Name = 'FileName'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = RequestFileOpen
+    extobj.Name = 'RequestFileOpen'
     extobj.DataType = NumericNodeId(1, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -33334,12 +33334,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileNodeId
+    extobj.Name = 'FileNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -33417,7 +33417,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = ObjectToDelete
+    extobj.Name = 'ObjectToDelete'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -33502,22 +33502,22 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = ObjectToMoveOrCopy
+    extobj.Name = 'ObjectToMoveOrCopy'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = TargetDirectory
+    extobj.Name = 'TargetDirectory'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = CreateCopy
+    extobj.Name = 'CreateCopy'
     extobj.DataType = NumericNodeId(1, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = NewName
+    extobj.Name = 'NewName'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -33561,7 +33561,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = NewNodeId
+    extobj.Name = 'NewNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -33904,7 +33904,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = Mode
+    extobj.Name = 'Mode'
     extobj.DataType = NumericNodeId(3, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -33948,7 +33948,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -34026,7 +34026,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -34111,12 +34111,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = Length
+    extobj.Name = 'Length'
     extobj.DataType = NumericNodeId(6, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -34160,7 +34160,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = Data
+    extobj.Name = 'Data'
     extobj.DataType = NumericNodeId(15, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -34238,12 +34238,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = Data
+    extobj.Name = 'Data'
     extobj.DataType = NumericNodeId(15, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -34328,7 +34328,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -34372,7 +34372,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = Position
+    extobj.Name = 'Position'
     extobj.DataType = NumericNodeId(9, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -34450,12 +34450,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = Position
+    extobj.Name = 'Position'
     extobj.DataType = NumericNodeId(9, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -34540,7 +34540,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = DirectoryName
+    extobj.Name = 'DirectoryName'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -34584,7 +34584,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = DirectoryNodeId
+    extobj.Name = 'DirectoryNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -34669,12 +34669,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileName
+    extobj.Name = 'FileName'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = RequestFileOpen
+    extobj.Name = 'RequestFileOpen'
     extobj.DataType = NumericNodeId(1, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -34718,12 +34718,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileNodeId
+    extobj.Name = 'FileNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -34801,7 +34801,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = ObjectToDelete
+    extobj.Name = 'ObjectToDelete'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -34886,22 +34886,22 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = ObjectToMoveOrCopy
+    extobj.Name = 'ObjectToMoveOrCopy'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = TargetDirectory
+    extobj.Name = 'TargetDirectory'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = CreateCopy
+    extobj.Name = 'CreateCopy'
     extobj.DataType = NumericNodeId(1, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = NewName
+    extobj.Name = 'NewName'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -34945,7 +34945,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = NewNodeId
+    extobj.Name = 'NewNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -35071,7 +35071,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = DirectoryName
+    extobj.Name = 'DirectoryName'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -35108,7 +35108,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = DirectoryNodeId
+    extobj.Name = 'DirectoryNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -35179,12 +35179,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileName
+    extobj.Name = 'FileName'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = RequestFileOpen
+    extobj.Name = 'RequestFileOpen'
     extobj.DataType = NumericNodeId(1, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -35221,12 +35221,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileNodeId
+    extobj.Name = 'FileNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -35290,7 +35290,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = ObjectToDelete
+    extobj.Name = 'ObjectToDelete'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -35361,22 +35361,22 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = ObjectToMoveOrCopy
+    extobj.Name = 'ObjectToMoveOrCopy'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = TargetDirectory
+    extobj.Name = 'TargetDirectory'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = CreateCopy
+    extobj.Name = 'CreateCopy'
     extobj.DataType = NumericNodeId(1, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = NewName
+    extobj.Name = 'NewName'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -35413,7 +35413,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = NewNodeId
+    extobj.Name = 'NewNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -35584,7 +35584,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = GenerateOptions
+    extobj.Name = 'GenerateOptions'
     extobj.DataType = NumericNodeId(24, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -35628,17 +35628,17 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileNodeId
+    extobj.Name = 'FileNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = CompletionStateMachine
+    extobj.Name = 'CompletionStateMachine'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -35723,7 +35723,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = GenerateOptions
+    extobj.Name = 'GenerateOptions'
     extobj.DataType = NumericNodeId(24, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -35767,12 +35767,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileNodeId
+    extobj.Name = 'FileNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -35857,7 +35857,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = FileHandle
+    extobj.Name = 'FileHandle'
     extobj.DataType = NumericNodeId(7, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -35901,7 +35901,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = CompletionStateMachine
+    extobj.Name = 'CompletionStateMachine'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -37757,12 +37757,12 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RoleName
+    extobj.Name = 'RoleName'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
     extobj = ua.Argument()
-    extobj.Name = NamespaceUri
+    extobj.Name = 'NamespaceUri'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -37806,7 +37806,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RoleNodeId
+    extobj.Name = 'RoleNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -37884,7 +37884,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RoleNodeId
+    extobj.Name = 'RoleNodeId'
     extobj.DataType = NumericNodeId(17, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -38245,7 +38245,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -38323,7 +38323,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -38401,7 +38401,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -38479,7 +38479,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -38557,7 +38557,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -38635,7 +38635,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -39094,7 +39094,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -39158,7 +39158,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -39222,7 +39222,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -39286,7 +39286,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -39350,7 +39350,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -39414,7 +39414,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -39735,7 +39735,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -39799,7 +39799,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -39863,7 +39863,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -39927,7 +39927,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -39991,7 +39991,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -40055,7 +40055,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -40376,7 +40376,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -40440,7 +40440,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -40504,7 +40504,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -40568,7 +40568,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -40632,7 +40632,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -40696,7 +40696,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -41017,7 +41017,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -41081,7 +41081,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -41145,7 +41145,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -41209,7 +41209,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -41273,7 +41273,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -41337,7 +41337,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -41658,7 +41658,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -41722,7 +41722,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -41786,7 +41786,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -41850,7 +41850,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -41914,7 +41914,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -41978,7 +41978,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -42299,7 +42299,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -42363,7 +42363,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -42427,7 +42427,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -42491,7 +42491,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -42555,7 +42555,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -42619,7 +42619,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -42940,7 +42940,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -43004,7 +43004,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -43068,7 +43068,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -43132,7 +43132,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -43196,7 +43196,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -43260,7 +43260,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -43581,7 +43581,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -43645,7 +43645,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(15634, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -43709,7 +43709,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -43773,7 +43773,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -43837,7 +43837,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToAdd
+    extobj.Name = 'RuleToAdd'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
@@ -43901,7 +43901,7 @@ def create_standard_address_space_Part5(server):
     attrs.DataType = NumericNodeId(296, 0)
     value = []
     extobj = ua.Argument()
-    extobj.Name = RuleToRemove
+    extobj.Name = 'RuleToRemove'
     extobj.DataType = NumericNodeId(12, 0)
     extobj.ValueRank = -1
     value.append(extobj)
