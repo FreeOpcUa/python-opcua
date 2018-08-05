@@ -514,7 +514,7 @@ class Server:
         """
         exp = XmlExporter(self)
         await exp.build_etree(nodes)
-        return exp.write_xml(path)
+        await exp.write_xml(path)
 
     async def export_xml_by_ns(self, path, namespaces=None):
         """

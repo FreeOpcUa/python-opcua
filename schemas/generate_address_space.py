@@ -79,7 +79,7 @@ def nodeid_code(string):
     return f"{ntype}({identifier}, {namespace})"
 
 
-class CodeGenerator(object):
+class CodeGenerator:
 
     def __init__(self, input_path, output_path):
         self.input_path = input_path
@@ -88,11 +88,12 @@ class CodeGenerator(object):
         self.part = self.input_path.split(".")[-2]
         self.parser = None
 
-    def run(self):
+    async def run(self):
         sys.stderr.write(f"Generating Python code {self.output_path} for XML file {self.input_path}\n")
         self.output_file = open(self.output_path, 'w', encoding='utf-8')
         self.make_header()
-        self.parser = xmlparser.XMLParser(self.input_path)
+        self.parser = xmlparser.XMLParser()
+        self.parser.parse_sync(self.input_path)
         for node in self.parser.get_node_datas():
             if node.nodetype == 'UAObject':
                 self.make_object_code(node)

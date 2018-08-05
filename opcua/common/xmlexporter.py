@@ -2,7 +2,9 @@
 from a list of nodes in the address space, build an XML file
 format is the one from opc-ua specification
 """
+import asyncio
 import logging
+import functools
 from collections import OrderedDict
 import xml.etree.ElementTree as Et
 from copy import copy
@@ -19,7 +21,6 @@ class XmlExporter:
     """
     If it is required that for _extobj_to_etree members to the value should be written in a certain
     order it can be added to the dictionary below.
-    ToDo: Run `ElementTree` methods with thread pool executor
     """
     extobj_ordered_elements = {
         ua.NodeId(ua.ObjectIds.Argument): [
@@ -106,7 +107,7 @@ class XmlExporter:
                 if i not in idxs:
                     idxs.append(i)
 
-    def write_xml(self, xmlpath, pretty=True):
+    async def write_xml(self, xmlpath, pretty=True):
         """
         Write the XML etree in the exporter object to a file
         Args:
@@ -116,13 +117,10 @@ class XmlExporter:
         """
         # try to write the XML etree to a file
         self.logger.info('Exporting XML file to %s', xmlpath)
-        # from IPython import embed
-        # embed()
         if pretty:
             self.indent(self.etree.getroot())
-            self.etree.write(xmlpath, encoding='utf-8', xml_declaration=True)
-        else:
-            self.etree.write(xmlpath, encoding='utf-8', xml_declaration=True)
+        func = functools.partial(self.etree.write, xmlpath, encoding='utf-8', xml_declaration=True)
+        await asyncio.get_event_loop().run_in_executor(None, func)
 
     def dump_etree(self):
         """

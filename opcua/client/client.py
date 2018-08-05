@@ -534,7 +534,7 @@ class Client(object):
         """
         exp = XmlExporter(self)
         await exp.build_etree(nodes)
-        return exp.write_xml(path)
+        await exp.write_xml(path)
 
     async def register_namespace(self, uri):
         """
