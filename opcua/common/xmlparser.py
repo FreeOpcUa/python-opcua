@@ -331,6 +331,8 @@ class XMLParser(object):
         return body
 
     def _parse_refs(self, el, obj):
+        parent, parentlink = obj.parent, None
+
         for ref in el:
             struct = RefStruct()
             struct.forward = "IsForward" not in ref.attrib or ref.attrib["IsForward"] not in ("false", "False")
@@ -341,8 +343,10 @@ class XMLParser(object):
             if ref.attrib["ReferenceType"] == "HasTypeDefinition":
                 obj.typedef = ref.text
             elif not struct.forward:
-                # Rmq: parent giving as ParentNodeId misses the ref type, so better to prioritize the ref descr
-                #if not obj.parent:
-                obj.parent = ref.text
-                if obj.parent == ref.text:
-                    obj.parentlink = ref.attrib["ReferenceType"]
+                parent, parentlink = struct.target, struct.reftype
+                if obj.parent == parent:
+                    obj.parentlink = parentlink
+
+        if not obj.parent or not obj.parentlink:
+            obj.parent, obj.parentlink = parent, parentlink
+            self.logger.warning("Could not detect backward reference to parent for node '%s'", obj.nodeid)

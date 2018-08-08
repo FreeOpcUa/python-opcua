@@ -363,7 +363,10 @@ class NodeManagementService(object):
         rdesc.ReferenceTypeId = addref.ReferenceTypeId
         rdesc.IsForward = addref.IsForward
         rdesc.NodeId = addref.TargetNodeId
-        rdesc.NodeClass = addref.TargetNodeClass
+        if addref.TargetNodeClass == ua.NodeClass.Unspecified:
+            rdesc.NodeClass = self._aspace.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.NodeClass).Value.Value
+        else:
+            rdesc.NodeClass = addref.TargetNodeClass
         bname = self._aspace.get_attribute_value(addref.TargetNodeId, ua.AttributeIds.BrowseName).Value.Value
         if bname:
             rdesc.BrowseName = bname
@@ -651,10 +654,6 @@ class AddressSpace(object):
             node = self._nodes[nodeid]
             if attr not in node.attributes:
                 return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
-            if not value.SourceTimestamp:
-                value.SourceTimestamp = datetime.utcnow()
-            if not value.ServerTimestamp:
-                value.ServerTimestamp = datetime.utcnow()
 
             attval = node.attributes[attr]
             old = attval.value

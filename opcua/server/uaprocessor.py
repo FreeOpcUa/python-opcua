@@ -143,9 +143,12 @@ class UaProcessor(object):
 
         elif typeid == ua.NodeId(ua.ObjectIds.CloseSessionRequest_Encoding_DefaultBinary):
             self.logger.info("Close session request")
-            deletesubs = ua.ua_binary.Primitives.Boolean.unpack(body)
 
-            self.session.close_session(deletesubs)
+            if self.session:
+                deletesubs = ua.ua_binary.Primitives.Boolean.unpack(body)
+                self.session.close_session(deletesubs)
+            else:
+                self.logger.info("Request to close non-existing session")
 
             response = ua.CloseSessionResponse()
             self.logger.info("sending close session response")

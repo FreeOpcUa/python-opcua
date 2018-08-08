@@ -12,13 +12,16 @@ from opcua.server.internal_subscription import InternalSubscription
 
 class SubscriptionService(object):
 
-    def __init__(self, loop, aspace):
+    def __init__(self, aspace):
         self.logger = logging.getLogger(__name__)
-        self.loop = loop
+        self.loop = None
         self.aspace = aspace
         self.subscriptions = {}
         self._sub_id_counter = 77
         self._lock = RLock()
+
+    def set_loop(self, loop):
+        self.loop = loop
 
     def create_subscription(self, params, callback):
         self.logger.info("create subscription with callback: %s", callback)
