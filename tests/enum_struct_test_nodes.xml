@@ -19,12 +19,22 @@
         <Alias Alias="ExampleEnum">ns=1;i=3002</Alias>
         <Alias Alias="ExampleStruct">ns=1;i=3003</Alias>
     </Aliases>
+    <Extensions>
+        <Extension>
+            <ua:ModelInfo Tool="UaModeler" Hash="X9hC3soReOI6F62LFHTOXA==" Version="1.5.2"/>
+        </Extension>
+    </Extensions>
     <UADataType NodeId="ns=1;i=3002" BrowseName="1:ExampleEnum">
         <DisplayName>ExampleEnum</DisplayName>
         <References>
             <Reference ReferenceType="HasProperty">ns=1;i=6001</Reference>
             <Reference ReferenceType="HasSubtype" IsForward="false">i=29</Reference>
         </References>
+        <Definition Name="1:ExampleEnum">
+            <Field Name="EnumVal1" Value="0"/>
+            <Field Name="EnumVal2" Value="1"/>
+            <Field Name="EnumVal3" Value="2"/>
+        </Definition>
     </UADataType>
     <UAVariable DataType="LocalizedText" ParentNodeId="ns=1;i=3002" ValueRank="1" NodeId="ns=1;i=6001" ArrayDimensions="3" BrowseName="EnumStrings">
         <DisplayName>EnumStrings</DisplayName>
@@ -54,6 +64,10 @@
             <Reference ReferenceType="HasEncoding">ns=1;i=5002</Reference>
             <Reference ReferenceType="HasSubtype" IsForward="false">i=22</Reference>
         </References>
+        <Definition Name="1:ExampleStruct">
+            <Field DataType="Int16" Name="IntVal1"/>
+            <Field DataType="ExampleEnum" Name="EnumVal"/>
+        </Definition>
     </UADataType>
     <UAVariable DataType="String" ParentNodeId="ns=1;i=6002" NodeId="ns=1;i=6006" BrowseName="1:ExampleStruct">
         <DisplayName>ExampleStruct</DisplayName>
@@ -173,7 +187,7 @@
             <Reference ReferenceType="Organizes" IsForward="false">i=85</Reference>
         </References>
     </UAVariable>
-    <UAObject NodeId="ns=1;i=5001" BrowseName="Default Binary">
+    <UAObject SymbolicName="DefaultBinary" NodeId="ns=1;i=5001" BrowseName="Default Binary">
         <DisplayName>Default Binary</DisplayName>
         <References>
             <Reference ReferenceType="HasEncoding" IsForward="false">ns=1;i=3003</Reference>
@@ -181,7 +195,7 @@
             <Reference ReferenceType="HasDescription">ns=1;i=6006</Reference>
         </References>
     </UAObject>
-    <UAObject NodeId="ns=1;i=5002" BrowseName="Default XML">
+    <UAObject SymbolicName="DefaultXml" NodeId="ns=1;i=5002" BrowseName="Default XML">
         <DisplayName>Default XML</DisplayName>
         <References>
             <Reference ReferenceType="HasEncoding" IsForward="false">ns=1;i=3003</Reference>
