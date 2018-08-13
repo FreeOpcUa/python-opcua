@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     mydevice = instantiate(server.nodes.objects, dev, bname="2:Device0001")
 
-    node_list = [dev, mydevice, myobj, myvar]
+    node_list = [dev, mydevice[0], myobj, myvar]
 
     # starting!
     server.start()
