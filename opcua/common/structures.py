@@ -11,14 +11,12 @@ import logging
 # The next two imports are for generated code
 from datetime import datetime
 import uuid
+from enum import IntEnum, EnumMeta
 
 from lxml import objectify
 
-
 from opcua.ua.ua_binary import Primitives
 from opcua import ua
-
-from enum import IntEnum, EnumMeta
 
 
 logger = logging.getLogger(__name__)
@@ -26,11 +24,11 @@ logger = logging.getLogger(__name__)
 
 def get_default_value(uatype, enums):
     if uatype == "String":
-        return "None" 
+        return "None"
     elif uatype == "Guid":
-        return "uuid.uuid4()" 
+        return "uuid.uuid4()"
     elif uatype in ("ByteString", "CharArray", "Char"):
-        return None
+        return b''
     elif uatype == "Boolean":
         return "True"
     elif uatype == "DateTime":
@@ -40,7 +38,7 @@ def get_default_value(uatype, enums):
     elif uatype in enums:
         return "ua." + uatype + "(" + enums[uatype] + ")"
     elif hasattr(ua, uatype) and issubclass(getattr(ua, uatype), IntEnum):
-        return "ua." + uatype + "(" + list(eval("ua."+uatype))[0] + ")"
+        return "ua." + uatype + "(0)"
     else:
         return "ua." + uatype + "()"
 
@@ -108,7 +106,7 @@ class {0}(object):
         code += """
 
     def __init__(self):
-""".format(self.name)
+"""
         if not self.fields:
             code += "      pass"
         for field in self.fields:
@@ -225,6 +223,7 @@ from opcua import ua
                 return
 
 
+
 def load_type_definitions(server, nodes=None):
     """
     Download xml from given variable node defining custom structures.
@@ -265,17 +264,16 @@ def load_type_definitions(server, nodes=None):
             if ref_desc_list:  #some server put extra things here
                 name = _clean_name(ndesc.BrowseName.Name)
                 if not name in structs_dict:
-                    logger.warning("Error {} is found as child of binary definition node but is not found in xml".format(name))
+                    logger.warning("%s is found as child of binary definition node but is not found in xml", name)
                     continue
                 nodeid = ref_desc_list[0].NodeId
                 ua.register_extension_object(name, nodeid, structs_dict[name])
                 # save the typeid if user want to create static file for type definitnion
                 generator.set_typeid(name, nodeid.to_string())
 
-        for key in structs_dict.keys():
-            if type(structs_dict[key]) is EnumMeta and key is not "IntEnum":
-                import opcua.ua
-                setattr(opcua.ua, key, structs_dict[key])
+        for key, val in structs_dict.items():
+            if isinstance(val, EnumMeta) and key is not "IntEnum":
+                setattr(ua, key, val)
 
     return generators, structs_dict
 
