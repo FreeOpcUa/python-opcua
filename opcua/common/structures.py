@@ -28,7 +28,7 @@ def get_default_value(uatype, enums):
     elif uatype == "Guid":
         return "uuid.uuid4()"
     elif uatype in ("ByteString", "CharArray", "Char"):
-        return b''
+        return "b''" 
     elif uatype == "Boolean":
         return "True"
     elif uatype == "DateTime":
