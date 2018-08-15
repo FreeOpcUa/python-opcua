@@ -30,7 +30,7 @@ def get_default_value(uatype, enums):
     elif uatype == "Guid":
         return "uuid.uuid4()" 
     elif uatype in ("ByteString", "CharArray", "Char"):
-        return None 
+        return None
     elif uatype == "Boolean":
         return "True"
     elif uatype == "DateTime":
@@ -40,7 +40,7 @@ def get_default_value(uatype, enums):
     elif uatype in enums:
         return "ua." + uatype + "(" + enums[uatype] + ")"
     # Cause an exception when an uatype is not registered yet...
-    elif uatype in ua.__dict__ and issubclass(eval("ua."+uatype), IntEnum):
+    elif hasattr(ua, uatype) and issubclass(getattr(ua, uatype), IntEnum):
         return "ua." + uatype + "(" + list(eval("ua."+uatype))[0] + ")"
     else:
         return "ua." + uatype + "()"
