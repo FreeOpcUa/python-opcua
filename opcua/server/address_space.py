@@ -521,7 +521,8 @@ class AddressSpace(object):
         if idx in self._nodeid_counter:
             self._nodeid_counter[idx] += 1
         else:
-            identifier_list = sorted([i.Identifier for i in self._nodes.keys() if i.NamespaceIndex == idx])
+            identifier_list = sorted([i.Identifier for i in self._nodes.keys()
+                                      if i.NamespaceIndex == idx and str(i.Identifier).isdigit()])
             if identifier_list:
                 self._nodeid_counter[idx] = identifier_list[-1]
             else:
