@@ -521,8 +521,10 @@ class AddressSpace(object):
         if idx in self._nodeid_counter:
             self._nodeid_counter[idx] += 1
         else:
-            identifier_list = sorted([i.Identifier for i in self._nodes.keys()
-                                      if i.NamespaceIndex == idx and str(i.Identifier).isdigit()])
+            # get the biggest identifier number from the existed nodes in address space
+            identifier_list = sorted([nodeid.Identifier for nodeid in self._nodes.keys()
+                                      if nodeid.NamespaceIndex == idx and nodeid.NodeIdType
+                                      in (ua.NodeIdType.Numeric, ua.NodeIdType.TwoByte, ua.NodeIdType.FourByte)])
             if identifier_list:
                 self._nodeid_counter[idx] = identifier_list[-1]
             else:
