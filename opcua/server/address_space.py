@@ -521,9 +521,6 @@ class AddressSpace(object):
         if idx in self._nodeid_counter:
             self._nodeid_counter[idx] += 1
         else:
-            # from 1 start may causes maximum recursion depth exceeded exception,
-            #  if there are lots of nodes already in address space
-            # here get the biggest number from the address space, and add one
             identifier_list = sorted([i.Identifier for i in self._nodes.keys() if i.NamespaceIndex == idx])
             if identifier_list:
                 self._nodeid_counter[idx] = identifier_list[-1]
