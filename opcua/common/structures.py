@@ -11,7 +11,7 @@ import logging
 # The next two imports are for generated code
 from datetime import datetime
 import uuid
-from enum import IntEnum, EnumMeta
+from enum import Enum, IntEnum, EnumMeta
 
 from lxml import objectify
 
@@ -37,10 +37,12 @@ def get_default_value(uatype, enums):
         return 0
     elif uatype in enums:
         return "ua." + uatype + "(" + enums[uatype] + ")"
-    elif hasattr(ua, uatype) and issubclass(getattr(ua, uatype), IntEnum):
-        return "ua." + uatype + "(0)"
+    elif hasattr(ua, uatype) and issubclass(getattr(ua, uatype), Enum):
+        # We have an enum, try to initilize it correctly
+        val = list(getattr(ua, uatype).__members__)[0]
+        return "ua.{}([})".format(uatype, val)
     else:
-        return "ua." + uatype + "()"
+        return "ua.{}()".format(uatype)
 
 
 class EnumType(object):
