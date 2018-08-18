@@ -40,7 +40,7 @@ def get_default_value(uatype, enums):
     elif hasattr(ua, uatype) and issubclass(getattr(ua, uatype), Enum):
         # We have an enum, try to initilize it correctly
         val = list(getattr(ua, uatype).__members__)[0]
-        return "ua.{}([})".format(uatype, val)
+        return "ua.{}.{}".format(uatype, val)
     else:
         return "ua.{}()".format(uatype)
 
