@@ -92,7 +92,7 @@ class OPCTypeDictionaryBuilderTest(unittest.TestCase):
     def test_opc_type_dict_add_field_1(self):
         structure_name = 'CustomizedStruct'
         self.opc_type_builder.append_struct(structure_name)
-        self.opc_type_builder.add_field(ua.VariantType.Boolean, 'id', structure_name)
+        self.opc_type_builder.add_field('id', ua.VariantType.Boolean, structure_name)
         case = {'TypeName': 'opc:Boolean',
                 'Name': 'id'}
         struct_dict = getattr(self.opc_type_builder, '_structs_dict')
@@ -102,7 +102,7 @@ class OPCTypeDictionaryBuilderTest(unittest.TestCase):
     def test_opc_type_dict_add_field_2(self):
         structure_name = 'CustomizedStruct'
         self.opc_type_builder.append_struct(structure_name)
-        self.opc_type_builder.add_field('Boolean', 'id', structure_name)
+        self.opc_type_builder.add_field('id', 'Boolean', structure_name)
         case = {'TypeName': 'opc:Boolean',
                 'Name': 'id'}
         struct_dict = getattr(self.opc_type_builder, '_structs_dict')
@@ -112,7 +112,7 @@ class OPCTypeDictionaryBuilderTest(unittest.TestCase):
     def test_opc_type_dict_add_field_3(self):
         structure_name = 'CustomizedStruct'
         self.opc_type_builder.append_struct(structure_name)
-        self.opc_type_builder.add_field(ua.VariantType.Boolean, 'id', structure_name, is_array=True)
+        self.opc_type_builder.add_field('id', ua.VariantType.Boolean, structure_name, is_array=True)
         case = [{'TypeName': 'opc:Int32',
                 'Name': 'NoOfid'},
                 {'TypeName': 'opc:Boolean',
@@ -130,7 +130,7 @@ class OPCTypeDictionaryBuilderTest(unittest.TestCase):
         appended_struct.attrib['BaseType'] = 'ua:ExtensionObject'
         appended_struct.attrib['Name'] = to_camel_case(structure_name)
 
-        self.opc_type_builder.add_field(ua.VariantType.Boolean, 'id', structure_name)
+        self.opc_type_builder.add_field('id', ua.VariantType.Boolean, structure_name)
         # external tree operation
         field = Et.SubElement(appended_struct, 'opc:Field')
         field.attrib['Name'] = 'id'
@@ -240,7 +240,7 @@ class OPCTypeDictionaryBuilderTest(unittest.TestCase):
     def test_data_type_dict_set_dict_byte_string(self):
         structure_name = 'CustomizedStruct'
         self.dict_builder.create_data_type(structure_name)
-        self.dict_builder.add_field(ua.VariantType.Int32, 'id', structure_name)
+        self.dict_builder.add_field('id', ua.VariantType.Int32, structure_name)
         self.dict_builder.set_dict_byte_string()
         # external tree operation
         appended_struct = Et.SubElement(self.test_etree.getroot(), 'opc:StructuredType')
@@ -258,7 +258,7 @@ class OPCTypeDictionaryBuilderTest(unittest.TestCase):
     def test_data_type_dict_add_field_1(self):
         struct_name = 'CustomizedStruct'
         self.dict_builder.create_data_type(struct_name)
-        self.dict_builder.add_field(ua.VariantType.Int32, 'id', struct_name)
+        self.dict_builder.add_field('id', ua.VariantType.Int32, struct_name)
         self.dict_builder.set_dict_byte_string()
         self.srv.load_type_definitions()
         struct = get_ua_class(struct_name)
@@ -270,7 +270,7 @@ class OPCTypeDictionaryBuilderTest(unittest.TestCase):
     def test_data_type_dict_add_field_2(self):
         struct_name = 'AnotherCustomizedStruct'
         self.dict_builder.create_data_type(struct_name)
-        self.dict_builder.add_field(ua.VariantType.Int32, 'id', struct_name, is_array=True)
+        self.dict_builder.add_field('id', ua.VariantType.Int32, struct_name, is_array=True)
         self.dict_builder.set_dict_byte_string()
         self.srv.load_type_definitions()
         struct = get_ua_class(struct_name)
@@ -344,7 +344,7 @@ class OPCTypeDictionaryBuilderTest(unittest.TestCase):
         self.assertEqual(basic_result, basic_msg)
 
     def test_functional_advance(self):
-        basic_struct_name = 'basic_structure'
+        basic_struct_name = 'base_structure'
         basic_struct = self.dict_builder.create_data_type(basic_struct_name)
         basic_struct.add_field('ID', ua.VariantType.Int32)
         basic_struct.add_field('Gender', ua.VariantType.Boolean)
@@ -359,7 +359,7 @@ class OPCTypeDictionaryBuilderTest(unittest.TestCase):
         self.dict_builder.set_dict_byte_string()
         self.srv.load_type_definitions()
 
-        basic_var = self.srv.nodes.objects.add_variable(ua.NodeId(namespaceidx=self.idx), 'BasicStruct',
+        basic_var = self.srv.nodes.objects.add_variable(ua.NodeId(namespaceidx=self.idx), 'BaseStruct',
                                                         ua.Variant(None, ua.VariantType.Null),
                                                         datatype=basic_struct.data_type)
 
