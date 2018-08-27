@@ -679,6 +679,12 @@ def uacall():
                         type=int,
                         default=None,
                         help="Set method to call. If not given then (single) method of the selected node is used.")
+    parser.add_argument("-M",
+                        "--method-name",
+                        dest="method_name",
+                        type=str,
+                        default=None,
+                        help="Set name of method to call. Overrides --method")
     parser.add_argument("-l",
                         "--list",
                         "--array",
@@ -715,7 +721,9 @@ def uacall():
         method_id = None
         #print( "methods=%s" % (methods) )
 
-        if ( args.method is None ):
+        if ( args.method_name is not None ):
+            method_id = args.method_name
+        elif ( args.method is None ):
             if ( len( methods ) == 0 ):
                 raise ValueError( "No methods in selected node and no method given" )
             elif ( len( methods ) == 1 ):
