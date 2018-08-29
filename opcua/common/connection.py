@@ -52,7 +52,10 @@ class MessageChunk(ua.FrozenClass):
         if signature_size > 0:
             signature = decrypted[-signature_size:]
             decrypted = decrypted[:-signature_size]
-            crypto.verify(header_to_binary(obj.MessageHeader) + struct_to_binary(obj.SecurityHeader) + decrypted, signature)
+            try:
+                crypto.verify(header_to_binary(obj.MessageHeader) + struct_to_binary(obj.SecurityHeader) + decrypted, signature)
+            except UaError:
+                logger.exception("Could not verify signature for message {}".format(obj))
         data = ua.utils.Buffer(crypto.remove_padding(decrypted))
         obj.SequenceHeader = struct_from_binary(ua.SequenceHeader, data)
         obj.Body = data.read(len(data))
