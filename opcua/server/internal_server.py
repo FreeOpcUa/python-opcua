@@ -5,6 +5,7 @@ Can be used on server side or to implement binary/https opc-ua servers
 
 from datetime import datetime, timedelta
 from copy import copy
+import pickle
 import os
 import logging
 from threading import Lock
@@ -181,6 +182,20 @@ class InternalServer(object):
         return self.endpoints[:]
 
     def find_servers(self, params):
+        servers = self._find_servers(params)
+        if not params.EndpointUrl:
+            return servers
+        # If 0.0.0.0 in any endpointUrl, copy endPointUrl from
+        # FindServersParameters provided in the client request.
+        servers = pickle.loads(pickle.dumps(servers))
+        for serv in servers:
+            for idx, url in enumerate(serv.DiscoveryUrls):
+                if '0.0.0.0' not in url:
+                    continue
+                serv.DiscoveryUrls[idx] = params.EndpointUrl
+        return servers
+
+    def _find_servers(self, params):
         if not params.ServerUris:
             return [desc.Server for desc in self._known_servers.values()]
         servers = []
