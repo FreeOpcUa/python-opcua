@@ -169,17 +169,18 @@ class InternalServer(object):
 
     def get_endpoints(self, params=None, sockname=None):
         self.logger.info("get endpoint")
-        if sockname:
-            # return to client the ip address it has access to
-            edps = []
-            for edp in self.endpoints:
-                edp1 = copy(edp)
+        # return to client the ip address it has access to
+        edps = []
+        for edp in self.endpoints:
+            edp1 = copy(edp)
+            if '0.0.0.0' in edp1.EndpointUrl and params.EndpointUrl:
+                edp1.EndpointUrl = params.EndpointUrl
+            elif sockname:
                 url = urlparse(edp1.EndpointUrl)
                 url = url._replace(netloc=sockname[0] + ":" + str(sockname[1]))
                 edp1.EndpointUrl = url.geturl()
-                edps.append(edp1)
-            return edps
-        return self.endpoints[:]
+            edps.append(edp1)
+        return edps
 
     def find_servers(self, params):
         servers = self._find_servers(params)
@@ -326,7 +327,7 @@ class InternalSession(object):
         result.MaxRequestMessageSize = 65536
         self.nonce = utils.create_nonce(32)
         result.ServerNonce = self.nonce
-        result.ServerEndpoints = self.get_endpoints(sockname=sockname)
+        result.ServerEndpoints = self.get_endpoints(params=params, sockname=sockname)
 
         return result
 
