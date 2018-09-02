@@ -4,7 +4,7 @@ Can be used on server side or to implement binary/https opc-ua servers
 """
 
 from datetime import datetime, timedelta
-import pickle
+from copy import deepcopy
 import os
 import logging
 from threading import Lock
@@ -172,9 +172,11 @@ class InternalServer(object):
     def get_endpoints(self, params=None, sockname=None):
         self.logger.info("get endpoint")
         # return to client the endpoints it has access to
-        edps = pickle.loads(pickle.dumps(self.endpoints))
         netloc = self._get_netloc(params, sockname)
-        return [self._endpoint_replace_inaddr_any(edp, netloc) for edp in edps]
+        edps = deepcopy(self.endpoints)
+        for edp in edps:
+            edp.EndpointUrl = InternalServer._replace_inaddr_any(edp.EndpointUrl, netloc)
+        return edps
 
     @staticmethod
     def _get_netloc(params=None, sockname=None):
@@ -189,11 +191,6 @@ class InternalServer(object):
         return netloc
 
     @staticmethod
-    def _endpoint_replace_inaddr_any(edp, netloc):
-        edp.EndpointUrl = InternalServer._replace_inaddr_any(edp.EndpointUrl, netloc)
-        return edp
-
-    @staticmethod
     def _replace_inaddr_any(urlStr, netloc):
         # If urlStr is '0.0.0.0:port' or '[::]:port', use netloc ip:port.
         parseResult = urlparse(urlStr)
@@ -201,18 +198,17 @@ class InternalServer(object):
             hostip = ip_address(parseResult.hostname)
         except ValueError:
             hostip = None
-        if not (hostip and netloc):
+        if not netloc:
             pass
-        elif ip_address(hostip) in (ip_address(INADDR_ANY), ip_address(IN6ADDR_ANY)):
+        elif hostip in (ip_address(INADDR_ANY), ip_address(IN6ADDR_ANY)):
             urlStr = parseResult._replace(netloc=netloc).geturl()
         return urlStr
 
     def find_servers(self, params):
-        servers = self._filter_servers(params)
-        servers = pickle.loads(pickle.dumps(servers))
+        servers = deepcopy(self._filter_servers(params))
         netloc = self._get_netloc(params)
         for srv in servers:
-            srv.DiscoveryUrls = [self._replace_inaddr_any(url, netloc) for url in srv.DiscoveryUrls]
+            srv.DiscoveryUrls = [self._replace_inaddr_any(dUrl, netloc) for dUrl in srv.DiscoveryUrls]
         return servers
 
     def _filter_servers(self, params):
