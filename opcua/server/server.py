@@ -663,7 +663,7 @@ class Server(object):
         pw = token.Password
 
         # decrypt password is we can
-        if token.EncryptionAlgorithm != "None":
+        if str(token.EncryptionAlgorithm) != "None":
             if use_crypto == False:
                 return False;
             try:
@@ -672,14 +672,14 @@ class Server(object):
                 elif token.EncryptionAlgorithm == "http://www.w3.org/2001/04/xmlenc#rsa-oaep":
                     raw_pw = uacrypto.decrypt_rsa_oaep(self.private_key, pw)
                 else:
-                    self.logger.warning("Unknown password encoding: {0}".format(token.EncryptionAlgorithm))
+                    self.logger.warning("Unknown password encoding '{0}'".format(token.EncryptionAlgorithm))
                     return False
 
                 nonce_len = 32
                 length = unpack_from('<I', raw_pw)[0] - nonce_len
-                pw = raw_pw[4:4 + length].decode('utf-8')
+                pw = raw_pw[4:4 + length]
             except Exception as exp:
                 self.logger.warning("Unable to decrypt password")
                 return False
 
-        return self.user_manager(token.UserName, pw)
+        return self.user_manager(str(token.UserName), pw.decode('utf-8'))
