@@ -3,6 +3,7 @@ High level interface to pure python OPC-UA server
 """
 
 import logging
+from struct import unpack_from, unpack
 from datetime import timedelta, datetime
 try:
     from urllib.parse import urlparse
@@ -11,6 +12,7 @@ except ImportError:
 
 
 from opcua import ua
+
 # from opcua.binary_server import BinaryServer
 from opcua.server.binary_server_asyncio import BinaryServer
 from opcua.server.internal_server import InternalServer
@@ -94,6 +96,7 @@ class Server(object):
         self.private_key = None
         self._policies = []
         self.nodes = Shortcuts(self.iserver.isession)
+        self.user_manager = None
 
         # setup some expected values
         self.set_application_uri(self._application_uri)
@@ -641,3 +644,42 @@ class Server(object):
         so it is a little faster
         """
         return self.iserver.set_attribute_value(nodeid, datavalue, attr)
+    
+    def set_user_manager(self, user_manager):
+        """
+        set up a function which that will check for authorize users. Input function takes username
+        and password as paramters and returns True of user is allowed access, False otherwise.
+        """
+        self.user_manager = user_manager
+        self.iserver.user_token_manager = self.user_token_manager
+
+    def user_token_manager(self, token):
+        """
+        This function
+        """
+        # no manager or no crypto, bail out
+        if self.user_manager == False:
+            return False
+        pw = token.Password
+
+        # decrypt password is we can
+        if token.EncryptionAlgorithm != "None":
+            if use_crypto == False:
+                return False;
+            try:
+                if token.EncryptionAlgorithm == "http://www.w3.org/2001/04/xmlenc#rsa-1_5":
+                    raw_pw = uacrypto.decrypt_rsa15(self.private_key, pw)
+                elif token.EncryptionAlgorithm == "http://www.w3.org/2001/04/xmlenc#rsa-oaep":
+                    raw_pw = uacrypto.decrypt_rsa_oaep(self.private_key, pw)
+                else:
+                    self.logger.warning("Unknown password encoding: {0}".format(token.EncryptionAlgorithm))
+                    return False
+
+                nonce_len = 32
+                length = unpack_from('<I', raw_pw)[0] - nonce_len
+                pw = raw_pw[4:4 + length].decode('utf-8')
+            except Exception as exp:
+                self.logger.warning("Unable to decrypt password")
+                return False
+
+        return self.user_manager(token.UserName, pw)

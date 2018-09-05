@@ -2,7 +2,6 @@
 Internal server implementing opcu-ua interface.
 Can be used on server side or to implement binary/https opc-ua servers
 """
-
 from datetime import datetime, timedelta
 from copy import copy
 import os
@@ -70,6 +69,8 @@ class InternalServer(object):
         self.subscription_service = SubscriptionService(self.aspace)
 
         self.history_manager = HistoryManager(self)
+
+        self.user_token_manager = None
 
         # create a session to use on server side
         self.isession = InternalSession(self, self.aspace, self.subscription_service, "Internal", user=User.Admin)
@@ -332,7 +333,10 @@ class InternalSession(object):
         self.state = SessionState.Activated
         id_token = params.UserIdentityToken
         if isinstance(id_token, ua.UserNameIdentityToken):
-            if self.iserver.allow_remote_admin and id_token.UserName in ("admin", "Admin"):
+            if self.iserver.user_token_manager:
+                if self.iserver.user_token_manager(id_token) == False:
+                    raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
+            elif self.iserver.allow_remote_admin and id_token.UserName in ("admin", "Admin"):
                 self.user = User.Admin
         self.logger.info("Activated internal session %s for user %s", self.name, self.user)
         return result
@@ -412,3 +416,5 @@ class InternalSession(object):
         if acks is None:
             acks = []
         return self.subscription_service.publish(acks)
+
+
