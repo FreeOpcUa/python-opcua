@@ -139,10 +139,14 @@ class CommonTests(object):
             var = fold.add_property(2, "ProToDeleteR", 9.1)
             prop = fold.add_property(2, "ProToDeleteR", 9.1)
             o = fold.add_object(3, "ObjToDeleteR")
+            o_var = o.add_variable(3, "VarToDeleteRR", 9.2)
+            o_prop = o.add_property(3, "PropToDeleteRR", 9.2)
             mynodes.append(nfold)
             mynodes.append(var)
             mynodes.append(prop)
             mynodes.append(o)
+            mynodes.append(o_var)
+            mynodes.append(o_prop)
         self.opc.delete_nodes([fold], recursive=True)
         for node in mynodes:
             with self.assertRaises(ua.UaStatusCodeError):
