@@ -294,12 +294,12 @@ class InternalServer(object):
         """
         self.user_manager = self.default_user_manager
         
-    def default_user_manager(self, user, token):
+    def default_user_manager(self, isession, token):
         if self.allow_remote_admin and token.UserName in ("admin", "Admin"):
-            user = User.Admin
+            isession.user = User.Admin
         return True        
 
-    def check_user_token(self, user, token):
+    def check_user_token(self, token):
         """
         unpack the user name and password for the benefit of the user defined user manager
         """
@@ -326,8 +326,9 @@ class InternalServer(object):
                 print(exp)
                 return False
 
-        return self.user_manager(user, str(token.UserName), pw.decode('utf-8'))
-        
+        return self.user_manager(self.isession, str(token.UserName), pw.decode('utf-8'))
+
+
 class InternalSession(object):
     _counter = 10
     _auth_counter = 1000
@@ -388,7 +389,7 @@ class InternalSession(object):
         self.state = SessionState.Activated
         id_token = params.UserIdentityToken
         if isinstance(id_token, ua.UserNameIdentityToken):
-            if self.iserver.check_user_token(self.user, id_token) == False:
+            if self.iserver.check_user_token(id_token) == False:
                 raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
         self.logger.info("Activated internal session %s for user %s", self.name, self.user)
         return result
