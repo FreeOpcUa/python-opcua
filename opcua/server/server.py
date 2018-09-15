@@ -3,13 +3,11 @@ High level interface to pure python OPC-UA server
 """
 
 import logging
-from struct import unpack_from, unpack
 from datetime import timedelta, datetime
 try:
     from urllib.parse import urlparse
 except ImportError:
     from urlparse import urlparse
-
 
 from opcua import ua
 
@@ -92,11 +90,8 @@ class Server(object):
         self.bserver = None
         self._discovery_clients = {}
         self._discovery_period = 60
-        self.certificate = None
-        self.private_key = None
         self._policies = []
         self.nodes = Shortcuts(self.iserver.isession)
-        self.user_manager = None
 
         # setup some expected values
         self.set_application_uri(self._application_uri)
@@ -137,10 +132,10 @@ class Server(object):
         """
         load server certificate from file, either pem or der
         """
-        self.certificate = uacrypto.load_certificate(path)
+        self.iserver.certificate = uacrypto.load_certificate(path)
 
     def load_private_key(self, path):
-        self.private_key = uacrypto.load_private_key(path)
+        self.iserver.private_key = uacrypto.load_private_key(path)
 
     def disable_clock(self, val=True):
         """
@@ -273,7 +268,7 @@ class Server(object):
             self._policies = [ua.SecurityPolicyFactory()]
 
         if self._security_policy != [ua.SecurityPolicyType.NoSecurity]:
-            if not (self.certificate and self.private_key):
+            if not (self.iserver.certificate and self.iserver.private_key):
                 self.logger.warning("Endpoints other than open requested but private key and certificate are not set.")
                 return
 
@@ -285,32 +280,32 @@ class Server(object):
                                     ua.MessageSecurityMode.SignAndEncrypt)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
                                                                ua.MessageSecurityMode.SignAndEncrypt,
-                                                               self.certificate,
-                                                               self.private_key)
+                                                               self.iserver.certificate,
+                                                               self.iserver.private_key)
                                      )
             if ua.SecurityPolicyType.Basic128Rsa15_Sign in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
                                     ua.MessageSecurityMode.Sign)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
                                                                ua.MessageSecurityMode.Sign,
-                                                               self.certificate,
-                                                               self.private_key)
+                                                               self.iserver.certificate,
+                                                               self.iserver.private_key)
                                      )
             if ua.SecurityPolicyType.Basic256_SignAndEncrypt in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic256,
                                     ua.MessageSecurityMode.SignAndEncrypt)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
                                                                ua.MessageSecurityMode.SignAndEncrypt,
-                                                               self.certificate,
-                                                               self.private_key)
+                                                               self.iserver.certificate,
+                                                               self.iserver.private_key)
                                      )
             if ua.SecurityPolicyType.Basic256_Sign in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic256,
                                     ua.MessageSecurityMode.Sign)
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
                                                                ua.MessageSecurityMode.Sign,
-                                                               self.certificate,
-                                                               self.private_key)
+                                                               self.iserver.certificate,
+                                                               self.iserver.private_key)
                                      )
 
     def _set_endpoints(self, policy=ua.SecurityPolicy, mode=ua.MessageSecurityMode.None_):
@@ -349,8 +344,8 @@ class Server(object):
         edp = ua.EndpointDescription()
         edp.EndpointUrl = self.endpoint.geturl()
         edp.Server = appdesc
-        if self.certificate:
-            edp.ServerCertificate = uacrypto.der_from_x509(self.certificate)
+        if self.iserver.certificate:
+            edp.ServerCertificate = uacrypto.der_from_x509(self.iserver.certificate)
         edp.SecurityMode = mode
         edp.SecurityPolicyUri = policy.URI
         edp.UserIdentityTokens = idtokens
@@ -644,42 +639,4 @@ class Server(object):
         so it is a little faster
         """
         return self.iserver.set_attribute_value(nodeid, datavalue, attr)
-    
-    def set_user_manager(self, user_manager):
-        """
-        set up a function which that will check for authorize users. Input function takes username
-        and password as paramters and returns True of user is allowed access, False otherwise.
-        """
-        self.user_manager = user_manager
-        self.iserver.user_token_manager = self.user_token_manager
 
-    def user_token_manager(self, token):
-        """
-        This function
-        """
-        # no manager or no crypto, bail out
-        if self.user_manager == False:
-            return False
-        pw = token.Password
-
-        # decrypt password is we can
-        if str(token.EncryptionAlgorithm) != "None":
-            if use_crypto == False:
-                return False;
-            try:
-                if token.EncryptionAlgorithm == "http://www.w3.org/2001/04/xmlenc#rsa-1_5":
-                    raw_pw = uacrypto.decrypt_rsa15(self.private_key, pw)
-                elif token.EncryptionAlgorithm == "http://www.w3.org/2001/04/xmlenc#rsa-oaep":
-                    raw_pw = uacrypto.decrypt_rsa_oaep(self.private_key, pw)
-                else:
-                    self.logger.warning("Unknown password encoding '{0}'".format(token.EncryptionAlgorithm))
-                    return False
-
-                nonce_len = 32
-                length = unpack_from('<I', raw_pw)[0] - nonce_len
-                pw = raw_pw[4:4 + length]
-            except Exception as exp:
-                self.logger.warning("Unable to decrypt password")
-                return False
-
-        return self.user_manager(str(token.UserName), pw.decode('utf-8'))
