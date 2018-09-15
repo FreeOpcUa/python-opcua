@@ -294,39 +294,36 @@ class InternalServer(object):
         """
         self.user_manager = self.default_user_manager
         
-    def default_user_manager(self, isession, token):
-        if self.allow_remote_admin and token.UserName in ("admin", "Admin"):
+    def default_user_manager(self, isession, username, password):
+        if self.allow_remote_admin and username in ("admin", "Admin"):
             isession.user = User.Admin
         return True        
 
-    def check_user_token(self, token):
+    def check_user_token(self, isession, token):
         """
-        unpack the user name and password for the benefit of the user defined user manager
+        unpack the username and password for the benefit of the user defined user manager
         """
-        pw = token.Password
-
+        userName = token.UserName
+        passwd = token.Password
         # decrypt password is we can
         if str(token.EncryptionAlgorithm) != "None":
             if use_crypto == False:
                 return False;
             try:
                 if token.EncryptionAlgorithm == "http://www.w3.org/2001/04/xmlenc#rsa-1_5":
-                    raw_pw = uacrypto.decrypt_rsa15(self.private_key, pw)
+                    raw_pw = uacrypto.decrypt_rsa15(self.private_key, passwd)
                 elif token.EncryptionAlgorithm == "http://www.w3.org/2001/04/xmlenc#rsa-oaep":
-                    raw_pw = uacrypto.decrypt_rsa_oaep(self.private_key, pw)
+                    raw_pw = uacrypto.decrypt_rsa_oaep(self.private_key, passwd)
                 else:
                     self.logger.warning("Unknown password encoding '{0}'".format(token.EncryptionAlgorithm))
                     return False
-
-                nonce_len = 32
-                length = unpack_from('<I', raw_pw)[0] - nonce_len
-                pw = raw_pw[4:4 + length]
+                length = unpack_from('<I', raw_pw)[0] - len(isession.nonce)
+                passwd = raw_pw[4:4 + length]
+                passwd = passwd.decode('utf-8')
             except Exception as exp:
                 self.logger.warning("Unable to decrypt password")
-                print(exp)
                 return False
-
-        return self.user_manager(self.isession, str(token.UserName), pw.decode('utf-8'))
+        return self.user_manager(isession, userName, passwd)
 
 
 class InternalSession(object):
@@ -389,7 +386,7 @@ class InternalSession(object):
         self.state = SessionState.Activated
         id_token = params.UserIdentityToken
         if isinstance(id_token, ua.UserNameIdentityToken):
-            if self.iserver.check_user_token(id_token) == False:
+            if self.iserver.check_user_token(self, id_token) == False:
                 raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
         self.logger.info("Activated internal session %s for user %s", self.name, self.user)
         return result
