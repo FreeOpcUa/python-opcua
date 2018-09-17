@@ -313,13 +313,13 @@ class InternalServer(object):
                 self.logger.warning("Unable to decrypt password")
                 return False
 
-        # call user manager if one is defined
+        # call user_manager if one is defined
         if self.user_manager is not None:
             return self.user_manager(self, isession, userName, passwd)
 
-        # do the default thing
+        # If nothing function defined, do the default thing
         if self.allow_remote_admin and userName in ("admin", "Admin"):
-                isession.user = User.Admin
+            isession.user = User.Admin
         return True
 
 
