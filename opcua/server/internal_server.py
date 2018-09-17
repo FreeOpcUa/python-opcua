@@ -464,9 +464,3 @@ class InternalSession(object):
             acks = []
         return self.subscription_service.publish(acks)
 
-
-def default_user_manager(self, iserver, isession, username, password):
-    if self.allow_remote_admin and username in ("admin", "Admin"):
-        isession.user = User.Admin
-    return True        
-
