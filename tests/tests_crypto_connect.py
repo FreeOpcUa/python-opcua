@@ -25,28 +25,28 @@ class TestCryptoConnect(unittest.TestCase):
 
     '''
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(self):
         # start our own server
-        cls.srv_crypto = Server()
-        cls.uri_crypto = 'opc.tcp://127.0.0.1:{0:d}'.format(port_num1)
-        cls.srv_crypto.set_endpoint(cls.uri_crypto)
+        self.srv_crypto = Server()
+        self.uri_crypto = 'opc.tcp://127.0.0.1:{0:d}'.format(port_num1)
+        self.srv_crypto.set_endpoint(self.uri_crypto)
         # load server certificate and private key. This enables endpoints
         # with signing and encryption.
-        cls.srv_crypto.load_certificate("examples/certificate-example.der")
-        cls.srv_crypto.load_private_key("examples/private-key-example.pem")
-        cls.srv_crypto.start()
+        self.srv_crypto.load_certificate("examples/certificate-example.der")
+        self.srv_crypto.load_private_key("examples/private-key-example.pem")
+        self.srv_crypto.start()
 
         # start a server without crypto
-        cls.srv_no_crypto = Server()
-        cls.uri_no_crypto = 'opc.tcp://127.0.0.1:{0:d}'.format(port_num2)
-        cls.srv_no_crypto.set_endpoint(cls.uri_no_crypto)
-        cls.srv_no_crypto.start()
+        self.srv_no_crypto = Server()
+        self.uri_no_crypto = 'opc.tcp://127.0.0.1:{0:d}'.format(port_num2)
+        self.srv_no_crypto.set_endpoint(self.uri_no_crypto)
+        self.srv_no_crypto.start()
 
     @classmethod
-    def tearDownClass(cls):
+    def tearDownClass(self):
         # stop the server 
-        cls.srv_no_crypto.stop()
-        cls.srv_crypto.stop()
+        self.srv_no_crypto.stop()
+        self.srv_crypto.stop()
 
     def test_nocrypto(self):
         clt = Client(self.uri_no_crypto)
@@ -56,51 +56,33 @@ class TestCryptoConnect(unittest.TestCase):
         finally:
             clt.disconnect()
 
-    def test_nocrypto_feil(self):
+    def test_nocrypto_fail(self):
         clt = Client(self.uri_no_crypto)
         with self.assertRaises(ua.UaError):
-            clt.set_security_string("Basic256,Sign,examples/certificate-example.der,examples/private-key-example.pem")
+            clt.set_security_string("Basic256Sha256,Sign,examples/certificate-example.der,examples/private-key-example.pem")
 
-    def test_basic256(self):
+    def test_basic256sha256(self):
         clt = Client(self.uri_crypto)
         try:
-            clt.set_security_string("Basic256,Sign,examples/certificate-example.der,examples/private-key-example.pem")
+            clt.set_security_string("Basic256Sha256,Sign,examples/certificate-example.der,examples/private-key-example.pem")
             clt.connect()
             self.assertTrue(clt.get_objects_node().get_children())
         finally:
             clt.disconnect()
 
-    def test_basic256_encrypt(self):
+    def test_basic256sha256_encrypt(self):
         clt = Client(self.uri_crypto)
         try:
-            clt.set_security_string("Basic256,SignAndEncrypt,examples/certificate-example.der,examples/private-key-example.pem")
+            clt.set_security_string("Basic256Sha256,SignAndEncrypt,examples/certificate-example.der,examples/private-key-example.pem")
             clt.connect()
             self.assertTrue(clt.get_objects_node().get_children())
         finally:
             clt.disconnect()
 
-    def test_basic128Rsa15(self):
+    def test_basic256sha56_encrypt_success(self):
         clt = Client(self.uri_crypto)
         try:
-            clt.set_security_string("Basic128Rsa15,Sign,examples/certificate-example.der,examples/private-key-example.pem")
-            clt.connect()
-            self.assertTrue(clt.get_objects_node().get_children())
-        finally:
-            clt.disconnect()
-
-    def test_basic128Rsa15_encrypt(self):
-        clt = Client(self.uri_crypto)
-        try:
-            clt.set_security_string("Basic128Rsa15,SignAndEncrypt,examples/certificate-example.der,examples/private-key-example.pem")
-            clt.connect()
-            self.assertTrue(clt.get_objects_node().get_children())
-        finally:
-            clt.disconnect()
-
-    def test_basic256_encrypt_success(self):
-        clt = Client(self.uri_crypto)
-        try:
-            clt.set_security(security_policies.SecurityPolicyBasic256,
+            clt.set_security(security_policies.SecurityPolicyBasic256Sha256,
                              'examples/certificate-example.der',
                              'examples/private-key-example.pem',
                              None,
@@ -111,11 +93,11 @@ class TestCryptoConnect(unittest.TestCase):
         finally:
             clt.disconnect()
 
-    def test_basic256_encrypt_feil(self):
-        # FIXME: how to make it feil???
+    def test_basic256sha56_encrypt_fail(self):
+        # FIXME: how to make it fail???
         clt = Client(self.uri_crypto)
         with self.assertRaises(ua.UaError):
-            clt.set_security(security_policies.SecurityPolicyBasic256,
+            clt.set_security(security_policies.SecurityPolicyBasic256Sha256,
                              'examples/certificate-example.der',
                              'examples/private-key-example.pem',
                              None,

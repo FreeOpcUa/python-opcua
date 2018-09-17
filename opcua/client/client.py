@@ -159,7 +159,7 @@ class Client(object):
         """
         Set SecureConnection mode. String format:
         Policy,Mode,certificate,private_key[,server_private_key]
-        where Policy is Basic128Rsa15 or Basic256,
+        where Policy is Basic128Rsa15, Basic256 or Basic256Sha256,
             Mode is Sign or SignAndEncrypt
             certificate, private_key and server_private_key are
                 paths to .pem or .der files
