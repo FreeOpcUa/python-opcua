@@ -81,7 +81,7 @@ class InternalServer(object):
 
         self.history_manager = HistoryManager(self)
 
-        self.user_manager = None
+        self.user_manager = default_user_manager # defined at the end of this file
 
         # create a session to use on server side
         self.isession = InternalSession(self, self.aspace, self.subscription_service, "Internal", user=User.Admin)
@@ -294,6 +294,7 @@ class InternalServer(object):
         """
         userName = token.UserName
         passwd = token.Password
+
         # decrypt password is we can
         if str(token.EncryptionAlgorithm) != "None":
             if use_crypto == False:
@@ -313,14 +314,8 @@ class InternalServer(object):
                 self.logger.warning("Unable to decrypt password")
                 return False
 
-        # call user_manager if one is defined
-        if self.user_manager is not None:
-            return self.user_manager(self, isession, userName, passwd)
-
-        # If nothing function defined, do the default thing
-        if self.allow_remote_admin and userName in ("admin", "Admin"):
-            isession.user = User.Admin
-        return True
+        # call user_manager
+        return self.user_manager(self, isession, userName, passwd)
 
 
 class InternalSession(object):
@@ -464,3 +459,11 @@ class InternalSession(object):
             acks = []
         return self.subscription_service.publish(acks)
 
+
+def default_user_manager(iserver, isession, userName, password):
+    """
+    Default user_manager, does nothing much but check for admin
+    """
+    if iserver.allow_remote_admin and userName in ("admin", "Admin"):
+        isession.user = User.Admin
+    return True
