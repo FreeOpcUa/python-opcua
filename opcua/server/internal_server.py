@@ -81,7 +81,7 @@ class InternalServer(object):
 
         self.history_manager = HistoryManager(self)
 
-        self.user_manager = self.default_user_manager
+        self.user_manager = None
 
         # create a session to use on server side
         self.isession = InternalSession(self, self.aspace, self.subscription_service, "Internal", user=User.Admin)
@@ -288,17 +288,6 @@ class InternalServer(object):
         """
         self.user_manager = user_manager
 
-    def reset_user_manager(self):
-        """
-        reset user manager to default state 
-        """
-        self.user_manager = self.default_user_manager
-        
-    def default_user_manager(self, isession, username, password):
-        if self.allow_remote_admin and username in ("admin", "Admin"):
-            isession.user = User.Admin
-        return True        
-
     def check_user_token(self, isession, token):
         """
         unpack the username and password for the benefit of the user defined user manager
@@ -323,7 +312,15 @@ class InternalServer(object):
             except Exception as exp:
                 self.logger.warning("Unable to decrypt password")
                 return False
-        return self.user_manager(isession, userName, passwd)
+
+        # call user manager if one is defined
+        if self.user_manager is not None:
+            return self.user_manager(self, isession, userName, passwd)
+
+        # do the default thing
+        if self.allow_remote_admin and userName in ("admin", "Admin"):
+                isession.user = User.Admin
+        return True
 
 
 class InternalSession(object):
@@ -466,3 +463,10 @@ class InternalSession(object):
         if acks is None:
             acks = []
         return self.subscription_service.publish(acks)
+
+
+def default_user_manager(self, iserver, isession, username, password):
+    if self.allow_remote_admin and username in ("admin", "Admin"):
+        isession.user = User.Admin
+    return True        
+
