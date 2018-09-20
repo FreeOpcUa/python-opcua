@@ -2,9 +2,9 @@
 Internal server implementing opcu-ua interface.
 Can be used on server side or to implement binary/https opc-ua servers
 """
-
 from datetime import datetime, timedelta
 from copy import copy
+from struct import unpack_from, unpack
 import os
 import logging
 from threading import Lock
@@ -30,6 +30,13 @@ from opcua.server.subscription_service import SubscriptionService
 from opcua.server.standard_address_space import standard_address_space
 from opcua.server.users import User
 #from opcua.common import xmlimporter
+
+use_crypto = True
+try:
+    from opcua.crypto import uacrypto
+except ImportError:
+    logging.getLogger(__name__).warning("cryptography is not installed, use of crypto disabled")
+    use_crypto = False
 
 
 class SessionState(Enum):
@@ -57,6 +64,9 @@ class InternalServer(object):
         self.disabled_clock = False  # for debugging we may want to disable clock that writes too much in log
         self._known_servers = {}  # used if we are a discovery server
 
+        self.certificate = None
+        self.private_key = None
+
         self.aspace = AddressSpace()
         self.attribute_service = AttributeService(self.aspace)
         self.view_service = ViewService(self.aspace)
@@ -70,6 +80,8 @@ class InternalServer(object):
         self.subscription_service = SubscriptionService(self.aspace)
 
         self.history_manager = HistoryManager(self)
+
+        self.user_manager = default_user_manager # defined at the end of this file
 
         # create a session to use on server side
         self.isession = InternalSession(self, self.aspace, self.subscription_service, "Internal", user=User.Admin)
@@ -269,7 +281,41 @@ class InternalServer(object):
         """
         self.aspace.set_attribute_value(nodeid, ua.AttributeIds.Value, datavalue)
 
+    def set_user_manager(self, user_manager):
+        """
+        set up a function which that will check for authorize users. Input function takes username
+        and password as paramters and returns True of user is allowed access, False otherwise.
+        """
+        self.user_manager = user_manager
 
+    def check_user_token(self, isession, token):
+        """
+        unpack the username and password for the benefit of the user defined user manager
+        """
+        userName = token.UserName
+        passwd = token.Password
+
+        # decrypt password is we can
+        if str(token.EncryptionAlgorithm) != "None":
+            if use_crypto == False:
+                return False;
+            try:
+                if token.EncryptionAlgorithm == "http://www.w3.org/2001/04/xmlenc#rsa-1_5":
+                    raw_pw = uacrypto.decrypt_rsa15(self.private_key, passwd)
+                elif token.EncryptionAlgorithm == "http://www.w3.org/2001/04/xmlenc#rsa-oaep":
+                    raw_pw = uacrypto.decrypt_rsa_oaep(self.private_key, passwd)
+                else:
+                    self.logger.warning("Unknown password encoding '{0}'".format(token.EncryptionAlgorithm))
+                    return False
+                length = unpack_from('<I', raw_pw)[0] - len(isession.nonce)
+                passwd = raw_pw[4:4 + length]
+                passwd = passwd.decode('utf-8')
+            except Exception as exp:
+                self.logger.warning("Unable to decrypt password")
+                return False
+
+        # call user_manager
+        return self.user_manager(self, isession, userName, passwd)
 
 
 class InternalSession(object):
@@ -332,8 +378,8 @@ class InternalSession(object):
         self.state = SessionState.Activated
         id_token = params.UserIdentityToken
         if isinstance(id_token, ua.UserNameIdentityToken):
-            if self.iserver.allow_remote_admin and id_token.UserName in ("admin", "Admin"):
-                self.user = User.Admin
+            if self.iserver.check_user_token(self, id_token) == False:
+                raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
         self.logger.info("Activated internal session %s for user %s", self.name, self.user)
         return result
 
@@ -412,3 +458,12 @@ class InternalSession(object):
         if acks is None:
             acks = []
         return self.subscription_service.publish(acks)
+
+
+def default_user_manager(iserver, isession, userName, password):
+    """
+    Default user_manager, does nothing much but check for admin
+    """
+    if iserver.allow_remote_admin and userName in ("admin", "Admin"):
+        isession.user = User.Admin
+    return True
