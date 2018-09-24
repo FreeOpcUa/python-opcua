@@ -104,15 +104,18 @@ class Subscription(object):
         while self.subscription_id is None:
             time.sleep(0.01)
 
-        for notif in publishresult.NotificationMessage.NotificationData:
-            if isinstance(notif, ua.DataChangeNotification):
-                self._call_datachange(notif)
-            elif isinstance(notif, ua.EventNotificationList):
-                self._call_event(notif)
-            elif isinstance(notif, ua.StatusChangeNotification):
-                self._call_status(notif)
-            else:
-                self.logger.warning("Notification type not supported yet for notification %s", notif)
+        if publishresult.NotificationMessage.NotificationData is not None:
+            for notif in publishresult.NotificationMessage.NotificationData:
+                if isinstance(notif, ua.DataChangeNotification):
+                    self._call_datachange(notif)
+                elif isinstance(notif, ua.EventNotificationList):
+                    self._call_event(notif)
+                elif isinstance(notif, ua.StatusChangeNotification):
+                    self._call_status(notif)
+                else:
+                    self.logger.warning("Notification type not supported yet for notification %s", notif)
+        else:
+            self.logger.warning("NotificationMessage is None.")
 
         ack = ua.SubscriptionAcknowledgement()
         ack.SubscriptionId = self.subscription_id
