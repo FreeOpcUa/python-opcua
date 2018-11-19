@@ -199,14 +199,6 @@ class Server(object):
             client.register_server(self)
             self.iserver.loop.call_later(self._discovery_period, self._renew_registration)
 
-    def get_client_to_discovery(self, url="opc.tcp://localhost:4840"):
-        """
-        Create a client to discovery server and return it
-        """
-        client = Client(url)
-        client.connect()
-        return client
-
     def allow_remote_admin(self, allow):
         """
         Enable or disable the builtin Admin user from network clients
