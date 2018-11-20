@@ -150,6 +150,7 @@ class UASocketClient(object):
         self.logger.info("Socket closed, waiting for receiver thread to terminate...")
         if self._thread and self._thread.is_alive():
             self._thread.join()
+        self._callbackmap.clear()
         self.logger.info("Done closing socket: Receiving thread terminated, socket disconnected")
 
     def send_hello(self, url, max_messagesize=0, max_chunkcount=0):
@@ -190,7 +191,6 @@ class UASocketClient(object):
         with self._lock:
             # don't expect any more answers
             future.cancel()
-            self._callbackmap.clear()
 
         # some servers send a response here, most do not ... so we ignore
 
