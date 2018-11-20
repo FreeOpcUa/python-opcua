@@ -193,12 +193,17 @@ class UASocketClient(object):
         """
         self.logger.info("close_secure_channel")
         request = ua.CloseSecureChannelRequest()
-        future = self._send_request(request, message_type=ua.MessageType.SecureClose)
-        with self._lock:
-            # don't expect any more answers
-            future.cancel()
-
-        # some servers send a response here, most do not ... so we ignore
+        try:
+            future = self._send_request(request, message_type=ua.MessageType.SecureClose)
+            with self._lock:
+                # some servers send a response here, most do not ... so we ignore
+                future.cancel()
+        except OSError as exc:
+            raise
+            if exc.errno == errno.EBADF:
+                pass # Socket is closed, so can't send SecureClose request.
+            else:
+                raise
 
     def is_secure_channel_open(self):
         return self._connection.is_open()
