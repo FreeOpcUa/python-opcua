@@ -273,7 +273,7 @@ class UaClient(object):
 
     def close_session(self, deletesubscriptions):
         self.logger.info("close_session")
-        # Bail out if we don't have an open server-channel to unsubsribe ourself.
+        # Bail out if we don't have an open server-channel to unsubscribe ourself.
         if not self._uasocket.is_secure_channel_open():
             return
         request = ua.CloseSessionRequest()
