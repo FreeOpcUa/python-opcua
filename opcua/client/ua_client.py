@@ -201,6 +201,7 @@ class UASocketClient(object):
         except OSError as exc:
             raise
             if exc.errno == errno.EBADF:
+                self.logger.warning("close_secure_channel() failed: socket already closed")
                 pass # Socket is closed, so can't send SecureClose request.
             else:
                 raise
