@@ -137,7 +137,7 @@ class UASocketClient(object):
         """
         self.logger.info("opening connection")
         sock = socket.create_connection((host, port))
-        # nodelay ncessary to avoid packing in one frame, some servers do not like it
+        # nodelay necessary to avoid packing in one frame, some servers do not like it
         sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self._socket = ua.utils.SocketWrapper(sock)
         self.start()
@@ -145,7 +145,13 @@ class UASocketClient(object):
     def disconnect_socket(self):
         self.logger.info("Request to close socket received")
         self._do_stop = True
-        self._socket.socket.shutdown(socket.SHUT_RDWR)
+        try:
+            self._socket.socket.shutdown(socket.SHUT_RDWR)
+        except OSError as exc:
+            if exc.errno == errno.ENOTCONN:
+                pass # Socket is not connected, so can't send FIN packet.
+            else:
+                raise
         self._socket.socket.close()
         self.logger.info("Socket closed, waiting for receiver thread to terminate...")
         if self._thread and self._thread.is_alive():
