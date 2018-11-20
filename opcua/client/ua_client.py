@@ -200,6 +200,9 @@ class UASocketClient(object):
 
         # some servers send a response here, most do not ... so we ignore
 
+    def is_secure_channel_open(self):
+        return self._connection.is_open()
+
 
 class UaClient(object):
 
@@ -270,6 +273,9 @@ class UaClient(object):
 
     def close_session(self, deletesubscriptions):
         self.logger.info("close_session")
+        # Bail out if we don't have an open server-channel to unsubsribe ourself.
+        if not self._uasocket.is_secure_channel_open():
+            return
         request = ua.CloseSessionRequest()
         request.DeleteSubscriptions = deletesubscriptions
         data = self._uasocket.send_request(request)
