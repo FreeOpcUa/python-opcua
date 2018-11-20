@@ -199,7 +199,6 @@ class UASocketClient(object):
                 # some servers send a response here, most do not ... so we ignore
                 future.cancel()
         except OSError as exc:
-            raise
             if exc.errno == errno.EBADF:
                 # Socket is closed, so can't send CloseSecureChannelRequest.
                 self.logger.warning("close_secure_channel() failed: socket already closed")
