@@ -12,8 +12,8 @@ from opcua import ua
 from opcua.client.client import Client
 
 class RegistrationService(object):
-    DEF_REGINT = 2 # [sec] Default re-registration interval.
-    MIN_REGINT = 0 # [sec] Minimal re-registration interval.
+    DEF_REGINT = 60 # [sec] Default re-registration interval.
+    MIN_REGINT = 10 # [sec] Minimal re-registration interval.
 
     # FIXME monitor connection to serverToRegister.
 
