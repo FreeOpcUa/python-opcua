@@ -89,7 +89,8 @@ class InternalServer(object):
         if self._local_discovery_service is None:
             self._local_discovery_service = LocalDiscoveryService()
             for edp in self.endpoints:
-                self._local_discovery_service.add_server_description(edp.Server)
+                srvDesc = LocalDiscoveryService.ServerDescription(edp.Server)
+                self._local_discovery_service.add_server_description(srvDesc)
         return self._local_discovery_service
 
     def setup_nodes(self):

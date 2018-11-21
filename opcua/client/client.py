@@ -316,26 +316,6 @@ class Client(object):
         params.EndpointUrl = self.server_url.geturl()
         return self.uaclient.get_endpoints(params)
 
-    def register_server(self, server, discovery_configuration=None):
-        """
-        register a server to discovery server
-        if discovery_configuration is provided, the newer register_server2 service call is used
-        """
-        serv = ua.RegisteredServer()
-        serv.ServerUri = server.application_uri
-        serv.ProductUri = server.product_uri
-        serv.DiscoveryUrls = [server.endpoint.geturl()]
-        serv.ServerType = server.application_type
-        serv.ServerNames = [ua.LocalizedText(server.name)]
-        serv.IsOnline = True
-        if discovery_configuration:
-            params = ua.RegisterServer2Parameters()
-            params.Server = serv
-            params.DiscoveryConfiguration = discovery_configuration
-            return self.uaclient.register_server2(params)
-        else:
-            return self.uaclient.register_server(serv)
-
     def find_servers(self, uris=None):
         """
         send a FindServer request to the server. The answer should be a list of
