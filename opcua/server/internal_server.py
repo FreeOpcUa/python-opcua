@@ -26,6 +26,7 @@ from opcua.server.address_space import ViewService
 from opcua.server.address_space import NodeManagementService
 from opcua.server.address_space import MethodService
 from opcua.server.subscription_service import SubscriptionService
+from opcua.server.discovery_service import LocalDiscoveryService
 from opcua.server.standard_address_space import standard_address_space
 from opcua.server.user_manager import UserManager
 #from opcua.common import xmlimporter
@@ -35,13 +36,6 @@ class SessionState(Enum):
     Created = 0
     Activated = 1
     Closed = 2
-
-
-class ServerDesc(object):
-    def __init__(self, serv, cap=None):
-        self.Server = serv
-        self.Capabilities = cap
-
 
 class InternalServer(object):
 
@@ -54,7 +48,7 @@ class InternalServer(object):
         self.endpoints = []
         self._channel_id_counter = 5
         self.disabled_clock = False  # for debugging we may want to disable clock that writes too much in log
-        self._known_servers = {}  # used if we are a discovery server
+        self._local_discovery_service = None # lazy-loading
 
         self.aspace = AddressSpace()
         self.attribute_service = AttributeService(self.aspace)
@@ -81,6 +75,14 @@ class InternalServer(object):
     @property
     def user_manager(self):
         return self._parent.user_manager
+
+    @property
+    def local_discovery_service(self):
+        if self._local_discovery_service is None:
+            self._local_discovery_service = LocalDiscoveryService()
+            for edp in self.endpoints:
+                self._local_discovery_service.add_server_description(edp.Server)
+        return self._local_discovery_service
 
     def setup_nodes(self):
         """
@@ -140,8 +142,6 @@ class InternalServer(object):
 
     def start(self):
         self.logger.info("starting internal server")
-        for edp in self.endpoints:
-            self._known_servers[edp.Server.ApplicationUri] = ServerDesc(edp.Server)
         self.loop = utils.ThreadLoop()
         self.loop.start()
         self.subscription_service.set_loop(self.loop)
@@ -158,6 +158,9 @@ class InternalServer(object):
             self.loop = None
         self.subscription_service.set_loop(None)
         self.history_manager.stop()
+
+    def is_running(self):
+        return self.loop is not None
 
     def _set_current_time(self):
         self.current_time_node.set_value(datetime.utcnow())
@@ -184,6 +187,7 @@ class InternalServer(object):
             return edps
         return self.endpoints[:]
 
+<<<<<<< HEAD
     def find_servers(self, params):
         if not params.ServerUris:
             return [desc.Server for desc in self._known_servers.values()]

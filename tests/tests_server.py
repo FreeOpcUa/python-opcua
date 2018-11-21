@@ -17,6 +17,7 @@ from opcua import ua
 from opcua import uamethod
 from opcua.common.event_objects import BaseEvent, AuditEvent, AuditChannelEvent, AuditSecurityEvent, AuditOpenSecureChannelEvent
 from opcua.common import ua_utils
+from opcua.server.registration_service import RegistrationService
 
 
 port_num = 48540
@@ -53,12 +54,13 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
             servers = client.find_servers()
             new_app_uri = "urn:freeopcua:python:server:test_discovery"
             self.srv.application_uri = new_app_uri
-            self.srv.register_to_discovery(self.discovery.endpoint.geturl(), 0)
-            time.sleep(0.1)  # let server register registration
-            new_servers = client.find_servers()
-            self.assertEqual(len(new_servers) - len(servers) , 1)
-            self.assertFalse(new_app_uri in [s.ApplicationUri for s in servers])
-            self.assertTrue(new_app_uri in [s.ApplicationUri for s in new_servers])
+            with RegistrationService() as regService:
+                regService.register_to_discovery(self.srv, self.discovery.endpoint.geturl(), period=0)
+                time.sleep(0.1)  # let server register registration
+                new_servers = client.find_servers()
+                self.assertEqual(len(new_servers) - len(servers) , 1)
+                self.assertFalse(new_app_uri in [s.ApplicationUri for s in servers])
+                self.assertTrue(new_app_uri in [s.ApplicationUri for s in new_servers])
         finally:
             client.disconnect()
 
@@ -67,29 +69,34 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         client.connect()
         try:
             servers = client.find_servers()
-            new_app_uri1 = "urn:freeopcua:python:server:test_discovery1"
-            self.srv.application_uri = new_app_uri1
-            self.srv.register_to_discovery(self.discovery.endpoint.geturl(), period=0)
-            new_app_uri2 = "urn:freeopcua:python:test_discovery2"
-            self.srv.application_uri = new_app_uri2
-            self.srv.register_to_discovery(self.discovery.endpoint.geturl(), period=0)
-            time.sleep(0.1)  # let server register registration
-            new_servers = client.find_servers()
-            self.assertEqual(len(new_servers) - len(servers) , 2)
-            self.assertFalse(new_app_uri1 in [s.ApplicationUri for s in servers])
-            self.assertFalse(new_app_uri2 in [s.ApplicationUri for s in servers])
-            self.assertTrue(new_app_uri1 in [s.ApplicationUri for s in new_servers])
-            self.assertTrue(new_app_uri2 in [s.ApplicationUri for s in new_servers])
-            # now do a query with filer
-            new_servers = client.find_servers(["urn:freeopcua:python:server"])
-            self.assertEqual(len(new_servers) - len(servers) , 0)
-            self.assertTrue(new_app_uri1 in [s.ApplicationUri for s in new_servers])
-            self.assertFalse(new_app_uri2 in [s.ApplicationUri for s in new_servers])
-            # now do a query with filer
-            new_servers = client.find_servers(["urn:freeopcua:python"])
-            self.assertEqual(len(new_servers) - len(servers) , 2)
-            self.assertTrue(new_app_uri1 in [s.ApplicationUri for s in new_servers])
-            self.assertTrue(new_app_uri2 in [s.ApplicationUri for s in new_servers])
+            # Use 2 different RegistrationServices, as it does not allow duplicate registrations.
+            with RegistrationService() as regService1, RegistrationService() as regService2:
+                # Register to server with uri1
+                new_app_uri1 = "urn:freeopcua:python:server:test_discovery1"
+                self.srv.application_uri = new_app_uri1
+                regService1.register_to_discovery(self.srv, self.discovery.endpoint.geturl(), period=0)
+                # Register to server with uri2
+                new_app_uri2 = "urn:freeopcua:python:test_discovery2"
+                self.srv.application_uri = new_app_uri2
+                regService2.register_to_discovery(self.srv, self.discovery.endpoint.geturl(), period=0)
+                # Check for 2 registrations
+                time.sleep(0.1)  # let server register registration
+                new_servers = client.find_servers()
+                self.assertEqual(len(new_servers) - len(servers) , 2)
+                self.assertFalse(new_app_uri1 in [s.ApplicationUri for s in servers])
+                self.assertFalse(new_app_uri2 in [s.ApplicationUri for s in servers])
+                self.assertTrue(new_app_uri1 in [s.ApplicationUri for s in new_servers])
+                self.assertTrue(new_app_uri2 in [s.ApplicationUri for s in new_servers])
+                # now do a query with filter
+                new_servers = client.find_servers(["urn:freeopcua:python:server"])
+                self.assertEqual(len(new_servers) - len(servers) , 0)
+                self.assertTrue(new_app_uri1 in [s.ApplicationUri for s in new_servers])
+                self.assertFalse(new_app_uri2 in [s.ApplicationUri for s in new_servers])
+                # now do a query with filter
+                new_servers = client.find_servers(["urn:freeopcua:python"])
+                self.assertEqual(len(new_servers) - len(servers) , 2)
+                self.assertTrue(new_app_uri1 in [s.ApplicationUri for s in new_servers])
+                self.assertTrue(new_app_uri2 in [s.ApplicationUri for s in new_servers])
         finally:
             client.disconnect()
 
