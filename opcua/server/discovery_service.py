@@ -8,7 +8,7 @@ class LocalDiscoveryService(object):
             self.applicationDescription = appDesc
             self.discoveryConfiguration = uaDiscoveryConfiguration
 
-    def __init__(self, shelffile=None):
+    def __init__(self):
         self._known_servers = {}
 
     def find_servers(self, params):
