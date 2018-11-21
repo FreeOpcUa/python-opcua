@@ -4,6 +4,7 @@ Low level binary client
 
 import logging
 import socket
+import errno
 from threading import Thread, Lock
 from concurrent.futures import Future
 from functools import partial

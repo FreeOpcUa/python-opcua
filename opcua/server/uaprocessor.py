@@ -34,6 +34,10 @@ class UaProcessor(object):
         self._publish_result_queue = []  # used when we need to wait for PublishRequest
         self._connection = SecureConnection(ua.SecurityPolicy())
 
+    @property
+    def local_discovery_service(self):
+        return self.iserver.local_discovery_service
+
     def set_policies(self, policies):
         self._connection.set_policy_factories(policies)
 
@@ -228,7 +232,7 @@ class UaProcessor(object):
             self.logger.info("find servers request")
             params = struct_from_binary(ua.FindServersParameters, body)
 
-            servers = self.iserver.find_servers(params)
+            servers = self.local_discovery_service.find_servers(params)
 
             response = ua.FindServersResponse()
             response.Servers = servers
@@ -240,7 +244,7 @@ class UaProcessor(object):
             self.logger.info("register server request")
             serv = struct_from_binary(ua.RegisteredServer, body)
 
-            self.iserver.register_server(serv)
+            self.local_discovery_service.register_server(serv)
 
             response = ua.RegisterServerResponse()
 
@@ -251,7 +255,7 @@ class UaProcessor(object):
             self.logger.info("register server 2 request")
             params = struct_from_binary(ua.RegisterServer2Parameters, body)
 
-            results = self.iserver.register_server2(params)
+            results = self.local_discovery_service.register_server2(params)
 
             response = ua.RegisterServer2Response()
             response.ConfigurationResults = results
