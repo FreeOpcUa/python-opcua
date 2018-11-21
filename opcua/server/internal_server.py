@@ -27,6 +27,7 @@ from opcua.server.address_space import ViewService
 from opcua.server.address_space import NodeManagementService
 from opcua.server.address_space import MethodService
 from opcua.server.subscription_service import SubscriptionService
+from opcua.server.discovery_service import LocalDiscoveryService
 from opcua.server.standard_address_space import standard_address_space
 from opcua.server.users import User
 #from opcua.common import xmlimporter
@@ -44,13 +45,6 @@ class SessionState(Enum):
     Activated = 1
     Closed = 2
 
-
-class ServerDesc(object):
-    def __init__(self, serv, cap=None):
-        self.Server = serv
-        self.Capabilities = cap
-
-
 class InternalServer(object):
 
     def __init__(self, shelffile=None):
@@ -62,7 +56,7 @@ class InternalServer(object):
         self._channel_id_counter = 5
         self.allow_remote_admin = True
         self.disabled_clock = False  # for debugging we may want to disable clock that writes too much in log
-        self._known_servers = {}  # used if we are a discovery server
+        self._local_discovery_service = None # lazy-loading
 
         self.certificate = None
         self.private_key = None
@@ -89,6 +83,14 @@ class InternalServer(object):
         self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
         self._address_space_fixes()
         self.setup_nodes()
+
+    @property
+    def local_discovery_service(self):
+        if self._local_discovery_service is None:
+            self._local_discovery_service = LocalDiscoveryService()
+            for edp in self.endpoints:
+                self._local_discovery_service.add_server_description(edp.Server)
+        return self._local_discovery_service
 
     def setup_nodes(self):
         """
@@ -148,8 +150,6 @@ class InternalServer(object):
 
     def start(self):
         self.logger.info("starting internal server")
-        for edp in self.endpoints:
-            self._known_servers[edp.Server.ApplicationUri] = ServerDesc(edp.Server)
         self.loop = utils.ThreadLoop()
         self.loop.start()
         self.subscription_service.set_loop(self.loop)
@@ -166,6 +166,9 @@ class InternalServer(object):
             self.loop = None
         self.subscription_service.set_loop(None)
         self.history_manager.stop()
+
+    def is_running(self):
+        return self.loop is not None
 
     def _set_current_time(self):
         self.current_time_node.set_value(datetime.utcnow())
@@ -191,34 +194,6 @@ class InternalServer(object):
                 edps.append(edp1)
             return edps
         return self.endpoints[:]
-
-    def find_servers(self, params):
-        if not params.ServerUris:
-            return [desc.Server for desc in self._known_servers.values()]
-        servers = []
-        for serv in self._known_servers.values():
-            serv_uri = serv.Server.ApplicationUri.split(":")
-            for uri in params.ServerUris:
-                uri = uri.split(":")
-                if serv_uri[:len(uri)] == uri:
-                    servers.append(serv.Server)
-                    break
-        return servers
-
-    def register_server(self, server, conf=None):
-        appdesc = ua.ApplicationDescription()
-        appdesc.ApplicationUri = server.ServerUri
-        appdesc.ProductUri = server.ProductUri
-        # FIXME: select name from client locale
-        appdesc.ApplicationName = server.ServerNames[0]
-        appdesc.ApplicationType = server.ServerType
-        appdesc.DiscoveryUrls = server.DiscoveryUrls
-        # FIXME: select discovery uri using reachability from client network
-        appdesc.GatewayServerUri = server.GatewayServerUri
-        self._known_servers[server.ServerUri] = ServerDesc(appdesc, conf)
-
-    def register_server2(self, params):
-        return self.register_server(params.Server, params.DiscoveryConfiguration)
 
     def create_session(self, name, user=User.Anonymous, external=False):
         return InternalSession(self, self.aspace, self.subscription_service, name, user=user, external=external)

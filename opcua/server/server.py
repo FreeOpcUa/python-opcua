@@ -15,6 +15,7 @@ from opcua import ua
 from opcua.server.binary_server_asyncio import BinaryServer
 from opcua.server.internal_server import InternalServer
 from opcua.server.event_generator import EventGenerator
+from opcua.server.discovery_service import LocalDiscoveryService
 from opcua.common.node import Node
 from opcua.common.subscription import Subscription
 from opcua.common.manage_nodes import delete_nodes
@@ -88,8 +89,6 @@ class Server(object):
         else:
             self.iserver = InternalServer(shelffile)
         self.bserver = None
-        self._discovery_clients = {}
-        self._discovery_period = 60
         self._policies = []
         self.nodes = Shortcuts(self.iserver.isession)
 
@@ -125,6 +124,10 @@ class Server(object):
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.stop()
+
+    @property
+    def local_discovery_service(self):
+        return self.iserver.local_discovery_service
 
     def load_certificate(self, path):
         """
@@ -168,36 +171,7 @@ class Server(object):
         params = ua.FindServersParameters()
         params.EndpointUrl = self.endpoint.geturl()
         params.ServerUris = uris
-        return self.iserver.find_servers(params)
-
-    def register_to_discovery(self, url="opc.tcp://localhost:4840", period=60):
-        """
-        Register to an OPC-UA Discovery server. Registering must be renewed at
-        least every 10 minutes, so this method will use our asyncio thread to
-        re-register every period seconds
-        if period is 0 registration is not automatically renewed
-        """
-        # FIXME: have a period per discovery
-        if url in self._discovery_clients:
-            self._discovery_clients[url].disconnect()
-        self._discovery_clients[url] = Client(url)
-        self._discovery_clients[url].connect()
-        self._discovery_clients[url].register_server(self)
-        self._discovery_period = period
-        if period:
-            self.iserver.loop.call_soon(self._renew_registration)
-
-    def unregister_to_discovery(self, url="opc.tcp://localhost:4840"):
-        """
-        stop registration thread
-        """
-        # FIXME: is there really no way to deregister?
-        self._discovery_clients[url].disconnect()
-
-    def _renew_registration(self):
-        for client in self._discovery_clients.values():
-            client.register_server(self)
-            self.iserver.loop.call_later(self._discovery_period, self._renew_registration)
+        return self.local_discovery_service.find_servers(params)
 
     def allow_remote_admin(self, allow):
         """
@@ -341,8 +315,6 @@ class Server(object):
         """
         Stop server
         """
-        for client in self._discovery_clients.values():
-            client.disconnect()
         self.bserver.stop()
         self.iserver.stop()
 

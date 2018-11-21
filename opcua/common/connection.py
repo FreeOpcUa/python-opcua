@@ -148,6 +148,7 @@ class SecureConnection(object):
         Called on client side when getting secure channel data from server
         """
         self.channel = channel
+        self._open = True
 
     def open(self, params, server):
         """
