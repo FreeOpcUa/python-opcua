@@ -12,6 +12,8 @@ from opcua import ua
 from opcua.client.client import Client
 
 class RegistrationService(object):
+    DEF_DISCOVERY_URL = "opc.tcp://localhost:4840" # By OPC-UA specification.
+    MAX_CLIENT = 32 # [-] Max. number of simultaneous client connections.
     DEF_REGINT = 60 # [sec] Default re-registration interval.
     MIN_REGINT = 10 # [sec] Minimal re-registration interval.
 
@@ -31,31 +33,34 @@ class RegistrationService(object):
                 client.disconnect()
             self._registration_clients = []
 
-    def register_to_discovery(self, serverToRegister=None, url="opc.tcp://localhost:4840", period=DEF_REGINT):
+    def register_to_discovery(self, serverToRegister=None, discoveryUrl=DEF_DISCOVERY_URL, period=DEF_REGINT):
         """
         Register to an OPC-UA Discovery server. Registering must be renewed at
         least every 10 minutes, so this method will use our asyncio thread to
         re-register every period seconds
         if period is 0 registration is not automatically renewed
         """
+        # Detect accidental registration loops.
+        if len(self._registration_clients) >= self.MAX_CLIENT:
+            raise Exception('Max. discovery servers reached: {:d}'.format(self.MAX_CLIENT))
         # Prevent multiple registrations to one discovery server.
-        netloc = urlparse(url).netloc
+        netloc = urlparse(discoveryUrl).netloc
         for client in self._registration_clients:
             if client.server_url.netloc != netloc:
                 continue
-            raise Exception('Already registering to discovery server: {:s}'.format(url))
+            raise Exception('Already registering to discovery server: {:s}'.format(discoveryUrl))
         # Create and store client connection to discovery server.
-        registrationClient = Client(url)
+        registrationClient = Client(discoveryUrl)
         registrationClient.connect()
         self._registration_clients.append(registrationClient)
         self._renew_registration(serverToRegister, registrationClient, period=period)
 
-    def unregister_to_discovery(self, url="opc.tcp://localhost:4840"):
+    def unregister_to_discovery(self, discoveryUrl=DEF_DISCOVERY_URL):
         """
         Unregister from OPC-UA Discovery server.
         """
         # FIXME: is there really no way to deregister?
-        netloc = urlparse(url).netloc
+        netloc = urlparse(discoveryUrl).netloc
         with self._lock:
             for client in self._registration_clients[:]:
                 if client.server_url.netloc != netloc:
@@ -64,6 +69,8 @@ class RegistrationService(object):
                 client.disconnect()
                 break
 
+    # This method is called once from the main thread.
+    # Subsequent periodic calls are from asyncio loop.
     def _renew_registration(self, serverToRegister, registrationClient, period=DEF_REGINT):
         # Send registration request to discovery server.
         try:
@@ -73,15 +80,16 @@ class RegistrationService(object):
                 self._register_server(serverToRegister, registrationClient)
         except (BrokenPipeError, OSError) as e:
             self.logger.info("Discovery server registration failure: {:s}".format(str(e)))
-            return # FIXME handle connection loss (retry x times?).
+            return # TODO handle connection loss (retry x times?).
         except TimeoutError:
             self.logger.info("Discovery server registration timeout: {:s}".format(str(e)))
-
+        # Decide whether to schedule a registration renewal.
         if period == 0:
-            return
+            return # no periodic registrations.
         elif not serverToRegister.iserver.is_running():
-            return
-        self._schedule_registration(serverToRegister, registrationClient, period)
+            return # won't happen as we currently use serverToRegister's own event loop.
+        else:
+            self._schedule_registration(serverToRegister, registrationClient, period)
 
     def _schedule_registration(self, serverToRegister, registrationClient, period=DEF_REGINT):
         # Schedule automatic re-registrations every <period> sec.
@@ -92,6 +100,7 @@ class RegistrationService(object):
             registrationClient = registrationClient,
             period = period
         )
+        # Piggyback on the serverToRegister's asyncio loop.
         serverToRegister.iserver.loop.call_later(period, renew_cb)
 
     @staticmethod
