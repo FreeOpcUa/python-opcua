@@ -147,8 +147,8 @@ class UASocketClient(object):
         self._do_stop = True
         try:
             self._socket.socket.shutdown(socket.SHUT_RDWR)
-        except OSError as exc:
-            if exc.errno == errno.ENOTCONN:
+        except (socket.error, OSError) as exc:
+            if exc.errno in (errno.ENOTCONN, errno.EBADF):
                 pass # Socket is not connected, so can't send FIN packet.
             else:
                 raise
@@ -198,8 +198,8 @@ class UASocketClient(object):
             with self._lock:
                 # some servers send a response here, most do not ... so we ignore
                 future.cancel()
-        except OSError as exc:
-            if exc.errno == errno.EBADF:
+        except (socket.error, OSError) as exc:
+            if exc.errno in (errno.ENOTCONN, errno.EBADF):
                 # Socket is closed, so can't send CloseSecureChannelRequest.
                 self.logger.warning("close_secure_channel() failed: socket already closed")
             else:
