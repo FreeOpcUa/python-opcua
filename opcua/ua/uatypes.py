@@ -756,9 +756,6 @@ class Variant(FrozenClass):
 
     __repr__ = __str__
 
-    def to_binary(self):
-        from opcua.ua.ua_binary import variant_to_binary
-        return variant_to_binary(self)
 
 
 def _split_list(l, n):
