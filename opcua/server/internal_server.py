@@ -64,7 +64,6 @@ class InternalServer(object):
         self.disabled_clock = False  # for debugging we may want to disable clock that writes too much in log
         self._known_servers = {}  # used if we are a discovery server
 
-        self.certificate = None
         self.private_key = None
 
         self.aspace = AddressSpace()
