@@ -85,9 +85,15 @@ class InternalServer(object):
         self.setup_nodes()
 
     @property
+    def threadLoop(self):
+        if self.loop is None:
+            raise Exception("InternalServer stopped: threadLoop is not running.")
+        return self.loop
+
+    @property
     def local_discovery_service(self):
         if self._local_discovery_service is None:
-            self._local_discovery_service = LocalDiscoveryService()
+            self._local_discovery_service = LocalDiscoveryService(parent = self)
             for edp in self.endpoints:
                 srvDesc = LocalDiscoveryService.ServerDescription(edp.Server)
                 self._local_discovery_service.add_server_description(srvDesc)
