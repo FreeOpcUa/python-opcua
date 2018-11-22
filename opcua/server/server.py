@@ -20,7 +20,6 @@ from opcua.server.discovery_service import LocalDiscoveryService
 from opcua.common.node import Node
 from opcua.common.subscription import Subscription
 from opcua.common.manage_nodes import delete_nodes
-from opcua.client.client import Client
 from opcua.crypto import security_policies
 from opcua.common.event_objects import BaseEvent
 from opcua.common.shortcuts import Shortcuts
