@@ -76,27 +76,27 @@ class Subscription(object):
     code and/or use create_monitored_items method.
     """
 
-    def __init__(self, server, params, handler):
+    def __init__(self, isession, params, handler):
         self.logger = logging.getLogger(__name__)
-        self.server = server
+        self.isession = isession
         self._client_handle = 200
         self._handler = handler
         self.parameters = params  # move to data class
         self._monitoreditems_map = {}
         self._lock = Lock()
         self.subscription_id = None
-        response = self.server.create_subscription(params, self.publish_callback)
+        response = self.isession.create_subscription(params, self.publish_callback)
         self.subscription_id = response.SubscriptionId  # move to data class
         
-        #Send a publish request so the server has one in its queue
+        #Send a publish request so the session server has one in its queue
         # Servers should alsways be able to handle at least on extra publish request per subscriptions
-        self.server.publish()
+        self.isession.publish()
 
     def delete(self):
         """
         Delete subscription on server. This is automatically done by Client and Server classes on exit
         """
-        results = self.server.delete_subscriptions([self.subscription_id])
+        results = self.isession.delete_subscriptions([self.subscription_id])
         results[0].check()
 
     def publish_callback(self, publishresult):
@@ -120,7 +120,7 @@ class Subscription(object):
         ack = ua.SubscriptionAcknowledgement()
         ack.SubscriptionId = self.subscription_id
         ack.SequenceNumber = publishresult.NotificationMessage.SequenceNumber
-        self.server.publish([ack])
+        self.isession.publish([ack])
 
     def _call_datachange(self, datachange):
         for item in datachange.MonitoredItems:
@@ -186,13 +186,13 @@ class Subscription(object):
         if evtypes is a list or tuple of custom event types, the events will be filtered to the supplied types
         Return a handle which can be used to unsubscribe
         """
-        sourcenode = Node(self.server, sourcenode)
+        sourcenode = Node(self.isession, sourcenode)
 
         if evfilter is None:
             if not type(evtypes) in (list, tuple):
                 evtypes = [evtypes]
 
-            evtypes = [Node(self.server, evtype) for evtype in evtypes]
+            evtypes = [Node(self.isession, evtype) for evtype in evtypes]
 
             evfilter = events.get_filter_from_event_type(evtypes)
         return self._subscribe(sourcenode, ua.AttributeIds.EventNotifier, evfilter, queuesize=queuesize)
@@ -252,12 +252,12 @@ class Subscription(object):
             for mi in monitored_items:
                 data = SubscriptionItemData()
                 data.client_handle = mi.RequestedParameters.ClientHandle
-                data.node = Node(self.server, mi.ItemToMonitor.NodeId)
+                data.node = Node(self.isession, mi.ItemToMonitor.NodeId)
                 data.attribute = mi.ItemToMonitor.AttributeId
                 #TODO: Either use the filter from request or from response. Here it uses from request, in modify it uses from response
                 data.mfilter = mi.RequestedParameters.Filter
                 self._monitoreditems_map[mi.RequestedParameters.ClientHandle] = data
-        results = self.server.create_monitored_items(params)
+        results = self.isession.create_monitored_items(params)
         mids = []
         # process result, add server_handle, or remove it if failed
         with self._lock:
@@ -280,7 +280,7 @@ class Subscription(object):
         params = ua.DeleteMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
         params.MonitoredItemIds = [handle]
-        results = self.server.delete_monitored_items(params)
+        results = self.isession.delete_monitored_items(params)
         results[0].check()
         with self._lock:
             for k, v in self._monitoreditems_map.items():
@@ -317,7 +317,7 @@ class Subscription(object):
         params = ua.ModifyMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
         params.ItemsToModify.append(modif_item)
-        results = self.server.modify_monitored_items(params)
+        results = self.isession.modify_monitored_items(params)
         item_to_change.mfilter = results[0].FilterResult
         return results
 

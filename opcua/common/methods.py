@@ -37,18 +37,18 @@ def call_method_full(parent, methodid, *args):
     elif isinstance(methodid, node.Node):
         methodid = methodid.nodeid
 
-    result = _call_method(parent.server, parent.nodeid, methodid, to_variant(*args))
+    result = _call_method(parent.isession, parent.nodeid, methodid, to_variant(*args))
     result.OutputArguments = [var.Value for var in result.OutputArguments]
     return result
 
 
-def _call_method(server, parentnodeid, methodid, arguments):
+def _call_method(isession, parentnodeid, methodid, arguments):
     request = ua.CallMethodRequest()
     request.ObjectId = parentnodeid
     request.MethodId = methodid
     request.InputArguments = arguments
     methodstocall = [request]
-    results = server.call(methodstocall)
+    results = isession.call(methodstocall)
     res = results[0]
     res.StatusCode.check()
     return res

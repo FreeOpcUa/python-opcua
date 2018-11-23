@@ -35,8 +35,8 @@ class Node(object):
     directly UA services methods to optimize your code
     """
 
-    def __init__(self, server, nodeid):
-        self.server = server
+    def __init__(self, isession, nodeid):
+        self.isession = isession
         self.nodeid = None
         if isinstance(nodeid, Node):
             self.nodeid = nodeid.nodeid
@@ -93,7 +93,7 @@ class Node(object):
         may not be convertible to VariantType
         """
         result = self.get_attribute(ua.AttributeIds.DataType)
-        return opcua.common.ua_utils.data_type_to_variant_type(Node(self.server, result.Value.Value))
+        return opcua.common.ua_utils.data_type_to_variant_type(Node(self.isession, result.Value.Value))
 
     def get_access_level(self):
         """
@@ -253,7 +253,7 @@ class Node(object):
         attr.Value = datavalue
         params = ua.WriteParameters()
         params.NodesToWrite = [attr]
-        result = self.server.write(params)
+        result = self.isession.write(params)
         result[0].check()
 
     def get_attribute(self, attr):
@@ -266,7 +266,7 @@ class Node(object):
         rv.AttributeId = attr
         params = ua.ReadParameters()
         params.NodesToRead.append(rv)
-        result = self.server.read(params)
+        result = self.isession.read(params)
         result[0].StatusCode.check()
         return result[0]
 
@@ -282,7 +282,7 @@ class Node(object):
             rv.AttributeId = attr
             params.NodesToRead.append(rv)
 
-        results = self.server.read(params)
+        results = self.isession.read(params)
         return results
 
     def get_children(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified):
@@ -360,7 +360,7 @@ class Node(object):
         params.View.Timestamp = ua.get_win_epoch()
         params.NodesToBrowse.append(desc)
         params.RequestedMaxReferencesPerNode = 0
-        results = self.server.browse(params)
+        results = self.isession.browse(params)
 
         references = self._browse_next(results)
         return references
@@ -371,7 +371,7 @@ class Node(object):
             params = ua.BrowseNextParameters()
             params.ContinuationPoints = [results[0].ContinuationPoint]
             params.ReleaseContinuationPoints = False
-            results = self.server.browse_next(params)
+            results = self.isession.browse_next(params)
             references.extend(results[0].References)
         return references
 
@@ -384,7 +384,7 @@ class Node(object):
         references = self.get_references(refs, direction, nodeclassmask, includesubtypes)
         nodes = []
         for desc in references:
-            node = Node(self.server, desc.NodeId)
+            node = Node(self.isession, desc.NodeId)
             nodes.append(node)
         return nodes
 
@@ -407,7 +407,7 @@ class Node(object):
 
         """
         path = self._get_path(max_length)
-        path = [Node(self.server, ref.NodeId) for ref in path]
+        path = [Node(self.isession, ref.NodeId) for ref in path]
         path.append(self)
         if as_string:
             path = [el.get_browse_name().to_string() for el in path]
@@ -428,7 +428,7 @@ class Node(object):
             refs = node.get_references(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse)
             if len(refs) > 0:
                 path.insert(0, refs[0])
-                node = Node(self.server, refs[0].NodeId)
+                node = Node(self.isession, refs[0].NodeId)
                 if len(path) >= (max_length -1):
                     return path
             else:
@@ -443,7 +443,7 @@ class Node(object):
         """
         refs = self.get_references(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse)
         if len(refs) > 0:
-            return Node(self.server, refs[0].NodeId)
+            return Node(self.isession, refs[0].NodeId)
         else:
             return None
 
@@ -462,11 +462,11 @@ class Node(object):
         bpath = ua.BrowsePath()
         bpath.StartingNode = self.nodeid
         bpath.RelativePath = rpath
-        result = self.server.translate_browsepaths_to_nodeids([bpath])
+        result = self.isession.translate_browsepaths_to_nodeids([bpath])
         result = result[0]
         result.StatusCode.check()
         # FIXME: seems this method may return several nodes
-        return Node(self.server, result.Targets[0].TargetId)
+        return Node(self.isession, result.Targets[0].TargetId)
 
     def _make_relative_path(self, path):
         rpath = ua.RelativePath()
@@ -518,7 +518,7 @@ class Node(object):
         params.TimestampsToReturn = ua.TimestampsToReturn.Both
         params.ReleaseContinuationPoints = False
         params.NodesToRead.append(valueid)
-        result = self.server.history_read(params)[0]
+        result = self.isession.history_read(params)[0]
         return result
 
     def read_event_history(self, starttime=None, endtime=None, numvalues=0, evtypes=ua.ObjectIds.BaseEventType):
@@ -543,7 +543,7 @@ class Node(object):
         if not isinstance(evtypes, (list, tuple)):
             evtypes = [evtypes]
 
-        evtypes = [Node(self.server, evtype) for evtype in evtypes]
+        evtypes = [Node(self.isession, evtype) for evtype in evtypes]
 
         evfilter = events.get_filter_from_event_type(evtypes)
         details.Filter = evfilter
@@ -568,14 +568,14 @@ class Node(object):
         params.TimestampsToReturn = ua.TimestampsToReturn.Both
         params.ReleaseContinuationPoints = False
         params.NodesToRead.append(valueid)
-        result = self.server.history_read(params)[0]
+        result = self.isession.history_read(params)[0]
         return result
 
     def delete(self, delete_references=True, recursive=False):
         """
         Delete node from address space
         """
-        results = opcua.common.manage_nodes.delete_nodes(self.server, [self], recursive, delete_references)
+        results = opcua.common.manage_nodes.delete_nodes(self.isession, [self], recursive, delete_references)
         _check_results(results)
 
     def _fill_delete_reference_item(self, rdesc, bidirectional = False):
@@ -602,7 +602,7 @@ class Node(object):
             raise ua.UaStatusCodeError(ua.StatusCodes.BadNotFound)
 
         ditem = self._fill_delete_reference_item(rdesc, bidirectional)
-        self.server.delete_references([ditem])[0].check()
+        self.isession.delete_references([ditem])[0].check()
 
     def add_reference(self, target, reftype, forward=True, bidirectional=True):
         """
@@ -625,7 +625,7 @@ class Node(object):
             aitem2.IsForward = not forward
             params.append(aitem2)
 
-        results = self.server.add_references(params)
+        results = self.isession.add_references(params)
         _check_results(results, len(params))
 
     def set_modelling_rule(self, mandatory):
@@ -637,7 +637,7 @@ class Node(object):
         """
         # remove all existing modelling rule
         rules = self.get_references(ua.ObjectIds.HasModellingRule)
-        self.server.delete_references(list(map(self._fill_delete_reference_item, rules)))
+        self.isession.delete_references(list(map(self._fill_delete_reference_item, rules)))
         # add new modelling rule as requested
         if mandatory is not None:
             rule = ua.ObjectIds.ModellingRule_Mandatory if mandatory else ua.ObjectIds.ModellingRule_Optional

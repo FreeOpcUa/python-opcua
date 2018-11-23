@@ -15,11 +15,11 @@ def copy_node(parent, node, nodeid=None, recursive=True):
 
     if nodeid is None:
         nodeid = ua.NodeId(namespaceidx=node.nodeid.NamespaceIndex)
-    added_nodeids = _copy_node(parent.server, parent.nodeid, rdesc, nodeid, recursive)
-    return [Node(parent.server, nid) for nid in added_nodeids]
+    added_nodeids = _copy_node(parent.isession, parent.nodeid, rdesc, nodeid, recursive)
+    return [Node(parent.isession, nid) for nid in added_nodeids]
 
 
-def _copy_node(server, parent_nodeid, rdesc, nodeid, recursive):
+def _copy_node(isession, parent_nodeid, rdesc, nodeid, recursive):
     addnode = ua.AddNodesItem()
     addnode.RequestedNewNodeId = nodeid
     addnode.BrowseName = rdesc.BrowseName
@@ -28,19 +28,19 @@ def _copy_node(server, parent_nodeid, rdesc, nodeid, recursive):
     addnode.TypeDefinition = rdesc.TypeDefinition
     addnode.NodeClass = rdesc.NodeClass
 
-    node_to_copy = Node(server, rdesc.NodeId)
+    node_to_copy = Node(isession, rdesc.NodeId)
     
     attrObj = getattr(ua, rdesc.NodeClass.name + "Attributes")
     _read_and_copy_attrs(node_to_copy, attrObj(), addnode)
     
-    res = server.add_nodes([addnode])[0]
+    res = isession.add_nodes([addnode])[0]
 
     added_nodes = [res.AddedNodeId]
         
     if recursive:
         descs = node_to_copy.get_children_descriptions()
         for desc in descs:
-            nodes = _copy_node(server, res.AddedNodeId, desc, nodeid=ua.NodeId(namespaceidx=desc.NodeId.NamespaceIndex), recursive=True)
+            nodes = _copy_node(isession, res.AddedNodeId, desc, nodeid=ua.NodeId(namespaceidx=desc.NodeId.NamespaceIndex), recursive=True)
             added_nodes.extend(nodes)
 
     return added_nodes

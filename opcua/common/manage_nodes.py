@@ -38,7 +38,7 @@ def create_folder(parent, nodeid, bname):
     or namespace index, name
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
-    return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, ua.ObjectIds.FolderType))
+    return node.Node(parent.isession, _create_object(parent.isession, parent.nodeid, nodeid, qname, ua.ObjectIds.FolderType))
 
 
 def create_object(parent, nodeid, bname, objecttype=None):
@@ -50,12 +50,12 @@ def create_object(parent, nodeid, bname, objecttype=None):
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
     if objecttype is not None:
-        objecttype = node.Node(parent.server, objecttype)
+        objecttype = node.Node(parent.isession, objecttype)
         dname = ua.LocalizedText(bname)
         nodes = instantiate(parent, objecttype, nodeid, bname=qname, dname=dname)[0]
         return nodes
     else:
-        return node.Node(parent.server, _create_object(parent.server, parent.nodeid, nodeid, qname, ua.ObjectIds.BaseObjectType))
+        return node.Node(parent.isession, _create_object(parent.isession, parent.nodeid, nodeid, qname, ua.ObjectIds.BaseObjectType))
 
 
 def create_property(parent, nodeid, bname, val, varianttype=None, datatype=None):
@@ -70,7 +70,7 @@ def create_property(parent, nodeid, bname, val, varianttype=None, datatype=None)
         datatype = ua.NodeId(datatype, 0)
     if datatype and not isinstance(datatype, ua.NodeId):
         raise RuntimeError("datatype argument must be a nodeid or an int refering to a nodeid")
-    return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, var, datatype=datatype, isproperty=True))
+    return node.Node(parent.isession, _create_variable(parent.isession, parent.nodeid, nodeid, qname, var, datatype=datatype, isproperty=True))
 
 
 def create_variable(parent, nodeid, bname, val, varianttype=None, datatype=None):
@@ -86,7 +86,7 @@ def create_variable(parent, nodeid, bname, val, varianttype=None, datatype=None)
     if datatype and not isinstance(datatype, ua.NodeId):
         raise RuntimeError("datatype argument must be a nodeid or an int refering to a nodeid")
 
-    return node.Node(parent.server, _create_variable(parent.server, parent.nodeid, nodeid, qname, var, datatype=datatype, isproperty=False))
+    return node.Node(parent.isession, _create_variable(parent.isession, parent.nodeid, nodeid, qname, var, datatype=datatype, isproperty=False))
 
 
 def create_variable_type(parent, nodeid, bname, datatype):
@@ -100,7 +100,7 @@ def create_variable_type(parent, nodeid, bname, datatype):
         datatype = ua.NodeId(datatype, 0)
     if datatype and not isinstance(datatype, ua.NodeId):
         raise RuntimeError("Data type argument must be a nodeid or an int refering to a nodeid, received: {}".format(datatype))
-    return node.Node(parent.server, _create_variable_type(parent.server, parent.nodeid, nodeid, qname, datatype))
+    return node.Node(parent.isession, _create_variable_type(parent.isession, parent.nodeid, nodeid, qname, datatype))
 
 
 def create_reference_type(parent, nodeid, bname, symmetric=True, inversename=None):
@@ -110,7 +110,7 @@ def create_reference_type(parent, nodeid, bname, symmetric=True, inversename=Non
     or idx and name
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
-    return node.Node(parent.server, _create_reference_type(parent.server, parent.nodeid, nodeid, qname, symmetric, inversename))
+    return node.Node(parent.isession, _create_reference_type(parent.isession, parent.nodeid, nodeid, qname, symmetric, inversename))
 
 
 def create_object_type(parent, nodeid, bname):
@@ -120,7 +120,7 @@ def create_object_type(parent, nodeid, bname):
     or namespace index, name
     """
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
-    return node.Node(parent.server, _create_object_type(parent.server, parent.nodeid, nodeid, qname))
+    return node.Node(parent.isession, _create_object_type(parent.isession, parent.nodeid, nodeid, qname))
 
 
 def create_method(parent, *args):
@@ -142,7 +142,7 @@ def create_method(parent, *args):
         outputs = args[4]
     else:
         outputs = []
-    return node.Node(parent.server, _create_method(parent, nodeid, qname, callback, inputs, outputs))
+    return node.Node(parent.isession, _create_method(parent, nodeid, qname, callback, inputs, outputs))
 
 
 def _create_object(server, parentnodeid, nodeid, qname, objecttype):
@@ -302,9 +302,9 @@ def create_data_type(parent, nodeid, bname, description=None):
     attrs.UserWriteMask = 0
     attrs.IsAbstract = False  # True mean they cannot be instanciated
     addnode.NodeAttributes = attrs
-    results = parent.server.add_nodes([addnode])
+    results = parent.isession.add_nodes([addnode])
     results[0].StatusCode.check()
-    return node.Node(parent.server, results[0].AddedNodeId)
+    return node.Node(parent.isession, results[0].AddedNodeId)
 
 
 def _create_method(parent, nodeid, qname, callback, inputs, outputs):
@@ -323,9 +323,9 @@ def _create_method(parent, nodeid, qname, callback, inputs, outputs):
     attrs.Executable = True
     attrs.UserExecutable = True
     addnode.NodeAttributes = attrs
-    results = parent.server.add_nodes([addnode])
+    results = parent.isession.add_nodes([addnode])
     results[0].StatusCode.check()
-    method = node.Node(parent.server, results[0].AddedNodeId)
+    method = node.Node(parent.isession, results[0].AddedNodeId)
     if inputs:
         create_property(method,
                         ua.NodeId(namespaceidx=method.nodeid.NamespaceIndex),
@@ -340,8 +340,8 @@ def _create_method(parent, nodeid, qname, callback, inputs, outputs):
                         [_vtype_to_argument(vtype) for vtype in outputs],
                         varianttype=ua.VariantType.ExtensionObject,
                         datatype=ua.ObjectIds.Argument)
-    if hasattr(parent.server, "add_method_callback"):
-        parent.server.add_method_callback(method.nodeid, callback)
+    if hasattr(parent.isession, "add_method_callback"):
+        parent.isession.add_method_callback(method.nodeid, callback)
     return results[0].AddedNodeId
 
 
