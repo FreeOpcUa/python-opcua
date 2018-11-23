@@ -15,6 +15,7 @@ from opcua import ua
 from opcua.server.binary_server_asyncio import BinaryServer
 from opcua.server.internal_server import InternalServer
 from opcua.server.event_generator import EventGenerator
+from opcua.server.user_manager import UserManager
 from opcua.common.node import Node
 from opcua.common.subscription import Subscription
 from opcua.common.manage_nodes import delete_nodes
@@ -86,7 +87,7 @@ class Server(object):
         if iserver is not None:
             self.iserver = iserver
         else:
-            self.iserver = InternalServer(shelffile)
+            self.iserver = InternalServer(shelffile = shelffile, parent = self)
         self.bserver = None
         self._discovery_clients = {}
         self._discovery_period = 60
@@ -113,6 +114,8 @@ class Server(object):
 
         # enable all endpoints by default
         self.certificate = None
+        self.private_key = None
+        self.userManager = UserManager(parent = self)
         self._security_policy = [
                         ua.SecurityPolicyType.NoSecurity,
                         ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt,
@@ -134,7 +137,7 @@ class Server(object):
         self.certificate = uacrypto.load_certificate(path)
 
     def load_private_key(self, path):
-        self.iserver.private_key = uacrypto.load_private_key(path)
+        self.private_key = uacrypto.load_private_key(path)
 
     def disable_clock(self, val=True):
         """
@@ -204,7 +207,7 @@ class Server(object):
         """
         Enable or disable the builtin Admin user from network clients
         """
-        self.iserver.allow_remote_admin = allow
+        self.userManager.allow_remote_admin = allow
 
     def set_endpoint(self, url):
         self.endpoint = urlparse(url)
@@ -256,7 +259,7 @@ class Server(object):
             self._policies = [ua.SecurityPolicyFactory()]
 
         if self._security_policy != [ua.SecurityPolicyType.NoSecurity]:
-            if not (self.certificate and self.iserver.private_key):
+            if not (self.certificate and self.private_key):
                 self.logger.warning("Endpoints other than open requested but private key and certificate are not set.")
                 return
 
@@ -269,7 +272,7 @@ class Server(object):
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256Sha256,
                                                                ua.MessageSecurityMode.SignAndEncrypt,
                                                                self.certificate,
-                                                               self.iserver.private_key)
+                                                               self.private_key)
                                      )
             if ua.SecurityPolicyType.Basic256Sha256_Sign in self._security_policy:
                 self._set_endpoints(security_policies.SecurityPolicyBasic256Sha256,
@@ -277,7 +280,7 @@ class Server(object):
                 self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256Sha256,
                                                                ua.MessageSecurityMode.Sign,
                                                                self.certificate,
-                                                               self.iserver.private_key)
+                                                               self.private_key)
                                      )
 
     def _set_endpoints(self, policy=ua.SecurityPolicy, mode=ua.MessageSecurityMode.None_):

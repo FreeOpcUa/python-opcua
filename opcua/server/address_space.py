@@ -9,7 +9,7 @@ except:
     import pickle
 
 from opcua import ua
-from opcua.server.users import User
+from opcua.server.user_manager import UserManager
 
 
 class AttributeValue(object):
@@ -50,11 +50,11 @@ class AttributeService(object):
             res.append(self._aspace.get_attribute_value(readvalue.NodeId, readvalue.AttributeId))
         return res
 
-    def write(self, params, user=User.Admin):
+    def write(self, params, user=UserManager.User.Admin):
         self.logger.debug("write %s as user %s", params, user)
         res = []
         for writevalue in params.NodesToWrite:
-            if user != User.Admin:
+            if user != UserManager.User.Admin:
                 if writevalue.AttributeId != ua.AttributeIds.Value:
                     res.append(ua.StatusCode(ua.StatusCodes.BadUserAccessDenied))
                     continue
@@ -182,13 +182,13 @@ class NodeManagementService(object):
         self.logger = logging.getLogger(__name__)
         self._aspace = aspace
 
-    def add_nodes(self, addnodeitems, user=User.Admin):
+    def add_nodes(self, addnodeitems, user=UserManager.User.Admin):
         results = []
         for item in addnodeitems:
             results.append(self._add_node(item, user))
         return results
 
-    def try_add_nodes(self, addnodeitems, user=User.Admin, check=True):
+    def try_add_nodes(self, addnodeitems, user=UserManager.User.Admin, check=True):
         for item in addnodeitems:
             ret = self._add_node(item, user, check=check)
             if not ret.StatusCode.is_good():
@@ -198,7 +198,7 @@ class NodeManagementService(object):
         self.logger.debug("Adding node %s %s", item.RequestedNewNodeId, item.BrowseName)
         result = ua.AddNodesResult()
 
-        if not user == User.Admin:
+        if not user == UserManager.User.Admin:
             result.StatusCode = ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
             return result
 
@@ -302,14 +302,14 @@ class NodeManagementService(object):
         addref.TargetNodeClass = ua.NodeClass.DataType
         self._add_reference_no_check(nodedata, addref)
 
-    def delete_nodes(self, deletenodeitems, user=User.Admin):
+    def delete_nodes(self, deletenodeitems, user=UserManager.User.Admin):
         results = []
         for item in deletenodeitems.NodesToDelete:
             results.append(self._delete_node(item, user))
         return results
 
     def _delete_node(self, item, user):
-        if user != User.Admin:
+        if user != UserManager.User.Admin:
             return ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
 
         if item.NodeId not in self._aspace:
@@ -337,13 +337,13 @@ class NodeManagementService(object):
                 except Exception as ex:
                     self.logger.exception("Error calling delete node callback callback %s, %s, %s", nodedata, ua.AttributeIds.Value, ex)
 
-    def add_references(self, refs, user=User.Admin):
+    def add_references(self, refs, user=UserManager.User.Admin):
         result = []
         for ref in refs:
             result.append(self._add_reference(ref, user))
         return result
 
-    def try_add_references(self, refs, user=User.Admin):
+    def try_add_references(self, refs, user=UserManager.User.Admin):
         for ref in refs:
             if not self._add_reference(ref, user).is_good():
                 yield ref
@@ -354,7 +354,7 @@ class NodeManagementService(object):
             return ua.StatusCode(ua.StatusCodes.BadSourceNodeIdInvalid)
         if addref.TargetNodeId not in self._aspace:
             return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
-        if user != User.Admin:
+        if user != UserManager.User.Admin:
             return ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
         return self._add_reference_no_check(sourcedata, addref)
 
@@ -375,7 +375,7 @@ class NodeManagementService(object):
             rdesc.DisplayName = dname
         return self._add_unique_reference(sourcedata, rdesc)
 
-    def delete_references(self, refs, user=User.Admin):
+    def delete_references(self, refs, user=UserManager.User.Admin):
         result = []
         for ref in refs:
             result.append(self._delete_reference(ref, user))
@@ -400,7 +400,7 @@ class NodeManagementService(object):
             return ua.StatusCode(ua.StatusCodes.BadTargetNodeIdInvalid)
         if item.ReferenceTypeId not in self._aspace:
             return ua.StatusCode(ua.StatusCodes.BadReferenceTypeIdInvalid)
-        if user != User.Admin:
+        if user != UserManager.User.Admin:
             return ua.StatusCode(ua.StatusCodes.BadUserAccessDenied)
 
         if item.DeleteBidirectional:
