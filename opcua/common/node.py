@@ -2,6 +2,8 @@
 High level node object, to access node attribute
 and browse address space
 """
+import warnings
+warnings.simplefilter('once', DeprecationWarning)
 from datetime import datetime
 
 from opcua import ua
@@ -48,6 +50,11 @@ class Node(object):
             self.nodeid = ua.NodeId(nodeid, 0)
         else:
             raise ua.UaError("argument to node must be a NodeId object or a string defining a nodeid found {0} of type {1}".format(nodeid, type(nodeid)))
+
+    @property
+    def server(self):
+        warnings.warn("Node.server attribute is deprecated. Use isession instead", DeprecationWarning)
+        return self.isession
 
     def __eq__(self, other):
         if isinstance(other, Node) and self.nodeid == other.nodeid:
