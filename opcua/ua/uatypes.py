@@ -696,41 +696,62 @@ class Variant(FrozenClass):
     """
 
     def __init__(self, value=None, varianttype=None, dimensions=None, is_array=None):
+        self._freeze = False # defers validation until ready.
+        # Value, VariantType
         self._value = None
+        self._variantType = None
         if isinstance(value, Variant):
             self.Value = value.Value
             self.VariantType = value.VariantType
         else:
             self.Value = value
             self.VariantType = varianttype
+        # Dimensions
         self.Dimensions = dimensions
+        if dimensions is None and isinstance(self.Value, (list, tuple)):
+            dims = get_shape(self.Value)
+            if len(dims) > 1:
+                self.Dimensions = dims
+        # is_array
         if is_array is not None:
             self.is_array = bool(is_array)
         else:
             self.is_array = isinstance(self.Value, (list, tuple))
+        # Validation check
         self._freeze = True
-        if self.VariantType is None:
-            self.VariantType = self._guess_type(self.Value)
-        if self.Value is None and not self.is_array and self.VariantType not in (VariantType.Null, VariantType.String,
-                                                                                 VariantType.DateTime):
-            raise UaError("Non array Variant of type {0} cannot have value None".format(self.VariantType))
-        if self.Dimensions is None and isinstance(self.Value, (list, tuple)):
-            dims = get_shape(self.Value)
-            if len(dims) > 1:
-                self.Dimensions = dims
+        self._validate()
 
     @property
     def Value(self):
         return self._value
 
     @Value.setter
-    def Value(self, newValue):
-        assert(not isinstance(newValue, Variant))
-        if not (self._value is None or isinstance(newValue, type(self._value))):
-            logger.warning("Datatype changed from {} to {} in Variant {}.".format(type(self._value), type(newValue), self))
-        if isinstance(self._value, int) and self.VariantType in (VariantType.Float, VariantType.Double):
-            newValue = float(newValue)
-        self._value = newValue
+    def Value(self, value):
+        if not (self._value is None or isinstance(value, type(self._value))):
+            logger.warning("Datatype changed from {} to {} in Variant {}.".format(type(self._value), type(value), self))
+        self._value = value
+        self._validate()
+
+    @property
+    def VariantType(self):
+        return self._variantType
+
+    @VariantType.setter
+    def VariantType(self, variantType):
+        if variantType is not None:
+            self._variantType = variantType
+        else:
+            self._variantType = self._guess_type(self.Value)
+        self._validate()
+
+    def _validate(self):
+        if self._freeze is False:
+            return
+        elif isinstance(self._value, int) and self.VariantType in (VariantType.Float, VariantType.Double):
+            self._value = float(self._value)
+        elif self._value is None and not self.is_array and \
+              self.VariantType not in (VariantType.Null, VariantType.String, VariantType.DateTime):
+            raise UaError("Non array Variant of type {0} cannot have value None".format(self.VariantType))
 
     def __eq__(self, other):
         if isinstance(other, Variant) and self.VariantType == other.VariantType and self.Value == other.Value:
