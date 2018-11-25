@@ -696,19 +696,18 @@ class Variant(FrozenClass):
     """
 
     def __init__(self, value=None, varianttype=None, dimensions=None, is_array=None):
-        self.Value = value
-        self.VariantType = varianttype
-        self.Dimensions = dimensions
-        self.is_array = is_array
-        if self.is_array is None:
-            if isinstance(value, (list, tuple)):
-                self.is_array = True
-            else:
-                self.is_array = False
-        self._freeze = True
         if isinstance(value, Variant):
             self.Value = value.Value
             self.VariantType = value.VariantType
+        else:
+            self.Value = value
+            self.VariantType = varianttype
+        self.Dimensions = dimensions
+        if is_array is not None:
+            self.is_array = bool(is_array)
+        else:
+            self.is_array = isinstance(self.Value, (list, tuple))
+        self._freeze = True
         if self.VariantType is None:
             self.VariantType = self._guess_type(self.Value)
         if self.Value is None and not self.is_array and self.VariantType not in (VariantType.Null, VariantType.String,
