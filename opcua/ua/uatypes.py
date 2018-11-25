@@ -696,25 +696,26 @@ class Variant(FrozenClass):
     """
 
     def __init__(self, value=None, varianttype=None, dimensions=None, is_array=None):
+        self._value = None
         if isinstance(value, Variant):
-            self._value = value.Value
+            self.Value = value.Value
             self.VariantType = value.VariantType
         else:
-            self._value = value
+            self.Value = value
             self.VariantType = varianttype
         self.Dimensions = dimensions
         if is_array is not None:
             self.is_array = bool(is_array)
         else:
-            self.is_array = isinstance(self._value, (list, tuple))
+            self.is_array = isinstance(self.Value, (list, tuple))
         self._freeze = True
         if self.VariantType is None:
-            self.VariantType = self._guess_type(self._value)
-        if self._value is None and not self.is_array and self.VariantType not in (VariantType.Null, VariantType.String,
+            self.VariantType = self._guess_type(self.Value)
+        if self.Value is None and not self.is_array and self.VariantType not in (VariantType.Null, VariantType.String,
                                                                                  VariantType.DateTime):
             raise UaError("Non array Variant of type {0} cannot have value None".format(self.VariantType))
-        if self.Dimensions is None and isinstance(self._value, (list, tuple)):
-            dims = get_shape(self._value)
+        if self.Dimensions is None and isinstance(self.Value, (list, tuple)):
+            dims = get_shape(self.Value)
             if len(dims) > 1:
                 self.Dimensions = dims
 
@@ -727,6 +728,8 @@ class Variant(FrozenClass):
         assert(not isinstance(newValue, Variant))
         if not (self._value is None or isinstance(newValue, type(self._value))):
             logger.warning("Datatype changed from {} to {} in Variant {}.".format(type(self._value), type(newValue), self))
+        if isinstance(self._value, int) and self.VariantType in (VariantType.Float, VariantType.Double):
+            newValue = float(newValue)
         self._value = newValue
 
     def __eq__(self, other):
