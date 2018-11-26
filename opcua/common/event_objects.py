@@ -89,7 +89,7 @@ class AuditCreateSessionEvent(AuditSessionEvent):
 
 class AuditActivateSessionEvent(AuditSessionEvent):
     """
-    AuditActivateSessionEvent: 
+    AuditActivateSessionEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditActivateSessionEvent, self).__init__(sourcenode, message, severity)
@@ -100,7 +100,7 @@ class AuditActivateSessionEvent(AuditSessionEvent):
 
 class AuditCancelEvent(AuditSessionEvent):
     """
-    AuditCancelEvent: 
+    AuditCancelEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditCancelEvent, self).__init__(sourcenode, message, severity)
@@ -109,7 +109,7 @@ class AuditCancelEvent(AuditSessionEvent):
 
 class AuditCertificateEvent(AuditSecurityEvent):
     """
-    AuditCertificateEvent: 
+    AuditCertificateEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditCertificateEvent, self).__init__(sourcenode, message, severity)
@@ -118,7 +118,7 @@ class AuditCertificateEvent(AuditSecurityEvent):
 
 class AuditCertificateDataMismatchEvent(AuditCertificateEvent):
     """
-    AuditCertificateDataMismatchEvent: 
+    AuditCertificateDataMismatchEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditCertificateDataMismatchEvent, self).__init__(sourcenode, message, severity)
@@ -128,7 +128,7 @@ class AuditCertificateDataMismatchEvent(AuditCertificateEvent):
 
 class AuditCertificateExpiredEvent(AuditCertificateEvent):
     """
-    AuditCertificateExpiredEvent: 
+    AuditCertificateExpiredEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditCertificateExpiredEvent, self).__init__(sourcenode, message, severity)
@@ -136,7 +136,7 @@ class AuditCertificateExpiredEvent(AuditCertificateEvent):
 
 class AuditCertificateInvalidEvent(AuditCertificateEvent):
     """
-    AuditCertificateInvalidEvent: 
+    AuditCertificateInvalidEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditCertificateInvalidEvent, self).__init__(sourcenode, message, severity)
@@ -144,7 +144,7 @@ class AuditCertificateInvalidEvent(AuditCertificateEvent):
 
 class AuditCertificateUntrustedEvent(AuditCertificateEvent):
     """
-    AuditCertificateUntrustedEvent: 
+    AuditCertificateUntrustedEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditCertificateUntrustedEvent, self).__init__(sourcenode, message, severity)
@@ -152,7 +152,7 @@ class AuditCertificateUntrustedEvent(AuditCertificateEvent):
 
 class AuditCertificateRevokedEvent(AuditCertificateEvent):
     """
-    AuditCertificateRevokedEvent: 
+    AuditCertificateRevokedEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditCertificateRevokedEvent, self).__init__(sourcenode, message, severity)
@@ -160,7 +160,7 @@ class AuditCertificateRevokedEvent(AuditCertificateEvent):
 
 class AuditCertificateMismatchEvent(AuditCertificateEvent):
     """
-    AuditCertificateMismatchEvent: 
+    AuditCertificateMismatchEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditCertificateMismatchEvent, self).__init__(sourcenode, message, severity)
@@ -168,7 +168,7 @@ class AuditCertificateMismatchEvent(AuditCertificateEvent):
 
 class AuditNodeManagementEvent(AuditEvent):
     """
-    AuditNodeManagementEvent: 
+    AuditNodeManagementEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditNodeManagementEvent, self).__init__(sourcenode, message, severity)
@@ -176,7 +176,7 @@ class AuditNodeManagementEvent(AuditEvent):
 
 class AuditAddNodesEvent(AuditNodeManagementEvent):
     """
-    AuditAddNodesEvent: 
+    AuditAddNodesEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditAddNodesEvent, self).__init__(sourcenode, message, severity)
@@ -185,7 +185,7 @@ class AuditAddNodesEvent(AuditNodeManagementEvent):
 
 class AuditDeleteNodesEvent(AuditNodeManagementEvent):
     """
-    AuditDeleteNodesEvent: 
+    AuditDeleteNodesEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditDeleteNodesEvent, self).__init__(sourcenode, message, severity)
@@ -194,7 +194,7 @@ class AuditDeleteNodesEvent(AuditNodeManagementEvent):
 
 class AuditAddReferencesEvent(AuditNodeManagementEvent):
     """
-    AuditAddReferencesEvent: 
+    AuditAddReferencesEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditAddReferencesEvent, self).__init__(sourcenode, message, severity)
@@ -203,7 +203,7 @@ class AuditAddReferencesEvent(AuditNodeManagementEvent):
 
 class AuditDeleteReferencesEvent(AuditNodeManagementEvent):
     """
-    AuditDeleteReferencesEvent: 
+    AuditDeleteReferencesEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditDeleteReferencesEvent, self).__init__(sourcenode, message, severity)
@@ -212,7 +212,7 @@ class AuditDeleteReferencesEvent(AuditNodeManagementEvent):
 
 class AuditUpdateEvent(AuditEvent):
     """
-    AuditUpdateEvent: 
+    AuditUpdateEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditUpdateEvent, self).__init__(sourcenode, message, severity)
@@ -220,7 +220,7 @@ class AuditUpdateEvent(AuditEvent):
 
 class AuditWriteUpdateEvent(AuditUpdateEvent):
     """
-    AuditWriteUpdateEvent: 
+    AuditWriteUpdateEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditWriteUpdateEvent, self).__init__(sourcenode, message, severity)
@@ -232,7 +232,7 @@ class AuditWriteUpdateEvent(AuditUpdateEvent):
 
 class AuditHistoryUpdateEvent(AuditUpdateEvent):
     """
-    AuditHistoryUpdateEvent: 
+    AuditHistoryUpdateEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditHistoryUpdateEvent, self).__init__(sourcenode, message, severity)
@@ -241,7 +241,7 @@ class AuditHistoryUpdateEvent(AuditUpdateEvent):
 
 class AuditUpdateMethodEvent(AuditEvent):
     """
-    AuditUpdateMethodEvent: 
+    AuditUpdateMethodEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditUpdateMethodEvent, self).__init__(sourcenode, message, severity)
@@ -251,7 +251,7 @@ class AuditUpdateMethodEvent(AuditEvent):
 
 class SystemEvent(BaseEvent):
     """
-    SystemEvent: 
+    SystemEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(SystemEvent, self).__init__(sourcenode, message, severity)
@@ -259,7 +259,7 @@ class SystemEvent(BaseEvent):
 
 class DeviceFailureEvent(SystemEvent):
     """
-    DeviceFailureEvent: 
+    DeviceFailureEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(DeviceFailureEvent, self).__init__(sourcenode, message, severity)
@@ -267,7 +267,7 @@ class DeviceFailureEvent(SystemEvent):
 
 class BaseModelChangeEvent(BaseEvent):
     """
-    BaseModelChangeEvent: 
+    BaseModelChangeEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(BaseModelChangeEvent, self).__init__(sourcenode, message, severity)
@@ -275,7 +275,7 @@ class BaseModelChangeEvent(BaseEvent):
 
 class GeneralModelChangeEvent(BaseModelChangeEvent):
     """
-    GeneralModelChangeEvent: 
+    GeneralModelChangeEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(GeneralModelChangeEvent, self).__init__(sourcenode, message, severity)
@@ -284,7 +284,7 @@ class GeneralModelChangeEvent(BaseModelChangeEvent):
 
 class TransitionEvent(BaseEvent):
     """
-    TransitionEvent: 
+    TransitionEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(TransitionEvent, self).__init__(sourcenode, message, severity)
@@ -292,7 +292,7 @@ class TransitionEvent(BaseEvent):
 
 class AuditUpdateStateEvent(AuditUpdateMethodEvent):
     """
-    AuditUpdateStateEvent: 
+    AuditUpdateStateEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditUpdateStateEvent, self).__init__(sourcenode, message, severity)
@@ -302,7 +302,7 @@ class AuditUpdateStateEvent(AuditUpdateMethodEvent):
 
 class ProgramTransitionEvent(TransitionEvent):
     """
-    ProgramTransitionEvent: 
+    ProgramTransitionEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(ProgramTransitionEvent, self).__init__(sourcenode, message, severity)
@@ -311,7 +311,7 @@ class ProgramTransitionEvent(TransitionEvent):
 
 class SemanticChangeEvent(BaseModelChangeEvent):
     """
-    SemanticChangeEvent: 
+    SemanticChangeEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(SemanticChangeEvent, self).__init__(sourcenode, message, severity)
@@ -320,7 +320,7 @@ class SemanticChangeEvent(BaseModelChangeEvent):
 
 class AuditUrlMismatchEvent(AuditCreateSessionEvent):
     """
-    AuditUrlMismatchEvent: 
+    AuditUrlMismatchEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditUrlMismatchEvent, self).__init__(sourcenode, message, severity)
@@ -329,7 +329,7 @@ class AuditUrlMismatchEvent(AuditCreateSessionEvent):
 
 class RefreshStartEvent(SystemEvent):
     """
-    RefreshStartEvent: 
+    RefreshStartEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(RefreshStartEvent, self).__init__(sourcenode, message, severity)
@@ -337,7 +337,7 @@ class RefreshStartEvent(SystemEvent):
 
 class RefreshEndEvent(SystemEvent):
     """
-    RefreshEndEvent: 
+    RefreshEndEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(RefreshEndEvent, self).__init__(sourcenode, message, severity)
@@ -345,7 +345,7 @@ class RefreshEndEvent(SystemEvent):
 
 class RefreshRequiredEvent(SystemEvent):
     """
-    RefreshRequiredEvent: 
+    RefreshRequiredEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(RefreshRequiredEvent, self).__init__(sourcenode, message, severity)
@@ -353,7 +353,7 @@ class RefreshRequiredEvent(SystemEvent):
 
 class AuditConditionEvent(AuditUpdateMethodEvent):
     """
-    AuditConditionEvent: 
+    AuditConditionEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionEvent, self).__init__(sourcenode, message, severity)
@@ -361,7 +361,7 @@ class AuditConditionEvent(AuditUpdateMethodEvent):
 
 class AuditConditionEnableEvent(AuditConditionEvent):
     """
-    AuditConditionEnableEvent: 
+    AuditConditionEnableEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionEnableEvent, self).__init__(sourcenode, message, severity)
@@ -369,7 +369,7 @@ class AuditConditionEnableEvent(AuditConditionEvent):
 
 class AuditConditionCommentEvent(AuditConditionEvent):
     """
-    AuditConditionCommentEvent: 
+    AuditConditionCommentEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionCommentEvent, self).__init__(sourcenode, message, severity)
@@ -379,7 +379,7 @@ class AuditConditionCommentEvent(AuditConditionEvent):
 
 class AuditHistoryEventUpdateEvent(AuditHistoryUpdateEvent):
     """
-    AuditHistoryEventUpdateEvent: 
+    AuditHistoryEventUpdateEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditHistoryEventUpdateEvent, self).__init__(sourcenode, message, severity)
@@ -392,7 +392,7 @@ class AuditHistoryEventUpdateEvent(AuditHistoryUpdateEvent):
 
 class AuditHistoryValueUpdateEvent(AuditHistoryUpdateEvent):
     """
-    AuditHistoryValueUpdateEvent: 
+    AuditHistoryValueUpdateEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditHistoryValueUpdateEvent, self).__init__(sourcenode, message, severity)
@@ -404,7 +404,7 @@ class AuditHistoryValueUpdateEvent(AuditHistoryUpdateEvent):
 
 class AuditHistoryDeleteEvent(AuditHistoryUpdateEvent):
     """
-    AuditHistoryDeleteEvent: 
+    AuditHistoryDeleteEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditHistoryDeleteEvent, self).__init__(sourcenode, message, severity)
@@ -413,7 +413,7 @@ class AuditHistoryDeleteEvent(AuditHistoryUpdateEvent):
 
 class AuditHistoryRawModifyDeleteEvent(AuditHistoryDeleteEvent):
     """
-    AuditHistoryRawModifyDeleteEvent: 
+    AuditHistoryRawModifyDeleteEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditHistoryRawModifyDeleteEvent, self).__init__(sourcenode, message, severity)
@@ -425,7 +425,7 @@ class AuditHistoryRawModifyDeleteEvent(AuditHistoryDeleteEvent):
 
 class AuditHistoryAtTimeDeleteEvent(AuditHistoryDeleteEvent):
     """
-    AuditHistoryAtTimeDeleteEvent: 
+    AuditHistoryAtTimeDeleteEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditHistoryAtTimeDeleteEvent, self).__init__(sourcenode, message, severity)
@@ -435,7 +435,7 @@ class AuditHistoryAtTimeDeleteEvent(AuditHistoryDeleteEvent):
 
 class AuditHistoryEventDeleteEvent(AuditHistoryDeleteEvent):
     """
-    AuditHistoryEventDeleteEvent: 
+    AuditHistoryEventDeleteEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditHistoryEventDeleteEvent, self).__init__(sourcenode, message, severity)
@@ -445,7 +445,7 @@ class AuditHistoryEventDeleteEvent(AuditHistoryDeleteEvent):
 
 class EventQueueOverflowEvent(BaseEvent):
     """
-    EventQueueOverflowEvent: 
+    EventQueueOverflowEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(EventQueueOverflowEvent, self).__init__(sourcenode, message, severity)
@@ -453,7 +453,7 @@ class EventQueueOverflowEvent(BaseEvent):
 
 class ProgramTransitionAuditEvent(AuditUpdateStateEvent):
     """
-    ProgramTransitionAuditEvent: 
+    ProgramTransitionAuditEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(ProgramTransitionAuditEvent, self).__init__(sourcenode, message, severity)
@@ -461,7 +461,7 @@ class ProgramTransitionAuditEvent(AuditUpdateStateEvent):
 
 class AuditConditionRespondEvent(AuditConditionEvent):
     """
-    AuditConditionRespondEvent: 
+    AuditConditionRespondEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionRespondEvent, self).__init__(sourcenode, message, severity)
@@ -470,7 +470,7 @@ class AuditConditionRespondEvent(AuditConditionEvent):
 
 class AuditConditionAcknowledgeEvent(AuditConditionEvent):
     """
-    AuditConditionAcknowledgeEvent: 
+    AuditConditionAcknowledgeEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionAcknowledgeEvent, self).__init__(sourcenode, message, severity)
@@ -480,7 +480,7 @@ class AuditConditionAcknowledgeEvent(AuditConditionEvent):
 
 class AuditConditionConfirmEvent(AuditConditionEvent):
     """
-    AuditConditionConfirmEvent: 
+    AuditConditionConfirmEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionConfirmEvent, self).__init__(sourcenode, message, severity)
@@ -490,7 +490,7 @@ class AuditConditionConfirmEvent(AuditConditionEvent):
 
 class AuditConditionShelvingEvent(AuditConditionEvent):
     """
-    AuditConditionShelvingEvent: 
+    AuditConditionShelvingEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionShelvingEvent, self).__init__(sourcenode, message, severity)
@@ -499,7 +499,7 @@ class AuditConditionShelvingEvent(AuditConditionEvent):
 
 class ProgressEvent(BaseEvent):
     """
-    ProgressEvent: 
+    ProgressEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(ProgressEvent, self).__init__(sourcenode, message, severity)
@@ -509,7 +509,7 @@ class ProgressEvent(BaseEvent):
 
 class SystemStatusChangeEvent(SystemEvent):
     """
-    SystemStatusChangeEvent: 
+    SystemStatusChangeEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(SystemStatusChangeEvent, self).__init__(sourcenode, message, severity)
@@ -518,7 +518,7 @@ class SystemStatusChangeEvent(SystemEvent):
 
 class AuditProgramTransitionEvent(AuditUpdateStateEvent):
     """
-    AuditProgramTransitionEvent: 
+    AuditProgramTransitionEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditProgramTransitionEvent, self).__init__(sourcenode, message, severity)
@@ -527,7 +527,7 @@ class AuditProgramTransitionEvent(AuditUpdateStateEvent):
 
 class TrustListUpdatedAuditEvent(AuditUpdateMethodEvent):
     """
-    TrustListUpdatedAuditEvent: 
+    TrustListUpdatedAuditEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(TrustListUpdatedAuditEvent, self).__init__(sourcenode, message, severity)
@@ -535,7 +535,7 @@ class TrustListUpdatedAuditEvent(AuditUpdateMethodEvent):
 
 class CertificateUpdatedAuditEvent(AuditUpdateMethodEvent):
     """
-    CertificateUpdatedAuditEvent: 
+    CertificateUpdatedAuditEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(CertificateUpdatedAuditEvent, self).__init__(sourcenode, message, severity)
@@ -545,7 +545,7 @@ class CertificateUpdatedAuditEvent(AuditUpdateMethodEvent):
 
 class AuditConditionResetEvent(AuditConditionEvent):
     """
-    AuditConditionResetEvent: 
+    AuditConditionResetEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionResetEvent, self).__init__(sourcenode, message, severity)
@@ -553,7 +553,7 @@ class AuditConditionResetEvent(AuditConditionEvent):
 
 class PubSubStatusEvent(SystemEvent):
     """
-    PubSubStatusEvent: 
+    PubSubStatusEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(PubSubStatusEvent, self).__init__(sourcenode, message, severity)
@@ -564,7 +564,7 @@ class PubSubStatusEvent(SystemEvent):
 
 class PubSubTransportLimitsExceedEvent(PubSubStatusEvent):
     """
-    PubSubTransportLimitsExceedEvent: 
+    PubSubTransportLimitsExceedEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(PubSubTransportLimitsExceedEvent, self).__init__(sourcenode, message, severity)
@@ -574,7 +574,7 @@ class PubSubTransportLimitsExceedEvent(PubSubStatusEvent):
 
 class PubSubCommunicationFailureEvent(PubSubStatusEvent):
     """
-    PubSubCommunicationFailureEvent: 
+    PubSubCommunicationFailureEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(PubSubCommunicationFailureEvent, self).__init__(sourcenode, message, severity)
@@ -583,7 +583,7 @@ class PubSubCommunicationFailureEvent(PubSubStatusEvent):
 
 class AuditConditionSuppressEvent(AuditConditionEvent):
     """
-    AuditConditionSuppressEvent: 
+    AuditConditionSuppressEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionSuppressEvent, self).__init__(sourcenode, message, severity)
@@ -591,7 +591,7 @@ class AuditConditionSuppressEvent(AuditConditionEvent):
 
 class AuditConditionSilenceEvent(AuditConditionEvent):
     """
-    AuditConditionSilenceEvent: 
+    AuditConditionSilenceEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionSilenceEvent, self).__init__(sourcenode, message, severity)
@@ -599,7 +599,7 @@ class AuditConditionSilenceEvent(AuditConditionEvent):
 
 class AuditConditionOutOfServiceEvent(AuditConditionEvent):
     """
-    AuditConditionOutOfServiceEvent: 
+    AuditConditionOutOfServiceEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionOutOfServiceEvent, self).__init__(sourcenode, message, severity)
@@ -607,7 +607,7 @@ class AuditConditionOutOfServiceEvent(AuditConditionEvent):
 
 class RoleMappingRuleChangedAuditEvent(AuditUpdateMethodEvent):
     """
-    RoleMappingRuleChangedAuditEvent: 
+    RoleMappingRuleChangedAuditEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(RoleMappingRuleChangedAuditEvent, self).__init__(sourcenode, message, severity)
@@ -615,7 +615,7 @@ class RoleMappingRuleChangedAuditEvent(AuditUpdateMethodEvent):
 
 class KeyCredentialAuditEvent(AuditUpdateMethodEvent):
     """
-    KeyCredentialAuditEvent: 
+    KeyCredentialAuditEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(KeyCredentialAuditEvent, self).__init__(sourcenode, message, severity)
@@ -624,7 +624,7 @@ class KeyCredentialAuditEvent(AuditUpdateMethodEvent):
 
 class KeyCredentialUpdatedAuditEvent(KeyCredentialAuditEvent):
     """
-    KeyCredentialUpdatedAuditEvent: 
+    KeyCredentialUpdatedAuditEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(KeyCredentialUpdatedAuditEvent, self).__init__(sourcenode, message, severity)
@@ -632,7 +632,7 @@ class KeyCredentialUpdatedAuditEvent(KeyCredentialAuditEvent):
 
 class KeyCredentialDeletedAuditEvent(KeyCredentialAuditEvent):
     """
-    KeyCredentialDeletedAuditEvent: 
+    KeyCredentialDeletedAuditEvent:
     """
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(KeyCredentialDeletedAuditEvent, self).__init__(sourcenode, message, severity)
