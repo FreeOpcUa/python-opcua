@@ -505,7 +505,7 @@ class SubscriptionTests(object):
         propertystring2 = "This is my test 2"
         evgen2.event.PropertyNum = propertynum2
         evgen2.event.PropertyString = propertystring2
-        
+
         for i in range(3):
             evgen1.trigger()
             evgen2.trigger()
@@ -563,7 +563,7 @@ class SubscriptionTests(object):
         propertystring3 = "This is my test 3"
         evgen3.event.PropertyNum3 = propertynum3
         evgen3.event.PropertyString = propertystring2
-        
+
         for i in range(3):
             evgen1.trigger()
             evgen2.trigger()

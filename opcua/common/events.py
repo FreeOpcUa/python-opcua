@@ -63,7 +63,7 @@ class Event(object):
     def to_event_fields_using_subscription_fields(self, select_clauses):
         """
         Using a new select_clauses and the original select_clauses
-        used during subscription, return a field list 
+        used during subscription, return a field list
         """
         fields = []
         for sattr in select_clauses:
@@ -134,7 +134,7 @@ def select_clauses_from_evtype(evtypes):
 def where_clause_from_evtype(evtypes):
     cf = ua.ContentFilter()
     el = ua.ContentFilterElement()
-    
+
     # operands can be ElementOperand, LiteralOperand, AttributeOperand, SimpleAttribute
     # Create a clause where the generate event type property EventType
     # must be a subtype of events in evtypes argument
