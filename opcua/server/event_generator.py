@@ -24,7 +24,7 @@ class EventGenerator(object):
         etype: The event type, either an objectId, a NodeId or a Node object
     """
 
-    def __init__(self, isession, etype=None, source=ua.ObjectIds.Server):
+    def __init__(self, isession, etype=None, emitting_node=ua.ObjectIds.Server):
         if not etype:
             etype = event_objects.BaseEvent()
 
@@ -45,38 +45,36 @@ class EventGenerator(object):
         if node:
             self.event = events.get_event_obj_from_type_node(node)
 
-        if isinstance(source, Node):
+        if isinstance(emitting_node, Node):
             pass
-        elif isinstance(source, ua.NodeId):
-            source = Node(isession, source)
+        elif isinstance(emitting_node, ua.NodeId):
+            emitting_node = Node(isession, emitting_node)
         else:
-            source = Node(isession, ua.NodeId(source))
+            emitting_node = Node(isession, ua.NodeId(emitting_node))
 
-        if self.event.SourceNode:
-            if source.nodeid != self.event.SourceNode:
-                self.logger.warning(
-                    "Source NodeId: '%s' and event SourceNode: '%s' are not the same. Using '%s' as SourceNode",
-                    str(source.nodeid), str(self.event.SourceNode), str(self.event.SourceNode))
-                source = Node(self.isession, self.event.SourceNode)
+        self.event.emitting_node = emitting_node.nodeid
 
-        self.event.SourceNode = source.nodeid
-        self.event.SourceName = source.get_browse_name().Name
+        if not self.event.SourceNode:
+            self.event.SourceNode = emitting_node.nodeid
+            self.event.SourceName = emitting_node.get_browse_name().Name
 
-        source.set_event_notifier([ua.EventNotifier.SubscribeToEvents])
+        emitting_node.set_event_notifier([ua.EventNotifier.SubscribeToEvents])
         refs = []
         ref = ua.AddReferencesItem()
         ref.IsForward = True
         ref.ReferenceTypeId = ua.NodeId(ua.ObjectIds.GeneratesEvent)
-        ref.SourceNodeId = source.nodeid
+        ref.SourceNodeId = emitting_node.nodeid
         ref.TargetNodeClass = ua.NodeClass.ObjectType
         ref.TargetNodeId = self.event.EventType
         refs.append(ref)
         results = self.isession.add_references(refs)
         # result.StatusCode.check()
 
+        self.emitting_node = emitting_node
+
     def __str__(self):
-        return "EventGenerator(Type:{0}, Source:{1}, Time:{2}, Message: {3})".format(self.event.EventType,
-                                                                                 self.event.SourceNode,
+        return "EventGenerator(Type:{0}, Emitting Node:{1}, Time:{2}, Message: {3})".format(self.event.EventType,
+                                                                                 self.emitting_node,
                                                                                  self.event.Time,
                                                                                  self.event.Message)
     __repr__ = __str__
