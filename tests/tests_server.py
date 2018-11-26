@@ -250,24 +250,24 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         check_eventgenerator_SourceServer(self, evgen)
 
     def test_eventgenerator_sourceServer_Node(self):
-        evgen = self.opc.get_event_generator(source=opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.Server)))
+        evgen = self.opc.get_event_generator(emitting_node=opcua.Node(self.opc.iserver.isession, ua.NodeId(ua.ObjectIds.Server)))
         check_eventgenerator_BaseEvent(self, evgen)
         check_eventgenerator_SourceServer(self, evgen)
 
     def test_eventgenerator_sourceServer_NodeId(self):
-        evgen = self.opc.get_event_generator(source=ua.NodeId(ua.ObjectIds.Server))
+        evgen = self.opc.get_event_generator(emitting_node=ua.NodeId(ua.ObjectIds.Server))
         check_eventgenerator_BaseEvent(self, evgen)
         check_eventgenerator_SourceServer(self, evgen)
 
     def test_eventgenerator_sourceServer_ObjectIds(self):
-        evgen = self.opc.get_event_generator(source=ua.ObjectIds.Server)
+        evgen = self.opc.get_event_generator(emitting_node=ua.ObjectIds.Server)
         check_eventgenerator_BaseEvent(self, evgen)
         check_eventgenerator_SourceServer(self, evgen)
 
     def test_eventgenerator_sourceMyObject(self):
         objects = self.opc.get_objects_node()
         o = objects.add_object(3, 'MyObject')
-        evgen = self.opc.get_event_generator(source=o)
+        evgen = self.opc.get_event_generator(emitting_node=o)
         check_eventgenerator_BaseEvent(self, evgen)
         check_event_generator_object(self, evgen, o)
 
@@ -276,8 +276,10 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         o = objects.add_object(3, 'MyObject')
         event = BaseEvent(sourcenode=o.nodeid)
         evgen = self.opc.get_event_generator(event, ua.ObjectIds.Server)
+        evgen.event.SourceNode = o.nodeid
+        evgen.event.SourceName = o.get_browse_name().Name
         check_eventgenerator_BaseEvent(self, evgen)
-        check_event_generator_object(self, evgen, o)
+        check_event_generator_object(self, evgen, o, emitting_node=opcua.Node(self.opc.iserver.isession, ua.ObjectIds.Server))
 
     def test_eventgenerator_InheritedEvent(self):
         evgen = self.opc.get_event_generator(ua.ObjectIds.AuditEventType)
@@ -523,14 +525,17 @@ def check_eventgenerator_SourceServer(test, evgen):
     test.assertGreaterEqual(len(refs), 1)
 
 
-def check_event_generator_object(test, evgen, obj):
+def check_event_generator_object(test, evgen, obj, emitting_node=None):
     test.assertEqual(evgen.event.SourceName, obj.get_browse_name().Name)
     test.assertEqual(evgen.event.SourceNode, obj.nodeid)
-    test.assertEqual(obj.get_event_notifier(), {ua.EventNotifier.SubscribeToEvents})
+    if not emitting_node:
+        test.assertEqual(obj.get_event_notifier(), {ua.EventNotifier.SubscribeToEvents})
+        refs = obj.get_referenced_nodes(ua.ObjectIds.GeneratesEvent, ua.BrowseDirection.Forward, ua.NodeClass.ObjectType, False)
+    else:
+        test.assertEqual(emitting_node.get_event_notifier(), {ua.EventNotifier.SubscribeToEvents})
+        refs = emitting_node.get_referenced_nodes(ua.ObjectIds.GeneratesEvent, ua.BrowseDirection.Forward, ua.NodeClass.ObjectType, False)
 
-    refs = obj.get_referenced_nodes(ua.ObjectIds.GeneratesEvent, ua.BrowseDirection.Forward, ua.NodeClass.ObjectType, False)
-    test.assertEqual(len(refs), 1)
-    test.assertEqual(refs[0].nodeid, evgen.event.EventType)
+    test.assertIn(evgen.event.EventType, [x.nodeid for x in refs])
 
 
 def check_eventgenerator_BaseEvent(test, evgen):
