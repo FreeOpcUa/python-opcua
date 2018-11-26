@@ -417,14 +417,14 @@ class Server(object):
         uries = self.get_namespace_array()
         return uries.index(uri)
 
-    def get_event_generator(self, etype=None, source=ua.ObjectIds.Server):
+    def get_event_generator(self, etype=None, emitting_node=ua.ObjectIds.Server):
         """
         Returns an event object using an event type from address space.
         Use this object to fire events
         """
         if not etype:
             etype = BaseEvent()
-        return EventGenerator(self.iserver.isession, etype, source)
+        return EventGenerator(self.iserver.isession, etype, emitting_node=emitting_node)
 
     def create_custom_data_type(self, idx, name, basetype=ua.ObjectIds.BaseDataType, properties=None):
         if properties is None:
