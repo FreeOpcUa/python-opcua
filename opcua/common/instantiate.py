@@ -30,18 +30,18 @@ def instantiate(parent, node_type, nodeid=None, bname=None, dname=None, idx=0, i
         bname = ua.QualifiedName.from_string(bname)
 
     nodeids = _instantiate_node(
-        parent.isession,
-        Node(parent.isession, rdesc.NodeId),
+        parent.session_server,
+        Node(parent.session_server, rdesc.NodeId),
         parent.nodeid,
         rdesc,
         nodeid,
         bname,
         dname=dname,
         instantiate_optional=instantiate_optional)
-    return [Node(parent.isession, nid) for nid in nodeids]
+    return [Node(parent.session_server, nid) for nid in nodeids]
 
 
-def _instantiate_node(isession,
+def _instantiate_node(session_server,
                       node_type,
                       parentid,
                       rdesc,
@@ -80,19 +80,19 @@ def _instantiate_node(isession,
     if dname is not None:
         addnode.NodeAttributes.DisplayName = dname
 
-    res = isession.add_nodes([addnode])[0]
+    res = session_server.add_nodes([addnode])[0]
     added_nodes = [res.AddedNodeId]
 
     if recursive:
         parents = ua_utils.get_node_supertypes(node_type, includeitself=True)
-        node = Node(isession, res.AddedNodeId)
+        node = Node(session_server, res.AddedNodeId)
         for parent in parents:
             descs = parent.get_children_descriptions(includesubtypes=False)
             for c_rdesc in descs:
                 # skip items that already exists, prefer the 'lowest' one in object hierarchy
                 if not ua_utils.is_child_present(node, c_rdesc.BrowseName):
 
-                    c_node_type = Node(isession, c_rdesc.NodeId)
+                    c_node_type = Node(session_server, c_rdesc.NodeId)
                     refs = c_node_type.get_referenced_nodes(refs=ua.ObjectIds.HasModellingRule)
                     if not refs:
                         # spec says to ignore nodes without modelling rules
@@ -107,7 +107,7 @@ def _instantiate_node(isession,
                     if res.AddedNodeId.NodeIdType is ua.NodeIdType.String:
                         inst_nodeid = res.AddedNodeId.Identifier + "." + c_rdesc.BrowseName.Name
                         nodeids = _instantiate_node(
-                            isession,
+                            session_server,
                             c_node_type,
                             res.AddedNodeId,
                             c_rdesc,
@@ -115,7 +115,7 @@ def _instantiate_node(isession,
                             bname=c_rdesc.BrowseName)
                     else:
                         nodeids = _instantiate_node(
-                            isession,
+                            session_server,
                             c_node_type,
                             res.AddedNodeId,
                             c_rdesc,

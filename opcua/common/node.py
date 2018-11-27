@@ -2,8 +2,6 @@
 High level node object, to access node attribute
 and browse address space
 """
-import warnings
-warnings.simplefilter('once', DeprecationWarning)
 from datetime import datetime
 
 from opcua import ua
@@ -37,8 +35,8 @@ class Node(object):
     directly UA services methods to optimize your code
     """
 
-    def __init__(self, isession, nodeid):
-        self.isession = isession
+    def __init__(self, session_server, nodeid):
+        self.session_server = session_server
         self.nodeid = None
         if isinstance(nodeid, Node):
             self.nodeid = nodeid.nodeid
@@ -53,8 +51,8 @@ class Node(object):
 
     @property
     def server(self):
-        warnings.warn("Node.server attribute is deprecated. Use isession instead", DeprecationWarning)
-        return self.isession
+        # to maintain backwards compatibility.
+        return self.session_server
 
     def __eq__(self, other):
         if isinstance(other, Node) and self.nodeid == other.nodeid:
@@ -100,7 +98,7 @@ class Node(object):
         may not be convertible to VariantType
         """
         result = self.get_attribute(ua.AttributeIds.DataType)
-        return opcua.common.ua_utils.data_type_to_variant_type(Node(self.isession, result.Value.Value))
+        return opcua.common.ua_utils.data_type_to_variant_type(Node(self.session_server, result.Value.Value))
 
     def get_access_level(self):
         """
@@ -260,7 +258,7 @@ class Node(object):
         attr.Value = datavalue
         params = ua.WriteParameters()
         params.NodesToWrite = [attr]
-        result = self.isession.write(params)
+        result = self.session_server.write(params)
         result[0].check()
 
     def get_attribute(self, attr):
@@ -273,7 +271,7 @@ class Node(object):
         rv.AttributeId = attr
         params = ua.ReadParameters()
         params.NodesToRead.append(rv)
-        result = self.isession.read(params)
+        result = self.session_server.read(params)
         result[0].StatusCode.check()
         return result[0]
 
@@ -289,7 +287,7 @@ class Node(object):
             rv.AttributeId = attr
             params.NodesToRead.append(rv)
 
-        results = self.isession.read(params)
+        results = self.session_server.read(params)
         return results
 
     def get_children(self, refs=ua.ObjectIds.HierarchicalReferences, nodeclassmask=ua.NodeClass.Unspecified):
@@ -367,7 +365,7 @@ class Node(object):
         params.View.Timestamp = ua.get_win_epoch()
         params.NodesToBrowse.append(desc)
         params.RequestedMaxReferencesPerNode = 0
-        results = self.isession.browse(params)
+        results = self.session_server.browse(params)
 
         references = self._browse_next(results)
         return references
@@ -378,7 +376,7 @@ class Node(object):
             params = ua.BrowseNextParameters()
             params.ContinuationPoints = [results[0].ContinuationPoint]
             params.ReleaseContinuationPoints = False
-            results = self.isession.browse_next(params)
+            results = self.session_server.browse_next(params)
             references.extend(results[0].References)
         return references
 
@@ -391,7 +389,7 @@ class Node(object):
         references = self.get_references(refs, direction, nodeclassmask, includesubtypes)
         nodes = []
         for desc in references:
-            node = Node(self.isession, desc.NodeId)
+            node = Node(self.session_server, desc.NodeId)
             nodes.append(node)
         return nodes
 
@@ -414,7 +412,7 @@ class Node(object):
 
         """
         path = self._get_path(max_length)
-        path = [Node(self.isession, ref.NodeId) for ref in path]
+        path = [Node(self.session_server, ref.NodeId) for ref in path]
         path.append(self)
         if as_string:
             path = [el.get_browse_name().to_string() for el in path]
@@ -435,7 +433,7 @@ class Node(object):
             refs = node.get_references(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse)
             if len(refs) > 0:
                 path.insert(0, refs[0])
-                node = Node(self.isession, refs[0].NodeId)
+                node = Node(self.session_server, refs[0].NodeId)
                 if len(path) >= (max_length -1):
                     return path
             else:
@@ -450,7 +448,7 @@ class Node(object):
         """
         refs = self.get_references(refs=ua.ObjectIds.HierarchicalReferences, direction=ua.BrowseDirection.Inverse)
         if len(refs) > 0:
-            return Node(self.isession, refs[0].NodeId)
+            return Node(self.session_server, refs[0].NodeId)
         else:
             return None
 
@@ -469,11 +467,11 @@ class Node(object):
         bpath = ua.BrowsePath()
         bpath.StartingNode = self.nodeid
         bpath.RelativePath = rpath
-        result = self.isession.translate_browsepaths_to_nodeids([bpath])
+        result = self.session_server.translate_browsepaths_to_nodeids([bpath])
         result = result[0]
         result.StatusCode.check()
         # FIXME: seems this method may return several nodes
-        return Node(self.isession, result.Targets[0].TargetId)
+        return Node(self.session_server, result.Targets[0].TargetId)
 
     def _make_relative_path(self, path):
         rpath = ua.RelativePath()
@@ -525,7 +523,7 @@ class Node(object):
         params.TimestampsToReturn = ua.TimestampsToReturn.Both
         params.ReleaseContinuationPoints = False
         params.NodesToRead.append(valueid)
-        result = self.isession.history_read(params)[0]
+        result = self.session_server.history_read(params)[0]
         return result
 
     def read_event_history(self, starttime=None, endtime=None, numvalues=0, evtypes=ua.ObjectIds.BaseEventType):
@@ -550,7 +548,7 @@ class Node(object):
         if not isinstance(evtypes, (list, tuple)):
             evtypes = [evtypes]
 
-        evtypes = [Node(self.isession, evtype) for evtype in evtypes]
+        evtypes = [Node(self.session_server, evtype) for evtype in evtypes]
 
         evfilter = events.get_filter_from_event_type(evtypes)
         details.Filter = evfilter
@@ -575,14 +573,14 @@ class Node(object):
         params.TimestampsToReturn = ua.TimestampsToReturn.Both
         params.ReleaseContinuationPoints = False
         params.NodesToRead.append(valueid)
-        result = self.isession.history_read(params)[0]
+        result = self.session_server.history_read(params)[0]
         return result
 
     def delete(self, delete_references=True, recursive=False):
         """
         Delete node from address space
         """
-        results = opcua.common.manage_nodes.delete_nodes(self.isession, [self], recursive, delete_references)
+        results = opcua.common.manage_nodes.delete_nodes(self.session_server, [self], recursive, delete_references)
         _check_results(results)
 
     def _fill_delete_reference_item(self, rdesc, bidirectional = False):
@@ -609,7 +607,7 @@ class Node(object):
             raise ua.UaStatusCodeError(ua.StatusCodes.BadNotFound)
 
         ditem = self._fill_delete_reference_item(rdesc, bidirectional)
-        self.isession.delete_references([ditem])[0].check()
+        self.session_server.delete_references([ditem])[0].check()
 
     def add_reference(self, target, reftype, forward=True, bidirectional=True):
         """
@@ -632,7 +630,7 @@ class Node(object):
             aitem2.IsForward = not forward
             params.append(aitem2)
 
-        results = self.isession.add_references(params)
+        results = self.session_server.add_references(params)
         _check_results(results, len(params))
 
     def set_modelling_rule(self, mandatory):
@@ -644,7 +642,7 @@ class Node(object):
         """
         # remove all existing modelling rule
         rules = self.get_references(ua.ObjectIds.HasModellingRule)
-        self.isession.delete_references(list(map(self._fill_delete_reference_item, rules)))
+        self.session_server.delete_references(list(map(self._fill_delete_reference_item, rules)))
         # add new modelling rule as requested
         if mandatory is not None:
             rule = ua.ObjectIds.ModellingRule_Mandatory if mandatory else ua.ObjectIds.ModellingRule_Optional
