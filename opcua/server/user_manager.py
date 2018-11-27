@@ -32,7 +32,7 @@ class UserManager(object):
     def private_key(self):
         return self._parent.private_key
 
-    def default_user_manager(self, userManager, isession, userName, password):
+    def default_user_manager(self, isession, userName, password):
         """
         Default user_manager, does nothing much but check for admin
         """
@@ -74,4 +74,4 @@ class UserManager(object):
                 return False
 
         # call user_manager
-        return self.user_manager(self, isession, userName, passwd)
+        return self.user_manager(isession, userName, passwd)

@@ -115,7 +115,7 @@ class Server(object):
         # enable all endpoints by default
         self.certificate = None
         self.private_key = None
-        self.userManager = UserManager(parent = self)
+        self.user_manager = UserManager(parent = self)
         self._security_policy = [
                         ua.SecurityPolicyType.NoSecurity,
                         ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt,
@@ -207,7 +207,7 @@ class Server(object):
         """
         Enable or disable the builtin Admin user from network clients
         """
-        self.userManager.allow_remote_admin = allow
+        self.user_manager.allow_remote_admin = allow
 
     def set_endpoint(self, url):
         self.endpoint = urlparse(url)
