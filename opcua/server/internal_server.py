@@ -21,6 +21,7 @@ from opcua.common.callback import (CallbackType, ServerItemCallback,
 from opcua.common.node import Node
 from opcua.server.history import HistoryManager
 from opcua.server.address_space import AddressSpace
+from opcua.server.address_space_sqlite import AddressSpaceSQLite
 from opcua.server.address_space import AttributeService
 from opcua.server.address_space import ViewService
 from opcua.server.address_space import NodeManagementService
@@ -51,12 +52,19 @@ class InternalServer(object):
         self._local_discovery_service = None # lazy-loading
 
         self.aspace = AddressSpace()
+        if bool(shelffile) is True:
+            sqlFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "standard_address_space.sql")
+            if not os.path.exists(sqlFile):
+                raise FileNotFoundError(sqlFile)
+            self.aspace = AddressSpaceSQLite(sqlFile = sqlFile) # Sqlite3 on-demand address space
+            self.aspace.__enter__()
         self.attribute_service = AttributeService(self.aspace)
         self.view_service = ViewService(self.aspace)
         self.method_service = MethodService(self.aspace)
         self.node_mgt_service = NodeManagementService(self.aspace)
 
-        self.load_standard_address_space(shelffile)
+        if bool(shelffile) is False:
+            standard_address_space.fill_address_space(self.node_mgt_service)
 
         self.loop = None
         self.asyncio_transports = []
@@ -99,21 +107,6 @@ class InternalServer(object):
         uries = ["http://opcfoundation.org/UA/"]
         ns_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         ns_node.set_value(uries)
-
-    def load_standard_address_space(self, shelffile=None):
-        if (shelffile is not None) and (os.path.isfile(shelffile) or os.path.isfile(shelffile+".db")):
-            # import address space from shelf
-            self.aspace.load_aspace_shelf(shelffile)
-        else:
-            # import address space from code generated from xml
-            standard_address_space.fill_address_space(self.node_mgt_service)
-            # import address space directly from xml, this has performance impact so disabled
-            # importer = xmlimporter.XmlImporter(self.node_mgt_service)
-            # importer.import_xml("/path/to/python-opcua/schemas/Opc.Ua.NodeSet2.xml", self)
-
-            # if a cache file was supplied a shelve of the standard address space can now be built for next start up
-            if shelffile:
-                self.aspace.make_aspace_shelf(shelffile)
 
     def _address_space_fixes(self):
         """
