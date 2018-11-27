@@ -79,8 +79,8 @@ class InternalServer(object):
         self.setup_nodes()
 
     @property
-    def userManager(self):
-        return self._parent.userManager
+    def user_manager(self):
+        return self._parent.user_manager
 
     def setup_nodes(self):
         """
@@ -297,8 +297,8 @@ class InternalSession(object):
         self._lock = Lock()
 
     @property
-    def userManager(self):
-        return self.iserver.userManager
+    def user_manager(self):
+        return self.iserver.user_manager
 
     def __str__(self):
         return "InternalSession(name:{0}, user:{1}, id:{2}, auth_token:{3})".format(
@@ -338,7 +338,7 @@ class InternalSession(object):
         self.state = SessionState.Activated
         id_token = params.UserIdentityToken
         if isinstance(id_token, ua.UserNameIdentityToken):
-            if self.userManager.check_user_token(self, id_token) == False:
+            if self.user_manager.check_user_token(self, id_token) == False:
                 raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
         self.logger.info("Activated internal session %s for user %s", self.name, self.user)
         return result
