@@ -77,9 +77,9 @@ class InternalServer(object):
         return self._parent.user_manager
 
     @property
-    def threadLoop(self):
+    def thread_loop(self):
         if self.loop is None:
-            raise Exception("InternalServer stopped: threadLoop is not running.")
+            raise Exception("InternalServer stopped: async threadloop is not running.")
         return self.loop
 
     @property
@@ -194,7 +194,6 @@ class InternalServer(object):
             return edps
         return self.endpoints[:]
 
-<<<<<<< HEAD
     def find_servers(self, params):
         if not params.ServerUris:
             return [desc.Server for desc in self._known_servers.values()]
