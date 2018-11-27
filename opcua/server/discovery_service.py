@@ -20,8 +20,8 @@ class LocalDiscoveryService(object):
         self._known_servers = {} # _known_servers[appUri] = ServerDescription instance
 
     @property
-    def threadLoop(self):
-        return self._parent.threadLoop
+    def thread_loop(self):
+        return self._parent.thread_loop
 
     def find_servers(self, params):
         servers = []
@@ -82,7 +82,7 @@ class LocalDiscoveryService(object):
         self.add_server_description(srvDesc)
         # Auto-expire server registrations after REG_EXPIRE_TIMEOUT seconds.
         expire_cb = partial(self._expire_server_description, srvDesc)
-        self.threadLoop.call_later(self.REG_EXPIRE_TIMEOUT, expire_cb)
+        self.thread_loop.call_later(self.REG_EXPIRE_TIMEOUT, expire_cb)
 
     def register_server2(self, params):
         return self.register_server(params.Server, params.DiscoveryConfiguration)
