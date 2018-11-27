@@ -194,34 +194,6 @@ class InternalServer(object):
             return edps
         return self.endpoints[:]
 
-    def find_servers(self, params):
-        if not params.ServerUris:
-            return [desc.Server for desc in self._known_servers.values()]
-        servers = []
-        for serv in self._known_servers.values():
-            serv_uri = serv.Server.ApplicationUri.split(":")
-            for uri in params.ServerUris:
-                uri = uri.split(":")
-                if serv_uri[:len(uri)] == uri:
-                    servers.append(serv.Server)
-                    break
-        return servers
-
-    def register_server(self, server, conf=None):
-        appdesc = ua.ApplicationDescription()
-        appdesc.ApplicationUri = server.ServerUri
-        appdesc.ProductUri = server.ProductUri
-        # FIXME: select name from client locale
-        appdesc.ApplicationName = server.ServerNames[0]
-        appdesc.ApplicationType = server.ServerType
-        appdesc.DiscoveryUrls = server.DiscoveryUrls
-        # FIXME: select discovery uri using reachability from client network
-        appdesc.GatewayServerUri = server.GatewayServerUri
-        self._known_servers[server.ServerUri] = ServerDesc(appdesc, conf)
-
-    def register_server2(self, params):
-        return self.register_server(params.Server, params.DiscoveryConfiguration)
-
     def create_session(self, name, user=UserManager.User.Anonymous, external=False):
         return InternalSession(self, self.aspace, self.subscription_service, name, user=user, external=external)
 
