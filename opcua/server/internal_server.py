@@ -21,7 +21,6 @@ from opcua.common.callback import (CallbackType, ServerItemCallback,
 from opcua.common.node import Node
 from opcua.server.history import HistoryManager
 from opcua.server.address_space import AddressSpace
-from opcua.server.address_space_sqlite import AddressSpaceSQLite
 from opcua.server.address_space import AttributeService
 from opcua.server.address_space import ViewService
 from opcua.server.address_space import NodeManagementService
@@ -40,7 +39,7 @@ class SessionState(Enum):
 
 class InternalServer(object):
 
-    def __init__(self, shelffile=None, parent=None, session_cls=None):
+    def __init__(self, aspace=None, parent=None, session_cls=None):
         self.logger = logging.getLogger(__name__)
 
         self._parent = parent
@@ -51,19 +50,13 @@ class InternalServer(object):
         self.disabled_clock = False  # for debugging we may want to disable clock that writes too much in log
         self._local_discovery_service = None # lazy-loading
 
-        self.aspace = AddressSpace()
-        if bool(shelffile) is True:
-            sqlFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "standard_address_space.sql")
-            if not os.path.exists(sqlFile):
-                raise FileNotFoundError(sqlFile)
-            self.aspace = AddressSpaceSQLite(sqlFile = sqlFile) # Sqlite3 on-demand address space
-            self.aspace.__enter__()
+        self.aspace = AddressSpace() if aspace is None else aspace
         self.attribute_service = AttributeService(self.aspace)
         self.view_service = ViewService(self.aspace)
         self.method_service = MethodService(self.aspace)
         self.node_mgt_service = NodeManagementService(self.aspace)
 
-        if bool(shelffile) is False:
+        if aspace is None:
             standard_address_space.fill_address_space(self.node_mgt_service)
 
         self.loop = None
@@ -74,11 +67,10 @@ class InternalServer(object):
 
         # create a session to use on server side
         self.session_cls = session_cls or InternalSession
-        self.isession = self.session_cls(self, self.aspace, \
+        self.isession = self.session_cls(self, \
           self.subscription_service, "Internal", user=UserManager.User.Admin)
 
         self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
-        self._address_space_fixes()
         self.setup_nodes()
 
     @property
@@ -107,62 +99,6 @@ class InternalServer(object):
         uries = ["http://opcfoundation.org/UA/"]
         ns_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         ns_node.set_value(uries)
-
-    def _address_space_fixes(self):
-        """
-        Looks like the xml definition of address space has some error. This is a good place to fix them
-        """
-
-        it = ua.AddReferencesItem()
-        it.SourceNodeId = ua.NodeId(ua.ObjectIds.BaseObjectType)
-        it.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
-        it.IsForward = False
-        it.TargetNodeId = ua.NodeId(ua.ObjectIds.ObjectTypesFolder)
-        it.TargetNodeClass = ua.NodeClass.Object
-
-        it2 = ua.AddReferencesItem()
-        it2.SourceNodeId = ua.NodeId(ua.ObjectIds.BaseDataType)
-        it2.ReferenceTypeId = ua.NodeId(ua.ObjectIds.Organizes)
-        it2.IsForward = False
-        it2.TargetNodeId = ua.NodeId(ua.ObjectIds.DataTypesFolder)
-        it2.TargetNodeClass = ua.NodeClass.Object
-
-        results = self.isession.add_references([it, it2])
-
-        params = ua.WriteParameters()
-        for nodeid in (ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerRead,
-                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerHistoryReadData,
-                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerHistoryReadEvents,
-                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerWrite,
-                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerHistoryUpdateData,
-                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerHistoryUpdateEvents,
-                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerMethodCall,
-                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerBrowse,
-                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerRegisterNodes,
-                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerTranslateBrowsePathsToNodeIds,
-                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerNodeManagement,
-                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxMonitoredItemsPerCall):
-            attr = ua.WriteValue()
-            attr.NodeId = ua.NodeId(nodeid)
-            attr.AttributeId = ua.AttributeIds.Value
-            attr.Value = ua.DataValue(ua.Variant(10000, ua.VariantType.UInt32), ua.StatusCode(ua.StatusCodes.Good))
-            attr.Value.ServerTimestamp = datetime.utcnow()
-            params.NodesToWrite.append(attr)
-        result = self.isession.write(params)
-        result[0].check()
-
-
-    def load_address_space(self, path):
-        """
-        Load address space from path
-        """
-        self.aspace.load(path)
-
-    def dump_address_space(self, path):
-        """
-        Dump current address space to path
-        """
-        self.aspace.dump(path)
 
     def start(self):
         self.logger.info("starting internal server")
@@ -215,7 +151,7 @@ class InternalServer(object):
         return self.endpoints[:]
 
     def create_session(self, name, user=UserManager.User.Anonymous, external=False):
-        return self.session_cls(self, self.aspace, self.subscription_service, name, user=user, external=external)
+        return self.session_cls(self, self.subscription_service, name, user=user, external=external)
 
     def enable_history_data_change(self, node, period=timedelta(days=7), count=0):
         """
@@ -280,11 +216,10 @@ class InternalSession(object):
     _counter = 10
     _auth_counter = 1000
 
-    def __init__(self, internal_server, aspace, submgr, name, user=UserManager.User.Anonymous, external=False):
+    def __init__(self, internal_server, submgr, name, user=UserManager.User.Anonymous, external=False):
         self.logger = logging.getLogger(__name__)
         self.iserver = internal_server
         self.external = external  # define if session is external, we need to copy some objects if it is internal
-        self.aspace = aspace
         self.subscription_service = submgr
         self.name = name
         self.user = user
@@ -301,6 +236,10 @@ class InternalSession(object):
     @property
     def user_manager(self):
         return self.iserver.user_manager
+
+    @property
+    def aspace(self):
+        return self.iserver.aspace
 
     def __str__(self):
         return "InternalSession(name:{0}, user:{1}, id:{2}, auth_token:{3})".format(

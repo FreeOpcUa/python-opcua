@@ -311,10 +311,10 @@ class NodeManagementService(object):
             return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
 
         if item.DeleteTargetReferences:
-            for elem in self._aspace.keys():
-                for rdesc in self._aspace[elem].references:
+            for ndata in self._aspace.values():
+                for rdesc in ndata.references:
                     if rdesc.NodeId == item.NodeId:
-                        self._aspace[elem].references.remove(rdesc)
+                        ndata.references.remove(rdesc)
 
         self._delete_node_callbacks(self._aspace[item.NodeId])
 
@@ -479,23 +479,21 @@ class AddressSpace(ThreadSafeDict):
     and helper methods.
     The methods are thread safe
     """
+    DEFAULT_USER_NAMESPACE_INDEX = 2
 
     def __init__(self, cache=None):
         super(AddressSpace, self).__init__(cache)
         self.logger = logging.getLogger(__name__)
         self._datachange_callback_counter = 200
         self._handle_to_attribute_map = {}
-        self._default_idx = 2
         self._nodeid_counter = {0: 20000, 1: 2000}
 
-    def generate_nodeid(self, idx=None):
-        if idx is None:
-            idx = self._default_idx
+    def generate_nodeid(self, idx=DEFAULT_USER_NAMESPACE_INDEX):
         if idx in self._nodeid_counter:
             self._nodeid_counter[idx] += 1
         else:
             # get the biggest identifier number from the existed nodes in address space
-            identifier_list = sorted([nodeid.Identifier for nodeid in self.keys()
+            identifier_list = sorted([nodeid.Identifier for nodeid in self
                                       if nodeid.NamespaceIndex == idx and nodeid.NodeIdType
                                       in (ua.NodeIdType.Numeric, ua.NodeIdType.TwoByte, ua.NodeIdType.FourByte)])
             if identifier_list:
@@ -505,7 +503,7 @@ class AddressSpace(ThreadSafeDict):
         nodeid = ua.NodeId(self._nodeid_counter[idx], idx)
         with self._lock:  # OK since reentrant lock
             while True:
-                if nodeid in self.keys():
+                if nodeid in self:
                     nodeid = self.generate_nodeid(idx)
                 else:
                     return nodeid
@@ -513,7 +511,7 @@ class AddressSpace(ThreadSafeDict):
     def get_attribute_value(self, nodeid, attr):
         with self._lock:
             self.logger.debug("get attr val: %s %s", nodeid, attr)
-            if nodeid not in self.keys():
+            if nodeid not in self:
                 dv = ua.DataValue()
                 dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
                 return dv
@@ -530,10 +528,11 @@ class AddressSpace(ThreadSafeDict):
     def set_attribute_value(self, nodeid, attr, value):
         with self._lock:
             self.logger.debug("set attr val: %s %s %s", nodeid, attr, value)
-            node = self.get(nodeid, None)
-            if node is None:
+ 
+            try:
+                attval = self[nodeid].attributes.get(attr, None)
+            except KeyError:
                 return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
-            attval = node.attributes.get(attr, None)
             if attval is None:
                 return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
 
@@ -554,12 +553,13 @@ class AddressSpace(ThreadSafeDict):
     def add_datachange_callback(self, nodeid, attr, callback):
         with self._lock:
             self.logger.debug("set attr callback: %s %s %s", nodeid, attr, callback)
-            if nodeid not in self.keys():
+
+            try:
+                attval = self[nodeid].attributes.get(attr, None)
+            except KeyError:
                 return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown), 0
-            node = self[nodeid]
-            if attr not in node.attributes:
+            if attval is None:
                 return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid), 0
-            attval = node.attributes[attr]
             self._datachange_callback_counter += 1
             handle = self._datachange_callback_counter
             attval.datachange_callbacks[handle] = callback

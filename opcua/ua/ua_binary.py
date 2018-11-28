@@ -273,6 +273,8 @@ def to_binary(uatype, val):
         return getattr(Primitives, uatype).pack(val)
     elif isinstance(val, (IntEnum, Enum)):
         return Primitives.UInt32.pack(val.value)
+    elif isinstance(val, int):
+        return Primitives.UInt32.pack(val)
     elif isinstance(val, ua.NodeId):
         return nodeid_to_binary(val)
     elif isinstance(val, ua.Variant):

@@ -325,11 +325,11 @@ def save_aspace_to_disk():
     standard_address_space.fill_address_space(NodeManagementService(aspace))
     # Write in-memory address space to sqlite3 file.
     import os.path
-    path = os.path.join("..", "opcua", "server", "standard_address_space.sql")
+    path = os.path.join("..", "opcua", "server", "standard_address_space", "standard_address_space.sql")
     print("Saving standard address space to:", path)
     from opcua.server.address_space_sqlite import AddressSpaceSQLite
     with AddressSpaceSQLite(cache=aspace, sqlFile=path) as aspace_sql:
-        aspace_sql.dump(path)
+        aspace_sql.dump(namespaceidx=0)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARN)

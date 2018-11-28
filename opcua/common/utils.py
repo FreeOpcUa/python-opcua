@@ -214,7 +214,7 @@ class ThreadLoop(threading.Thread):
 class ThreadSafeDict(MutableMapping):
 
     def __init__(self, cache=None):
-        self._lock = threading.RLock()  # FIXME: should use multiple reader, one writter pattern
+        self._lock = cache._lock if hasattr(cache, '_lock') else threading.RLock()  # FIXME: should use multiple reader, one writter pattern
         if cache is None:
             self._cache = {}
         else:
@@ -249,7 +249,7 @@ class ThreadSafeDict(MutableMapping):
 
     def __iter__(self):
         with self._lock:
-            return iter(self._cache.keys())
+            return self._cache.__iter__()
 
     def __len__(self):
         return len(self._cache)
