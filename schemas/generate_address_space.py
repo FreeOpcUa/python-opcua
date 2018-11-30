@@ -328,7 +328,8 @@ def save_aspace_to_disk():
     path = os.path.join("..", "opcua", "server", "standard_address_space", "standard_address_space.sql")
     print("Saving standard address space to:", path)
     from opcua.server.address_space_sqlite import AddressSpaceSQLite
-    with AddressSpaceSQLite(cache=aspace, sqlFile=path) as aspace_sql:
+    from opcua.common.sqlite3_backend import SQLite3Backend
+    with SQLite3Backend(sqlFile=path, readonly=False) as backend, AddressSpaceSQLite(backend, cache=aspace) as aspace_sql:
         aspace_sql.dump(namespaceidx=0)
 
 if __name__ == "__main__":

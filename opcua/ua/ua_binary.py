@@ -148,7 +148,8 @@ class _Primitive1(object):
             return None
         if length == 0:
             return ()
-        return struct.unpack(self._fmt.format(length), data.read(self.size * length))
+        fmt = bytes(self._fmt.format(length), 'utf-8')
+        return struct.unpack(fmt, data.read(self.size * length))
 
 
 class Primitives1(object):
