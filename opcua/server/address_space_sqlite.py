@@ -1,4 +1,5 @@
 
+import os.path
 import time
 import datetime
 from struct import pack
@@ -6,6 +7,7 @@ from struct import pack
 from opcua import ua
 from opcua.ua.uatypes import NumericNodeId, NodeIdType
 from opcua.common.utils import Buffer
+from opcua.common.sqlite3_backend import SQLite3Backend
 from opcua.server.address_space import NodeData, AddressSpace, AttributeValue
 
 class ReadOnlyException(Exception):
@@ -488,3 +490,19 @@ class AddressSpaceSQLite(AddressSpace):
         assert(ref.DisplayName == ref2.DisplayName)
         assert(int(ref.NodeClass) == int(ref2.NodeClass))
         assert(ref.TypeDefinition == ref2.TypeDefinition)
+
+
+class StandardAddressSpaceSQLite(AddressSpaceSQLite):
+
+    def __init__(self, cache=None):
+        path = os.path.join(os.path.dirname(__file__), "standard_address_space", "standard_address_space.sql")
+        backend = SQLite3Backend(sqlFile=path, readonly=True) 
+        super(StandardAddressSpaceSQLite, self).__init__(backend, cache)
+
+    def __enter__(self):
+        self.backend.__enter__()
+        return super(StandardAddressSpaceSQLite, self).__enter__()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        super(StandardAddressSpaceSQLite, self).__exit__(exc_type, exc_value, traceback)
+        backend.__exit__(exc_type, exc_value, traceback)
