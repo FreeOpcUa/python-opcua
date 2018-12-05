@@ -19,6 +19,7 @@ dist
 newdocs
 examples/history.db
 *.sql
+!standard_address_space.sql
 /.project
 /.pydevproject
 /.settings/
