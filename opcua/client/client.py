@@ -76,15 +76,14 @@ class KeepAlive(Thread):
 
 
 class Client(object):
-
     """
     High level client to connect to an OPC-UA server.
 
     This class makes it easy to connect and browse address space.
-    It attemps to expose as much functionality as possible
-    but if you want more flexibility it is possible and adviced to
-    use UaClient object, available as self.uaclient
-    which offers the raw OPC-UA services interface.
+    It attempts to expose as much functionality as possible
+    but if you want more flexibility it is possible and advised to
+    use the UaClient object, available as self.uaclient, which offers
+    the raw OPC-UA services interface.
     """
 
     def __init__(self, url, timeout=4):
@@ -213,6 +212,10 @@ class Client(object):
         self.connect_socket()
         try:
             self.send_hello()
+        except ua.UaStatusCodeError:
+            raise
+
+        try:
             self.open_secure_channel()
             endpoints = self.get_endpoints()
             self.close_secure_channel()
@@ -227,6 +230,10 @@ class Client(object):
         self.connect_socket()
         try:
             self.send_hello()
+        except ua.UaStatusCodeError:
+            raise
+
+        try:
             self.open_secure_channel()  # spec says it should not be necessary to open channel
             servers = self.find_servers()
             self.close_secure_channel()
@@ -241,6 +248,10 @@ class Client(object):
         self.connect_socket()
         try:
             self.send_hello()
+        except ua.UaStatusCodeError:
+            raise
+
+        try:
             self.open_secure_channel()
             servers = self.find_servers_on_network()
             self.close_secure_channel()
@@ -256,6 +267,10 @@ class Client(object):
         self.connect_socket()
         try:
             self.send_hello()
+        except ua.UaStatusCodeError:
+            raise
+
+        try:
             self.open_secure_channel()
             self.create_session()
         except Exception:
@@ -288,7 +303,10 @@ class Client(object):
         Send OPC-UA hello to server
         """
         ack = self.uaclient.send_hello(self.server_url.geturl(), self.max_messagesize, self.max_chunkcount)
-        # FIXME check ack
+
+        # TODO: Handle ua.UaError
+        if isinstance(ack, ua.UaStatusCodeError):
+            raise ack
 
     def open_secure_channel(self, renew=False):
         """

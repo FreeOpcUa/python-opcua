@@ -290,7 +290,6 @@ class SecureConnection(object):
             return msg
         elif header.MessageType == ua.MessageType.Error:
             msg = struct_from_binary(ua.ErrorMessage, body)
-            logger.warning("Received an error: %s", msg)
             return msg
         else:
             raise ua.UaError("Unsupported message type {0}".format(header.MessageType))
