@@ -1,10 +1,12 @@
 
+import sys
 import time
 import sqlite3
 import threading
 from multiprocessing import Lock
 
 class SQLite3Backend(object):
+    PY2 = sys.version_info < (3, 0)
     CHECKP_INTERVAL = 90 # [sec] WAL checkpoint
 
     def __init__(self, sqlFile = None, readonly=True):
@@ -74,6 +76,8 @@ class SQLite3Backend(object):
             detect_types = sqlite3.PARSE_DECLTYPES,
             check_same_thread = False
         )
+        if SQLite3Backend.PY2:
+            self._conn[CID].text_factory = bytes
         c = self._get_conn().cursor()
         if self.readonly is True:
             c.execute('PRAGMA query_only=1')

@@ -125,6 +125,8 @@ class _Guid(object):
 
 
 class _Primitive1(object):
+    PY2 = sys.version_info < (3, 0)
+
     def __init__(self, fmt):
         self._fmt = fmt
         st = struct.Struct(fmt.format(1))
@@ -141,7 +143,7 @@ class _Primitive1(object):
         if data is None:
             return Primitives.Int32.pack(-1)
         sizedata = Primitives.Int32.pack(len(data))
-        fmt = bytes(self._fmt.format(len(data)), 'utf-8')
+        fmt = self._str_to_bytes(self._fmt.format(len(data)))
         return sizedata + struct.pack(fmt, *data)
 
     def unpack_array(self, data, length):
@@ -149,9 +151,12 @@ class _Primitive1(object):
             return None
         if length == 0:
             return ()
-        fmt = bytes(self._fmt.format(length), 'utf-8')
+        fmt = self._str_to_bytes(self._fmt.format(length))
         return struct.unpack(fmt, data.read(self.size * length))
 
+    @staticmethod
+    def _str_to_bytes(_str, PY2=PY2):
+        return bytes(_str) if PY2 else bytes(_str, 'utf-8')
 
 class Primitives1(object):
     SByte = _Primitive1("<{:d}b")

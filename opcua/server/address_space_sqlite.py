@@ -1,7 +1,9 @@
 
+import sys
 import os.path
 import time
 import datetime
+import sqlite3
 from struct import pack
 
 from opcua import ua
@@ -83,6 +85,7 @@ class AddressSpaceSQLite(AddressSpace):
     Load the standard address space nodes from a SQLite database.
     Intended for slow devices, such as Raspberry Pi, to greatly improve start up time
     """
+    PY2 = sys.version_info < (3, 0)
     ATTR_TABLE_NAME = 'Attributes'
     REFS_TABLE_NAME = 'References'
     CUR_TIME_NODEID = NumericNodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime, 0)
@@ -258,10 +261,17 @@ class AddressSpaceSQLite(AddressSpace):
     def _read_nodedata(backend, nodeid, ndata):
         # Search key = numeric nodeid in opc-ua binary format
         numNodeId = AddressSpaceSQLite._nodeid_to_numeric(nodeid)
-        hexNodeId = ua.ua_binary.nodeid_to_binary(numNodeId).hex()
+        hexNodeId = AddressSpaceSQLite._to_hex(ua.ua_binary.nodeid_to_binary(numNodeId))
 
         AddressSpaceSQLite._read_attributes(backend, hexNodeId, ndata)
         AddressSpaceSQLite._read_references(backend, hexNodeId, ndata)
+
+    @staticmethod
+    def _to_hex(b):
+        if AddressSpaceSQLite.PY2:
+            return "".join("{:02x}".format(ord(c)) for c in b)
+        else:
+            return b.hex()
 
     @staticmethod
     def _read_attributes(backend, hexNodeId, ndata, attrTable=ATTR_TABLE_NAME):
@@ -339,15 +349,15 @@ class AddressSpaceSQLite(AddressSpace):
 
         cmd = 'INSERT OR REPLACE INTO "{tn}" VALUES ({q})'.format(tn=table, q=', '.join('?'*10))
         params = (
-          memoryview(primaryKey),
-          memoryview(binNodeId),
+          sqlite3.Binary(primaryKey),
+          sqlite3.Binary(binNodeId),
           int(attrId),
           attr.value.ServerTimestamp,
           None if attr.value.ServerPicoseconds is None else int(attr.value.ServerPicoseconds),
           attr.value.SourceTimestamp,
           None if attr.value.SourcePicoseconds is None else int(attr.value.SourcePicoseconds),
           int(attr.value.StatusCode.value),
-          memoryview(ua.ua_binary.variant_to_binary(attr.value.Value)),
+          sqlite3.Binary(ua.ua_binary.variant_to_binary(attr.value.Value)),
           str(nodeid)
         )
         backend.execute_write(cmd, params=params)
@@ -425,18 +435,18 @@ class AddressSpaceSQLite(AddressSpace):
 
         cmd = 'INSERT OR REPLACE INTO "{tn}" VALUES ({q})'.format(tn=table, q=', '.join('?'*13))
         params = (
-          memoryview(primaryKey),
-          memoryview(binNodeId),
-          memoryview(ua.ua_binary.nodeid_to_binary(ref.ReferenceTypeId)),
+          sqlite3.Binary(primaryKey),
+          sqlite3.Binary(binNodeId),
+          sqlite3.Binary(ua.ua_binary.nodeid_to_binary(ref.ReferenceTypeId)),
           int(bool(ref.IsForward)),
-          memoryview(refNodeId),
+          sqlite3.Binary(refNodeId),
           int(ref.BrowseName.NamespaceIndex),
           None if ref.BrowseName.Name is None else str(ref.BrowseName.Name),
           None if ref.DisplayName.Text is None else str(ref.DisplayName.Text),
           None if ref.DisplayName.Locale is None else str(ref.DisplayName.Locale),
           int(ref.DisplayName.Encoding),
           int(ref.NodeClass),
-          memoryview(ua.ua_binary.nodeid_to_binary(ref.TypeDefinition)),
+          sqlite3.Binary(ua.ua_binary.nodeid_to_binary(ref.TypeDefinition)),
           str(nodeid)
         )
         backend.execute_write(cmd, params=params)
