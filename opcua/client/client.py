@@ -212,10 +212,6 @@ class Client(object):
         self.connect_socket()
         try:
             self.send_hello()
-        except ua.UaStatusCodeError:
-            raise
-
-        try:
             self.open_secure_channel()
             endpoints = self.get_endpoints()
             self.close_secure_channel()
@@ -230,10 +226,6 @@ class Client(object):
         self.connect_socket()
         try:
             self.send_hello()
-        except ua.UaStatusCodeError:
-            raise
-
-        try:
             self.open_secure_channel()  # spec says it should not be necessary to open channel
             servers = self.find_servers()
             self.close_secure_channel()
@@ -248,10 +240,6 @@ class Client(object):
         self.connect_socket()
         try:
             self.send_hello()
-        except ua.UaStatusCodeError:
-            raise
-
-        try:
             self.open_secure_channel()
             servers = self.find_servers_on_network()
             self.close_secure_channel()
@@ -267,10 +255,6 @@ class Client(object):
         self.connect_socket()
         try:
             self.send_hello()
-        except ua.UaStatusCodeError:
-            raise
-
-        try:
             self.open_secure_channel()
             self.create_session()
         except Exception:
