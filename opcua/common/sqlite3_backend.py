@@ -33,18 +33,18 @@ class SQLite3Backend(object):
     # PUBLIC METHODS
     def execute_read(self, dbCmd = None, params = (), CB = None):
         with self._lock:
-            c = self._getConn().cursor()
+            c = self._get_conn().cursor()
             for row in c.execute(dbCmd, params):
                 CB(row)
 
     def execute_write(self, dbCmd = None, params = ()):
         with self._lock:
-            c = self._getConn().cursor()
+            c = self._get_conn().cursor()
             c.execute(dbCmd, params)
 
     def commit(self):
         with self._lock:
-            self._getConn().commit()
+            self._get_conn().commit()
             self._wal_throttled()
 
     def wal_checkpoint(self):
@@ -55,7 +55,7 @@ class SQLite3Backend(object):
         transactions that you really want to survive a power loss.
         """
         self._lastCheckP = time.time()
-        c = self._getConn().cursor()
+        c = self._get_conn().cursor()
         c.execute('PRAGMA wal_checkpoint')
 
     # PRIVATE METHODS
@@ -74,7 +74,7 @@ class SQLite3Backend(object):
             detect_types = sqlite3.PARSE_DECLTYPES,
             check_same_thread = False
         )
-        c = self._getConn().cursor()
+        c = self._get_conn().cursor()
         if self.readonly is True:
             c.execute('PRAGMA query_only=1')
         else:
@@ -85,7 +85,7 @@ class SQLite3Backend(object):
         # Commit, checkpoint.
         if self.readonly is False:
             with self._lock:
-                self._getConn().commit()
+                self._get_conn().commit()
                 self.wal_checkpoint()
         # Close all connections to database.
         for CID in self._conn:
@@ -93,7 +93,7 @@ class SQLite3Backend(object):
         # Remove all items from dict.
         self._conn.clear()
 
-    def _getConn(self):
+    def _get_conn(self):
         if self._lock.acquire(False) is True:
             self._lock.release()
             raise Exception('Forgot to lock?')
