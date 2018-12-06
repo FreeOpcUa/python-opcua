@@ -84,7 +84,7 @@ class AddressSpaceSQLite(AddressSpace):
     Intended for slow devices, such as Raspberry Pi, to greatly improve start up time
     """
     ATTR_TABLE_NAME = 'Attributes'
-    REFS_TABLE_NAME = 'ReferenceDescription'
+    REFS_TABLE_NAME = 'References'
     CUR_TIME_NODEID = NumericNodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime, 0)
 
     def __init__(self, backend, cache=None):
@@ -214,7 +214,6 @@ class AddressSpaceSQLite(AddressSpace):
         AddressSpaceSQLite._create_refs_table(self.backend, drop=True)
 
         # 2. Populate.
-        a = time.time()
         for nodeid, ndata in self._cache.items():
             assert(nodeid == ndata.nodeid)
             assert(isinstance(ndata, NodeData))
@@ -227,7 +226,6 @@ class AddressSpaceSQLite(AddressSpace):
                     continue
                 numNodeId = AddressSpaceSQLite._nodeid_to_numeric(ndata.nodeid)
                 self._insert_reference(numNodeId, ref)
-        print(time.time() - a)
 
         # 3. Integrity checks.
         for nodeid, ndata in self._cache.items():
@@ -373,7 +371,7 @@ class AddressSpaceSQLite(AddressSpace):
 
     # Read and write from references table
     @staticmethod
-    def _create_refs_table(backend, table='ReferenceDescription', drop=False):
+    def _create_refs_table(backend, table=REFS_TABLE_NAME, drop=False):
         REFS_TABLE_COLS = [
             '_Id BLOB PRIMARY KEY NOT NULL',     # 0
             'NodeId BLOB',                       # 1 = the nodeid of this ReferenceDescription
