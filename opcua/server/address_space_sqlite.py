@@ -505,4 +505,4 @@ class StandardAddressSpaceSQLite(AddressSpaceSQLite):
 
     def __exit__(self, exc_type, exc_value, traceback):
         super(StandardAddressSpaceSQLite, self).__exit__(exc_type, exc_value, traceback)
-        backend.__exit__(exc_type, exc_value, traceback)
+        self.backend.__exit__(exc_type, exc_value, traceback)
