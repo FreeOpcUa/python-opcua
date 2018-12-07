@@ -37,7 +37,7 @@ class MonitoredNode(object):
 
     def __init__(self, aspace, ndata):
         self._aspace = aspace
-        self._nodeid = AddressSpaceSQLite._nodeid_to_numeric(ndata.nodeid)
+        self._nodeid = AddressSpaceSQLite._nodeid_surjection(ndata.nodeid)
 
     @property
     def aspace(self):
@@ -174,15 +174,17 @@ class AddressSpaceSQLite(AddressSpace):
             self.backend.commit()
 
     @staticmethod
-    def _nodeid_to_numeric(nodeid):
+    def _nodeid_surjection(nodeid):
         assert(isinstance(nodeid, ua.uatypes.NodeId))
         # For database lookups, map TwoByte and FourByte onto NumericNodeId.
         if nodeid.NodeIdType == NodeIdType.Numeric:
             return nodeid
-        if nodeid.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte):
+        elif nodeid.NodeIdType in (NodeIdType.TwoByte, NodeIdType.FourByte):
             return NumericNodeId(nodeid.Identifier, nodeid.NamespaceIndex)
+        elif nodeid.NodeIdType in (NodeIdType.String, NodeIdType.Guid, NodeIdType.ByteString):
+            return nodeid
         else:
-            raise Exception('NodeIdType {:d} is not supported for backend lookups.'.format(nodeid.NodeIdType))
+            raise Exception('NodeIdType {:d} is not supported.'.format(nodeid.NodeIdType))
 
     def keys(self):
         raise Exception("dict.keys() is not supported for performance. Use iterator.")
@@ -227,8 +229,8 @@ class AddressSpaceSQLite(AddressSpace):
             for ref in ndata.references:
                 if ref.NodeId.NamespaceIndex != namespaceidx:
                     continue
-                numNodeId = AddressSpaceSQLite._nodeid_to_numeric(ndata.nodeid)
-                self._insert_reference(numNodeId, ref)
+                mapNodeId = AddressSpaceSQLite._nodeid_surjection(ndata.nodeid)
+                self._insert_reference(mapNodeId, ref)
 
         # 3. Integrity checks.
         for nodeid, ndata in self._cache.items():
@@ -240,9 +242,9 @@ class AddressSpaceSQLite(AddressSpace):
 
     # Write NodeData to database
     def _write_nodedata(self, ndata):
-        numNodeId = AddressSpaceSQLite._nodeid_to_numeric(ndata.nodeid)
-        self._write_attributes(numNodeId, ndata)
-        self._write_references(numNodeId, ndata)
+        mapNodeId = AddressSpaceSQLite._nodeid_surjection(ndata.nodeid)
+        self._write_attributes(mapNodeId, ndata)
+        self._write_references(mapNodeId, ndata)
 
     def _write_attributes(self, nodeid, ndata):
         assert(nodeid.NodeIdType == NodeIdType.Numeric)
@@ -259,9 +261,9 @@ class AddressSpaceSQLite(AddressSpace):
     # Read NodeData from database
     @staticmethod
     def _read_nodedata(backend, nodeid, ndata):
-        # Search key = numeric nodeid in opc-ua binary format
-        numNodeId = AddressSpaceSQLite._nodeid_to_numeric(nodeid)
-        hexNodeId = AddressSpaceSQLite._to_hex(ua.ua_binary.nodeid_to_binary(numNodeId))
+        # Search key = nodeid in opc-ua binary format
+        mapNodeId = AddressSpaceSQLite._nodeid_surjection(nodeid)
+        hexNodeId = AddressSpaceSQLite._to_hex(ua.ua_binary.nodeid_to_binary(mapNodeId))
 
         AddressSpaceSQLite._read_attributes(backend, hexNodeId, ndata)
         AddressSpaceSQLite._read_references(backend, hexNodeId, ndata)
