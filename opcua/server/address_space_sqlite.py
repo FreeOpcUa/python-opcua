@@ -96,8 +96,9 @@ class AddressSpaceSQLite(AddressSpace):
 
     def __enter__(self):
         super(AddressSpaceSQLite, self).__enter__()
-        AddressSpaceSQLite._create_attr_table(self.backend)
-        AddressSpaceSQLite._create_refs_table(self.backend)
+        if self.readonly is False:
+            AddressSpaceSQLite._create_attr_table(self.backend)
+            AddressSpaceSQLite._create_refs_table(self.backend)
         return self
 
     def __str__(self):

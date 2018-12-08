@@ -1,4 +1,5 @@
 
+import os
 import sys
 import time
 import sqlite3
@@ -69,21 +70,33 @@ class SQLite3Backend(object):
 
     def _db_connect(self):
         CID = SQLite3Backend._getCID()
-        # PARSE_DECLTYPES is active so certain data types (such as datetime) will not be BLOBs
         assert CID not in self._conn
-        self._conn[CID] = sqlite3.connect(
-            self._sqlFile,
-            detect_types = sqlite3.PARSE_DECLTYPES,
-            check_same_thread = False
-        )
         if SQLite3Backend.PY2:
-            self._conn[CID].text_factory = bytes
+            self._db_connect_py2(CID)
+        else:
+            self._conn[CID] = sqlite3.connect(
+                'file:{:s}?immutable={:s}'.format(self._sqlFile, '1' if self.readonly else '0'),
+                detect_types = sqlite3.PARSE_DECLTYPES, # so datetimes won't be BLOBs
+                check_same_thread = False,
+                uri = True,
+            )
         c = self._get_conn().cursor()
         if self.readonly is True:
             c.execute('PRAGMA query_only=1')
         else:
             c.execute('PRAGMA journal_mode=WAL')
             c.execute('PRAGMA synchronous=NORMAL')
+
+    # Legacy support for Python<3.x.
+    def _db_connect_py2(self, CID):
+        if os.access(self._sqlFile, os.W_OK) is False:
+            raise Exception('Python>=3.x is required for immutable sqlite3 database.')
+        self._conn[CID] = sqlite3.connect(
+            self._sqlFile,
+            detect_types = sqlite3.PARSE_DECLTYPES,
+            check_same_thread = False
+        )
+        self._conn[CID].text_factory = bytes
 
     def _db_disconnect(self):
         # Commit, checkpoint.
