@@ -39,34 +39,45 @@ class SQLite3Backend(object):
             c = self._get_conn().cursor()
             for row in c.execute(dbCmd, params):
                 CB(row)
+            c.close()
 
-    def execute_write(self, dbCmd = None, params = ()):
+    def execute_write(self, dbCmd = None, params = (), commit=True):
         with self._lock:
-            c = self._get_conn().cursor()
-            c.execute(dbCmd, params)
+            conn = self._get_conn()
+            if dbCmd is not None:
+                c = conn.cursor()
+                c.execute(dbCmd, params)
+                c.close()
+            if bool(commit) is True:
+                conn.commit()
+                self._wal_throttled()
 
-    def commit(self):
+    def wal_throttled_threadsafe(self):
         with self._lock:
-            self._get_conn().commit()
             self._wal_throttled()
 
-    def wal_checkpoint(self):
+    def wal_checkpoint_threadsafe(self):
         """
         Store checkpoint: forces database modifications to be persistent.
         Automatically done when sqlite cache runs over the 1000 pages threshold.
         IMPORTANT: slow operation, manual syncs are only useful for sporadic
         transactions that you really want to survive a power loss.
         """
-        self._lastCheckP = time.time()
-        c = self._get_conn().cursor()
-        c.execute('PRAGMA wal_checkpoint')
-
+        with self._lock:
+            self._wal_checkpoint()
+    
     # PRIVATE METHODS
     def _wal_throttled(self):
         # commits still require a wal_checkpoint to become persistent.
         if abs(time.time() - self._lastCheckP) < self.CHECKP_INTERVAL:
             return
-        self.wal_checkpoint()
+        self._wal_checkpoint()
+
+    def _wal_checkpoint(self):
+        self._lastCheckP = time.time()
+        c = self._get_conn().cursor()
+        c.execute('PRAGMA wal_checkpoint')
+        c.close()
 
     def _db_connect(self):
         CID = SQLite3Backend._getCID()
@@ -101,9 +112,7 @@ class SQLite3Backend(object):
     def _db_disconnect(self):
         # Commit, checkpoint.
         if self.readonly is False:
-            with self._lock:
-                self._get_conn().commit()
-                self.wal_checkpoint()
+            self.wal_checkpoint_threadsafe()
         # Close all connections to database.
         for CID in self._conn:
             self._conn[CID].close()

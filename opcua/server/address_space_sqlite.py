@@ -57,7 +57,7 @@ class MonitoredAttributeDict(MonitoredNode, dict):
 
     def __setitem__(self, attrId, attr):
         def onchange_cb():
-            self.aspace._insert_attribute_threadsafe(self.nodeid, attrId, self[attrId])
+            self.aspace._insert_attribute_threadsafe(self.nodeid, attrId, self[attrId], commit=True)
         mAttr = MonitoredAttribute(attr, onchange_cb)
         dict.__setitem__(self, attrId, mAttr)
         mAttr.onchange_cb()
@@ -74,7 +74,7 @@ class MonitoredReferenceList(MonitoredNode, list):
 
     def append(self, ref):
         list.append(self, ref)
-        self._aspace._insert_reference_threadsafe(self.nodeid, ref)
+        self._aspace._insert_reference_threadsafe(self.nodeid, ref, commit=True)
 
     def remove(self, ref):
         raise NotImplementedError
@@ -172,7 +172,6 @@ class AddressSpaceSQLite(AddressSpace):
 
         if ndata.attributes.aspace is self:
             self._write_nodedata(ndata)
-            self.backend.commit()
 
     @staticmethod
     def _nodeid_surjection(nodeid):
@@ -211,7 +210,6 @@ class AddressSpaceSQLite(AddressSpace):
         """
         with self._lock:
             self._dump(namespaceidx)
-            self.backend.commit()
         print("Export to {:s} completed".format(str(self.backend)))
 
     def _dump(self, namespaceidx=AddressSpace.DEFAULT_USER_NAMESPACE_INDEX):
@@ -224,16 +222,19 @@ class AddressSpaceSQLite(AddressSpace):
             assert(nodeid == ndata.nodeid)
             assert(isinstance(ndata, NodeData))
             if nodeid.NamespaceIndex == namespaceidx:
-                self._write_nodedata(ndata)
+                self._write_nodedata(ndata, commit=False)
                 continue
             # inter-namespace references.
             for ref in ndata.references:
                 if ref.NodeId.NamespaceIndex != namespaceidx:
                     continue
                 mapNodeId = AddressSpaceSQLite._nodeid_surjection(ndata.nodeid)
-                self._insert_reference(mapNodeId, ref)
+                self._insert_reference(mapNodeId, ref, commit=False)
 
-        # 3. Integrity checks.
+        # 3. commit
+        self.backend.execute_write(dbCmd=None, commit=True)
+
+        # 4. Integrity checks.
         for nodeid, ndata in self._cache.items():
             if nodeid.NamespaceIndex != namespaceidx:
                 continue
@@ -242,22 +243,22 @@ class AddressSpaceSQLite(AddressSpace):
             AddressSpaceSQLite._cmp_nodedata(ndata, ndata2)
 
     # Write NodeData to database
-    def _write_nodedata(self, ndata):
+    def _write_nodedata(self, ndata, commit=True):
         mapNodeId = AddressSpaceSQLite._nodeid_surjection(ndata.nodeid)
-        self._write_attributes(mapNodeId, ndata)
-        self._write_references(mapNodeId, ndata)
+        self._write_attributes(mapNodeId, ndata, commit=commit)
+        self._write_references(mapNodeId, ndata, commit=commit)
 
-    def _write_attributes(self, nodeid, ndata):
+    def _write_attributes(self, nodeid, ndata, commit=True):
         assert(nodeid.NodeIdType == NodeIdType.Numeric)
         assert(isinstance(ndata.attributes, dict))
         for attrId, attr in ndata.attributes.items():
-            AddressSpaceSQLite._insert_attribute(self.backend, nodeid, attrId, attr)
+            AddressSpaceSQLite._insert_attribute(self.backend, nodeid, attrId, attr, commit=commit)
 
-    def _write_references(self, nodeid, ndata):
+    def _write_references(self, nodeid, ndata, commit=True):
         assert(nodeid.NodeIdType == NodeIdType.Numeric)
         assert(isinstance(ndata.references, list))
         for ref in ndata.references:
-            AddressSpaceSQLite._insert_reference(self.backend, nodeid, ref)
+            AddressSpaceSQLite._insert_reference(self.backend, nodeid, ref, commit=commit)
 
     # Read NodeData from database
     @staticmethod
@@ -309,22 +310,20 @@ class AddressSpaceSQLite(AddressSpace):
         ]
         if drop is True:
             dropCmd = 'DROP TABLE IF EXISTS "{tn}"'.format(tn=table)
-            backend.execute_write(dropCmd)
+            backend.execute_write(dropCmd, commit=True)
         cmd = 'CREATE TABLE IF NOT EXISTS "{tn}" ({c})'.format(tn=table, c=', '.join(ATTR_TABLE_COLS))
-        backend.execute_write(cmd)
+        backend.execute_write(cmd, commit=True)
 
-    def _insert_attribute_threadsafe(self, nodeid, attrId, attr, table=ATTR_TABLE_NAME):
+    def _insert_attribute_threadsafe(self, nodeid, attrId, attr, table=ATTR_TABLE_NAME, commit=True):
         with self._lock:
             if nodeid == AddressSpaceSQLite.CUR_TIME_NODEID:
-                pass # Prevents SD-card wear: don't write the time.
+                # Prevent sd-card wear: don't write the time. Use as trigger for WAL checkpoints.
+                self.backend.wal_throttled_threadsafe()
             else:
-                AddressSpaceSQLite._insert_attribute(self.backend, nodeid, attrId, attr, table)
-            # CurrentTime-node updates result in commits at COMMIT_INTERVAL sec.
-            # Commits without previous actual transactions don't touch the file.
-            self.backend.commit()
+                AddressSpaceSQLite._insert_attribute(self.backend, nodeid, attrId, attr, table, commit=commit)
 
     @staticmethod
-    def _insert_attribute(backend, nodeid, attrId, attr, table=ATTR_TABLE_NAME):
+    def _insert_attribute(backend, nodeid, attrId, attr, table=ATTR_TABLE_NAME, commit=True):
         assert(nodeid.NodeIdType == NodeIdType.Numeric)
         assert(isinstance(attrId, ua.AttributeIds))
         assert(isinstance(attr, AttributeValue))
@@ -363,7 +362,7 @@ class AddressSpaceSQLite(AddressSpace):
           sqlite3.Binary(ua.ua_binary.variant_to_binary(attr.value.Value)),
           str(nodeid)
         )
-        backend.execute_write(cmd, params=params)
+        backend.execute_write(cmd, params=params, commit=commit)
 
     @staticmethod
     def _read_attribute_row(row):
@@ -402,17 +401,16 @@ class AddressSpaceSQLite(AddressSpace):
         ]
         if drop is True:
             dropCmd = 'DROP TABLE IF EXISTS "{tn}"'.format(tn=table)
-            backend.execute_write(dropCmd)
+            backend.execute_write(dropCmd, commit=True)
         cmd = 'CREATE TABLE IF NOT EXISTS "{tn}" ({c})'.format(tn=table, c=', '.join(REFS_TABLE_COLS))
-        backend.execute_write(cmd)
+        backend.execute_write(cmd, commit=True)
 
-    def _insert_reference_threadsafe(self, nodeid, ref, table=REFS_TABLE_NAME):
+    def _insert_reference_threadsafe(self, nodeid, ref, table=REFS_TABLE_NAME, commit=True):
         with self._lock:
-            AddressSpaceSQLite._insert_reference(self.backend, nodeid, ref, table)
-            self.backend.commit()
+            AddressSpaceSQLite._insert_reference(self.backend, nodeid, ref, table, commit=commit)
 
     @staticmethod
-    def _insert_reference(backend, nodeid, ref, table=REFS_TABLE_NAME):
+    def _insert_reference(backend, nodeid, ref, table=REFS_TABLE_NAME, commit=True):
         # NumericNodeId is required for searching.
         assert(nodeid.NodeIdType == NodeIdType.Numeric)
         assert(isinstance(ref, ua.uaprotocol_auto.ReferenceDescription))
@@ -452,7 +450,7 @@ class AddressSpaceSQLite(AddressSpace):
           sqlite3.Binary(ua.ua_binary.nodeid_to_binary(ref.TypeDefinition)),
           str(nodeid)
         )
-        backend.execute_write(cmd, params=params)
+        backend.execute_write(cmd, params=params, commit=commit)
 
     @staticmethod
     def _read_reference_row(row):
