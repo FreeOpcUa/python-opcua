@@ -138,7 +138,10 @@ class UASocketClient(object):
         connect to server socket and start receiving thread
         """
         self.logger.info("opening connection")
-        sock = socket.create_connection((host, port))
+        # Create socket with timeout for initial connection
+        sock = socket.create_connection((host, port), timeout=self.timeout)
+        # set to blocking mode again
+        sock.settimeout(None)
         # nodelay necessary to avoid packing in one frame, some servers do not like it
         sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self._socket = ua.utils.SocketWrapper(sock)
