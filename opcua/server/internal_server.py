@@ -310,18 +310,44 @@ class InternalSession(object):
 
     def activate_session(self, params):
         self.logger.info("activate session")
+
         result = ua.ActivateSessionResult()
         if self.state != SessionState.Created:
             raise utils.ServiceError(ua.StatusCodes.BadSessionIdInvalid)
+
+        # FIXME: Get the server available UserIdentityToken policy's ids. I don't how to get it in other way.
+        # iserver_policy_ids = ["anonymous", "certificate_basic256sha256", "username"]
+        # Note that it is different from server._policyIDs = ["Anonymous", "Basic256Sha256", "Username"]
+        iserver_policy_ids = []
+        edp = self.iserver.get_endpoints()[0]  # FIXME: is it the same list whatever endpoint ?
+        for token in edp.UserIdentityTokens:
+            iserver_policy_ids.append(token.PolicyId)
+
+        # Check if params UserIdentityToken is authorized by the server.
+        params_id_token = params.UserIdentityToken
+        if params_id_token.PolicyId not in iserver_policy_ids:
+            raise utils.ServiceError(ua.StatusCodes.BadIdentityTokenInvalid)
+
+        # Route to the correct manager
+        if isinstance(params_id_token, ua.AnonymousIdentityToken):
+            pass  # TODO: Call AnonymousIdentityToken Manager
+
+        elif isinstance(params_id_token, ua.UserNameIdentityToken):
+            if self.user_manager.check_user_token(self, params_id_token) == False:
+                raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
+
+        elif isinstance(params_id_token, ua.X509IdentityToken):
+            pass  # TODO: Call X509IdentityToken Manager
+
+        else:  # Not implement IdentityToken
+            raise utils.ServiceError(ua.StatusCodes.BadIdentityTokenInvalid)
+
         self.nonce = utils.create_nonce(32)
         result.ServerNonce = self.nonce
         for _ in params.ClientSoftwareCertificates:
             result.Results.append(ua.StatusCode())
         self.state = SessionState.Activated
-        id_token = params.UserIdentityToken
-        if isinstance(id_token, ua.UserNameIdentityToken):
-            if self.user_manager.check_user_token(self, id_token) == False:
-                raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
+
         self.logger.info("Activated internal session %s for user %s", self.name, self.user)
         return result
 
