@@ -77,6 +77,10 @@ class InternalServer(object):
         return self._parent.user_manager
 
     @property
+    def certificate_manager(self):
+        return self._parent.certificate_manager
+
+    @property
     def thread_loop(self):
         if self.loop is None:
             raise Exception("InternalServer stopped: async threadloop is not running.")
@@ -282,6 +286,10 @@ class InternalSession(object):
     def user_manager(self):
         return self.iserver.user_manager
 
+    @property
+    def certificate_manager(self):
+        return self.iserver.certificate_manager
+
     def __str__(self):
         return "InternalSession(name:{0}, user:{1}, id:{2}, auth_token:{3})".format(
             self.name, self.user, self.session_id, self.authentication_token)
@@ -333,13 +341,14 @@ class InternalSession(object):
             pass  # TODO: Call AnonymousIdentityToken Manager
 
         elif isinstance(params_id_token, ua.UserNameIdentityToken):
-            if self.user_manager.check_user_token(self, params_id_token) == False:
+            if not self.user_manager.check_user_token(self, params_id_token):
                 raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
 
         elif isinstance(params_id_token, ua.X509IdentityToken):
-            pass  # TODO: Call X509IdentityToken Manager
+            if not self.certificate_manager.check_certificate_token(self, params):
+                raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
 
-        else:  # Not implement IdentityToken
+        else:  # Not implemented IdentityToken
             raise utils.ServiceError(ua.StatusCodes.BadIdentityTokenInvalid)
 
         self.nonce = utils.create_nonce(32)
