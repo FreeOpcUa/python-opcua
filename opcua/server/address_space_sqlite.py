@@ -86,6 +86,7 @@ class AddressSpaceSQLite(AddressSpace):
     Intended for slow devices, such as Raspberry Pi, to greatly improve start up time
     """
     PY2 = sys.version_info < (3, 0)
+    NODEID_COL_NAME = 'NodeId'
     ATTR_TABLE_NAME = 'Attributes'
     REFS_TABLE_NAME = 'References'
     CUR_TIME_NODEID = NumericNodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime, 0)
@@ -296,9 +297,10 @@ class AddressSpaceSQLite(AddressSpace):
     # Read and write from attribute table
     @staticmethod
     def _create_attr_table(backend, table=ATTR_TABLE_NAME, drop=False):
-        ATTR_TABLE_COLS = [
+        nid = AddressSpaceSQLite.NODEID_COL_NAME
+        ATTR_COLS = [
             '_Id BLOB PRIMARY KEY NOT NULL', # 0
-            'NodeId BLOB',                   # 1
+            '{:s} BLOB'.format(nid),         # 1
             'AttributeId INTEGER',           # 2
             'ServerTimestamp TIMESTAMP',     # 3
             'ServerPicoseconds INTEGER',     # 4
@@ -308,11 +310,19 @@ class AddressSpaceSQLite(AddressSpace):
             'Variant BLOB',                  # 8
             'Description STRING',            # 9
         ]
+        AddressSpaceSQLite._create_indexed_table(backend, table, ATTR_COLS, drop)
+
+    @staticmethod
+    def _create_indexed_table(backend, table, cols, drop):
+        nid = AddressSpaceSQLite.NODEID_COL_NAME
+        cmds = []
         if drop is True:
-            dropCmd = 'DROP TABLE IF EXISTS "{tn}"'.format(tn=table)
-            backend.execute_write(dropCmd, commit=True)
-        cmd = 'CREATE TABLE IF NOT EXISTS "{tn}" ({c})'.format(tn=table, c=', '.join(ATTR_TABLE_COLS))
-        backend.execute_write(cmd, commit=True)
+            cmds.append('DROP INDEX IF EXISTS "idx_{tn}"'.format(tn=table))
+            cmds.append('DROP TABLE IF EXISTS "{tn}"'.format(tn=table))
+        cmds.append('CREATE TABLE IF NOT EXISTS "{tn}" ({c})'.format(tn=table, c=', '.join(cols)))
+        cmds.append('CREATE INDEX IF NOT EXISTS "idx_{tn}" ON "{tn}" ({nid})'.format(tn=table, nid=nid))
+        for cmd in cmds:
+            backend.execute_write(cmd, commit=True)
 
     def _insert_attribute_threadsafe(self, nodeid, attrId, attr, table=ATTR_TABLE_NAME, commit=True):
         with self._lock:
@@ -384,9 +394,10 @@ class AddressSpaceSQLite(AddressSpace):
     # Read and write from references table
     @staticmethod
     def _create_refs_table(backend, table=REFS_TABLE_NAME, drop=False):
-        REFS_TABLE_COLS = [
+        nid = AddressSpaceSQLite.NODEID_COL_NAME
+        REFS_COLS = [
             '_Id BLOB PRIMARY KEY NOT NULL',     # 0
-            'NodeId BLOB',                       # 1 = the nodeid of this ReferenceDescription
+            '{:s} BLOB'.format(nid),             # 1 = the nodeid of this ReferenceDescription
             'ReferenceTypeId BLOB',              # 2
             'IsForward INTEGER',                 # 3
             'ReferredNodeId BLOB',               # 4 = referred nodeid of ReferenceDescription
@@ -399,11 +410,7 @@ class AddressSpaceSQLite(AddressSpace):
             'TypeDefinition BLOB',               # 11
             'Description STRING'                 # 12
         ]
-        if drop is True:
-            dropCmd = 'DROP TABLE IF EXISTS "{tn}"'.format(tn=table)
-            backend.execute_write(dropCmd, commit=True)
-        cmd = 'CREATE TABLE IF NOT EXISTS "{tn}" ({c})'.format(tn=table, c=', '.join(REFS_TABLE_COLS))
-        backend.execute_write(cmd, commit=True)
+        AddressSpaceSQLite._create_indexed_table(backend, table, REFS_COLS, drop)
 
     def _insert_reference_threadsafe(self, nodeid, ref, table=REFS_TABLE_NAME, commit=True):
         with self._lock:
