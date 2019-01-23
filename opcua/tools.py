@@ -315,7 +315,7 @@ def _lsprint_0(node, depth, indent=""):
     for desc in node.get_children_descriptions():
         print("{0}{1:30} {2:25}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string()))
         if depth:
-            _lsprint_0(Node(node.server, desc.NodeId), depth - 1, indent + "  ")
+            _lsprint_0(Node(node.session_server, desc.NodeId), depth - 1, indent + "  ")
 
 
 def _lsprint_1(node, depth, indent=""):
@@ -326,14 +326,14 @@ def _lsprint_1(node, depth, indent=""):
     for desc in node.get_children_descriptions():
         if desc.NodeClass == ua.NodeClass.Variable:
             try:
-                val = Node(node.server, desc.NodeId).get_value()
+                val = Node(node.session_server, desc.NodeId).get_value()
             except UaStatusCodeError as err:
                 val = "Bad (0x{0:x})".format(err.code)
             print("{0}{1:30} {2!s:25} {3!s:25}, {4!s:3}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string(), desc.BrowseName.to_string(), val))
         else:
             print("{0}{1:30} {2!s:25} {3!s:25}".format(indent, desc.DisplayName.to_string(), desc.NodeId.to_string(), desc.BrowseName.to_string()))
         if depth:
-            _lsprint_1(Node(node.server, desc.NodeId), depth - 1, indent + "  ")
+            _lsprint_1(Node(node.session_server, desc.NodeId), depth - 1, indent + "  ")
 
 
 def _lsprint_long(pnode, depth, indent=""):

@@ -16,7 +16,6 @@ from opcua.ua import flatten, get_shape
 from opcua.server.internal_subscription import WhereClauseEvaluator
 from opcua.common.event_objects import BaseEvent
 from opcua.common.ua_utils import string_to_variant, variant_to_string, string_to_val, val_to_string
-from opcua.common.xmlimporter import XmlImporter
 from opcua.ua.uatypes import _MaskEnum
 from opcua.common.structures import StructGenerator
 from opcua.common.connection import MessageChunk

@@ -122,7 +122,7 @@ class DataTypeDictionaryBuilder:
 
     def __init__(self, server, idx, idx_name, dict_name):
         self._server = server
-        self._session_server = server.get_root_node().server
+        self._session_server = server.get_root_node().session_server
         self._idx = idx
         # Risk of bugs using a fixed number without checking
         self._id_counter = 8000
