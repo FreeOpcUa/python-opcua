@@ -12,6 +12,7 @@ from opcua import ua
 from opcua.ua import object_ids as o_ids
 from opcua.common.ua_utils import get_base_data_type
 from opcua.ua.uatypes import extension_object_ids
+from opcua.ua.uaerrors import UaError
 
 
 class XmlExporter(object):
@@ -94,7 +95,12 @@ class XmlExporter(object):
         idxs = []
         for node in nodes:
             node_idxs = [node.nodeid.NamespaceIndex]
-            node_idxs.append(node.get_browse_name().NamespaceIndex)
+            try:
+                node_idxs.append(node.get_browse_name().NamespaceIndex)
+            except UaError:
+                self.logger.exception("Error retrieving browse name of node %s", node)
+                raise
+
             node_idxs.extend(ref.NodeId.NamespaceIndex for ref in node.get_references())
             node_idxs = list(set(node_idxs))  # remove duplicates
             for i in node_idxs:
