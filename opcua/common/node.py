@@ -8,10 +8,12 @@ from opcua import ua
 from opcua.common import events
 import opcua.common
 
-def _check_results(results, reqlen = 1):
+
+def _check_results(results, reqlen=1):
     assert len(results) == reqlen, results
     for r in results:
         r.check()
+
 
 def _to_nodeid(nodeid):
     if isinstance(nodeid, int):
@@ -24,6 +26,7 @@ def _to_nodeid(nodeid):
         return ua.NodeId.from_string(nodeid)
     else:
         raise ua.UaError("Could not resolve '{0}' to a type id".format(nodeid))
+
 
 class Node(object):
 
@@ -576,7 +579,8 @@ class Node(object):
         Delete node from address space
         """
         results = opcua.common.manage_nodes.delete_nodes(self.server, [self], recursive, delete_references)
-        _check_results(results)
+        for r in results:
+            r.check()
 
     def _fill_delete_reference_item(self, rdesc, bidirectional = False):
         ditem = ua.DeleteReferencesItem()
@@ -626,7 +630,8 @@ class Node(object):
             params.append(aitem2)
 
         results = self.server.add_references(params)
-        _check_results(results, len(params))
+        for r in results:
+            r.check()
 
     def set_modelling_rule(self, mandatory):
         """
