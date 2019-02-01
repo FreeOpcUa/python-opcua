@@ -578,9 +578,10 @@ class Node(object):
         """
         Delete node from address space
         """
-        results = opcua.common.manage_nodes.delete_nodes(self.server, [self], recursive, delete_references)
+        nodes, results = opcua.common.manage_nodes.delete_nodes(self.server, [self], recursive, delete_references)
         for r in results:
             r.check()
+        return nodes
 
     def _fill_delete_reference_item(self, rdesc, bidirectional = False):
         ditem = ua.DeleteReferencesItem()

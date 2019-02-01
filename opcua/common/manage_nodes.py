@@ -376,6 +376,7 @@ def delete_nodes(server, nodes, recursive=False, delete_target_references=True):
     """
     Delete specified nodes. Optionally delete recursively all nodes with a
     downward hierachic references to the node
+    return the list of deleted node and the result
     """
     nodestodelete = []
     if recursive:
@@ -387,7 +388,7 @@ def delete_nodes(server, nodes, recursive=False, delete_target_references=True):
         nodestodelete.append(it)
     params = ua.DeleteNodesParameters()
     params.NodesToDelete = nodestodelete
-    return server.delete_nodes(params)
+    return params.NodesToDelete, server.delete_nodes(params)
 
 
 def _add_childs(nodes):
