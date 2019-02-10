@@ -99,12 +99,12 @@ if __name__ == "__main__":
     idx = server.register_namespace(uri)
 
     # create a new node type we can instantiate in our address space
-    dev = server.nodes.base_object_type.add_object_type(0, "MyDevice")
-    dev.add_variable(0, "sensor1", 1.0).set_modelling_rule(True)
-    dev.add_property(0, "device_id", "0340").set_modelling_rule(True)
-    ctrl = dev.add_object(0, "controller")
+    dev = server.nodes.base_object_type.add_object_type(idx, "MyDevice")
+    dev.add_variable(idx, "sensor1", 1.0).set_modelling_rule(True)
+    dev.add_property(idx, "device_id", "0340").set_modelling_rule(True)
+    ctrl = dev.add_object(idx, "controller")
     ctrl.set_modelling_rule(True)
-    ctrl.add_property(0, "state", "Idle").set_modelling_rule(True)
+    ctrl.add_property(idx, "state", "Idle").set_modelling_rule(True)
 
     # populating our address space
 
@@ -112,7 +112,7 @@ if __name__ == "__main__":
     myfolder = server.nodes.objects.add_folder(idx, "myEmptyFolder")
     # instanciate one instance of our device
     mydevice = server.nodes.objects.add_object(idx, "Device0001", dev)
-    mydevice_var = mydevice.get_child(["0:controller", "0:state"])  # get proxy to our device state variable 
+    mydevice_var = mydevice.get_child(["{}:controller".format(idx), "{}:state".format(idx)])  # get proxy to our device state variable 
     # create directly some objects and variables
     myobj = server.nodes.objects.add_object(idx, "MyObject")
     myvar = myobj.add_variable(idx, "MyVariable", 6.7)
