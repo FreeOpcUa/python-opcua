@@ -9,9 +9,9 @@ http://freeopcua.github.io/, https://github.com/FreeOpcUa/python-opcua
 
 [![PyPI Package](https://badge.fury.io/py/opcua.svg)](https://badge.fury.io/py/opcua)
 
-**The library is in maintenance model. The plan is now to focus on the asyncio version of this library https://github.com/FreeOpcUa/opcua-asyncio which also has a sync wrapper, with very few changes in API  https://github.com/FreeOpcUa/opcua-asyncio/blob/master/asyncua/sync.py**
+**The library is in maintenance mode. The plan is now to focus on the asyncio version of this library: [python-asyncio](https://github.com/FreeOpcUa/opcua-asyncio) which also has a [sync-wrapper](https://github.com/FreeOpcUa/opcua-asyncio/blob/master/asyncua/sync.py), with very few changes in API**
 
-**PR to python-opcua are welcome, but if you want to write new fancy features or architectural changes please look at opcua-asyncio**
+**PR to python-opcua are welcome, but if you want to write new fancy features or architectural changes, please look at opcua-asyncio**
 
 **Why asyncio? because it makes code easier to read and safer(read: less chances for bugs) and since python is monoprocess it might even be faster. It is also a good timing to remove all Python2 code**
 
