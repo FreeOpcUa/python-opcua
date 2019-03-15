@@ -51,6 +51,7 @@ class Node(object):
             self.nodeid = ua.NodeId(nodeid, 0)
         else:
             raise ua.UaError("argument to node must be a NodeId object or a string defining a nodeid found {0} of type {1}".format(nodeid, type(nodeid)))
+        self.oldnodeid = None
 
     def __eq__(self, other):
         if isinstance(other, Node) and self.nodeid == other.nodeid:
@@ -678,3 +679,13 @@ class Node(object):
 
     def call_method(self, methodid, *args):
         return opcua.common.methods.call_method(self, methodid, *args)
+
+    def register(self):
+        self.oldnodeid = self.nodeid
+        self.nodeid = self.server.register_nodes([self.nodeid])[0]
+
+    def unregister(self):
+        self.server.unregister_nodes([self.nodeid])
+        if self.oldnodeid:
+            self.nodeid = self.oldnodeid
+            self.oldnodeid = None
