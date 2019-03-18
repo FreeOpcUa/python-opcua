@@ -614,3 +614,16 @@ class UaClient(object):
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
         # nothing to return for this service
+
+    def get_attribute(self, nodes, attr):
+        self.logger.info("get_attribute")
+        request = ua.ReadRequest()
+        for node in nodes:
+            rv = ua.ReadValueId()
+            rv.NodeId = node
+            rv.AttributeId = attr
+            request.Parameters.NodesToRead.append(rv)
+        data = self._uasocket.send_request(request)
+        response = struct_from_binary(ua.ReadResponse, data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
