@@ -120,9 +120,9 @@ class XmlImporter(object):
             if ndata.parent:
                 ndata.parent = ua.NodeId.from_string(ndata.parent)
             if ndata.parentlink:
-                ndata.parentlink = self.to_nodeid(ndata.parentlink)
+                ndata.parentlink = self._to_nodeid(ndata.parentlink)
             if ndata.typedef:
-                ndata.typedef = self.to_nodeid(ndata.typedef)
+                ndata.typedef = self._to_nodeid(ndata.typedef)
             new_nodes.append(ndata)
         return new_nodes
 
