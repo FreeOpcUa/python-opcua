@@ -51,7 +51,7 @@ def create_object(parent, nodeid, bname, objecttype=None):
     nodeid, qname = _parse_nodeid_qname(nodeid, bname)
     if objecttype is not None:
         objecttype = node.Node(parent.server, objecttype)
-        dname = ua.LocalizedText(bname)
+        dname = ua.LocalizedText(qname.Name)
         nodes = instantiate(parent, objecttype, nodeid, bname=qname, dname=dname)[0]
         return nodes
     else:
