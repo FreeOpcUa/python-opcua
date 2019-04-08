@@ -603,7 +603,7 @@ class UaClient(object):
         response = struct_from_binary(ua.RegisterNodesResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
-        return response.Parameters
+        return response.Parameters.RegisteredNodeIds
 
     def unregister_nodes(self, nodes):
         self.logger.info("unregister_nodes")
