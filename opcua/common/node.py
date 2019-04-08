@@ -38,7 +38,7 @@ class Node(object):
     directly UA services methods to optimize your code
     """
 
-    def __init__(self, server, nodeid):
+    def __init__(self, server, nodeid, basenodeid=None):
         self.server = server
         self.nodeid = None
         if isinstance(nodeid, Node):
@@ -51,7 +51,7 @@ class Node(object):
             self.nodeid = ua.NodeId(nodeid, 0)
         else:
             raise ua.UaError("argument to node must be a NodeId object or a string defining a nodeid found {0} of type {1}".format(nodeid, type(nodeid)))
-        self.oldnodeid = None
+        self.basenodeid = basenodeid
 
     def __eq__(self, other):
         if isinstance(other, Node) and self.nodeid == other.nodeid:
@@ -681,11 +681,11 @@ class Node(object):
         return opcua.common.methods.call_method(self, methodid, *args)
 
     def register(self):
-        self.oldnodeid = self.nodeid
-        self.nodeid = self.server.register_nodes([self.nodeid])[0]
+        nodeid = self.server.register_nodes([self.nodeid])[0]
+        return Node(self.server, nodeid, self.nodeid)
 
     def unregister(self):
+        if self.basenodeid is None:
+            return self
         self.server.unregister_nodes([self.nodeid])
-        if self.oldnodeid:
-            self.nodeid = self.oldnodeid
-            self.oldnodeid = None
+        return Node(self.server, self.basenodeid)
