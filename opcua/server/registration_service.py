@@ -110,7 +110,7 @@ class RegistrationService(object):
         if uaDiscoveryConfiguration is provided, the newer register_server2 service call is used
         """
         uaRegSrv = ua.RegisteredServer()
-        uaRegSrv.ServerUri = serverToRegister.application_uri
+        uaRegSrv.ServerUri = serverToRegister._application_uri
         uaRegSrv.ProductUri = serverToRegister.product_uri
         uaRegSrv.DiscoveryUrls = [serverToRegister.endpoint.geturl()]
         uaRegSrv.ServerType = serverToRegister.application_type
