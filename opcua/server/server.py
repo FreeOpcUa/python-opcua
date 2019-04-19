@@ -165,9 +165,6 @@ class Server(object):
             uries.append(uri)
         ns_node.set_value(uries)
 
-    def set_application_uri_var(self, uri):
-        self._application_uri = uri
-
     def get_application_uri(self):
         return self._application_uri
 

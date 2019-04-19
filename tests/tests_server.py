@@ -53,7 +53,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         try:
             servers = client.find_servers()
             new_app_uri = "urn:freeopcua:python:server:test_discovery"
-            self.srv.set_application_uri_var(new_app_uri)
+            self.srv.set_application_uri(new_app_uri)
             with RegistrationService() as regService:
                 regService.register_to_discovery(self.srv, self.discovery.endpoint.geturl(), period=0)
                 time.sleep(0.1)  # let server register registration
@@ -73,11 +73,11 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
             with RegistrationService() as regService1, RegistrationService() as regService2:
                 # Register to server with uri1
                 new_app_uri1 = "urn:freeopcua:python:server:test_discovery1"
-                self.srv.set_application_uri_var(new_app_uri1)
+                self.srv.set_application_uri(new_app_uri1)
                 regService1.register_to_discovery(self.srv, self.discovery.endpoint.geturl(), period=0)
                 # Register to server with uri2
                 new_app_uri2 = "urn:freeopcua:python:test_discovery2"
-                self.srv.set_application_uri_var(new_app_uri2)
+                self.srv.set_application_uri(new_app_uri2)
                 regService2.register_to_discovery(self.srv, self.discovery.endpoint.geturl(), period=0)
                 # Check for 2 registrations
                 time.sleep(0.1)  # let server register registration
