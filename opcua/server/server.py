@@ -165,6 +165,9 @@ class Server(object):
             uries.append(uri)
         ns_node.set_value(uries)
 
+    def get_application_uri(self):
+        return self._application_uri
+
     def find_servers(self, uris=None):
         """
         find_servers. mainly implemented for symmetry with client
