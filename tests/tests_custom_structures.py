@@ -190,7 +190,7 @@ class TypeDictionaryBuilderTest(unittest.TestCase):
         self.assertEqual(type_node.get_display_name(), ua.LocalizedText(type_name))
 
         # Test description node
-        desc_node = self.srv.get_node(self.dict_builder.dict_id).get_child(f"2:{type_name}")
+        desc_node = self.srv.get_node(self.dict_builder.dict_id).get_child("2:{}".format(type_name))
         self.assertEqual(desc_node.get_browse_name(), ua.QualifiedName(type_name, self.idx))
         self.assertEqual(desc_node.get_node_class(), ua.NodeClass.Variable)
         self.assertEqual(desc_node.get_parent().nodeid, self.dict_builder.dict_id)

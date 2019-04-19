@@ -137,7 +137,7 @@ class DataTypeDictionaryBuilder:
 
     def _add_dictionary(self, name):
         try:
-            node = self._server.nodes.opc_binary.get_child(f"{self._idx}:{name}")
+            node = self._server.nodes.opc_binary.get_child("{}:{}".format(self._idx, name))
         except ua.uaerrors.BadNoMatch:
             node = ua.AddNodesItem()
             node.RequestedNewNodeId = ua.NodeId(0, self._idx)
