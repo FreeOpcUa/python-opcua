@@ -573,14 +573,16 @@ class Client(object):
 
     def register_nodes(self, nodes):
         """
-        Register nodes for faster read and write access
+        Register nodes for faster read and write access (if supported by server)
+        Rmw: This call modifies the nodeid of the nodes, the original nodeid is
+        available as node.basenodeid
         """
         nodeids = [node.nodeid for node in nodes]
         nodeids = self.uaclient.register_nodes(nodeids)
-        ret = []
         for node, nodeid in zip(nodes, nodeids):
-            ret.append(Node(node.server, nodeid, node.nodeid))
-        return ret
+            node.basenodeid = node.nodeid
+            node.nodeid = nodeid
+        return nodes
 
     def unregister_nodes(self, nodes):
         """
@@ -588,9 +590,9 @@ class Client(object):
         """
         nodeids = [node.nodeid for node in nodes]
         self.uaclient.unregister_nodes(nodeids)
-        ret = []
         for node in nodes:
-            ret.append(Node(node.server, node.basenodeid))
+            node.nodeid = node.basenodeid
+            node.basenodeid = None
 
     def get_values(self, nodes):
         """

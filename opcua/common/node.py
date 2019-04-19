@@ -38,7 +38,7 @@ class Node(object):
     directly UA services methods to optimize your code
     """
 
-    def __init__(self, server, nodeid, basenodeid=None):
+    def __init__(self, server, nodeid):
         self.server = server
         self.nodeid = None
         if isinstance(nodeid, Node):
@@ -51,7 +51,7 @@ class Node(object):
             self.nodeid = ua.NodeId(nodeid, 0)
         else:
             raise ua.UaError("argument to node must be a NodeId object or a string defining a nodeid found {0} of type {1}".format(nodeid, type(nodeid)))
-        self.basenodeid = basenodeid
+        self.basenodeid = None
 
     def __eq__(self, other):
         if isinstance(other, Node) and self.nodeid == other.nodeid:
@@ -666,7 +666,7 @@ class Node(object):
         return opcua.common.manage_nodes.create_variable_type(self, nodeid, bname, datatype)
 
     def add_data_type(self, nodeid, bname, description=None):
-        return opcua.common.manage_nodes.create_data_type(self, nodeid, bname, description=None)
+        return opcua.common.manage_nodes.create_data_type(self, nodeid, bname, description=description)
 
     def add_property(self, nodeid, bname, val, varianttype=None, datatype=None):
         return opcua.common.manage_nodes.create_property(self, nodeid, bname, val, varianttype, datatype)
@@ -681,11 +681,18 @@ class Node(object):
         return opcua.common.methods.call_method(self, methodid, *args)
 
     def register(self):
+        """
+        Register node for faster read and write access (if supported by server)
+        Rmw: This call modifies the nodeid of the node, the original nodeid is
+        available as node.basenodeid
+        """
         nodeid = self.server.register_nodes([self.nodeid])[0]
-        return Node(self.server, nodeid, self.nodeid)
+        self.basenodeid = self.nodeid
+        self.nodeid = nodeid
 
     def unregister(self):
         if self.basenodeid is None:
-            return self
+            return
         self.server.unregister_nodes([self.nodeid])
-        return Node(self.server, self.basenodeid)
+        self.nodeid = self.basenodeid
+        self.basenodeid = None
