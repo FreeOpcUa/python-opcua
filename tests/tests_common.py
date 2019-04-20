@@ -521,8 +521,8 @@ class CommonTests(object):
         self.assertEqual([1], val)
 
     def test_use_namespace(self):
-        idx = self.opc.get_namespace_index("urn:freeopcua:python:server")
-        self.assertEqual(idx, 1)
+        idx = self.opc.get_namespace_index("http://opcfoundation.org/UA/")
+        self.assertEqual(idx, 0)
         root = self.opc.get_root_node()
         myvar = root.add_variable(idx, 'var_in_custom_namespace', [5])
         myid = myvar.nodeid
