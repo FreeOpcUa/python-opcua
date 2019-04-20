@@ -166,6 +166,9 @@ class Server(object):
         ns_node.set_value(uries)
 
     def get_application_uri(self):
+        """
+        Get application/server URI.
+        """
         return self._application_uri
 
     def find_servers(self, uris=None):
