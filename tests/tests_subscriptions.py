@@ -1,11 +1,14 @@
-
 from concurrent.futures import Future, TimeoutError
 import time
 from datetime import datetime, timedelta
 from copy import copy
+import unittest
 
 import opcua
+from opcua import Client
+from opcua import Server
 from opcua import ua
+from opcua.server.internal_server import InternalServer, InternalSession
 
 
 class SubHandler():
@@ -592,3 +595,46 @@ class SubscriptionTests(object):
         sub.unsubscribe(handle)
         sub.delete()
 
+
+class CustomInternalSession(InternalSession):
+    TIMEOUT = 4
+
+    def create_subscription(self, *args, **kwargs):
+        time.sleep(self.TIMEOUT)
+        return super(CustomInternalSession, self).create_subscription(*args, **kwargs)
+
+
+class SubscriptionTestCustomServer(unittest.TestCase):
+    PORT_NUM2 = 48511  # Needs to be different than num_port1 in tests_client.py
+
+    @classmethod
+    def setUpClass(cls):
+        iserver = InternalServer(session_cls=CustomInternalSession)
+        cls.srv = Server(iserver=iserver)
+        iserver._parent = cls.srv
+        cls.srv.set_endpoint('opc.tcp://127.0.0.1:{0:d}'.format(cls.PORT_NUM2))
+        cls.srv.start()
+
+        # start admin client
+        # short timeout since we want it to fail
+        cls.clt = Client('opc.tcp://admin@127.0.0.1:{0:d}'.format(cls.PORT_NUM2), timeout=1)
+        cls.clt.connect()
+        cls.opc = cls.clt
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.clt.disconnect()
+        cls.srv.stop()
+
+    def test_subscription_timeout_deadlock(self):
+        self.assertRaises(
+            TimeoutError,
+            self.opc.create_subscription,
+            100,
+            MySubHandler()
+        )
+        time.sleep(5)
+        # There is no better way to test if we actually did complete
+        subs = self.opc.uaclient.registered_subscriptions()
+        self.assertEqual(1, len(subs))
+        self.assertTrue(subs[0].is_ready())

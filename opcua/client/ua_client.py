@@ -409,23 +409,29 @@ class UaClient(object):
         response.ResponseHeader.ServiceResult.check()
         return response.Results
 
-    def create_subscription(self, params, callback):
+    def create_subscription(self, params, publish_callback, ready_callback=None):
         self.logger.info("create_subscription")
         request = ua.CreateSubscriptionRequest()
         request.Parameters = params
         resp_fut = Future()
-        mycallbak = partial(self._create_subscription_callback, callback, resp_fut)
+        mycallbak = partial(self._create_subscription_callback, publish_callback, ready_callback, resp_fut)
         self._uasocket.send_request(request, mycallbak)
         return resp_fut.result(self._timeout)
 
-    def _create_subscription_callback(self, pub_callback, resp_fut, data_fut):
+    def _create_subscription_callback(self, pub_callback, ready_callback, resp_fut, data_fut):
         self.logger.info("_create_subscription_callback")
         data = data_fut.result()
         response = struct_from_binary(ua.CreateSubscriptionResponse, data)
         self.logger.debug(response)
         response.ResponseHeader.ServiceResult.check()
+        if ready_callback:
+            ready_callback(response)
         self._publishcallbacks[response.Parameters.SubscriptionId] = pub_callback
         resp_fut.set_result(response.Parameters)
+
+    def registered_subscriptions(self):
+        """Get all subscriptions we know about"""
+        return [cb.__self__ for cb in self._publishcallbacks.values()]
 
     def delete_subscriptions(self, subscriptionids):
         self.logger.info("delete_subscription")

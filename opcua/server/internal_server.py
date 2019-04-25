@@ -39,7 +39,7 @@ class SessionState(Enum):
 
 class InternalServer(object):
 
-    def __init__(self, shelffile=None, parent=None):
+    def __init__(self, shelffile=None, parent=None, session_cls=None):
         self.logger = logging.getLogger(__name__)
 
         self._parent = parent
@@ -65,7 +65,8 @@ class InternalServer(object):
         self.history_manager = HistoryManager(self)
 
         # create a session to use on server side
-        self.isession = InternalSession(self, self.aspace, \
+        self.session_cls = session_cls or InternalSession
+        self.isession = self.session_cls(self, self.aspace, \
           self.subscription_service, "Internal", user=UserManager.User.Admin)
 
         self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
@@ -134,7 +135,7 @@ class InternalServer(object):
         it2.TargetNodeClass = ua.NodeClass.Object
 
         results = self.isession.add_references([it, it2])
- 
+
     def load_address_space(self, path):
         """
         Load address space from path
@@ -195,7 +196,7 @@ class InternalServer(object):
         return self.endpoints[:]
 
     def create_session(self, name, user=UserManager.User.Anonymous, external=False):
-        return InternalSession(self, self.aspace, self.subscription_service, name, user=user, external=external)
+        return self.session_cls(self, self.aspace, self.subscription_service, name, user=user, external=external)
 
     def enable_history_data_change(self, node, period=timedelta(days=7), count=0):
         """
@@ -359,7 +360,7 @@ class InternalSession(object):
     def call(self, params):
         return self.iserver.method_service.call(params)
 
-    def create_subscription(self, params, callback):
+    def create_subscription(self, params, callback, ready_callback=None):
         result = self.subscription_service.create_subscription(params, callback)
         with self._lock:
             self.subscriptions.append(result.SubscriptionId)
