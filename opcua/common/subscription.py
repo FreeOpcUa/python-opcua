@@ -85,9 +85,12 @@ class Subscription(object):
         self._monitoreditems_map = {}
         self._lock = Lock()
         self.subscription_id = None
-        response = self.server.create_subscription(params, self.publish_callback)
-        self.subscription_id = response.SubscriptionId  # move to data class
-        
+        response = self.server.create_subscription(
+            params, self.publish_callback, ready_callback=self.ready_callback)
+        # Set it here to keep the old behavof as well, but this may not run if
+        # the above times out
+        self.subscription_id = response.SubscriptionId
+
         #Send a publish request so the server has one in its queue
         # Servers should alsways be able to handle at least on extra publish request per subscriptions
         self.server.publish()
@@ -99,10 +102,19 @@ class Subscription(object):
         results = self.server.delete_subscriptions([self.subscription_id])
         results[0].check()
 
+    def is_ready(self):
+        return bool(self.subscription_id)
+
+    def ready_callback(self, response):
+        self.subscription_id = self.subscription_id or response.Parameters.SubscriptionId
+        self.server.publish()
+
     def publish_callback(self, publishresult):
         self.logger.info("Publish callback called with result: %s", publishresult)
-        while self.subscription_id is None:
-            time.sleep(0.01)
+        if not self.is_ready():
+            self.logger.warning(
+                "Result received but subscription not ready %s", publishresult)
+            return
 
         if publishresult.NotificationMessage.NotificationData is not None:
             for notif in publishresult.NotificationMessage.NotificationData:
