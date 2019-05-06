@@ -218,6 +218,18 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(string_to_val(s_statuscode, ua.VariantType.StatusCode), statuscode)
         self.assertEqual(string_to_val(s_statuscode2, ua.VariantType.StatusCode), statuscode2)
 
+    def test_status_code_to_string(self):
+        # serialize a status code and deserialize it, name and doc resolution should work just fine
+        statuscode = ua.StatusCode(ua.StatusCodes.BadNotConnected)
+        statuscode2 = struct_from_binary(ua.StatusCode, io.BytesIO(struct_to_binary(ua.StatusCode(ua.StatusCodes.BadNotConnected))))
+
+        self.assertEqual(statuscode, statuscode2)
+        self.assertEqual(statuscode.value, statuscode2.value)
+
+        # properties that are not serialized should still translate properly
+        self.assertEqual(statuscode.name, statuscode2.name)
+        self.assertEqual(statuscode.doc, statuscode2.doc)
+
     def test_string_to_variant_qname(self):
         string = "2:name"
         obj = ua.QualifiedName("name", 2)
