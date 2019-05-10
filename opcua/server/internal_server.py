@@ -136,6 +136,29 @@ class InternalServer(object):
 
         results = self.isession.add_references([it, it2])
 
+        params = ua.WriteParameters()
+        for nodeid in (ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerRead,
+                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerHistoryReadData,
+                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerHistoryReadEvents,
+                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerWrite,
+                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerHistoryUpdateData,
+                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerHistoryUpdateEvents,
+                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerMethodCall,
+                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerBrowse,
+                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerRegisterNodes,
+                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerTranslateBrowsePathsToNodeIds,
+                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxNodesPerNodeManagement,
+                     ua.ObjectIds.Server_ServerCapabilities_OperationLimits_MaxMonitoredItemsPerCall):
+            attr = ua.WriteValue()
+            attr.NodeId = ua.NodeId(nodeid)
+            attr.AttributeId = ua.AttributeIds.Value
+            attr.Value = ua.DataValue(ua.Variant(10000), ua.StatusCode(ua.StatusCodes.Good))
+            attr.Value.ServerTimestamp = datetime.utcnow()
+            params.NodesToWrite.append(attr)
+        result = self.isession.write(params)
+        result[0].check()
+
+
     def load_address_space(self, path):
         """
         Load address space from path
