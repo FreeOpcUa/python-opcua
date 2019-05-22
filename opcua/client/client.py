@@ -97,6 +97,17 @@ class Client(object):
         :param timeout:
             Each request sent to the server expects an answer within this
             time. The timeout is specified in seconds.
+
+        Some other client parameters can be changed by setting
+        attributes on the constructed object:
+
+        secure_channel_timeout
+            Timeout for the secure channel, specified in milliseconds.
+
+        session_timeout
+            Timeout for the session, specified in milliseconds.
+
+        See the source code for the exhaustive list.
         """
         self.logger = logging.getLogger(__name__)
         self.server_url = urlparse(url)
@@ -307,7 +318,11 @@ class Client(object):
         # length should be equal to the length of key of symmetric encryption
         params.ClientNonce = utils.create_nonce(self.security_policy.symmetric_key_size) # this nonce is used to create a symmetric key
         result = self.uaclient.open_secure_channel(params)
-        self.secure_channel_timeout = result.SecurityToken.RevisedLifetime
+        if self.secure_channel_timeout != result.SecurityToken.RevisedLifetime:
+            self.logger.warning("Requested secure channel timeout to be %dms, got %dms instead",
+                                self.secure_channel_timeout,
+                                result.SecurityToken.RevisedLifetime)
+            self.secure_channel_timeout = result.SecurityToken.RevisedLifetime
 
     def close_secure_channel(self):
         return self.uaclient.close_secure_channel()
@@ -354,7 +369,7 @@ class Client(object):
         params.ClientDescription = desc
         params.EndpointUrl = self.server_url.geturl()
         params.SessionName = self.description + " Session" + str(self._session_counter)
-        params.RequestedSessionTimeout = 3600000
+        params.RequestedSessionTimeout = self.session_timeout
         params.MaxResponseMessageSize = 0  # means no max size
         response = self.uaclient.create_session(params)
         if self.security_policy.client_certificate is None:
@@ -370,7 +385,11 @@ class Client(object):
         # remember PolicyId's: we will use them in activate_session()
         ep = Client.find_endpoint(response.ServerEndpoints, self.security_policy.Mode, self.security_policy.URI)
         self._policy_ids = ep.UserIdentityTokens
-        self.session_timeout = response.RevisedSessionTimeout
+        if self.session_timeout != response.RevisedSessionTimeout:
+            self.logger.warning("Requested session timeout to be %dms, got %dms instead",
+                                self.secure_channel_timeout,
+                                response.RevisedSessionTimeout)
+            self.session_timeout = response.RevisedSessionTimeout
         self.keepalive = KeepAlive(
             self, min(self.session_timeout, self.secure_channel_timeout) * 0.7)  # 0.7 is from spec
         self.keepalive.start()
