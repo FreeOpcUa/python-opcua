@@ -478,7 +478,7 @@ class UaProcessor(object):
 
         else:
             self.logger.warning("Unknown message received %s", typeid)
-            raise utils.ServiceError(ua.StatusCodes.BadNotImplemented)
+            raise utils.ServiceError(ua.StatusCodes.BadServiceUnsupported)
 
         return True
 
