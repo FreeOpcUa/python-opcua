@@ -72,6 +72,11 @@ class UserManager(object):
             except Exception as exp:
                 self.logger.warning("Unable to decrypt password")
                 return False
+        else:
+            try:
+                passwd = passwd.decode('utf-8')
+            except:
+                self.logger.warning("Unable to decode password")
 
         # call user_manager
         return self.user_manager(isession, userName, passwd)
