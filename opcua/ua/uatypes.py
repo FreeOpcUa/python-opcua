@@ -216,11 +216,9 @@ class StatusCode(FrozenClass):
 
     def __init__(self, value=0):
         if isinstance(value, str):
-            self.name = value
             self.value = getattr(status_codes.StatusCodes, value)
         else:
             self.value = value
-            self.name, self.doc = status_codes.get_name_and_doc(value)
         self._freeze = True
 
     def check(self):
@@ -241,6 +239,16 @@ class StatusCode(FrozenClass):
             return False
         else:
             return True
+
+    @property
+    def name(self):
+        name, _ = status_codes.get_name_and_doc(self.value)
+        return name
+
+    @property
+    def doc(self):
+        _, doc = status_codes.get_name_and_doc(self.value)
+        return doc
 
     def __str__(self):
         return 'StatusCode({0})'.format(self.name)
