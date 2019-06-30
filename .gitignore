@@ -25,3 +25,7 @@ examples/history.db
 
 # DS_Store
 .DS_Store
+
+*.der
+*.pem
+venv/
