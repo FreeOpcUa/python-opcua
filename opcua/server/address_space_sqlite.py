@@ -77,7 +77,8 @@ class MonitoredReferenceList(MonitoredNode, list):
         self._aspace._insert_reference_threadsafe(self.nodeid, ref, commit=True)
 
     def remove(self, ref):
-        raise NotImplementedError
+        self._aspace._remove_reference_threadsafe(self.nodeid, ref, commit=True)
+        list.remove(self, ref)
 
 
 class AddressSpaceSQLite(AddressSpace):
@@ -437,9 +438,8 @@ class AddressSpaceSQLite(AddressSpace):
         assert(isinstance(ref.NodeClass, (int, ua.uaprotocol_auto.NodeClass)))
         assert(isinstance(ref.TypeDefinition, ua.uatypes.NodeId))
 
-        binNodeId = ua.ua_binary.nodeid_to_binary(nodeid)     # Our own nodeid
-        refNodeId = ua.ua_binary.nodeid_to_binary(ref.NodeId) # Referred nodeid
-        primaryKey = binNodeId + refNodeId + pack(">B", int(ref.IsForward))
+        binNodeId, refNodeId, primaryKey = \
+            AddressSpaceSQLite._calcRefPrimaryKey(nodeid, ref)
 
         cmd = 'INSERT OR REPLACE INTO "{tn}" VALUES ({q})'.format(tn=table, q=', '.join('?'*13))
         params = (
@@ -456,6 +456,26 @@ class AddressSpaceSQLite(AddressSpace):
           int(ref.NodeClass),
           sqlite3.Binary(ua.ua_binary.nodeid_to_binary(ref.TypeDefinition)),
           str(nodeid)
+        )
+        backend.execute_write(cmd, params=params, commit=commit)
+
+    def _calcRefPrimaryKey(nodeid, ref):
+        binNodeId = ua.ua_binary.nodeid_to_binary(nodeid)     # Our own nodeid
+        refNodeId = ua.ua_binary.nodeid_to_binary(ref.NodeId) # Referred nodeid
+        primaryKey = binNodeId + refNodeId + pack(">B", int(ref.IsForward))
+        return binNodeId, refNodeId, primaryKey
+
+    def _remove_reference_threadsafe(self, nodeid, ref, table=REFS_TABLE_NAME, commit=True):
+        with self._lock:
+            AddressSpaceSQLite._remove_reference(self.backend, nodeid, ref, table, commit=commit)
+
+    @staticmethod
+    def _remove_reference(backend, nodeid, ref, table=REFS_TABLE_NAME, commit=True):
+        cmd = 'DELETE FROM "{tn}" WHERE _Id = ?'.format(tn=table)
+        binNodeId, refNodeId, primaryKey = \
+            AddressSpaceSQLite._calcRefPrimaryKey(nodeid, ref)
+        params = (
+            sqlite3.Binary(primaryKey),
         )
         backend.execute_write(cmd, params=params, commit=commit)
 
