@@ -1,7 +1,6 @@
 
 import sys
 import os.path
-import time
 import datetime
 import sqlite3
 from struct import pack
@@ -11,6 +10,7 @@ from opcua.ua.uatypes import NumericNodeId, NodeIdType
 from opcua.common.utils import Buffer
 from opcua.common.sqlite3_backend import SQLite3Backend
 from opcua.server.address_space import NodeData, AddressSpace, AttributeValue
+
 
 class ReadOnlyException(Exception):
     pass
@@ -32,6 +32,7 @@ class MonitoredAttribute(AttributeValue):
     def value(self, newVal):
         self._value = newVal
         self.onchange_cb()
+
 
 class MonitoredNode(object):
 
@@ -132,7 +133,7 @@ class AddressSpaceSQLite(AddressSpace):
         except KeyError:
             (nodeData, fromDisk) = (NodeData(nodeid), True)
             AddressSpaceSQLite._read_nodedata(self.backend, nodeid, nodeData)
-            if len(nodeData.attributes) is 0:
+            if len(nodeData.attributes) == 0:
                 raise
             elif self.readonly is False:
                 self._monitor_nodedata(nodeData)
@@ -190,15 +191,15 @@ class AddressSpaceSQLite(AddressSpace):
 
     def keys(self):
         raise Exception("dict.keys() is not supported for performance. Use iterator.")
-        
+
     def __delitem__(self, key):
-        # TODO only deleting items from the cache is implemented.
+        self._drop_nodedata(nodeid=key)
         super(AddressSpaceSQLite, self).__delitem__(key)
-    
+
     def __iter__(self):
         # TODO only the cache can be iterated over.
         return super(AddressSpaceSQLite, self).__iter__()
-    
+
     def __len__(self):
         # TODO only returns the length of items in the cache.
         return super(AddressSpaceSQLite, self).__len__()
@@ -262,6 +263,14 @@ class AddressSpaceSQLite(AddressSpace):
         for ref in ndata.references:
             AddressSpaceSQLite._insert_reference(self.backend, nodeid, ref, commit=commit)
 
+    # Remove NodeData from database
+    def _drop_nodedata(self, nodeid, commit=True):
+        assert(nodeid.NodeIdType == NodeIdType.Numeric)
+        if self.readonly is True:
+            return
+        AddressSpaceSQLite._drop_attributes(self.backend, nodeid, commit=commit)
+        AddressSpaceSQLite._drop_references(self.backend, nodeid, commit=commit)
+
     # Read NodeData from database
     @staticmethod
     def _read_nodedata(backend, nodeid, ndata):
@@ -282,6 +291,7 @@ class AddressSpaceSQLite(AddressSpace):
     @staticmethod
     def _read_attributes(backend, hexNodeId, ndata, attrTable=ATTR_TABLE_NAME):
         cmd = 'SELECT * FROM "{tn}" WHERE NodeId = x\'{h}\''.format(tn=attrTable, h=hexNodeId)
+
         def CB(row):
             (attrId, attr) = AddressSpaceSQLite._read_attribute_row(row)
             ndata.attributes[attrId] = attr
@@ -290,6 +300,7 @@ class AddressSpaceSQLite(AddressSpace):
     @staticmethod
     def _read_references(backend, hexNodeId, ndata, refsTable=REFS_TABLE_NAME):
         cmd = 'SELECT * FROM "{tn}" WHERE NodeId = x\'{h}\''.format(tn=refsTable, h=hexNodeId)
+
         def CB(row):
             ref = AddressSpaceSQLite._read_reference_row(row)
             ndata.references.append(ref)
@@ -300,16 +311,16 @@ class AddressSpaceSQLite(AddressSpace):
     def _create_attr_table(backend, table=ATTR_TABLE_NAME, drop=False):
         nid = AddressSpaceSQLite.NODEID_COL_NAME
         ATTR_COLS = [
-            '_Id BLOB PRIMARY KEY NOT NULL', # 0
-            '{:s} BLOB'.format(nid),         # 1
-            'AttributeId INTEGER',           # 2
-            'ServerTimestamp TIMESTAMP',     # 3
-            'ServerPicoseconds INTEGER',     # 4
-            'SourceTimestamp TIMESTAMP',     # 5
-            'SourcePicoseconds INTEGER',     # 6
-            'StatusCode INTEGER',            # 7
-            'Variant BLOB',                  # 8
-            'Description STRING',            # 9
+            '_Id BLOB PRIMARY KEY NOT NULL',  # 0
+            '{:s} BLOB'.format(nid),          # 1
+            'AttributeId INTEGER',            # 2
+            'ServerTimestamp TIMESTAMP',      # 3
+            'ServerPicoseconds INTEGER',      # 4
+            'SourceTimestamp TIMESTAMP',      # 5
+            'SourcePicoseconds INTEGER',      # 6
+            'StatusCode INTEGER',             # 7
+            'Variant BLOB',                   # 8
+            'Description STRING',             # 9
         ]
         AddressSpaceSQLite._create_indexed_table(backend, table, ATTR_COLS, drop)
 
@@ -339,21 +350,21 @@ class AddressSpaceSQLite(AddressSpace):
         assert(isinstance(attrId, ua.AttributeIds))
         assert(isinstance(attr, AttributeValue))
         # Callback methods are not supported.
-        assert(attr.value_callback is None) 
+        assert(attr.value_callback is None)
         # Datachange callbacks not supported and are ignored.
         assert(isinstance(attr.datachange_callbacks, dict))
         # DataValue has no opc-ua to_binary: flatten object.
         assert(isinstance(attr.value, ua.uatypes.DataValue))
         # Server timestamp
-        assert(attr.value.ServerTimestamp is None or \
-          isinstance(attr.value.ServerTimestamp, datetime.datetime))
-        assert(attr.value.ServerPicoseconds is None or \
-          isinstance(attr.value.ServerTimestamp, int))
+        assert(attr.value.ServerTimestamp is None or
+               isinstance(attr.value.ServerTimestamp, datetime.datetime))
+        assert(attr.value.ServerPicoseconds is None or
+               isinstance(attr.value.ServerTimestamp, int))
         # Source timestamp
-        assert(attr.value.SourceTimestamp is None or \
-          isinstance(attr.value.SourceTimestamp, datetime.datetime))
-        assert(attr.value.SourcePicoseconds is None or \
-          isinstance(attr.value.ServerTimestamp, int))
+        assert(attr.value.SourceTimestamp is None or
+               isinstance(attr.value.SourceTimestamp, datetime.datetime))
+        assert(attr.value.SourcePicoseconds is None or
+               isinstance(attr.value.ServerTimestamp, int))
         assert(isinstance(attr.value.StatusCode, ua.uatypes.StatusCode))
         assert(isinstance(attr.value.Value, ua.uatypes.Variant))
 
@@ -372,6 +383,19 @@ class AddressSpaceSQLite(AddressSpace):
           int(attr.value.StatusCode.value),
           sqlite3.Binary(ua.ua_binary.variant_to_binary(attr.value.Value)),
           str(nodeid)
+        )
+        backend.execute_write(cmd, params=params, commit=commit)
+
+    @staticmethod
+    def _drop_attributes(backend, nodeid, table=ATTR_TABLE_NAME, commit=True):
+        assert(nodeid.NodeIdType == NodeIdType.Numeric)
+        binNodeId = ua.ua_binary.nodeid_to_binary(nodeid)
+        cmd = 'DELETE FROM "{tn}" WHERE {nid}=?'.format(
+            tn=table,
+            nid=AddressSpaceSQLite.NODEID_COL_NAME
+        )
+        params = (
+          sqlite3.Binary(binNodeId),
         )
         backend.execute_write(cmd, params=params, commit=commit)
 
@@ -397,19 +421,19 @@ class AddressSpaceSQLite(AddressSpace):
     def _create_refs_table(backend, table=REFS_TABLE_NAME, drop=False):
         nid = AddressSpaceSQLite.NODEID_COL_NAME
         REFS_COLS = [
-            '_Id BLOB PRIMARY KEY NOT NULL',     # 0
-            '{:s} BLOB'.format(nid),             # 1 = the nodeid of this ReferenceDescription
-            'ReferenceTypeId BLOB',              # 2
-            'IsForward INTEGER',                 # 3
-            'ReferredNodeId BLOB',               # 4 = referred nodeid of ReferenceDescription
-            'BrowseName_NamespaceIndex INTEGER', # 5
-            'BrowseName_Name TEXT',              # 6
-            'DisplayName_Text TEXT',             # 7
-            'DisplayName_Locale TEXT',           # 8
-            'DisplayName_Encoding INTEGER',      # 9
-            'NodeClass INTEGER',                 # 10
-            'TypeDefinition BLOB',               # 11
-            'Description STRING'                 # 12
+            '_Id BLOB PRIMARY KEY NOT NULL',      # 0
+            '{:s} BLOB'.format(nid),              # 1 = the nodeid of this ReferenceDescription
+            'ReferenceTypeId BLOB',               # 2
+            'IsForward INTEGER',                  # 3
+            'ReferredNodeId BLOB',                # 4 = referred nodeid of ReferenceDescription
+            'BrowseName_NamespaceIndex INTEGER',  # 5
+            'BrowseName_Name TEXT',               # 6
+            'DisplayName_Text TEXT',              # 7
+            'DisplayName_Locale TEXT',            # 8
+            'DisplayName_Encoding INTEGER',       # 9
+            'NodeClass INTEGER',                  # 10
+            'TypeDefinition BLOB',                # 11
+            'Description STRING'                  # 12
         ]
         AddressSpaceSQLite._create_indexed_table(backend, table, REFS_COLS, drop)
 
@@ -459,9 +483,22 @@ class AddressSpaceSQLite(AddressSpace):
         )
         backend.execute_write(cmd, params=params, commit=commit)
 
+    @staticmethod
+    def _drop_references(backend, nodeid, table=REFS_TABLE_NAME, commit=True):
+        assert(nodeid.NodeIdType == NodeIdType.Numeric)
+        binNodeId = ua.ua_binary.nodeid_to_binary(nodeid)
+        cmd = 'DELETE FROM "{tn}" WHERE {nid}=?'.format(
+            tn=table,
+            nid=AddressSpaceSQLite.NODEID_COL_NAME
+        )
+        params = (
+          sqlite3.Binary(binNodeId),
+        )
+        backend.execute_write(cmd, params=params, commit=commit)
+
     def _calcRefPrimaryKey(nodeid, ref):
-        binNodeId = ua.ua_binary.nodeid_to_binary(nodeid)     # Our own nodeid
-        refNodeId = ua.ua_binary.nodeid_to_binary(ref.NodeId) # Referred nodeid
+        binNodeId = ua.ua_binary.nodeid_to_binary(nodeid)      # Our own nodeid
+        refNodeId = ua.ua_binary.nodeid_to_binary(ref.NodeId)  # Referred nodeid
         primaryKey = binNodeId + refNodeId + pack(">B", int(ref.IsForward))
         return binNodeId, refNodeId, primaryKey
 
@@ -512,7 +549,7 @@ class AddressSpaceSQLite(AddressSpace):
         assert(attr.value.StatusCode.value == attr2.value.StatusCode.value)
         try:
             assert(str(attr.value.Value.Value) == str(attr2.value.Value.Value))
-        except:
+        except Exception:
             assert(int(attr.value.Value.Value) == int(attr2.value.Value.Value))
         assert(attr.value.Value.VariantType == attr2.value.Value.VariantType)
 
@@ -532,7 +569,7 @@ class StandardAddressSpaceSQLite(AddressSpaceSQLite):
 
     def __init__(self, cache=None):
         path = os.path.join(os.path.dirname(__file__), "standard_address_space", "standard_address_space.sql")
-        backend = SQLite3Backend(sqlFile=path, readonly=True) 
+        backend = SQLite3Backend(sqlFile=path, readonly=True)
         super(StandardAddressSpaceSQLite, self).__init__(backend, cache)
 
     def __enter__(self):
