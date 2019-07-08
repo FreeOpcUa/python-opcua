@@ -200,7 +200,7 @@ class XmlExporter(object):
         nodeid = node.nodeid
         parent = node.get_parent()
         displayname = node.get_display_name().Text
-        desc = node.get_description().Text
+        desc = node.get_description().Text if node.get_description() else None
         node_el = Et.SubElement(self.etree.getroot(), nodetype)
         node_el.attrib["NodeId"] = self._node_to_string(nodeid)
         node_el.attrib["BrowseName"] = self._bname_to_string(browsename)

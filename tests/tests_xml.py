@@ -203,6 +203,12 @@ class XmlTests(object):
         o = self.opc.nodes.objects.add_variable(2, "xmlstring", "mystring")
         self._test_xml_var_type(o, "string")
 
+    def test_xml_string_with_null_description(self):
+        o = self.opc.nodes.objects.add_variable(2, "xmlstring", "mystring")
+        o.set_attribute(ua.AttributeIds.Description, ua.DataValue(None))
+        o2 = self._test_xml_var_type(o, "string")
+        self.assertEqual(o.get_description(), o2.get_description())
+
     def test_xml_string_array(self):
         o = self.opc.nodes.objects.add_variable(2, "xmlstringarray", ["mystring2", "mystring3"])
         node2 = self._test_xml_var_type(o, "stringarray")
