@@ -140,7 +140,7 @@ class UaProcessor(object):
             response.Parameters.ServerSignature.Signature = \
                 self._connection.security_policy.asymmetric_cryptography.signature(data)
 
-            response.Parameters.ServerSignature.Algorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+            response.Parameters.ServerSignature.Algorithm = self._connection.security_policy.AsymmetricSignatureURI
 
             self.logger.info("sending create session response")
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
