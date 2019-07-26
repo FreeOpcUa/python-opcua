@@ -3,7 +3,7 @@
 server side implementation of callback event 
 """
 
-from collections import OrderedDict
+from collections.abc import OrderedDict
 from enum import Enum
 
 class CallbackType(Enum):

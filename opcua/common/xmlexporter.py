@@ -3,7 +3,7 @@ from a list of nodes in the address space, build an XML file
 format is the one from opc-ua specification
 """
 import logging
-from collections import OrderedDict
+from collections.abc import OrderedDict
 import xml.etree.ElementTree as Et
 from copy import copy
 import base64
