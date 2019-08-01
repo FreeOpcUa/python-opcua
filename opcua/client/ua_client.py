@@ -621,7 +621,7 @@ class UaClient(object):
         response.ResponseHeader.ServiceResult.check()
         # nothing to return for this service
 
-    def get_attribute(self, nodes, attr):
+    def get_attributes(self, nodes, attr):
         self.logger.info("get_attribute")
         request = ua.ReadRequest()
         for node in nodes:
@@ -633,3 +633,22 @@ class UaClient(object):
         response = struct_from_binary(ua.ReadResponse, data)
         response.ResponseHeader.ServiceResult.check()
         return response.Results
+
+    def set_attributes(self, nodeids, datavalues, attributeid=ua.AttributeIds.Value):
+        """
+        Set an attribute of multiple nodes
+        datavalue is a ua.DataValue object
+        """
+        self.logger.info("set_attributes of several nodes")
+        request = ua.WriteRequest()
+        for idx, nodeid in enumerate(nodeids):
+            attr = ua.WriteValue()
+            attr.NodeId = nodeid
+            attr.AttributeId = attributeid
+            attr.Value = datavalues[idx]
+            request.Parameters.NodesToWrite.append(attr)
+        data = self._uasocket.send_request(request)
+        response = struct_from_binary(ua.WriteResponse, data)
+        response.ResponseHeader.ServiceResult.check()
+        return response.Results
+

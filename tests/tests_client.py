@@ -46,7 +46,7 @@ class TestClient(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         #stop our clients
         cls.ro_clt.disconnect()
         cls.clt.disconnect()
-        # stop the server 
+        # stop the server
         cls.srv.stop()
 
     def test_service_fault(self):
@@ -73,18 +73,37 @@ class TestClient(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
     def test_variable_anonymous(self):
         objects = self.clt.get_objects_node()
         v = objects.add_variable(3, 'MyROVariable', 6)
-        v.set_value(4) #this should work
+        v.set_value(4)  # this should work
         v_ro = self.ro_clt.get_node(v.nodeid)
         with self.assertRaises(ua.UaStatusCodeError):
             v_ro.set_value(2)
         self.assertEqual(v_ro.get_value(), 4)
         v.set_writable(True)
-        v_ro.set_value(2) #now it should work
+        v_ro.set_value(2)  # now it should work
         self.assertEqual(v_ro.get_value(), 2)
         v.set_writable(False)
         with self.assertRaises(ua.UaStatusCodeError):
             v_ro.set_value(9)
         self.assertEqual(v_ro.get_value(), 2)
+
+    def test_multiple_read_and_write(self):
+        objects = self.srv.get_objects_node()
+        f = objects.add_folder(3, 'Multiple_read_write_test')
+        v1 = f.add_variable(3, "a", 1)
+        v1.set_writable()
+        v2 = f.add_variable(3, "b", 2)
+        v2.set_writable()
+        v3 = f.add_variable(3, "c", 3)
+        v3.set_writable()
+        v_ro = f.add_variable(3, "ro", 3)
+
+        vals = self.ro_clt.get_values([v1, v2, v3])
+        self.assertEqual(vals, [1, 2, 3])
+        self.ro_clt.set_values([v1, v2, v3], [4, 5, 6])
+        vals = self.ro_clt.get_values([v1, v2, v3])
+        self.assertEqual(vals, [4, 5, 6])
+        with self.assertRaises(ua.uaerrors.BadUserAccessDenied):
+            self.ro_clt.set_values([v1, v2, v_ro], [4, 5, 6])
 
     def test_context_manager(self):
         """ Context manager calls connect() and disconnect()

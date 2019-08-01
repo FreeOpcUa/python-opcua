@@ -15,6 +15,7 @@ from opcua.common.node import Node
 from opcua.common.manage_nodes import delete_nodes
 from opcua.common.subscription import Subscription
 from opcua.common import utils
+from opcua.common import ua_utils
 from opcua.crypto import security_policies
 from opcua.common.shortcuts import Shortcuts
 from opcua.common.structures import load_type_definitions, load_enums
@@ -599,5 +600,16 @@ class Client(object):
         Read the value of multiple nodes in one roundtrip.
         """
         nodes = [node.nodeid for node in nodes]
-        results = self.uaclient.get_attribute(nodes, ua.AttributeIds.Value)
+        results = self.uaclient.get_attributes(nodes, ua.AttributeIds.Value)
         return [result.Value.Value for result in results]
+
+    def set_values(self, nodes, values):
+        """
+        Write values to multiple nodes in one ua call
+        """
+        nodeids = [node.nodeid for node in nodes]
+        dvs = [ua_utils.value_to_datavalue(val) for val in values]
+        results = self.uaclient.set_attributes(nodeids, dvs, ua.AttributeIds.Value)
+        for result in results:
+            result.check()
+
