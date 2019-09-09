@@ -222,8 +222,6 @@ class Node(object):
 
     set_data_value = set_value
 
-    set_data_value = set_value
-
     def set_writable(self, writable=True):
         """
         Set node as writable by clients.
