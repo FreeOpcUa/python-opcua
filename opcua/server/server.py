@@ -406,10 +406,25 @@ class Server(object):
             etype = BaseEvent()
         return EventGenerator(self.iserver.isession, etype, emitting_node=emitting_node)
 
-    def create_custom_data_type(self, idx, name, basetype=ua.ObjectIds.BaseDataType, properties=None):
+    def create_custom_data_type(self, idx, name, basetype=ua.ObjectIds.BaseDataType, properties=None, description=None):
         if properties is None:
             properties = []
-        return self._create_custom_type(idx, name, basetype, properties, [], [])
+
+        if isinstance(basetype, Node):
+            base_t = basetype
+        elif isinstance(basetype, ua.NodeId):
+            base_t = Node(self.iserver.isession, basetype)
+        else:
+            base_t = Node(self.iserver.isession, ua.NodeId(basetype))
+
+        custom_t = base_t.add_data_type(idx, name, description)
+        for prop in properties:
+            datatype = None
+            if len(prop) > 2:
+                datatype = prop[2]
+            custom_t.add_property(idx, prop[0], ua.get_default_value(prop[1]), varianttype=prop[1], datatype=datatype)
+
+        return custom_t
 
     def create_custom_event_type(self, idx, name, basetype=ua.ObjectIds.BaseEventType, properties=None):
         if properties is None:

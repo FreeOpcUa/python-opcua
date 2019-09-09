@@ -327,7 +327,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
     # For the custom events all posibilites are tested. For other custom types only one test case is done since they are using the same code
     def test_create_custom_data_type_ObjectId(self):
         type = self.opc.create_custom_data_type(2, 'MyDataType', ua.ObjectIds.BaseDataType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
-        check_custom_type(self, type, ua.ObjectIds.BaseDataType)
+        check_custom_type(self, type, ua.ObjectIds.BaseDataType, ua.NodeClass.DataType)
 
     def test_create_custom_event_type_ObjectId(self):
         type = self.opc.create_custom_event_type(2, 'MyEvent', ua.ObjectIds.BaseEventType, [('PropertyNum', ua.VariantType.Int32), ('PropertyString', ua.VariantType.String)])
@@ -571,12 +571,16 @@ def check_custom_event(test, ev, etype):
     test.assertEqual(ev.Severity, 1)
 
 
-def check_custom_type(test, type, base_type):
+def check_custom_type(test, type, base_type, node_class=None):
     base = opcua.Node(test.opc.iserver.isession, ua.NodeId(base_type))
     test.assertTrue(type in base.get_children())
     nodes = type.get_referenced_nodes(refs=ua.ObjectIds.HasSubtype, direction=ua.BrowseDirection.Inverse, includesubtypes=True)
     test.assertEqual(base, nodes[0])
     properties = type.get_properties()
+
+    if node_class:
+        test.assertEqual(node_class, type.get_node_class())
+
     test.assertIsNot(properties, None)
     test.assertEqual(len(properties), 2)
     test.assertTrue(type.get_child("2:PropertyNum") in properties)
