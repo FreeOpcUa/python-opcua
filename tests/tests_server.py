@@ -2,12 +2,12 @@ import unittest
 import os
 import shelve
 import time
-from enum import Enum, EnumMeta
+from enum import EnumMeta
 
 from tests_common import CommonTests, add_server_methods
 from tests_xml import XmlTests
 from tests_subscriptions import SubscriptionTests
-from datetime import timedelta, datetime
+from datetime import timedelta
 from tempfile import NamedTemporaryFile
 
 import opcua
