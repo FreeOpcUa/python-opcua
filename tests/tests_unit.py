@@ -20,6 +20,7 @@ from opcua.common.xmlimporter import XmlImporter
 from opcua.ua.uatypes import _MaskEnum
 from opcua.common.structures import StructGenerator
 from opcua.common.connection import MessageChunk
+from opcua.ua.uaerrors import UaError
 
 
 class TestUnit(unittest.TestCase):
@@ -512,7 +513,6 @@ class TestUnit(unittest.TestCase):
     def test_variant_array(self):
         v = ua.Variant([1, 2, 3, 4, 5])
         self.assertEqual(v.Value[1], 2)
-        # self.assertEqual(v.VarianType, ua.VariantType.Int64) # we do not care, we should aonly test for sutff that matter
         v2 = variant_from_binary(ua.utils.Buffer(variant_to_binary(v)))
         self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
@@ -524,6 +524,29 @@ class TestUnit(unittest.TestCase):
         v2 = variant_from_binary(ua.utils.Buffer(variant_to_binary(v)))
         self.assertEqual(v.Value, v2.Value)
         self.assertEqual(v.VariantType, v2.VariantType)
+
+    def test_variant_array_mixed_types(self):
+        v = ua.Variant([1, 2, 3])
+        self.assertEqual(v.VariantType, ua.VariantType.Int64)
+
+        # No empty lists
+        with self.assertRaises(UaError):
+            v = ua.Variant([])
+
+        # First list is used to guess type
+        with self.assertRaises(UaError):
+            v = ua.Variant([[], [1, 2, 3]])
+
+        v = ua.Variant([[1, 2, 3], []])
+        self.assertEqual(v.VariantType, ua.VariantType.Int64)
+
+        # No mixed lists
+        with self.assertRaises(UaError):
+            v = ua.Variant([1, 2.0, '3'])
+
+        # Unless it's a mixed list of ints and floats
+        v = ua.Variant([1, 2.0, 3])
+        self.assertEqual(v.VariantType, ua.VariantType.Double)
 
     def test_variant_array_dim(self):
         v = ua.Variant([1, 2, 3, 4, 5, 6], dimensions=[2, 3])
