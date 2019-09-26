@@ -770,23 +770,19 @@ class Variant(FrozenClass):
         return not self.__eq__(other)
 
     def _guess_type(self, val):
-
         if isinstance(val, (list, tuple)):
             error_val = val
-
-            # Guess the type of a list of lists using the first list
-            while isinstance(val[0], (list, tuple)):
+            while val and isinstance(val[0], (list, tuple)):
                 val = val[0]
 
             types = {type(el) for el in val}
-
             if len(types) == 0:
                 raise UaError("List of zero length. Could not guess UA type of variable {0}".format(error_val))
             elif types == set([int, float]):
                 logger.warning(
                     "Variable {0} has ints and floats. UA type will be {1}".format(error_val, VariantType.Double)
                 )
-                val = float(val[0])
+                val = float()
             elif len(types) > 1:
                 raise UaError("List of multiple types. Could not guess UA type of variable {0}".format(error_val))
             else:
