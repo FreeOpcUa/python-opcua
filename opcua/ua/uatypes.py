@@ -779,7 +779,7 @@ class Variant(FrozenClass):
             if len(types) == 0:
                 raise UaError("List of zero length. Could not guess UA type of variable {0}".format(error_val))
             elif types == set([int, float]):
-                logger.warning(
+                logger.debug(
                     "Variable {0} has ints and floats. UA type will be {1}".format(error_val, VariantType.Double)
                 )
                 val = float()
