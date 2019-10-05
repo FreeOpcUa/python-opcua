@@ -498,7 +498,7 @@ class UaProcessor(object):
 
             params = struct_from_binary(ua.SetPublishingModeParameters, body)
 
-            # FIXME: Implement.SetPublishingMode
+            # FIXME: Implement SetPublishingMode
             # Send dummy results to keep clients happy
             response = ua.SetPublishingModeResponse()
             results = ua.SetPublishingModeResult()
