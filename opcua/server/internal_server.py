@@ -152,7 +152,7 @@ class InternalServer(object):
             attr = ua.WriteValue()
             attr.NodeId = ua.NodeId(nodeid)
             attr.AttributeId = ua.AttributeIds.Value
-            attr.Value = ua.DataValue(ua.Variant(10000), ua.StatusCode(ua.StatusCodes.Good))
+            attr.Value = ua.DataValue(ua.Variant(10000, ua.VariantType.UInt32), ua.StatusCode(ua.StatusCodes.Good))
             attr.Value.ServerTimestamp = datetime.utcnow()
             params.NodesToWrite.append(attr)
         result = self.isession.write(params)
