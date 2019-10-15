@@ -96,6 +96,7 @@ class UASocketClient(object):
                 self._receive()
             except ua.utils.SocketClosedException:
                 self.logger.info("Socket has closed connection")
+                self._connection.close()
                 break
             except UaError:
                 self.logger.exception("Protocol Error")
