@@ -100,6 +100,7 @@ class UASocketClient(object):
                 break
             except UaError:
                 self.logger.exception("Protocol Error")
+        self._cancel_all_callbacks()
         self.logger.info("Thread ended")
 
     def _receive(self):
@@ -125,6 +126,12 @@ class UASocketClient(object):
                     .format(request_id, self._callbackmap.keys())
                 )
         future.set_result(body)
+
+    def _cancel_all_callbacks(self):
+        for request_id, fut in self._callbackmap.items():
+            self.logger.info("Cancelling request {:d}".format(request_id))
+            fut.cancel()
+        self._callbackmap.clear()
 
     def _create_request_header(self, timeout=1000):
         hdr = ua.RequestHeader()
@@ -162,7 +169,7 @@ class UASocketClient(object):
         self.logger.info("Socket closed, waiting for receiver thread to terminate...")
         if self._thread and self._thread.is_alive():
             self._thread.join()
-        self._callbackmap.clear()
+        self._cancel_all_callbacks()
         self.logger.info("Done closing socket: Receiving thread terminated, socket disconnected")
 
     def send_hello(self, url, max_messagesize=0, max_chunkcount=0):
