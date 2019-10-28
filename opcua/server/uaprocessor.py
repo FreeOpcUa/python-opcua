@@ -476,6 +476,40 @@ class UaProcessor(object):
 
             self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
 
+        elif typeid == ua.NodeId(ua.ObjectIds.SetMonitoringModeRequest_Encoding_DefaultBinary):
+            self.logger.info("set monitoring mode request")
+
+            params = struct_from_binary(ua.SetMonitoringModeParameters, body)
+
+            # FIXME: Implement SetMonitoringMode
+            # Send dummy results to keep clients happy
+            response = ua.SetMonitoringModeResponse()
+            results = ua.SetMonitoringModeResult()
+            ids = params.MonitoredItemIds
+            statuses = [ua.StatusCode(ua.StatusCodes.Good) for node_id in ids]
+            results.Results = statuses
+            response.Parameters = results
+
+            self.logger.info("sending set monitoring mode response")
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
+        elif typeid == ua.NodeId(ua.ObjectIds.SetPublishingModeRequest_Encoding_DefaultBinary):
+            self.logger.info("set publishing mode request")
+
+            params = struct_from_binary(ua.SetPublishingModeParameters, body)
+
+            # FIXME: Implement SetPublishingMode
+            # Send dummy results to keep clients happy
+            response = ua.SetPublishingModeResponse()
+            results = ua.SetPublishingModeResult()
+            ids = params.SubscriptionIds
+            statuses = [ua.StatusCode(ua.StatusCodes.Good) for node_id in ids]
+            results.Results = statuses
+            response.Parameters = results
+
+            self.logger.info("sending set publishing mode response")
+            self.send_response(requesthdr.RequestHandle, algohdr, seqhdr, response)
+
         else:
             self.logger.warning("Unknown message received %s", typeid)
             raise utils.ServiceError(ua.StatusCodes.BadServiceUnsupported)
