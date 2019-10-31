@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+import random
 
 from opcua import ua
 from opcua.server.user_manager import UserManager
@@ -473,12 +474,14 @@ class MethodService(object):
 
 
 class AddressSpace(ThreadSafeDict):
-
     """
     The address space object stores all the nodes of the OPC-UA server
     and helper methods.
     The methods are thread safe
     """
+    # https://opcfoundation.org/UA/schemas/1.03/Opc.Ua.Types.bsd
+    # numeric nodeid is UInt32, but Siemens MindSphere uses Int32.
+    MAX_NUMERIC_IDENTIFIER = 0x7fffffff
     DEFAULT_USER_NAMESPACE_INDEX = 2
 
     def __init__(self, cache=None):
@@ -486,27 +489,19 @@ class AddressSpace(ThreadSafeDict):
         self.logger = logging.getLogger(__name__)
         self._datachange_callback_counter = 200
         self._handle_to_attribute_map = {}
-        self._nodeid_counter = {0: 20000, 1: 2000}
 
     def generate_nodeid(self, idx=DEFAULT_USER_NAMESPACE_INDEX):
-        if idx in self._nodeid_counter:
-            self._nodeid_counter[idx] += 1
-        else:
-            # get the biggest identifier number from the existed nodes in address space
-            identifier_list = sorted([nodeid.Identifier for nodeid in self
-                                      if nodeid.NamespaceIndex == idx and nodeid.NodeIdType
-                                      in (ua.NodeIdType.Numeric, ua.NodeIdType.TwoByte, ua.NodeIdType.FourByte)])
-            if identifier_list:
-                self._nodeid_counter[idx] = identifier_list[-1]
-            else:
-                self._nodeid_counter[idx] = 1
-        nodeid = ua.NodeId(self._nodeid_counter[idx], idx)
+        nodeid = ua.NodeId(
+            identifier=random.randrange(AddressSpace.MAX_NUMERIC_IDENTIFIER),
+            namespaceidx=idx
+        )
         with self._lock:  # OK since reentrant lock
-            while True:
+            for retry in range(0, 10):
                 if nodeid in self:
                     nodeid = self.generate_nodeid(idx)
                 else:
                     return nodeid
+        assert(False)  # What are the odds?
 
     def get_attribute_value(self, nodeid, attr):
         with self._lock:
