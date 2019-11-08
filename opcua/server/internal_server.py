@@ -184,11 +184,14 @@ class InternalServer(object):
     def stop(self):
         self.logger.info("stopping internal server")
         self.isession.close_session()
-        if self.loop:
-            self.loop.stop()
-            self.loop = None
         self.subscription_service.set_loop(None)
         self.history_manager.stop()
+        if self.loop:
+            self.loop.stop()
+            # wait for ThreadLoop to finish before proceeding
+            self.loop.join()
+            self.loop.close()
+            self.loop = None
 
     def is_running(self):
         return self.loop is not None

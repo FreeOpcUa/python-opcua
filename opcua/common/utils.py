@@ -156,6 +156,10 @@ class ThreadLoop(threading.Thread):
         """
         self.loop.call_soon_threadsafe(self.loop.stop)
 
+    def close(self):
+        self.loop.close()
+        self.loop = None
+
     def call_soon(self, callback):
         self.loop.call_soon_threadsafe(callback)
 
