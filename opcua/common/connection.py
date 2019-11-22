@@ -9,11 +9,11 @@ from opcua import ua
 logger = logging.getLogger('opcua.uaprotocol')
 
 
-class MessageChunk(ua.FrozenClass):
+class MessageChunk(object):
     """
     Message Chunk, as described in OPC UA specs Part 6, 6.7.2.
     """
-
+    __slots__ = ['MessageHeader', 'SecurityHeader', 'SequenceHeader', 'Body', 'security_policy']
     def __init__(self, security_policy, body=b'', msg_type=ua.MessageType.SecureMessage, chunk_type=ua.ChunkType.Single):
         self.MessageHeader = ua.Header(msg_type, chunk_type)
         if msg_type in (ua.MessageType.SecureMessage, ua.MessageType.SecureClose):

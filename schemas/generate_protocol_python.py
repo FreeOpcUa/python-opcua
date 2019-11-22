@@ -100,7 +100,7 @@ class CodeGenerator(object):
         self.write("")
         self.write("")
         self.iidx = 0
-        self.write("class {}(FrozenClass):".format(obj.name))
+        self.write("class {}(object):".format(obj.name))
         self.iidx += 1
         self.write("'''")
         if obj.doc:
@@ -134,6 +134,12 @@ class CodeGenerator(object):
         self.write("           ]")
         self.write("")
 
+        self.write("__slots__ = [")
+        for field in obj.fields:
+            self.write("    '{}',".format(field.name))
+        self.write("           ]")
+        self.write("")
+
         self.write("def __init__(self):")
         self.iidx += 1
 
@@ -151,8 +157,9 @@ class CodeGenerator(object):
                 self.write("self.TypeId = FourByteNodeId(ObjectIds.{}_Encoding_DefaultBinary)".format(obj.name))
             else:
                 self.write("self.{} = {}".format(field.name, "[]" if field.length else self.get_default_value(field)))
-        self.write("self._freeze = True")
         self.iidx = 1
+        if not obj.fields:
+            self.write("    pass")
 
         #__str__
         self.write("")

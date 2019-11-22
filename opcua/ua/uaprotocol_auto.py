@@ -1049,15 +1049,18 @@ class ExceptionDeviationFormat(IntEnum):
     Unknown = 4
 
 
-class DataTypeDefinition(FrozenClass):
+class DataTypeDefinition(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'DataTypeDefinition(' +  + ')'
@@ -1065,7 +1068,7 @@ class DataTypeDefinition(FrozenClass):
     __repr__ = __str__
 
 
-class DiagnosticInfo(FrozenClass):
+class DiagnosticInfo(object):
     '''
     A recursive structure containing diagnostic information associated with a status code.
 
@@ -1107,6 +1110,17 @@ class DiagnosticInfo(FrozenClass):
         ('InnerDiagnosticInfo', 'DiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'Encoding',
+        'SymbolicId',
+        'NamespaceURI',
+        'Locale',
+        'LocalizedText',
+        'AdditionalInfo',
+        'InnerStatusCode',
+        'InnerDiagnosticInfo',
+               ]
+
     def __init__(self):
         self.Encoding = 0
         self.SymbolicId = None
@@ -1116,7 +1130,6 @@ class DiagnosticInfo(FrozenClass):
         self.AdditionalInfo = None
         self.InnerStatusCode = None
         self.InnerDiagnosticInfo = None
-        self._freeze = True
 
     def __str__(self):
         return 'DiagnosticInfo(' + 'Encoding:' + str(self.Encoding) + ', ' + \
@@ -1131,7 +1144,7 @@ class DiagnosticInfo(FrozenClass):
     __repr__ = __str__
 
 
-class KeyValuePair(FrozenClass):
+class KeyValuePair(object):
     '''
     :ivar Key:
     :vartype Key: QualifiedName
@@ -1144,10 +1157,14 @@ class KeyValuePair(FrozenClass):
         ('Value', 'Variant'),
                ]
 
+    __slots__ = [
+        'Key',
+        'Value',
+               ]
+
     def __init__(self):
         self.Key = QualifiedName()
         self.Value = Variant()
-        self._freeze = True
 
     def __str__(self):
         return 'KeyValuePair(' + 'Key:' + str(self.Key) + ', ' + \
@@ -1156,7 +1173,7 @@ class KeyValuePair(FrozenClass):
     __repr__ = __str__
 
 
-class EndpointType(FrozenClass):
+class EndpointType(object):
     '''
     :ivar EndpointUrl:
     :vartype EndpointUrl: String
@@ -1175,12 +1192,18 @@ class EndpointType(FrozenClass):
         ('TransportProfileUri', 'String'),
                ]
 
+    __slots__ = [
+        'EndpointUrl',
+        'SecurityMode',
+        'SecurityPolicyUri',
+        'TransportProfileUri',
+               ]
+
     def __init__(self):
         self.EndpointUrl = None
         self.SecurityMode = MessageSecurityMode(0)
         self.SecurityPolicyUri = None
         self.TransportProfileUri = None
-        self._freeze = True
 
     def __str__(self):
         return 'EndpointType(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
@@ -1191,7 +1214,7 @@ class EndpointType(FrozenClass):
     __repr__ = __str__
 
 
-class IdentityMappingRuleType(FrozenClass):
+class IdentityMappingRuleType(object):
     '''
     :ivar CriteriaType:
     :vartype CriteriaType: IdentityCriteriaType
@@ -1204,10 +1227,14 @@ class IdentityMappingRuleType(FrozenClass):
         ('Criteria', 'String'),
                ]
 
+    __slots__ = [
+        'CriteriaType',
+        'Criteria',
+               ]
+
     def __init__(self):
         self.CriteriaType = IdentityCriteriaType(0)
         self.Criteria = None
-        self._freeze = True
 
     def __str__(self):
         return 'IdentityMappingRuleType(' + 'CriteriaType:' + str(self.CriteriaType) + ', ' + \
@@ -1216,7 +1243,7 @@ class IdentityMappingRuleType(FrozenClass):
     __repr__ = __str__
 
 
-class TrustListDataType(FrozenClass):
+class TrustListDataType(object):
     '''
     :ivar SpecifiedLists:
     :vartype SpecifiedLists: UInt32
@@ -1238,13 +1265,20 @@ class TrustListDataType(FrozenClass):
         ('IssuerCrls', 'ListOfByteString'),
                ]
 
+    __slots__ = [
+        'SpecifiedLists',
+        'TrustedCertificates',
+        'TrustedCrls',
+        'IssuerCertificates',
+        'IssuerCrls',
+               ]
+
     def __init__(self):
         self.SpecifiedLists = 0
         self.TrustedCertificates = []
         self.TrustedCrls = []
         self.IssuerCertificates = []
         self.IssuerCrls = []
-        self._freeze = True
 
     def __str__(self):
         return 'TrustListDataType(' + 'SpecifiedLists:' + str(self.SpecifiedLists) + ', ' + \
@@ -1256,7 +1290,7 @@ class TrustListDataType(FrozenClass):
     __repr__ = __str__
 
 
-class DecimalDataType(FrozenClass):
+class DecimalDataType(object):
     '''
     :ivar Scale:
     :vartype Scale: Int16
@@ -1269,10 +1303,14 @@ class DecimalDataType(FrozenClass):
         ('Value', 'ByteString'),
                ]
 
+    __slots__ = [
+        'Scale',
+        'Value',
+               ]
+
     def __init__(self):
         self.Scale = 0
         self.Value = None
-        self._freeze = True
 
     def __str__(self):
         return 'DecimalDataType(' + 'Scale:' + str(self.Scale) + ', ' + \
@@ -1281,7 +1319,7 @@ class DecimalDataType(FrozenClass):
     __repr__ = __str__
 
 
-class DataTypeSchemaHeader(FrozenClass):
+class DataTypeSchemaHeader(object):
     '''
     :ivar Namespaces:
     :vartype Namespaces: String
@@ -1300,12 +1338,18 @@ class DataTypeSchemaHeader(FrozenClass):
         ('SimpleDataTypes', 'ListOfSimpleTypeDescription'),
                ]
 
+    __slots__ = [
+        'Namespaces',
+        'StructureDataTypes',
+        'EnumDataTypes',
+        'SimpleDataTypes',
+               ]
+
     def __init__(self):
         self.Namespaces = []
         self.StructureDataTypes = []
         self.EnumDataTypes = []
         self.SimpleDataTypes = []
-        self._freeze = True
 
     def __str__(self):
         return 'DataTypeSchemaHeader(' + 'Namespaces:' + str(self.Namespaces) + ', ' + \
@@ -1316,7 +1360,7 @@ class DataTypeSchemaHeader(FrozenClass):
     __repr__ = __str__
 
 
-class DataTypeDescription(FrozenClass):
+class DataTypeDescription(object):
     '''
     :ivar DataTypeId:
     :vartype DataTypeId: NodeId
@@ -1329,10 +1373,14 @@ class DataTypeDescription(FrozenClass):
         ('Name', 'QualifiedName'),
                ]
 
+    __slots__ = [
+        'DataTypeId',
+        'Name',
+               ]
+
     def __init__(self):
         self.DataTypeId = NodeId()
         self.Name = QualifiedName()
-        self._freeze = True
 
     def __str__(self):
         return 'DataTypeDescription(' + 'DataTypeId:' + str(self.DataTypeId) + ', ' + \
@@ -1341,7 +1389,7 @@ class DataTypeDescription(FrozenClass):
     __repr__ = __str__
 
 
-class StructureDescription(FrozenClass):
+class StructureDescription(object):
     '''
     :ivar DataTypeId:
     :vartype DataTypeId: NodeId
@@ -1357,11 +1405,16 @@ class StructureDescription(FrozenClass):
         ('StructureDefinition', 'StructureDefinition'),
                ]
 
+    __slots__ = [
+        'DataTypeId',
+        'Name',
+        'StructureDefinition',
+               ]
+
     def __init__(self):
         self.DataTypeId = NodeId()
         self.Name = QualifiedName()
         self.StructureDefinition = StructureDefinition()
-        self._freeze = True
 
     def __str__(self):
         return 'StructureDescription(' + 'DataTypeId:' + str(self.DataTypeId) + ', ' + \
@@ -1371,7 +1424,7 @@ class StructureDescription(FrozenClass):
     __repr__ = __str__
 
 
-class EnumDescription(FrozenClass):
+class EnumDescription(object):
     '''
     :ivar DataTypeId:
     :vartype DataTypeId: NodeId
@@ -1390,12 +1443,18 @@ class EnumDescription(FrozenClass):
         ('BuiltInType', 'Byte'),
                ]
 
+    __slots__ = [
+        'DataTypeId',
+        'Name',
+        'EnumDefinition',
+        'BuiltInType',
+               ]
+
     def __init__(self):
         self.DataTypeId = NodeId()
         self.Name = QualifiedName()
         self.EnumDefinition = EnumDefinition()
         self.BuiltInType = 0
-        self._freeze = True
 
     def __str__(self):
         return 'EnumDescription(' + 'DataTypeId:' + str(self.DataTypeId) + ', ' + \
@@ -1406,7 +1465,7 @@ class EnumDescription(FrozenClass):
     __repr__ = __str__
 
 
-class SimpleTypeDescription(FrozenClass):
+class SimpleTypeDescription(object):
     '''
     :ivar DataTypeId:
     :vartype DataTypeId: NodeId
@@ -1425,12 +1484,18 @@ class SimpleTypeDescription(FrozenClass):
         ('BuiltInType', 'Byte'),
                ]
 
+    __slots__ = [
+        'DataTypeId',
+        'Name',
+        'BaseDataType',
+        'BuiltInType',
+               ]
+
     def __init__(self):
         self.DataTypeId = NodeId()
         self.Name = QualifiedName()
         self.BaseDataType = NodeId()
         self.BuiltInType = 0
-        self._freeze = True
 
     def __str__(self):
         return 'SimpleTypeDescription(' + 'DataTypeId:' + str(self.DataTypeId) + ', ' + \
@@ -1441,7 +1506,7 @@ class SimpleTypeDescription(FrozenClass):
     __repr__ = __str__
 
 
-class UABinaryFileDataType(FrozenClass):
+class UABinaryFileDataType(object):
     '''
     :ivar Namespaces:
     :vartype Namespaces: String
@@ -1469,6 +1534,16 @@ class UABinaryFileDataType(FrozenClass):
         ('Body', 'Variant'),
                ]
 
+    __slots__ = [
+        'Namespaces',
+        'StructureDataTypes',
+        'EnumDataTypes',
+        'SimpleDataTypes',
+        'SchemaLocation',
+        'FileHeader',
+        'Body',
+               ]
+
     def __init__(self):
         self.Namespaces = []
         self.StructureDataTypes = []
@@ -1477,7 +1552,6 @@ class UABinaryFileDataType(FrozenClass):
         self.SchemaLocation = None
         self.FileHeader = []
         self.Body = Variant()
-        self._freeze = True
 
     def __str__(self):
         return 'UABinaryFileDataType(' + 'Namespaces:' + str(self.Namespaces) + ', ' + \
@@ -1491,7 +1565,7 @@ class UABinaryFileDataType(FrozenClass):
     __repr__ = __str__
 
 
-class DataSetMetaDataType(FrozenClass):
+class DataSetMetaDataType(object):
     '''
     :ivar Namespaces:
     :vartype Namespaces: String
@@ -1525,6 +1599,18 @@ class DataSetMetaDataType(FrozenClass):
         ('ConfigurationVersion', 'ConfigurationVersionDataType'),
                ]
 
+    __slots__ = [
+        'Namespaces',
+        'StructureDataTypes',
+        'EnumDataTypes',
+        'SimpleDataTypes',
+        'Name',
+        'Description',
+        'Fields',
+        'DataSetClassId',
+        'ConfigurationVersion',
+               ]
+
     def __init__(self):
         self.Namespaces = []
         self.StructureDataTypes = []
@@ -1535,7 +1621,6 @@ class DataSetMetaDataType(FrozenClass):
         self.Fields = []
         self.DataSetClassId = Guid()
         self.ConfigurationVersion = ConfigurationVersionDataType()
-        self._freeze = True
 
     def __str__(self):
         return 'DataSetMetaDataType(' + 'Namespaces:' + str(self.Namespaces) + ', ' + \
@@ -1551,7 +1636,7 @@ class DataSetMetaDataType(FrozenClass):
     __repr__ = __str__
 
 
-class FieldMetaData(FrozenClass):
+class FieldMetaData(object):
     '''
     :ivar Name:
     :vartype Name: String
@@ -1588,6 +1673,19 @@ class FieldMetaData(FrozenClass):
         ('Properties', 'ListOfKeyValuePair'),
                ]
 
+    __slots__ = [
+        'Name',
+        'Description',
+        'FieldFlags',
+        'BuiltInType',
+        'DataType',
+        'ValueRank',
+        'ArrayDimensions',
+        'MaxStringLength',
+        'DataSetFieldId',
+        'Properties',
+               ]
+
     def __init__(self):
         self.Name = None
         self.Description = LocalizedText()
@@ -1599,7 +1697,6 @@ class FieldMetaData(FrozenClass):
         self.MaxStringLength = 0
         self.DataSetFieldId = Guid()
         self.Properties = []
-        self._freeze = True
 
     def __str__(self):
         return 'FieldMetaData(' + 'Name:' + str(self.Name) + ', ' + \
@@ -1616,7 +1713,7 @@ class FieldMetaData(FrozenClass):
     __repr__ = __str__
 
 
-class ConfigurationVersionDataType(FrozenClass):
+class ConfigurationVersionDataType(object):
     '''
     :ivar MajorVersion:
     :vartype MajorVersion: UInt32
@@ -1629,10 +1726,14 @@ class ConfigurationVersionDataType(FrozenClass):
         ('MinorVersion', 'UInt32'),
                ]
 
+    __slots__ = [
+        'MajorVersion',
+        'MinorVersion',
+               ]
+
     def __init__(self):
         self.MajorVersion = 0
         self.MinorVersion = 0
-        self._freeze = True
 
     def __str__(self):
         return 'ConfigurationVersionDataType(' + 'MajorVersion:' + str(self.MajorVersion) + ', ' + \
@@ -1641,7 +1742,7 @@ class ConfigurationVersionDataType(FrozenClass):
     __repr__ = __str__
 
 
-class PublishedDataSetDataType(FrozenClass):
+class PublishedDataSetDataType(object):
     '''
     :ivar Name:
     :vartype Name: String
@@ -1663,13 +1764,20 @@ class PublishedDataSetDataType(FrozenClass):
         ('DataSetSource', 'ExtensionObject'),
                ]
 
+    __slots__ = [
+        'Name',
+        'DataSetFolder',
+        'DataSetMetaData',
+        'ExtensionFields',
+        'DataSetSource',
+               ]
+
     def __init__(self):
         self.Name = None
         self.DataSetFolder = []
         self.DataSetMetaData = DataSetMetaDataType()
         self.ExtensionFields = []
         self.DataSetSource = ExtensionObject()
-        self._freeze = True
 
     def __str__(self):
         return 'PublishedDataSetDataType(' + 'Name:' + str(self.Name) + ', ' + \
@@ -1681,15 +1789,18 @@ class PublishedDataSetDataType(FrozenClass):
     __repr__ = __str__
 
 
-class PublishedDataSetSourceDataType(FrozenClass):
+class PublishedDataSetSourceDataType(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'PublishedDataSetSourceDataType(' +  + ')'
@@ -1697,7 +1808,7 @@ class PublishedDataSetSourceDataType(FrozenClass):
     __repr__ = __str__
 
 
-class PublishedVariableDataType(FrozenClass):
+class PublishedVariableDataType(object):
     '''
     :ivar PublishedVariable:
     :vartype PublishedVariable: NodeId
@@ -1728,6 +1839,17 @@ class PublishedVariableDataType(FrozenClass):
         ('MetaDataProperties', 'ListOfQualifiedName'),
                ]
 
+    __slots__ = [
+        'PublishedVariable',
+        'AttributeId',
+        'SamplingIntervalHint',
+        'DeadbandType',
+        'DeadbandValue',
+        'IndexRange',
+        'SubstituteValue',
+        'MetaDataProperties',
+               ]
+
     def __init__(self):
         self.PublishedVariable = NodeId()
         self.AttributeId = 0
@@ -1737,7 +1859,6 @@ class PublishedVariableDataType(FrozenClass):
         self.IndexRange = None
         self.SubstituteValue = Variant()
         self.MetaDataProperties = []
-        self._freeze = True
 
     def __str__(self):
         return 'PublishedVariableDataType(' + 'PublishedVariable:' + str(self.PublishedVariable) + ', ' + \
@@ -1752,7 +1873,7 @@ class PublishedVariableDataType(FrozenClass):
     __repr__ = __str__
 
 
-class PublishedDataItemsDataType(FrozenClass):
+class PublishedDataItemsDataType(object):
     '''
     :ivar PublishedData:
     :vartype PublishedData: PublishedVariableDataType
@@ -1762,9 +1883,12 @@ class PublishedDataItemsDataType(FrozenClass):
         ('PublishedData', 'ListOfPublishedVariableDataType'),
                ]
 
+    __slots__ = [
+        'PublishedData',
+               ]
+
     def __init__(self):
         self.PublishedData = []
-        self._freeze = True
 
     def __str__(self):
         return 'PublishedDataItemsDataType(' + 'PublishedData:' + str(self.PublishedData) + ')'
@@ -1772,7 +1896,7 @@ class PublishedDataItemsDataType(FrozenClass):
     __repr__ = __str__
 
 
-class PublishedEventsDataType(FrozenClass):
+class PublishedEventsDataType(object):
     '''
     :ivar EventNotifier:
     :vartype EventNotifier: NodeId
@@ -1788,11 +1912,16 @@ class PublishedEventsDataType(FrozenClass):
         ('Filter', 'ContentFilter'),
                ]
 
+    __slots__ = [
+        'EventNotifier',
+        'SelectedFields',
+        'Filter',
+               ]
+
     def __init__(self):
         self.EventNotifier = NodeId()
         self.SelectedFields = []
         self.Filter = ContentFilter()
-        self._freeze = True
 
     def __str__(self):
         return 'PublishedEventsDataType(' + 'EventNotifier:' + str(self.EventNotifier) + ', ' + \
@@ -1802,7 +1931,7 @@ class PublishedEventsDataType(FrozenClass):
     __repr__ = __str__
 
 
-class DataSetWriterDataType(FrozenClass):
+class DataSetWriterDataType(object):
     '''
     :ivar Name:
     :vartype Name: String
@@ -1836,6 +1965,18 @@ class DataSetWriterDataType(FrozenClass):
         ('MessageSettings', 'ExtensionObject'),
                ]
 
+    __slots__ = [
+        'Name',
+        'Enabled',
+        'DataSetWriterId',
+        'DataSetFieldContentMask',
+        'KeyFrameCount',
+        'DataSetName',
+        'DataSetWriterProperties',
+        'TransportSettings',
+        'MessageSettings',
+               ]
+
     def __init__(self):
         self.Name = None
         self.Enabled = True
@@ -1846,7 +1987,6 @@ class DataSetWriterDataType(FrozenClass):
         self.DataSetWriterProperties = []
         self.TransportSettings = ExtensionObject()
         self.MessageSettings = ExtensionObject()
-        self._freeze = True
 
     def __str__(self):
         return 'DataSetWriterDataType(' + 'Name:' + str(self.Name) + ', ' + \
@@ -1862,15 +2002,18 @@ class DataSetWriterDataType(FrozenClass):
     __repr__ = __str__
 
 
-class DataSetWriterTransportDataType(FrozenClass):
+class DataSetWriterTransportDataType(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'DataSetWriterTransportDataType(' +  + ')'
@@ -1878,15 +2021,18 @@ class DataSetWriterTransportDataType(FrozenClass):
     __repr__ = __str__
 
 
-class DataSetWriterMessageDataType(FrozenClass):
+class DataSetWriterMessageDataType(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'DataSetWriterMessageDataType(' +  + ')'
@@ -1894,7 +2040,7 @@ class DataSetWriterMessageDataType(FrozenClass):
     __repr__ = __str__
 
 
-class PubSubGroupDataType(FrozenClass):
+class PubSubGroupDataType(object):
     '''
     :ivar Name:
     :vartype Name: String
@@ -1922,6 +2068,16 @@ class PubSubGroupDataType(FrozenClass):
         ('GroupProperties', 'ListOfKeyValuePair'),
                ]
 
+    __slots__ = [
+        'Name',
+        'Enabled',
+        'SecurityMode',
+        'SecurityGroupId',
+        'SecurityKeyServices',
+        'MaxNetworkMessageSize',
+        'GroupProperties',
+               ]
+
     def __init__(self):
         self.Name = None
         self.Enabled = True
@@ -1930,7 +2086,6 @@ class PubSubGroupDataType(FrozenClass):
         self.SecurityKeyServices = []
         self.MaxNetworkMessageSize = 0
         self.GroupProperties = []
-        self._freeze = True
 
     def __str__(self):
         return 'PubSubGroupDataType(' + 'Name:' + str(self.Name) + ', ' + \
@@ -1944,7 +2099,7 @@ class PubSubGroupDataType(FrozenClass):
     __repr__ = __str__
 
 
-class WriterGroupDataType(FrozenClass):
+class WriterGroupDataType(object):
     '''
     :ivar Name:
     :vartype Name: String
@@ -1996,6 +2151,24 @@ class WriterGroupDataType(FrozenClass):
         ('DataSetWriters', 'ListOfDataSetWriterDataType'),
                ]
 
+    __slots__ = [
+        'Name',
+        'Enabled',
+        'SecurityMode',
+        'SecurityGroupId',
+        'SecurityKeyServices',
+        'MaxNetworkMessageSize',
+        'GroupProperties',
+        'WriterGroupId',
+        'PublishingInterval',
+        'KeepAliveTime',
+        'Priority',
+        'LocaleIds',
+        'TransportSettings',
+        'MessageSettings',
+        'DataSetWriters',
+               ]
+
     def __init__(self):
         self.Name = None
         self.Enabled = True
@@ -2012,7 +2185,6 @@ class WriterGroupDataType(FrozenClass):
         self.TransportSettings = ExtensionObject()
         self.MessageSettings = ExtensionObject()
         self.DataSetWriters = []
-        self._freeze = True
 
     def __str__(self):
         return 'WriterGroupDataType(' + 'Name:' + str(self.Name) + ', ' + \
@@ -2034,15 +2206,18 @@ class WriterGroupDataType(FrozenClass):
     __repr__ = __str__
 
 
-class WriterGroupTransportDataType(FrozenClass):
+class WriterGroupTransportDataType(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'WriterGroupTransportDataType(' +  + ')'
@@ -2050,15 +2225,18 @@ class WriterGroupTransportDataType(FrozenClass):
     __repr__ = __str__
 
 
-class WriterGroupMessageDataType(FrozenClass):
+class WriterGroupMessageDataType(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'WriterGroupMessageDataType(' +  + ')'
@@ -2066,7 +2244,7 @@ class WriterGroupMessageDataType(FrozenClass):
     __repr__ = __str__
 
 
-class PubSubConnectionDataType(FrozenClass):
+class PubSubConnectionDataType(object):
     '''
     :ivar Name:
     :vartype Name: String
@@ -2100,6 +2278,18 @@ class PubSubConnectionDataType(FrozenClass):
         ('ReaderGroups', 'ListOfReaderGroupDataType'),
                ]
 
+    __slots__ = [
+        'Name',
+        'Enabled',
+        'PublisherId',
+        'TransportProfileUri',
+        'Address',
+        'ConnectionProperties',
+        'TransportSettings',
+        'WriterGroups',
+        'ReaderGroups',
+               ]
+
     def __init__(self):
         self.Name = None
         self.Enabled = True
@@ -2110,7 +2300,6 @@ class PubSubConnectionDataType(FrozenClass):
         self.TransportSettings = ExtensionObject()
         self.WriterGroups = []
         self.ReaderGroups = []
-        self._freeze = True
 
     def __str__(self):
         return 'PubSubConnectionDataType(' + 'Name:' + str(self.Name) + ', ' + \
@@ -2126,15 +2315,18 @@ class PubSubConnectionDataType(FrozenClass):
     __repr__ = __str__
 
 
-class ConnectionTransportDataType(FrozenClass):
+class ConnectionTransportDataType(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'ConnectionTransportDataType(' +  + ')'
@@ -2142,7 +2334,7 @@ class ConnectionTransportDataType(FrozenClass):
     __repr__ = __str__
 
 
-class NetworkAddressDataType(FrozenClass):
+class NetworkAddressDataType(object):
     '''
     :ivar NetworkInterface:
     :vartype NetworkInterface: String
@@ -2152,9 +2344,12 @@ class NetworkAddressDataType(FrozenClass):
         ('NetworkInterface', 'String'),
                ]
 
+    __slots__ = [
+        'NetworkInterface',
+               ]
+
     def __init__(self):
         self.NetworkInterface = None
-        self._freeze = True
 
     def __str__(self):
         return 'NetworkAddressDataType(' + 'NetworkInterface:' + str(self.NetworkInterface) + ')'
@@ -2162,7 +2357,7 @@ class NetworkAddressDataType(FrozenClass):
     __repr__ = __str__
 
 
-class NetworkAddressUrlDataType(FrozenClass):
+class NetworkAddressUrlDataType(object):
     '''
     :ivar NetworkInterface:
     :vartype NetworkInterface: String
@@ -2175,10 +2370,14 @@ class NetworkAddressUrlDataType(FrozenClass):
         ('Url', 'String'),
                ]
 
+    __slots__ = [
+        'NetworkInterface',
+        'Url',
+               ]
+
     def __init__(self):
         self.NetworkInterface = None
         self.Url = None
-        self._freeze = True
 
     def __str__(self):
         return 'NetworkAddressUrlDataType(' + 'NetworkInterface:' + str(self.NetworkInterface) + ', ' + \
@@ -2187,7 +2386,7 @@ class NetworkAddressUrlDataType(FrozenClass):
     __repr__ = __str__
 
 
-class ReaderGroupDataType(FrozenClass):
+class ReaderGroupDataType(object):
     '''
     :ivar Name:
     :vartype Name: String
@@ -2224,6 +2423,19 @@ class ReaderGroupDataType(FrozenClass):
         ('DataSetReaders', 'ListOfDataSetReaderDataType'),
                ]
 
+    __slots__ = [
+        'Name',
+        'Enabled',
+        'SecurityMode',
+        'SecurityGroupId',
+        'SecurityKeyServices',
+        'MaxNetworkMessageSize',
+        'GroupProperties',
+        'TransportSettings',
+        'MessageSettings',
+        'DataSetReaders',
+               ]
+
     def __init__(self):
         self.Name = None
         self.Enabled = True
@@ -2235,7 +2447,6 @@ class ReaderGroupDataType(FrozenClass):
         self.TransportSettings = ExtensionObject()
         self.MessageSettings = ExtensionObject()
         self.DataSetReaders = []
-        self._freeze = True
 
     def __str__(self):
         return 'ReaderGroupDataType(' + 'Name:' + str(self.Name) + ', ' + \
@@ -2252,15 +2463,18 @@ class ReaderGroupDataType(FrozenClass):
     __repr__ = __str__
 
 
-class ReaderGroupTransportDataType(FrozenClass):
+class ReaderGroupTransportDataType(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'ReaderGroupTransportDataType(' +  + ')'
@@ -2268,15 +2482,18 @@ class ReaderGroupTransportDataType(FrozenClass):
     __repr__ = __str__
 
 
-class ReaderGroupMessageDataType(FrozenClass):
+class ReaderGroupMessageDataType(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'ReaderGroupMessageDataType(' +  + ')'
@@ -2284,7 +2501,7 @@ class ReaderGroupMessageDataType(FrozenClass):
     __repr__ = __str__
 
 
-class DataSetReaderDataType(FrozenClass):
+class DataSetReaderDataType(object):
     '''
     :ivar Name:
     :vartype Name: String
@@ -2336,6 +2553,24 @@ class DataSetReaderDataType(FrozenClass):
         ('SubscribedDataSet', 'ExtensionObject'),
                ]
 
+    __slots__ = [
+        'Name',
+        'Enabled',
+        'PublisherId',
+        'WriterGroupId',
+        'DataSetWriterId',
+        'DataSetMetaData',
+        'DataSetFieldContentMask',
+        'MessageReceiveTimeout',
+        'SecurityMode',
+        'SecurityGroupId',
+        'SecurityKeyServices',
+        'DataSetReaderProperties',
+        'TransportSettings',
+        'MessageSettings',
+        'SubscribedDataSet',
+               ]
+
     def __init__(self):
         self.Name = None
         self.Enabled = True
@@ -2352,7 +2587,6 @@ class DataSetReaderDataType(FrozenClass):
         self.TransportSettings = ExtensionObject()
         self.MessageSettings = ExtensionObject()
         self.SubscribedDataSet = ExtensionObject()
-        self._freeze = True
 
     def __str__(self):
         return 'DataSetReaderDataType(' + 'Name:' + str(self.Name) + ', ' + \
@@ -2374,15 +2608,18 @@ class DataSetReaderDataType(FrozenClass):
     __repr__ = __str__
 
 
-class DataSetReaderTransportDataType(FrozenClass):
+class DataSetReaderTransportDataType(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'DataSetReaderTransportDataType(' +  + ')'
@@ -2390,15 +2627,18 @@ class DataSetReaderTransportDataType(FrozenClass):
     __repr__ = __str__
 
 
-class DataSetReaderMessageDataType(FrozenClass):
+class DataSetReaderMessageDataType(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'DataSetReaderMessageDataType(' +  + ')'
@@ -2406,15 +2646,18 @@ class DataSetReaderMessageDataType(FrozenClass):
     __repr__ = __str__
 
 
-class SubscribedDataSetDataType(FrozenClass):
+class SubscribedDataSetDataType(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'SubscribedDataSetDataType(' +  + ')'
@@ -2422,7 +2665,7 @@ class SubscribedDataSetDataType(FrozenClass):
     __repr__ = __str__
 
 
-class TargetVariablesDataType(FrozenClass):
+class TargetVariablesDataType(object):
     '''
     :ivar TargetVariables:
     :vartype TargetVariables: FieldTargetDataType
@@ -2432,9 +2675,12 @@ class TargetVariablesDataType(FrozenClass):
         ('TargetVariables', 'ListOfFieldTargetDataType'),
                ]
 
+    __slots__ = [
+        'TargetVariables',
+               ]
+
     def __init__(self):
         self.TargetVariables = []
-        self._freeze = True
 
     def __str__(self):
         return 'TargetVariablesDataType(' + 'TargetVariables:' + str(self.TargetVariables) + ')'
@@ -2442,7 +2688,7 @@ class TargetVariablesDataType(FrozenClass):
     __repr__ = __str__
 
 
-class FieldTargetDataType(FrozenClass):
+class FieldTargetDataType(object):
     '''
     :ivar DataSetFieldId:
     :vartype DataSetFieldId: Guid
@@ -2470,6 +2716,16 @@ class FieldTargetDataType(FrozenClass):
         ('OverrideValue', 'Variant'),
                ]
 
+    __slots__ = [
+        'DataSetFieldId',
+        'ReceiverIndexRange',
+        'TargetNodeId',
+        'AttributeId',
+        'WriteIndexRange',
+        'OverrideValueHandling',
+        'OverrideValue',
+               ]
+
     def __init__(self):
         self.DataSetFieldId = Guid()
         self.ReceiverIndexRange = None
@@ -2478,7 +2734,6 @@ class FieldTargetDataType(FrozenClass):
         self.WriteIndexRange = None
         self.OverrideValueHandling = OverrideValueHandling(0)
         self.OverrideValue = Variant()
-        self._freeze = True
 
     def __str__(self):
         return 'FieldTargetDataType(' + 'DataSetFieldId:' + str(self.DataSetFieldId) + ', ' + \
@@ -2492,7 +2747,7 @@ class FieldTargetDataType(FrozenClass):
     __repr__ = __str__
 
 
-class SubscribedDataSetMirrorDataType(FrozenClass):
+class SubscribedDataSetMirrorDataType(object):
     '''
     :ivar ParentNodeName:
     :vartype ParentNodeName: String
@@ -2505,10 +2760,14 @@ class SubscribedDataSetMirrorDataType(FrozenClass):
         ('RolePermissions', 'ListOfRolePermissionType'),
                ]
 
+    __slots__ = [
+        'ParentNodeName',
+        'RolePermissions',
+               ]
+
     def __init__(self):
         self.ParentNodeName = None
         self.RolePermissions = []
-        self._freeze = True
 
     def __str__(self):
         return 'SubscribedDataSetMirrorDataType(' + 'ParentNodeName:' + str(self.ParentNodeName) + ', ' + \
@@ -2517,7 +2776,7 @@ class SubscribedDataSetMirrorDataType(FrozenClass):
     __repr__ = __str__
 
 
-class PubSubConfigurationDataType(FrozenClass):
+class PubSubConfigurationDataType(object):
     '''
     :ivar PublishedDataSets:
     :vartype PublishedDataSets: PublishedDataSetDataType
@@ -2533,11 +2792,16 @@ class PubSubConfigurationDataType(FrozenClass):
         ('Enabled', 'Boolean'),
                ]
 
+    __slots__ = [
+        'PublishedDataSets',
+        'Connections',
+        'Enabled',
+               ]
+
     def __init__(self):
         self.PublishedDataSets = []
         self.Connections = []
         self.Enabled = True
-        self._freeze = True
 
     def __str__(self):
         return 'PubSubConfigurationDataType(' + 'PublishedDataSets:' + str(self.PublishedDataSets) + ', ' + \
@@ -2547,7 +2811,7 @@ class PubSubConfigurationDataType(FrozenClass):
     __repr__ = __str__
 
 
-class UadpWriterGroupMessageDataType(FrozenClass):
+class UadpWriterGroupMessageDataType(object):
     '''
     :ivar GroupVersion:
     :vartype GroupVersion: UInt32
@@ -2569,13 +2833,20 @@ class UadpWriterGroupMessageDataType(FrozenClass):
         ('PublishingOffset', 'ListOfDouble'),
                ]
 
+    __slots__ = [
+        'GroupVersion',
+        'DataSetOrdering',
+        'NetworkMessageContentMask',
+        'SamplingOffset',
+        'PublishingOffset',
+               ]
+
     def __init__(self):
         self.GroupVersion = 0
         self.DataSetOrdering = DataSetOrderingType(0)
         self.NetworkMessageContentMask = UadpNetworkMessageContentMask(0)
         self.SamplingOffset = 0
         self.PublishingOffset = []
-        self._freeze = True
 
     def __str__(self):
         return 'UadpWriterGroupMessageDataType(' + 'GroupVersion:' + str(self.GroupVersion) + ', ' + \
@@ -2587,7 +2858,7 @@ class UadpWriterGroupMessageDataType(FrozenClass):
     __repr__ = __str__
 
 
-class UadpDataSetWriterMessageDataType(FrozenClass):
+class UadpDataSetWriterMessageDataType(object):
     '''
     :ivar DataSetMessageContentMask:
     :vartype DataSetMessageContentMask: UadpDataSetMessageContentMask
@@ -2606,12 +2877,18 @@ class UadpDataSetWriterMessageDataType(FrozenClass):
         ('DataSetOffset', 'UInt16'),
                ]
 
+    __slots__ = [
+        'DataSetMessageContentMask',
+        'ConfiguredSize',
+        'NetworkMessageNumber',
+        'DataSetOffset',
+               ]
+
     def __init__(self):
         self.DataSetMessageContentMask = UadpDataSetMessageContentMask(0)
         self.ConfiguredSize = 0
         self.NetworkMessageNumber = 0
         self.DataSetOffset = 0
-        self._freeze = True
 
     def __str__(self):
         return 'UadpDataSetWriterMessageDataType(' + 'DataSetMessageContentMask:' + str(self.DataSetMessageContentMask) + ', ' + \
@@ -2622,7 +2899,7 @@ class UadpDataSetWriterMessageDataType(FrozenClass):
     __repr__ = __str__
 
 
-class UadpDataSetReaderMessageDataType(FrozenClass):
+class UadpDataSetReaderMessageDataType(object):
     '''
     :ivar GroupVersion:
     :vartype GroupVersion: UInt32
@@ -2656,6 +2933,18 @@ class UadpDataSetReaderMessageDataType(FrozenClass):
         ('ProcessingOffset', 'Double'),
                ]
 
+    __slots__ = [
+        'GroupVersion',
+        'NetworkMessageNumber',
+        'DataSetOffset',
+        'DataSetClassId',
+        'NetworkMessageContentMask',
+        'DataSetMessageContentMask',
+        'PublishingInterval',
+        'ReceiveOffset',
+        'ProcessingOffset',
+               ]
+
     def __init__(self):
         self.GroupVersion = 0
         self.NetworkMessageNumber = 0
@@ -2666,7 +2955,6 @@ class UadpDataSetReaderMessageDataType(FrozenClass):
         self.PublishingInterval = 0
         self.ReceiveOffset = 0
         self.ProcessingOffset = 0
-        self._freeze = True
 
     def __str__(self):
         return 'UadpDataSetReaderMessageDataType(' + 'GroupVersion:' + str(self.GroupVersion) + ', ' + \
@@ -2682,7 +2970,7 @@ class UadpDataSetReaderMessageDataType(FrozenClass):
     __repr__ = __str__
 
 
-class JsonWriterGroupMessageDataType(FrozenClass):
+class JsonWriterGroupMessageDataType(object):
     '''
     :ivar NetworkMessageContentMask:
     :vartype NetworkMessageContentMask: JsonNetworkMessageContentMask
@@ -2692,9 +2980,12 @@ class JsonWriterGroupMessageDataType(FrozenClass):
         ('NetworkMessageContentMask', 'JsonNetworkMessageContentMask'),
                ]
 
+    __slots__ = [
+        'NetworkMessageContentMask',
+               ]
+
     def __init__(self):
         self.NetworkMessageContentMask = JsonNetworkMessageContentMask(0)
-        self._freeze = True
 
     def __str__(self):
         return 'JsonWriterGroupMessageDataType(' + 'NetworkMessageContentMask:' + str(self.NetworkMessageContentMask) + ')'
@@ -2702,7 +2993,7 @@ class JsonWriterGroupMessageDataType(FrozenClass):
     __repr__ = __str__
 
 
-class JsonDataSetWriterMessageDataType(FrozenClass):
+class JsonDataSetWriterMessageDataType(object):
     '''
     :ivar DataSetMessageContentMask:
     :vartype DataSetMessageContentMask: JsonDataSetMessageContentMask
@@ -2712,9 +3003,12 @@ class JsonDataSetWriterMessageDataType(FrozenClass):
         ('DataSetMessageContentMask', 'JsonDataSetMessageContentMask'),
                ]
 
+    __slots__ = [
+        'DataSetMessageContentMask',
+               ]
+
     def __init__(self):
         self.DataSetMessageContentMask = JsonDataSetMessageContentMask(0)
-        self._freeze = True
 
     def __str__(self):
         return 'JsonDataSetWriterMessageDataType(' + 'DataSetMessageContentMask:' + str(self.DataSetMessageContentMask) + ')'
@@ -2722,7 +3016,7 @@ class JsonDataSetWriterMessageDataType(FrozenClass):
     __repr__ = __str__
 
 
-class JsonDataSetReaderMessageDataType(FrozenClass):
+class JsonDataSetReaderMessageDataType(object):
     '''
     :ivar NetworkMessageContentMask:
     :vartype NetworkMessageContentMask: JsonNetworkMessageContentMask
@@ -2735,10 +3029,14 @@ class JsonDataSetReaderMessageDataType(FrozenClass):
         ('DataSetMessageContentMask', 'JsonDataSetMessageContentMask'),
                ]
 
+    __slots__ = [
+        'NetworkMessageContentMask',
+        'DataSetMessageContentMask',
+               ]
+
     def __init__(self):
         self.NetworkMessageContentMask = JsonNetworkMessageContentMask(0)
         self.DataSetMessageContentMask = JsonDataSetMessageContentMask(0)
-        self._freeze = True
 
     def __str__(self):
         return 'JsonDataSetReaderMessageDataType(' + 'NetworkMessageContentMask:' + str(self.NetworkMessageContentMask) + ', ' + \
@@ -2747,7 +3045,7 @@ class JsonDataSetReaderMessageDataType(FrozenClass):
     __repr__ = __str__
 
 
-class DatagramConnectionTransportDataType(FrozenClass):
+class DatagramConnectionTransportDataType(object):
     '''
     :ivar DiscoveryAddress:
     :vartype DiscoveryAddress: ExtensionObject
@@ -2757,9 +3055,12 @@ class DatagramConnectionTransportDataType(FrozenClass):
         ('DiscoveryAddress', 'ExtensionObject'),
                ]
 
+    __slots__ = [
+        'DiscoveryAddress',
+               ]
+
     def __init__(self):
         self.DiscoveryAddress = ExtensionObject()
-        self._freeze = True
 
     def __str__(self):
         return 'DatagramConnectionTransportDataType(' + 'DiscoveryAddress:' + str(self.DiscoveryAddress) + ')'
@@ -2767,7 +3068,7 @@ class DatagramConnectionTransportDataType(FrozenClass):
     __repr__ = __str__
 
 
-class DatagramWriterGroupTransportDataType(FrozenClass):
+class DatagramWriterGroupTransportDataType(object):
     '''
     :ivar MessageRepeatCount:
     :vartype MessageRepeatCount: Byte
@@ -2780,10 +3081,14 @@ class DatagramWriterGroupTransportDataType(FrozenClass):
         ('MessageRepeatDelay', 'Double'),
                ]
 
+    __slots__ = [
+        'MessageRepeatCount',
+        'MessageRepeatDelay',
+               ]
+
     def __init__(self):
         self.MessageRepeatCount = 0
         self.MessageRepeatDelay = 0
-        self._freeze = True
 
     def __str__(self):
         return 'DatagramWriterGroupTransportDataType(' + 'MessageRepeatCount:' + str(self.MessageRepeatCount) + ', ' + \
@@ -2792,7 +3097,7 @@ class DatagramWriterGroupTransportDataType(FrozenClass):
     __repr__ = __str__
 
 
-class BrokerConnectionTransportDataType(FrozenClass):
+class BrokerConnectionTransportDataType(object):
     '''
     :ivar ResourceUri:
     :vartype ResourceUri: String
@@ -2805,10 +3110,14 @@ class BrokerConnectionTransportDataType(FrozenClass):
         ('AuthenticationProfileUri', 'String'),
                ]
 
+    __slots__ = [
+        'ResourceUri',
+        'AuthenticationProfileUri',
+               ]
+
     def __init__(self):
         self.ResourceUri = None
         self.AuthenticationProfileUri = None
-        self._freeze = True
 
     def __str__(self):
         return 'BrokerConnectionTransportDataType(' + 'ResourceUri:' + str(self.ResourceUri) + ', ' + \
@@ -2817,7 +3126,7 @@ class BrokerConnectionTransportDataType(FrozenClass):
     __repr__ = __str__
 
 
-class BrokerWriterGroupTransportDataType(FrozenClass):
+class BrokerWriterGroupTransportDataType(object):
     '''
     :ivar QueueName:
     :vartype QueueName: String
@@ -2836,12 +3145,18 @@ class BrokerWriterGroupTransportDataType(FrozenClass):
         ('RequestedDeliveryGuarantee', 'BrokerTransportQualityOfService'),
                ]
 
+    __slots__ = [
+        'QueueName',
+        'ResourceUri',
+        'AuthenticationProfileUri',
+        'RequestedDeliveryGuarantee',
+               ]
+
     def __init__(self):
         self.QueueName = None
         self.ResourceUri = None
         self.AuthenticationProfileUri = None
         self.RequestedDeliveryGuarantee = BrokerTransportQualityOfService(0)
-        self._freeze = True
 
     def __str__(self):
         return 'BrokerWriterGroupTransportDataType(' + 'QueueName:' + str(self.QueueName) + ', ' + \
@@ -2852,7 +3167,7 @@ class BrokerWriterGroupTransportDataType(FrozenClass):
     __repr__ = __str__
 
 
-class BrokerDataSetWriterTransportDataType(FrozenClass):
+class BrokerDataSetWriterTransportDataType(object):
     '''
     :ivar QueueName:
     :vartype QueueName: String
@@ -2874,13 +3189,20 @@ class BrokerDataSetWriterTransportDataType(FrozenClass):
         ('MetaDataUpdateTime', 'Double'),
                ]
 
+    __slots__ = [
+        'QueueName',
+        'ResourceUri',
+        'AuthenticationProfileUri',
+        'MetaDataQueueName',
+        'MetaDataUpdateTime',
+               ]
+
     def __init__(self):
         self.QueueName = None
         self.ResourceUri = None
         self.AuthenticationProfileUri = None
         self.MetaDataQueueName = None
         self.MetaDataUpdateTime = 0
-        self._freeze = True
 
     def __str__(self):
         return 'BrokerDataSetWriterTransportDataType(' + 'QueueName:' + str(self.QueueName) + ', ' + \
@@ -2892,7 +3214,7 @@ class BrokerDataSetWriterTransportDataType(FrozenClass):
     __repr__ = __str__
 
 
-class BrokerDataSetReaderTransportDataType(FrozenClass):
+class BrokerDataSetReaderTransportDataType(object):
     '''
     :ivar QueueName:
     :vartype QueueName: String
@@ -2914,13 +3236,20 @@ class BrokerDataSetReaderTransportDataType(FrozenClass):
         ('MetaDataQueueName', 'String'),
                ]
 
+    __slots__ = [
+        'QueueName',
+        'ResourceUri',
+        'AuthenticationProfileUri',
+        'RequestedDeliveryGuarantee',
+        'MetaDataQueueName',
+               ]
+
     def __init__(self):
         self.QueueName = None
         self.ResourceUri = None
         self.AuthenticationProfileUri = None
         self.RequestedDeliveryGuarantee = BrokerTransportQualityOfService(0)
         self.MetaDataQueueName = None
-        self._freeze = True
 
     def __str__(self):
         return 'BrokerDataSetReaderTransportDataType(' + 'QueueName:' + str(self.QueueName) + ', ' + \
@@ -2932,7 +3261,7 @@ class BrokerDataSetReaderTransportDataType(FrozenClass):
     __repr__ = __str__
 
 
-class RolePermissionType(FrozenClass):
+class RolePermissionType(object):
     '''
     :ivar RoleId:
     :vartype RoleId: NodeId
@@ -2945,10 +3274,14 @@ class RolePermissionType(FrozenClass):
         ('Permissions', 'UInt32'),
                ]
 
+    __slots__ = [
+        'RoleId',
+        'Permissions',
+               ]
+
     def __init__(self):
         self.RoleId = NodeId()
         self.Permissions = 0
-        self._freeze = True
 
     def __str__(self):
         return 'RolePermissionType(' + 'RoleId:' + str(self.RoleId) + ', ' + \
@@ -2957,7 +3290,7 @@ class RolePermissionType(FrozenClass):
     __repr__ = __str__
 
 
-class StructureField(FrozenClass):
+class StructureField(object):
     '''
     :ivar Name:
     :vartype Name: String
@@ -2985,6 +3318,16 @@ class StructureField(FrozenClass):
         ('IsOptional', 'Boolean'),
                ]
 
+    __slots__ = [
+        'Name',
+        'Description',
+        'DataType',
+        'ValueRank',
+        'ArrayDimensions',
+        'MaxStringLength',
+        'IsOptional',
+               ]
+
     def __init__(self):
         self.Name = None
         self.Description = LocalizedText()
@@ -2993,7 +3336,6 @@ class StructureField(FrozenClass):
         self.ArrayDimensions = []
         self.MaxStringLength = 0
         self.IsOptional = True
-        self._freeze = True
 
     def __str__(self):
         return 'StructureField(' + 'Name:' + str(self.Name) + ', ' + \
@@ -3007,7 +3349,7 @@ class StructureField(FrozenClass):
     __repr__ = __str__
 
 
-class StructureDefinition(FrozenClass):
+class StructureDefinition(object):
     '''
     :ivar DefaultEncodingId:
     :vartype DefaultEncodingId: NodeId
@@ -3026,12 +3368,18 @@ class StructureDefinition(FrozenClass):
         ('Fields', 'ListOfStructureField'),
                ]
 
+    __slots__ = [
+        'DefaultEncodingId',
+        'BaseDataType',
+        'StructureType',
+        'Fields',
+               ]
+
     def __init__(self):
         self.DefaultEncodingId = NodeId()
         self.BaseDataType = NodeId()
         self.StructureType = StructureType(0)
         self.Fields = []
-        self._freeze = True
 
     def __str__(self):
         return 'StructureDefinition(' + 'DefaultEncodingId:' + str(self.DefaultEncodingId) + ', ' + \
@@ -3042,7 +3390,7 @@ class StructureDefinition(FrozenClass):
     __repr__ = __str__
 
 
-class EnumDefinition(FrozenClass):
+class EnumDefinition(object):
     '''
     :ivar Fields:
     :vartype Fields: EnumField
@@ -3052,9 +3400,12 @@ class EnumDefinition(FrozenClass):
         ('Fields', 'ListOfEnumField'),
                ]
 
+    __slots__ = [
+        'Fields',
+               ]
+
     def __init__(self):
         self.Fields = []
-        self._freeze = True
 
     def __str__(self):
         return 'EnumDefinition(' + 'Fields:' + str(self.Fields) + ')'
@@ -3062,7 +3413,7 @@ class EnumDefinition(FrozenClass):
     __repr__ = __str__
 
 
-class Argument(FrozenClass):
+class Argument(object):
     '''
     An argument for a method.
 
@@ -3086,13 +3437,20 @@ class Argument(FrozenClass):
         ('Description', 'LocalizedText'),
                ]
 
+    __slots__ = [
+        'Name',
+        'DataType',
+        'ValueRank',
+        'ArrayDimensions',
+        'Description',
+               ]
+
     def __init__(self):
         self.Name = None
         self.DataType = NodeId()
         self.ValueRank = 0
         self.ArrayDimensions = []
         self.Description = LocalizedText()
-        self._freeze = True
 
     def __str__(self):
         return 'Argument(' + 'Name:' + str(self.Name) + ', ' + \
@@ -3104,7 +3462,7 @@ class Argument(FrozenClass):
     __repr__ = __str__
 
 
-class EnumValueType(FrozenClass):
+class EnumValueType(object):
     '''
     A mapping between a value of an enumerated type and a name and description.
 
@@ -3122,11 +3480,16 @@ class EnumValueType(FrozenClass):
         ('Description', 'LocalizedText'),
                ]
 
+    __slots__ = [
+        'Value',
+        'DisplayName',
+        'Description',
+               ]
+
     def __init__(self):
         self.Value = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
-        self._freeze = True
 
     def __str__(self):
         return 'EnumValueType(' + 'Value:' + str(self.Value) + ', ' + \
@@ -3136,7 +3499,7 @@ class EnumValueType(FrozenClass):
     __repr__ = __str__
 
 
-class EnumField(FrozenClass):
+class EnumField(object):
     '''
     :ivar Value:
     :vartype Value: Int64
@@ -3155,12 +3518,18 @@ class EnumField(FrozenClass):
         ('Name', 'String'),
                ]
 
+    __slots__ = [
+        'Value',
+        'DisplayName',
+        'Description',
+        'Name',
+               ]
+
     def __init__(self):
         self.Value = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
         self.Name = None
-        self._freeze = True
 
     def __str__(self):
         return 'EnumField(' + 'Value:' + str(self.Value) + ', ' + \
@@ -3171,7 +3540,7 @@ class EnumField(FrozenClass):
     __repr__ = __str__
 
 
-class OptionSet(FrozenClass):
+class OptionSet(object):
     '''
     This abstract Structured DataType is the base DataType for all DataTypes representing a bit mask.
 
@@ -3186,10 +3555,14 @@ class OptionSet(FrozenClass):
         ('ValidBits', 'ByteString'),
                ]
 
+    __slots__ = [
+        'Value',
+        'ValidBits',
+               ]
+
     def __init__(self):
         self.Value = None
         self.ValidBits = None
-        self._freeze = True
 
     def __str__(self):
         return 'OptionSet(' + 'Value:' + str(self.Value) + ', ' + \
@@ -3198,7 +3571,7 @@ class OptionSet(FrozenClass):
     __repr__ = __str__
 
 
-class Union(FrozenClass):
+class Union(object):
     '''
     This abstract DataType is the base DataType for all union DataTypes.
 
@@ -3207,8 +3580,11 @@ class Union(FrozenClass):
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'Union(' +  + ')'
@@ -3216,7 +3592,7 @@ class Union(FrozenClass):
     __repr__ = __str__
 
 
-class TimeZoneDataType(FrozenClass):
+class TimeZoneDataType(object):
     '''
     :ivar Offset:
     :vartype Offset: Int16
@@ -3229,10 +3605,14 @@ class TimeZoneDataType(FrozenClass):
         ('DaylightSavingInOffset', 'Boolean'),
                ]
 
+    __slots__ = [
+        'Offset',
+        'DaylightSavingInOffset',
+               ]
+
     def __init__(self):
         self.Offset = 0
         self.DaylightSavingInOffset = True
-        self._freeze = True
 
     def __str__(self):
         return 'TimeZoneDataType(' + 'Offset:' + str(self.Offset) + ', ' + \
@@ -3241,7 +3621,7 @@ class TimeZoneDataType(FrozenClass):
     __repr__ = __str__
 
 
-class ApplicationDescription(FrozenClass):
+class ApplicationDescription(object):
     '''
     Describes an application and how to find it.
 
@@ -3271,6 +3651,16 @@ class ApplicationDescription(FrozenClass):
         ('DiscoveryUrls', 'ListOfString'),
                ]
 
+    __slots__ = [
+        'ApplicationUri',
+        'ProductUri',
+        'ApplicationName',
+        'ApplicationType',
+        'GatewayServerUri',
+        'DiscoveryProfileUri',
+        'DiscoveryUrls',
+               ]
+
     def __init__(self):
         self.ApplicationUri = None
         self.ProductUri = None
@@ -3279,7 +3669,6 @@ class ApplicationDescription(FrozenClass):
         self.GatewayServerUri = None
         self.DiscoveryProfileUri = None
         self.DiscoveryUrls = []
-        self._freeze = True
 
     def __str__(self):
         return 'ApplicationDescription(' + 'ApplicationUri:' + str(self.ApplicationUri) + ', ' + \
@@ -3293,7 +3682,7 @@ class ApplicationDescription(FrozenClass):
     __repr__ = __str__
 
 
-class RequestHeader(FrozenClass):
+class RequestHeader(object):
     '''
     The header passed with every server request.
 
@@ -3323,6 +3712,16 @@ class RequestHeader(FrozenClass):
         ('AdditionalHeader', 'ExtensionObject'),
                ]
 
+    __slots__ = [
+        'AuthenticationToken',
+        'Timestamp',
+        'RequestHandle',
+        'ReturnDiagnostics',
+        'AuditEntryId',
+        'TimeoutHint',
+        'AdditionalHeader',
+               ]
+
     def __init__(self):
         self.AuthenticationToken = NodeId()
         self.Timestamp = datetime.utcnow()
@@ -3331,7 +3730,6 @@ class RequestHeader(FrozenClass):
         self.AuditEntryId = None
         self.TimeoutHint = 0
         self.AdditionalHeader = ExtensionObject()
-        self._freeze = True
 
     def __str__(self):
         return 'RequestHeader(' + 'AuthenticationToken:' + str(self.AuthenticationToken) + ', ' + \
@@ -3345,7 +3743,7 @@ class RequestHeader(FrozenClass):
     __repr__ = __str__
 
 
-class ResponseHeader(FrozenClass):
+class ResponseHeader(object):
     '''
     The header passed with every server response.
 
@@ -3372,6 +3770,15 @@ class ResponseHeader(FrozenClass):
         ('AdditionalHeader', 'ExtensionObject'),
                ]
 
+    __slots__ = [
+        'Timestamp',
+        'RequestHandle',
+        'ServiceResult',
+        'ServiceDiagnostics',
+        'StringTable',
+        'AdditionalHeader',
+               ]
+
     def __init__(self):
         self.Timestamp = datetime.utcnow()
         self.RequestHandle = 0
@@ -3379,7 +3786,6 @@ class ResponseHeader(FrozenClass):
         self.ServiceDiagnostics = DiagnosticInfo()
         self.StringTable = []
         self.AdditionalHeader = ExtensionObject()
-        self._freeze = True
 
     def __str__(self):
         return 'ResponseHeader(' + 'Timestamp:' + str(self.Timestamp) + ', ' + \
@@ -3392,7 +3798,7 @@ class ResponseHeader(FrozenClass):
     __repr__ = __str__
 
 
-class ServiceFault(FrozenClass):
+class ServiceFault(object):
     '''
     The response returned by all services when there is a service level error.
 
@@ -3407,10 +3813,14 @@ class ServiceFault(FrozenClass):
         ('ResponseHeader', 'ResponseHeader'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ServiceFault_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-        self._freeze = True
 
     def __str__(self):
         return 'ServiceFault(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -3419,7 +3829,7 @@ class ServiceFault(FrozenClass):
     __repr__ = __str__
 
 
-class SessionlessInvokeRequestType(FrozenClass):
+class SessionlessInvokeRequestType(object):
     '''
     :ivar UrisVersion:
     :vartype UrisVersion: UInt32
@@ -3441,13 +3851,20 @@ class SessionlessInvokeRequestType(FrozenClass):
         ('ServiceId', 'UInt32'),
                ]
 
+    __slots__ = [
+        'UrisVersion',
+        'NamespaceUris',
+        'ServerUris',
+        'LocaleIds',
+        'ServiceId',
+               ]
+
     def __init__(self):
         self.UrisVersion = []
         self.NamespaceUris = []
         self.ServerUris = []
         self.LocaleIds = []
         self.ServiceId = 0
-        self._freeze = True
 
     def __str__(self):
         return 'SessionlessInvokeRequestType(' + 'UrisVersion:' + str(self.UrisVersion) + ', ' + \
@@ -3459,7 +3876,7 @@ class SessionlessInvokeRequestType(FrozenClass):
     __repr__ = __str__
 
 
-class SessionlessInvokeResponseType(FrozenClass):
+class SessionlessInvokeResponseType(object):
     '''
     :ivar NamespaceUris:
     :vartype NamespaceUris: String
@@ -3475,11 +3892,16 @@ class SessionlessInvokeResponseType(FrozenClass):
         ('ServiceId', 'UInt32'),
                ]
 
+    __slots__ = [
+        'NamespaceUris',
+        'ServerUris',
+        'ServiceId',
+               ]
+
     def __init__(self):
         self.NamespaceUris = []
         self.ServerUris = []
         self.ServiceId = 0
-        self._freeze = True
 
     def __str__(self):
         return 'SessionlessInvokeResponseType(' + 'NamespaceUris:' + str(self.NamespaceUris) + ', ' + \
@@ -3489,7 +3911,7 @@ class SessionlessInvokeResponseType(FrozenClass):
     __repr__ = __str__
 
 
-class FindServersParameters(FrozenClass):
+class FindServersParameters(object):
     '''
     :ivar EndpointUrl:
     :vartype EndpointUrl: String
@@ -3505,11 +3927,16 @@ class FindServersParameters(FrozenClass):
         ('ServerUris', 'ListOfString'),
                ]
 
+    __slots__ = [
+        'EndpointUrl',
+        'LocaleIds',
+        'ServerUris',
+               ]
+
     def __init__(self):
         self.EndpointUrl = None
         self.LocaleIds = []
         self.ServerUris = []
-        self._freeze = True
 
     def __str__(self):
         return 'FindServersParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
@@ -3519,7 +3946,7 @@ class FindServersParameters(FrozenClass):
     __repr__ = __str__
 
 
-class FindServersRequest(FrozenClass):
+class FindServersRequest(object):
     '''
     Finds the servers known to the discovery server.
 
@@ -3537,11 +3964,16 @@ class FindServersRequest(FrozenClass):
         ('Parameters', 'FindServersParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.FindServersRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = FindServersParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'FindServersRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -3551,7 +3983,7 @@ class FindServersRequest(FrozenClass):
     __repr__ = __str__
 
 
-class FindServersResponse(FrozenClass):
+class FindServersResponse(object):
     '''
     Finds the servers known to the discovery server.
 
@@ -3569,11 +4001,16 @@ class FindServersResponse(FrozenClass):
         ('Servers', 'ListOfApplicationDescription'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Servers',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.FindServersResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Servers = []
-        self._freeze = True
 
     def __str__(self):
         return 'FindServersResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -3583,7 +4020,7 @@ class FindServersResponse(FrozenClass):
     __repr__ = __str__
 
 
-class ServerOnNetwork(FrozenClass):
+class ServerOnNetwork(object):
     '''
     :ivar RecordId:
     :vartype RecordId: UInt32
@@ -3602,12 +4039,18 @@ class ServerOnNetwork(FrozenClass):
         ('ServerCapabilities', 'ListOfString'),
                ]
 
+    __slots__ = [
+        'RecordId',
+        'ServerName',
+        'DiscoveryUrl',
+        'ServerCapabilities',
+               ]
+
     def __init__(self):
         self.RecordId = 0
         self.ServerName = None
         self.DiscoveryUrl = None
         self.ServerCapabilities = []
-        self._freeze = True
 
     def __str__(self):
         return 'ServerOnNetwork(' + 'RecordId:' + str(self.RecordId) + ', ' + \
@@ -3618,7 +4061,7 @@ class ServerOnNetwork(FrozenClass):
     __repr__ = __str__
 
 
-class FindServersOnNetworkParameters(FrozenClass):
+class FindServersOnNetworkParameters(object):
     '''
     :ivar StartingRecordId:
     :vartype StartingRecordId: UInt32
@@ -3634,11 +4077,16 @@ class FindServersOnNetworkParameters(FrozenClass):
         ('ServerCapabilityFilter', 'ListOfString'),
                ]
 
+    __slots__ = [
+        'StartingRecordId',
+        'MaxRecordsToReturn',
+        'ServerCapabilityFilter',
+               ]
+
     def __init__(self):
         self.StartingRecordId = 0
         self.MaxRecordsToReturn = 0
         self.ServerCapabilityFilter = []
-        self._freeze = True
 
     def __str__(self):
         return 'FindServersOnNetworkParameters(' + 'StartingRecordId:' + str(self.StartingRecordId) + ', ' + \
@@ -3648,7 +4096,7 @@ class FindServersOnNetworkParameters(FrozenClass):
     __repr__ = __str__
 
 
-class FindServersOnNetworkRequest(FrozenClass):
+class FindServersOnNetworkRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -3664,11 +4112,16 @@ class FindServersOnNetworkRequest(FrozenClass):
         ('Parameters', 'FindServersOnNetworkParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.FindServersOnNetworkRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = FindServersOnNetworkParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'FindServersOnNetworkRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -3678,7 +4131,7 @@ class FindServersOnNetworkRequest(FrozenClass):
     __repr__ = __str__
 
 
-class FindServersOnNetworkResult(FrozenClass):
+class FindServersOnNetworkResult(object):
     '''
     :ivar LastCounterResetTime:
     :vartype LastCounterResetTime: DateTime
@@ -3691,10 +4144,14 @@ class FindServersOnNetworkResult(FrozenClass):
         ('Servers', 'ListOfServerOnNetwork'),
                ]
 
+    __slots__ = [
+        'LastCounterResetTime',
+        'Servers',
+               ]
+
     def __init__(self):
         self.LastCounterResetTime = datetime.utcnow()
         self.Servers = []
-        self._freeze = True
 
     def __str__(self):
         return 'FindServersOnNetworkResult(' + 'LastCounterResetTime:' + str(self.LastCounterResetTime) + ', ' + \
@@ -3703,7 +4160,7 @@ class FindServersOnNetworkResult(FrozenClass):
     __repr__ = __str__
 
 
-class FindServersOnNetworkResponse(FrozenClass):
+class FindServersOnNetworkResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -3719,11 +4176,16 @@ class FindServersOnNetworkResponse(FrozenClass):
         ('Parameters', 'FindServersOnNetworkResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.FindServersOnNetworkResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = FindServersOnNetworkResult()
-        self._freeze = True
 
     def __str__(self):
         return 'FindServersOnNetworkResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -3733,7 +4195,7 @@ class FindServersOnNetworkResponse(FrozenClass):
     __repr__ = __str__
 
 
-class UserTokenPolicy(FrozenClass):
+class UserTokenPolicy(object):
     '''
     Describes a user token that can be used with a server.
 
@@ -3757,13 +4219,20 @@ class UserTokenPolicy(FrozenClass):
         ('SecurityPolicyUri', 'String'),
                ]
 
+    __slots__ = [
+        'PolicyId',
+        'TokenType',
+        'IssuedTokenType',
+        'IssuerEndpointUrl',
+        'SecurityPolicyUri',
+               ]
+
     def __init__(self):
         self.PolicyId = None
         self.TokenType = UserTokenType(0)
         self.IssuedTokenType = None
         self.IssuerEndpointUrl = None
         self.SecurityPolicyUri = None
-        self._freeze = True
 
     def __str__(self):
         return 'UserTokenPolicy(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
@@ -3775,7 +4244,7 @@ class UserTokenPolicy(FrozenClass):
     __repr__ = __str__
 
 
-class EndpointDescription(FrozenClass):
+class EndpointDescription(object):
     '''
     The description of a endpoint that can be used to access a server.
 
@@ -3808,6 +4277,17 @@ class EndpointDescription(FrozenClass):
         ('SecurityLevel', 'Byte'),
                ]
 
+    __slots__ = [
+        'EndpointUrl',
+        'Server',
+        'ServerCertificate',
+        'SecurityMode',
+        'SecurityPolicyUri',
+        'UserIdentityTokens',
+        'TransportProfileUri',
+        'SecurityLevel',
+               ]
+
     def __init__(self):
         self.EndpointUrl = None
         self.Server = ApplicationDescription()
@@ -3817,7 +4297,6 @@ class EndpointDescription(FrozenClass):
         self.UserIdentityTokens = []
         self.TransportProfileUri = None
         self.SecurityLevel = 0
-        self._freeze = True
 
     def __str__(self):
         return 'EndpointDescription(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
@@ -3832,7 +4311,7 @@ class EndpointDescription(FrozenClass):
     __repr__ = __str__
 
 
-class GetEndpointsParameters(FrozenClass):
+class GetEndpointsParameters(object):
     '''
     :ivar EndpointUrl:
     :vartype EndpointUrl: String
@@ -3848,11 +4327,16 @@ class GetEndpointsParameters(FrozenClass):
         ('ProfileUris', 'ListOfString'),
                ]
 
+    __slots__ = [
+        'EndpointUrl',
+        'LocaleIds',
+        'ProfileUris',
+               ]
+
     def __init__(self):
         self.EndpointUrl = None
         self.LocaleIds = []
         self.ProfileUris = []
-        self._freeze = True
 
     def __str__(self):
         return 'GetEndpointsParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
@@ -3862,7 +4346,7 @@ class GetEndpointsParameters(FrozenClass):
     __repr__ = __str__
 
 
-class GetEndpointsRequest(FrozenClass):
+class GetEndpointsRequest(object):
     '''
     Gets the endpoints used by the server.
 
@@ -3880,11 +4364,16 @@ class GetEndpointsRequest(FrozenClass):
         ('Parameters', 'GetEndpointsParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.GetEndpointsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = GetEndpointsParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'GetEndpointsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -3894,7 +4383,7 @@ class GetEndpointsRequest(FrozenClass):
     __repr__ = __str__
 
 
-class GetEndpointsResponse(FrozenClass):
+class GetEndpointsResponse(object):
     '''
     Gets the endpoints used by the server.
 
@@ -3912,11 +4401,16 @@ class GetEndpointsResponse(FrozenClass):
         ('Endpoints', 'ListOfEndpointDescription'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Endpoints',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.GetEndpointsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Endpoints = []
-        self._freeze = True
 
     def __str__(self):
         return 'GetEndpointsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -3926,7 +4420,7 @@ class GetEndpointsResponse(FrozenClass):
     __repr__ = __str__
 
 
-class RegisteredServer(FrozenClass):
+class RegisteredServer(object):
     '''
     The information required to register a server with a discovery server.
 
@@ -3959,6 +4453,17 @@ class RegisteredServer(FrozenClass):
         ('IsOnline', 'Boolean'),
                ]
 
+    __slots__ = [
+        'ServerUri',
+        'ProductUri',
+        'ServerNames',
+        'ServerType',
+        'GatewayServerUri',
+        'DiscoveryUrls',
+        'SemaphoreFilePath',
+        'IsOnline',
+               ]
+
     def __init__(self):
         self.ServerUri = None
         self.ProductUri = None
@@ -3968,7 +4473,6 @@ class RegisteredServer(FrozenClass):
         self.DiscoveryUrls = []
         self.SemaphoreFilePath = None
         self.IsOnline = True
-        self._freeze = True
 
     def __str__(self):
         return 'RegisteredServer(' + 'ServerUri:' + str(self.ServerUri) + ', ' + \
@@ -3983,7 +4487,7 @@ class RegisteredServer(FrozenClass):
     __repr__ = __str__
 
 
-class RegisterServerRequest(FrozenClass):
+class RegisterServerRequest(object):
     '''
     Registers a server with the discovery server.
 
@@ -4001,11 +4505,16 @@ class RegisterServerRequest(FrozenClass):
         ('Server', 'RegisteredServer'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Server',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServerRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Server = RegisteredServer()
-        self._freeze = True
 
     def __str__(self):
         return 'RegisterServerRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4015,7 +4524,7 @@ class RegisterServerRequest(FrozenClass):
     __repr__ = __str__
 
 
-class RegisterServerResponse(FrozenClass):
+class RegisterServerResponse(object):
     '''
     Registers a server with the discovery server.
 
@@ -4030,10 +4539,14 @@ class RegisterServerResponse(FrozenClass):
         ('ResponseHeader', 'ResponseHeader'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServerResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-        self._freeze = True
 
     def __str__(self):
         return 'RegisterServerResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4042,7 +4555,7 @@ class RegisterServerResponse(FrozenClass):
     __repr__ = __str__
 
 
-class DiscoveryConfiguration(FrozenClass):
+class DiscoveryConfiguration(object):
     '''
     A base type for discovery configuration information.
 
@@ -4051,8 +4564,11 @@ class DiscoveryConfiguration(FrozenClass):
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'DiscoveryConfiguration(' +  + ')'
@@ -4060,7 +4576,7 @@ class DiscoveryConfiguration(FrozenClass):
     __repr__ = __str__
 
 
-class MdnsDiscoveryConfiguration(FrozenClass):
+class MdnsDiscoveryConfiguration(object):
     '''
     The discovery information needed for mDNS registration.
 
@@ -4075,10 +4591,14 @@ class MdnsDiscoveryConfiguration(FrozenClass):
         ('ServerCapabilities', 'ListOfString'),
                ]
 
+    __slots__ = [
+        'MdnsServerName',
+        'ServerCapabilities',
+               ]
+
     def __init__(self):
         self.MdnsServerName = None
         self.ServerCapabilities = []
-        self._freeze = True
 
     def __str__(self):
         return 'MdnsDiscoveryConfiguration(' + 'MdnsServerName:' + str(self.MdnsServerName) + ', ' + \
@@ -4087,7 +4607,7 @@ class MdnsDiscoveryConfiguration(FrozenClass):
     __repr__ = __str__
 
 
-class RegisterServer2Parameters(FrozenClass):
+class RegisterServer2Parameters(object):
     '''
     :ivar Server:
     :vartype Server: RegisteredServer
@@ -4100,10 +4620,14 @@ class RegisterServer2Parameters(FrozenClass):
         ('DiscoveryConfiguration', 'ListOfExtensionObject'),
                ]
 
+    __slots__ = [
+        'Server',
+        'DiscoveryConfiguration',
+               ]
+
     def __init__(self):
         self.Server = RegisteredServer()
         self.DiscoveryConfiguration = []
-        self._freeze = True
 
     def __str__(self):
         return 'RegisterServer2Parameters(' + 'Server:' + str(self.Server) + ', ' + \
@@ -4112,7 +4636,7 @@ class RegisterServer2Parameters(FrozenClass):
     __repr__ = __str__
 
 
-class RegisterServer2Request(FrozenClass):
+class RegisterServer2Request(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -4128,11 +4652,16 @@ class RegisterServer2Request(FrozenClass):
         ('Parameters', 'RegisterServer2Parameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServer2Request_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = RegisterServer2Parameters()
-        self._freeze = True
 
     def __str__(self):
         return 'RegisterServer2Request(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4142,7 +4671,7 @@ class RegisterServer2Request(FrozenClass):
     __repr__ = __str__
 
 
-class RegisterServer2Response(FrozenClass):
+class RegisterServer2Response(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -4161,12 +4690,18 @@ class RegisterServer2Response(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'ConfigurationResults',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterServer2Response_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.ConfigurationResults = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'RegisterServer2Response(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4177,7 +4712,7 @@ class RegisterServer2Response(FrozenClass):
     __repr__ = __str__
 
 
-class ChannelSecurityToken(FrozenClass):
+class ChannelSecurityToken(object):
     '''
     The token that identifies a set of keys for an active secure channel.
 
@@ -4198,12 +4733,18 @@ class ChannelSecurityToken(FrozenClass):
         ('RevisedLifetime', 'UInt32'),
                ]
 
+    __slots__ = [
+        'ChannelId',
+        'TokenId',
+        'CreatedAt',
+        'RevisedLifetime',
+               ]
+
     def __init__(self):
         self.ChannelId = 0
         self.TokenId = 0
         self.CreatedAt = datetime.utcnow()
         self.RevisedLifetime = 0
-        self._freeze = True
 
     def __str__(self):
         return 'ChannelSecurityToken(' + 'ChannelId:' + str(self.ChannelId) + ', ' + \
@@ -4214,7 +4755,7 @@ class ChannelSecurityToken(FrozenClass):
     __repr__ = __str__
 
 
-class OpenSecureChannelParameters(FrozenClass):
+class OpenSecureChannelParameters(object):
     '''
     :ivar ClientProtocolVersion:
     :vartype ClientProtocolVersion: UInt32
@@ -4236,13 +4777,20 @@ class OpenSecureChannelParameters(FrozenClass):
         ('RequestedLifetime', 'UInt32'),
                ]
 
+    __slots__ = [
+        'ClientProtocolVersion',
+        'RequestType',
+        'SecurityMode',
+        'ClientNonce',
+        'RequestedLifetime',
+               ]
+
     def __init__(self):
         self.ClientProtocolVersion = 0
         self.RequestType = SecurityTokenRequestType(0)
         self.SecurityMode = MessageSecurityMode(0)
         self.ClientNonce = None
         self.RequestedLifetime = 0
-        self._freeze = True
 
     def __str__(self):
         return 'OpenSecureChannelParameters(' + 'ClientProtocolVersion:' + str(self.ClientProtocolVersion) + ', ' + \
@@ -4254,7 +4802,7 @@ class OpenSecureChannelParameters(FrozenClass):
     __repr__ = __str__
 
 
-class OpenSecureChannelRequest(FrozenClass):
+class OpenSecureChannelRequest(object):
     '''
     Creates a secure channel with a server.
 
@@ -4272,11 +4820,16 @@ class OpenSecureChannelRequest(FrozenClass):
         ('Parameters', 'OpenSecureChannelParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.OpenSecureChannelRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = OpenSecureChannelParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'OpenSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4286,7 +4839,7 @@ class OpenSecureChannelRequest(FrozenClass):
     __repr__ = __str__
 
 
-class OpenSecureChannelResult(FrozenClass):
+class OpenSecureChannelResult(object):
     '''
     :ivar ServerProtocolVersion:
     :vartype ServerProtocolVersion: UInt32
@@ -4302,11 +4855,16 @@ class OpenSecureChannelResult(FrozenClass):
         ('ServerNonce', 'ByteString'),
                ]
 
+    __slots__ = [
+        'ServerProtocolVersion',
+        'SecurityToken',
+        'ServerNonce',
+               ]
+
     def __init__(self):
         self.ServerProtocolVersion = 0
         self.SecurityToken = ChannelSecurityToken()
         self.ServerNonce = None
-        self._freeze = True
 
     def __str__(self):
         return 'OpenSecureChannelResult(' + 'ServerProtocolVersion:' + str(self.ServerProtocolVersion) + ', ' + \
@@ -4316,7 +4874,7 @@ class OpenSecureChannelResult(FrozenClass):
     __repr__ = __str__
 
 
-class OpenSecureChannelResponse(FrozenClass):
+class OpenSecureChannelResponse(object):
     '''
     Creates a secure channel with a server.
 
@@ -4334,11 +4892,16 @@ class OpenSecureChannelResponse(FrozenClass):
         ('Parameters', 'OpenSecureChannelResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.OpenSecureChannelResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = OpenSecureChannelResult()
-        self._freeze = True
 
     def __str__(self):
         return 'OpenSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4348,7 +4911,7 @@ class OpenSecureChannelResponse(FrozenClass):
     __repr__ = __str__
 
 
-class CloseSecureChannelRequest(FrozenClass):
+class CloseSecureChannelRequest(object):
     '''
     Closes a secure channel.
 
@@ -4363,10 +4926,14 @@ class CloseSecureChannelRequest(FrozenClass):
         ('RequestHeader', 'RequestHeader'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CloseSecureChannelRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
-        self._freeze = True
 
     def __str__(self):
         return 'CloseSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4375,7 +4942,7 @@ class CloseSecureChannelRequest(FrozenClass):
     __repr__ = __str__
 
 
-class CloseSecureChannelResponse(FrozenClass):
+class CloseSecureChannelResponse(object):
     '''
     Closes a secure channel.
 
@@ -4390,10 +4957,14 @@ class CloseSecureChannelResponse(FrozenClass):
         ('ResponseHeader', 'ResponseHeader'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CloseSecureChannelResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-        self._freeze = True
 
     def __str__(self):
         return 'CloseSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4402,7 +4973,7 @@ class CloseSecureChannelResponse(FrozenClass):
     __repr__ = __str__
 
 
-class SignedSoftwareCertificate(FrozenClass):
+class SignedSoftwareCertificate(object):
     '''
     A software certificate with a digital signature.
 
@@ -4417,10 +4988,14 @@ class SignedSoftwareCertificate(FrozenClass):
         ('Signature', 'ByteString'),
                ]
 
+    __slots__ = [
+        'CertificateData',
+        'Signature',
+               ]
+
     def __init__(self):
         self.CertificateData = None
         self.Signature = None
-        self._freeze = True
 
     def __str__(self):
         return 'SignedSoftwareCertificate(' + 'CertificateData:' + str(self.CertificateData) + ', ' + \
@@ -4429,7 +5004,7 @@ class SignedSoftwareCertificate(FrozenClass):
     __repr__ = __str__
 
 
-class SignatureData(FrozenClass):
+class SignatureData(object):
     '''
     A digital signature.
 
@@ -4444,10 +5019,14 @@ class SignatureData(FrozenClass):
         ('Signature', 'ByteString'),
                ]
 
+    __slots__ = [
+        'Algorithm',
+        'Signature',
+               ]
+
     def __init__(self):
         self.Algorithm = None
         self.Signature = None
-        self._freeze = True
 
     def __str__(self):
         return 'SignatureData(' + 'Algorithm:' + str(self.Algorithm) + ', ' + \
@@ -4456,7 +5035,7 @@ class SignatureData(FrozenClass):
     __repr__ = __str__
 
 
-class CreateSessionParameters(FrozenClass):
+class CreateSessionParameters(object):
     '''
     :ivar ClientDescription:
     :vartype ClientDescription: ApplicationDescription
@@ -4487,6 +5066,17 @@ class CreateSessionParameters(FrozenClass):
         ('MaxResponseMessageSize', 'UInt32'),
                ]
 
+    __slots__ = [
+        'ClientDescription',
+        'ServerUri',
+        'EndpointUrl',
+        'SessionName',
+        'ClientNonce',
+        'ClientCertificate',
+        'RequestedSessionTimeout',
+        'MaxResponseMessageSize',
+               ]
+
     def __init__(self):
         self.ClientDescription = ApplicationDescription()
         self.ServerUri = None
@@ -4496,7 +5086,6 @@ class CreateSessionParameters(FrozenClass):
         self.ClientCertificate = None
         self.RequestedSessionTimeout = 0
         self.MaxResponseMessageSize = 0
-        self._freeze = True
 
     def __str__(self):
         return 'CreateSessionParameters(' + 'ClientDescription:' + str(self.ClientDescription) + ', ' + \
@@ -4511,7 +5100,7 @@ class CreateSessionParameters(FrozenClass):
     __repr__ = __str__
 
 
-class CreateSessionRequest(FrozenClass):
+class CreateSessionRequest(object):
     '''
     Creates a new session with the server.
 
@@ -4529,11 +5118,16 @@ class CreateSessionRequest(FrozenClass):
         ('Parameters', 'CreateSessionParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateSessionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CreateSessionParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'CreateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4543,7 +5137,7 @@ class CreateSessionRequest(FrozenClass):
     __repr__ = __str__
 
 
-class CreateSessionResult(FrozenClass):
+class CreateSessionResult(object):
     '''
     :ivar SessionId:
     :vartype SessionId: NodeId
@@ -4577,6 +5171,18 @@ class CreateSessionResult(FrozenClass):
         ('MaxRequestMessageSize', 'UInt32'),
                ]
 
+    __slots__ = [
+        'SessionId',
+        'AuthenticationToken',
+        'RevisedSessionTimeout',
+        'ServerNonce',
+        'ServerCertificate',
+        'ServerEndpoints',
+        'ServerSoftwareCertificates',
+        'ServerSignature',
+        'MaxRequestMessageSize',
+               ]
+
     def __init__(self):
         self.SessionId = NodeId()
         self.AuthenticationToken = NodeId()
@@ -4587,7 +5193,6 @@ class CreateSessionResult(FrozenClass):
         self.ServerSoftwareCertificates = []
         self.ServerSignature = SignatureData()
         self.MaxRequestMessageSize = 0
-        self._freeze = True
 
     def __str__(self):
         return 'CreateSessionResult(' + 'SessionId:' + str(self.SessionId) + ', ' + \
@@ -4603,7 +5208,7 @@ class CreateSessionResult(FrozenClass):
     __repr__ = __str__
 
 
-class CreateSessionResponse(FrozenClass):
+class CreateSessionResponse(object):
     '''
     Creates a new session with the server.
 
@@ -4621,11 +5226,16 @@ class CreateSessionResponse(FrozenClass):
         ('Parameters', 'CreateSessionResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateSessionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = CreateSessionResult()
-        self._freeze = True
 
     def __str__(self):
         return 'CreateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4635,7 +5245,7 @@ class CreateSessionResponse(FrozenClass):
     __repr__ = __str__
 
 
-class UserIdentityToken(FrozenClass):
+class UserIdentityToken(object):
     '''
     A base type for a user identity token.
 
@@ -4647,9 +5257,12 @@ class UserIdentityToken(FrozenClass):
         ('PolicyId', 'String'),
                ]
 
+    __slots__ = [
+        'PolicyId',
+               ]
+
     def __init__(self):
         self.PolicyId = None
-        self._freeze = True
 
     def __str__(self):
         return 'UserIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ')'
@@ -4657,7 +5270,7 @@ class UserIdentityToken(FrozenClass):
     __repr__ = __str__
 
 
-class AnonymousIdentityToken(FrozenClass):
+class AnonymousIdentityToken(object):
     '''
     A token representing an anonymous user.
 
@@ -4669,9 +5282,12 @@ class AnonymousIdentityToken(FrozenClass):
         ('PolicyId', 'String'),
                ]
 
+    __slots__ = [
+        'PolicyId',
+               ]
+
     def __init__(self):
         self.PolicyId = None
-        self._freeze = True
 
     def __str__(self):
         return 'AnonymousIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ')'
@@ -4679,7 +5295,7 @@ class AnonymousIdentityToken(FrozenClass):
     __repr__ = __str__
 
 
-class UserNameIdentityToken(FrozenClass):
+class UserNameIdentityToken(object):
     '''
     A token representing a user identified by a user name and password.
 
@@ -4700,12 +5316,18 @@ class UserNameIdentityToken(FrozenClass):
         ('EncryptionAlgorithm', 'String'),
                ]
 
+    __slots__ = [
+        'PolicyId',
+        'UserName',
+        'Password',
+        'EncryptionAlgorithm',
+               ]
+
     def __init__(self):
         self.PolicyId = None
         self.UserName = None
         self.Password = None
         self.EncryptionAlgorithm = None
-        self._freeze = True
 
     def __str__(self):
         return 'UserNameIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
@@ -4716,7 +5338,7 @@ class UserNameIdentityToken(FrozenClass):
     __repr__ = __str__
 
 
-class X509IdentityToken(FrozenClass):
+class X509IdentityToken(object):
     '''
     A token representing a user identified by an X509 certificate.
 
@@ -4731,10 +5353,14 @@ class X509IdentityToken(FrozenClass):
         ('CertificateData', 'ByteString'),
                ]
 
+    __slots__ = [
+        'PolicyId',
+        'CertificateData',
+               ]
+
     def __init__(self):
         self.PolicyId = None
         self.CertificateData = None
-        self._freeze = True
 
     def __str__(self):
         return 'X509IdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
@@ -4743,7 +5369,7 @@ class X509IdentityToken(FrozenClass):
     __repr__ = __str__
 
 
-class IssuedIdentityToken(FrozenClass):
+class IssuedIdentityToken(object):
     '''
     A token representing a user identified by a WS-Security XML token.
 
@@ -4761,11 +5387,16 @@ class IssuedIdentityToken(FrozenClass):
         ('EncryptionAlgorithm', 'String'),
                ]
 
+    __slots__ = [
+        'PolicyId',
+        'TokenData',
+        'EncryptionAlgorithm',
+               ]
+
     def __init__(self):
         self.PolicyId = None
         self.TokenData = None
         self.EncryptionAlgorithm = None
-        self._freeze = True
 
     def __str__(self):
         return 'IssuedIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
@@ -4775,7 +5406,7 @@ class IssuedIdentityToken(FrozenClass):
     __repr__ = __str__
 
 
-class ActivateSessionParameters(FrozenClass):
+class ActivateSessionParameters(object):
     '''
     :ivar ClientSignature:
     :vartype ClientSignature: SignatureData
@@ -4797,13 +5428,20 @@ class ActivateSessionParameters(FrozenClass):
         ('UserTokenSignature', 'SignatureData'),
                ]
 
+    __slots__ = [
+        'ClientSignature',
+        'ClientSoftwareCertificates',
+        'LocaleIds',
+        'UserIdentityToken',
+        'UserTokenSignature',
+               ]
+
     def __init__(self):
         self.ClientSignature = SignatureData()
         self.ClientSoftwareCertificates = []
         self.LocaleIds = []
         self.UserIdentityToken = ExtensionObject()
         self.UserTokenSignature = SignatureData()
-        self._freeze = True
 
     def __str__(self):
         return 'ActivateSessionParameters(' + 'ClientSignature:' + str(self.ClientSignature) + ', ' + \
@@ -4815,7 +5453,7 @@ class ActivateSessionParameters(FrozenClass):
     __repr__ = __str__
 
 
-class ActivateSessionRequest(FrozenClass):
+class ActivateSessionRequest(object):
     '''
     Activates a session with the server.
 
@@ -4833,11 +5471,16 @@ class ActivateSessionRequest(FrozenClass):
         ('Parameters', 'ActivateSessionParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ActivateSessionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = ActivateSessionParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'ActivateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4847,7 +5490,7 @@ class ActivateSessionRequest(FrozenClass):
     __repr__ = __str__
 
 
-class ActivateSessionResult(FrozenClass):
+class ActivateSessionResult(object):
     '''
     :ivar ServerNonce:
     :vartype ServerNonce: ByteString
@@ -4863,11 +5506,16 @@ class ActivateSessionResult(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'ServerNonce',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.ServerNonce = None
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'ActivateSessionResult(' + 'ServerNonce:' + str(self.ServerNonce) + ', ' + \
@@ -4877,7 +5525,7 @@ class ActivateSessionResult(FrozenClass):
     __repr__ = __str__
 
 
-class ActivateSessionResponse(FrozenClass):
+class ActivateSessionResponse(object):
     '''
     Activates a session with the server.
 
@@ -4895,11 +5543,16 @@ class ActivateSessionResponse(FrozenClass):
         ('Parameters', 'ActivateSessionResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ActivateSessionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = ActivateSessionResult()
-        self._freeze = True
 
     def __str__(self):
         return 'ActivateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4909,7 +5562,7 @@ class ActivateSessionResponse(FrozenClass):
     __repr__ = __str__
 
 
-class CloseSessionRequest(FrozenClass):
+class CloseSessionRequest(object):
     '''
     Closes a session with the server.
 
@@ -4927,11 +5580,16 @@ class CloseSessionRequest(FrozenClass):
         ('DeleteSubscriptions', 'Boolean'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'DeleteSubscriptions',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CloseSessionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.DeleteSubscriptions = True
-        self._freeze = True
 
     def __str__(self):
         return 'CloseSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4941,7 +5599,7 @@ class CloseSessionRequest(FrozenClass):
     __repr__ = __str__
 
 
-class CloseSessionResponse(FrozenClass):
+class CloseSessionResponse(object):
     '''
     Closes a session with the server.
 
@@ -4956,10 +5614,14 @@ class CloseSessionResponse(FrozenClass):
         ('ResponseHeader', 'ResponseHeader'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CloseSessionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-        self._freeze = True
 
     def __str__(self):
         return 'CloseSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -4968,7 +5630,7 @@ class CloseSessionResponse(FrozenClass):
     __repr__ = __str__
 
 
-class CancelParameters(FrozenClass):
+class CancelParameters(object):
     '''
     :ivar RequestHandle:
     :vartype RequestHandle: UInt32
@@ -4978,9 +5640,12 @@ class CancelParameters(FrozenClass):
         ('RequestHandle', 'UInt32'),
                ]
 
+    __slots__ = [
+        'RequestHandle',
+               ]
+
     def __init__(self):
         self.RequestHandle = 0
-        self._freeze = True
 
     def __str__(self):
         return 'CancelParameters(' + 'RequestHandle:' + str(self.RequestHandle) + ')'
@@ -4988,7 +5653,7 @@ class CancelParameters(FrozenClass):
     __repr__ = __str__
 
 
-class CancelRequest(FrozenClass):
+class CancelRequest(object):
     '''
     Cancels an outstanding request.
 
@@ -5006,11 +5671,16 @@ class CancelRequest(FrozenClass):
         ('Parameters', 'CancelParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CancelRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CancelParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'CancelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -5020,7 +5690,7 @@ class CancelRequest(FrozenClass):
     __repr__ = __str__
 
 
-class CancelResult(FrozenClass):
+class CancelResult(object):
     '''
     :ivar CancelCount:
     :vartype CancelCount: UInt32
@@ -5030,9 +5700,12 @@ class CancelResult(FrozenClass):
         ('CancelCount', 'UInt32'),
                ]
 
+    __slots__ = [
+        'CancelCount',
+               ]
+
     def __init__(self):
         self.CancelCount = 0
-        self._freeze = True
 
     def __str__(self):
         return 'CancelResult(' + 'CancelCount:' + str(self.CancelCount) + ')'
@@ -5040,7 +5713,7 @@ class CancelResult(FrozenClass):
     __repr__ = __str__
 
 
-class CancelResponse(FrozenClass):
+class CancelResponse(object):
     '''
     Cancels an outstanding request.
 
@@ -5058,11 +5731,16 @@ class CancelResponse(FrozenClass):
         ('Parameters', 'CancelResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CancelResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = CancelResult()
-        self._freeze = True
 
     def __str__(self):
         return 'CancelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -5072,7 +5750,7 @@ class CancelResponse(FrozenClass):
     __repr__ = __str__
 
 
-class NodeAttributes(FrozenClass):
+class NodeAttributes(object):
     '''
     The base attributes for all nodes.
 
@@ -5096,13 +5774,20 @@ class NodeAttributes(FrozenClass):
         ('UserWriteMask', 'UInt32'),
                ]
 
+    __slots__ = [
+        'SpecifiedAttributes',
+        'DisplayName',
+        'Description',
+        'WriteMask',
+        'UserWriteMask',
+               ]
+
     def __init__(self):
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
         self.WriteMask = 0
         self.UserWriteMask = 0
-        self._freeze = True
 
     def __str__(self):
         return 'NodeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -5114,7 +5799,7 @@ class NodeAttributes(FrozenClass):
     __repr__ = __str__
 
 
-class ObjectAttributes(FrozenClass):
+class ObjectAttributes(object):
     '''
     The attributes for an object node.
 
@@ -5141,6 +5826,15 @@ class ObjectAttributes(FrozenClass):
         ('EventNotifier', 'Byte'),
                ]
 
+    __slots__ = [
+        'SpecifiedAttributes',
+        'DisplayName',
+        'Description',
+        'WriteMask',
+        'UserWriteMask',
+        'EventNotifier',
+               ]
+
     def __init__(self):
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -5148,7 +5842,6 @@ class ObjectAttributes(FrozenClass):
         self.WriteMask = 0
         self.UserWriteMask = 0
         self.EventNotifier = 0
-        self._freeze = True
 
     def __str__(self):
         return 'ObjectAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -5161,7 +5854,7 @@ class ObjectAttributes(FrozenClass):
     __repr__ = __str__
 
 
-class VariableAttributes(FrozenClass):
+class VariableAttributes(object):
     '''
     The attributes for a variable node.
 
@@ -5209,6 +5902,22 @@ class VariableAttributes(FrozenClass):
         ('Historizing', 'Boolean'),
                ]
 
+    __slots__ = [
+        'SpecifiedAttributes',
+        'DisplayName',
+        'Description',
+        'WriteMask',
+        'UserWriteMask',
+        'Value',
+        'DataType',
+        'ValueRank',
+        'ArrayDimensions',
+        'AccessLevel',
+        'UserAccessLevel',
+        'MinimumSamplingInterval',
+        'Historizing',
+               ]
+
     def __init__(self):
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -5223,7 +5932,6 @@ class VariableAttributes(FrozenClass):
         self.UserAccessLevel = 0
         self.MinimumSamplingInterval = 0
         self.Historizing = True
-        self._freeze = True
 
     def __str__(self):
         return 'VariableAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -5243,7 +5951,7 @@ class VariableAttributes(FrozenClass):
     __repr__ = __str__
 
 
-class MethodAttributes(FrozenClass):
+class MethodAttributes(object):
     '''
     The attributes for a method node.
 
@@ -5273,6 +5981,16 @@ class MethodAttributes(FrozenClass):
         ('UserExecutable', 'Boolean'),
                ]
 
+    __slots__ = [
+        'SpecifiedAttributes',
+        'DisplayName',
+        'Description',
+        'WriteMask',
+        'UserWriteMask',
+        'Executable',
+        'UserExecutable',
+               ]
+
     def __init__(self):
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -5281,7 +5999,6 @@ class MethodAttributes(FrozenClass):
         self.UserWriteMask = 0
         self.Executable = True
         self.UserExecutable = True
-        self._freeze = True
 
     def __str__(self):
         return 'MethodAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -5295,7 +6012,7 @@ class MethodAttributes(FrozenClass):
     __repr__ = __str__
 
 
-class ObjectTypeAttributes(FrozenClass):
+class ObjectTypeAttributes(object):
     '''
     The attributes for an object type node.
 
@@ -5322,6 +6039,15 @@ class ObjectTypeAttributes(FrozenClass):
         ('IsAbstract', 'Boolean'),
                ]
 
+    __slots__ = [
+        'SpecifiedAttributes',
+        'DisplayName',
+        'Description',
+        'WriteMask',
+        'UserWriteMask',
+        'IsAbstract',
+               ]
+
     def __init__(self):
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -5329,7 +6055,6 @@ class ObjectTypeAttributes(FrozenClass):
         self.WriteMask = 0
         self.UserWriteMask = 0
         self.IsAbstract = True
-        self._freeze = True
 
     def __str__(self):
         return 'ObjectTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -5342,7 +6067,7 @@ class ObjectTypeAttributes(FrozenClass):
     __repr__ = __str__
 
 
-class VariableTypeAttributes(FrozenClass):
+class VariableTypeAttributes(object):
     '''
     The attributes for a variable type node.
 
@@ -5381,6 +6106,19 @@ class VariableTypeAttributes(FrozenClass):
         ('IsAbstract', 'Boolean'),
                ]
 
+    __slots__ = [
+        'SpecifiedAttributes',
+        'DisplayName',
+        'Description',
+        'WriteMask',
+        'UserWriteMask',
+        'Value',
+        'DataType',
+        'ValueRank',
+        'ArrayDimensions',
+        'IsAbstract',
+               ]
+
     def __init__(self):
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -5392,7 +6130,6 @@ class VariableTypeAttributes(FrozenClass):
         self.ValueRank = 0
         self.ArrayDimensions = []
         self.IsAbstract = True
-        self._freeze = True
 
     def __str__(self):
         return 'VariableTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -5409,7 +6146,7 @@ class VariableTypeAttributes(FrozenClass):
     __repr__ = __str__
 
 
-class ReferenceTypeAttributes(FrozenClass):
+class ReferenceTypeAttributes(object):
     '''
     The attributes for a reference type node.
 
@@ -5442,6 +6179,17 @@ class ReferenceTypeAttributes(FrozenClass):
         ('InverseName', 'LocalizedText'),
                ]
 
+    __slots__ = [
+        'SpecifiedAttributes',
+        'DisplayName',
+        'Description',
+        'WriteMask',
+        'UserWriteMask',
+        'IsAbstract',
+        'Symmetric',
+        'InverseName',
+               ]
+
     def __init__(self):
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -5451,7 +6199,6 @@ class ReferenceTypeAttributes(FrozenClass):
         self.IsAbstract = True
         self.Symmetric = True
         self.InverseName = LocalizedText()
-        self._freeze = True
 
     def __str__(self):
         return 'ReferenceTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -5466,7 +6213,7 @@ class ReferenceTypeAttributes(FrozenClass):
     __repr__ = __str__
 
 
-class DataTypeAttributes(FrozenClass):
+class DataTypeAttributes(object):
     '''
     The attributes for a data type node.
 
@@ -5493,6 +6240,15 @@ class DataTypeAttributes(FrozenClass):
         ('IsAbstract', 'Boolean'),
                ]
 
+    __slots__ = [
+        'SpecifiedAttributes',
+        'DisplayName',
+        'Description',
+        'WriteMask',
+        'UserWriteMask',
+        'IsAbstract',
+               ]
+
     def __init__(self):
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -5500,7 +6256,6 @@ class DataTypeAttributes(FrozenClass):
         self.WriteMask = 0
         self.UserWriteMask = 0
         self.IsAbstract = True
-        self._freeze = True
 
     def __str__(self):
         return 'DataTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -5513,7 +6268,7 @@ class DataTypeAttributes(FrozenClass):
     __repr__ = __str__
 
 
-class ViewAttributes(FrozenClass):
+class ViewAttributes(object):
     '''
     The attributes for a view node.
 
@@ -5543,6 +6298,16 @@ class ViewAttributes(FrozenClass):
         ('EventNotifier', 'Byte'),
                ]
 
+    __slots__ = [
+        'SpecifiedAttributes',
+        'DisplayName',
+        'Description',
+        'WriteMask',
+        'UserWriteMask',
+        'ContainsNoLoops',
+        'EventNotifier',
+               ]
+
     def __init__(self):
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -5551,7 +6316,6 @@ class ViewAttributes(FrozenClass):
         self.UserWriteMask = 0
         self.ContainsNoLoops = True
         self.EventNotifier = 0
-        self._freeze = True
 
     def __str__(self):
         return 'ViewAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -5565,7 +6329,7 @@ class ViewAttributes(FrozenClass):
     __repr__ = __str__
 
 
-class GenericAttributeValue(FrozenClass):
+class GenericAttributeValue(object):
     '''
     :ivar AttributeId:
     :vartype AttributeId: UInt32
@@ -5578,10 +6342,14 @@ class GenericAttributeValue(FrozenClass):
         ('Value', 'Variant'),
                ]
 
+    __slots__ = [
+        'AttributeId',
+        'Value',
+               ]
+
     def __init__(self):
         self.AttributeId = 0
         self.Value = Variant()
-        self._freeze = True
 
     def __str__(self):
         return 'GenericAttributeValue(' + 'AttributeId:' + str(self.AttributeId) + ', ' + \
@@ -5590,7 +6358,7 @@ class GenericAttributeValue(FrozenClass):
     __repr__ = __str__
 
 
-class GenericAttributes(FrozenClass):
+class GenericAttributes(object):
     '''
     :ivar SpecifiedAttributes:
     :vartype SpecifiedAttributes: UInt32
@@ -5615,6 +6383,15 @@ class GenericAttributes(FrozenClass):
         ('AttributeValues', 'ListOfGenericAttributeValue'),
                ]
 
+    __slots__ = [
+        'SpecifiedAttributes',
+        'DisplayName',
+        'Description',
+        'WriteMask',
+        'UserWriteMask',
+        'AttributeValues',
+               ]
+
     def __init__(self):
         self.SpecifiedAttributes = 0
         self.DisplayName = LocalizedText()
@@ -5622,7 +6399,6 @@ class GenericAttributes(FrozenClass):
         self.WriteMask = 0
         self.UserWriteMask = 0
         self.AttributeValues = []
-        self._freeze = True
 
     def __str__(self):
         return 'GenericAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
@@ -5635,7 +6411,7 @@ class GenericAttributes(FrozenClass):
     __repr__ = __str__
 
 
-class AddNodesItem(FrozenClass):
+class AddNodesItem(object):
     '''
     A request to add a node to the server address space.
 
@@ -5665,6 +6441,16 @@ class AddNodesItem(FrozenClass):
         ('TypeDefinition', 'ExpandedNodeId'),
                ]
 
+    __slots__ = [
+        'ParentNodeId',
+        'ReferenceTypeId',
+        'RequestedNewNodeId',
+        'BrowseName',
+        'NodeClass',
+        'NodeAttributes',
+        'TypeDefinition',
+               ]
+
     def __init__(self):
         self.ParentNodeId = ExpandedNodeId()
         self.ReferenceTypeId = NodeId()
@@ -5673,7 +6459,6 @@ class AddNodesItem(FrozenClass):
         self.NodeClass = NodeClass(0)
         self.NodeAttributes = ExtensionObject()
         self.TypeDefinition = ExpandedNodeId()
-        self._freeze = True
 
     def __str__(self):
         return 'AddNodesItem(' + 'ParentNodeId:' + str(self.ParentNodeId) + ', ' + \
@@ -5687,7 +6472,7 @@ class AddNodesItem(FrozenClass):
     __repr__ = __str__
 
 
-class AddNodesResult(FrozenClass):
+class AddNodesResult(object):
     '''
     A result of an add node operation.
 
@@ -5702,10 +6487,14 @@ class AddNodesResult(FrozenClass):
         ('AddedNodeId', 'NodeId'),
                ]
 
+    __slots__ = [
+        'StatusCode',
+        'AddedNodeId',
+               ]
+
     def __init__(self):
         self.StatusCode = StatusCode()
         self.AddedNodeId = NodeId()
-        self._freeze = True
 
     def __str__(self):
         return 'AddNodesResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
@@ -5714,7 +6503,7 @@ class AddNodesResult(FrozenClass):
     __repr__ = __str__
 
 
-class AddNodesParameters(FrozenClass):
+class AddNodesParameters(object):
     '''
     :ivar NodesToAdd:
     :vartype NodesToAdd: AddNodesItem
@@ -5724,9 +6513,12 @@ class AddNodesParameters(FrozenClass):
         ('NodesToAdd', 'ListOfAddNodesItem'),
                ]
 
+    __slots__ = [
+        'NodesToAdd',
+               ]
+
     def __init__(self):
         self.NodesToAdd = []
-        self._freeze = True
 
     def __str__(self):
         return 'AddNodesParameters(' + 'NodesToAdd:' + str(self.NodesToAdd) + ')'
@@ -5734,7 +6526,7 @@ class AddNodesParameters(FrozenClass):
     __repr__ = __str__
 
 
-class AddNodesRequest(FrozenClass):
+class AddNodesRequest(object):
     '''
     Adds one or more nodes to the server address space.
 
@@ -5752,11 +6544,16 @@ class AddNodesRequest(FrozenClass):
         ('Parameters', 'AddNodesParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AddNodesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = AddNodesParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'AddNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -5766,7 +6563,7 @@ class AddNodesRequest(FrozenClass):
     __repr__ = __str__
 
 
-class AddNodesResponse(FrozenClass):
+class AddNodesResponse(object):
     '''
     Adds one or more nodes to the server address space.
 
@@ -5787,12 +6584,18 @@ class AddNodesResponse(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AddNodesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'AddNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -5803,7 +6606,7 @@ class AddNodesResponse(FrozenClass):
     __repr__ = __str__
 
 
-class AddReferencesItem(FrozenClass):
+class AddReferencesItem(object):
     '''
     A request to add a reference to the server address space.
 
@@ -5830,6 +6633,15 @@ class AddReferencesItem(FrozenClass):
         ('TargetNodeClass', 'NodeClass'),
                ]
 
+    __slots__ = [
+        'SourceNodeId',
+        'ReferenceTypeId',
+        'IsForward',
+        'TargetServerUri',
+        'TargetNodeId',
+        'TargetNodeClass',
+               ]
+
     def __init__(self):
         self.SourceNodeId = NodeId()
         self.ReferenceTypeId = NodeId()
@@ -5837,7 +6649,6 @@ class AddReferencesItem(FrozenClass):
         self.TargetServerUri = None
         self.TargetNodeId = ExpandedNodeId()
         self.TargetNodeClass = NodeClass(0)
-        self._freeze = True
 
     def __str__(self):
         return 'AddReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', ' + \
@@ -5850,7 +6661,7 @@ class AddReferencesItem(FrozenClass):
     __repr__ = __str__
 
 
-class AddReferencesParameters(FrozenClass):
+class AddReferencesParameters(object):
     '''
     :ivar ReferencesToAdd:
     :vartype ReferencesToAdd: AddReferencesItem
@@ -5860,9 +6671,12 @@ class AddReferencesParameters(FrozenClass):
         ('ReferencesToAdd', 'ListOfAddReferencesItem'),
                ]
 
+    __slots__ = [
+        'ReferencesToAdd',
+               ]
+
     def __init__(self):
         self.ReferencesToAdd = []
-        self._freeze = True
 
     def __str__(self):
         return 'AddReferencesParameters(' + 'ReferencesToAdd:' + str(self.ReferencesToAdd) + ')'
@@ -5870,7 +6684,7 @@ class AddReferencesParameters(FrozenClass):
     __repr__ = __str__
 
 
-class AddReferencesRequest(FrozenClass):
+class AddReferencesRequest(object):
     '''
     Adds one or more references to the server address space.
 
@@ -5888,11 +6702,16 @@ class AddReferencesRequest(FrozenClass):
         ('Parameters', 'AddReferencesParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AddReferencesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = AddReferencesParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'AddReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -5902,7 +6721,7 @@ class AddReferencesRequest(FrozenClass):
     __repr__ = __str__
 
 
-class AddReferencesResponse(FrozenClass):
+class AddReferencesResponse(object):
     '''
     Adds one or more references to the server address space.
 
@@ -5923,12 +6742,18 @@ class AddReferencesResponse(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.AddReferencesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'AddReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -5939,7 +6764,7 @@ class AddReferencesResponse(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteNodesItem(FrozenClass):
+class DeleteNodesItem(object):
     '''
     A request to delete a node to the server address space.
 
@@ -5954,10 +6779,14 @@ class DeleteNodesItem(FrozenClass):
         ('DeleteTargetReferences', 'Boolean'),
                ]
 
+    __slots__ = [
+        'NodeId',
+        'DeleteTargetReferences',
+               ]
+
     def __init__(self):
         self.NodeId = NodeId()
         self.DeleteTargetReferences = True
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteNodesItem(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -5966,7 +6795,7 @@ class DeleteNodesItem(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteNodesParameters(FrozenClass):
+class DeleteNodesParameters(object):
     '''
     :ivar NodesToDelete:
     :vartype NodesToDelete: DeleteNodesItem
@@ -5976,9 +6805,12 @@ class DeleteNodesParameters(FrozenClass):
         ('NodesToDelete', 'ListOfDeleteNodesItem'),
                ]
 
+    __slots__ = [
+        'NodesToDelete',
+               ]
+
     def __init__(self):
         self.NodesToDelete = []
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteNodesParameters(' + 'NodesToDelete:' + str(self.NodesToDelete) + ')'
@@ -5986,7 +6818,7 @@ class DeleteNodesParameters(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteNodesRequest(FrozenClass):
+class DeleteNodesRequest(object):
     '''
     Delete one or more nodes from the server address space.
 
@@ -6004,11 +6836,16 @@ class DeleteNodesRequest(FrozenClass):
         ('Parameters', 'DeleteNodesParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteNodesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteNodesParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6018,7 +6855,7 @@ class DeleteNodesRequest(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteNodesResponse(FrozenClass):
+class DeleteNodesResponse(object):
     '''
     Delete one or more nodes from the server address space.
 
@@ -6039,12 +6876,18 @@ class DeleteNodesResponse(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteNodesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6055,7 +6898,7 @@ class DeleteNodesResponse(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteReferencesItem(FrozenClass):
+class DeleteReferencesItem(object):
     '''
     A request to delete a node from the server address space.
 
@@ -6079,13 +6922,20 @@ class DeleteReferencesItem(FrozenClass):
         ('DeleteBidirectional', 'Boolean'),
                ]
 
+    __slots__ = [
+        'SourceNodeId',
+        'ReferenceTypeId',
+        'IsForward',
+        'TargetNodeId',
+        'DeleteBidirectional',
+               ]
+
     def __init__(self):
         self.SourceNodeId = NodeId()
         self.ReferenceTypeId = NodeId()
         self.IsForward = True
         self.TargetNodeId = ExpandedNodeId()
         self.DeleteBidirectional = True
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', ' + \
@@ -6097,7 +6947,7 @@ class DeleteReferencesItem(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteReferencesParameters(FrozenClass):
+class DeleteReferencesParameters(object):
     '''
     :ivar ReferencesToDelete:
     :vartype ReferencesToDelete: DeleteReferencesItem
@@ -6107,9 +6957,12 @@ class DeleteReferencesParameters(FrozenClass):
         ('ReferencesToDelete', 'ListOfDeleteReferencesItem'),
                ]
 
+    __slots__ = [
+        'ReferencesToDelete',
+               ]
+
     def __init__(self):
         self.ReferencesToDelete = []
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteReferencesParameters(' + 'ReferencesToDelete:' + str(self.ReferencesToDelete) + ')'
@@ -6117,7 +6970,7 @@ class DeleteReferencesParameters(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteReferencesRequest(FrozenClass):
+class DeleteReferencesRequest(object):
     '''
     Delete one or more references from the server address space.
 
@@ -6135,11 +6988,16 @@ class DeleteReferencesRequest(FrozenClass):
         ('Parameters', 'DeleteReferencesParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteReferencesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteReferencesParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6149,7 +7007,7 @@ class DeleteReferencesRequest(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteReferencesResult(FrozenClass):
+class DeleteReferencesResult(object):
     '''
     :ivar Results:
     :vartype Results: StatusCode
@@ -6162,10 +7020,14 @@ class DeleteReferencesResult(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteReferencesResult(' + 'Results:' + str(self.Results) + ', ' + \
@@ -6174,7 +7036,7 @@ class DeleteReferencesResult(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteReferencesResponse(FrozenClass):
+class DeleteReferencesResponse(object):
     '''
     Delete one or more references from the server address space.
 
@@ -6192,11 +7054,16 @@ class DeleteReferencesResponse(FrozenClass):
         ('Parameters', 'DeleteReferencesResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteReferencesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = DeleteReferencesResult()
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6206,7 +7073,7 @@ class DeleteReferencesResponse(FrozenClass):
     __repr__ = __str__
 
 
-class ViewDescription(FrozenClass):
+class ViewDescription(object):
     '''
     The view to browse.
 
@@ -6224,11 +7091,16 @@ class ViewDescription(FrozenClass):
         ('ViewVersion', 'UInt32'),
                ]
 
+    __slots__ = [
+        'ViewId',
+        'Timestamp',
+        'ViewVersion',
+               ]
+
     def __init__(self):
         self.ViewId = NodeId()
         self.Timestamp = datetime.utcnow()
         self.ViewVersion = 0
-        self._freeze = True
 
     def __str__(self):
         return 'ViewDescription(' + 'ViewId:' + str(self.ViewId) + ', ' + \
@@ -6238,7 +7110,7 @@ class ViewDescription(FrozenClass):
     __repr__ = __str__
 
 
-class BrowseDescription(FrozenClass):
+class BrowseDescription(object):
     '''
     A request to browse the the references from a node.
 
@@ -6265,6 +7137,15 @@ class BrowseDescription(FrozenClass):
         ('ResultMask', 'UInt32'),
                ]
 
+    __slots__ = [
+        'NodeId',
+        'BrowseDirection',
+        'ReferenceTypeId',
+        'IncludeSubtypes',
+        'NodeClassMask',
+        'ResultMask',
+               ]
+
     def __init__(self):
         self.NodeId = NodeId()
         self.BrowseDirection = BrowseDirection(0)
@@ -6272,7 +7153,6 @@ class BrowseDescription(FrozenClass):
         self.IncludeSubtypes = True
         self.NodeClassMask = 0
         self.ResultMask = 0
-        self._freeze = True
 
     def __str__(self):
         return 'BrowseDescription(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -6285,7 +7165,7 @@ class BrowseDescription(FrozenClass):
     __repr__ = __str__
 
 
-class ReferenceDescription(FrozenClass):
+class ReferenceDescription(object):
     '''
     The description of a reference.
 
@@ -6315,6 +7195,16 @@ class ReferenceDescription(FrozenClass):
         ('TypeDefinition', 'ExpandedNodeId'),
                ]
 
+    __slots__ = [
+        'ReferenceTypeId',
+        'IsForward',
+        'NodeId',
+        'BrowseName',
+        'DisplayName',
+        'NodeClass',
+        'TypeDefinition',
+               ]
+
     def __init__(self):
         self.ReferenceTypeId = NodeId()
         self.IsForward = True
@@ -6323,7 +7213,6 @@ class ReferenceDescription(FrozenClass):
         self.DisplayName = LocalizedText()
         self.NodeClass = NodeClass(0)
         self.TypeDefinition = ExpandedNodeId()
-        self._freeze = True
 
     def __str__(self):
         return 'ReferenceDescription(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
@@ -6337,7 +7226,7 @@ class ReferenceDescription(FrozenClass):
     __repr__ = __str__
 
 
-class BrowseResult(FrozenClass):
+class BrowseResult(object):
     '''
     The result of a browse operation.
 
@@ -6355,11 +7244,16 @@ class BrowseResult(FrozenClass):
         ('References', 'ListOfReferenceDescription'),
                ]
 
+    __slots__ = [
+        'StatusCode',
+        'ContinuationPoint',
+        'References',
+               ]
+
     def __init__(self):
         self.StatusCode = StatusCode()
         self.ContinuationPoint = None
         self.References = []
-        self._freeze = True
 
     def __str__(self):
         return 'BrowseResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
@@ -6369,7 +7263,7 @@ class BrowseResult(FrozenClass):
     __repr__ = __str__
 
 
-class BrowseParameters(FrozenClass):
+class BrowseParameters(object):
     '''
     :ivar View:
     :vartype View: ViewDescription
@@ -6385,11 +7279,16 @@ class BrowseParameters(FrozenClass):
         ('NodesToBrowse', 'ListOfBrowseDescription'),
                ]
 
+    __slots__ = [
+        'View',
+        'RequestedMaxReferencesPerNode',
+        'NodesToBrowse',
+               ]
+
     def __init__(self):
         self.View = ViewDescription()
         self.RequestedMaxReferencesPerNode = 0
         self.NodesToBrowse = []
-        self._freeze = True
 
     def __str__(self):
         return 'BrowseParameters(' + 'View:' + str(self.View) + ', ' + \
@@ -6399,7 +7298,7 @@ class BrowseParameters(FrozenClass):
     __repr__ = __str__
 
 
-class BrowseRequest(FrozenClass):
+class BrowseRequest(object):
     '''
     Browse the references for one or more nodes from the server address space.
 
@@ -6417,11 +7316,16 @@ class BrowseRequest(FrozenClass):
         ('Parameters', 'BrowseParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.BrowseRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = BrowseParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'BrowseRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6431,7 +7335,7 @@ class BrowseRequest(FrozenClass):
     __repr__ = __str__
 
 
-class BrowseResponse(FrozenClass):
+class BrowseResponse(object):
     '''
     Browse the references for one or more nodes from the server address space.
 
@@ -6452,12 +7356,18 @@ class BrowseResponse(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.BrowseResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'BrowseResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6468,7 +7378,7 @@ class BrowseResponse(FrozenClass):
     __repr__ = __str__
 
 
-class BrowseNextParameters(FrozenClass):
+class BrowseNextParameters(object):
     '''
     :ivar ReleaseContinuationPoints:
     :vartype ReleaseContinuationPoints: Boolean
@@ -6481,10 +7391,14 @@ class BrowseNextParameters(FrozenClass):
         ('ContinuationPoints', 'ListOfByteString'),
                ]
 
+    __slots__ = [
+        'ReleaseContinuationPoints',
+        'ContinuationPoints',
+               ]
+
     def __init__(self):
         self.ReleaseContinuationPoints = True
         self.ContinuationPoints = []
-        self._freeze = True
 
     def __str__(self):
         return 'BrowseNextParameters(' + 'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', ' + \
@@ -6493,7 +7407,7 @@ class BrowseNextParameters(FrozenClass):
     __repr__ = __str__
 
 
-class BrowseNextRequest(FrozenClass):
+class BrowseNextRequest(object):
     '''
     Continues one or more browse operations.
 
@@ -6511,11 +7425,16 @@ class BrowseNextRequest(FrozenClass):
         ('Parameters', 'BrowseNextParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.BrowseNextRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = BrowseNextParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'BrowseNextRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6525,7 +7444,7 @@ class BrowseNextRequest(FrozenClass):
     __repr__ = __str__
 
 
-class BrowseNextResult(FrozenClass):
+class BrowseNextResult(object):
     '''
     :ivar Results:
     :vartype Results: BrowseResult
@@ -6538,10 +7457,14 @@ class BrowseNextResult(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'BrowseNextResult(' + 'Results:' + str(self.Results) + ', ' + \
@@ -6550,7 +7473,7 @@ class BrowseNextResult(FrozenClass):
     __repr__ = __str__
 
 
-class BrowseNextResponse(FrozenClass):
+class BrowseNextResponse(object):
     '''
     Continues one or more browse operations.
 
@@ -6568,11 +7491,16 @@ class BrowseNextResponse(FrozenClass):
         ('Parameters', 'BrowseNextResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.BrowseNextResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = BrowseNextResult()
-        self._freeze = True
 
     def __str__(self):
         return 'BrowseNextResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6582,7 +7510,7 @@ class BrowseNextResponse(FrozenClass):
     __repr__ = __str__
 
 
-class RelativePathElement(FrozenClass):
+class RelativePathElement(object):
     '''
     An element in a relative path.
 
@@ -6603,12 +7531,18 @@ class RelativePathElement(FrozenClass):
         ('TargetName', 'QualifiedName'),
                ]
 
+    __slots__ = [
+        'ReferenceTypeId',
+        'IsInverse',
+        'IncludeSubtypes',
+        'TargetName',
+               ]
+
     def __init__(self):
         self.ReferenceTypeId = NodeId()
         self.IsInverse = True
         self.IncludeSubtypes = True
         self.TargetName = QualifiedName()
-        self._freeze = True
 
     def __str__(self):
         return 'RelativePathElement(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
@@ -6619,7 +7553,7 @@ class RelativePathElement(FrozenClass):
     __repr__ = __str__
 
 
-class RelativePath(FrozenClass):
+class RelativePath(object):
     '''
     A relative path constructed from reference types and browse names.
 
@@ -6631,9 +7565,12 @@ class RelativePath(FrozenClass):
         ('Elements', 'ListOfRelativePathElement'),
                ]
 
+    __slots__ = [
+        'Elements',
+               ]
+
     def __init__(self):
         self.Elements = []
-        self._freeze = True
 
     def __str__(self):
         return 'RelativePath(' + 'Elements:' + str(self.Elements) + ')'
@@ -6641,7 +7578,7 @@ class RelativePath(FrozenClass):
     __repr__ = __str__
 
 
-class BrowsePath(FrozenClass):
+class BrowsePath(object):
     '''
     A request to translate a path into a node id.
 
@@ -6656,10 +7593,14 @@ class BrowsePath(FrozenClass):
         ('RelativePath', 'RelativePath'),
                ]
 
+    __slots__ = [
+        'StartingNode',
+        'RelativePath',
+               ]
+
     def __init__(self):
         self.StartingNode = NodeId()
         self.RelativePath = RelativePath()
-        self._freeze = True
 
     def __str__(self):
         return 'BrowsePath(' + 'StartingNode:' + str(self.StartingNode) + ', ' + \
@@ -6668,7 +7609,7 @@ class BrowsePath(FrozenClass):
     __repr__ = __str__
 
 
-class BrowsePathTarget(FrozenClass):
+class BrowsePathTarget(object):
     '''
     The target of the translated path.
 
@@ -6683,10 +7624,14 @@ class BrowsePathTarget(FrozenClass):
         ('RemainingPathIndex', 'UInt32'),
                ]
 
+    __slots__ = [
+        'TargetId',
+        'RemainingPathIndex',
+               ]
+
     def __init__(self):
         self.TargetId = ExpandedNodeId()
         self.RemainingPathIndex = 0
-        self._freeze = True
 
     def __str__(self):
         return 'BrowsePathTarget(' + 'TargetId:' + str(self.TargetId) + ', ' + \
@@ -6695,7 +7640,7 @@ class BrowsePathTarget(FrozenClass):
     __repr__ = __str__
 
 
-class BrowsePathResult(FrozenClass):
+class BrowsePathResult(object):
     '''
     The result of a translate opearation.
 
@@ -6710,10 +7655,14 @@ class BrowsePathResult(FrozenClass):
         ('Targets', 'ListOfBrowsePathTarget'),
                ]
 
+    __slots__ = [
+        'StatusCode',
+        'Targets',
+               ]
+
     def __init__(self):
         self.StatusCode = StatusCode()
         self.Targets = []
-        self._freeze = True
 
     def __str__(self):
         return 'BrowsePathResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
@@ -6722,7 +7671,7 @@ class BrowsePathResult(FrozenClass):
     __repr__ = __str__
 
 
-class TranslateBrowsePathsToNodeIdsParameters(FrozenClass):
+class TranslateBrowsePathsToNodeIdsParameters(object):
     '''
     :ivar BrowsePaths:
     :vartype BrowsePaths: BrowsePath
@@ -6732,9 +7681,12 @@ class TranslateBrowsePathsToNodeIdsParameters(FrozenClass):
         ('BrowsePaths', 'ListOfBrowsePath'),
                ]
 
+    __slots__ = [
+        'BrowsePaths',
+               ]
+
     def __init__(self):
         self.BrowsePaths = []
-        self._freeze = True
 
     def __str__(self):
         return 'TranslateBrowsePathsToNodeIdsParameters(' + 'BrowsePaths:' + str(self.BrowsePaths) + ')'
@@ -6742,7 +7694,7 @@ class TranslateBrowsePathsToNodeIdsParameters(FrozenClass):
     __repr__ = __str__
 
 
-class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
+class TranslateBrowsePathsToNodeIdsRequest(object):
     '''
     Translates one or more paths in the server address space.
 
@@ -6760,11 +7712,16 @@ class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
         ('Parameters', 'TranslateBrowsePathsToNodeIdsParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = TranslateBrowsePathsToNodeIdsParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'TranslateBrowsePathsToNodeIdsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6774,7 +7731,7 @@ class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
     __repr__ = __str__
 
 
-class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
+class TranslateBrowsePathsToNodeIdsResponse(object):
     '''
     Translates one or more paths in the server address space.
 
@@ -6795,12 +7752,18 @@ class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TranslateBrowsePathsToNodeIdsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'TranslateBrowsePathsToNodeIdsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6811,7 +7774,7 @@ class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
     __repr__ = __str__
 
 
-class RegisterNodesParameters(FrozenClass):
+class RegisterNodesParameters(object):
     '''
     :ivar NodesToRegister:
     :vartype NodesToRegister: NodeId
@@ -6821,9 +7784,12 @@ class RegisterNodesParameters(FrozenClass):
         ('NodesToRegister', 'ListOfNodeId'),
                ]
 
+    __slots__ = [
+        'NodesToRegister',
+               ]
+
     def __init__(self):
         self.NodesToRegister = []
-        self._freeze = True
 
     def __str__(self):
         return 'RegisterNodesParameters(' + 'NodesToRegister:' + str(self.NodesToRegister) + ')'
@@ -6831,7 +7797,7 @@ class RegisterNodesParameters(FrozenClass):
     __repr__ = __str__
 
 
-class RegisterNodesRequest(FrozenClass):
+class RegisterNodesRequest(object):
     '''
     Registers one or more nodes for repeated use within a session.
 
@@ -6849,11 +7815,16 @@ class RegisterNodesRequest(FrozenClass):
         ('Parameters', 'RegisterNodesParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterNodesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = RegisterNodesParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'RegisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6863,7 +7834,7 @@ class RegisterNodesRequest(FrozenClass):
     __repr__ = __str__
 
 
-class RegisterNodesResult(FrozenClass):
+class RegisterNodesResult(object):
     '''
     :ivar RegisteredNodeIds:
     :vartype RegisteredNodeIds: NodeId
@@ -6873,9 +7844,12 @@ class RegisterNodesResult(FrozenClass):
         ('RegisteredNodeIds', 'ListOfNodeId'),
                ]
 
+    __slots__ = [
+        'RegisteredNodeIds',
+               ]
+
     def __init__(self):
         self.RegisteredNodeIds = []
-        self._freeze = True
 
     def __str__(self):
         return 'RegisterNodesResult(' + 'RegisteredNodeIds:' + str(self.RegisteredNodeIds) + ')'
@@ -6883,7 +7857,7 @@ class RegisterNodesResult(FrozenClass):
     __repr__ = __str__
 
 
-class RegisterNodesResponse(FrozenClass):
+class RegisterNodesResponse(object):
     '''
     Registers one or more nodes for repeated use within a session.
 
@@ -6901,11 +7875,16 @@ class RegisterNodesResponse(FrozenClass):
         ('Parameters', 'RegisterNodesResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RegisterNodesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = RegisterNodesResult()
-        self._freeze = True
 
     def __str__(self):
         return 'RegisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6915,7 +7894,7 @@ class RegisterNodesResponse(FrozenClass):
     __repr__ = __str__
 
 
-class UnregisterNodesParameters(FrozenClass):
+class UnregisterNodesParameters(object):
     '''
     :ivar NodesToUnregister:
     :vartype NodesToUnregister: NodeId
@@ -6925,9 +7904,12 @@ class UnregisterNodesParameters(FrozenClass):
         ('NodesToUnregister', 'ListOfNodeId'),
                ]
 
+    __slots__ = [
+        'NodesToUnregister',
+               ]
+
     def __init__(self):
         self.NodesToUnregister = []
-        self._freeze = True
 
     def __str__(self):
         return 'UnregisterNodesParameters(' + 'NodesToUnregister:' + str(self.NodesToUnregister) + ')'
@@ -6935,7 +7917,7 @@ class UnregisterNodesParameters(FrozenClass):
     __repr__ = __str__
 
 
-class UnregisterNodesRequest(FrozenClass):
+class UnregisterNodesRequest(object):
     '''
     Unregisters one or more previously registered nodes.
 
@@ -6953,11 +7935,16 @@ class UnregisterNodesRequest(FrozenClass):
         ('Parameters', 'UnregisterNodesParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.UnregisterNodesRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = UnregisterNodesParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'UnregisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6967,7 +7954,7 @@ class UnregisterNodesRequest(FrozenClass):
     __repr__ = __str__
 
 
-class UnregisterNodesResponse(FrozenClass):
+class UnregisterNodesResponse(object):
     '''
     Unregisters one or more previously registered nodes.
 
@@ -6982,10 +7969,14 @@ class UnregisterNodesResponse(FrozenClass):
         ('ResponseHeader', 'ResponseHeader'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.UnregisterNodesResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
-        self._freeze = True
 
     def __str__(self):
         return 'UnregisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -6994,7 +7985,7 @@ class UnregisterNodesResponse(FrozenClass):
     __repr__ = __str__
 
 
-class EndpointConfiguration(FrozenClass):
+class EndpointConfiguration(object):
     '''
     :ivar OperationTimeout:
     :vartype OperationTimeout: Int32
@@ -7028,6 +8019,18 @@ class EndpointConfiguration(FrozenClass):
         ('SecurityTokenLifetime', 'Int32'),
                ]
 
+    __slots__ = [
+        'OperationTimeout',
+        'UseBinaryEncoding',
+        'MaxStringLength',
+        'MaxByteStringLength',
+        'MaxArrayLength',
+        'MaxMessageSize',
+        'MaxBufferSize',
+        'ChannelLifetime',
+        'SecurityTokenLifetime',
+               ]
+
     def __init__(self):
         self.OperationTimeout = 0
         self.UseBinaryEncoding = True
@@ -7038,7 +8041,6 @@ class EndpointConfiguration(FrozenClass):
         self.MaxBufferSize = 0
         self.ChannelLifetime = 0
         self.SecurityTokenLifetime = 0
-        self._freeze = True
 
     def __str__(self):
         return 'EndpointConfiguration(' + 'OperationTimeout:' + str(self.OperationTimeout) + ', ' + \
@@ -7054,7 +8056,7 @@ class EndpointConfiguration(FrozenClass):
     __repr__ = __str__
 
 
-class QueryDataDescription(FrozenClass):
+class QueryDataDescription(object):
     '''
     :ivar RelativePath:
     :vartype RelativePath: RelativePath
@@ -7070,11 +8072,16 @@ class QueryDataDescription(FrozenClass):
         ('IndexRange', 'String'),
                ]
 
+    __slots__ = [
+        'RelativePath',
+        'AttributeId',
+        'IndexRange',
+               ]
+
     def __init__(self):
         self.RelativePath = RelativePath()
         self.AttributeId = 0
         self.IndexRange = None
-        self._freeze = True
 
     def __str__(self):
         return 'QueryDataDescription(' + 'RelativePath:' + str(self.RelativePath) + ', ' + \
@@ -7084,7 +8091,7 @@ class QueryDataDescription(FrozenClass):
     __repr__ = __str__
 
 
-class NodeTypeDescription(FrozenClass):
+class NodeTypeDescription(object):
     '''
     :ivar TypeDefinitionNode:
     :vartype TypeDefinitionNode: ExpandedNodeId
@@ -7100,11 +8107,16 @@ class NodeTypeDescription(FrozenClass):
         ('DataToReturn', 'ListOfQueryDataDescription'),
                ]
 
+    __slots__ = [
+        'TypeDefinitionNode',
+        'IncludeSubTypes',
+        'DataToReturn',
+               ]
+
     def __init__(self):
         self.TypeDefinitionNode = ExpandedNodeId()
         self.IncludeSubTypes = True
         self.DataToReturn = []
-        self._freeze = True
 
     def __str__(self):
         return 'NodeTypeDescription(' + 'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', ' + \
@@ -7114,7 +8126,7 @@ class NodeTypeDescription(FrozenClass):
     __repr__ = __str__
 
 
-class QueryDataSet(FrozenClass):
+class QueryDataSet(object):
     '''
     :ivar NodeId:
     :vartype NodeId: ExpandedNodeId
@@ -7130,11 +8142,16 @@ class QueryDataSet(FrozenClass):
         ('Values', 'ListOfVariant'),
                ]
 
+    __slots__ = [
+        'NodeId',
+        'TypeDefinitionNode',
+        'Values',
+               ]
+
     def __init__(self):
         self.NodeId = ExpandedNodeId()
         self.TypeDefinitionNode = ExpandedNodeId()
         self.Values = []
-        self._freeze = True
 
     def __str__(self):
         return 'QueryDataSet(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -7144,7 +8161,7 @@ class QueryDataSet(FrozenClass):
     __repr__ = __str__
 
 
-class NodeReference(FrozenClass):
+class NodeReference(object):
     '''
     :ivar NodeId:
     :vartype NodeId: NodeId
@@ -7163,12 +8180,18 @@ class NodeReference(FrozenClass):
         ('ReferencedNodeIds', 'ListOfNodeId'),
                ]
 
+    __slots__ = [
+        'NodeId',
+        'ReferenceTypeId',
+        'IsForward',
+        'ReferencedNodeIds',
+               ]
+
     def __init__(self):
         self.NodeId = NodeId()
         self.ReferenceTypeId = NodeId()
         self.IsForward = True
         self.ReferencedNodeIds = []
-        self._freeze = True
 
     def __str__(self):
         return 'NodeReference(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -7179,7 +8202,7 @@ class NodeReference(FrozenClass):
     __repr__ = __str__
 
 
-class ContentFilterElement(FrozenClass):
+class ContentFilterElement(object):
     '''
     :ivar FilterOperator:
     :vartype FilterOperator: FilterOperator
@@ -7192,10 +8215,14 @@ class ContentFilterElement(FrozenClass):
         ('FilterOperands', 'ListOfExtensionObject'),
                ]
 
+    __slots__ = [
+        'FilterOperator',
+        'FilterOperands',
+               ]
+
     def __init__(self):
         self.FilterOperator = FilterOperator(0)
         self.FilterOperands = []
-        self._freeze = True
 
     def __str__(self):
         return 'ContentFilterElement(' + 'FilterOperator:' + str(self.FilterOperator) + ', ' + \
@@ -7204,7 +8231,7 @@ class ContentFilterElement(FrozenClass):
     __repr__ = __str__
 
 
-class ContentFilter(FrozenClass):
+class ContentFilter(object):
     '''
     :ivar Elements:
     :vartype Elements: ContentFilterElement
@@ -7214,9 +8241,12 @@ class ContentFilter(FrozenClass):
         ('Elements', 'ListOfContentFilterElement'),
                ]
 
+    __slots__ = [
+        'Elements',
+               ]
+
     def __init__(self):
         self.Elements = []
-        self._freeze = True
 
     def __str__(self):
         return 'ContentFilter(' + 'Elements:' + str(self.Elements) + ')'
@@ -7224,7 +8254,7 @@ class ContentFilter(FrozenClass):
     __repr__ = __str__
 
 
-class ElementOperand(FrozenClass):
+class ElementOperand(object):
     '''
     :ivar Index:
     :vartype Index: UInt32
@@ -7234,9 +8264,12 @@ class ElementOperand(FrozenClass):
         ('Index', 'UInt32'),
                ]
 
+    __slots__ = [
+        'Index',
+               ]
+
     def __init__(self):
         self.Index = 0
-        self._freeze = True
 
     def __str__(self):
         return 'ElementOperand(' + 'Index:' + str(self.Index) + ')'
@@ -7244,7 +8277,7 @@ class ElementOperand(FrozenClass):
     __repr__ = __str__
 
 
-class LiteralOperand(FrozenClass):
+class LiteralOperand(object):
     '''
     :ivar Value:
     :vartype Value: Variant
@@ -7254,9 +8287,12 @@ class LiteralOperand(FrozenClass):
         ('Value', 'Variant'),
                ]
 
+    __slots__ = [
+        'Value',
+               ]
+
     def __init__(self):
         self.Value = Variant()
-        self._freeze = True
 
     def __str__(self):
         return 'LiteralOperand(' + 'Value:' + str(self.Value) + ')'
@@ -7264,7 +8300,7 @@ class LiteralOperand(FrozenClass):
     __repr__ = __str__
 
 
-class AttributeOperand(FrozenClass):
+class AttributeOperand(object):
     '''
     :ivar NodeId:
     :vartype NodeId: NodeId
@@ -7286,13 +8322,20 @@ class AttributeOperand(FrozenClass):
         ('IndexRange', 'String'),
                ]
 
+    __slots__ = [
+        'NodeId',
+        'Alias',
+        'BrowsePath',
+        'AttributeId',
+        'IndexRange',
+               ]
+
     def __init__(self):
         self.NodeId = NodeId()
         self.Alias = None
         self.BrowsePath = RelativePath()
         self.AttributeId = 0
         self.IndexRange = None
-        self._freeze = True
 
     def __str__(self):
         return 'AttributeOperand(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -7304,7 +8347,7 @@ class AttributeOperand(FrozenClass):
     __repr__ = __str__
 
 
-class SimpleAttributeOperand(FrozenClass):
+class SimpleAttributeOperand(object):
     '''
     :ivar TypeDefinitionId:
     :vartype TypeDefinitionId: NodeId
@@ -7323,12 +8366,18 @@ class SimpleAttributeOperand(FrozenClass):
         ('IndexRange', 'String'),
                ]
 
+    __slots__ = [
+        'TypeDefinitionId',
+        'BrowsePath',
+        'AttributeId',
+        'IndexRange',
+               ]
+
     def __init__(self):
         self.TypeDefinitionId = NodeId()
         self.BrowsePath = []
         self.AttributeId = 0
         self.IndexRange = None
-        self._freeze = True
 
     def __str__(self):
         return 'SimpleAttributeOperand(' + 'TypeDefinitionId:' + str(self.TypeDefinitionId) + ', ' + \
@@ -7339,7 +8388,7 @@ class SimpleAttributeOperand(FrozenClass):
     __repr__ = __str__
 
 
-class ContentFilterElementResult(FrozenClass):
+class ContentFilterElementResult(object):
     '''
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
@@ -7355,11 +8404,16 @@ class ContentFilterElementResult(FrozenClass):
         ('OperandDiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'StatusCode',
+        'OperandStatusCodes',
+        'OperandDiagnosticInfos',
+               ]
+
     def __init__(self):
         self.StatusCode = StatusCode()
         self.OperandStatusCodes = []
         self.OperandDiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'ContentFilterElementResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
@@ -7369,7 +8423,7 @@ class ContentFilterElementResult(FrozenClass):
     __repr__ = __str__
 
 
-class ContentFilterResult(FrozenClass):
+class ContentFilterResult(object):
     '''
     :ivar ElementResults:
     :vartype ElementResults: ContentFilterElementResult
@@ -7382,10 +8436,14 @@ class ContentFilterResult(FrozenClass):
         ('ElementDiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'ElementResults',
+        'ElementDiagnosticInfos',
+               ]
+
     def __init__(self):
         self.ElementResults = []
         self.ElementDiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'ContentFilterResult(' + 'ElementResults:' + str(self.ElementResults) + ', ' + \
@@ -7394,7 +8452,7 @@ class ContentFilterResult(FrozenClass):
     __repr__ = __str__
 
 
-class ParsingResult(FrozenClass):
+class ParsingResult(object):
     '''
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
@@ -7410,11 +8468,16 @@ class ParsingResult(FrozenClass):
         ('DataDiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'StatusCode',
+        'DataStatusCodes',
+        'DataDiagnosticInfos',
+               ]
+
     def __init__(self):
         self.StatusCode = StatusCode()
         self.DataStatusCodes = []
         self.DataDiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'ParsingResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
@@ -7424,7 +8487,7 @@ class ParsingResult(FrozenClass):
     __repr__ = __str__
 
 
-class QueryFirstParameters(FrozenClass):
+class QueryFirstParameters(object):
     '''
     :ivar View:
     :vartype View: ViewDescription
@@ -7446,13 +8509,20 @@ class QueryFirstParameters(FrozenClass):
         ('MaxReferencesToReturn', 'UInt32'),
                ]
 
+    __slots__ = [
+        'View',
+        'NodeTypes',
+        'Filter',
+        'MaxDataSetsToReturn',
+        'MaxReferencesToReturn',
+               ]
+
     def __init__(self):
         self.View = ViewDescription()
         self.NodeTypes = []
         self.Filter = ContentFilter()
         self.MaxDataSetsToReturn = 0
         self.MaxReferencesToReturn = 0
-        self._freeze = True
 
     def __str__(self):
         return 'QueryFirstParameters(' + 'View:' + str(self.View) + ', ' + \
@@ -7464,7 +8534,7 @@ class QueryFirstParameters(FrozenClass):
     __repr__ = __str__
 
 
-class QueryFirstRequest(FrozenClass):
+class QueryFirstRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -7480,11 +8550,16 @@ class QueryFirstRequest(FrozenClass):
         ('Parameters', 'QueryFirstParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.QueryFirstRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = QueryFirstParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'QueryFirstRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -7494,7 +8569,7 @@ class QueryFirstRequest(FrozenClass):
     __repr__ = __str__
 
 
-class QueryFirstResult(FrozenClass):
+class QueryFirstResult(object):
     '''
     :ivar QueryDataSets:
     :vartype QueryDataSets: QueryDataSet
@@ -7516,13 +8591,20 @@ class QueryFirstResult(FrozenClass):
         ('FilterResult', 'ContentFilterResult'),
                ]
 
+    __slots__ = [
+        'QueryDataSets',
+        'ContinuationPoint',
+        'ParsingResults',
+        'DiagnosticInfos',
+        'FilterResult',
+               ]
+
     def __init__(self):
         self.QueryDataSets = []
         self.ContinuationPoint = None
         self.ParsingResults = []
         self.DiagnosticInfos = []
         self.FilterResult = ContentFilterResult()
-        self._freeze = True
 
     def __str__(self):
         return 'QueryFirstResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', ' + \
@@ -7534,7 +8616,7 @@ class QueryFirstResult(FrozenClass):
     __repr__ = __str__
 
 
-class QueryFirstResponse(FrozenClass):
+class QueryFirstResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -7550,11 +8632,16 @@ class QueryFirstResponse(FrozenClass):
         ('Parameters', 'QueryFirstResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.QueryFirstResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = QueryFirstResult()
-        self._freeze = True
 
     def __str__(self):
         return 'QueryFirstResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -7564,7 +8651,7 @@ class QueryFirstResponse(FrozenClass):
     __repr__ = __str__
 
 
-class QueryNextParameters(FrozenClass):
+class QueryNextParameters(object):
     '''
     :ivar ReleaseContinuationPoint:
     :vartype ReleaseContinuationPoint: Boolean
@@ -7577,10 +8664,14 @@ class QueryNextParameters(FrozenClass):
         ('ContinuationPoint', 'ByteString'),
                ]
 
+    __slots__ = [
+        'ReleaseContinuationPoint',
+        'ContinuationPoint',
+               ]
+
     def __init__(self):
         self.ReleaseContinuationPoint = True
         self.ContinuationPoint = None
-        self._freeze = True
 
     def __str__(self):
         return 'QueryNextParameters(' + 'ReleaseContinuationPoint:' + str(self.ReleaseContinuationPoint) + ', ' + \
@@ -7589,7 +8680,7 @@ class QueryNextParameters(FrozenClass):
     __repr__ = __str__
 
 
-class QueryNextRequest(FrozenClass):
+class QueryNextRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -7605,11 +8696,16 @@ class QueryNextRequest(FrozenClass):
         ('Parameters', 'QueryNextParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.QueryNextRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = QueryNextParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'QueryNextRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -7619,7 +8715,7 @@ class QueryNextRequest(FrozenClass):
     __repr__ = __str__
 
 
-class QueryNextResult(FrozenClass):
+class QueryNextResult(object):
     '''
     :ivar QueryDataSets:
     :vartype QueryDataSets: QueryDataSet
@@ -7632,10 +8728,14 @@ class QueryNextResult(FrozenClass):
         ('RevisedContinuationPoint', 'ByteString'),
                ]
 
+    __slots__ = [
+        'QueryDataSets',
+        'RevisedContinuationPoint',
+               ]
+
     def __init__(self):
         self.QueryDataSets = []
         self.RevisedContinuationPoint = None
-        self._freeze = True
 
     def __str__(self):
         return 'QueryNextResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', ' + \
@@ -7644,7 +8744,7 @@ class QueryNextResult(FrozenClass):
     __repr__ = __str__
 
 
-class QueryNextResponse(FrozenClass):
+class QueryNextResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -7660,11 +8760,16 @@ class QueryNextResponse(FrozenClass):
         ('Parameters', 'QueryNextResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.QueryNextResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = QueryNextResult()
-        self._freeze = True
 
     def __str__(self):
         return 'QueryNextResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -7674,7 +8779,7 @@ class QueryNextResponse(FrozenClass):
     __repr__ = __str__
 
 
-class ReadValueId(FrozenClass):
+class ReadValueId(object):
     '''
     :ivar NodeId:
     :vartype NodeId: NodeId
@@ -7693,12 +8798,18 @@ class ReadValueId(FrozenClass):
         ('DataEncoding', 'QualifiedName'),
                ]
 
+    __slots__ = [
+        'NodeId',
+        'AttributeId',
+        'IndexRange',
+        'DataEncoding',
+               ]
+
     def __init__(self):
         self.NodeId = NodeId()
         self.AttributeId = 0
         self.IndexRange = None
         self.DataEncoding = QualifiedName()
-        self._freeze = True
 
     def __str__(self):
         return 'ReadValueId(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -7709,7 +8820,7 @@ class ReadValueId(FrozenClass):
     __repr__ = __str__
 
 
-class ReadParameters(FrozenClass):
+class ReadParameters(object):
     '''
     :ivar MaxAge:
     :vartype MaxAge: Double
@@ -7725,11 +8836,16 @@ class ReadParameters(FrozenClass):
         ('NodesToRead', 'ListOfReadValueId'),
                ]
 
+    __slots__ = [
+        'MaxAge',
+        'TimestampsToReturn',
+        'NodesToRead',
+               ]
+
     def __init__(self):
         self.MaxAge = 0
         self.TimestampsToReturn = TimestampsToReturn(0)
         self.NodesToRead = []
-        self._freeze = True
 
     def __str__(self):
         return 'ReadParameters(' + 'MaxAge:' + str(self.MaxAge) + ', ' + \
@@ -7739,7 +8855,7 @@ class ReadParameters(FrozenClass):
     __repr__ = __str__
 
 
-class ReadRequest(FrozenClass):
+class ReadRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -7755,11 +8871,16 @@ class ReadRequest(FrozenClass):
         ('Parameters', 'ReadParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ReadRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = ReadParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'ReadRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -7769,7 +8890,7 @@ class ReadRequest(FrozenClass):
     __repr__ = __str__
 
 
-class ReadResponse(FrozenClass):
+class ReadResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -7788,12 +8909,18 @@ class ReadResponse(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ReadResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'ReadResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -7804,7 +8931,7 @@ class ReadResponse(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryReadValueId(FrozenClass):
+class HistoryReadValueId(object):
     '''
     :ivar NodeId:
     :vartype NodeId: NodeId
@@ -7823,12 +8950,18 @@ class HistoryReadValueId(FrozenClass):
         ('ContinuationPoint', 'ByteString'),
                ]
 
+    __slots__ = [
+        'NodeId',
+        'IndexRange',
+        'DataEncoding',
+        'ContinuationPoint',
+               ]
+
     def __init__(self):
         self.NodeId = NodeId()
         self.IndexRange = None
         self.DataEncoding = QualifiedName()
         self.ContinuationPoint = None
-        self._freeze = True
 
     def __str__(self):
         return 'HistoryReadValueId(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -7839,7 +8972,7 @@ class HistoryReadValueId(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryReadResult(FrozenClass):
+class HistoryReadResult(object):
     '''
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
@@ -7855,11 +8988,16 @@ class HistoryReadResult(FrozenClass):
         ('HistoryData', 'ExtensionObject'),
                ]
 
+    __slots__ = [
+        'StatusCode',
+        'ContinuationPoint',
+        'HistoryData',
+               ]
+
     def __init__(self):
         self.StatusCode = StatusCode()
         self.ContinuationPoint = None
         self.HistoryData = ExtensionObject()
-        self._freeze = True
 
     def __str__(self):
         return 'HistoryReadResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
@@ -7869,15 +9007,18 @@ class HistoryReadResult(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryReadDetails(FrozenClass):
+class HistoryReadDetails(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'HistoryReadDetails(' +  + ')'
@@ -7885,7 +9026,7 @@ class HistoryReadDetails(FrozenClass):
     __repr__ = __str__
 
 
-class ReadEventDetails(FrozenClass):
+class ReadEventDetails(object):
     '''
     :ivar NumValuesPerNode:
     :vartype NumValuesPerNode: UInt32
@@ -7904,12 +9045,18 @@ class ReadEventDetails(FrozenClass):
         ('Filter', 'EventFilter'),
                ]
 
+    __slots__ = [
+        'NumValuesPerNode',
+        'StartTime',
+        'EndTime',
+        'Filter',
+               ]
+
     def __init__(self):
         self.NumValuesPerNode = 0
         self.StartTime = datetime.utcnow()
         self.EndTime = datetime.utcnow()
         self.Filter = EventFilter()
-        self._freeze = True
 
     def __str__(self):
         return 'ReadEventDetails(' + 'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', ' + \
@@ -7920,7 +9067,7 @@ class ReadEventDetails(FrozenClass):
     __repr__ = __str__
 
 
-class ReadRawModifiedDetails(FrozenClass):
+class ReadRawModifiedDetails(object):
     '''
     :ivar IsReadModified:
     :vartype IsReadModified: Boolean
@@ -7942,13 +9089,20 @@ class ReadRawModifiedDetails(FrozenClass):
         ('ReturnBounds', 'Boolean'),
                ]
 
+    __slots__ = [
+        'IsReadModified',
+        'StartTime',
+        'EndTime',
+        'NumValuesPerNode',
+        'ReturnBounds',
+               ]
+
     def __init__(self):
         self.IsReadModified = True
         self.StartTime = datetime.utcnow()
         self.EndTime = datetime.utcnow()
         self.NumValuesPerNode = 0
         self.ReturnBounds = True
-        self._freeze = True
 
     def __str__(self):
         return 'ReadRawModifiedDetails(' + 'IsReadModified:' + str(self.IsReadModified) + ', ' + \
@@ -7960,7 +9114,7 @@ class ReadRawModifiedDetails(FrozenClass):
     __repr__ = __str__
 
 
-class ReadProcessedDetails(FrozenClass):
+class ReadProcessedDetails(object):
     '''
     :ivar StartTime:
     :vartype StartTime: DateTime
@@ -7982,13 +9136,20 @@ class ReadProcessedDetails(FrozenClass):
         ('AggregateConfiguration', 'AggregateConfiguration'),
                ]
 
+    __slots__ = [
+        'StartTime',
+        'EndTime',
+        'ProcessingInterval',
+        'AggregateType',
+        'AggregateConfiguration',
+               ]
+
     def __init__(self):
         self.StartTime = datetime.utcnow()
         self.EndTime = datetime.utcnow()
         self.ProcessingInterval = 0
         self.AggregateType = []
         self.AggregateConfiguration = AggregateConfiguration()
-        self._freeze = True
 
     def __str__(self):
         return 'ReadProcessedDetails(' + 'StartTime:' + str(self.StartTime) + ', ' + \
@@ -8000,7 +9161,7 @@ class ReadProcessedDetails(FrozenClass):
     __repr__ = __str__
 
 
-class ReadAtTimeDetails(FrozenClass):
+class ReadAtTimeDetails(object):
     '''
     :ivar ReqTimes:
     :vartype ReqTimes: DateTime
@@ -8013,10 +9174,14 @@ class ReadAtTimeDetails(FrozenClass):
         ('UseSimpleBounds', 'Boolean'),
                ]
 
+    __slots__ = [
+        'ReqTimes',
+        'UseSimpleBounds',
+               ]
+
     def __init__(self):
         self.ReqTimes = []
         self.UseSimpleBounds = True
-        self._freeze = True
 
     def __str__(self):
         return 'ReadAtTimeDetails(' + 'ReqTimes:' + str(self.ReqTimes) + ', ' + \
@@ -8025,7 +9190,7 @@ class ReadAtTimeDetails(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryData(FrozenClass):
+class HistoryData(object):
     '''
     :ivar DataValues:
     :vartype DataValues: DataValue
@@ -8035,9 +9200,12 @@ class HistoryData(FrozenClass):
         ('DataValues', 'ListOfDataValue'),
                ]
 
+    __slots__ = [
+        'DataValues',
+               ]
+
     def __init__(self):
         self.DataValues = []
-        self._freeze = True
 
     def __str__(self):
         return 'HistoryData(' + 'DataValues:' + str(self.DataValues) + ')'
@@ -8045,7 +9213,7 @@ class HistoryData(FrozenClass):
     __repr__ = __str__
 
 
-class ModificationInfo(FrozenClass):
+class ModificationInfo(object):
     '''
     :ivar ModificationTime:
     :vartype ModificationTime: DateTime
@@ -8061,11 +9229,16 @@ class ModificationInfo(FrozenClass):
         ('UserName', 'String'),
                ]
 
+    __slots__ = [
+        'ModificationTime',
+        'UpdateType',
+        'UserName',
+               ]
+
     def __init__(self):
         self.ModificationTime = datetime.utcnow()
         self.UpdateType = HistoryUpdateType(0)
         self.UserName = None
-        self._freeze = True
 
     def __str__(self):
         return 'ModificationInfo(' + 'ModificationTime:' + str(self.ModificationTime) + ', ' + \
@@ -8075,7 +9248,7 @@ class ModificationInfo(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryModifiedData(FrozenClass):
+class HistoryModifiedData(object):
     '''
     :ivar DataValues:
     :vartype DataValues: DataValue
@@ -8088,10 +9261,14 @@ class HistoryModifiedData(FrozenClass):
         ('ModificationInfos', 'ListOfModificationInfo'),
                ]
 
+    __slots__ = [
+        'DataValues',
+        'ModificationInfos',
+               ]
+
     def __init__(self):
         self.DataValues = []
         self.ModificationInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'HistoryModifiedData(' + 'DataValues:' + str(self.DataValues) + ', ' + \
@@ -8100,7 +9277,7 @@ class HistoryModifiedData(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryEvent(FrozenClass):
+class HistoryEvent(object):
     '''
     :ivar Events:
     :vartype Events: HistoryEventFieldList
@@ -8110,9 +9287,12 @@ class HistoryEvent(FrozenClass):
         ('Events', 'ListOfHistoryEventFieldList'),
                ]
 
+    __slots__ = [
+        'Events',
+               ]
+
     def __init__(self):
         self.Events = []
-        self._freeze = True
 
     def __str__(self):
         return 'HistoryEvent(' + 'Events:' + str(self.Events) + ')'
@@ -8120,7 +9300,7 @@ class HistoryEvent(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryReadParameters(FrozenClass):
+class HistoryReadParameters(object):
     '''
     :ivar HistoryReadDetails:
     :vartype HistoryReadDetails: ExtensionObject
@@ -8139,12 +9319,18 @@ class HistoryReadParameters(FrozenClass):
         ('NodesToRead', 'ListOfHistoryReadValueId'),
                ]
 
+    __slots__ = [
+        'HistoryReadDetails',
+        'TimestampsToReturn',
+        'ReleaseContinuationPoints',
+        'NodesToRead',
+               ]
+
     def __init__(self):
         self.HistoryReadDetails = ExtensionObject()
         self.TimestampsToReturn = TimestampsToReturn(0)
         self.ReleaseContinuationPoints = True
         self.NodesToRead = []
-        self._freeze = True
 
     def __str__(self):
         return 'HistoryReadParameters(' + 'HistoryReadDetails:' + str(self.HistoryReadDetails) + ', ' + \
@@ -8155,7 +9341,7 @@ class HistoryReadParameters(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryReadRequest(FrozenClass):
+class HistoryReadRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -8171,11 +9357,16 @@ class HistoryReadRequest(FrozenClass):
         ('Parameters', 'HistoryReadParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.HistoryReadRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = HistoryReadParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'HistoryReadRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -8185,7 +9376,7 @@ class HistoryReadRequest(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryReadResponse(FrozenClass):
+class HistoryReadResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -8204,12 +9395,18 @@ class HistoryReadResponse(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.HistoryReadResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'HistoryReadResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -8220,7 +9417,7 @@ class HistoryReadResponse(FrozenClass):
     __repr__ = __str__
 
 
-class WriteValue(FrozenClass):
+class WriteValue(object):
     '''
     :ivar NodeId:
     :vartype NodeId: NodeId
@@ -8239,12 +9436,18 @@ class WriteValue(FrozenClass):
         ('Value', 'DataValue'),
                ]
 
+    __slots__ = [
+        'NodeId',
+        'AttributeId',
+        'IndexRange',
+        'Value',
+               ]
+
     def __init__(self):
         self.NodeId = NodeId()
         self.AttributeId = 0
         self.IndexRange = None
         self.Value = DataValue()
-        self._freeze = True
 
     def __str__(self):
         return 'WriteValue(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -8255,7 +9458,7 @@ class WriteValue(FrozenClass):
     __repr__ = __str__
 
 
-class WriteParameters(FrozenClass):
+class WriteParameters(object):
     '''
     :ivar NodesToWrite:
     :vartype NodesToWrite: WriteValue
@@ -8265,9 +9468,12 @@ class WriteParameters(FrozenClass):
         ('NodesToWrite', 'ListOfWriteValue'),
                ]
 
+    __slots__ = [
+        'NodesToWrite',
+               ]
+
     def __init__(self):
         self.NodesToWrite = []
-        self._freeze = True
 
     def __str__(self):
         return 'WriteParameters(' + 'NodesToWrite:' + str(self.NodesToWrite) + ')'
@@ -8275,7 +9481,7 @@ class WriteParameters(FrozenClass):
     __repr__ = __str__
 
 
-class WriteRequest(FrozenClass):
+class WriteRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -8291,11 +9497,16 @@ class WriteRequest(FrozenClass):
         ('Parameters', 'WriteParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.WriteRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = WriteParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'WriteRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -8305,7 +9516,7 @@ class WriteRequest(FrozenClass):
     __repr__ = __str__
 
 
-class WriteResponse(FrozenClass):
+class WriteResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -8324,12 +9535,18 @@ class WriteResponse(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.WriteResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'WriteResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -8340,7 +9557,7 @@ class WriteResponse(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryUpdateDetails(FrozenClass):
+class HistoryUpdateDetails(object):
     '''
     :ivar NodeId:
     :vartype NodeId: NodeId
@@ -8350,9 +9567,12 @@ class HistoryUpdateDetails(FrozenClass):
         ('NodeId', 'NodeId'),
                ]
 
+    __slots__ = [
+        'NodeId',
+               ]
+
     def __init__(self):
         self.NodeId = NodeId()
-        self._freeze = True
 
     def __str__(self):
         return 'HistoryUpdateDetails(' + 'NodeId:' + str(self.NodeId) + ')'
@@ -8360,7 +9580,7 @@ class HistoryUpdateDetails(FrozenClass):
     __repr__ = __str__
 
 
-class UpdateDataDetails(FrozenClass):
+class UpdateDataDetails(object):
     '''
     :ivar NodeId:
     :vartype NodeId: NodeId
@@ -8376,11 +9596,16 @@ class UpdateDataDetails(FrozenClass):
         ('UpdateValues', 'ListOfDataValue'),
                ]
 
+    __slots__ = [
+        'NodeId',
+        'PerformInsertReplace',
+        'UpdateValues',
+               ]
+
     def __init__(self):
         self.NodeId = NodeId()
         self.PerformInsertReplace = PerformUpdateType(0)
         self.UpdateValues = []
-        self._freeze = True
 
     def __str__(self):
         return 'UpdateDataDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -8390,7 +9615,7 @@ class UpdateDataDetails(FrozenClass):
     __repr__ = __str__
 
 
-class UpdateStructureDataDetails(FrozenClass):
+class UpdateStructureDataDetails(object):
     '''
     :ivar NodeId:
     :vartype NodeId: NodeId
@@ -8406,11 +9631,16 @@ class UpdateStructureDataDetails(FrozenClass):
         ('UpdateValues', 'ListOfDataValue'),
                ]
 
+    __slots__ = [
+        'NodeId',
+        'PerformInsertReplace',
+        'UpdateValues',
+               ]
+
     def __init__(self):
         self.NodeId = NodeId()
         self.PerformInsertReplace = PerformUpdateType(0)
         self.UpdateValues = []
-        self._freeze = True
 
     def __str__(self):
         return 'UpdateStructureDataDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -8420,7 +9650,7 @@ class UpdateStructureDataDetails(FrozenClass):
     __repr__ = __str__
 
 
-class UpdateEventDetails(FrozenClass):
+class UpdateEventDetails(object):
     '''
     :ivar NodeId:
     :vartype NodeId: NodeId
@@ -8439,12 +9669,18 @@ class UpdateEventDetails(FrozenClass):
         ('EventData', 'ListOfHistoryEventFieldList'),
                ]
 
+    __slots__ = [
+        'NodeId',
+        'PerformInsertReplace',
+        'Filter',
+        'EventData',
+               ]
+
     def __init__(self):
         self.NodeId = NodeId()
         self.PerformInsertReplace = PerformUpdateType(0)
         self.Filter = EventFilter()
         self.EventData = []
-        self._freeze = True
 
     def __str__(self):
         return 'UpdateEventDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -8455,7 +9691,7 @@ class UpdateEventDetails(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteRawModifiedDetails(FrozenClass):
+class DeleteRawModifiedDetails(object):
     '''
     :ivar NodeId:
     :vartype NodeId: NodeId
@@ -8474,12 +9710,18 @@ class DeleteRawModifiedDetails(FrozenClass):
         ('EndTime', 'DateTime'),
                ]
 
+    __slots__ = [
+        'NodeId',
+        'IsDeleteModified',
+        'StartTime',
+        'EndTime',
+               ]
+
     def __init__(self):
         self.NodeId = NodeId()
         self.IsDeleteModified = True
         self.StartTime = datetime.utcnow()
         self.EndTime = datetime.utcnow()
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteRawModifiedDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -8490,7 +9732,7 @@ class DeleteRawModifiedDetails(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteAtTimeDetails(FrozenClass):
+class DeleteAtTimeDetails(object):
     '''
     :ivar NodeId:
     :vartype NodeId: NodeId
@@ -8503,10 +9745,14 @@ class DeleteAtTimeDetails(FrozenClass):
         ('ReqTimes', 'ListOfDateTime'),
                ]
 
+    __slots__ = [
+        'NodeId',
+        'ReqTimes',
+               ]
+
     def __init__(self):
         self.NodeId = NodeId()
         self.ReqTimes = []
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteAtTimeDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -8515,7 +9761,7 @@ class DeleteAtTimeDetails(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteEventDetails(FrozenClass):
+class DeleteEventDetails(object):
     '''
     :ivar NodeId:
     :vartype NodeId: NodeId
@@ -8528,10 +9774,14 @@ class DeleteEventDetails(FrozenClass):
         ('EventIds', 'ListOfByteString'),
                ]
 
+    __slots__ = [
+        'NodeId',
+        'EventIds',
+               ]
+
     def __init__(self):
         self.NodeId = NodeId()
         self.EventIds = []
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteEventDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
@@ -8540,7 +9790,7 @@ class DeleteEventDetails(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryUpdateResult(FrozenClass):
+class HistoryUpdateResult(object):
     '''
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
@@ -8556,11 +9806,16 @@ class HistoryUpdateResult(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'StatusCode',
+        'OperationResults',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.StatusCode = StatusCode()
         self.OperationResults = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'HistoryUpdateResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
@@ -8570,7 +9825,7 @@ class HistoryUpdateResult(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryUpdateParameters(FrozenClass):
+class HistoryUpdateParameters(object):
     '''
     :ivar HistoryUpdateDetails:
     :vartype HistoryUpdateDetails: ExtensionObject
@@ -8580,9 +9835,12 @@ class HistoryUpdateParameters(FrozenClass):
         ('HistoryUpdateDetails', 'ListOfExtensionObject'),
                ]
 
+    __slots__ = [
+        'HistoryUpdateDetails',
+               ]
+
     def __init__(self):
         self.HistoryUpdateDetails = []
-        self._freeze = True
 
     def __str__(self):
         return 'HistoryUpdateParameters(' + 'HistoryUpdateDetails:' + str(self.HistoryUpdateDetails) + ')'
@@ -8590,7 +9848,7 @@ class HistoryUpdateParameters(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryUpdateRequest(FrozenClass):
+class HistoryUpdateRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -8606,11 +9864,16 @@ class HistoryUpdateRequest(FrozenClass):
         ('Parameters', 'HistoryUpdateParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.HistoryUpdateRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = HistoryUpdateParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'HistoryUpdateRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -8620,7 +9883,7 @@ class HistoryUpdateRequest(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryUpdateResponse(FrozenClass):
+class HistoryUpdateResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -8639,12 +9902,18 @@ class HistoryUpdateResponse(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.HistoryUpdateResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'HistoryUpdateResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -8655,7 +9924,7 @@ class HistoryUpdateResponse(FrozenClass):
     __repr__ = __str__
 
 
-class CallMethodRequest(FrozenClass):
+class CallMethodRequest(object):
     '''
     :ivar ObjectId:
     :vartype ObjectId: NodeId
@@ -8671,11 +9940,16 @@ class CallMethodRequest(FrozenClass):
         ('InputArguments', 'ListOfVariant'),
                ]
 
+    __slots__ = [
+        'ObjectId',
+        'MethodId',
+        'InputArguments',
+               ]
+
     def __init__(self):
         self.ObjectId = NodeId()
         self.MethodId = NodeId()
         self.InputArguments = []
-        self._freeze = True
 
     def __str__(self):
         return 'CallMethodRequest(' + 'ObjectId:' + str(self.ObjectId) + ', ' + \
@@ -8685,7 +9959,7 @@ class CallMethodRequest(FrozenClass):
     __repr__ = __str__
 
 
-class CallMethodResult(FrozenClass):
+class CallMethodResult(object):
     '''
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
@@ -8704,12 +9978,18 @@ class CallMethodResult(FrozenClass):
         ('OutputArguments', 'ListOfVariant'),
                ]
 
+    __slots__ = [
+        'StatusCode',
+        'InputArgumentResults',
+        'InputArgumentDiagnosticInfos',
+        'OutputArguments',
+               ]
+
     def __init__(self):
         self.StatusCode = StatusCode()
         self.InputArgumentResults = []
         self.InputArgumentDiagnosticInfos = []
         self.OutputArguments = []
-        self._freeze = True
 
     def __str__(self):
         return 'CallMethodResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
@@ -8720,7 +10000,7 @@ class CallMethodResult(FrozenClass):
     __repr__ = __str__
 
 
-class CallParameters(FrozenClass):
+class CallParameters(object):
     '''
     :ivar MethodsToCall:
     :vartype MethodsToCall: CallMethodRequest
@@ -8730,9 +10010,12 @@ class CallParameters(FrozenClass):
         ('MethodsToCall', 'ListOfCallMethodRequest'),
                ]
 
+    __slots__ = [
+        'MethodsToCall',
+               ]
+
     def __init__(self):
         self.MethodsToCall = []
-        self._freeze = True
 
     def __str__(self):
         return 'CallParameters(' + 'MethodsToCall:' + str(self.MethodsToCall) + ')'
@@ -8740,7 +10023,7 @@ class CallParameters(FrozenClass):
     __repr__ = __str__
 
 
-class CallRequest(FrozenClass):
+class CallRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -8756,11 +10039,16 @@ class CallRequest(FrozenClass):
         ('Parameters', 'CallParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CallRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CallParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'CallRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -8770,7 +10058,7 @@ class CallRequest(FrozenClass):
     __repr__ = __str__
 
 
-class CallResponse(FrozenClass):
+class CallResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -8789,12 +10077,18 @@ class CallResponse(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CallResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'CallResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -8805,15 +10099,18 @@ class CallResponse(FrozenClass):
     __repr__ = __str__
 
 
-class MonitoringFilter(FrozenClass):
+class MonitoringFilter(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'MonitoringFilter(' +  + ')'
@@ -8821,7 +10118,7 @@ class MonitoringFilter(FrozenClass):
     __repr__ = __str__
 
 
-class DataChangeFilter(FrozenClass):
+class DataChangeFilter(object):
     '''
     :ivar Trigger:
     :vartype Trigger: DataChangeTrigger
@@ -8837,11 +10134,16 @@ class DataChangeFilter(FrozenClass):
         ('DeadbandValue', 'Double'),
                ]
 
+    __slots__ = [
+        'Trigger',
+        'DeadbandType',
+        'DeadbandValue',
+               ]
+
     def __init__(self):
         self.Trigger = DataChangeTrigger(0)
         self.DeadbandType = 0
         self.DeadbandValue = 0
-        self._freeze = True
 
     def __str__(self):
         return 'DataChangeFilter(' + 'Trigger:' + str(self.Trigger) + ', ' + \
@@ -8851,7 +10153,7 @@ class DataChangeFilter(FrozenClass):
     __repr__ = __str__
 
 
-class EventFilter(FrozenClass):
+class EventFilter(object):
     '''
     :ivar SelectClauses:
     :vartype SelectClauses: SimpleAttributeOperand
@@ -8864,10 +10166,14 @@ class EventFilter(FrozenClass):
         ('WhereClause', 'ContentFilter'),
                ]
 
+    __slots__ = [
+        'SelectClauses',
+        'WhereClause',
+               ]
+
     def __init__(self):
         self.SelectClauses = []
         self.WhereClause = ContentFilter()
-        self._freeze = True
 
     def __str__(self):
         return 'EventFilter(' + 'SelectClauses:' + str(self.SelectClauses) + ', ' + \
@@ -8876,7 +10182,7 @@ class EventFilter(FrozenClass):
     __repr__ = __str__
 
 
-class AggregateConfiguration(FrozenClass):
+class AggregateConfiguration(object):
     '''
     :ivar UseServerCapabilitiesDefaults:
     :vartype UseServerCapabilitiesDefaults: Boolean
@@ -8898,13 +10204,20 @@ class AggregateConfiguration(FrozenClass):
         ('UseSlopedExtrapolation', 'Boolean'),
                ]
 
+    __slots__ = [
+        'UseServerCapabilitiesDefaults',
+        'TreatUncertainAsBad',
+        'PercentDataBad',
+        'PercentDataGood',
+        'UseSlopedExtrapolation',
+               ]
+
     def __init__(self):
         self.UseServerCapabilitiesDefaults = True
         self.TreatUncertainAsBad = True
         self.PercentDataBad = 0
         self.PercentDataGood = 0
         self.UseSlopedExtrapolation = True
-        self._freeze = True
 
     def __str__(self):
         return 'AggregateConfiguration(' + 'UseServerCapabilitiesDefaults:' + str(self.UseServerCapabilitiesDefaults) + ', ' + \
@@ -8916,7 +10229,7 @@ class AggregateConfiguration(FrozenClass):
     __repr__ = __str__
 
 
-class AggregateFilter(FrozenClass):
+class AggregateFilter(object):
     '''
     :ivar StartTime:
     :vartype StartTime: DateTime
@@ -8935,12 +10248,18 @@ class AggregateFilter(FrozenClass):
         ('AggregateConfiguration', 'AggregateConfiguration'),
                ]
 
+    __slots__ = [
+        'StartTime',
+        'AggregateType',
+        'ProcessingInterval',
+        'AggregateConfiguration',
+               ]
+
     def __init__(self):
         self.StartTime = datetime.utcnow()
         self.AggregateType = NodeId()
         self.ProcessingInterval = 0
         self.AggregateConfiguration = AggregateConfiguration()
-        self._freeze = True
 
     def __str__(self):
         return 'AggregateFilter(' + 'StartTime:' + str(self.StartTime) + ', ' + \
@@ -8951,15 +10270,18 @@ class AggregateFilter(FrozenClass):
     __repr__ = __str__
 
 
-class MonitoringFilterResult(FrozenClass):
+class MonitoringFilterResult(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'MonitoringFilterResult(' +  + ')'
@@ -8967,7 +10289,7 @@ class MonitoringFilterResult(FrozenClass):
     __repr__ = __str__
 
 
-class EventFilterResult(FrozenClass):
+class EventFilterResult(object):
     '''
     :ivar SelectClauseResults:
     :vartype SelectClauseResults: StatusCode
@@ -8983,11 +10305,16 @@ class EventFilterResult(FrozenClass):
         ('WhereClauseResult', 'ContentFilterResult'),
                ]
 
+    __slots__ = [
+        'SelectClauseResults',
+        'SelectClauseDiagnosticInfos',
+        'WhereClauseResult',
+               ]
+
     def __init__(self):
         self.SelectClauseResults = []
         self.SelectClauseDiagnosticInfos = []
         self.WhereClauseResult = ContentFilterResult()
-        self._freeze = True
 
     def __str__(self):
         return 'EventFilterResult(' + 'SelectClauseResults:' + str(self.SelectClauseResults) + ', ' + \
@@ -8997,7 +10324,7 @@ class EventFilterResult(FrozenClass):
     __repr__ = __str__
 
 
-class AggregateFilterResult(FrozenClass):
+class AggregateFilterResult(object):
     '''
     :ivar RevisedStartTime:
     :vartype RevisedStartTime: DateTime
@@ -9013,11 +10340,16 @@ class AggregateFilterResult(FrozenClass):
         ('RevisedAggregateConfiguration', 'AggregateConfiguration'),
                ]
 
+    __slots__ = [
+        'RevisedStartTime',
+        'RevisedProcessingInterval',
+        'RevisedAggregateConfiguration',
+               ]
+
     def __init__(self):
         self.RevisedStartTime = datetime.utcnow()
         self.RevisedProcessingInterval = 0
         self.RevisedAggregateConfiguration = AggregateConfiguration()
-        self._freeze = True
 
     def __str__(self):
         return 'AggregateFilterResult(' + 'RevisedStartTime:' + str(self.RevisedStartTime) + ', ' + \
@@ -9027,7 +10359,7 @@ class AggregateFilterResult(FrozenClass):
     __repr__ = __str__
 
 
-class MonitoringParameters(FrozenClass):
+class MonitoringParameters(object):
     '''
     :ivar ClientHandle:
     :vartype ClientHandle: UInt32
@@ -9049,13 +10381,20 @@ class MonitoringParameters(FrozenClass):
         ('DiscardOldest', 'Boolean'),
                ]
 
+    __slots__ = [
+        'ClientHandle',
+        'SamplingInterval',
+        'Filter',
+        'QueueSize',
+        'DiscardOldest',
+               ]
+
     def __init__(self):
         self.ClientHandle = 0
         self.SamplingInterval = 0
         self.Filter = ExtensionObject()
         self.QueueSize = 0
         self.DiscardOldest = True
-        self._freeze = True
 
     def __str__(self):
         return 'MonitoringParameters(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
@@ -9067,7 +10406,7 @@ class MonitoringParameters(FrozenClass):
     __repr__ = __str__
 
 
-class MonitoredItemCreateRequest(FrozenClass):
+class MonitoredItemCreateRequest(object):
     '''
     :ivar ItemToMonitor:
     :vartype ItemToMonitor: ReadValueId
@@ -9083,11 +10422,16 @@ class MonitoredItemCreateRequest(FrozenClass):
         ('RequestedParameters', 'MonitoringParameters'),
                ]
 
+    __slots__ = [
+        'ItemToMonitor',
+        'MonitoringMode',
+        'RequestedParameters',
+               ]
+
     def __init__(self):
         self.ItemToMonitor = ReadValueId()
         self.MonitoringMode = MonitoringMode(0)
         self.RequestedParameters = MonitoringParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'MonitoredItemCreateRequest(' + 'ItemToMonitor:' + str(self.ItemToMonitor) + ', ' + \
@@ -9097,7 +10441,7 @@ class MonitoredItemCreateRequest(FrozenClass):
     __repr__ = __str__
 
 
-class MonitoredItemCreateResult(FrozenClass):
+class MonitoredItemCreateResult(object):
     '''
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
@@ -9119,13 +10463,20 @@ class MonitoredItemCreateResult(FrozenClass):
         ('FilterResult', 'ExtensionObject'),
                ]
 
+    __slots__ = [
+        'StatusCode',
+        'MonitoredItemId',
+        'RevisedSamplingInterval',
+        'RevisedQueueSize',
+        'FilterResult',
+               ]
+
     def __init__(self):
         self.StatusCode = StatusCode()
         self.MonitoredItemId = 0
         self.RevisedSamplingInterval = 0
         self.RevisedQueueSize = 0
         self.FilterResult = ExtensionObject()
-        self._freeze = True
 
     def __str__(self):
         return 'MonitoredItemCreateResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
@@ -9137,7 +10488,7 @@ class MonitoredItemCreateResult(FrozenClass):
     __repr__ = __str__
 
 
-class CreateMonitoredItemsParameters(FrozenClass):
+class CreateMonitoredItemsParameters(object):
     '''
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
@@ -9153,11 +10504,16 @@ class CreateMonitoredItemsParameters(FrozenClass):
         ('ItemsToCreate', 'ListOfMonitoredItemCreateRequest'),
                ]
 
+    __slots__ = [
+        'SubscriptionId',
+        'TimestampsToReturn',
+        'ItemsToCreate',
+               ]
+
     def __init__(self):
         self.SubscriptionId = 0
         self.TimestampsToReturn = TimestampsToReturn(0)
         self.ItemsToCreate = []
-        self._freeze = True
 
     def __str__(self):
         return 'CreateMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
@@ -9167,7 +10523,7 @@ class CreateMonitoredItemsParameters(FrozenClass):
     __repr__ = __str__
 
 
-class CreateMonitoredItemsRequest(FrozenClass):
+class CreateMonitoredItemsRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -9183,11 +10539,16 @@ class CreateMonitoredItemsRequest(FrozenClass):
         ('Parameters', 'CreateMonitoredItemsParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateMonitoredItemsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CreateMonitoredItemsParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'CreateMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9197,7 +10558,7 @@ class CreateMonitoredItemsRequest(FrozenClass):
     __repr__ = __str__
 
 
-class CreateMonitoredItemsResponse(FrozenClass):
+class CreateMonitoredItemsResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -9216,12 +10577,18 @@ class CreateMonitoredItemsResponse(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateMonitoredItemsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'CreateMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9232,7 +10599,7 @@ class CreateMonitoredItemsResponse(FrozenClass):
     __repr__ = __str__
 
 
-class MonitoredItemModifyRequest(FrozenClass):
+class MonitoredItemModifyRequest(object):
     '''
     :ivar MonitoredItemId:
     :vartype MonitoredItemId: UInt32
@@ -9245,10 +10612,14 @@ class MonitoredItemModifyRequest(FrozenClass):
         ('RequestedParameters', 'MonitoringParameters'),
                ]
 
+    __slots__ = [
+        'MonitoredItemId',
+        'RequestedParameters',
+               ]
+
     def __init__(self):
         self.MonitoredItemId = 0
         self.RequestedParameters = MonitoringParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'MonitoredItemModifyRequest(' + 'MonitoredItemId:' + str(self.MonitoredItemId) + ', ' + \
@@ -9257,7 +10628,7 @@ class MonitoredItemModifyRequest(FrozenClass):
     __repr__ = __str__
 
 
-class MonitoredItemModifyResult(FrozenClass):
+class MonitoredItemModifyResult(object):
     '''
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
@@ -9276,12 +10647,18 @@ class MonitoredItemModifyResult(FrozenClass):
         ('FilterResult', 'ExtensionObject'),
                ]
 
+    __slots__ = [
+        'StatusCode',
+        'RevisedSamplingInterval',
+        'RevisedQueueSize',
+        'FilterResult',
+               ]
+
     def __init__(self):
         self.StatusCode = StatusCode()
         self.RevisedSamplingInterval = 0
         self.RevisedQueueSize = 0
         self.FilterResult = ExtensionObject()
-        self._freeze = True
 
     def __str__(self):
         return 'MonitoredItemModifyResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
@@ -9292,7 +10669,7 @@ class MonitoredItemModifyResult(FrozenClass):
     __repr__ = __str__
 
 
-class ModifyMonitoredItemsParameters(FrozenClass):
+class ModifyMonitoredItemsParameters(object):
     '''
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
@@ -9308,11 +10685,16 @@ class ModifyMonitoredItemsParameters(FrozenClass):
         ('ItemsToModify', 'ListOfMonitoredItemModifyRequest'),
                ]
 
+    __slots__ = [
+        'SubscriptionId',
+        'TimestampsToReturn',
+        'ItemsToModify',
+               ]
+
     def __init__(self):
         self.SubscriptionId = 0
         self.TimestampsToReturn = TimestampsToReturn(0)
         self.ItemsToModify = []
-        self._freeze = True
 
     def __str__(self):
         return 'ModifyMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
@@ -9322,7 +10704,7 @@ class ModifyMonitoredItemsParameters(FrozenClass):
     __repr__ = __str__
 
 
-class ModifyMonitoredItemsRequest(FrozenClass):
+class ModifyMonitoredItemsRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -9338,11 +10720,16 @@ class ModifyMonitoredItemsRequest(FrozenClass):
         ('Parameters', 'ModifyMonitoredItemsParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ModifyMonitoredItemsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = ModifyMonitoredItemsParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'ModifyMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9352,7 +10739,7 @@ class ModifyMonitoredItemsRequest(FrozenClass):
     __repr__ = __str__
 
 
-class ModifyMonitoredItemsResponse(FrozenClass):
+class ModifyMonitoredItemsResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -9371,12 +10758,18 @@ class ModifyMonitoredItemsResponse(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ModifyMonitoredItemsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'ModifyMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9387,7 +10780,7 @@ class ModifyMonitoredItemsResponse(FrozenClass):
     __repr__ = __str__
 
 
-class SetMonitoringModeParameters(FrozenClass):
+class SetMonitoringModeParameters(object):
     '''
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
@@ -9403,11 +10796,16 @@ class SetMonitoringModeParameters(FrozenClass):
         ('MonitoredItemIds', 'ListOfUInt32'),
                ]
 
+    __slots__ = [
+        'SubscriptionId',
+        'MonitoringMode',
+        'MonitoredItemIds',
+               ]
+
     def __init__(self):
         self.SubscriptionId = 0
         self.MonitoringMode = MonitoringMode(0)
         self.MonitoredItemIds = []
-        self._freeze = True
 
     def __str__(self):
         return 'SetMonitoringModeParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
@@ -9417,7 +10815,7 @@ class SetMonitoringModeParameters(FrozenClass):
     __repr__ = __str__
 
 
-class SetMonitoringModeRequest(FrozenClass):
+class SetMonitoringModeRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -9433,11 +10831,16 @@ class SetMonitoringModeRequest(FrozenClass):
         ('Parameters', 'SetMonitoringModeParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetMonitoringModeRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = SetMonitoringModeParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'SetMonitoringModeRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9447,7 +10850,7 @@ class SetMonitoringModeRequest(FrozenClass):
     __repr__ = __str__
 
 
-class SetMonitoringModeResult(FrozenClass):
+class SetMonitoringModeResult(object):
     '''
     :ivar Results:
     :vartype Results: StatusCode
@@ -9460,10 +10863,14 @@ class SetMonitoringModeResult(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'SetMonitoringModeResult(' + 'Results:' + str(self.Results) + ', ' + \
@@ -9472,7 +10879,7 @@ class SetMonitoringModeResult(FrozenClass):
     __repr__ = __str__
 
 
-class SetMonitoringModeResponse(FrozenClass):
+class SetMonitoringModeResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -9488,11 +10895,16 @@ class SetMonitoringModeResponse(FrozenClass):
         ('Parameters', 'SetMonitoringModeResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetMonitoringModeResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = SetMonitoringModeResult()
-        self._freeze = True
 
     def __str__(self):
         return 'SetMonitoringModeResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9502,7 +10914,7 @@ class SetMonitoringModeResponse(FrozenClass):
     __repr__ = __str__
 
 
-class SetTriggeringParameters(FrozenClass):
+class SetTriggeringParameters(object):
     '''
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
@@ -9521,12 +10933,18 @@ class SetTriggeringParameters(FrozenClass):
         ('LinksToRemove', 'ListOfUInt32'),
                ]
 
+    __slots__ = [
+        'SubscriptionId',
+        'TriggeringItemId',
+        'LinksToAdd',
+        'LinksToRemove',
+               ]
+
     def __init__(self):
         self.SubscriptionId = 0
         self.TriggeringItemId = 0
         self.LinksToAdd = []
         self.LinksToRemove = []
-        self._freeze = True
 
     def __str__(self):
         return 'SetTriggeringParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
@@ -9537,7 +10955,7 @@ class SetTriggeringParameters(FrozenClass):
     __repr__ = __str__
 
 
-class SetTriggeringRequest(FrozenClass):
+class SetTriggeringRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -9553,11 +10971,16 @@ class SetTriggeringRequest(FrozenClass):
         ('Parameters', 'SetTriggeringParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetTriggeringRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = SetTriggeringParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'SetTriggeringRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9567,7 +10990,7 @@ class SetTriggeringRequest(FrozenClass):
     __repr__ = __str__
 
 
-class SetTriggeringResult(FrozenClass):
+class SetTriggeringResult(object):
     '''
     :ivar AddResults:
     :vartype AddResults: StatusCode
@@ -9586,12 +11009,18 @@ class SetTriggeringResult(FrozenClass):
         ('RemoveDiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'AddResults',
+        'AddDiagnosticInfos',
+        'RemoveResults',
+        'RemoveDiagnosticInfos',
+               ]
+
     def __init__(self):
         self.AddResults = []
         self.AddDiagnosticInfos = []
         self.RemoveResults = []
         self.RemoveDiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'SetTriggeringResult(' + 'AddResults:' + str(self.AddResults) + ', ' + \
@@ -9602,7 +11031,7 @@ class SetTriggeringResult(FrozenClass):
     __repr__ = __str__
 
 
-class SetTriggeringResponse(FrozenClass):
+class SetTriggeringResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -9618,11 +11047,16 @@ class SetTriggeringResponse(FrozenClass):
         ('Parameters', 'SetTriggeringResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetTriggeringResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = SetTriggeringResult()
-        self._freeze = True
 
     def __str__(self):
         return 'SetTriggeringResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9632,7 +11066,7 @@ class SetTriggeringResponse(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteMonitoredItemsParameters(FrozenClass):
+class DeleteMonitoredItemsParameters(object):
     '''
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
@@ -9645,10 +11079,14 @@ class DeleteMonitoredItemsParameters(FrozenClass):
         ('MonitoredItemIds', 'ListOfUInt32'),
                ]
 
+    __slots__ = [
+        'SubscriptionId',
+        'MonitoredItemIds',
+               ]
+
     def __init__(self):
         self.SubscriptionId = 0
         self.MonitoredItemIds = []
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
@@ -9657,7 +11095,7 @@ class DeleteMonitoredItemsParameters(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteMonitoredItemsRequest(FrozenClass):
+class DeleteMonitoredItemsRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -9673,11 +11111,16 @@ class DeleteMonitoredItemsRequest(FrozenClass):
         ('Parameters', 'DeleteMonitoredItemsParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteMonitoredItemsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteMonitoredItemsParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9687,7 +11130,7 @@ class DeleteMonitoredItemsRequest(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteMonitoredItemsResponse(FrozenClass):
+class DeleteMonitoredItemsResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -9706,12 +11149,18 @@ class DeleteMonitoredItemsResponse(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteMonitoredItemsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9722,7 +11171,7 @@ class DeleteMonitoredItemsResponse(FrozenClass):
     __repr__ = __str__
 
 
-class CreateSubscriptionParameters(FrozenClass):
+class CreateSubscriptionParameters(object):
     '''
     :ivar RequestedPublishingInterval:
     :vartype RequestedPublishingInterval: Double
@@ -9747,6 +11196,15 @@ class CreateSubscriptionParameters(FrozenClass):
         ('Priority', 'Byte'),
                ]
 
+    __slots__ = [
+        'RequestedPublishingInterval',
+        'RequestedLifetimeCount',
+        'RequestedMaxKeepAliveCount',
+        'MaxNotificationsPerPublish',
+        'PublishingEnabled',
+        'Priority',
+               ]
+
     def __init__(self):
         self.RequestedPublishingInterval = 0
         self.RequestedLifetimeCount = 0
@@ -9754,7 +11212,6 @@ class CreateSubscriptionParameters(FrozenClass):
         self.MaxNotificationsPerPublish = 0
         self.PublishingEnabled = True
         self.Priority = 0
-        self._freeze = True
 
     def __str__(self):
         return 'CreateSubscriptionParameters(' + 'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', ' + \
@@ -9767,7 +11224,7 @@ class CreateSubscriptionParameters(FrozenClass):
     __repr__ = __str__
 
 
-class CreateSubscriptionRequest(FrozenClass):
+class CreateSubscriptionRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -9783,11 +11240,16 @@ class CreateSubscriptionRequest(FrozenClass):
         ('Parameters', 'CreateSubscriptionParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateSubscriptionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = CreateSubscriptionParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'CreateSubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9797,7 +11259,7 @@ class CreateSubscriptionRequest(FrozenClass):
     __repr__ = __str__
 
 
-class CreateSubscriptionResult(FrozenClass):
+class CreateSubscriptionResult(object):
     '''
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
@@ -9816,12 +11278,18 @@ class CreateSubscriptionResult(FrozenClass):
         ('RevisedMaxKeepAliveCount', 'UInt32'),
                ]
 
+    __slots__ = [
+        'SubscriptionId',
+        'RevisedPublishingInterval',
+        'RevisedLifetimeCount',
+        'RevisedMaxKeepAliveCount',
+               ]
+
     def __init__(self):
         self.SubscriptionId = 0
         self.RevisedPublishingInterval = 0
         self.RevisedLifetimeCount = 0
         self.RevisedMaxKeepAliveCount = 0
-        self._freeze = True
 
     def __str__(self):
         return 'CreateSubscriptionResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
@@ -9832,7 +11300,7 @@ class CreateSubscriptionResult(FrozenClass):
     __repr__ = __str__
 
 
-class CreateSubscriptionResponse(FrozenClass):
+class CreateSubscriptionResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -9848,11 +11316,16 @@ class CreateSubscriptionResponse(FrozenClass):
         ('Parameters', 'CreateSubscriptionResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.CreateSubscriptionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = CreateSubscriptionResult()
-        self._freeze = True
 
     def __str__(self):
         return 'CreateSubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9862,7 +11335,7 @@ class CreateSubscriptionResponse(FrozenClass):
     __repr__ = __str__
 
 
-class ModifySubscriptionParameters(FrozenClass):
+class ModifySubscriptionParameters(object):
     '''
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
@@ -9887,6 +11360,15 @@ class ModifySubscriptionParameters(FrozenClass):
         ('Priority', 'Byte'),
                ]
 
+    __slots__ = [
+        'SubscriptionId',
+        'RequestedPublishingInterval',
+        'RequestedLifetimeCount',
+        'RequestedMaxKeepAliveCount',
+        'MaxNotificationsPerPublish',
+        'Priority',
+               ]
+
     def __init__(self):
         self.SubscriptionId = 0
         self.RequestedPublishingInterval = 0
@@ -9894,7 +11376,6 @@ class ModifySubscriptionParameters(FrozenClass):
         self.RequestedMaxKeepAliveCount = 0
         self.MaxNotificationsPerPublish = 0
         self.Priority = 0
-        self._freeze = True
 
     def __str__(self):
         return 'ModifySubscriptionParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
@@ -9907,7 +11388,7 @@ class ModifySubscriptionParameters(FrozenClass):
     __repr__ = __str__
 
 
-class ModifySubscriptionRequest(FrozenClass):
+class ModifySubscriptionRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -9923,11 +11404,16 @@ class ModifySubscriptionRequest(FrozenClass):
         ('Parameters', 'ModifySubscriptionParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ModifySubscriptionRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = ModifySubscriptionParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'ModifySubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9937,7 +11423,7 @@ class ModifySubscriptionRequest(FrozenClass):
     __repr__ = __str__
 
 
-class ModifySubscriptionResult(FrozenClass):
+class ModifySubscriptionResult(object):
     '''
     :ivar RevisedPublishingInterval:
     :vartype RevisedPublishingInterval: Double
@@ -9953,11 +11439,16 @@ class ModifySubscriptionResult(FrozenClass):
         ('RevisedMaxKeepAliveCount', 'UInt32'),
                ]
 
+    __slots__ = [
+        'RevisedPublishingInterval',
+        'RevisedLifetimeCount',
+        'RevisedMaxKeepAliveCount',
+               ]
+
     def __init__(self):
         self.RevisedPublishingInterval = 0
         self.RevisedLifetimeCount = 0
         self.RevisedMaxKeepAliveCount = 0
-        self._freeze = True
 
     def __str__(self):
         return 'ModifySubscriptionResult(' + 'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', ' + \
@@ -9967,7 +11458,7 @@ class ModifySubscriptionResult(FrozenClass):
     __repr__ = __str__
 
 
-class ModifySubscriptionResponse(FrozenClass):
+class ModifySubscriptionResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -9983,11 +11474,16 @@ class ModifySubscriptionResponse(FrozenClass):
         ('Parameters', 'ModifySubscriptionResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.ModifySubscriptionResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = ModifySubscriptionResult()
-        self._freeze = True
 
     def __str__(self):
         return 'ModifySubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -9997,7 +11493,7 @@ class ModifySubscriptionResponse(FrozenClass):
     __repr__ = __str__
 
 
-class SetPublishingModeParameters(FrozenClass):
+class SetPublishingModeParameters(object):
     '''
     :ivar PublishingEnabled:
     :vartype PublishingEnabled: Boolean
@@ -10010,10 +11506,14 @@ class SetPublishingModeParameters(FrozenClass):
         ('SubscriptionIds', 'ListOfUInt32'),
                ]
 
+    __slots__ = [
+        'PublishingEnabled',
+        'SubscriptionIds',
+               ]
+
     def __init__(self):
         self.PublishingEnabled = True
         self.SubscriptionIds = []
-        self._freeze = True
 
     def __str__(self):
         return 'SetPublishingModeParameters(' + 'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
@@ -10022,7 +11522,7 @@ class SetPublishingModeParameters(FrozenClass):
     __repr__ = __str__
 
 
-class SetPublishingModeRequest(FrozenClass):
+class SetPublishingModeRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -10038,11 +11538,16 @@ class SetPublishingModeRequest(FrozenClass):
         ('Parameters', 'SetPublishingModeParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetPublishingModeRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = SetPublishingModeParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'SetPublishingModeRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -10052,7 +11557,7 @@ class SetPublishingModeRequest(FrozenClass):
     __repr__ = __str__
 
 
-class SetPublishingModeResult(FrozenClass):
+class SetPublishingModeResult(object):
     '''
     :ivar Results:
     :vartype Results: StatusCode
@@ -10065,10 +11570,14 @@ class SetPublishingModeResult(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'SetPublishingModeResult(' + 'Results:' + str(self.Results) + ', ' + \
@@ -10077,7 +11586,7 @@ class SetPublishingModeResult(FrozenClass):
     __repr__ = __str__
 
 
-class SetPublishingModeResponse(FrozenClass):
+class SetPublishingModeResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -10093,11 +11602,16 @@ class SetPublishingModeResponse(FrozenClass):
         ('Parameters', 'SetPublishingModeResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.SetPublishingModeResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = SetPublishingModeResult()
-        self._freeze = True
 
     def __str__(self):
         return 'SetPublishingModeResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -10107,7 +11621,7 @@ class SetPublishingModeResponse(FrozenClass):
     __repr__ = __str__
 
 
-class NotificationMessage(FrozenClass):
+class NotificationMessage(object):
     '''
     :ivar SequenceNumber:
     :vartype SequenceNumber: UInt32
@@ -10123,11 +11637,16 @@ class NotificationMessage(FrozenClass):
         ('NotificationData', 'ListOfExtensionObject'),
                ]
 
+    __slots__ = [
+        'SequenceNumber',
+        'PublishTime',
+        'NotificationData',
+               ]
+
     def __init__(self):
         self.SequenceNumber = 0
         self.PublishTime = datetime.utcnow()
         self.NotificationData = []
-        self._freeze = True
 
     def __str__(self):
         return 'NotificationMessage(' + 'SequenceNumber:' + str(self.SequenceNumber) + ', ' + \
@@ -10137,15 +11656,18 @@ class NotificationMessage(FrozenClass):
     __repr__ = __str__
 
 
-class NotificationData(FrozenClass):
+class NotificationData(object):
     '''
     '''
 
     ua_types = [
                ]
 
+    __slots__ = [
+               ]
+
     def __init__(self):
-        self._freeze = True
+        pass
 
     def __str__(self):
         return 'NotificationData(' +  + ')'
@@ -10153,7 +11675,7 @@ class NotificationData(FrozenClass):
     __repr__ = __str__
 
 
-class DataChangeNotification(FrozenClass):
+class DataChangeNotification(object):
     '''
     :ivar MonitoredItems:
     :vartype MonitoredItems: MonitoredItemNotification
@@ -10166,10 +11688,14 @@ class DataChangeNotification(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'MonitoredItems',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.MonitoredItems = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'DataChangeNotification(' + 'MonitoredItems:' + str(self.MonitoredItems) + ', ' + \
@@ -10178,7 +11704,7 @@ class DataChangeNotification(FrozenClass):
     __repr__ = __str__
 
 
-class MonitoredItemNotification(FrozenClass):
+class MonitoredItemNotification(object):
     '''
     :ivar ClientHandle:
     :vartype ClientHandle: UInt32
@@ -10191,10 +11717,14 @@ class MonitoredItemNotification(FrozenClass):
         ('Value', 'DataValue'),
                ]
 
+    __slots__ = [
+        'ClientHandle',
+        'Value',
+               ]
+
     def __init__(self):
         self.ClientHandle = 0
         self.Value = DataValue()
-        self._freeze = True
 
     def __str__(self):
         return 'MonitoredItemNotification(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
@@ -10203,7 +11733,7 @@ class MonitoredItemNotification(FrozenClass):
     __repr__ = __str__
 
 
-class EventNotificationList(FrozenClass):
+class EventNotificationList(object):
     '''
     :ivar Events:
     :vartype Events: EventFieldList
@@ -10213,9 +11743,12 @@ class EventNotificationList(FrozenClass):
         ('Events', 'ListOfEventFieldList'),
                ]
 
+    __slots__ = [
+        'Events',
+               ]
+
     def __init__(self):
         self.Events = []
-        self._freeze = True
 
     def __str__(self):
         return 'EventNotificationList(' + 'Events:' + str(self.Events) + ')'
@@ -10223,7 +11756,7 @@ class EventNotificationList(FrozenClass):
     __repr__ = __str__
 
 
-class EventFieldList(FrozenClass):
+class EventFieldList(object):
     '''
     :ivar ClientHandle:
     :vartype ClientHandle: UInt32
@@ -10236,10 +11769,14 @@ class EventFieldList(FrozenClass):
         ('EventFields', 'ListOfVariant'),
                ]
 
+    __slots__ = [
+        'ClientHandle',
+        'EventFields',
+               ]
+
     def __init__(self):
         self.ClientHandle = 0
         self.EventFields = []
-        self._freeze = True
 
     def __str__(self):
         return 'EventFieldList(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
@@ -10248,7 +11785,7 @@ class EventFieldList(FrozenClass):
     __repr__ = __str__
 
 
-class HistoryEventFieldList(FrozenClass):
+class HistoryEventFieldList(object):
     '''
     :ivar EventFields:
     :vartype EventFields: Variant
@@ -10258,9 +11795,12 @@ class HistoryEventFieldList(FrozenClass):
         ('EventFields', 'ListOfVariant'),
                ]
 
+    __slots__ = [
+        'EventFields',
+               ]
+
     def __init__(self):
         self.EventFields = []
-        self._freeze = True
 
     def __str__(self):
         return 'HistoryEventFieldList(' + 'EventFields:' + str(self.EventFields) + ')'
@@ -10268,7 +11808,7 @@ class HistoryEventFieldList(FrozenClass):
     __repr__ = __str__
 
 
-class StatusChangeNotification(FrozenClass):
+class StatusChangeNotification(object):
     '''
     :ivar Status:
     :vartype Status: StatusCode
@@ -10281,10 +11821,14 @@ class StatusChangeNotification(FrozenClass):
         ('DiagnosticInfo', 'DiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'Status',
+        'DiagnosticInfo',
+               ]
+
     def __init__(self):
         self.Status = StatusCode()
         self.DiagnosticInfo = DiagnosticInfo()
-        self._freeze = True
 
     def __str__(self):
         return 'StatusChangeNotification(' + 'Status:' + str(self.Status) + ', ' + \
@@ -10293,7 +11837,7 @@ class StatusChangeNotification(FrozenClass):
     __repr__ = __str__
 
 
-class SubscriptionAcknowledgement(FrozenClass):
+class SubscriptionAcknowledgement(object):
     '''
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
@@ -10306,10 +11850,14 @@ class SubscriptionAcknowledgement(FrozenClass):
         ('SequenceNumber', 'UInt32'),
                ]
 
+    __slots__ = [
+        'SubscriptionId',
+        'SequenceNumber',
+               ]
+
     def __init__(self):
         self.SubscriptionId = 0
         self.SequenceNumber = 0
-        self._freeze = True
 
     def __str__(self):
         return 'SubscriptionAcknowledgement(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
@@ -10318,7 +11866,7 @@ class SubscriptionAcknowledgement(FrozenClass):
     __repr__ = __str__
 
 
-class PublishParameters(FrozenClass):
+class PublishParameters(object):
     '''
     :ivar SubscriptionAcknowledgements:
     :vartype SubscriptionAcknowledgements: SubscriptionAcknowledgement
@@ -10328,9 +11876,12 @@ class PublishParameters(FrozenClass):
         ('SubscriptionAcknowledgements', 'ListOfSubscriptionAcknowledgement'),
                ]
 
+    __slots__ = [
+        'SubscriptionAcknowledgements',
+               ]
+
     def __init__(self):
         self.SubscriptionAcknowledgements = []
-        self._freeze = True
 
     def __str__(self):
         return 'PublishParameters(' + 'SubscriptionAcknowledgements:' + str(self.SubscriptionAcknowledgements) + ')'
@@ -10338,7 +11889,7 @@ class PublishParameters(FrozenClass):
     __repr__ = __str__
 
 
-class PublishRequest(FrozenClass):
+class PublishRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -10354,11 +11905,16 @@ class PublishRequest(FrozenClass):
         ('Parameters', 'PublishParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.PublishRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = PublishParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'PublishRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -10368,7 +11924,7 @@ class PublishRequest(FrozenClass):
     __repr__ = __str__
 
 
-class PublishResult(FrozenClass):
+class PublishResult(object):
     '''
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
@@ -10393,6 +11949,15 @@ class PublishResult(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'SubscriptionId',
+        'AvailableSequenceNumbers',
+        'MoreNotifications',
+        'NotificationMessage',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.SubscriptionId = 0
         self.AvailableSequenceNumbers = []
@@ -10400,7 +11965,6 @@ class PublishResult(FrozenClass):
         self.NotificationMessage = NotificationMessage()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'PublishResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
@@ -10413,7 +11977,7 @@ class PublishResult(FrozenClass):
     __repr__ = __str__
 
 
-class PublishResponse(FrozenClass):
+class PublishResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -10429,11 +11993,16 @@ class PublishResponse(FrozenClass):
         ('Parameters', 'PublishResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.PublishResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = PublishResult()
-        self._freeze = True
 
     def __str__(self):
         return 'PublishResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -10443,7 +12012,7 @@ class PublishResponse(FrozenClass):
     __repr__ = __str__
 
 
-class RepublishParameters(FrozenClass):
+class RepublishParameters(object):
     '''
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
@@ -10456,10 +12025,14 @@ class RepublishParameters(FrozenClass):
         ('RetransmitSequenceNumber', 'UInt32'),
                ]
 
+    __slots__ = [
+        'SubscriptionId',
+        'RetransmitSequenceNumber',
+               ]
+
     def __init__(self):
         self.SubscriptionId = 0
         self.RetransmitSequenceNumber = 0
-        self._freeze = True
 
     def __str__(self):
         return 'RepublishParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
@@ -10468,7 +12041,7 @@ class RepublishParameters(FrozenClass):
     __repr__ = __str__
 
 
-class RepublishRequest(FrozenClass):
+class RepublishRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -10484,11 +12057,16 @@ class RepublishRequest(FrozenClass):
         ('Parameters', 'RepublishParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RepublishRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = RepublishParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'RepublishRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -10498,7 +12076,7 @@ class RepublishRequest(FrozenClass):
     __repr__ = __str__
 
 
-class RepublishResponse(FrozenClass):
+class RepublishResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -10514,11 +12092,16 @@ class RepublishResponse(FrozenClass):
         ('NotificationMessage', 'NotificationMessage'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'NotificationMessage',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.RepublishResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.NotificationMessage = NotificationMessage()
-        self._freeze = True
 
     def __str__(self):
         return 'RepublishResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -10528,7 +12111,7 @@ class RepublishResponse(FrozenClass):
     __repr__ = __str__
 
 
-class TransferResult(FrozenClass):
+class TransferResult(object):
     '''
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
@@ -10541,10 +12124,14 @@ class TransferResult(FrozenClass):
         ('AvailableSequenceNumbers', 'ListOfUInt32'),
                ]
 
+    __slots__ = [
+        'StatusCode',
+        'AvailableSequenceNumbers',
+               ]
+
     def __init__(self):
         self.StatusCode = StatusCode()
         self.AvailableSequenceNumbers = []
-        self._freeze = True
 
     def __str__(self):
         return 'TransferResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
@@ -10553,7 +12140,7 @@ class TransferResult(FrozenClass):
     __repr__ = __str__
 
 
-class TransferSubscriptionsParameters(FrozenClass):
+class TransferSubscriptionsParameters(object):
     '''
     :ivar SubscriptionIds:
     :vartype SubscriptionIds: UInt32
@@ -10566,10 +12153,14 @@ class TransferSubscriptionsParameters(FrozenClass):
         ('SendInitialValues', 'Boolean'),
                ]
 
+    __slots__ = [
+        'SubscriptionIds',
+        'SendInitialValues',
+               ]
+
     def __init__(self):
         self.SubscriptionIds = []
         self.SendInitialValues = True
-        self._freeze = True
 
     def __str__(self):
         return 'TransferSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ', ' + \
@@ -10578,7 +12169,7 @@ class TransferSubscriptionsParameters(FrozenClass):
     __repr__ = __str__
 
 
-class TransferSubscriptionsRequest(FrozenClass):
+class TransferSubscriptionsRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -10594,11 +12185,16 @@ class TransferSubscriptionsRequest(FrozenClass):
         ('Parameters', 'TransferSubscriptionsParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TransferSubscriptionsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = TransferSubscriptionsParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'TransferSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -10608,7 +12204,7 @@ class TransferSubscriptionsRequest(FrozenClass):
     __repr__ = __str__
 
 
-class TransferSubscriptionsResult(FrozenClass):
+class TransferSubscriptionsResult(object):
     '''
     :ivar Results:
     :vartype Results: TransferResult
@@ -10621,10 +12217,14 @@ class TransferSubscriptionsResult(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'TransferSubscriptionsResult(' + 'Results:' + str(self.Results) + ', ' + \
@@ -10633,7 +12233,7 @@ class TransferSubscriptionsResult(FrozenClass):
     __repr__ = __str__
 
 
-class TransferSubscriptionsResponse(FrozenClass):
+class TransferSubscriptionsResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -10649,11 +12249,16 @@ class TransferSubscriptionsResponse(FrozenClass):
         ('Parameters', 'TransferSubscriptionsResult'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.TransferSubscriptionsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Parameters = TransferSubscriptionsResult()
-        self._freeze = True
 
     def __str__(self):
         return 'TransferSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -10663,7 +12268,7 @@ class TransferSubscriptionsResponse(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteSubscriptionsParameters(FrozenClass):
+class DeleteSubscriptionsParameters(object):
     '''
     :ivar SubscriptionIds:
     :vartype SubscriptionIds: UInt32
@@ -10673,9 +12278,12 @@ class DeleteSubscriptionsParameters(FrozenClass):
         ('SubscriptionIds', 'ListOfUInt32'),
                ]
 
+    __slots__ = [
+        'SubscriptionIds',
+               ]
+
     def __init__(self):
         self.SubscriptionIds = []
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
@@ -10683,7 +12291,7 @@ class DeleteSubscriptionsParameters(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteSubscriptionsRequest(FrozenClass):
+class DeleteSubscriptionsRequest(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -10699,11 +12307,16 @@ class DeleteSubscriptionsRequest(FrozenClass):
         ('Parameters', 'DeleteSubscriptionsParameters'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'RequestHeader',
+        'Parameters',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsRequest_Encoding_DefaultBinary)
         self.RequestHeader = RequestHeader()
         self.Parameters = DeleteSubscriptionsParameters()
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -10713,7 +12326,7 @@ class DeleteSubscriptionsRequest(FrozenClass):
     __repr__ = __str__
 
 
-class DeleteSubscriptionsResponse(FrozenClass):
+class DeleteSubscriptionsResponse(object):
     '''
     :ivar TypeId:
     :vartype TypeId: NodeId
@@ -10732,12 +12345,18 @@ class DeleteSubscriptionsResponse(FrozenClass):
         ('DiagnosticInfos', 'ListOfDiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'TypeId',
+        'ResponseHeader',
+        'Results',
+        'DiagnosticInfos',
+               ]
+
     def __init__(self):
         self.TypeId = FourByteNodeId(ObjectIds.DeleteSubscriptionsResponse_Encoding_DefaultBinary)
         self.ResponseHeader = ResponseHeader()
         self.Results = []
         self.DiagnosticInfos = []
-        self._freeze = True
 
     def __str__(self):
         return 'DeleteSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
@@ -10748,7 +12367,7 @@ class DeleteSubscriptionsResponse(FrozenClass):
     __repr__ = __str__
 
 
-class BuildInfo(FrozenClass):
+class BuildInfo(object):
     '''
     :ivar ProductUri:
     :vartype ProductUri: String
@@ -10773,6 +12392,15 @@ class BuildInfo(FrozenClass):
         ('BuildDate', 'DateTime'),
                ]
 
+    __slots__ = [
+        'ProductUri',
+        'ManufacturerName',
+        'ProductName',
+        'SoftwareVersion',
+        'BuildNumber',
+        'BuildDate',
+               ]
+
     def __init__(self):
         self.ProductUri = None
         self.ManufacturerName = None
@@ -10780,7 +12408,6 @@ class BuildInfo(FrozenClass):
         self.SoftwareVersion = None
         self.BuildNumber = None
         self.BuildDate = datetime.utcnow()
-        self._freeze = True
 
     def __str__(self):
         return 'BuildInfo(' + 'ProductUri:' + str(self.ProductUri) + ', ' + \
@@ -10793,7 +12420,7 @@ class BuildInfo(FrozenClass):
     __repr__ = __str__
 
 
-class RedundantServerDataType(FrozenClass):
+class RedundantServerDataType(object):
     '''
     :ivar ServerId:
     :vartype ServerId: String
@@ -10809,11 +12436,16 @@ class RedundantServerDataType(FrozenClass):
         ('ServerState', 'ServerState'),
                ]
 
+    __slots__ = [
+        'ServerId',
+        'ServiceLevel',
+        'ServerState',
+               ]
+
     def __init__(self):
         self.ServerId = None
         self.ServiceLevel = 0
         self.ServerState = ServerState(0)
-        self._freeze = True
 
     def __str__(self):
         return 'RedundantServerDataType(' + 'ServerId:' + str(self.ServerId) + ', ' + \
@@ -10823,7 +12455,7 @@ class RedundantServerDataType(FrozenClass):
     __repr__ = __str__
 
 
-class EndpointUrlListDataType(FrozenClass):
+class EndpointUrlListDataType(object):
     '''
     :ivar EndpointUrlList:
     :vartype EndpointUrlList: String
@@ -10833,9 +12465,12 @@ class EndpointUrlListDataType(FrozenClass):
         ('EndpointUrlList', 'ListOfString'),
                ]
 
+    __slots__ = [
+        'EndpointUrlList',
+               ]
+
     def __init__(self):
         self.EndpointUrlList = []
-        self._freeze = True
 
     def __str__(self):
         return 'EndpointUrlListDataType(' + 'EndpointUrlList:' + str(self.EndpointUrlList) + ')'
@@ -10843,7 +12478,7 @@ class EndpointUrlListDataType(FrozenClass):
     __repr__ = __str__
 
 
-class NetworkGroupDataType(FrozenClass):
+class NetworkGroupDataType(object):
     '''
     :ivar ServerUri:
     :vartype ServerUri: String
@@ -10856,10 +12491,14 @@ class NetworkGroupDataType(FrozenClass):
         ('NetworkPaths', 'ListOfEndpointUrlListDataType'),
                ]
 
+    __slots__ = [
+        'ServerUri',
+        'NetworkPaths',
+               ]
+
     def __init__(self):
         self.ServerUri = None
         self.NetworkPaths = []
-        self._freeze = True
 
     def __str__(self):
         return 'NetworkGroupDataType(' + 'ServerUri:' + str(self.ServerUri) + ', ' + \
@@ -10868,7 +12507,7 @@ class NetworkGroupDataType(FrozenClass):
     __repr__ = __str__
 
 
-class SamplingIntervalDiagnosticsDataType(FrozenClass):
+class SamplingIntervalDiagnosticsDataType(object):
     '''
     :ivar SamplingInterval:
     :vartype SamplingInterval: Double
@@ -10887,12 +12526,18 @@ class SamplingIntervalDiagnosticsDataType(FrozenClass):
         ('DisabledMonitoredItemCount', 'UInt32'),
                ]
 
+    __slots__ = [
+        'SamplingInterval',
+        'MonitoredItemCount',
+        'MaxMonitoredItemCount',
+        'DisabledMonitoredItemCount',
+               ]
+
     def __init__(self):
         self.SamplingInterval = 0
         self.MonitoredItemCount = 0
         self.MaxMonitoredItemCount = 0
         self.DisabledMonitoredItemCount = 0
-        self._freeze = True
 
     def __str__(self):
         return 'SamplingIntervalDiagnosticsDataType(' + 'SamplingInterval:' + str(self.SamplingInterval) + ', ' + \
@@ -10903,7 +12548,7 @@ class SamplingIntervalDiagnosticsDataType(FrozenClass):
     __repr__ = __str__
 
 
-class ServerDiagnosticsSummaryDataType(FrozenClass):
+class ServerDiagnosticsSummaryDataType(object):
     '''
     :ivar ServerViewCount:
     :vartype ServerViewCount: UInt32
@@ -10946,6 +12591,21 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
         ('RejectedRequestsCount', 'UInt32'),
                ]
 
+    __slots__ = [
+        'ServerViewCount',
+        'CurrentSessionCount',
+        'CumulatedSessionCount',
+        'SecurityRejectedSessionCount',
+        'RejectedSessionCount',
+        'SessionTimeoutCount',
+        'SessionAbortCount',
+        'CurrentSubscriptionCount',
+        'CumulatedSubscriptionCount',
+        'PublishingIntervalCount',
+        'SecurityRejectedRequestsCount',
+        'RejectedRequestsCount',
+               ]
+
     def __init__(self):
         self.ServerViewCount = 0
         self.CurrentSessionCount = 0
@@ -10959,7 +12619,6 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
         self.PublishingIntervalCount = 0
         self.SecurityRejectedRequestsCount = 0
         self.RejectedRequestsCount = 0
-        self._freeze = True
 
     def __str__(self):
         return 'ServerDiagnosticsSummaryDataType(' + 'ServerViewCount:' + str(self.ServerViewCount) + ', ' + \
@@ -10978,7 +12637,7 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
     __repr__ = __str__
 
 
-class ServerStatusDataType(FrozenClass):
+class ServerStatusDataType(object):
     '''
     :ivar StartTime:
     :vartype StartTime: DateTime
@@ -11003,6 +12662,15 @@ class ServerStatusDataType(FrozenClass):
         ('ShutdownReason', 'LocalizedText'),
                ]
 
+    __slots__ = [
+        'StartTime',
+        'CurrentTime',
+        'State',
+        'BuildInfo',
+        'SecondsTillShutdown',
+        'ShutdownReason',
+               ]
+
     def __init__(self):
         self.StartTime = datetime.utcnow()
         self.CurrentTime = datetime.utcnow()
@@ -11010,7 +12678,6 @@ class ServerStatusDataType(FrozenClass):
         self.BuildInfo = BuildInfo()
         self.SecondsTillShutdown = 0
         self.ShutdownReason = LocalizedText()
-        self._freeze = True
 
     def __str__(self):
         return 'ServerStatusDataType(' + 'StartTime:' + str(self.StartTime) + ', ' + \
@@ -11023,7 +12690,7 @@ class ServerStatusDataType(FrozenClass):
     __repr__ = __str__
 
 
-class SessionDiagnosticsDataType(FrozenClass):
+class SessionDiagnosticsDataType(object):
     '''
     :ivar SessionId:
     :vartype SessionId: NodeId
@@ -11159,6 +12826,52 @@ class SessionDiagnosticsDataType(FrozenClass):
         ('UnregisterNodesCount', 'ServiceCounterDataType'),
                ]
 
+    __slots__ = [
+        'SessionId',
+        'SessionName',
+        'ClientDescription',
+        'ServerUri',
+        'EndpointUrl',
+        'LocaleIds',
+        'ActualSessionTimeout',
+        'MaxResponseMessageSize',
+        'ClientConnectionTime',
+        'ClientLastContactTime',
+        'CurrentSubscriptionsCount',
+        'CurrentMonitoredItemsCount',
+        'CurrentPublishRequestsInQueue',
+        'TotalRequestCount',
+        'UnauthorizedRequestCount',
+        'ReadCount',
+        'HistoryReadCount',
+        'WriteCount',
+        'HistoryUpdateCount',
+        'CallCount',
+        'CreateMonitoredItemsCount',
+        'ModifyMonitoredItemsCount',
+        'SetMonitoringModeCount',
+        'SetTriggeringCount',
+        'DeleteMonitoredItemsCount',
+        'CreateSubscriptionCount',
+        'ModifySubscriptionCount',
+        'SetPublishingModeCount',
+        'PublishCount',
+        'RepublishCount',
+        'TransferSubscriptionsCount',
+        'DeleteSubscriptionsCount',
+        'AddNodesCount',
+        'AddReferencesCount',
+        'DeleteNodesCount',
+        'DeleteReferencesCount',
+        'BrowseCount',
+        'BrowseNextCount',
+        'TranslateBrowsePathsToNodeIdsCount',
+        'QueryFirstCount',
+        'QueryNextCount',
+        'RegisterNodesCount',
+        'UnregisterNodesCount',
+               ]
+
     def __init__(self):
         self.SessionId = NodeId()
         self.SessionName = None
@@ -11203,7 +12916,6 @@ class SessionDiagnosticsDataType(FrozenClass):
         self.QueryNextCount = ServiceCounterDataType()
         self.RegisterNodesCount = ServiceCounterDataType()
         self.UnregisterNodesCount = ServiceCounterDataType()
-        self._freeze = True
 
     def __str__(self):
         return 'SessionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
@@ -11253,7 +12965,7 @@ class SessionDiagnosticsDataType(FrozenClass):
     __repr__ = __str__
 
 
-class SessionSecurityDiagnosticsDataType(FrozenClass):
+class SessionSecurityDiagnosticsDataType(object):
     '''
     :ivar SessionId:
     :vartype SessionId: NodeId
@@ -11287,6 +12999,18 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
         ('ClientCertificate', 'ByteString'),
                ]
 
+    __slots__ = [
+        'SessionId',
+        'ClientUserIdOfSession',
+        'ClientUserIdHistory',
+        'AuthenticationMechanism',
+        'Encoding',
+        'TransportProtocol',
+        'SecurityMode',
+        'SecurityPolicyUri',
+        'ClientCertificate',
+               ]
+
     def __init__(self):
         self.SessionId = NodeId()
         self.ClientUserIdOfSession = None
@@ -11297,7 +13021,6 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
         self.SecurityMode = MessageSecurityMode(0)
         self.SecurityPolicyUri = None
         self.ClientCertificate = None
-        self._freeze = True
 
     def __str__(self):
         return 'SessionSecurityDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
@@ -11313,7 +13036,7 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
     __repr__ = __str__
 
 
-class ServiceCounterDataType(FrozenClass):
+class ServiceCounterDataType(object):
     '''
     :ivar TotalCount:
     :vartype TotalCount: UInt32
@@ -11326,10 +13049,14 @@ class ServiceCounterDataType(FrozenClass):
         ('ErrorCount', 'UInt32'),
                ]
 
+    __slots__ = [
+        'TotalCount',
+        'ErrorCount',
+               ]
+
     def __init__(self):
         self.TotalCount = 0
         self.ErrorCount = 0
-        self._freeze = True
 
     def __str__(self):
         return 'ServiceCounterDataType(' + 'TotalCount:' + str(self.TotalCount) + ', ' + \
@@ -11338,7 +13065,7 @@ class ServiceCounterDataType(FrozenClass):
     __repr__ = __str__
 
 
-class StatusResult(FrozenClass):
+class StatusResult(object):
     '''
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
@@ -11351,10 +13078,14 @@ class StatusResult(FrozenClass):
         ('DiagnosticInfo', 'DiagnosticInfo'),
                ]
 
+    __slots__ = [
+        'StatusCode',
+        'DiagnosticInfo',
+               ]
+
     def __init__(self):
         self.StatusCode = StatusCode()
         self.DiagnosticInfo = DiagnosticInfo()
-        self._freeze = True
 
     def __str__(self):
         return 'StatusResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
@@ -11363,7 +13094,7 @@ class StatusResult(FrozenClass):
     __repr__ = __str__
 
 
-class SubscriptionDiagnosticsDataType(FrozenClass):
+class SubscriptionDiagnosticsDataType(object):
     '''
     :ivar SessionId:
     :vartype SessionId: NodeId
@@ -11463,6 +13194,40 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
         ('EventQueueOverFlowCount', 'UInt32'),
                ]
 
+    __slots__ = [
+        'SessionId',
+        'SubscriptionId',
+        'Priority',
+        'PublishingInterval',
+        'MaxKeepAliveCount',
+        'MaxLifetimeCount',
+        'MaxNotificationsPerPublish',
+        'PublishingEnabled',
+        'ModifyCount',
+        'EnableCount',
+        'DisableCount',
+        'RepublishRequestCount',
+        'RepublishMessageRequestCount',
+        'RepublishMessageCount',
+        'TransferRequestCount',
+        'TransferredToAltClientCount',
+        'TransferredToSameClientCount',
+        'PublishRequestCount',
+        'DataChangeNotificationsCount',
+        'EventNotificationsCount',
+        'NotificationsCount',
+        'LatePublishRequestCount',
+        'CurrentKeepAliveCount',
+        'CurrentLifetimeCount',
+        'UnacknowledgedMessageCount',
+        'DiscardedMessageCount',
+        'MonitoredItemCount',
+        'DisabledMonitoredItemCount',
+        'MonitoringQueueOverflowCount',
+        'NextSequenceNumber',
+        'EventQueueOverFlowCount',
+               ]
+
     def __init__(self):
         self.SessionId = NodeId()
         self.SubscriptionId = 0
@@ -11495,7 +13260,6 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
         self.MonitoringQueueOverflowCount = 0
         self.NextSequenceNumber = 0
         self.EventQueueOverFlowCount = 0
-        self._freeze = True
 
     def __str__(self):
         return 'SubscriptionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
@@ -11533,7 +13297,7 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
     __repr__ = __str__
 
 
-class ModelChangeStructureDataType(FrozenClass):
+class ModelChangeStructureDataType(object):
     '''
     :ivar Affected:
     :vartype Affected: NodeId
@@ -11549,11 +13313,16 @@ class ModelChangeStructureDataType(FrozenClass):
         ('Verb', 'Byte'),
                ]
 
+    __slots__ = [
+        'Affected',
+        'AffectedType',
+        'Verb',
+               ]
+
     def __init__(self):
         self.Affected = NodeId()
         self.AffectedType = NodeId()
         self.Verb = 0
-        self._freeze = True
 
     def __str__(self):
         return 'ModelChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', ' + \
@@ -11563,7 +13332,7 @@ class ModelChangeStructureDataType(FrozenClass):
     __repr__ = __str__
 
 
-class SemanticChangeStructureDataType(FrozenClass):
+class SemanticChangeStructureDataType(object):
     '''
     :ivar Affected:
     :vartype Affected: NodeId
@@ -11576,10 +13345,14 @@ class SemanticChangeStructureDataType(FrozenClass):
         ('AffectedType', 'NodeId'),
                ]
 
+    __slots__ = [
+        'Affected',
+        'AffectedType',
+               ]
+
     def __init__(self):
         self.Affected = NodeId()
         self.AffectedType = NodeId()
-        self._freeze = True
 
     def __str__(self):
         return 'SemanticChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', ' + \
@@ -11588,7 +13361,7 @@ class SemanticChangeStructureDataType(FrozenClass):
     __repr__ = __str__
 
 
-class Range(FrozenClass):
+class Range(object):
     '''
     :ivar Low:
     :vartype Low: Double
@@ -11601,10 +13374,14 @@ class Range(FrozenClass):
         ('High', 'Double'),
                ]
 
+    __slots__ = [
+        'Low',
+        'High',
+               ]
+
     def __init__(self):
         self.Low = 0
         self.High = 0
-        self._freeze = True
 
     def __str__(self):
         return 'Range(' + 'Low:' + str(self.Low) + ', ' + \
@@ -11613,7 +13390,7 @@ class Range(FrozenClass):
     __repr__ = __str__
 
 
-class EUInformation(FrozenClass):
+class EUInformation(object):
     '''
     :ivar NamespaceUri:
     :vartype NamespaceUri: String
@@ -11632,12 +13409,18 @@ class EUInformation(FrozenClass):
         ('Description', 'LocalizedText'),
                ]
 
+    __slots__ = [
+        'NamespaceUri',
+        'UnitId',
+        'DisplayName',
+        'Description',
+               ]
+
     def __init__(self):
         self.NamespaceUri = None
         self.UnitId = 0
         self.DisplayName = LocalizedText()
         self.Description = LocalizedText()
-        self._freeze = True
 
     def __str__(self):
         return 'EUInformation(' + 'NamespaceUri:' + str(self.NamespaceUri) + ', ' + \
@@ -11648,7 +13431,7 @@ class EUInformation(FrozenClass):
     __repr__ = __str__
 
 
-class ComplexNumberType(FrozenClass):
+class ComplexNumberType(object):
     '''
     :ivar Real:
     :vartype Real: Float
@@ -11661,10 +13444,14 @@ class ComplexNumberType(FrozenClass):
         ('Imaginary', 'Float'),
                ]
 
+    __slots__ = [
+        'Real',
+        'Imaginary',
+               ]
+
     def __init__(self):
         self.Real = 0
         self.Imaginary = 0
-        self._freeze = True
 
     def __str__(self):
         return 'ComplexNumberType(' + 'Real:' + str(self.Real) + ', ' + \
@@ -11673,7 +13460,7 @@ class ComplexNumberType(FrozenClass):
     __repr__ = __str__
 
 
-class DoubleComplexNumberType(FrozenClass):
+class DoubleComplexNumberType(object):
     '''
     :ivar Real:
     :vartype Real: Double
@@ -11686,10 +13473,14 @@ class DoubleComplexNumberType(FrozenClass):
         ('Imaginary', 'Double'),
                ]
 
+    __slots__ = [
+        'Real',
+        'Imaginary',
+               ]
+
     def __init__(self):
         self.Real = 0
         self.Imaginary = 0
-        self._freeze = True
 
     def __str__(self):
         return 'DoubleComplexNumberType(' + 'Real:' + str(self.Real) + ', ' + \
@@ -11698,7 +13489,7 @@ class DoubleComplexNumberType(FrozenClass):
     __repr__ = __str__
 
 
-class AxisInformation(FrozenClass):
+class AxisInformation(object):
     '''
     :ivar EngineeringUnits:
     :vartype EngineeringUnits: EUInformation
@@ -11720,13 +13511,20 @@ class AxisInformation(FrozenClass):
         ('AxisSteps', 'ListOfDouble'),
                ]
 
+    __slots__ = [
+        'EngineeringUnits',
+        'EURange',
+        'Title',
+        'AxisScaleType',
+        'AxisSteps',
+               ]
+
     def __init__(self):
         self.EngineeringUnits = EUInformation()
         self.EURange = Range()
         self.Title = LocalizedText()
         self.AxisScaleType = AxisScaleEnumeration(0)
         self.AxisSteps = []
-        self._freeze = True
 
     def __str__(self):
         return 'AxisInformation(' + 'EngineeringUnits:' + str(self.EngineeringUnits) + ', ' + \
@@ -11738,7 +13536,7 @@ class AxisInformation(FrozenClass):
     __repr__ = __str__
 
 
-class XVType(FrozenClass):
+class XVType(object):
     '''
     :ivar X:
     :vartype X: Double
@@ -11751,10 +13549,14 @@ class XVType(FrozenClass):
         ('Value', 'Float'),
                ]
 
+    __slots__ = [
+        'X',
+        'Value',
+               ]
+
     def __init__(self):
         self.X = 0
         self.Value = 0
-        self._freeze = True
 
     def __str__(self):
         return 'XVType(' + 'X:' + str(self.X) + ', ' + \
@@ -11763,7 +13565,7 @@ class XVType(FrozenClass):
     __repr__ = __str__
 
 
-class ProgramDiagnosticDataType(FrozenClass):
+class ProgramDiagnosticDataType(object):
     '''
     :ivar CreateSessionId:
     :vartype CreateSessionId: NodeId
@@ -11800,6 +13602,19 @@ class ProgramDiagnosticDataType(FrozenClass):
         ('LastMethodReturnStatus', 'StatusResult'),
                ]
 
+    __slots__ = [
+        'CreateSessionId',
+        'CreateClientName',
+        'InvocationCreationTime',
+        'LastTransitionTime',
+        'LastMethodCall',
+        'LastMethodSessionId',
+        'LastMethodInputArguments',
+        'LastMethodOutputArguments',
+        'LastMethodCallTime',
+        'LastMethodReturnStatus',
+               ]
+
     def __init__(self):
         self.CreateSessionId = NodeId()
         self.CreateClientName = None
@@ -11811,7 +13626,6 @@ class ProgramDiagnosticDataType(FrozenClass):
         self.LastMethodOutputArguments = []
         self.LastMethodCallTime = datetime.utcnow()
         self.LastMethodReturnStatus = StatusResult()
-        self._freeze = True
 
     def __str__(self):
         return 'ProgramDiagnosticDataType(' + 'CreateSessionId:' + str(self.CreateSessionId) + ', ' + \
@@ -11828,7 +13642,7 @@ class ProgramDiagnosticDataType(FrozenClass):
     __repr__ = __str__
 
 
-class ProgramDiagnostic2DataType(FrozenClass):
+class ProgramDiagnostic2DataType(object):
     '''
     :ivar CreateSessionId:
     :vartype CreateSessionId: NodeId
@@ -11871,6 +13685,21 @@ class ProgramDiagnostic2DataType(FrozenClass):
         ('LastMethodReturnStatus', 'StatusResult'),
                ]
 
+    __slots__ = [
+        'CreateSessionId',
+        'CreateClientName',
+        'InvocationCreationTime',
+        'LastTransitionTime',
+        'LastMethodCall',
+        'LastMethodSessionId',
+        'LastMethodInputArguments',
+        'LastMethodOutputArguments',
+        'LastMethodInputValues',
+        'LastMethodOutputValues',
+        'LastMethodCallTime',
+        'LastMethodReturnStatus',
+               ]
+
     def __init__(self):
         self.CreateSessionId = NodeId()
         self.CreateClientName = None
@@ -11884,7 +13713,6 @@ class ProgramDiagnostic2DataType(FrozenClass):
         self.LastMethodOutputValues = []
         self.LastMethodCallTime = datetime.utcnow()
         self.LastMethodReturnStatus = StatusResult()
-        self._freeze = True
 
     def __str__(self):
         return 'ProgramDiagnostic2DataType(' + 'CreateSessionId:' + str(self.CreateSessionId) + ', ' + \
@@ -11903,7 +13731,7 @@ class ProgramDiagnostic2DataType(FrozenClass):
     __repr__ = __str__
 
 
-class Annotation(FrozenClass):
+class Annotation(object):
     '''
     :ivar Message:
     :vartype Message: String
@@ -11919,11 +13747,16 @@ class Annotation(FrozenClass):
         ('AnnotationTime', 'DateTime'),
                ]
 
+    __slots__ = [
+        'Message',
+        'UserName',
+        'AnnotationTime',
+               ]
+
     def __init__(self):
         self.Message = None
         self.UserName = None
         self.AnnotationTime = datetime.utcnow()
-        self._freeze = True
 
     def __str__(self):
         return 'Annotation(' + 'Message:' + str(self.Message) + ', ' + \

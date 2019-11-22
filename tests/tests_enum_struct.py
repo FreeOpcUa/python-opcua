@@ -10,17 +10,17 @@ class ExampleEnum(IntEnum):
 import opcua.ua
 setattr(opcua.ua, 'ExampleEnum', ExampleEnum)
 
-class ExampleStruct(uatypes.FrozenClass):
+class ExampleStruct(object):
 
     ua_types = [
         ('IntVal1', 'Int16'),
         ('EnumVal', 'ExampleEnum'),
                ]
+    __slots__ = ['IntVal1', 'EnumVal']
 
     def __init__(self):
         self.IntVal1 = 0
         self.EnumVal = ExampleEnum(0)
-        self._freeze = True
 
     def __str__(self):
         return 'ExampleStruct(' + 'IntVal1:' + str(self.IntVal1) + ', ' + \

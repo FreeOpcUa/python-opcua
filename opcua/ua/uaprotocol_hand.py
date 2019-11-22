@@ -3,16 +3,16 @@ import struct
 from opcua.ua import uaprotocol_auto as auto
 from opcua.ua import uatypes
 from opcua.common import utils
-from opcua.ua.uatypes import AccessLevel, FrozenClass
+from opcua.ua.uatypes import AccessLevel
 
 OPC_TCP_SCHEME = 'opc.tcp'
 
 
-class Hello(uatypes.FrozenClass):
+class Hello(object):
 
     ua_types = (('ProtocolVersion', 'UInt32'), ('ReceiveBufferSize', 'UInt32'), ('SendBufferSize', 'UInt32'),
                 ('MaxMessageSize', 'UInt32'), ('MaxChunkCount', 'UInt32'), ('EndpointUrl', 'String'), )
-
+    __slots__ = ['ProtocolVersion', 'ReceiveBufferSize', 'SendBufferSize', 'MaxMessageSize', 'MaxChunkCount', 'EndpointUrl']
     def __init__(self):
         self.ProtocolVersion = 0
         self.ReceiveBufferSize = 65536
@@ -20,7 +20,6 @@ class Hello(uatypes.FrozenClass):
         self.MaxMessageSize = 0 # No limits
         self.MaxChunkCount = 0 # No limits
         self.EndpointUrl = ""
-        self._freeze = True
 
 
 class MessageType(object):
@@ -40,14 +39,14 @@ class ChunkType(object):
     Abort = b"A"  # when an error occurred and the Message is aborted (body is ErrorMessage)
 
 
-class Header(uatypes.FrozenClass):
+class Header(object):
+    __slots__ = ['MessageType', 'ChunkType', 'ChannelId', 'body_size', 'packet_size']
     def __init__(self, msgType=None, chunkType=None, channelid=0):
         self.MessageType = msgType
         self.ChunkType = chunkType
         self.ChannelId = channelid
         self.body_size = 0
         self.packet_size = 0
-        self._freeze = True
 
     def add_size(self, size):
         self.body_size += size
@@ -63,14 +62,13 @@ class Header(uatypes.FrozenClass):
     __repr__ = __str__
 
 
-class ErrorMessage(uatypes.FrozenClass):
+class ErrorMessage(object):
 
     ua_types = (('Error', 'StatusCode'), ('Reason', 'String'), )
-
+    __slots__ = ['Error', 'Reason']
     def __init__(self):
         self.Error = uatypes.StatusCode()
         self.Reason = ""
-        self._freeze = True
 
     def __str__(self):
         return "MessageAbort(error:{0}, reason:{1})".format(self.Error, self.Reason)
@@ -78,7 +76,7 @@ class ErrorMessage(uatypes.FrozenClass):
     __repr__ = __str__
 
 
-class Acknowledge(uatypes.FrozenClass):
+class Acknowledge(object):
 
     ua_types = [
         ("ProtocolVersion", "UInt32"),
@@ -87,6 +85,7 @@ class Acknowledge(uatypes.FrozenClass):
         ("MaxMessageSize", "UInt32"),
         ("MaxChunkCount", "UInt32"),
     ]
+    __slots__ = ["ProtocolVersion", "ReceiveBufferSize", "SendBufferSize", "MaxMessageSize", "MaxChunkCount"]
 
     def __init__(self):
         self.ProtocolVersion = 0
@@ -94,22 +93,21 @@ class Acknowledge(uatypes.FrozenClass):
         self.SendBufferSize = 65536
         self.MaxMessageSize = 0  # No limits
         self.MaxChunkCount = 0  # No limits
-        self._freeze = True
 
 
-class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
+class AsymmetricAlgorithmHeader(object):
 
     ua_types = [
         ("SecurityPolicyURI", "String"),
         ("SenderCertificate", "ByteString"),
         ("ReceiverCertificateThumbPrint", "ByteString"),
     ]
+    __slots__ = ["SecurityPolicyURI", "SenderCertificate", "ReceiverCertificateThumbPrint"]
 
     def __init__(self):
         self.SecurityPolicyURI = "http://opcfoundation.org/UA/SecurityPolicy#None"
         self.SenderCertificate = None
         self.ReceiverCertificateThumbPrint = None
-        self._freeze = True
 
     def __str__(self):
         size1 = len(self.SenderCertificate) if self.SenderCertificate is not None else None
@@ -120,15 +118,14 @@ class AsymmetricAlgorithmHeader(uatypes.FrozenClass):
     __repr__ = __str__
 
 
-class SymmetricAlgorithmHeader(uatypes.FrozenClass):
+class SymmetricAlgorithmHeader(object):
 
     ua_types = [
         ("TokenId", "UInt32"),
     ]
-
+    __slots__ = ["TokenId"]
     def __init__(self):
         self.TokenId = 0
-        self._freeze = True
 
     @staticmethod
     def max_size():
@@ -140,17 +137,17 @@ class SymmetricAlgorithmHeader(uatypes.FrozenClass):
     __repr__ = __str__
 
 
-class SequenceHeader(uatypes.FrozenClass):
+class SequenceHeader(object):
 
     ua_types = [
         ("SequenceNumber", "UInt32"),
         ("RequestId", "UInt32"),
     ]
+    __slots__ = ["SequenceNumber", "RequestId"]
 
     def __init__(self):
         self.SequenceNumber = None
         self.RequestId = None
-        self._freeze = True
 
     @staticmethod
     def max_size():
@@ -341,7 +338,7 @@ class Argument(auto.Argument):
         self.ValueRank = -2
 
 
-class XmlElement(FrozenClass):
+class XmlElement(object):
     '''
     An XML element encoded as a UTF-8 string.
     :ivar Value:
@@ -351,10 +348,9 @@ class XmlElement(FrozenClass):
     ua_types = [
         ('Value', 'String'),
     ]
-
+    __slots__ = ['Value']
     def __init__(self, xml=""):
         self.Value = xml
-        self._freeze = True
 
     def __str__(self):
         return 'XmlElement(' + 'Value:' + str(self.Value) + ')'

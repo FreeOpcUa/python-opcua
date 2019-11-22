@@ -66,7 +66,8 @@ def _rdesc_from_node(parent, node):
 
 
 def _read_and_copy_attrs(node_type, struct, addnode):
-    names = [name for name in struct.__dict__.keys() if not name.startswith("_") and name not in ("BodyLength", "TypeId", "SpecifiedAttributes", "Encoding", "IsAbstract", "EventNotifier")]
+    keys = struct.__dict__.keys() if struct.__dict__  else struct.__slots__
+    names = [name for name in keys if not name.startswith("_") and name not in ("BodyLength", "TypeId", "SpecifiedAttributes", "Encoding", "IsAbstract", "EventNotifier")]
     attrs = [getattr(ua.AttributeIds, name) for name in names]            
     for name in names:
         results = node_type.get_attributes(attrs)

@@ -66,29 +66,6 @@ def win_epoch_to_datetime(epch):
         return datetime(MAXYEAR, 12, 31, 23, 59, 59, 999999)
 
 
-class _FrozenClass(object):
-    """
-    Make it impossible to add members to a class.
-    Not pythonic at all but we found out it prevents many many
-    bugs in use of protocol structures
-    """
-    _freeze = False
-
-    def __setattr__(self, key, value):
-        if self._freeze and not hasattr(self, key):
-            raise TypeError("Error adding member '{0}' to class '{1}', class is frozen, members are {2}".format(
-                key, self.__class__.__name__, self.__dict__.keys()))
-        object.__setattr__(self, key, value)
-
-
-if "PYOPCUA_TYPO_CHECK" in os.environ:
-    # typo check is cpu consuming, but it will make debug easy.
-    # set PYOPCUA_TYPO_CHECK will make all uatype classes inherit from _FrozenClass
-    FrozenClass = _FrozenClass
-else:
-    FrozenClass = object
-
-
 class ValueRank(IntEnum):
     """
     Defines dimensions of a variable.
@@ -202,7 +179,7 @@ class EventNotifier(_MaskEnum):
     HistoryWrite = 3
 
 
-class StatusCode(FrozenClass):
+class StatusCode(object):
     """
     :ivar value:
     :vartype value: int
@@ -213,13 +190,13 @@ class StatusCode(FrozenClass):
     """
 
     ua_types = [("value", "UInt32")]
+    __slots__ = ['value']
 
     def __init__(self, value=0):
         if isinstance(value, str):
             self.value = getattr(status_codes.StatusCodes, value)
         else:
             self.value = value
-        self._freeze = True
 
     def check(self):
         """
@@ -454,7 +431,7 @@ class StringNodeId(NodeId):
 ExpandedNodeId = NodeId
 
 
-class QualifiedName(FrozenClass):
+class QualifiedName(object):
     """
     A string qualified with a namespace index.
     """
@@ -464,12 +441,13 @@ class QualifiedName(FrozenClass):
         ('Name', 'String'),
     ]
 
+    __slots__ = ['NamespaceIndex', 'Name']
+
     def __init__(self, name=None, namespaceidx=0):
         if not isinstance(namespaceidx, int):
             raise UaError("namespaceidx must be an int")
         self.NamespaceIndex = namespaceidx
         self.Name = name
-        self._freeze = True
 
     def to_string(self):
         return "{0}:{1}".format(self.NamespaceIndex, self.Name)
@@ -508,7 +486,7 @@ class QualifiedName(FrozenClass):
     __repr__ = __str__
 
 
-class LocalizedText(FrozenClass):
+class LocalizedText(object):
     """
     A string qualified with a namespace index.
     """
@@ -523,13 +501,14 @@ class LocalizedText(FrozenClass):
             ('Locale', 'String'), 
             ('Text', 'String'), )
 
+    __slots__ = ['Encoding', '_text', 'Locale']
+
     def __init__(self, text=None):
         self.Encoding = 0
         self._text = None
         if text:
             self.Text = text
         self.Locale = None
-        self._freeze = True
 
     @property
     def Text(self):
@@ -565,7 +544,7 @@ class LocalizedText(FrozenClass):
         return not self.__eq__(other)
 
 
-class ExtensionObject(FrozenClass):
+class ExtensionObject(object):
     """
     Any UA object packed as an ExtensionObject
 
@@ -583,12 +562,11 @@ class ExtensionObject(FrozenClass):
             ("Encoding", "Byte"), 
             ("Body", "ByteString"), 
             )
-
+    __slots__ = ['TypeId', 'Encoding', 'Body']
     def __init__(self):
         self.TypeId = NodeId()
         self.Encoding = 0
         self.Body = None
-        self._freeze = True
 
     def __bool__(self):
         return self.Body is not None
@@ -686,7 +664,7 @@ class VariantTypeCustom(object):
         return self.value == other.value
 
 
-class Variant(FrozenClass):
+class Variant(object):
     """
     Create an OPC-UA Variant object.
     if no argument a Null Variant is created.
@@ -702,6 +680,8 @@ class Variant(FrozenClass):
     :ivar is_array:
     :vartype is_array: If the variant is an array. Usually guessed from value.
     """
+
+    __slots__ = ['_value', '_variantType', 'Dimensions', 'is_array', '_freeze']
 
     def __init__(self, value=None, varianttype=None, dimensions=None, is_array=None):
         self._freeze = False # defers validation until ready.
@@ -860,7 +840,7 @@ def get_shape(mylist):
     return dims
 
 
-class DataValue(FrozenClass):
+class DataValue(object):
     """
     A value with an associated timestamp, and quality.
     Automatically generated from xml , copied and modified here to fix errors in xml spec
@@ -897,7 +877,7 @@ class DataValue(FrozenClass):
             ('ServerTimestamp', 'DateTime'), 
             ('ServerPicoseconds', 'UInt16'), 
             )
-
+    __slots__ = ['Encoding', 'Value', 'StatusCode', 'SourceTimestamp', 'SourcePicoseconds', 'ServerTimestamp', 'ServerPicoseconds']
     def __init__(self, variant=None, status=None):
         self.Encoding = 0
         if not isinstance(variant, Variant):
@@ -911,7 +891,6 @@ class DataValue(FrozenClass):
         self.SourcePicoseconds = None
         self.ServerTimestamp = None  # DateTime()
         self.ServerPicoseconds = None
-        self._freeze = True
 
     def __str__(self):
         s = 'DataValue(Value:{0}'.format(self.Value)
