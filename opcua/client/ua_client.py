@@ -63,6 +63,11 @@ class UASocketClient(object):
             if callback:
                 future.add_done_callback(callback)
             self._callbackmap[self._request_id] = future
+
+            # Change to the new security token if the connection has been renewed.
+            if self._connection.next_security_token.TokenId != 0:
+                self._connection.revolve_tokens()
+
             msg = self._connection.message_to_binary(binreq, message_type=message_type, request_id=self._request_id)
             self._socket.write(msg)
         return future
@@ -191,11 +196,9 @@ class UASocketClient(object):
         request.Parameters = params
         future = self._send_request(request, message_type=ua.MessageType.SecureOpen)
 
-        # FIXME: we have a race condition here
-        # we can get a packet with the new token id before we reach to store it..
         response = struct_from_binary(ua.OpenSecureChannelResponse, future.result(self.timeout))
         response.ResponseHeader.ServiceResult.check()
-        self._connection.set_channel(response.Parameters)
+        self._connection.set_channel(response.Parameters, params.RequestType, params.ClientNonce)
         return response.Parameters
 
     def close_secure_channel(self):
