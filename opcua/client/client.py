@@ -305,10 +305,8 @@ class Client(object):
         params.SecurityMode = self.security_policy.Mode
         params.RequestedLifetime = self.secure_channel_timeout
         # length should be equal to the length of key of symmetric encryption
-        nonce = utils.create_nonce(self.security_policy.symmetric_key_size)
-        params.ClientNonce = nonce  # this nonce is used to create a symmetric key
+        params.ClientNonce = utils.create_nonce(self.security_policy.symmetric_key_size) # this nonce is used to create a symmetric key
         result = self.uaclient.open_secure_channel(params)
-        self.security_policy.make_symmetric_key(nonce, result.ServerNonce)
         self.secure_channel_timeout = result.SecurityToken.RevisedLifetime
 
     def close_secure_channel(self):
