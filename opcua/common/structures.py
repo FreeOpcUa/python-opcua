@@ -28,7 +28,7 @@ def get_default_value(uatype, enums):
     elif uatype == "Guid":
         return "uuid.uuid4()"
     elif uatype in ("ByteString", "CharArray", "Char"):
-        return "b''" 
+        return "b''"
     elif uatype == "Boolean":
         return "True"
     elif uatype == "DateTime":
@@ -110,6 +110,11 @@ class {0}(object):
 
         code += "    ]"
         code += """
+    def __str__(self):
+        vals = [name + ": " + str(val) for name, val in self.__dict__.items()]
+        return self.__class__.__name__ + "(" + ", ".join(vals) + ")"
+
+    __repr__ = __str__
 
     def __init__(self):
 """
@@ -156,7 +161,7 @@ class StructGenerator(object):
                 intenum.fields.append(enumvalue)
                 enums[child.get("Name")] = value
             self.model.append(intenum)
-            
+
         for child in root.iter("{*}StructuredType"):
             struct = Struct(child.get("Name"))
             array = False
@@ -248,7 +253,7 @@ def load_type_definitions(server, nodes=None):
         for desc in server.nodes.opc_binary.get_children_descriptions():
             if desc.BrowseName != ua.QualifiedName("Opc.Ua"):
                 nodes.append(server.get_node(desc.NodeId))
-    
+
     structs_dict = {}
     generators = []
     for node in nodes:
@@ -303,7 +308,7 @@ def _generate_python_class(model, env=None):
     """
     generate Python code and execute in a new environment
     return a dict of structures {name: class}
-    Rmw: Since the code is generated on the fly, in case of error the stack trace is 
+    Rmw: Since the code is generated on the fly, in case of error the stack trace is
     not available and debugging is very hard...
     """
     if env is None:
