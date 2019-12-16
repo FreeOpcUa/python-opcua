@@ -96,19 +96,8 @@ class Server(object):
         self.set_application_uri(self._application_uri)
         sa_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerArray))
         sa_node.set_value([self._application_uri])
-        status_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus))
-        build_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_BuildInfo))
-        status = ua.ServerStatusDataType()
-        status.BuildInfo.ProductUri = self.product_uri
-        status.BuildInfo.ManufacturerName = self.manufacturer_name
-        status.BuildInfo.ProductName = self.name
-        status.BuildInfo.SoftwareVersion = "1.0pre"
-        status.BuildInfo.BuildNumber = "0"
-        status.BuildInfo.BuildDate = datetime.now()
-        status.SecondsTillShutdown = 0
-        status_node.set_value(status)
-        build_node.set_value(status.BuildInfo)
 
+        self.set_build_info(self.product_uri, self.manufacturer_name, self.name, "1.0pre", "0", datetime.now())
 
         # enable all endpoints by default
         self.certificate = None
@@ -303,6 +292,41 @@ class Server(object):
 
     def set_server_name(self, name):
         self.name = name
+
+    def set_build_info(self, product_uri, manufacturer_name, product_name, software_version, build_number, build_date):
+        """
+        Update the servers build information.
+        This needs to be added to the ServerStatus, BuildInfo and all underlying nodes
+        """
+        status_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus))
+        build_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_BuildInfo))
+        status = status_node.get_value()
+        if status is None:
+            status = ua.ServerStatusDataType()
+
+        status.BuildInfo.ProductUri = product_uri
+        status.BuildInfo.ManufacturerName = manufacturer_name
+        status.BuildInfo.ProductName = product_name
+        status.BuildInfo.SoftwareVersion = software_version
+        status.BuildInfo.BuildNumber = build_number
+        status.BuildInfo.BuildDate = build_date
+        status_node.set_value(status)
+        build_node.set_value(status.BuildInfo)
+
+        # we also need to update all individual nodes :/
+        product_uri_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_BuildInfo_ProductUri))
+        product_name_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_BuildInfo_ProductName))
+        product_manufacturer_name_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_BuildInfo_ManufacturerName))
+        product_software_version_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_BuildInfo_SoftwareVersion))
+        product_build_number_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_BuildInfo_BuildNumber))
+        product_build_date_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_ServerStatus_BuildInfo_BuildDate))
+
+        product_uri_node.set_value(status.BuildInfo.ProductUri)
+        product_name_node.set_value(status.BuildInfo.ProductName)
+        product_manufacturer_name_node.set_value(status.BuildInfo.ManufacturerName)
+        product_software_version_node.set_value(status.BuildInfo.SoftwareVersion)
+        product_build_number_node.set_value(status.BuildInfo.BuildNumber)
+        product_build_date_node.set_value(status.BuildInfo.BuildDate)
 
     def start(self):
         """
