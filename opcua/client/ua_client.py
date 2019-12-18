@@ -6,7 +6,7 @@ import logging
 import socket
 import errno
 from threading import Thread, Lock
-from concurrent.futures import Future
+from concurrent.futures import Future, CancelledError
 from functools import partial
 
 from opcua import ua
@@ -473,7 +473,10 @@ class UaClient(object):
 
     def _call_publish_callback(self, future):
         self.logger.info("call_publish_callback")
-        data = future.result()
+        try:
+            data = future.result()
+        except CancelledError:  # we are cancelled, we just return
+            return
 
         # check if answer looks ok
         try:
