@@ -4,7 +4,7 @@ high level interface to subscriptions
 import time
 import logging
 from threading import Lock
-import collections
+from collections import Iterable
 
 from opcua import ua
 from opcua.common import events
@@ -211,7 +211,7 @@ class Subscription(object):
 
     def _subscribe(self, nodes, attr, mfilter=None, queuesize=0):
         is_list = True
-        if isinstance(nodes, collections.Iterable):
+        if isinstance(nodes, Iterable):
             nodes = list(nodes)
         else:
             nodes = [nodes]
