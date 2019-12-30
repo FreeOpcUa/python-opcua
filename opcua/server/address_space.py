@@ -1,15 +1,10 @@
-from threading import RLock
 import logging
 from datetime import datetime
-import collections
-import shelve
-try:
-    import cPickle as pickle
-except:
-    import pickle
+import random
 
 from opcua import ua
 from opcua.server.user_manager import UserManager
+from opcua.common.utils import ThreadSafeDict
 
 
 class AttributeValue(object):
@@ -317,10 +312,10 @@ class NodeManagementService(object):
             return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
 
         if item.DeleteTargetReferences:
-            for elem in self._aspace.keys():
-                for rdesc in self._aspace[elem].references:
+            for ndata in self._aspace.values():
+                for rdesc in ndata.references:
                     if rdesc.NodeId == item.NodeId:
-                        self._aspace[elem].references.remove(rdesc)
+                        ndata.references.remove(rdesc)
 
         self._delete_node_callbacks(self._aspace[item.NodeId])
 
@@ -478,165 +473,44 @@ class MethodService(object):
         return res
 
 
-class AddressSpace(object):
-
+class AddressSpace(ThreadSafeDict):
     """
     The address space object stores all the nodes of the OPC-UA server
     and helper methods.
     The methods are thread safe
     """
+    # https://opcfoundation.org/UA/schemas/1.03/Opc.Ua.Types.bsd
+    # numeric nodeid is UInt32, but Siemens MindSphere uses Int32.
+    MAX_NUMERIC_IDENTIFIER = 0x7fffffff
+    DEFAULT_USER_NAMESPACE_INDEX = 2
 
-    def __init__(self):
+    def __init__(self, cache=None):
+        super(AddressSpace, self).__init__(cache)
         self.logger = logging.getLogger(__name__)
-        self._nodes = {}
-        self._lock = RLock()  # FIXME: should use multiple reader, one writter pattern
         self._datachange_callback_counter = 200
         self._handle_to_attribute_map = {}
-        self._default_idx = 2
-        self._nodeid_counter = {0: 20000, 1: 2000}
 
-    def __getitem__(self, nodeid):
-        with self._lock:
-            return self._nodes.__getitem__(nodeid)
-
-    def get(self, nodeid):
-        with self._lock:
-            return self._nodes.get(nodeid, None)
-
-    def __setitem__(self, nodeid, value):
-        with self._lock:
-            return self._nodes.__setitem__(nodeid, value)
-
-    def __contains__(self, nodeid):
-        with self._lock:
-            return self._nodes.__contains__(nodeid)
-
-    def __delitem__(self, nodeid):
-        with self._lock:
-            self._nodes.__delitem__(nodeid)
-
-    def generate_nodeid(self, idx=None):
-        if idx is None:
-            idx = self._default_idx
-        if idx in self._nodeid_counter:
-            self._nodeid_counter[idx] += 1
-        else:
-            # get the biggest identifier number from the existed nodes in address space
-            identifier_list = sorted([nodeid.Identifier for nodeid in self._nodes.keys()
-                                      if nodeid.NamespaceIndex == idx and nodeid.NodeIdType
-                                      in (ua.NodeIdType.Numeric, ua.NodeIdType.TwoByte, ua.NodeIdType.FourByte)])
-            if identifier_list:
-                self._nodeid_counter[idx] = identifier_list[-1]
-            else:
-                self._nodeid_counter[idx] = 1
-        nodeid = ua.NodeId(self._nodeid_counter[idx], idx)
+    def generate_nodeid(self, idx=DEFAULT_USER_NAMESPACE_INDEX):
+        nodeid = ua.NodeId(
+            identifier=random.randrange(AddressSpace.MAX_NUMERIC_IDENTIFIER),
+            namespaceidx=idx
+        )
         with self._lock:  # OK since reentrant lock
-            while True:
-                if nodeid in self._nodes:
+            for retry in range(0, 10):
+                if nodeid in self:
                     nodeid = self.generate_nodeid(idx)
                 else:
                     return nodeid
-
-    def keys(self):
-        with self._lock:
-            return self._nodes.keys()
-
-    def empty(self):
-        """
-        Delete all nodes in address space
-        """
-        with self._lock:
-            self._nodes = {}
-
-    def dump(self, path):
-        """
-        Dump address space as binary to file; note that server must be stopped for this method to work
-        DO NOT DUMP AN ADDRESS SPACE WHICH IS USING A SHELF (load_aspace_shelf), ONLY CACHED NODES WILL GET DUMPED!
-        """
-        # prepare nodes in address space for being serialized
-        for nodeid, ndata in self._nodes.items():
-            # if the node has a reference to a method call, remove it so the object can be serialized
-            if ndata.call is not None:
-                self._nodes[nodeid].call = None
-
-        with open(path, 'wb') as f:
-            pickle.dump(self._nodes, f, pickle.HIGHEST_PROTOCOL)
-
-    def load(self, path):
-        """
-        Load address space from a binary file, overwriting everything in the current address space
-        """
-        with open(path, 'rb') as f:
-            self._nodes = pickle.load(f)
-
-    def make_aspace_shelf(self, path):
-        """
-        Make a shelf for containing the nodes from the standard address space; this is typically only done on first
-        start of the server. Subsequent server starts will load the shelf, nodes are then moved to a cache
-        by the LazyLoadingDict class when they are accessed. Saving data back to the shelf
-        is currently NOT supported, it is only used for the default OPC UA standard address space
-
-        Note: Intended for slow devices, such as Raspberry Pi, to greatly improve start up time
-        """
-        s = shelve.open(path, "n", protocol=pickle.HIGHEST_PROTOCOL)
-        for nodeid, ndata in self._nodes.items():
-            s[nodeid.to_string()] = ndata
-        s.close()
-
-    def load_aspace_shelf(self, path):
-        """
-        Load the standard address space nodes from a python shelve via LazyLoadingDict as needed.
-        The dump() method can no longer be used if the address space is being loaded from a shelf
-
-        Note: Intended for slow devices, such as Raspberry Pi, to greatly improve start up time
-        """
-        class LazyLoadingDict(collections.MutableMapping):
-            """
-            Special dict that only loads nodes as they are accessed. If a node is accessed it gets copied from the
-            shelve to the cache dict. All user nodes are saved in the cache ONLY. Saving data back to the shelf
-            is currently NOT supported
-            """
-            def __init__(self, source):
-                self.source = source  # python shelf
-                self.cache = {}  # internal dict
-
-            def __getitem__(self, key):
-                # try to get the item (node) from the cache, if it isn't there get it from the shelf
-                try:
-                    return self.cache[key]
-                except KeyError:
-                    node = self.cache[key] = self.source[key.to_string()]
-                    return node
-
-            def __setitem__(self, key, value):
-                # add a new item to the cache; if this item is in the shelf it is not updated
-                self.cache[key] = value
-
-            def __contains__(self, key):
-                return key in self.cache or key.to_string() in self.source
-
-            def __delitem__(self, key):
-                # only deleting items from the cache is allowed
-                del self.cache[key]
-
-            def __iter__(self):
-                # only the cache can be iterated over
-                return iter(self.cache.keys())
-
-            def __len__(self):
-                # only returns the length of items in the cache, not unaccessed items in the shelf
-                return len(self.cache)
-
-        self._nodes = LazyLoadingDict(shelve.open(path, "r"))
+        assert(False)  # What are the odds?
 
     def get_attribute_value(self, nodeid, attr):
         with self._lock:
             self.logger.debug("get attr val: %s %s", nodeid, attr)
-            if nodeid not in self._nodes:
+            if nodeid not in self:
                 dv = ua.DataValue()
                 dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
                 return dv
-            node = self._nodes[nodeid]
+            node = self[nodeid]
             if attr not in node.attributes:
                 dv = ua.DataValue()
                 dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
@@ -649,10 +523,11 @@ class AddressSpace(object):
     def set_attribute_value(self, nodeid, attr, value):
         with self._lock:
             self.logger.debug("set attr val: %s %s %s", nodeid, attr, value)
-            node = self._nodes.get(nodeid, None)
-            if node is None:
+ 
+            try:
+                attval = self[nodeid].attributes.get(attr, None)
+            except KeyError:
                 return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
-            attval = node.attributes.get(attr, None)
             if attval is None:
                 return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
 
@@ -673,12 +548,13 @@ class AddressSpace(object):
     def add_datachange_callback(self, nodeid, attr, callback):
         with self._lock:
             self.logger.debug("set attr callback: %s %s %s", nodeid, attr, callback)
-            if nodeid not in self._nodes:
+
+            try:
+                attval = self[nodeid].attributes.get(attr, None)
+            except KeyError:
                 return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown), 0
-            node = self._nodes[nodeid]
-            if attr not in node.attributes:
+            if attval is None:
                 return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid), 0
-            attval = node.attributes[attr]
             self._datachange_callback_counter += 1
             handle = self._datachange_callback_counter
             attval.datachange_callbacks[handle] = callback
@@ -689,9 +565,9 @@ class AddressSpace(object):
         with self._lock:
             if handle in self._handle_to_attribute_map:
                 nodeid, attr = self._handle_to_attribute_map.pop(handle)
-                self._nodes[nodeid].attributes[attr].datachange_callbacks.pop(handle)
+                self[nodeid].attributes[attr].datachange_callbacks.pop(handle)
 
     def add_method_callback(self, methodid, callback):
         with self._lock:
-            node = self._nodes[methodid]
+            node = self[methodid]
             node.call = callback

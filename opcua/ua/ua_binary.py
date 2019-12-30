@@ -125,6 +125,8 @@ class _Guid(object):
 
 
 class _Primitive1(object):
+    PY2 = sys.version_info < (3, 0)
+
     def __init__(self, fmt):
         self._fmt = fmt
         st = struct.Struct(fmt.format(1))
@@ -141,15 +143,20 @@ class _Primitive1(object):
         if data is None:
             return Primitives.Int32.pack(-1)
         sizedata = Primitives.Int32.pack(len(data))
-        return sizedata + struct.pack(self._fmt.format(len(data)), *data)
+        fmt = self._str_to_bytes(self._fmt.format(len(data)))
+        return sizedata + struct.pack(fmt, *data)
 
     def unpack_array(self, data, length):
         if length == -1:
             return None
         if length == 0:
             return ()
-        return struct.unpack(self._fmt.format(length), data.read(self.size * length))
+        fmt = self._str_to_bytes(self._fmt.format(length))
+        return struct.unpack(fmt, data.read(self.size * length))
 
+    @staticmethod
+    def _str_to_bytes(_str, PY2=PY2):
+        return bytes(_str) if PY2 else bytes(_str, 'utf-8')
 
 class Primitives1(object):
     SByte = _Primitive1("<{:d}b")
@@ -273,6 +280,8 @@ def to_binary(uatype, val):
         return getattr(Primitives, uatype).pack(val)
     elif isinstance(val, (IntEnum, Enum)):
         return Primitives.UInt32.pack(val.value)
+    elif isinstance(val, int):
+        return Primitives.UInt32.pack(val)
     elif isinstance(val, ua.NodeId):
         return nodeid_to_binary(val)
     elif isinstance(val, ua.Variant):

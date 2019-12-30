@@ -75,7 +75,7 @@ class Server(object):
 
     """
 
-    def __init__(self, shelffile=None, iserver=None):
+    def __init__(self, aspace=None, iserver=None):
         self.logger = logging.getLogger(__name__)
         self.endpoint = urlparse("opc.tcp://0.0.0.0:4840/freeopcua/server/")
         self._application_uri = "urn:freeopcua:python:server"
@@ -87,7 +87,7 @@ class Server(object):
         if iserver is not None:
             self.iserver = iserver
         else:
-            self.iserver = InternalServer(shelffile = shelffile, parent = self)
+            self.iserver = InternalServer(aspace = aspace, parent = self)
         self.bserver = None
         self._policies = []
         self.nodes = Shortcuts(self.iserver.isession)

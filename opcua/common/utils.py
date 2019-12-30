@@ -9,6 +9,7 @@ from concurrent.futures import Future
 import functools
 import threading
 from socket import error as SocketError
+from collections import MutableMapping
 
 try:
     import asyncio
@@ -210,4 +211,53 @@ class ThreadLoop(threading.Thread):
         return future.result()
 
 
+class ThreadSafeDict(MutableMapping):
 
+    def __init__(self, cache=None):
+        self._lock = cache._lock if hasattr(cache, '_lock') else threading.RLock()  # FIXME: should use multiple reader, one writter pattern
+        if cache is None:
+            self._cache = {}
+        else:
+            assert(isinstance(cache, (dict, ThreadSafeDict)))
+            self._cache = cache
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._cache = None
+
+    def __getitem__(self, key):
+        with self._lock:
+            return self._cache.__getitem__(key)
+
+    def get(self, key, value=None):
+        with self._lock:
+            return self._cache.get(key, value)
+
+    def __setitem__(self, key, value):
+        with self._lock:
+            return self._cache.__setitem__(key, value)
+
+    def __contains__(self, key):
+        with self._lock:
+            return self._cache.__contains__(key)
+
+    def __delitem__(self, key):
+        with self._lock:
+            del self._cache[key]
+
+    def __iter__(self):
+        with self._lock:
+            return self._cache.__iter__()
+
+    def __len__(self):
+        return len(self._cache)
+
+    def keys(self):
+        with self._lock:
+            return self._cache.keys()
+
+    def empty(self):
+        with self._lock:
+            self._cache = {}
