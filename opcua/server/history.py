@@ -341,20 +341,6 @@ class HistoryManager(object):
             cont = ua.ua_binary.Primitives.DateTime.pack(cont)
         return results, cont
 
-    def update_history(self, params):
-        """
-        Update history for a node
-        This is the part AttributeService, but implemented as its own service
-        since it requires more logic than other attribute service methods
-        """
-        results = []
-        for _ in params.HistoryUpdateDetails:
-            result = ua.HistoryUpdateResult()
-            # we do not accept to rewrite history
-            result.StatusCode = ua.StatusCode(ua.StatusCodes.BadNotWritable)
-            results.append(results)
-        return results
-
     def stop(self):
         """
         call stop methods of active storage interface whenever the server is stopped
