@@ -222,8 +222,8 @@ class InternalServer(object):
             return edps
         return self.endpoints[:]
 
-    def create_session(self, name, user=UserManager.User.Anonymous, external=False):
-        return self.session_cls(self, self.aspace, self.subscription_service, name, user=user, external=external)
+    def create_session(self, name, user=UserManager.User.Anonymous):
+        return self.session_cls(self, self.aspace, self.subscription_service, name, user=user)
 
     def enable_history_data_change(self, node, period=timedelta(days=7), count=0):
         """
@@ -288,10 +288,9 @@ class InternalSession(object):
     _counter = 10
     _auth_counter = 1000
 
-    def __init__(self, internal_server, aspace, submgr, name, user=UserManager.User.Anonymous, external=False):
+    def __init__(self, internal_server, aspace, submgr, name, user=UserManager.User.Anonymous):
         self.logger = logging.getLogger(__name__)
         self.iserver = internal_server
-        self.external = external  # define if session is external, we need to copy some objects if it is internal
         self.aspace = aspace
         self.subscription_service = submgr
         self.name = name

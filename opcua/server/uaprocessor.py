@@ -125,7 +125,7 @@ class UaProcessor(object):
             params = struct_from_binary(ua.CreateSessionParameters, body)
 
             # create the session on server
-            self.session = self.iserver.create_session(self.name, external=True)
+            self.session = self.iserver.create_session(self.name)
             # get a session creation result to send back
             sessiondata = self.session.create_session(params, sockname=self.sockname)
 
