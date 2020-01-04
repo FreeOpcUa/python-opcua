@@ -370,10 +370,10 @@ class InternalSubscription(object):
     def republish(self, nb):
         self.logger.info("re-publish request for ack %s in subscription %s", nb, self)
         with self._lock:
-            notificationMessage = self._not_acknowledged_results.pop(nb, None)
-            if notificationMessage:
+            result = self._not_acknowledged_results.pop(nb, None)
+            if result:
                 self.logger.info("re-publishing ack %s in subscription %s", nb, self)
-                return notificationMessage
+                return result.NotificationMessage
             else:
                 self.logger.info("Error request to re-published non existing ack %s in subscription %s", nb, self)
                 return ua.NotificationMessage()
