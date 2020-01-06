@@ -78,8 +78,8 @@ class MonitoredItemService(object):
 
     def trigger_datachange(self, handle, nodeid, attr):
         self.logger.debug("triggering datachange for handle %s, nodeid %s, and attribute %s", handle, nodeid, attr)
-        variant = self.aspace.get_attribute_value(nodeid, attr)
-        self.datachange_callback(handle, variant)
+        datavalue = self.aspace.get_attribute_value(nodeid, attr)
+        self.datachange_callback(handle, datavalue)
 
     def _modify_monitored_item(self, params):
         with self._lock:
