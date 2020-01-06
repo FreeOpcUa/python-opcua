@@ -99,7 +99,6 @@ class MonitoredItemService(object):
     def _commit_monitored_item(self, result, mdata):
         if result.StatusCode.is_good():
             self._monitored_items[result.MonitoredItemId] = mdata
-            self._monitored_item_counter += 1
 
     def _make_monitored_item_common(self, params):
         result = ua.MonitoredItemCreateResult()
