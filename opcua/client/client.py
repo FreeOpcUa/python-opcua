@@ -436,7 +436,7 @@ class Client(object):
             )
         else:
             params.ClientSignature.Algorithm = (
-                "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+                security_policies.SecurityPolicyBasic256.AsymmetricSignatureURI
             )
         params.ClientSignature.Signature = self.security_policy.asymmetric_cryptography.signature(challenge)
         params.LocaleIds.append("en")
