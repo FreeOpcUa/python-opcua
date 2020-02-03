@@ -543,6 +543,20 @@ class Client(object):
         params.Priority = 0
         return Subscription(self.uaclient, params, handler)
 
+    def reconciliate_subscription(self, subscription):
+        """
+        Reconciliate the server state with the client
+        """
+        node = self.get_node(
+            ua.FourByteNodeId(ua.ObjectIds.Server_GetMonitoredItems)
+        )
+        # returns server and client handles
+        monitored_items = node.get_parent().call_method(
+            ua.uatypes.QualifiedName("GetMonitoredItems"),
+            ua.Variant(subscription.subscription_id, ua.datatype_to_varianttype(7))
+        )
+        return subscription.reconciliate(monitored_items)
+
     def get_namespace_array(self):
         ns_node = self.get_node(ua.NodeId(ua.ObjectIds.Server_NamespaceArray))
         return ns_node.get_value()
