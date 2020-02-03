@@ -85,6 +85,7 @@ class Subscription(object):
         self._monitoreditems_map = {}
         self._lock = Lock()
         self.subscription_id = None
+        self.unknown_handler = False
         response = self.server.create_subscription(
             params, self.publish_callback, ready_callback=self.ready_callback)
         # Set it here to keep the old behavof as well, but this may not run if
@@ -139,6 +140,7 @@ class Subscription(object):
             with self._lock:
                 if item.ClientHandle not in self._monitoreditems_map:
                     self.logger.warning("Received a notification for unknown handle: %s", item.ClientHandle)
+                    self.unknown_handler = True
                     continue
                 data = self._monitoreditems_map[item.ClientHandle]
             if hasattr(self._handler, "datachange_notification"):
@@ -357,3 +359,26 @@ class Subscription(object):
         deadband_filter.DeadbandType = deadbandtype
         deadband_filter.DeadbandValue = deadband_val  # absolute float value or from 0 to 100 for percentage deadband
         return self._subscribe(var, attr, deadband_filter, queuesize)
+
+    def reconciliate(self, monitored_items):
+        """
+        Reconciliate client monitored_items with its server counterpart.
+        :param monitored_items_srv: monitored items handles from server
+        :return: Number of mi added and deleted to the client subscription
+        """
+        mi_client_handlers = set(monitored_items[1])
+        monitored_map = set(self._monitoreditems_map.keys())
+        # find MI still present on the server-side
+        client_handler_to_del = mi_client_handlers - monitored_map
+        server_handler_to_del = []
+        for idx, item in enumerate(monitored_items[1]):
+            if item in client_handler_to_del:
+                server_handler_to_del.append(monitored_items[0][idx])
+        for item in server_handler_to_del:
+            try:
+                self.unsubscribe(item)
+            # fail silenty if the MI has already been removed
+            except ua.uaerrors._auto.BadMonitoredItemIdInvalid:
+                pass
+        self.unknown_handler = False
+        return len(client_handler_to_del)
