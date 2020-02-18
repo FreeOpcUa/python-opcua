@@ -85,7 +85,7 @@ class Subscription(object):
         self._monitoreditems_map = {}
         self._lock = Lock()
         self.subscription_id = None
-        self.unknown_handler = False
+        self.has_unknown_handlers = False
         response = self.server.create_subscription(
             params, self.publish_callback, ready_callback=self.ready_callback)
         # Set it here to keep the old behavof as well, but this may not run if
@@ -140,7 +140,7 @@ class Subscription(object):
             with self._lock:
                 if item.ClientHandle not in self._monitoreditems_map:
                     self.logger.warning("Received a notification for unknown handle: %s", item.ClientHandle)
-                    self.unknown_handler = True
+                    self.has_unknown_handlers = True
                     continue
                 data = self._monitoreditems_map[item.ClientHandle]
             if hasattr(self._handler, "datachange_notification"):
@@ -380,5 +380,5 @@ class Subscription(object):
             # fail silenty if the MI has already been removed
             except ua.uaerrors._auto.BadMonitoredItemIdInvalid:
                 pass
-        self.unknown_handler = False
+        self.has_unknown_handlers = False
         return len(client_handler_to_del)
