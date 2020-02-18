@@ -128,7 +128,7 @@ class SubscriptionTests(object):
             val = copy(val)  # we do not want to modify object in our db, we need a copy in order to generate event
             val.append(i)
             var.set_value(copy(val))
-        time.sleep(0.2)  # let last event arrive
+        time.sleep(0.3)  # let last event arrive
         self.assertEqual(myhandler.datachange_count, nb + 1)
         sub.delete()
 
