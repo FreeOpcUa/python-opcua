@@ -12,6 +12,9 @@ if __name__ == "__main__":
     client = Client("opc.tcp://localhost:53530/OPCUA/SimulationServer/")
     client.set_security_string("Basic256Sha256,Sign,certificate-example.der,private-key-example.pem")
     try:
+        client.application_uri = "urn:example.org:FreeOpcUa:python-opcua"
+        client.secure_channel_timeout = 10000
+        client.session_timeout = 10000
         client.connect()
         root = client.get_root_node()
         objects = client.get_objects_node()
