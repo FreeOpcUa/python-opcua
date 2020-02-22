@@ -27,6 +27,9 @@ except ImportError:
     use_crypto = False
 
 
+_logger = logging.getLogger(__name__)
+
+
 class KeepAlive(Thread):
 
     """
@@ -40,7 +43,7 @@ class KeepAlive(Thread):
             in milliseconds.
         """
         Thread.__init__(self)
-        self.logger = logging.getLogger(__name__)
+        _logger = logging.getLogger(__name__)
 
         self.client = client
         self._dostop = False
@@ -52,25 +55,25 @@ class KeepAlive(Thread):
             self.timeout = 3600000  # 1 hour
 
     def run(self):
-        self.logger.debug("starting keepalive thread with period of %s milliseconds", self.timeout)
+        _logger.debug("starting keepalive thread with period of %s milliseconds", self.timeout)
         server_state = self.client.get_node(ua.FourByteNodeId(ua.ObjectIds.Server_ServerStatus_State))
         while not self._dostop:
             with self._cond:
                 self._cond.wait(self.timeout / 1000)
             if self._dostop:
                 break
-            self.logger.debug("renewing channel")
+            _logger.debug("renewing channel")
             try:
                 self.client.open_secure_channel(renew=True)
             except concurrent.futures.TimeoutError:
-                self.logger.debug("keepalive failed: timeout on open_secure_channel()")
+                _logger.debug("keepalive failed: timeout on open_secure_channel()")
                 break
             val = server_state.get_value()
-            self.logger.debug("server state is: %s ", val)
-        self.logger.debug("keepalive thread has stopped")
+            _logger.debug("server state is: %s ", val)
+        _logger.debug("keepalive thread has stopped")
 
     def stop(self):
-        self.logger.debug("stoping keepalive thread")
+        _logger.debug("stoping keepalive thread")
         self._dostop = True
         with self._cond:
             self._cond.notify_all()
@@ -109,7 +112,7 @@ class Client(object):
 
         See the source code for the exhaustive list.
         """
-        self.logger = logging.getLogger(__name__)
+        _logger = logging.getLogger(__name__)
         self.server_url = urlparse(url)
         # take initial username and password from the url
         self._username = self.server_url.username
@@ -146,6 +149,9 @@ class Client(object):
         Find endpoint with required security mode and policy URI
         """
         for ep in endpoints:
+            print(ep.EndpointUrl,ua.OPC_TCP_SCHEME)
+            print(ep.SecurityMode, security_mode)
+            print(ep.SecurityPolicyUri, policy_uri)
             if (ep.EndpointUrl.startswith(ua.OPC_TCP_SCHEME) and
                     ep.SecurityMode == security_mode and
                     ep.SecurityPolicyUri == policy_uri):
@@ -319,7 +325,7 @@ class Client(object):
         params.ClientNonce = utils.create_nonce(self.security_policy.symmetric_key_size) # this nonce is used to create a symmetric key
         result = self.uaclient.open_secure_channel(params)
         if self.secure_channel_timeout != result.SecurityToken.RevisedLifetime:
-            self.logger.warning("Requested secure channel timeout to be %dms, got %dms instead",
+            _logger.warning("Requested secure channel timeout to be %dms, got %dms instead",
                                 self.secure_channel_timeout,
                                 result.SecurityToken.RevisedLifetime)
             self.secure_channel_timeout = result.SecurityToken.RevisedLifetime
@@ -386,7 +392,7 @@ class Client(object):
         ep = Client.find_endpoint(response.ServerEndpoints, self.security_policy.Mode, self.security_policy.URI)
         self._policy_ids = ep.UserIdentityTokens
         if self.session_timeout != response.RevisedSessionTimeout:
-            self.logger.warning("Requested session timeout to be %dms, got %dms instead",
+            _logger.warning("Requested session timeout to be %dms, got %dms instead",
                                 self.secure_channel_timeout,
                                 response.RevisedSessionTimeout)
             self.session_timeout = response.RevisedSessionTimeout
@@ -472,7 +478,7 @@ class Client(object):
             # then the password only contains UTF-8 encoded password
             # and EncryptionAlgorithm is null
             if self._password:
-                self.logger.warning("Sending plain-text password")
+                _logger.warning("Sending plain-text password")
                 params.UserIdentityToken.Password = password.encode('utf8')
             params.UserIdentityToken.EncryptionAlgorithm = None
         elif self._password:
