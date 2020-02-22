@@ -12,6 +12,7 @@ if __name__ == "__main__":
     server = Server()
     server.set_endpoint("opc.tcp://0.0.0.0:4840/freeopcua/server/")
 
+    server.set_security_policy([ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt])
     # load server certificate and private key. This enables endpoints
     # with signing and encryption.
     server.load_certificate("certificate-example.der")
