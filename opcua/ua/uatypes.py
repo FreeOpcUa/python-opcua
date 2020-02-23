@@ -5,6 +5,7 @@ implement ua datatypes
 import logging
 from enum import Enum, IntEnum
 from calendar import timegm
+import pytz
 import sys
 import os
 import uuid
@@ -29,26 +30,12 @@ HUNDREDS_OF_NANOSECONDS = 10000000
 FILETIME_EPOCH_AS_DATETIME = datetime(1601, 1, 1)
 
 
-class UTC(tzinfo):
-    """
-    UTC
-    """
-
-    def utcoffset(self, dt):
-        return timedelta(0)
-
-    def tzname(self, dt):
-        return "UTC"
-
-    def dst(self, dt):
-        return timedelta(0)
-
-
-
 # method copied from David Buxton <david@gasmark6.com> sample code
 def datetime_to_win_epoch(dt):
     if (dt.tzinfo is None) or (dt.tzinfo.utcoffset(dt) is None):
-        dt = dt.replace(tzinfo=UTC())
+        dt = dt.replace(tzinfo=pytz.utc)
+    else:
+        dt = dt.astimezone(tz=pytz.utc)
     ft = EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
     return ft + (dt.microsecond * 10)
 
