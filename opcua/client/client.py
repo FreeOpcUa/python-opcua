@@ -548,12 +548,12 @@ class Client(object):
         Reconciliate the server state with the client
         """
         node = self.get_node(
-            ua.FourByteNodeId(ua.ObjectIds.Server_GetMonitoredItems)
+            ua.FourByteNodeId(ua.ObjectIds.Server)
         )
         # returns server and client handles
-        monitored_items = node.get_parent().call_method(
+        monitored_items = node.call_method(
             ua.uatypes.QualifiedName("GetMonitoredItems"),
-            ua.Variant(subscription.subscription_id, ua.datatype_to_varianttype(7))
+            ua.Variant(subscription.subscription_id, ua.VariantType.UInt32)
         )
         return subscription.reconciliate(monitored_items)
 

@@ -378,7 +378,7 @@ class Subscription(object):
             try:
                 self.unsubscribe(item)
             # fail silenty if the MI has already been removed
-            except ua.uaerrors._auto.BadMonitoredItemIdInvalid:
+            except ua.uaerrors.BadMonitoredItemIdInvalid:
                 pass
         self.has_unknown_handlers = False
         return len(client_handler_to_del)
