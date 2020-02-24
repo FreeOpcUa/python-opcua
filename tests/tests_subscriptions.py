@@ -3,6 +3,7 @@ import time
 from datetime import datetime, timedelta
 from copy import copy
 import unittest
+from unittest import mock
 
 import opcua
 from opcua import Client
@@ -595,6 +596,22 @@ class SubscriptionTests(object):
         sub.unsubscribe(handle)
         sub.delete()
 
+    def test_subscription_reconciliate(self):
+        myhandler = SubHandler()
+        sub = self.opc.create_subscription(100, myhandler)
+        sub.has_unknown_handlers = True
+        get_mi_response = [[1, 2, 3, 4], [301, 201, 202, 302]]
+        mi_map = {301: myhandler, 302: myhandler}
+        sub.unsubscribe = mock.Mock()
+        with mock.patch.dict(sub._monitoreditems_map, mi_map):
+            mi_del = sub.reconciliate(get_mi_response)
+            mi_srv_only = set(get_mi_response[1]) - set(mi_map.keys())
+            for mi_handler in (2, 3):
+                self.assertIn(mock.call(mi_handler), sub.unsubscribe.call_args_list)
+            for mi_handler in (1, 4):
+                self.assertNotIn(mock.call(mi_handler), sub.unsubscribe.call_args_list)
+            self.assertEqual(mi_del, len(mi_srv_only))
+            self.assertFalse(sub.has_unknown_handlers)
 
 class CustomInternalSession(InternalSession):
     TIMEOUT = 4
