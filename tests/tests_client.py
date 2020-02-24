@@ -1,5 +1,4 @@
 import unittest
-from unittest import mock
 
 from opcua import Client
 from opcua import Server
@@ -12,6 +11,11 @@ from tests_common import CommonTests, add_server_methods
 from tests_xml import XmlTests
 
 from tests_enum_struct import add_server_custom_enum_struct
+
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 port_num1 = 48510
 

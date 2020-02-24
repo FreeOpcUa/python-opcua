@@ -3,13 +3,17 @@ import time
 from datetime import datetime, timedelta
 from copy import copy
 import unittest
-from unittest import mock
 
 import opcua
 from opcua import Client
 from opcua import Server
 from opcua import ua
 from opcua.server.internal_server import InternalServer, InternalSession
+
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 
 class SubHandler():
