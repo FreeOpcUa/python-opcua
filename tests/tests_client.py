@@ -1,4 +1,5 @@
 import unittest
+from unittest import mock
 
 from opcua import Client
 from opcua import Server
@@ -6,7 +7,7 @@ from opcua import ua
 from opcua.client.ua_client import UASocketClient
 from opcua.common.utils import SocketWrapper
 
-from tests_subscriptions import SubscriptionTests
+from tests_subscriptions import SubscriptionTests, SubHandler
 from tests_common import CommonTests, add_server_methods
 from tests_xml import XmlTests
 
@@ -152,3 +153,24 @@ class TestClient(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         val = myvar.get_value()
         self.assertEqual(val.IntVal1, 242)
         self.assertEqual(val.EnumVal, ua.ExampleEnum.EnumVal2)
+
+    @mock.patch("opcua.client.client.Subscription.reconciliate")
+    @mock.patch("opcua.client.client.Node.call_method")
+    def test_reconciliate(self, mock_call_method, mock_reconciliate):
+        get_mi_response = [[1, 2], [201, 202]]
+        mock_call_method.return_value = get_mi_response
+
+        myhandler = SubHandler()
+        sub = self.opc.create_subscription(100, myhandler)
+        self.clt.reconciliate_subscription(sub)
+
+        node_called_args = mock_call_method.call_args[0]
+        self.assertEqual(
+            node_called_args[0], ua.uatypes.QualifiedName("GetMonitoredItems")
+        )
+        self.assertEqual(
+            node_called_args[1], ua.Variant(sub.subscription_id, ua.VariantType.UInt32)
+        )
+
+        reconciliate_called_args = mock_reconciliate.call_args[0][0]
+        self.assertEqual(reconciliate_called_args, get_mi_response)
