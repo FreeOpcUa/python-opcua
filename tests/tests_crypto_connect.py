@@ -16,6 +16,7 @@ else:
 
 port_num1 = 48515
 port_num2 = 48512
+port_num3 = 48510
 
 @unittest.skipIf(disable_crypto_tests, "crypto not available")
 class TestCryptoConnect(unittest.TestCase):
@@ -42,11 +43,20 @@ class TestCryptoConnect(unittest.TestCase):
         cls.srv_no_crypto.set_endpoint(cls.uri_no_crypto)
         cls.srv_no_crypto.start()
 
+        # start server with long key
+        cls.srv_crypto2 = Server()
+        cls.uri_crypto2 = 'opc.tcp://127.0.0.1:{0:d}'.format(port_num3)
+        cls.srv_crypto2.set_endpoint(cls.uri_crypto2)
+        cls.srv_crypto2.load_certificate("examples/certificate-3072-example.der")
+        cls.srv_crypto2.load_private_key("examples/private-key-3072-example.pem")
+        cls.srv_crypto2.start()
+
     @classmethod
     def tearDownClass(cls):
         # stop the server 
         cls.srv_no_crypto.stop()
         cls.srv_crypto.stop()
+        cls.srv_crypto2.stop()
 
     def test_nocrypto(self):
         clt = Client(self.uri_no_crypto)
@@ -70,8 +80,26 @@ class TestCryptoConnect(unittest.TestCase):
         finally:
             clt.disconnect()
 
+    def test_basic256sha256_longkey(self):
+        clt = Client(self.uri_crypto2)
+        try:
+            clt.set_security_string("Basic256Sha256,Sign,examples/certificate-example.der,examples/private-key-example.pem")
+            clt.connect()
+            self.assertTrue(clt.get_objects_node().get_children())
+        finally:
+            clt.disconnect()
+
     def test_basic256sha256_encrypt(self):
         clt = Client(self.uri_crypto)
+        try:
+            clt.set_security_string("Basic256Sha256,SignAndEncrypt,examples/certificate-example.der,examples/private-key-example.pem")
+            clt.connect()
+            self.assertTrue(clt.get_objects_node().get_children())
+        finally:
+            clt.disconnect()
+
+    def test_basic256sha256_encrypt_longkey(self):
+        clt = Client(self.uri_crypto2)
         try:
             clt.set_security_string("Basic256Sha256,SignAndEncrypt,examples/certificate-example.der,examples/private-key-example.pem")
             clt.connect()
