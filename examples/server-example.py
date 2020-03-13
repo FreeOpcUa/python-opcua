@@ -1,3 +1,4 @@
+import uuid
 from threading import Thread
 import copy
 import logging
@@ -5,6 +6,9 @@ from datetime import datetime
 import time
 from math import sin
 import sys
+
+from opcua.ua import NodeId, NodeIdType
+
 sys.path.insert(0, "..")
 
 try:
@@ -18,12 +22,10 @@ except ImportError:
         shell = code.InteractiveConsole(myvars)
         shell.interact()
 
-
 from opcua import ua, uamethod, Server
 
 
 class SubHandler(object):
-
     """
     Subscription Handler. To receive events from server for a subscription
     """
@@ -67,7 +69,6 @@ class VarUpdater(Thread):
             v = sin(time.time() / 10)
             self.var.set_value(v)
             time.sleep(0.1)
-
 
 
 if __name__ == "__main__":
@@ -119,7 +120,9 @@ if __name__ == "__main__":
     mysin = myobj.add_variable(idx, "MySin", 0, ua.VariantType.Float)
     myvar.set_writable()    # Set MyVariable to be writable by clients
     mystringvar = myobj.add_variable(idx, "MyStringVariable", "Really nice string")
-    mystringvar.set_writable()    # Set MyVariable to be writable by clients
+    mystringvar.set_writable()  # Set MyVariable to be writable by clients
+    myguidvar = myobj.add_variable(NodeId(uuid.UUID('1be5ba38-d004-46bd-aa3a-b5b87940c698'), idx, NodeIdType.Guid),
+                                   'MyStringVariableWithGUID', 'NodeId type is guid')
     mydtvar = myobj.add_variable(idx, "MyDateTimeVar", datetime.utcnow())
     mydtvar.set_writable()    # Set MyVariable to be writable by clients
     myarrayvar = myobj.add_variable(idx, "myarrayvar", [6.7, 7.9])
