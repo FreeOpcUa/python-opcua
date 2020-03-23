@@ -81,6 +81,7 @@ def _instantiate_node(server,
         addnode.NodeAttributes.DisplayName = dname
 
     res = server.add_nodes([addnode])[0]
+    res.StatusCode.check()
     added_nodes = [res.AddedNodeId]
 
     if recursive:
