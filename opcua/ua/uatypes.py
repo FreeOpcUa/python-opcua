@@ -301,7 +301,10 @@ class NodeId(object):
         self._freeze = True
         if self.Identifier is None:
             self.Identifier = 0
-            self.NodeIdType = NodeIdType.TwoByte
+            if namespaceidx == 0:
+                self.NodeIdType = NodeIdType.TwoByte
+            else:  # TwoByte NodeId does not encode namespace.
+                self.NodeIdType = NodeIdType.Numeric
             return
         if self.NodeIdType is None:
             if isinstance(self.Identifier, int):
