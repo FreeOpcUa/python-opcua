@@ -12,9 +12,6 @@ except ImportError:
 
 class UserManager(object):
 
-    if use_crypto is False:
-        logging.getLogger(__name__).warning("cryptography is not installed, use of crypto disabled")
-
     class User(Enum):
         """
         Define some default users.
