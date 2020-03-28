@@ -7,7 +7,6 @@ use_crypto = True
 try:
     from opcua.crypto import uacrypto
 except ImportError:
-    logging.getLogger(__name__).warning("cryptography is not installed, use of crypto disabled")
     use_crypto = False
 
 

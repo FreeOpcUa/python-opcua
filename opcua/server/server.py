@@ -31,7 +31,6 @@ use_crypto = True
 try:
     from opcua.crypto import uacrypto
 except ImportError:
-    logging.getLogger(__name__).warning("cryptography is not installed, use of crypto disabled")
     use_crypto = False
 
 
@@ -74,6 +73,9 @@ class Server(object):
     :vartype nodes: Shortcuts
 
     """
+
+    if use_crypto is False:
+        logging.getLogger(__name__).warning("cryptography is not installed, use of crypto disabled")
 
     def __init__(self, shelffile=None, iserver=None):
         self.logger = logging.getLogger(__name__)
