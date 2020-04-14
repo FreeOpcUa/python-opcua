@@ -468,7 +468,7 @@ class Client(object):
         # the last serverNonce to the serverCertificate
         sig = uacrypto.sign_sha1(self.user_private_key, challenge)
         params.UserTokenSignature = ua.SignatureData()
-        params.UserTokenSignature.Algorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+        params.UserTokenSignature.Algorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
         params.UserTokenSignature.Signature = sig
 
     def _add_user_auth(self, params, username, password):
