@@ -4,7 +4,7 @@ from datetime import datetime
 
 from opcua import Subscription
 from opcua import ua
-from opcua.common import utils
+from opcua.common import utils, subscription
 
 
 class UaNodeAlreadyHistorizedError(ua.UaError):
@@ -172,7 +172,7 @@ class HistoryDict(HistoryStorageInterface):
         pass
 
 
-class SubHandler(object):
+class SubHandler(subscription.SubHandler):
     def __init__(self, storage):
         self.storage = storage
 
