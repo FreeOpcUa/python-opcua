@@ -527,7 +527,7 @@ class LocalizedText(FrozenClass):
 
     @Text.setter
     def Text(self, text):
-        if not isinstance(text, str):
+        if (not isinstance(text, str)) or (not isinstance(text, bytes)):
             raise ValueError("A LocalizedText object takes a string as argument, not a {}, {}".format(type(text), text))
         self._text = text
         if self._text:
