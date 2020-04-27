@@ -46,7 +46,7 @@ def get_win_epoch():
 
 def win_epoch_to_datetime(epch):
     try:
-        return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch // 10)
+        return FILETIME_EPOCH_AS_DATETIME + timedelta(microseconds=epch / 10)
     except OverflowError:
         # FILETIMEs after 31 Dec 9999 can't be converted to datetime
         logger.warning("datetime overflow: %s", epch)
