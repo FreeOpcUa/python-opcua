@@ -17,7 +17,7 @@ class BaseEvent(Event):
         self.add_property('SourceName', None, ua.VariantType.String)
         self.add_property('Time', None, ua.VariantType.DateTime)
         self.add_property('ReceiveTime', None, ua.VariantType.DateTime)
-        self.add_property('LocalTime', None, ua.VariantType.DateTime)
+        self.add_property('LocalTime', None, ua.VariantType.ExtensionObject)
         self.add_property('Message', ua.LocalizedText(message), ua.VariantType.LocalizedText)
         self.add_property('Severity', severity, ua.VariantType.UInt16)
 
@@ -418,8 +418,8 @@ class AuditHistoryRawModifyDeleteEvent(AuditHistoryDeleteEvent):
         super(AuditHistoryRawModifyDeleteEvent, self).__init__(sourcenode, message, severity)
         self.EventType = ua.NodeId(ua.ObjectIds.AuditHistoryRawModifyDeleteEventType)
         self.add_property('IsDeleteModified', None, ua.VariantType.Boolean)
-        self.add_property('StartTime', None, ua.VariantType.DateTime)
-        self.add_property('EndTime', None, ua.VariantType.DateTime)
+        self.add_property('StartTime', None, ua.NodeId(ua.ObjectIds.UtcTime))
+        self.add_property('EndTime', None, ua.NodeId(ua.ObjectIds.UtcTime))
         self.add_property('OldValues', None, ua.NodeId(ua.ObjectIds.DataValue))
 
 class AuditHistoryAtTimeDeleteEvent(AuditHistoryDeleteEvent):
@@ -494,7 +494,7 @@ class AuditConditionShelvingEvent(AuditConditionEvent):
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(AuditConditionShelvingEvent, self).__init__(sourcenode, message, severity)
         self.EventType = ua.NodeId(ua.ObjectIds.AuditConditionShelvingEventType)
-        self.add_property('ShelvingTime', None, ua.VariantType.DateTime)
+        self.add_property('ShelvingTime', None, ua.NodeId(ua.ObjectIds.Duration))
 
 class ProgressEvent(BaseEvent):
     """
@@ -557,3 +557,166 @@ class PubSubStatusEvent(SystemEvent):
     def __init__(self, sourcenode=None, message=None, severity=1):
         super(PubSubStatusEvent, self).__init__(sourcenode, message, severity)
         self.EventType = ua.NodeId(ua.ObjectIds.PubSubStatusEventType)
+        self.add_property('ConnectionId', ua.NodeId(ua.ObjectIds.PubSubStatusEventType), ua.VariantType.NodeId)
+        self.add_property('GroupId', ua.NodeId(ua.ObjectIds.PubSubStatusEventType), ua.VariantType.NodeId)
+        self.add_property('State', None, ua.NodeId(ua.ObjectIds.PubSubState))
+
+class PubSubTransportLimitsExceedEvent(PubSubStatusEvent):
+    """
+    PubSubTransportLimitsExceedEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(PubSubTransportLimitsExceedEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.PubSubTransportLimitsExceedEventType)
+        self.add_property('Actual', None, ua.VariantType.UInt32)
+        self.add_property('Maximum', None, ua.VariantType.UInt32)
+
+class PubSubCommunicationFailureEvent(PubSubStatusEvent):
+    """
+    PubSubCommunicationFailureEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(PubSubCommunicationFailureEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.PubSubCommunicationFailureEventType)
+        self.add_property('Error', None, ua.VariantType.StatusCode)
+
+class AuditConditionSuppressionEvent(AuditConditionEvent):
+    """
+    AuditConditionSuppressionEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(AuditConditionSuppressionEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.AuditConditionSuppressionEventType)
+
+class AuditConditionSilenceEvent(AuditConditionEvent):
+    """
+    AuditConditionSilenceEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(AuditConditionSilenceEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.AuditConditionSilenceEventType)
+
+class AuditConditionOutOfServiceEvent(AuditConditionEvent):
+    """
+    AuditConditionOutOfServiceEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(AuditConditionOutOfServiceEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.AuditConditionOutOfServiceEventType)
+
+class RoleMappingRuleChangedAuditEvent(AuditUpdateMethodEvent):
+    """
+    RoleMappingRuleChangedAuditEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(RoleMappingRuleChangedAuditEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.RoleMappingRuleChangedAuditEventType)
+
+class KeyCredentialAuditEvent(AuditUpdateMethodEvent):
+    """
+    KeyCredentialAuditEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(KeyCredentialAuditEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.KeyCredentialAuditEventType)
+        self.add_property('ResourceUri', None, ua.VariantType.String)
+
+class KeyCredentialUpdatedAuditEvent(KeyCredentialAuditEvent):
+    """
+    KeyCredentialUpdatedAuditEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(KeyCredentialUpdatedAuditEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.KeyCredentialUpdatedAuditEventType)
+
+class KeyCredentialDeletedAuditEvent(KeyCredentialAuditEvent):
+    """
+    KeyCredentialDeletedAuditEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(KeyCredentialDeletedAuditEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.KeyCredentialDeletedAuditEventType)
+
+class AuditHistoryAnnotationUpdateEvent(AuditHistoryUpdateEvent):
+    """
+    AuditHistoryAnnotationUpdateEvent: 
+    """
+    def __init__(self, sourcenode=None, message=None, severity=1):
+        super(AuditHistoryAnnotationUpdateEvent, self).__init__(sourcenode, message, severity)
+        self.EventType = ua.NodeId(ua.ObjectIds.AuditHistoryAnnotationUpdateEventType)
+        self.add_property('PerformInsertReplace', None, ua.NodeId(ua.ObjectIds.PerformUpdateType))
+        self.add_property('NewValues', None, ua.NodeId(ua.ObjectIds.DataValue))
+        self.add_property('OldValues', None, ua.NodeId(ua.ObjectIds.DataValue))
+
+
+IMPLEMENTED_EVENTS = {
+    ua.ObjectIds.BaseEventType: BaseEvent,
+    ua.ObjectIds.AuditEventType: AuditEvent,
+    ua.ObjectIds.AuditSecurityEventType: AuditSecurityEvent,
+    ua.ObjectIds.AuditChannelEventType: AuditChannelEvent,
+    ua.ObjectIds.AuditOpenSecureChannelEventType: AuditOpenSecureChannelEvent,
+    ua.ObjectIds.AuditSessionEventType: AuditSessionEvent,
+    ua.ObjectIds.AuditCreateSessionEventType: AuditCreateSessionEvent,
+    ua.ObjectIds.AuditActivateSessionEventType: AuditActivateSessionEvent,
+    ua.ObjectIds.AuditCancelEventType: AuditCancelEvent,
+    ua.ObjectIds.AuditCertificateEventType: AuditCertificateEvent,
+    ua.ObjectIds.AuditCertificateDataMismatchEventType: AuditCertificateDataMismatchEvent,
+    ua.ObjectIds.AuditCertificateExpiredEventType: AuditCertificateExpiredEvent,
+    ua.ObjectIds.AuditCertificateInvalidEventType: AuditCertificateInvalidEvent,
+    ua.ObjectIds.AuditCertificateUntrustedEventType: AuditCertificateUntrustedEvent,
+    ua.ObjectIds.AuditCertificateRevokedEventType: AuditCertificateRevokedEvent,
+    ua.ObjectIds.AuditCertificateMismatchEventType: AuditCertificateMismatchEvent,
+    ua.ObjectIds.AuditNodeManagementEventType: AuditNodeManagementEvent,
+    ua.ObjectIds.AuditAddNodesEventType: AuditAddNodesEvent,
+    ua.ObjectIds.AuditDeleteNodesEventType: AuditDeleteNodesEvent,
+    ua.ObjectIds.AuditAddReferencesEventType: AuditAddReferencesEvent,
+    ua.ObjectIds.AuditDeleteReferencesEventType: AuditDeleteReferencesEvent,
+    ua.ObjectIds.AuditUpdateEventType: AuditUpdateEvent,
+    ua.ObjectIds.AuditWriteUpdateEventType: AuditWriteUpdateEvent,
+    ua.ObjectIds.AuditHistoryUpdateEventType: AuditHistoryUpdateEvent,
+    ua.ObjectIds.AuditUpdateMethodEventType: AuditUpdateMethodEvent,
+    ua.ObjectIds.SystemEventType: SystemEvent,
+    ua.ObjectIds.DeviceFailureEventType: DeviceFailureEvent,
+    ua.ObjectIds.BaseModelChangeEventType: BaseModelChangeEvent,
+    ua.ObjectIds.GeneralModelChangeEventType: GeneralModelChangeEvent,
+    ua.ObjectIds.TransitionEventType: TransitionEvent,
+    ua.ObjectIds.AuditUpdateStateEventType: AuditUpdateStateEvent,
+    ua.ObjectIds.ProgramTransitionEventType: ProgramTransitionEvent,
+    ua.ObjectIds.SemanticChangeEventType: SemanticChangeEvent,
+    ua.ObjectIds.AuditUrlMismatchEventType: AuditUrlMismatchEvent,
+    ua.ObjectIds.RefreshStartEventType: RefreshStartEvent,
+    ua.ObjectIds.RefreshEndEventType: RefreshEndEvent,
+    ua.ObjectIds.RefreshRequiredEventType: RefreshRequiredEvent,
+    ua.ObjectIds.AuditConditionEventType: AuditConditionEvent,
+    ua.ObjectIds.AuditConditionEnableEventType: AuditConditionEnableEvent,
+    ua.ObjectIds.AuditConditionCommentEventType: AuditConditionCommentEvent,
+    ua.ObjectIds.AuditHistoryEventUpdateEventType: AuditHistoryEventUpdateEvent,
+    ua.ObjectIds.AuditHistoryValueUpdateEventType: AuditHistoryValueUpdateEvent,
+    ua.ObjectIds.AuditHistoryDeleteEventType: AuditHistoryDeleteEvent,
+    ua.ObjectIds.AuditHistoryRawModifyDeleteEventType: AuditHistoryRawModifyDeleteEvent,
+    ua.ObjectIds.AuditHistoryAtTimeDeleteEventType: AuditHistoryAtTimeDeleteEvent,
+    ua.ObjectIds.AuditHistoryEventDeleteEventType: AuditHistoryEventDeleteEvent,
+    ua.ObjectIds.EventQueueOverflowEventType: EventQueueOverflowEvent,
+    ua.ObjectIds.ProgramTransitionAuditEventType: ProgramTransitionAuditEvent,
+    ua.ObjectIds.AuditConditionRespondEventType: AuditConditionRespondEvent,
+    ua.ObjectIds.AuditConditionAcknowledgeEventType: AuditConditionAcknowledgeEvent,
+    ua.ObjectIds.AuditConditionConfirmEventType: AuditConditionConfirmEvent,
+    ua.ObjectIds.AuditConditionShelvingEventType: AuditConditionShelvingEvent,
+    ua.ObjectIds.ProgressEventType: ProgressEvent,
+    ua.ObjectIds.SystemStatusChangeEventType: SystemStatusChangeEvent,
+    ua.ObjectIds.AuditProgramTransitionEventType: AuditProgramTransitionEvent,
+    ua.ObjectIds.TrustListUpdatedAuditEventType: TrustListUpdatedAuditEvent,
+    ua.ObjectIds.CertificateUpdatedAuditEventType: CertificateUpdatedAuditEvent,
+    ua.ObjectIds.AuditConditionResetEventType: AuditConditionResetEvent,
+    ua.ObjectIds.PubSubStatusEventType: PubSubStatusEvent,
+    ua.ObjectIds.PubSubTransportLimitsExceedEventType: PubSubTransportLimitsExceedEvent,
+    ua.ObjectIds.PubSubCommunicationFailureEventType: PubSubCommunicationFailureEvent,
+    ua.ObjectIds.AuditConditionSuppressionEventType: AuditConditionSuppressionEvent,
+    ua.ObjectIds.AuditConditionSilenceEventType: AuditConditionSilenceEvent,
+    ua.ObjectIds.AuditConditionOutOfServiceEventType: AuditConditionOutOfServiceEvent,
+    ua.ObjectIds.RoleMappingRuleChangedAuditEventType: RoleMappingRuleChangedAuditEvent,
+    ua.ObjectIds.KeyCredentialAuditEventType: KeyCredentialAuditEvent,
+    ua.ObjectIds.KeyCredentialUpdatedAuditEventType: KeyCredentialUpdatedAuditEvent,
+    ua.ObjectIds.KeyCredentialDeletedAuditEventType: KeyCredentialDeletedAuditEvent,
+    ua.ObjectIds.AuditHistoryAnnotationUpdateEventType: AuditHistoryAnnotationUpdateEvent,
+    }
