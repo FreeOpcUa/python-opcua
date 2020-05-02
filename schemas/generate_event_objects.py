@@ -51,8 +51,10 @@ class EventsCodeGenerator(object):
             return "None"
 
     def getPropertyDataType(self, reference):
-        if str(reference.refBrowseName).endswith("Time"):
+        if str(reference.refBrowseName) in ("Time", "ReceiveTime"):
             return "ua.VariantType.DateTime"
+        elif str(reference.refBrowseName) == "LocalTime":
+            return "ua.VariantType.ExtensionObject"
         elif str(reference.refDataType).startswith("i="):
             return "ua.NodeId(ua.ObjectIds.{0})".format(str(obIds.ObjectIdNames[int(str(reference.refDataType).split("=")[1])]).split("_")[0])
         else:
