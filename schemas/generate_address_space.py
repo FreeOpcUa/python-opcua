@@ -20,7 +20,7 @@ def _to_val(objs, attr, val):
 
 
 def _get_uatype_name(cls, attname):
-    for name, uat in cls.ua_types.items():
+    for name, uat in cls.ua_types:
         if name == attname:
             return uat
     raise Exception("Could not find attribute {} in obj {}".format(attname, cls))
@@ -217,7 +217,7 @@ def create_standard_address_space_{0!s}(server):
             self.writecode(indent, 'attrs.UserAccessLevel = {0}'.format(obj.useraccesslevel))
         if obj.dimensions:
             self.writecode(indent, 'attrs.ArrayDimensions = {0}'.format(obj.dimensions))
-    
+
     def make_ext_obj_code(self, indent, extobj):
         self.writecode(indent, 'extobj = ua.{0}()'.format(extobj.objname))
         for name, val in extobj.body:

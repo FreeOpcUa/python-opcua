@@ -509,8 +509,8 @@ class LocalizedText(FrozenClass):
     }
 
     ua_types = (
-            ('Encoding', 'Byte'), 
-            ('Locale', 'String'), 
+            ('Encoding', 'Byte'),
+            ('Locale', 'String'),
             ('Text', 'String'), )
 
     def __init__(self, text=None):
@@ -527,7 +527,11 @@ class LocalizedText(FrozenClass):
 
     @Text.setter
     def Text(self, text):
-        if (not isinstance(text, str)) or (not isinstance(text, bytes)):
+        if isinstance(text, str):
+            pass
+        elif isinstance(text, bytes):
+            text = text.decode()
+        else:
             raise ValueError("A LocalizedText object takes a string as argument, not a {}, {}".format(type(text), text))
         self._text = text
         if self._text:
@@ -569,9 +573,9 @@ class ExtensionObject(FrozenClass):
     }
 
     ua_types = (
-            ("TypeId", "NodeId"), 
-            ("Encoding", "Byte"), 
-            ("Body", "ByteString"), 
+            ("TypeId", "NodeId"),
+            ("Encoding", "Byte"),
+            ("Body", "ByteString"),
             )
 
     def __init__(self):
@@ -879,13 +883,13 @@ class DataValue(FrozenClass):
     }
 
     ua_types = (
-            ('Encoding', 'Byte'), 
-            ('Value', 'Variant'), 
-            ('StatusCode', 'StatusCode'), 
+            ('Encoding', 'Byte'),
+            ('Value', 'Variant'),
+            ('StatusCode', 'StatusCode'),
             ('SourceTimestamp', 'DateTime'),
-            ('SourcePicoseconds', 'UInt16'), 
-            ('ServerTimestamp', 'DateTime'), 
-            ('ServerPicoseconds', 'UInt16'), 
+            ('SourcePicoseconds', 'UInt16'),
+            ('ServerTimestamp', 'DateTime'),
+            ('ServerPicoseconds', 'UInt16'),
             )
 
     def __init__(self, variant=None, status=None):
@@ -1013,7 +1017,7 @@ def get_extensionobject_class_type(typeid):
 class SecurityPolicyType(Enum):
     """
     The supported types of SecurityPolicy.
-    
+
     "None"
     "Basic128Rsa15_Sign"
     "Basic128Rsa15_SignAndEncrypt"
