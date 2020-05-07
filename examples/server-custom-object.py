@@ -39,8 +39,8 @@ if __name__ == "__main__":
                                                                    "0:ObjectTypes", 
                                                                    "0:BaseObjectType"])
     mycustomobj_type = types.add_object_type(idx, "MyCustomObjectType")
-    mycustomobj_type.add_variable(0, "var_should_be_there_after_instantiate", 1.0) # demonstrates instantiate
-    
+    var = mycustomobj_type.add_variable(0, "var_should_be_there_after_instantiate", 1.0) # demonstrates instantiate
+    var.set_modelling_rule(True) #if false it would not be instantiated
     myobj = objects.add_object(idx, "MyCustomObjectA", mycustomobj_type.nodeid)
     #-------------------------------------------------------------------------------
 
