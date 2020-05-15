@@ -151,9 +151,6 @@ class Client(object):
         Find endpoint with required security mode and policy URI
         """
         for ep in endpoints:
-            print(ep.EndpointUrl,ua.OPC_TCP_SCHEME)
-            print(ep.SecurityMode, security_mode)
-            print(ep.SecurityPolicyUri, policy_uri)
             if (ep.EndpointUrl.startswith(ua.OPC_TCP_SCHEME) and
                     ep.SecurityMode == security_mode and
                     ep.SecurityPolicyUri == policy_uri):
