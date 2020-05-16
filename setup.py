@@ -7,7 +7,7 @@ if sys.version_info[0] < 3:
     install_requires.extend(["enum34", "trollius", "futures"])
 
 setup(name="opcua",
-      version="0.98.10",
+      version="0.98.11",
       description="Pure Python OPC-UA client and server library",
       author="Olivier Roulet-Dubonnet",
       author_email="olivier.roulet@gmail.com",
