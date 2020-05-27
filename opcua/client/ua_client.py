@@ -112,7 +112,7 @@ class UASocketClient(object):
         msg = self._connection.receive_from_socket(self._socket)
         if msg is None:
             return
-        elif isinstance(msg, ua.Message):
+        if isinstance(msg, ua.Message):
             self._call_callback(msg.request_id(), msg.body())
         elif isinstance(msg, ua.Acknowledge):
             self._call_callback(0, msg)
@@ -120,7 +120,7 @@ class UASocketClient(object):
             self.logger.fatal("Received an error: %s", msg)
             self._call_callback(0, ua.UaStatusCodeError(msg.Error.value))
         else:
-            raise ua.UaError("Unsupported message type: %s", msg)
+            raise ua.UaError("Unsupported message type: {}".format(msg))
 
     def _call_callback(self, request_id, body):
         with self._lock:
@@ -194,12 +194,21 @@ class UASocketClient(object):
         self.logger.info("open_secure_channel")
         request = ua.OpenSecureChannelRequest()
         request.Parameters = params
-        future = self._send_request(request, message_type=ua.MessageType.SecureOpen)
 
-        response = struct_from_binary(ua.OpenSecureChannelResponse, future.result(self.timeout))
-        response.ResponseHeader.ServiceResult.check()
-        self._connection.set_channel(response.Parameters, params.RequestType, params.ClientNonce)
-        return response.Parameters
+        # use callback to make sure channel security parameters are set immedialty and we do no get race conditions
+        __response = None
+
+        def clb(future):
+            response = struct_from_binary(ua.OpenSecureChannelResponse, future.result())
+            response.ResponseHeader.ServiceResult.check()
+            print(response.Parameters)
+            self._connection.set_channel(response.Parameters, params.RequestType, params.ClientNonce)
+            clb.response = response  # store response in function so it is accessbile to our mother method
+
+        future = self._send_request(request, message_type=ua.MessageType.SecureOpen, callback=clb)
+        future.result(self.timeout)  #make sure we do not return before answer from server
+
+        return clb.response.Parameters
 
     def close_secure_channel(self):
         """
