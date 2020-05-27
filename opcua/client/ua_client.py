@@ -200,13 +200,18 @@ class UASocketClient(object):
 
         def clb(future):
             response = struct_from_binary(ua.OpenSecureChannelResponse, future.result())
+            clb.response = response  # store response in function so it is accessbile to our mother method
             response.ResponseHeader.ServiceResult.check()
             print(response.Parameters)
             self._connection.set_channel(response.Parameters, params.RequestType, params.ClientNonce)
-            clb.response = response  # store response in function so it is accessbile to our mother method
+        clb.response = None
 
         future = self._send_request(request, message_type=ua.MessageType.SecureOpen, callback=clb)
-        future.result(self.timeout)  #make sure we do not return before answer from server
+
+        future.result(self.timeout)  # make sure we do not return before answer from server
+        if clb.response is None:
+            raise RuntimeError("OpenSecureChannel parsing of server answer failed, should be another stack trace")
+        clb.response.ResponseHeader.ServiceResult.check()
 
         return clb.response.Parameters
 
