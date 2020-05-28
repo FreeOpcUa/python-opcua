@@ -191,29 +191,26 @@ class UASocketClient(object):
         return ack
 
     def open_secure_channel(self, params):
+        print("OPEN SECURE")
         self.logger.info("open_secure_channel")
         request = ua.OpenSecureChannelRequest()
         request.Parameters = params
 
-        # use callback to make sure channel security parameters are set immedialty and we do no get race conditions
-        __response = None
-
+        # use callback to make sure channel security parameters are set immedialty
+        # and we do no get race conditions
         def clb(future):
             response = struct_from_binary(ua.OpenSecureChannelResponse, future.result())
-            clb.response = response  # store response in function so it is accessbile to our mother method
             response.ResponseHeader.ServiceResult.check()
-            print(response.Parameters)
             self._connection.set_channel(response.Parameters, params.RequestType, params.ClientNonce)
-        clb.response = None
+            clb.future.set_result(response)
+        clb.future = Future()  # hack to have a variable only shared between a callback and us
 
-        future = self._send_request(request, message_type=ua.MessageType.SecureOpen, callback=clb)
+        self._send_request(request, message_type=ua.MessageType.SecureOpen, callback=clb)
+        # wait for our callbackto finish rexecuting before returning
+        response = clb.future.result(self.timeout)
+        response.ResponseHeader.ServiceResult.check()
 
-        future.result(self.timeout)  # make sure we do not return before answer from server
-        if clb.response is None:
-            raise RuntimeError("OpenSecureChannel parsing of server answer failed, should be another stack trace")
-        clb.response.ResponseHeader.ServiceResult.check()
-
-        return clb.response.Parameters
+        return response.Parameters
 
     def close_secure_channel(self):
         """
