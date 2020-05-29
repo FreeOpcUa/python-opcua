@@ -191,7 +191,6 @@ class UASocketClient(object):
         return ack
 
     def open_secure_channel(self, params):
-        print("OPEN SECURE")
         self.logger.info("open_secure_channel")
         request = ua.OpenSecureChannelRequest()
         request.Parameters = params
