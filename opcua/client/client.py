@@ -273,11 +273,21 @@ class Client(object):
         try:
             self.send_hello()
             self.open_secure_channel()
-            self.create_session()
+            try:
+                self.create_session()
+                try:
+                    self.activate_session(username=self._username, password=self._password, certificate=self.user_certificate)
+                except Exception:
+                    # clean up the session
+                    self.close_session()
+                    raise
+            except Exception:
+                # clean up the secure channel
+                self.close_secure_channel()
+                raise
         except Exception:
             self.disconnect_socket()  # clean up open socket
             raise
-        self.activate_session(username=self._username, password=self._password, certificate=self.user_certificate)
 
     def disconnect(self):
         """
