@@ -62,8 +62,10 @@ class Node(object):
         return not self.__eq__(other)
 
     def __str__(self):
+        return self.nodeid[self.nodeid.find("(")+1:self.nodeid.find(")")]
+    
+    def __repr__(self):
         return "Node({0})".format(self.nodeid)
-    __repr__ = __str__
 
     def __hash__(self):
         return self.nodeid.__hash__()
