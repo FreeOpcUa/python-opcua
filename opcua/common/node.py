@@ -62,7 +62,8 @@ class Node(object):
         return not self.__eq__(other)
 
     def __str__(self):
-        return self.nodeid[self.nodeid.find("(")+1:self.nodeid.find(")")]
+        node_str = str(self.nodeid)
+        return node_str[node_str.find("(")+1:node_str.find(")")]
     
     def __repr__(self):
         return "Node({0})".format(self.nodeid)
