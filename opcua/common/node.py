@@ -63,7 +63,7 @@ class Node(object):
 
     def __str__(self):
         node_str = str(self.nodeid)
-        return node_str[node_str.find("(")+1:node_str.find(")")]
+        return node_str[node_str.find("(")+1:len(node_str)-1]
     
     def __repr__(self):
         return "Node({0})".format(self.nodeid)
