@@ -269,6 +269,14 @@ class Message(object):
     def __init__(self, chunks):
         self._chunks = chunks
 
+    def __str__(self):
+        return 'Message(' + str(self._chunks) + ')'
+
+    __repr__ = __str__
+
+    def message_type(self):
+        return self._chunks[0].MessageHeader.MessageType
+
     def request_id(self):
         return self._chunks[0].SequenceHeader.RequestId
 

@@ -112,7 +112,7 @@ class UASocketClient(object):
         msg = self._connection.receive_from_socket(self._socket)
         if msg is None:
             return
-        elif isinstance(msg, ua.Message):
+        if isinstance(msg, ua.Message):
             self._call_callback(msg.request_id(), msg.body())
         elif isinstance(msg, ua.Acknowledge):
             self._call_callback(0, msg)
@@ -120,7 +120,7 @@ class UASocketClient(object):
             self.logger.fatal("Received an error: %s", msg)
             self._call_callback(0, ua.UaStatusCodeError(msg.Error.value))
         else:
-            raise ua.UaError("Unsupported message type: %s", msg)
+            raise ua.UaError("Unsupported message type: {}".format(msg))
 
     def _call_callback(self, request_id, body):
         with self._lock:
@@ -194,11 +194,21 @@ class UASocketClient(object):
         self.logger.info("open_secure_channel")
         request = ua.OpenSecureChannelRequest()
         request.Parameters = params
-        future = self._send_request(request, message_type=ua.MessageType.SecureOpen)
 
-        response = struct_from_binary(ua.OpenSecureChannelResponse, future.result(self.timeout))
+        # use callback to make sure channel security parameters are set immedialty
+        # and we do no get race conditions
+        def clb(future):
+            response = struct_from_binary(ua.OpenSecureChannelResponse, future.result())
+            response.ResponseHeader.ServiceResult.check()
+            self._connection.set_channel(response.Parameters, params.RequestType, params.ClientNonce)
+            clb.future.set_result(response)
+        clb.future = Future()  # hack to have a variable only shared between a callback and us
+
+        self._send_request(request, message_type=ua.MessageType.SecureOpen, callback=clb)
+        # wait for our callbackto finish rexecuting before returning
+        response = clb.future.result(self.timeout)
         response.ResponseHeader.ServiceResult.check()
-        self._connection.set_channel(response.Parameters, params.RequestType, params.ClientNonce)
+
         return response.Parameters
 
     def close_secure_channel(self):
