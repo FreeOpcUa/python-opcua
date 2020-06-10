@@ -140,12 +140,11 @@ class _Primitive1(object):
     def pack_array(self, data):
         if data is None:
             return Primitives.Int32.pack(-1)
-        if type(data) is int:
-            sizedata = Primitives.Int32.pack(data)
-            return sizedata + bytes(data)
-        else:
+        if isinstance(data, list):
             sizedata = Primitives.Int32.pack(len(data))
             return sizedata + struct.pack(self._fmt.format(len(data)), *data)
+        else:
+            return Primitives.Int32.pack(-1)
 
     def unpack_array(self, data, length):
         if length == -1:
