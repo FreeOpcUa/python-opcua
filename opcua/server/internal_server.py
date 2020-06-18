@@ -2,18 +2,12 @@
 Internal server implementing opcu-ua interface.
 Can be used on server side or to implement binary/https opc-ua servers
 """
-
 from datetime import datetime, timedelta
-from copy import copy deepcopy
+from copy import copy
 import os
 import logging
 from threading import Lock
 from enum import Enum
-from socket import INADDR_ANY # IPv4 '0.0.0.0'
-IN6ADDR_ANY = '::'
-from ipaddress import ip_address                                              
-                  
-                                
 try:
     from urllib.parse import urlparse
 except ImportError:
@@ -35,7 +29,6 @@ from opcua.server.subscription_service import SubscriptionService
 from opcua.server.discovery_service import LocalDiscoveryService
 from opcua.server.standard_address_space import standard_address_space
 from opcua.server.user_manager import UserManager
-from opcua.server.users import User
 #from opcua.common import xmlimporter
 
 
@@ -44,18 +37,6 @@ class SessionState(Enum):
     Activated = 1
     Closed = 2
 
-
-class ServerDesc(object):
-    def __init__(self, serv, cap=None):
-        self.Server = serv
-        self.Capabilities = cap
-
-                         
-                                       
-                          
-                               
-
-
 class InternalServer(object):
 
     def __init__(self, shelffile=None, parent=None, session_cls=None):
@@ -63,13 +44,12 @@ class InternalServer(object):
 
         self._parent = parent
         self.server_callback_dispatcher = CallbackDispatcher()
-        self.allow_remote_admin = True
+
         self.endpoints = []
         self._channel_id_counter = 5
-                                      
         self.disabled_clock = False  # for debugging we may want to disable clock that writes too much in log
         self._local_discovery_service = None # lazy-loading
-        self._known_servers = {}  # used if we are a discovery server
+
         self.aspace = AddressSpace()
         self.attribute_service = AttributeService(self.aspace)
         self.view_service = ViewService(self.aspace)
@@ -193,13 +173,10 @@ class InternalServer(object):
 
     def start(self):
         self.logger.info("starting internal server")
-        for edp in self.endpoints:
-            self._known_servers[edp.Server.ApplicationUri] = ServerDesc(edp.Server)                          
-                                                                                   
         self.loop = utils.ThreadLoop()
         self.loop.start()
         self.subscription_service.set_loop(self.loop)
-        Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_State)).set_value(0, ua.VariantType.Int32)
+        serverState = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_State))
         serverState.set_value(ua.uaprotocol_auto.ServerState.Running, ua.VariantType.Int32)
         Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_StartTime)).set_value(datetime.utcnow())
         if not self.disabled_clock:
@@ -233,142 +210,16 @@ class InternalServer(object):
 
     def get_endpoints(self, params=None, sockname=None):
         self.logger.info("get endpoint")
-                    
         # return to client the endpoints it has access to
         netloc = self._get_netloc(params, sockname)
         edps = deepcopy(self.endpoints)
         for edp in edps:
             edp.EndpointUrl = InternalServer._replace_inaddr_any(edp.EndpointUrl, netloc)
-                                                                               
-                                               
-                                 
         return edps
-                                
+        return self.endpoints[:]
 
-    @staticmethod
-    def _get_netloc(params=None, sockname=None):
-        # find the ip:port as seen by our client.
-        netloc = None
-        if params and params.EndpointUrl:
-            # use ip:port as provided within client request params.
-            netloc = urlparse(params.EndpointUrl).netloc
-        if not netloc and sockname:
-            # use ip:port extracted from our local interface.
-            netloc = sockname[0] + ":" + str(sockname[1])
-        return netloc
-
-    @staticmethod
-    def _replace_inaddr_any(urlStr, netloc):
-        # If urlStr is '0.0.0.0:port' or '[::]:port', use netloc ip:port.
-        parseResult = urlparse(urlStr)
-        try:
-            hostip = ip_address(parseResult.hostname)
-        except ValueError:
-            hostip = None
-        if not netloc:
-            pass
-        elif hostip in (ip_address(INADDR_ANY), ip_address(IN6ADDR_ANY)):
-            urlStr = parseResult._replace(netloc=netloc).geturl()
-        return urlStr
-
-    def find_servers(self, params):
-        servers = deepcopy(self._filter_servers(params))
-        netloc = self._get_netloc(params)
-        for srv in servers:
-            srv.DiscoveryUrls = [self._replace_inaddr_any(dUrl, netloc) for dUrl in srv.DiscoveryUrls]
-        return servers
-
-    def _filter_servers(self, params):
-        if not params.ServerUris:
-            return [desc.Server for desc in self._known_servers.values()]
-        servers = []
-        for serv in self._known_servers.values():
-            serv_uri = serv.Server.ApplicationUri.split(":")
-            for uri in params.ServerUris:
-                uri = uri.split(":")
-                if serv_uri[:len(uri)] == uri:
-                    servers.append(serv.Server)
-                    break
-        return servers
-
-    def register_server(self, server, conf=None):
-        appdesc = ua.ApplicationDescription()
-        appdesc.ApplicationUri = server.ServerUri
-        appdesc.ProductUri = server.ProductUri
-        # FIXME: select name from client locale
-        appdesc.ApplicationName = server.ServerNames[0]
-        appdesc.ApplicationType = server.ServerType
-        appdesc.DiscoveryUrls = server.DiscoveryUrls
-        # FIXME: select discovery uri using reachability from client network
-        appdesc.GatewayServerUri = server.GatewayServerUri
-        self._known_servers[server.ServerUri] = ServerDesc(appdesc, conf)
-
-    def register_server2(self, params):
-        return self.register_server(params.Server, params.DiscoveryConfiguration)
-
-    def create_session(self, name, user=User.Anonymous, external=False):
-        return InternalSession(self, self.aspace, self.subscription_service, name, user=user, external=external)
-                                                 
-                     
-                                         
-                                                                   
-                                                        
-                                   
-                                                             
-                                                         
-                     
-
-                 
-                                            
-                                                                         
-                                      
-            
-                                                     
-                          
-                         
-                      
-                
-                                                                         
-                                                                 
-                     
-
-                                   
-                                                        
-                                         
-                           
-                                                                                                      
-                      
-
-                                      
-                                 
-                                                                         
-                    
-                                                 
-                                                            
-                                         
-                                    
-                                              
-                                               
-                         
-                      
-
-                                                 
-                                             
-                                                 
-                                              
-                                               
-                                                       
-                                                   
-                                                    
-                                                                            
-                                                          
-                                                                         
-
-                                       
-                                                                                 
-
-                                                                        
-                                                                                                                
+    def create_session(self, name, user=UserManager.User.Anonymous):
+        return self.session_cls(self, self.aspace, self.subscription_service, name, user=user)
 
     def enable_history_data_change(self, node, period=timedelta(days=7), count=0):
         """
@@ -429,8 +280,6 @@ class InternalServer(object):
         self.aspace.set_attribute_value(nodeid, ua.AttributeIds.Value, datavalue)
 
 
-
-
 class InternalSession(object):
     _counter = 10
     _auth_counter = 1000
@@ -438,8 +287,6 @@ class InternalSession(object):
     def __init__(self, internal_server, aspace, submgr, name, user=UserManager.User.Anonymous):
         self.logger = logging.getLogger(__name__)
         self.iserver = internal_server
-        self.external = external  # define if session is external, we need to copy some objects if it is internal
-                                                                                                         
         self.aspace = aspace
         self.subscription_service = submgr
         self.name = name
