@@ -4,7 +4,11 @@ high level interface to subscriptions
 import time
 import logging
 from threading import Lock
-from collections import Iterable
+import sys
+if sys.version_info.major == 3 and sys.version_info.minor >= 6:
+    from collections.abc import Iterable
+else:
+    from collections import Iterable
 
 from opcua import ua
 from opcua.common import events
