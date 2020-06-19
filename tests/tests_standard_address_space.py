@@ -1,4 +1,3 @@
-import pytest
 import unittest
 import os.path
 import xml.etree.ElementTree as ET
