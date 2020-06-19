@@ -164,7 +164,7 @@ class CodeGenerator(object):
         tmp = [f"{f.name}:{{self.{f.name}}}" for f in obj.fields]
         tmp = ", ".join(tmp)
         if tmp:
-            self.write(f"return f'{obj.name}({tmp})'")
+            self.write(f"return '{obj.name}({tmp})'")
         else:
             self.write(f"return '{obj.name}()'")
         self.iidx -= 1
