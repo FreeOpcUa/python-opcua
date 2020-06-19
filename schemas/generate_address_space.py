@@ -2,7 +2,6 @@
 Generate address space c++ code from xml file specification
 xmlparser.py is a requirement. it is in opcua folder but to avoid importing all code, developer can link xmlparser.py in current directory
 """
-import asyncio
 import sys
 import os
 import datetime

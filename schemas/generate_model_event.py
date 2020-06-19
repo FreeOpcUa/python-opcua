@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 import collections
 
+
 class Node_struct:
 
     def __init__(self):
@@ -17,7 +18,10 @@ class Node_struct:
         return hash(self.nodeId, self.browseName, self.isAbstract, self.parentNodeId, self.dataType, self.displayName, self.description, self.references)
 
     def __eq__(self, other):
-        return (self.nodeId, self.browseName, self.isAbstract, self.parentNodeId, self.dataType, self.displayName, self.description, self.references) == (other.nodeId, other.browseName, other.isAbstract, other.parentNodeId, other.dataType, other.displayName, other.description, other.references)
+        return (self.nodeId, self.browseName, self.isAbstract, self.parentNodeId, self.dataType, self.displayName,
+                self.description, self.references) == (
+               other.nodeId, other.browseName, other.isAbstract, other.parentNodeId, other.dataType, other.displayName,
+               other.description, other.references)
 
     def __ne__(self, other):
         return not(self == other)
@@ -52,6 +56,7 @@ class Model_Event:
 
 class Parser(object):
     nameSpace = "{http://opcfoundation.org/UA/2011/03/UANodeSet.xsd}"
+
     def __init__(self, path):
         self.path = path
         self.model = None
@@ -79,8 +84,12 @@ class Parser(object):
         return node
 
     def checkNodeType(self, node):
-        if (node.tag == self.nameSpace + "UAObjectType") or (node.tag == self.nameSpace + "UAVariable") or (
-            node.tag == self.nameSpace + "UAObject") or (node.tag == self.nameSpace + "UAMethod") or (node.tag == self.nameSpace + "UAVariableType"):
+        if (
+                (node.tag == self.nameSpace + "UAObjectType") or
+                (node.tag == self.nameSpace + "UAVariable") or
+                (node.tag == self.nameSpace + "UAObject") or
+                (node.tag == self.nameSpace + "UAMethod") or
+                (node.tag == self.nameSpace + "UAVariableType")):
             return True
 
     def parse(self):

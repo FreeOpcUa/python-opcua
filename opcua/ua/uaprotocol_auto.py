@@ -1,5 +1,6 @@
 '''
 Autogenerate code from xml spec
+Date:2020-06-19 19:38:01.887066
 '''
 
 from datetime import datetime
@@ -10,21 +11,21 @@ from opcua.ua.object_ids import ObjectIds
 
 
 class NamingRuleType(IntEnum):
-    '''
+    """
     :ivar Mandatory:
     :vartype Mandatory: 1
     :ivar Optional:
     :vartype Optional: 2
     :ivar Constraint:
     :vartype Constraint: 3
-    '''
+    """
     Mandatory = 1
     Optional = 2
     Constraint = 3
 
 
 class OpenFileMode(IntEnum):
-    '''
+    """
     :ivar Read:
     :vartype Read: 1
     :ivar Write:
@@ -33,7 +34,7 @@ class OpenFileMode(IntEnum):
     :vartype EraseExisting: 4
     :ivar Append:
     :vartype Append: 8
-    '''
+    """
     Read = 1
     Write = 2
     EraseExisting = 4
@@ -41,7 +42,7 @@ class OpenFileMode(IntEnum):
 
 
 class IdentityCriteriaType(IntEnum):
-    '''
+    """
     :ivar UserName:
     :vartype UserName: 1
     :ivar Thumbprint:
@@ -54,7 +55,7 @@ class IdentityCriteriaType(IntEnum):
     :vartype Anonymous: 5
     :ivar AuthenticatedUser:
     :vartype AuthenticatedUser: 6
-    '''
+    """
     UserName = 1
     Thumbprint = 2
     Role = 3
@@ -64,7 +65,7 @@ class IdentityCriteriaType(IntEnum):
 
 
 class TrustListMasks(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar TrustedCertificates:
@@ -77,7 +78,7 @@ class TrustListMasks(IntEnum):
     :vartype IssuerCrls: 8
     :ivar All:
     :vartype All: 15
-    '''
+    """
     None_ = 0
     TrustedCertificates = 1
     TrustedCrls = 2
@@ -87,7 +88,7 @@ class TrustListMasks(IntEnum):
 
 
 class PubSubState(IntEnum):
-    '''
+    """
     :ivar Disabled:
     :vartype Disabled: 0
     :ivar Paused:
@@ -96,7 +97,7 @@ class PubSubState(IntEnum):
     :vartype Operational: 2
     :ivar Error:
     :vartype Error: 3
-    '''
+    """
     Disabled = 0
     Paused = 1
     Operational = 2
@@ -104,18 +105,18 @@ class PubSubState(IntEnum):
 
 
 class DataSetFieldFlags(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar PromotedField:
     :vartype PromotedField: 1
-    '''
+    """
     None_ = 0
     PromotedField = 1
 
 
 class DataSetFieldContentMask(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar StatusCode:
@@ -130,7 +131,7 @@ class DataSetFieldContentMask(IntEnum):
     :vartype ServerPicoSeconds: 16
     :ivar RawData:
     :vartype RawData: 32
-    '''
+    """
     None_ = 0
     StatusCode = 1
     SourceTimestamp = 2
@@ -141,35 +142,35 @@ class DataSetFieldContentMask(IntEnum):
 
 
 class OverrideValueHandling(IntEnum):
-    '''
+    """
     :ivar Disabled:
     :vartype Disabled: 0
     :ivar LastUsableValue:
     :vartype LastUsableValue: 1
     :ivar OverrideValue:
     :vartype OverrideValue: 2
-    '''
+    """
     Disabled = 0
     LastUsableValue = 1
     OverrideValue = 2
 
 
 class DataSetOrderingType(IntEnum):
-    '''
+    """
     :ivar Undefined:
     :vartype Undefined: 0
     :ivar AscendingWriterId:
     :vartype AscendingWriterId: 1
     :ivar AscendingWriterIdSingle:
     :vartype AscendingWriterIdSingle: 2
-    '''
+    """
     Undefined = 0
     AscendingWriterId = 1
     AscendingWriterIdSingle = 2
 
 
 class UadpNetworkMessageContentMask(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar PublisherId:
@@ -194,7 +195,7 @@ class UadpNetworkMessageContentMask(IntEnum):
     :vartype DataSetClassId: 512
     :ivar PromotedFields:
     :vartype PromotedFields: 1024
-    '''
+    """
     None_ = 0
     PublisherId = 1
     GroupHeader = 2
@@ -210,7 +211,7 @@ class UadpNetworkMessageContentMask(IntEnum):
 
 
 class UadpDataSetMessageContentMask(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar Timestamp:
@@ -225,7 +226,7 @@ class UadpDataSetMessageContentMask(IntEnum):
     :vartype MinorVersion: 16
     :ivar SequenceNumber:
     :vartype SequenceNumber: 32
-    '''
+    """
     None_ = 0
     Timestamp = 1
     PicoSeconds = 2
@@ -236,7 +237,7 @@ class UadpDataSetMessageContentMask(IntEnum):
 
 
 class JsonNetworkMessageContentMask(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar NetworkMessageHeader:
@@ -251,7 +252,7 @@ class JsonNetworkMessageContentMask(IntEnum):
     :vartype DataSetClassId: 16
     :ivar ReplyTo:
     :vartype ReplyTo: 32
-    '''
+    """
     None_ = 0
     NetworkMessageHeader = 1
     DataSetMessageHeader = 2
@@ -262,7 +263,7 @@ class JsonNetworkMessageContentMask(IntEnum):
 
 
 class JsonDataSetMessageContentMask(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar DataSetWriterId:
@@ -275,7 +276,7 @@ class JsonDataSetMessageContentMask(IntEnum):
     :vartype Timestamp: 8
     :ivar Status:
     :vartype Status: 16
-    '''
+    """
     None_ = 0
     DataSetWriterId = 1
     MetaDataVersion = 2
@@ -285,7 +286,7 @@ class JsonDataSetMessageContentMask(IntEnum):
 
 
 class BrokerTransportQualityOfService(IntEnum):
-    '''
+    """
     :ivar NotSpecified:
     :vartype NotSpecified: 0
     :ivar BestEffort:
@@ -296,7 +297,7 @@ class BrokerTransportQualityOfService(IntEnum):
     :vartype AtMostOnce: 3
     :ivar ExactlyOnce:
     :vartype ExactlyOnce: 4
-    '''
+    """
     NotSpecified = 0
     BestEffort = 1
     AtLeastOnce = 2
@@ -305,7 +306,7 @@ class BrokerTransportQualityOfService(IntEnum):
 
 
 class DiagnosticsLevel(IntEnum):
-    '''
+    """
     :ivar Basic:
     :vartype Basic: 0
     :ivar Advanced:
@@ -316,7 +317,7 @@ class DiagnosticsLevel(IntEnum):
     :vartype Log: 3
     :ivar Debug:
     :vartype Debug: 4
-    '''
+    """
     Basic = 0
     Advanced = 1
     Info = 2
@@ -325,18 +326,18 @@ class DiagnosticsLevel(IntEnum):
 
 
 class PubSubDiagnosticsCounterClassification(IntEnum):
-    '''
+    """
     :ivar Information:
     :vartype Information: 0
     :ivar Error:
     :vartype Error: 1
-    '''
+    """
     Information = 0
     Error = 1
 
 
 class IdType(IntEnum):
-    '''
+    """
     :ivar Numeric:
     :vartype Numeric: 0
     :ivar String:
@@ -345,7 +346,7 @@ class IdType(IntEnum):
     :vartype Guid: 2
     :ivar Opaque:
     :vartype Opaque: 3
-    '''
+    """
     Numeric = 0
     String = 1
     Guid = 2
@@ -353,7 +354,7 @@ class IdType(IntEnum):
 
 
 class NodeClass(IntEnum):
-    '''
+    """
     :ivar Unspecified:
     :vartype Unspecified: 0
     :ivar Object:
@@ -372,7 +373,7 @@ class NodeClass(IntEnum):
     :vartype DataType: 64
     :ivar View:
     :vartype View: 128
-    '''
+    """
     Unspecified = 0
     Object = 1
     Variable = 2
@@ -385,7 +386,7 @@ class NodeClass(IntEnum):
 
 
 class PermissionType(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar Browse:
@@ -422,7 +423,7 @@ class PermissionType(IntEnum):
     :vartype DeleteNode: 32768
     :ivar AddNode:
     :vartype AddNode: 65536
-    '''
+    """
     None_ = 0
     Browse = 1
     ReadRolePermissions = 2
@@ -444,7 +445,7 @@ class PermissionType(IntEnum):
 
 
 class AccessLevelType(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar CurrentRead:
@@ -461,7 +462,7 @@ class AccessLevelType(IntEnum):
     :vartype StatusWrite: 32
     :ivar TimestampWrite:
     :vartype TimestampWrite: 64
-    '''
+    """
     None_ = 0
     CurrentRead = 1
     CurrentWrite = 2
@@ -473,7 +474,7 @@ class AccessLevelType(IntEnum):
 
 
 class AccessLevelExType(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar CurrentRead:
@@ -496,7 +497,7 @@ class AccessLevelExType(IntEnum):
     :vartype NonatomicWrite: 512
     :ivar WriteFullArrayOnly:
     :vartype WriteFullArrayOnly: 1024
-    '''
+    """
     None_ = 0
     CurrentRead = 1
     CurrentWrite = 2
@@ -511,7 +512,7 @@ class AccessLevelExType(IntEnum):
 
 
 class EventNotifierType(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar SubscribeToEvents:
@@ -520,7 +521,7 @@ class EventNotifierType(IntEnum):
     :vartype HistoryRead: 4
     :ivar HistoryWrite:
     :vartype HistoryWrite: 8
-    '''
+    """
     None_ = 0
     SubscribeToEvents = 1
     HistoryRead = 4
@@ -528,7 +529,7 @@ class EventNotifierType(IntEnum):
 
 
 class AccessRestrictionType(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar SigningRequired:
@@ -537,7 +538,7 @@ class AccessRestrictionType(IntEnum):
     :vartype EncryptionRequired: 2
     :ivar SessionRequired:
     :vartype SessionRequired: 4
-    '''
+    """
     None_ = 0
     SigningRequired = 1
     EncryptionRequired = 2
@@ -545,21 +546,21 @@ class AccessRestrictionType(IntEnum):
 
 
 class StructureType(IntEnum):
-    '''
+    """
     :ivar Structure:
     :vartype Structure: 0
     :ivar StructureWithOptionalFields:
     :vartype StructureWithOptionalFields: 1
     :ivar Union:
     :vartype Union: 2
-    '''
+    """
     Structure = 0
     StructureWithOptionalFields = 1
     Union = 2
 
 
 class ApplicationType(IntEnum):
-    '''
+    """
     :ivar Server:
     :vartype Server: 0
     :ivar Client:
@@ -568,7 +569,7 @@ class ApplicationType(IntEnum):
     :vartype ClientAndServer: 2
     :ivar DiscoveryServer:
     :vartype DiscoveryServer: 3
-    '''
+    """
     Server = 0
     Client = 1
     ClientAndServer = 2
@@ -576,7 +577,7 @@ class ApplicationType(IntEnum):
 
 
 class MessageSecurityMode(IntEnum):
-    '''
+    """
     :ivar Invalid:
     :vartype Invalid: 0
     :ivar None_:
@@ -585,7 +586,7 @@ class MessageSecurityMode(IntEnum):
     :vartype Sign: 2
     :ivar SignAndEncrypt:
     :vartype SignAndEncrypt: 3
-    '''
+    """
     Invalid = 0
     None_ = 1
     Sign = 2
@@ -593,7 +594,7 @@ class MessageSecurityMode(IntEnum):
 
 
 class UserTokenType(IntEnum):
-    '''
+    """
     :ivar Anonymous:
     :vartype Anonymous: 0
     :ivar UserName:
@@ -602,7 +603,7 @@ class UserTokenType(IntEnum):
     :vartype Certificate: 2
     :ivar IssuedToken:
     :vartype IssuedToken: 3
-    '''
+    """
     Anonymous = 0
     UserName = 1
     Certificate = 2
@@ -610,18 +611,18 @@ class UserTokenType(IntEnum):
 
 
 class SecurityTokenRequestType(IntEnum):
-    '''
+    """
     :ivar Issue:
     :vartype Issue: 0
     :ivar Renew:
     :vartype Renew: 1
-    '''
+    """
     Issue = 0
     Renew = 1
 
 
 class NodeAttributesMask(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar AccessLevel:
@@ -692,7 +693,7 @@ class NodeAttributesMask(IntEnum):
     :vartype ReferenceType: 26537060
     :ivar View:
     :vartype View: 26501356
-    '''
+    """
     None_ = 0
     AccessLevel = 1
     ArrayDimensions = 2
@@ -731,7 +732,7 @@ class NodeAttributesMask(IntEnum):
 
 
 class AttributeWriteMask(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar AccessLevel:
@@ -786,7 +787,7 @@ class AttributeWriteMask(IntEnum):
     :vartype AccessRestrictions: 16777216
     :ivar AccessLevelEx:
     :vartype AccessLevelEx: 33554432
-    '''
+    """
     None_ = 0
     AccessLevel = 1
     ArrayDimensions = 2
@@ -817,7 +818,7 @@ class AttributeWriteMask(IntEnum):
 
 
 class BrowseDirection(IntEnum):
-    '''
+    """
     :ivar Forward:
     :vartype Forward: 0
     :ivar Inverse:
@@ -826,7 +827,7 @@ class BrowseDirection(IntEnum):
     :vartype Both: 2
     :ivar Invalid:
     :vartype Invalid: 3
-    '''
+    """
     Forward = 0
     Inverse = 1
     Both = 2
@@ -834,7 +835,7 @@ class BrowseDirection(IntEnum):
 
 
 class BrowseResultMask(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar ReferenceTypeId:
@@ -855,7 +856,7 @@ class BrowseResultMask(IntEnum):
     :vartype ReferenceTypeInfo: 3
     :ivar TargetInfo:
     :vartype TargetInfo: 60
-    '''
+    """
     None_ = 0
     ReferenceTypeId = 1
     IsForward = 2
@@ -869,7 +870,7 @@ class BrowseResultMask(IntEnum):
 
 
 class FilterOperator(IntEnum):
-    '''
+    """
     :ivar Equals:
     :vartype Equals: 0
     :ivar IsNull:
@@ -906,7 +907,7 @@ class FilterOperator(IntEnum):
     :vartype BitwiseAnd: 16
     :ivar BitwiseOr:
     :vartype BitwiseOr: 17
-    '''
+    """
     Equals = 0
     IsNull = 1
     GreaterThan = 2
@@ -928,7 +929,7 @@ class FilterOperator(IntEnum):
 
 
 class TimestampsToReturn(IntEnum):
-    '''
+    """
     :ivar Source:
     :vartype Source: 0
     :ivar Server:
@@ -939,7 +940,7 @@ class TimestampsToReturn(IntEnum):
     :vartype Neither: 3
     :ivar Invalid:
     :vartype Invalid: 4
-    '''
+    """
     Source = 0
     Server = 1
     Both = 2
@@ -948,7 +949,7 @@ class TimestampsToReturn(IntEnum):
 
 
 class HistoryUpdateType(IntEnum):
-    '''
+    """
     :ivar Insert:
     :vartype Insert: 1
     :ivar Replace:
@@ -957,7 +958,7 @@ class HistoryUpdateType(IntEnum):
     :vartype Update: 3
     :ivar Delete:
     :vartype Delete: 4
-    '''
+    """
     Insert = 1
     Replace = 2
     Update = 3
@@ -965,7 +966,7 @@ class HistoryUpdateType(IntEnum):
 
 
 class PerformUpdateType(IntEnum):
-    '''
+    """
     :ivar Insert:
     :vartype Insert: 1
     :ivar Replace:
@@ -974,7 +975,7 @@ class PerformUpdateType(IntEnum):
     :vartype Update: 3
     :ivar Remove:
     :vartype Remove: 4
-    '''
+    """
     Insert = 1
     Replace = 2
     Update = 3
@@ -982,49 +983,49 @@ class PerformUpdateType(IntEnum):
 
 
 class MonitoringMode(IntEnum):
-    '''
+    """
     :ivar Disabled:
     :vartype Disabled: 0
     :ivar Sampling:
     :vartype Sampling: 1
     :ivar Reporting:
     :vartype Reporting: 2
-    '''
+    """
     Disabled = 0
     Sampling = 1
     Reporting = 2
 
 
 class DataChangeTrigger(IntEnum):
-    '''
+    """
     :ivar Status:
     :vartype Status: 0
     :ivar StatusValue:
     :vartype StatusValue: 1
     :ivar StatusValueTimestamp:
     :vartype StatusValueTimestamp: 2
-    '''
+    """
     Status = 0
     StatusValue = 1
     StatusValueTimestamp = 2
 
 
 class DeadbandType(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar Absolute:
     :vartype Absolute: 1
     :ivar Percent:
     :vartype Percent: 2
-    '''
+    """
     None_ = 0
     Absolute = 1
     Percent = 2
 
 
 class RedundancySupport(IntEnum):
-    '''
+    """
     :ivar None_:
     :vartype None_: 0
     :ivar Cold:
@@ -1037,7 +1038,7 @@ class RedundancySupport(IntEnum):
     :vartype Transparent: 4
     :ivar HotAndMirrored:
     :vartype HotAndMirrored: 5
-    '''
+    """
     None_ = 0
     Cold = 1
     Warm = 2
@@ -1047,7 +1048,7 @@ class RedundancySupport(IntEnum):
 
 
 class ServerState(IntEnum):
-    '''
+    """
     :ivar Running:
     :vartype Running: 0
     :ivar Failed:
@@ -1064,7 +1065,7 @@ class ServerState(IntEnum):
     :vartype CommunicationFault: 6
     :ivar Unknown:
     :vartype Unknown: 7
-    '''
+    """
     Running = 0
     Failed = 1
     NoConfiguration = 2
@@ -1076,7 +1077,7 @@ class ServerState(IntEnum):
 
 
 class ModelChangeStructureVerbMask(IntEnum):
-    '''
+    """
     :ivar NodeAdded:
     :vartype NodeAdded: 1
     :ivar NodeDeleted:
@@ -1087,7 +1088,7 @@ class ModelChangeStructureVerbMask(IntEnum):
     :vartype ReferenceDeleted: 8
     :ivar DataTypeChanged:
     :vartype DataTypeChanged: 16
-    '''
+    """
     NodeAdded = 1
     NodeDeleted = 2
     ReferenceAdded = 4
@@ -1096,21 +1097,21 @@ class ModelChangeStructureVerbMask(IntEnum):
 
 
 class AxisScaleEnumeration(IntEnum):
-    '''
+    """
     :ivar Linear:
     :vartype Linear: 0
     :ivar Log:
     :vartype Log: 1
     :ivar Ln:
     :vartype Ln: 2
-    '''
+    """
     Linear = 0
     Log = 1
     Ln = 2
 
 
 class ExceptionDeviationFormat(IntEnum):
-    '''
+    """
     :ivar AbsoluteValue:
     :vartype AbsoluteValue: 0
     :ivar PercentOfValue:
@@ -1121,7 +1122,7 @@ class ExceptionDeviationFormat(IntEnum):
     :vartype PercentOfEURange: 3
     :ivar Unknown:
     :vartype Unknown: 4
-    '''
+    """
     AbsoluteValue = 0
     PercentOfValue = 1
     PercentOfRange = 2
@@ -1130,8 +1131,8 @@ class ExceptionDeviationFormat(IntEnum):
 
 
 class DataTypeDefinition(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -1140,13 +1141,13 @@ class DataTypeDefinition(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataTypeDefinition(' +  + ')'
+        return 'DataTypeDefinition()'
 
     __repr__ = __str__
 
 
 class DiagnosticInfo(FrozenClass):
-    '''
+    """
     A recursive structure containing diagnostic information associated with a status code.
 
     :ivar Encoding:
@@ -1165,7 +1166,7 @@ class DiagnosticInfo(FrozenClass):
     :vartype InnerStatusCode: StatusCode
     :ivar InnerDiagnosticInfo:
     :vartype InnerDiagnosticInfo: DiagnosticInfo
-    '''
+    """
 
     ua_switches = {
         'SymbolicId': ('Encoding', 0),
@@ -1199,25 +1200,18 @@ class DiagnosticInfo(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DiagnosticInfo(' + 'Encoding:' + str(self.Encoding) + ', ' + \
-               'SymbolicId:' + str(self.SymbolicId) + ', ' + \
-               'NamespaceURI:' + str(self.NamespaceURI) + ', ' + \
-               'Locale:' + str(self.Locale) + ', ' + \
-               'LocalizedText:' + str(self.LocalizedText) + ', ' + \
-               'AdditionalInfo:' + str(self.AdditionalInfo) + ', ' + \
-               'InnerStatusCode:' + str(self.InnerStatusCode) + ', ' + \
-               'InnerDiagnosticInfo:' + str(self.InnerDiagnosticInfo) + ')'
+        return f'DiagnosticInfo(Encoding:{self.Encoding}, SymbolicId:{self.SymbolicId}, NamespaceURI:{self.NamespaceURI}, Locale:{self.Locale}, LocalizedText:{self.LocalizedText}, AdditionalInfo:{self.AdditionalInfo}, InnerStatusCode:{self.InnerStatusCode}, InnerDiagnosticInfo:{self.InnerDiagnosticInfo})'
 
     __repr__ = __str__
 
 
 class KeyValuePair(FrozenClass):
-    '''
+    """
     :ivar Key:
     :vartype Key: QualifiedName
     :ivar Value:
     :vartype Value: Variant
-    '''
+    """
 
     ua_types = [
         ('Key', 'QualifiedName'),
@@ -1230,14 +1224,13 @@ class KeyValuePair(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'KeyValuePair(' + 'Key:' + str(self.Key) + ', ' + \
-               'Value:' + str(self.Value) + ')'
+        return f'KeyValuePair(Key:{self.Key}, Value:{self.Value})'
 
     __repr__ = __str__
 
 
 class EndpointType(FrozenClass):
-    '''
+    """
     :ivar EndpointUrl:
     :vartype EndpointUrl: String
     :ivar SecurityMode:
@@ -1246,7 +1239,7 @@ class EndpointType(FrozenClass):
     :vartype SecurityPolicyUri: String
     :ivar TransportProfileUri:
     :vartype TransportProfileUri: String
-    '''
+    """
 
     ua_types = [
         ('EndpointUrl', 'String'),
@@ -1263,21 +1256,18 @@ class EndpointType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EndpointType(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
-               'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', ' + \
-               'TransportProfileUri:' + str(self.TransportProfileUri) + ')'
+        return f'EndpointType(EndpointUrl:{self.EndpointUrl}, SecurityMode:{self.SecurityMode}, SecurityPolicyUri:{self.SecurityPolicyUri}, TransportProfileUri:{self.TransportProfileUri})'
 
     __repr__ = __str__
 
 
 class RationalNumber(FrozenClass):
-    '''
+    """
     :ivar Numerator:
     :vartype Numerator: Int32
     :ivar Denominator:
     :vartype Denominator: UInt32
-    '''
+    """
 
     ua_types = [
         ('Numerator', 'Int32'),
@@ -1290,15 +1280,14 @@ class RationalNumber(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RationalNumber(' + 'Numerator:' + str(self.Numerator) + ', ' + \
-               'Denominator:' + str(self.Denominator) + ')'
+        return f'RationalNumber(Numerator:{self.Numerator}, Denominator:{self.Denominator})'
 
     __repr__ = __str__
 
 
 class Vector(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -1307,20 +1296,20 @@ class Vector(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'Vector(' +  + ')'
+        return 'Vector()'
 
     __repr__ = __str__
 
 
 class ThreeDVector(FrozenClass):
-    '''
+    """
     :ivar X:
     :vartype X: Double
     :ivar Y:
     :vartype Y: Double
     :ivar Z:
     :vartype Z: Double
-    '''
+    """
 
     ua_types = [
         ('X', 'Double'),
@@ -1335,16 +1324,14 @@ class ThreeDVector(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ThreeDVector(' + 'X:' + str(self.X) + ', ' + \
-               'Y:' + str(self.Y) + ', ' + \
-               'Z:' + str(self.Z) + ')'
+        return f'ThreeDVector(X:{self.X}, Y:{self.Y}, Z:{self.Z})'
 
     __repr__ = __str__
 
 
 class CartesianCoordinates(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -1353,20 +1340,20 @@ class CartesianCoordinates(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CartesianCoordinates(' +  + ')'
+        return 'CartesianCoordinates()'
 
     __repr__ = __str__
 
 
 class ThreeDCartesianCoordinates(FrozenClass):
-    '''
+    """
     :ivar X:
     :vartype X: Double
     :ivar Y:
     :vartype Y: Double
     :ivar Z:
     :vartype Z: Double
-    '''
+    """
 
     ua_types = [
         ('X', 'Double'),
@@ -1381,16 +1368,14 @@ class ThreeDCartesianCoordinates(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ThreeDCartesianCoordinates(' + 'X:' + str(self.X) + ', ' + \
-               'Y:' + str(self.Y) + ', ' + \
-               'Z:' + str(self.Z) + ')'
+        return f'ThreeDCartesianCoordinates(X:{self.X}, Y:{self.Y}, Z:{self.Z})'
 
     __repr__ = __str__
 
 
 class Orientation(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -1399,20 +1384,20 @@ class Orientation(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'Orientation(' +  + ')'
+        return 'Orientation()'
 
     __repr__ = __str__
 
 
 class ThreeDOrientation(FrozenClass):
-    '''
+    """
     :ivar A:
     :vartype A: Double
     :ivar B:
     :vartype B: Double
     :ivar C:
     :vartype C: Double
-    '''
+    """
 
     ua_types = [
         ('A', 'Double'),
@@ -1427,16 +1412,14 @@ class ThreeDOrientation(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ThreeDOrientation(' + 'A:' + str(self.A) + ', ' + \
-               'B:' + str(self.B) + ', ' + \
-               'C:' + str(self.C) + ')'
+        return f'ThreeDOrientation(A:{self.A}, B:{self.B}, C:{self.C})'
 
     __repr__ = __str__
 
 
 class Frame(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -1445,18 +1428,18 @@ class Frame(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'Frame(' +  + ')'
+        return 'Frame()'
 
     __repr__ = __str__
 
 
 class ThreeDFrame(FrozenClass):
-    '''
+    """
     :ivar CartesianCoordinates:
     :vartype CartesianCoordinates: ThreeDCartesianCoordinates
     :ivar Orientation:
     :vartype Orientation: ThreeDOrientation
-    '''
+    """
 
     ua_types = [
         ('CartesianCoordinates', 'ThreeDCartesianCoordinates'),
@@ -1469,19 +1452,18 @@ class ThreeDFrame(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ThreeDFrame(' + 'CartesianCoordinates:' + str(self.CartesianCoordinates) + ', ' + \
-               'Orientation:' + str(self.Orientation) + ')'
+        return f'ThreeDFrame(CartesianCoordinates:{self.CartesianCoordinates}, Orientation:{self.Orientation})'
 
     __repr__ = __str__
 
 
 class IdentityMappingRuleType(FrozenClass):
-    '''
+    """
     :ivar CriteriaType:
     :vartype CriteriaType: IdentityCriteriaType
     :ivar Criteria:
     :vartype Criteria: String
-    '''
+    """
 
     ua_types = [
         ('CriteriaType', 'IdentityCriteriaType'),
@@ -1494,14 +1476,13 @@ class IdentityMappingRuleType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'IdentityMappingRuleType(' + 'CriteriaType:' + str(self.CriteriaType) + ', ' + \
-               'Criteria:' + str(self.Criteria) + ')'
+        return f'IdentityMappingRuleType(CriteriaType:{self.CriteriaType}, Criteria:{self.Criteria})'
 
     __repr__ = __str__
 
 
 class CurrencyUnitType(FrozenClass):
-    '''
+    """
     :ivar NumericCode:
     :vartype NumericCode: Int16
     :ivar Exponent:
@@ -1510,7 +1491,7 @@ class CurrencyUnitType(FrozenClass):
     :vartype AlphabeticCode: String
     :ivar Currency:
     :vartype Currency: LocalizedText
-    '''
+    """
 
     ua_types = [
         ('NumericCode', 'Int16'),
@@ -1527,16 +1508,13 @@ class CurrencyUnitType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CurrencyUnitType(' + 'NumericCode:' + str(self.NumericCode) + ', ' + \
-               'Exponent:' + str(self.Exponent) + ', ' + \
-               'AlphabeticCode:' + str(self.AlphabeticCode) + ', ' + \
-               'Currency:' + str(self.Currency) + ')'
+        return f'CurrencyUnitType(NumericCode:{self.NumericCode}, Exponent:{self.Exponent}, AlphabeticCode:{self.AlphabeticCode}, Currency:{self.Currency})'
 
     __repr__ = __str__
 
 
 class TrustListDataType(FrozenClass):
-    '''
+    """
     :ivar SpecifiedLists:
     :vartype SpecifiedLists: UInt32
     :ivar TrustedCertificates:
@@ -1547,7 +1525,7 @@ class TrustListDataType(FrozenClass):
     :vartype IssuerCertificates: ByteString
     :ivar IssuerCrls:
     :vartype IssuerCrls: ByteString
-    '''
+    """
 
     ua_types = [
         ('SpecifiedLists', 'UInt32'),
@@ -1566,22 +1544,18 @@ class TrustListDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TrustListDataType(' + 'SpecifiedLists:' + str(self.SpecifiedLists) + ', ' + \
-               'TrustedCertificates:' + str(self.TrustedCertificates) + ', ' + \
-               'TrustedCrls:' + str(self.TrustedCrls) + ', ' + \
-               'IssuerCertificates:' + str(self.IssuerCertificates) + ', ' + \
-               'IssuerCrls:' + str(self.IssuerCrls) + ')'
+        return f'TrustListDataType(SpecifiedLists:{self.SpecifiedLists}, TrustedCertificates:{self.TrustedCertificates}, TrustedCrls:{self.TrustedCrls}, IssuerCertificates:{self.IssuerCertificates}, IssuerCrls:{self.IssuerCrls})'
 
     __repr__ = __str__
 
 
 class DecimalDataType(FrozenClass):
-    '''
+    """
     :ivar Scale:
     :vartype Scale: Int16
     :ivar Value:
     :vartype Value: ByteString
-    '''
+    """
 
     ua_types = [
         ('Scale', 'Int16'),
@@ -1594,14 +1568,13 @@ class DecimalDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DecimalDataType(' + 'Scale:' + str(self.Scale) + ', ' + \
-               'Value:' + str(self.Value) + ')'
+        return f'DecimalDataType(Scale:{self.Scale}, Value:{self.Value})'
 
     __repr__ = __str__
 
 
 class DataTypeSchemaHeader(FrozenClass):
-    '''
+    """
     :ivar Namespaces:
     :vartype Namespaces: String
     :ivar StructureDataTypes:
@@ -1610,7 +1583,7 @@ class DataTypeSchemaHeader(FrozenClass):
     :vartype EnumDataTypes: EnumDescription
     :ivar SimpleDataTypes:
     :vartype SimpleDataTypes: SimpleTypeDescription
-    '''
+    """
 
     ua_types = [
         ('Namespaces', 'ListOfString'),
@@ -1627,21 +1600,18 @@ class DataTypeSchemaHeader(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataTypeSchemaHeader(' + 'Namespaces:' + str(self.Namespaces) + ', ' + \
-               'StructureDataTypes:' + str(self.StructureDataTypes) + ', ' + \
-               'EnumDataTypes:' + str(self.EnumDataTypes) + ', ' + \
-               'SimpleDataTypes:' + str(self.SimpleDataTypes) + ')'
+        return f'DataTypeSchemaHeader(Namespaces:{self.Namespaces}, StructureDataTypes:{self.StructureDataTypes}, EnumDataTypes:{self.EnumDataTypes}, SimpleDataTypes:{self.SimpleDataTypes})'
 
     __repr__ = __str__
 
 
 class DataTypeDescription(FrozenClass):
-    '''
+    """
     :ivar DataTypeId:
     :vartype DataTypeId: NodeId
     :ivar Name:
     :vartype Name: QualifiedName
-    '''
+    """
 
     ua_types = [
         ('DataTypeId', 'NodeId'),
@@ -1654,21 +1624,20 @@ class DataTypeDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataTypeDescription(' + 'DataTypeId:' + str(self.DataTypeId) + ', ' + \
-               'Name:' + str(self.Name) + ')'
+        return f'DataTypeDescription(DataTypeId:{self.DataTypeId}, Name:{self.Name})'
 
     __repr__ = __str__
 
 
 class StructureDescription(FrozenClass):
-    '''
+    """
     :ivar DataTypeId:
     :vartype DataTypeId: NodeId
     :ivar Name:
     :vartype Name: QualifiedName
     :ivar StructureDefinition:
     :vartype StructureDefinition: StructureDefinition
-    '''
+    """
 
     ua_types = [
         ('DataTypeId', 'NodeId'),
@@ -1683,15 +1652,13 @@ class StructureDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'StructureDescription(' + 'DataTypeId:' + str(self.DataTypeId) + ', ' + \
-               'Name:' + str(self.Name) + ', ' + \
-               'StructureDefinition:' + str(self.StructureDefinition) + ')'
+        return f'StructureDescription(DataTypeId:{self.DataTypeId}, Name:{self.Name}, StructureDefinition:{self.StructureDefinition})'
 
     __repr__ = __str__
 
 
 class EnumDescription(FrozenClass):
-    '''
+    """
     :ivar DataTypeId:
     :vartype DataTypeId: NodeId
     :ivar Name:
@@ -1700,7 +1667,7 @@ class EnumDescription(FrozenClass):
     :vartype EnumDefinition: EnumDefinition
     :ivar BuiltInType:
     :vartype BuiltInType: Byte
-    '''
+    """
 
     ua_types = [
         ('DataTypeId', 'NodeId'),
@@ -1717,16 +1684,13 @@ class EnumDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EnumDescription(' + 'DataTypeId:' + str(self.DataTypeId) + ', ' + \
-               'Name:' + str(self.Name) + ', ' + \
-               'EnumDefinition:' + str(self.EnumDefinition) + ', ' + \
-               'BuiltInType:' + str(self.BuiltInType) + ')'
+        return f'EnumDescription(DataTypeId:{self.DataTypeId}, Name:{self.Name}, EnumDefinition:{self.EnumDefinition}, BuiltInType:{self.BuiltInType})'
 
     __repr__ = __str__
 
 
 class SimpleTypeDescription(FrozenClass):
-    '''
+    """
     :ivar DataTypeId:
     :vartype DataTypeId: NodeId
     :ivar Name:
@@ -1735,7 +1699,7 @@ class SimpleTypeDescription(FrozenClass):
     :vartype BaseDataType: NodeId
     :ivar BuiltInType:
     :vartype BuiltInType: Byte
-    '''
+    """
 
     ua_types = [
         ('DataTypeId', 'NodeId'),
@@ -1752,16 +1716,13 @@ class SimpleTypeDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SimpleTypeDescription(' + 'DataTypeId:' + str(self.DataTypeId) + ', ' + \
-               'Name:' + str(self.Name) + ', ' + \
-               'BaseDataType:' + str(self.BaseDataType) + ', ' + \
-               'BuiltInType:' + str(self.BuiltInType) + ')'
+        return f'SimpleTypeDescription(DataTypeId:{self.DataTypeId}, Name:{self.Name}, BaseDataType:{self.BaseDataType}, BuiltInType:{self.BuiltInType})'
 
     __repr__ = __str__
 
 
 class UABinaryFileDataType(FrozenClass):
-    '''
+    """
     :ivar Namespaces:
     :vartype Namespaces: String
     :ivar StructureDataTypes:
@@ -1776,7 +1737,7 @@ class UABinaryFileDataType(FrozenClass):
     :vartype FileHeader: KeyValuePair
     :ivar Body:
     :vartype Body: Variant
-    '''
+    """
 
     ua_types = [
         ('Namespaces', 'ListOfString'),
@@ -1799,19 +1760,13 @@ class UABinaryFileDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UABinaryFileDataType(' + 'Namespaces:' + str(self.Namespaces) + ', ' + \
-               'StructureDataTypes:' + str(self.StructureDataTypes) + ', ' + \
-               'EnumDataTypes:' + str(self.EnumDataTypes) + ', ' + \
-               'SimpleDataTypes:' + str(self.SimpleDataTypes) + ', ' + \
-               'SchemaLocation:' + str(self.SchemaLocation) + ', ' + \
-               'FileHeader:' + str(self.FileHeader) + ', ' + \
-               'Body:' + str(self.Body) + ')'
+        return f'UABinaryFileDataType(Namespaces:{self.Namespaces}, StructureDataTypes:{self.StructureDataTypes}, EnumDataTypes:{self.EnumDataTypes}, SimpleDataTypes:{self.SimpleDataTypes}, SchemaLocation:{self.SchemaLocation}, FileHeader:{self.FileHeader}, Body:{self.Body})'
 
     __repr__ = __str__
 
 
 class DataSetMetaDataType(FrozenClass):
-    '''
+    """
     :ivar Namespaces:
     :vartype Namespaces: String
     :ivar StructureDataTypes:
@@ -1830,7 +1785,7 @@ class DataSetMetaDataType(FrozenClass):
     :vartype DataSetClassId: Guid
     :ivar ConfigurationVersion:
     :vartype ConfigurationVersion: ConfigurationVersionDataType
-    '''
+    """
 
     ua_types = [
         ('Namespaces', 'ListOfString'),
@@ -1857,21 +1812,13 @@ class DataSetMetaDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataSetMetaDataType(' + 'Namespaces:' + str(self.Namespaces) + ', ' + \
-               'StructureDataTypes:' + str(self.StructureDataTypes) + ', ' + \
-               'EnumDataTypes:' + str(self.EnumDataTypes) + ', ' + \
-               'SimpleDataTypes:' + str(self.SimpleDataTypes) + ', ' + \
-               'Name:' + str(self.Name) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'Fields:' + str(self.Fields) + ', ' + \
-               'DataSetClassId:' + str(self.DataSetClassId) + ', ' + \
-               'ConfigurationVersion:' + str(self.ConfigurationVersion) + ')'
+        return f'DataSetMetaDataType(Namespaces:{self.Namespaces}, StructureDataTypes:{self.StructureDataTypes}, EnumDataTypes:{self.EnumDataTypes}, SimpleDataTypes:{self.SimpleDataTypes}, Name:{self.Name}, Description:{self.Description}, Fields:{self.Fields}, DataSetClassId:{self.DataSetClassId}, ConfigurationVersion:{self.ConfigurationVersion})'
 
     __repr__ = __str__
 
 
 class FieldMetaData(FrozenClass):
-    '''
+    """
     :ivar Name:
     :vartype Name: String
     :ivar Description:
@@ -1892,7 +1839,7 @@ class FieldMetaData(FrozenClass):
     :vartype DataSetFieldId: Guid
     :ivar Properties:
     :vartype Properties: KeyValuePair
-    '''
+    """
 
     ua_types = [
         ('Name', 'String'),
@@ -1921,27 +1868,18 @@ class FieldMetaData(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FieldMetaData(' + 'Name:' + str(self.Name) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'FieldFlags:' + str(self.FieldFlags) + ', ' + \
-               'BuiltInType:' + str(self.BuiltInType) + ', ' + \
-               'DataType:' + str(self.DataType) + ', ' + \
-               'ValueRank:' + str(self.ValueRank) + ', ' + \
-               'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
-               'MaxStringLength:' + str(self.MaxStringLength) + ', ' + \
-               'DataSetFieldId:' + str(self.DataSetFieldId) + ', ' + \
-               'Properties:' + str(self.Properties) + ')'
+        return f'FieldMetaData(Name:{self.Name}, Description:{self.Description}, FieldFlags:{self.FieldFlags}, BuiltInType:{self.BuiltInType}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, MaxStringLength:{self.MaxStringLength}, DataSetFieldId:{self.DataSetFieldId}, Properties:{self.Properties})'
 
     __repr__ = __str__
 
 
 class ConfigurationVersionDataType(FrozenClass):
-    '''
+    """
     :ivar MajorVersion:
     :vartype MajorVersion: UInt32
     :ivar MinorVersion:
     :vartype MinorVersion: UInt32
-    '''
+    """
 
     ua_types = [
         ('MajorVersion', 'UInt32'),
@@ -1954,14 +1892,13 @@ class ConfigurationVersionDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ConfigurationVersionDataType(' + 'MajorVersion:' + str(self.MajorVersion) + ', ' + \
-               'MinorVersion:' + str(self.MinorVersion) + ')'
+        return f'ConfigurationVersionDataType(MajorVersion:{self.MajorVersion}, MinorVersion:{self.MinorVersion})'
 
     __repr__ = __str__
 
 
 class PublishedDataSetDataType(FrozenClass):
-    '''
+    """
     :ivar Name:
     :vartype Name: String
     :ivar DataSetFolder:
@@ -1972,7 +1909,7 @@ class PublishedDataSetDataType(FrozenClass):
     :vartype ExtensionFields: KeyValuePair
     :ivar DataSetSource:
     :vartype DataSetSource: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('Name', 'String'),
@@ -1991,18 +1928,14 @@ class PublishedDataSetDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PublishedDataSetDataType(' + 'Name:' + str(self.Name) + ', ' + \
-               'DataSetFolder:' + str(self.DataSetFolder) + ', ' + \
-               'DataSetMetaData:' + str(self.DataSetMetaData) + ', ' + \
-               'ExtensionFields:' + str(self.ExtensionFields) + ', ' + \
-               'DataSetSource:' + str(self.DataSetSource) + ')'
+        return f'PublishedDataSetDataType(Name:{self.Name}, DataSetFolder:{self.DataSetFolder}, DataSetMetaData:{self.DataSetMetaData}, ExtensionFields:{self.ExtensionFields}, DataSetSource:{self.DataSetSource})'
 
     __repr__ = __str__
 
 
 class PublishedDataSetSourceDataType(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -2011,13 +1944,13 @@ class PublishedDataSetSourceDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PublishedDataSetSourceDataType(' +  + ')'
+        return 'PublishedDataSetSourceDataType()'
 
     __repr__ = __str__
 
 
 class PublishedVariableDataType(FrozenClass):
-    '''
+    """
     :ivar PublishedVariable:
     :vartype PublishedVariable: NodeId
     :ivar AttributeId:
@@ -2034,7 +1967,7 @@ class PublishedVariableDataType(FrozenClass):
     :vartype SubstituteValue: Variant
     :ivar MetaDataProperties:
     :vartype MetaDataProperties: QualifiedName
-    '''
+    """
 
     ua_types = [
         ('PublishedVariable', 'NodeId'),
@@ -2059,23 +1992,16 @@ class PublishedVariableDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PublishedVariableDataType(' + 'PublishedVariable:' + str(self.PublishedVariable) + ', ' + \
-               'AttributeId:' + str(self.AttributeId) + ', ' + \
-               'SamplingIntervalHint:' + str(self.SamplingIntervalHint) + ', ' + \
-               'DeadbandType:' + str(self.DeadbandType) + ', ' + \
-               'DeadbandValue:' + str(self.DeadbandValue) + ', ' + \
-               'IndexRange:' + str(self.IndexRange) + ', ' + \
-               'SubstituteValue:' + str(self.SubstituteValue) + ', ' + \
-               'MetaDataProperties:' + str(self.MetaDataProperties) + ')'
+        return f'PublishedVariableDataType(PublishedVariable:{self.PublishedVariable}, AttributeId:{self.AttributeId}, SamplingIntervalHint:{self.SamplingIntervalHint}, DeadbandType:{self.DeadbandType}, DeadbandValue:{self.DeadbandValue}, IndexRange:{self.IndexRange}, SubstituteValue:{self.SubstituteValue}, MetaDataProperties:{self.MetaDataProperties})'
 
     __repr__ = __str__
 
 
 class PublishedDataItemsDataType(FrozenClass):
-    '''
+    """
     :ivar PublishedData:
     :vartype PublishedData: PublishedVariableDataType
-    '''
+    """
 
     ua_types = [
         ('PublishedData', 'ListOfPublishedVariableDataType'),
@@ -2086,20 +2012,20 @@ class PublishedDataItemsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PublishedDataItemsDataType(' + 'PublishedData:' + str(self.PublishedData) + ')'
+        return f'PublishedDataItemsDataType(PublishedData:{self.PublishedData})'
 
     __repr__ = __str__
 
 
 class PublishedEventsDataType(FrozenClass):
-    '''
+    """
     :ivar EventNotifier:
     :vartype EventNotifier: NodeId
     :ivar SelectedFields:
     :vartype SelectedFields: SimpleAttributeOperand
     :ivar Filter:
     :vartype Filter: ContentFilter
-    '''
+    """
 
     ua_types = [
         ('EventNotifier', 'NodeId'),
@@ -2114,15 +2040,13 @@ class PublishedEventsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PublishedEventsDataType(' + 'EventNotifier:' + str(self.EventNotifier) + ', ' + \
-               'SelectedFields:' + str(self.SelectedFields) + ', ' + \
-               'Filter:' + str(self.Filter) + ')'
+        return f'PublishedEventsDataType(EventNotifier:{self.EventNotifier}, SelectedFields:{self.SelectedFields}, Filter:{self.Filter})'
 
     __repr__ = __str__
 
 
 class DataSetWriterDataType(FrozenClass):
-    '''
+    """
     :ivar Name:
     :vartype Name: String
     :ivar Enabled:
@@ -2141,7 +2065,7 @@ class DataSetWriterDataType(FrozenClass):
     :vartype TransportSettings: ExtensionObject
     :ivar MessageSettings:
     :vartype MessageSettings: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('Name', 'String'),
@@ -2168,22 +2092,14 @@ class DataSetWriterDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataSetWriterDataType(' + 'Name:' + str(self.Name) + ', ' + \
-               'Enabled:' + str(self.Enabled) + ', ' + \
-               'DataSetWriterId:' + str(self.DataSetWriterId) + ', ' + \
-               'DataSetFieldContentMask:' + str(self.DataSetFieldContentMask) + ', ' + \
-               'KeyFrameCount:' + str(self.KeyFrameCount) + ', ' + \
-               'DataSetName:' + str(self.DataSetName) + ', ' + \
-               'DataSetWriterProperties:' + str(self.DataSetWriterProperties) + ', ' + \
-               'TransportSettings:' + str(self.TransportSettings) + ', ' + \
-               'MessageSettings:' + str(self.MessageSettings) + ')'
+        return f'DataSetWriterDataType(Name:{self.Name}, Enabled:{self.Enabled}, DataSetWriterId:{self.DataSetWriterId}, DataSetFieldContentMask:{self.DataSetFieldContentMask}, KeyFrameCount:{self.KeyFrameCount}, DataSetName:{self.DataSetName}, DataSetWriterProperties:{self.DataSetWriterProperties}, TransportSettings:{self.TransportSettings}, MessageSettings:{self.MessageSettings})'
 
     __repr__ = __str__
 
 
 class DataSetWriterTransportDataType(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -2192,14 +2108,14 @@ class DataSetWriterTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataSetWriterTransportDataType(' +  + ')'
+        return 'DataSetWriterTransportDataType()'
 
     __repr__ = __str__
 
 
 class DataSetWriterMessageDataType(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -2208,13 +2124,13 @@ class DataSetWriterMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataSetWriterMessageDataType(' +  + ')'
+        return 'DataSetWriterMessageDataType()'
 
     __repr__ = __str__
 
 
 class PubSubGroupDataType(FrozenClass):
-    '''
+    """
     :ivar Name:
     :vartype Name: String
     :ivar Enabled:
@@ -2229,7 +2145,7 @@ class PubSubGroupDataType(FrozenClass):
     :vartype MaxNetworkMessageSize: UInt32
     :ivar GroupProperties:
     :vartype GroupProperties: KeyValuePair
-    '''
+    """
 
     ua_types = [
         ('Name', 'String'),
@@ -2252,19 +2168,13 @@ class PubSubGroupDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PubSubGroupDataType(' + 'Name:' + str(self.Name) + ', ' + \
-               'Enabled:' + str(self.Enabled) + ', ' + \
-               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
-               'SecurityGroupId:' + str(self.SecurityGroupId) + ', ' + \
-               'SecurityKeyServices:' + str(self.SecurityKeyServices) + ', ' + \
-               'MaxNetworkMessageSize:' + str(self.MaxNetworkMessageSize) + ', ' + \
-               'GroupProperties:' + str(self.GroupProperties) + ')'
+        return f'PubSubGroupDataType(Name:{self.Name}, Enabled:{self.Enabled}, SecurityMode:{self.SecurityMode}, SecurityGroupId:{self.SecurityGroupId}, SecurityKeyServices:{self.SecurityKeyServices}, MaxNetworkMessageSize:{self.MaxNetworkMessageSize}, GroupProperties:{self.GroupProperties})'
 
     __repr__ = __str__
 
 
 class WriterGroupDataType(FrozenClass):
-    '''
+    """
     :ivar Name:
     :vartype Name: String
     :ivar Enabled:
@@ -2297,7 +2207,7 @@ class WriterGroupDataType(FrozenClass):
     :vartype MessageSettings: ExtensionObject
     :ivar DataSetWriters:
     :vartype DataSetWriters: DataSetWriterDataType
-    '''
+    """
 
     ua_types = [
         ('Name', 'String'),
@@ -2338,29 +2248,14 @@ class WriterGroupDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'WriterGroupDataType(' + 'Name:' + str(self.Name) + ', ' + \
-               'Enabled:' + str(self.Enabled) + ', ' + \
-               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
-               'SecurityGroupId:' + str(self.SecurityGroupId) + ', ' + \
-               'SecurityKeyServices:' + str(self.SecurityKeyServices) + ', ' + \
-               'MaxNetworkMessageSize:' + str(self.MaxNetworkMessageSize) + ', ' + \
-               'GroupProperties:' + str(self.GroupProperties) + ', ' + \
-               'WriterGroupId:' + str(self.WriterGroupId) + ', ' + \
-               'PublishingInterval:' + str(self.PublishingInterval) + ', ' + \
-               'KeepAliveTime:' + str(self.KeepAliveTime) + ', ' + \
-               'Priority:' + str(self.Priority) + ', ' + \
-               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
-               'HeaderLayoutUri:' + str(self.HeaderLayoutUri) + ', ' + \
-               'TransportSettings:' + str(self.TransportSettings) + ', ' + \
-               'MessageSettings:' + str(self.MessageSettings) + ', ' + \
-               'DataSetWriters:' + str(self.DataSetWriters) + ')'
+        return f'WriterGroupDataType(Name:{self.Name}, Enabled:{self.Enabled}, SecurityMode:{self.SecurityMode}, SecurityGroupId:{self.SecurityGroupId}, SecurityKeyServices:{self.SecurityKeyServices}, MaxNetworkMessageSize:{self.MaxNetworkMessageSize}, GroupProperties:{self.GroupProperties}, WriterGroupId:{self.WriterGroupId}, PublishingInterval:{self.PublishingInterval}, KeepAliveTime:{self.KeepAliveTime}, Priority:{self.Priority}, LocaleIds:{self.LocaleIds}, HeaderLayoutUri:{self.HeaderLayoutUri}, TransportSettings:{self.TransportSettings}, MessageSettings:{self.MessageSettings}, DataSetWriters:{self.DataSetWriters})'
 
     __repr__ = __str__
 
 
 class WriterGroupTransportDataType(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -2369,14 +2264,14 @@ class WriterGroupTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'WriterGroupTransportDataType(' +  + ')'
+        return 'WriterGroupTransportDataType()'
 
     __repr__ = __str__
 
 
 class WriterGroupMessageDataType(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -2385,13 +2280,13 @@ class WriterGroupMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'WriterGroupMessageDataType(' +  + ')'
+        return 'WriterGroupMessageDataType()'
 
     __repr__ = __str__
 
 
 class PubSubConnectionDataType(FrozenClass):
-    '''
+    """
     :ivar Name:
     :vartype Name: String
     :ivar Enabled:
@@ -2410,7 +2305,7 @@ class PubSubConnectionDataType(FrozenClass):
     :vartype WriterGroups: WriterGroupDataType
     :ivar ReaderGroups:
     :vartype ReaderGroups: ReaderGroupDataType
-    '''
+    """
 
     ua_types = [
         ('Name', 'String'),
@@ -2437,22 +2332,14 @@ class PubSubConnectionDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PubSubConnectionDataType(' + 'Name:' + str(self.Name) + ', ' + \
-               'Enabled:' + str(self.Enabled) + ', ' + \
-               'PublisherId:' + str(self.PublisherId) + ', ' + \
-               'TransportProfileUri:' + str(self.TransportProfileUri) + ', ' + \
-               'Address:' + str(self.Address) + ', ' + \
-               'ConnectionProperties:' + str(self.ConnectionProperties) + ', ' + \
-               'TransportSettings:' + str(self.TransportSettings) + ', ' + \
-               'WriterGroups:' + str(self.WriterGroups) + ', ' + \
-               'ReaderGroups:' + str(self.ReaderGroups) + ')'
+        return f'PubSubConnectionDataType(Name:{self.Name}, Enabled:{self.Enabled}, PublisherId:{self.PublisherId}, TransportProfileUri:{self.TransportProfileUri}, Address:{self.Address}, ConnectionProperties:{self.ConnectionProperties}, TransportSettings:{self.TransportSettings}, WriterGroups:{self.WriterGroups}, ReaderGroups:{self.ReaderGroups})'
 
     __repr__ = __str__
 
 
 class ConnectionTransportDataType(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -2461,16 +2348,16 @@ class ConnectionTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ConnectionTransportDataType(' +  + ')'
+        return 'ConnectionTransportDataType()'
 
     __repr__ = __str__
 
 
 class NetworkAddressDataType(FrozenClass):
-    '''
+    """
     :ivar NetworkInterface:
     :vartype NetworkInterface: String
-    '''
+    """
 
     ua_types = [
         ('NetworkInterface', 'String'),
@@ -2481,18 +2368,18 @@ class NetworkAddressDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'NetworkAddressDataType(' + 'NetworkInterface:' + str(self.NetworkInterface) + ')'
+        return f'NetworkAddressDataType(NetworkInterface:{self.NetworkInterface})'
 
     __repr__ = __str__
 
 
 class NetworkAddressUrlDataType(FrozenClass):
-    '''
+    """
     :ivar NetworkInterface:
     :vartype NetworkInterface: String
     :ivar Url:
     :vartype Url: String
-    '''
+    """
 
     ua_types = [
         ('NetworkInterface', 'String'),
@@ -2505,14 +2392,13 @@ class NetworkAddressUrlDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'NetworkAddressUrlDataType(' + 'NetworkInterface:' + str(self.NetworkInterface) + ', ' + \
-               'Url:' + str(self.Url) + ')'
+        return f'NetworkAddressUrlDataType(NetworkInterface:{self.NetworkInterface}, Url:{self.Url})'
 
     __repr__ = __str__
 
 
 class ReaderGroupDataType(FrozenClass):
-    '''
+    """
     :ivar Name:
     :vartype Name: String
     :ivar Enabled:
@@ -2533,7 +2419,7 @@ class ReaderGroupDataType(FrozenClass):
     :vartype MessageSettings: ExtensionObject
     :ivar DataSetReaders:
     :vartype DataSetReaders: DataSetReaderDataType
-    '''
+    """
 
     ua_types = [
         ('Name', 'String'),
@@ -2562,23 +2448,14 @@ class ReaderGroupDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReaderGroupDataType(' + 'Name:' + str(self.Name) + ', ' + \
-               'Enabled:' + str(self.Enabled) + ', ' + \
-               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
-               'SecurityGroupId:' + str(self.SecurityGroupId) + ', ' + \
-               'SecurityKeyServices:' + str(self.SecurityKeyServices) + ', ' + \
-               'MaxNetworkMessageSize:' + str(self.MaxNetworkMessageSize) + ', ' + \
-               'GroupProperties:' + str(self.GroupProperties) + ', ' + \
-               'TransportSettings:' + str(self.TransportSettings) + ', ' + \
-               'MessageSettings:' + str(self.MessageSettings) + ', ' + \
-               'DataSetReaders:' + str(self.DataSetReaders) + ')'
+        return f'ReaderGroupDataType(Name:{self.Name}, Enabled:{self.Enabled}, SecurityMode:{self.SecurityMode}, SecurityGroupId:{self.SecurityGroupId}, SecurityKeyServices:{self.SecurityKeyServices}, MaxNetworkMessageSize:{self.MaxNetworkMessageSize}, GroupProperties:{self.GroupProperties}, TransportSettings:{self.TransportSettings}, MessageSettings:{self.MessageSettings}, DataSetReaders:{self.DataSetReaders})'
 
     __repr__ = __str__
 
 
 class ReaderGroupTransportDataType(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -2587,14 +2464,14 @@ class ReaderGroupTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReaderGroupTransportDataType(' +  + ')'
+        return 'ReaderGroupTransportDataType()'
 
     __repr__ = __str__
 
 
 class ReaderGroupMessageDataType(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -2603,13 +2480,13 @@ class ReaderGroupMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReaderGroupMessageDataType(' +  + ')'
+        return 'ReaderGroupMessageDataType()'
 
     __repr__ = __str__
 
 
 class DataSetReaderDataType(FrozenClass):
-    '''
+    """
     :ivar Name:
     :vartype Name: String
     :ivar Enabled:
@@ -2644,7 +2521,7 @@ class DataSetReaderDataType(FrozenClass):
     :vartype MessageSettings: ExtensionObject
     :ivar SubscribedDataSet:
     :vartype SubscribedDataSet: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('Name', 'String'),
@@ -2687,30 +2564,14 @@ class DataSetReaderDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataSetReaderDataType(' + 'Name:' + str(self.Name) + ', ' + \
-               'Enabled:' + str(self.Enabled) + ', ' + \
-               'PublisherId:' + str(self.PublisherId) + ', ' + \
-               'WriterGroupId:' + str(self.WriterGroupId) + ', ' + \
-               'DataSetWriterId:' + str(self.DataSetWriterId) + ', ' + \
-               'DataSetMetaData:' + str(self.DataSetMetaData) + ', ' + \
-               'DataSetFieldContentMask:' + str(self.DataSetFieldContentMask) + ', ' + \
-               'MessageReceiveTimeout:' + str(self.MessageReceiveTimeout) + ', ' + \
-               'KeyFrameCount:' + str(self.KeyFrameCount) + ', ' + \
-               'HeaderLayoutUri:' + str(self.HeaderLayoutUri) + ', ' + \
-               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
-               'SecurityGroupId:' + str(self.SecurityGroupId) + ', ' + \
-               'SecurityKeyServices:' + str(self.SecurityKeyServices) + ', ' + \
-               'DataSetReaderProperties:' + str(self.DataSetReaderProperties) + ', ' + \
-               'TransportSettings:' + str(self.TransportSettings) + ', ' + \
-               'MessageSettings:' + str(self.MessageSettings) + ', ' + \
-               'SubscribedDataSet:' + str(self.SubscribedDataSet) + ')'
+        return f'DataSetReaderDataType(Name:{self.Name}, Enabled:{self.Enabled}, PublisherId:{self.PublisherId}, WriterGroupId:{self.WriterGroupId}, DataSetWriterId:{self.DataSetWriterId}, DataSetMetaData:{self.DataSetMetaData}, DataSetFieldContentMask:{self.DataSetFieldContentMask}, MessageReceiveTimeout:{self.MessageReceiveTimeout}, KeyFrameCount:{self.KeyFrameCount}, HeaderLayoutUri:{self.HeaderLayoutUri}, SecurityMode:{self.SecurityMode}, SecurityGroupId:{self.SecurityGroupId}, SecurityKeyServices:{self.SecurityKeyServices}, DataSetReaderProperties:{self.DataSetReaderProperties}, TransportSettings:{self.TransportSettings}, MessageSettings:{self.MessageSettings}, SubscribedDataSet:{self.SubscribedDataSet})'
 
     __repr__ = __str__
 
 
 class DataSetReaderTransportDataType(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -2719,14 +2580,14 @@ class DataSetReaderTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataSetReaderTransportDataType(' +  + ')'
+        return 'DataSetReaderTransportDataType()'
 
     __repr__ = __str__
 
 
 class DataSetReaderMessageDataType(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -2735,14 +2596,14 @@ class DataSetReaderMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataSetReaderMessageDataType(' +  + ')'
+        return 'DataSetReaderMessageDataType()'
 
     __repr__ = __str__
 
 
 class SubscribedDataSetDataType(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -2751,16 +2612,16 @@ class SubscribedDataSetDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SubscribedDataSetDataType(' +  + ')'
+        return 'SubscribedDataSetDataType()'
 
     __repr__ = __str__
 
 
 class TargetVariablesDataType(FrozenClass):
-    '''
+    """
     :ivar TargetVariables:
     :vartype TargetVariables: FieldTargetDataType
-    '''
+    """
 
     ua_types = [
         ('TargetVariables', 'ListOfFieldTargetDataType'),
@@ -2771,13 +2632,13 @@ class TargetVariablesDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TargetVariablesDataType(' + 'TargetVariables:' + str(self.TargetVariables) + ')'
+        return f'TargetVariablesDataType(TargetVariables:{self.TargetVariables})'
 
     __repr__ = __str__
 
 
 class FieldTargetDataType(FrozenClass):
-    '''
+    """
     :ivar DataSetFieldId:
     :vartype DataSetFieldId: Guid
     :ivar ReceiverIndexRange:
@@ -2792,7 +2653,7 @@ class FieldTargetDataType(FrozenClass):
     :vartype OverrideValueHandling: OverrideValueHandling
     :ivar OverrideValue:
     :vartype OverrideValue: Variant
-    '''
+    """
 
     ua_types = [
         ('DataSetFieldId', 'Guid'),
@@ -2815,24 +2676,18 @@ class FieldTargetDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FieldTargetDataType(' + 'DataSetFieldId:' + str(self.DataSetFieldId) + ', ' + \
-               'ReceiverIndexRange:' + str(self.ReceiverIndexRange) + ', ' + \
-               'TargetNodeId:' + str(self.TargetNodeId) + ', ' + \
-               'AttributeId:' + str(self.AttributeId) + ', ' + \
-               'WriteIndexRange:' + str(self.WriteIndexRange) + ', ' + \
-               'OverrideValueHandling:' + str(self.OverrideValueHandling) + ', ' + \
-               'OverrideValue:' + str(self.OverrideValue) + ')'
+        return f'FieldTargetDataType(DataSetFieldId:{self.DataSetFieldId}, ReceiverIndexRange:{self.ReceiverIndexRange}, TargetNodeId:{self.TargetNodeId}, AttributeId:{self.AttributeId}, WriteIndexRange:{self.WriteIndexRange}, OverrideValueHandling:{self.OverrideValueHandling}, OverrideValue:{self.OverrideValue})'
 
     __repr__ = __str__
 
 
 class SubscribedDataSetMirrorDataType(FrozenClass):
-    '''
+    """
     :ivar ParentNodeName:
     :vartype ParentNodeName: String
     :ivar RolePermissions:
     :vartype RolePermissions: RolePermissionType
-    '''
+    """
 
     ua_types = [
         ('ParentNodeName', 'String'),
@@ -2845,21 +2700,20 @@ class SubscribedDataSetMirrorDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SubscribedDataSetMirrorDataType(' + 'ParentNodeName:' + str(self.ParentNodeName) + ', ' + \
-               'RolePermissions:' + str(self.RolePermissions) + ')'
+        return f'SubscribedDataSetMirrorDataType(ParentNodeName:{self.ParentNodeName}, RolePermissions:{self.RolePermissions})'
 
     __repr__ = __str__
 
 
 class PubSubConfigurationDataType(FrozenClass):
-    '''
+    """
     :ivar PublishedDataSets:
     :vartype PublishedDataSets: PublishedDataSetDataType
     :ivar Connections:
     :vartype Connections: PubSubConnectionDataType
     :ivar Enabled:
     :vartype Enabled: Boolean
-    '''
+    """
 
     ua_types = [
         ('PublishedDataSets', 'ListOfPublishedDataSetDataType'),
@@ -2874,15 +2728,13 @@ class PubSubConfigurationDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PubSubConfigurationDataType(' + 'PublishedDataSets:' + str(self.PublishedDataSets) + ', ' + \
-               'Connections:' + str(self.Connections) + ', ' + \
-               'Enabled:' + str(self.Enabled) + ')'
+        return f'PubSubConfigurationDataType(PublishedDataSets:{self.PublishedDataSets}, Connections:{self.Connections}, Enabled:{self.Enabled})'
 
     __repr__ = __str__
 
 
 class UadpWriterGroupMessageDataType(FrozenClass):
-    '''
+    """
     :ivar GroupVersion:
     :vartype GroupVersion: UInt32
     :ivar DataSetOrdering:
@@ -2893,7 +2745,7 @@ class UadpWriterGroupMessageDataType(FrozenClass):
     :vartype SamplingOffset: Double
     :ivar PublishingOffset:
     :vartype PublishingOffset: Double
-    '''
+    """
 
     ua_types = [
         ('GroupVersion', 'UInt32'),
@@ -2912,17 +2764,13 @@ class UadpWriterGroupMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UadpWriterGroupMessageDataType(' + 'GroupVersion:' + str(self.GroupVersion) + ', ' + \
-               'DataSetOrdering:' + str(self.DataSetOrdering) + ', ' + \
-               'NetworkMessageContentMask:' + str(self.NetworkMessageContentMask) + ', ' + \
-               'SamplingOffset:' + str(self.SamplingOffset) + ', ' + \
-               'PublishingOffset:' + str(self.PublishingOffset) + ')'
+        return f'UadpWriterGroupMessageDataType(GroupVersion:{self.GroupVersion}, DataSetOrdering:{self.DataSetOrdering}, NetworkMessageContentMask:{self.NetworkMessageContentMask}, SamplingOffset:{self.SamplingOffset}, PublishingOffset:{self.PublishingOffset})'
 
     __repr__ = __str__
 
 
 class UadpDataSetWriterMessageDataType(FrozenClass):
-    '''
+    """
     :ivar DataSetMessageContentMask:
     :vartype DataSetMessageContentMask: UadpDataSetMessageContentMask
     :ivar ConfiguredSize:
@@ -2931,7 +2779,7 @@ class UadpDataSetWriterMessageDataType(FrozenClass):
     :vartype NetworkMessageNumber: UInt16
     :ivar DataSetOffset:
     :vartype DataSetOffset: UInt16
-    '''
+    """
 
     ua_types = [
         ('DataSetMessageContentMask', 'UadpDataSetMessageContentMask'),
@@ -2948,16 +2796,13 @@ class UadpDataSetWriterMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UadpDataSetWriterMessageDataType(' + 'DataSetMessageContentMask:' + str(self.DataSetMessageContentMask) + ', ' + \
-               'ConfiguredSize:' + str(self.ConfiguredSize) + ', ' + \
-               'NetworkMessageNumber:' + str(self.NetworkMessageNumber) + ', ' + \
-               'DataSetOffset:' + str(self.DataSetOffset) + ')'
+        return f'UadpDataSetWriterMessageDataType(DataSetMessageContentMask:{self.DataSetMessageContentMask}, ConfiguredSize:{self.ConfiguredSize}, NetworkMessageNumber:{self.NetworkMessageNumber}, DataSetOffset:{self.DataSetOffset})'
 
     __repr__ = __str__
 
 
 class UadpDataSetReaderMessageDataType(FrozenClass):
-    '''
+    """
     :ivar GroupVersion:
     :vartype GroupVersion: UInt32
     :ivar NetworkMessageNumber:
@@ -2976,7 +2821,7 @@ class UadpDataSetReaderMessageDataType(FrozenClass):
     :vartype ReceiveOffset: Double
     :ivar ProcessingOffset:
     :vartype ProcessingOffset: Double
-    '''
+    """
 
     ua_types = [
         ('GroupVersion', 'UInt32'),
@@ -3003,24 +2848,16 @@ class UadpDataSetReaderMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UadpDataSetReaderMessageDataType(' + 'GroupVersion:' + str(self.GroupVersion) + ', ' + \
-               'NetworkMessageNumber:' + str(self.NetworkMessageNumber) + ', ' + \
-               'DataSetOffset:' + str(self.DataSetOffset) + ', ' + \
-               'DataSetClassId:' + str(self.DataSetClassId) + ', ' + \
-               'NetworkMessageContentMask:' + str(self.NetworkMessageContentMask) + ', ' + \
-               'DataSetMessageContentMask:' + str(self.DataSetMessageContentMask) + ', ' + \
-               'PublishingInterval:' + str(self.PublishingInterval) + ', ' + \
-               'ReceiveOffset:' + str(self.ReceiveOffset) + ', ' + \
-               'ProcessingOffset:' + str(self.ProcessingOffset) + ')'
+        return f'UadpDataSetReaderMessageDataType(GroupVersion:{self.GroupVersion}, NetworkMessageNumber:{self.NetworkMessageNumber}, DataSetOffset:{self.DataSetOffset}, DataSetClassId:{self.DataSetClassId}, NetworkMessageContentMask:{self.NetworkMessageContentMask}, DataSetMessageContentMask:{self.DataSetMessageContentMask}, PublishingInterval:{self.PublishingInterval}, ReceiveOffset:{self.ReceiveOffset}, ProcessingOffset:{self.ProcessingOffset})'
 
     __repr__ = __str__
 
 
 class JsonWriterGroupMessageDataType(FrozenClass):
-    '''
+    """
     :ivar NetworkMessageContentMask:
     :vartype NetworkMessageContentMask: JsonNetworkMessageContentMask
-    '''
+    """
 
     ua_types = [
         ('NetworkMessageContentMask', 'JsonNetworkMessageContentMask'),
@@ -3031,16 +2868,16 @@ class JsonWriterGroupMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'JsonWriterGroupMessageDataType(' + 'NetworkMessageContentMask:' + str(self.NetworkMessageContentMask) + ')'
+        return f'JsonWriterGroupMessageDataType(NetworkMessageContentMask:{self.NetworkMessageContentMask})'
 
     __repr__ = __str__
 
 
 class JsonDataSetWriterMessageDataType(FrozenClass):
-    '''
+    """
     :ivar DataSetMessageContentMask:
     :vartype DataSetMessageContentMask: JsonDataSetMessageContentMask
-    '''
+    """
 
     ua_types = [
         ('DataSetMessageContentMask', 'JsonDataSetMessageContentMask'),
@@ -3051,18 +2888,18 @@ class JsonDataSetWriterMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'JsonDataSetWriterMessageDataType(' + 'DataSetMessageContentMask:' + str(self.DataSetMessageContentMask) + ')'
+        return f'JsonDataSetWriterMessageDataType(DataSetMessageContentMask:{self.DataSetMessageContentMask})'
 
     __repr__ = __str__
 
 
 class JsonDataSetReaderMessageDataType(FrozenClass):
-    '''
+    """
     :ivar NetworkMessageContentMask:
     :vartype NetworkMessageContentMask: JsonNetworkMessageContentMask
     :ivar DataSetMessageContentMask:
     :vartype DataSetMessageContentMask: JsonDataSetMessageContentMask
-    '''
+    """
 
     ua_types = [
         ('NetworkMessageContentMask', 'JsonNetworkMessageContentMask'),
@@ -3075,17 +2912,16 @@ class JsonDataSetReaderMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'JsonDataSetReaderMessageDataType(' + 'NetworkMessageContentMask:' + str(self.NetworkMessageContentMask) + ', ' + \
-               'DataSetMessageContentMask:' + str(self.DataSetMessageContentMask) + ')'
+        return f'JsonDataSetReaderMessageDataType(NetworkMessageContentMask:{self.NetworkMessageContentMask}, DataSetMessageContentMask:{self.DataSetMessageContentMask})'
 
     __repr__ = __str__
 
 
 class DatagramConnectionTransportDataType(FrozenClass):
-    '''
+    """
     :ivar DiscoveryAddress:
     :vartype DiscoveryAddress: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('DiscoveryAddress', 'ExtensionObject'),
@@ -3096,18 +2932,18 @@ class DatagramConnectionTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DatagramConnectionTransportDataType(' + 'DiscoveryAddress:' + str(self.DiscoveryAddress) + ')'
+        return f'DatagramConnectionTransportDataType(DiscoveryAddress:{self.DiscoveryAddress})'
 
     __repr__ = __str__
 
 
 class DatagramWriterGroupTransportDataType(FrozenClass):
-    '''
+    """
     :ivar MessageRepeatCount:
     :vartype MessageRepeatCount: Byte
     :ivar MessageRepeatDelay:
     :vartype MessageRepeatDelay: Double
-    '''
+    """
 
     ua_types = [
         ('MessageRepeatCount', 'Byte'),
@@ -3120,19 +2956,18 @@ class DatagramWriterGroupTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DatagramWriterGroupTransportDataType(' + 'MessageRepeatCount:' + str(self.MessageRepeatCount) + ', ' + \
-               'MessageRepeatDelay:' + str(self.MessageRepeatDelay) + ')'
+        return f'DatagramWriterGroupTransportDataType(MessageRepeatCount:{self.MessageRepeatCount}, MessageRepeatDelay:{self.MessageRepeatDelay})'
 
     __repr__ = __str__
 
 
 class BrokerConnectionTransportDataType(FrozenClass):
-    '''
+    """
     :ivar ResourceUri:
     :vartype ResourceUri: String
     :ivar AuthenticationProfileUri:
     :vartype AuthenticationProfileUri: String
-    '''
+    """
 
     ua_types = [
         ('ResourceUri', 'String'),
@@ -3145,14 +2980,13 @@ class BrokerConnectionTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrokerConnectionTransportDataType(' + 'ResourceUri:' + str(self.ResourceUri) + ', ' + \
-               'AuthenticationProfileUri:' + str(self.AuthenticationProfileUri) + ')'
+        return f'BrokerConnectionTransportDataType(ResourceUri:{self.ResourceUri}, AuthenticationProfileUri:{self.AuthenticationProfileUri})'
 
     __repr__ = __str__
 
 
 class BrokerWriterGroupTransportDataType(FrozenClass):
-    '''
+    """
     :ivar QueueName:
     :vartype QueueName: String
     :ivar ResourceUri:
@@ -3161,7 +2995,7 @@ class BrokerWriterGroupTransportDataType(FrozenClass):
     :vartype AuthenticationProfileUri: String
     :ivar RequestedDeliveryGuarantee:
     :vartype RequestedDeliveryGuarantee: BrokerTransportQualityOfService
-    '''
+    """
 
     ua_types = [
         ('QueueName', 'String'),
@@ -3178,16 +3012,13 @@ class BrokerWriterGroupTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrokerWriterGroupTransportDataType(' + 'QueueName:' + str(self.QueueName) + ', ' + \
-               'ResourceUri:' + str(self.ResourceUri) + ', ' + \
-               'AuthenticationProfileUri:' + str(self.AuthenticationProfileUri) + ', ' + \
-               'RequestedDeliveryGuarantee:' + str(self.RequestedDeliveryGuarantee) + ')'
+        return f'BrokerWriterGroupTransportDataType(QueueName:{self.QueueName}, ResourceUri:{self.ResourceUri}, AuthenticationProfileUri:{self.AuthenticationProfileUri}, RequestedDeliveryGuarantee:{self.RequestedDeliveryGuarantee})'
 
     __repr__ = __str__
 
 
 class BrokerDataSetWriterTransportDataType(FrozenClass):
-    '''
+    """
     :ivar QueueName:
     :vartype QueueName: String
     :ivar ResourceUri:
@@ -3200,7 +3031,7 @@ class BrokerDataSetWriterTransportDataType(FrozenClass):
     :vartype MetaDataQueueName: String
     :ivar MetaDataUpdateTime:
     :vartype MetaDataUpdateTime: Double
-    '''
+    """
 
     ua_types = [
         ('QueueName', 'String'),
@@ -3221,18 +3052,13 @@ class BrokerDataSetWriterTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrokerDataSetWriterTransportDataType(' + 'QueueName:' + str(self.QueueName) + ', ' + \
-               'ResourceUri:' + str(self.ResourceUri) + ', ' + \
-               'AuthenticationProfileUri:' + str(self.AuthenticationProfileUri) + ', ' + \
-               'RequestedDeliveryGuarantee:' + str(self.RequestedDeliveryGuarantee) + ', ' + \
-               'MetaDataQueueName:' + str(self.MetaDataQueueName) + ', ' + \
-               'MetaDataUpdateTime:' + str(self.MetaDataUpdateTime) + ')'
+        return f'BrokerDataSetWriterTransportDataType(QueueName:{self.QueueName}, ResourceUri:{self.ResourceUri}, AuthenticationProfileUri:{self.AuthenticationProfileUri}, RequestedDeliveryGuarantee:{self.RequestedDeliveryGuarantee}, MetaDataQueueName:{self.MetaDataQueueName}, MetaDataUpdateTime:{self.MetaDataUpdateTime})'
 
     __repr__ = __str__
 
 
 class BrokerDataSetReaderTransportDataType(FrozenClass):
-    '''
+    """
     :ivar QueueName:
     :vartype QueueName: String
     :ivar ResourceUri:
@@ -3243,7 +3069,7 @@ class BrokerDataSetReaderTransportDataType(FrozenClass):
     :vartype RequestedDeliveryGuarantee: BrokerTransportQualityOfService
     :ivar MetaDataQueueName:
     :vartype MetaDataQueueName: String
-    '''
+    """
 
     ua_types = [
         ('QueueName', 'String'),
@@ -3262,22 +3088,42 @@ class BrokerDataSetReaderTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrokerDataSetReaderTransportDataType(' + 'QueueName:' + str(self.QueueName) + ', ' + \
-               'ResourceUri:' + str(self.ResourceUri) + ', ' + \
-               'AuthenticationProfileUri:' + str(self.AuthenticationProfileUri) + ', ' + \
-               'RequestedDeliveryGuarantee:' + str(self.RequestedDeliveryGuarantee) + ', ' + \
-               'MetaDataQueueName:' + str(self.MetaDataQueueName) + ')'
+        return f'BrokerDataSetReaderTransportDataType(QueueName:{self.QueueName}, ResourceUri:{self.ResourceUri}, AuthenticationProfileUri:{self.AuthenticationProfileUri}, RequestedDeliveryGuarantee:{self.RequestedDeliveryGuarantee}, MetaDataQueueName:{self.MetaDataQueueName})'
+
+    __repr__ = __str__
+
+
+class AliasNameDataType(FrozenClass):
+    """
+    :ivar AliasName:
+    :vartype AliasName: QualifiedName
+    :ivar ReferencedNodes:
+    :vartype ReferencedNodes: ExpandedNodeId
+    """
+
+    ua_types = [
+        ('AliasName', 'QualifiedName'),
+        ('ReferencedNodes', 'ListOfExpandedNodeId'),
+               ]
+
+    def __init__(self):
+        self.AliasName = QualifiedName()
+        self.ReferencedNodes = []
+        self._freeze = True
+
+    def __str__(self):
+        return f'AliasNameDataType(AliasName:{self.AliasName}, ReferencedNodes:{self.ReferencedNodes})'
 
     __repr__ = __str__
 
 
 class RolePermissionType(FrozenClass):
-    '''
+    """
     :ivar RoleId:
     :vartype RoleId: NodeId
     :ivar Permissions:
     :vartype Permissions: PermissionType
-    '''
+    """
 
     ua_types = [
         ('RoleId', 'NodeId'),
@@ -3290,14 +3136,13 @@ class RolePermissionType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RolePermissionType(' + 'RoleId:' + str(self.RoleId) + ', ' + \
-               'Permissions:' + str(self.Permissions) + ')'
+        return f'RolePermissionType(RoleId:{self.RoleId}, Permissions:{self.Permissions})'
 
     __repr__ = __str__
 
 
 class StructureField(FrozenClass):
-    '''
+    """
     :ivar Name:
     :vartype Name: String
     :ivar Description:
@@ -3312,7 +3157,7 @@ class StructureField(FrozenClass):
     :vartype MaxStringLength: UInt32
     :ivar IsOptional:
     :vartype IsOptional: Boolean
-    '''
+    """
 
     ua_types = [
         ('Name', 'String'),
@@ -3335,19 +3180,13 @@ class StructureField(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'StructureField(' + 'Name:' + str(self.Name) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'DataType:' + str(self.DataType) + ', ' + \
-               'ValueRank:' + str(self.ValueRank) + ', ' + \
-               'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
-               'MaxStringLength:' + str(self.MaxStringLength) + ', ' + \
-               'IsOptional:' + str(self.IsOptional) + ')'
+        return f'StructureField(Name:{self.Name}, Description:{self.Description}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, MaxStringLength:{self.MaxStringLength}, IsOptional:{self.IsOptional})'
 
     __repr__ = __str__
 
 
 class StructureDefinition(FrozenClass):
-    '''
+    """
     :ivar DefaultEncodingId:
     :vartype DefaultEncodingId: NodeId
     :ivar BaseDataType:
@@ -3356,7 +3195,7 @@ class StructureDefinition(FrozenClass):
     :vartype StructureType: StructureType
     :ivar Fields:
     :vartype Fields: StructureField
-    '''
+    """
 
     ua_types = [
         ('DefaultEncodingId', 'NodeId'),
@@ -3373,19 +3212,16 @@ class StructureDefinition(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'StructureDefinition(' + 'DefaultEncodingId:' + str(self.DefaultEncodingId) + ', ' + \
-               'BaseDataType:' + str(self.BaseDataType) + ', ' + \
-               'StructureType:' + str(self.StructureType) + ', ' + \
-               'Fields:' + str(self.Fields) + ')'
+        return f'StructureDefinition(DefaultEncodingId:{self.DefaultEncodingId}, BaseDataType:{self.BaseDataType}, StructureType:{self.StructureType}, Fields:{self.Fields})'
 
     __repr__ = __str__
 
 
 class EnumDefinition(FrozenClass):
-    '''
+    """
     :ivar Fields:
     :vartype Fields: EnumField
-    '''
+    """
 
     ua_types = [
         ('Fields', 'ListOfEnumField'),
@@ -3396,13 +3232,13 @@ class EnumDefinition(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EnumDefinition(' + 'Fields:' + str(self.Fields) + ')'
+        return f'EnumDefinition(Fields:{self.Fields})'
 
     __repr__ = __str__
 
 
 class Argument(FrozenClass):
-    '''
+    """
     :ivar Name:
     :vartype Name: String
     :ivar DataType:
@@ -3413,7 +3249,7 @@ class Argument(FrozenClass):
     :vartype ArrayDimensions: UInt32
     :ivar Description:
     :vartype Description: LocalizedText
-    '''
+    """
 
     ua_types = [
         ('Name', 'String'),
@@ -3432,24 +3268,20 @@ class Argument(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'Argument(' + 'Name:' + str(self.Name) + ', ' + \
-               'DataType:' + str(self.DataType) + ', ' + \
-               'ValueRank:' + str(self.ValueRank) + ', ' + \
-               'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
-               'Description:' + str(self.Description) + ')'
+        return f'Argument(Name:{self.Name}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, Description:{self.Description})'
 
     __repr__ = __str__
 
 
 class EnumValueType(FrozenClass):
-    '''
+    """
     :ivar Value:
     :vartype Value: Int64
     :ivar DisplayName:
     :vartype DisplayName: LocalizedText
     :ivar Description:
     :vartype Description: LocalizedText
-    '''
+    """
 
     ua_types = [
         ('Value', 'Int64'),
@@ -3464,15 +3296,13 @@ class EnumValueType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EnumValueType(' + 'Value:' + str(self.Value) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ')'
+        return f'EnumValueType(Value:{self.Value}, DisplayName:{self.DisplayName}, Description:{self.Description})'
 
     __repr__ = __str__
 
 
 class EnumField(FrozenClass):
-    '''
+    """
     :ivar Value:
     :vartype Value: Int64
     :ivar DisplayName:
@@ -3481,7 +3311,7 @@ class EnumField(FrozenClass):
     :vartype Description: LocalizedText
     :ivar Name:
     :vartype Name: String
-    '''
+    """
 
     ua_types = [
         ('Value', 'Int64'),
@@ -3498,21 +3328,18 @@ class EnumField(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EnumField(' + 'Value:' + str(self.Value) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'Name:' + str(self.Name) + ')'
+        return f'EnumField(Value:{self.Value}, DisplayName:{self.DisplayName}, Description:{self.Description}, Name:{self.Name})'
 
     __repr__ = __str__
 
 
 class OptionSet(FrozenClass):
-    '''
+    """
     :ivar Value:
     :vartype Value: ByteString
     :ivar ValidBits:
     :vartype ValidBits: ByteString
-    '''
+    """
 
     ua_types = [
         ('Value', 'ByteString'),
@@ -3525,15 +3352,14 @@ class OptionSet(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'OptionSet(' + 'Value:' + str(self.Value) + ', ' + \
-               'ValidBits:' + str(self.ValidBits) + ')'
+        return f'OptionSet(Value:{self.Value}, ValidBits:{self.ValidBits})'
 
     __repr__ = __str__
 
 
 class Union(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -3542,18 +3368,18 @@ class Union(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'Union(' +  + ')'
+        return 'Union()'
 
     __repr__ = __str__
 
 
 class TimeZoneDataType(FrozenClass):
-    '''
+    """
     :ivar Offset:
     :vartype Offset: Int16
     :ivar DaylightSavingInOffset:
     :vartype DaylightSavingInOffset: Boolean
-    '''
+    """
 
     ua_types = [
         ('Offset', 'Int16'),
@@ -3566,14 +3392,13 @@ class TimeZoneDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TimeZoneDataType(' + 'Offset:' + str(self.Offset) + ', ' + \
-               'DaylightSavingInOffset:' + str(self.DaylightSavingInOffset) + ')'
+        return f'TimeZoneDataType(Offset:{self.Offset}, DaylightSavingInOffset:{self.DaylightSavingInOffset})'
 
     __repr__ = __str__
 
 
 class ApplicationDescription(FrozenClass):
-    '''
+    """
     :ivar ApplicationUri:
     :vartype ApplicationUri: String
     :ivar ProductUri:
@@ -3588,7 +3413,7 @@ class ApplicationDescription(FrozenClass):
     :vartype DiscoveryProfileUri: String
     :ivar DiscoveryUrls:
     :vartype DiscoveryUrls: String
-    '''
+    """
 
     ua_types = [
         ('ApplicationUri', 'String'),
@@ -3611,19 +3436,13 @@ class ApplicationDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ApplicationDescription(' + 'ApplicationUri:' + str(self.ApplicationUri) + ', ' + \
-               'ProductUri:' + str(self.ProductUri) + ', ' + \
-               'ApplicationName:' + str(self.ApplicationName) + ', ' + \
-               'ApplicationType:' + str(self.ApplicationType) + ', ' + \
-               'GatewayServerUri:' + str(self.GatewayServerUri) + ', ' + \
-               'DiscoveryProfileUri:' + str(self.DiscoveryProfileUri) + ', ' + \
-               'DiscoveryUrls:' + str(self.DiscoveryUrls) + ')'
+        return f'ApplicationDescription(ApplicationUri:{self.ApplicationUri}, ProductUri:{self.ProductUri}, ApplicationName:{self.ApplicationName}, ApplicationType:{self.ApplicationType}, GatewayServerUri:{self.GatewayServerUri}, DiscoveryProfileUri:{self.DiscoveryProfileUri}, DiscoveryUrls:{self.DiscoveryUrls})'
 
     __repr__ = __str__
 
 
 class RequestHeader(FrozenClass):
-    '''
+    """
     :ivar AuthenticationToken:
     :vartype AuthenticationToken: NodeId
     :ivar Timestamp:
@@ -3638,7 +3457,7 @@ class RequestHeader(FrozenClass):
     :vartype TimeoutHint: UInt32
     :ivar AdditionalHeader:
     :vartype AdditionalHeader: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('AuthenticationToken', 'NodeId'),
@@ -3661,19 +3480,13 @@ class RequestHeader(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RequestHeader(' + 'AuthenticationToken:' + str(self.AuthenticationToken) + ', ' + \
-               'Timestamp:' + str(self.Timestamp) + ', ' + \
-               'RequestHandle:' + str(self.RequestHandle) + ', ' + \
-               'ReturnDiagnostics:' + str(self.ReturnDiagnostics) + ', ' + \
-               'AuditEntryId:' + str(self.AuditEntryId) + ', ' + \
-               'TimeoutHint:' + str(self.TimeoutHint) + ', ' + \
-               'AdditionalHeader:' + str(self.AdditionalHeader) + ')'
+        return f'RequestHeader(AuthenticationToken:{self.AuthenticationToken}, Timestamp:{self.Timestamp}, RequestHandle:{self.RequestHandle}, ReturnDiagnostics:{self.ReturnDiagnostics}, AuditEntryId:{self.AuditEntryId}, TimeoutHint:{self.TimeoutHint}, AdditionalHeader:{self.AdditionalHeader})'
 
     __repr__ = __str__
 
 
 class ResponseHeader(FrozenClass):
-    '''
+    """
     :ivar Timestamp:
     :vartype Timestamp: DateTime
     :ivar RequestHandle:
@@ -3686,7 +3499,7 @@ class ResponseHeader(FrozenClass):
     :vartype StringTable: String
     :ivar AdditionalHeader:
     :vartype AdditionalHeader: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('Timestamp', 'DateTime'),
@@ -3707,23 +3520,18 @@ class ResponseHeader(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ResponseHeader(' + 'Timestamp:' + str(self.Timestamp) + ', ' + \
-               'RequestHandle:' + str(self.RequestHandle) + ', ' + \
-               'ServiceResult:' + str(self.ServiceResult) + ', ' + \
-               'ServiceDiagnostics:' + str(self.ServiceDiagnostics) + ', ' + \
-               'StringTable:' + str(self.StringTable) + ', ' + \
-               'AdditionalHeader:' + str(self.AdditionalHeader) + ')'
+        return f'ResponseHeader(Timestamp:{self.Timestamp}, RequestHandle:{self.RequestHandle}, ServiceResult:{self.ServiceResult}, ServiceDiagnostics:{self.ServiceDiagnostics}, StringTable:{self.StringTable}, AdditionalHeader:{self.AdditionalHeader})'
 
     __repr__ = __str__
 
 
 class ServiceFault(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -3736,14 +3544,13 @@ class ServiceFault(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ServiceFault(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ')'
+        return f'ServiceFault(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
 
 class SessionlessInvokeRequestType(FrozenClass):
-    '''
+    """
     :ivar UrisVersion:
     :vartype UrisVersion: UInt32
     :ivar NamespaceUris:
@@ -3754,7 +3561,7 @@ class SessionlessInvokeRequestType(FrozenClass):
     :vartype LocaleIds: String
     :ivar ServiceId:
     :vartype ServiceId: UInt32
-    '''
+    """
 
     ua_types = [
         ('UrisVersion', 'ListOfUInt32'),
@@ -3773,24 +3580,20 @@ class SessionlessInvokeRequestType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SessionlessInvokeRequestType(' + 'UrisVersion:' + str(self.UrisVersion) + ', ' + \
-               'NamespaceUris:' + str(self.NamespaceUris) + ', ' + \
-               'ServerUris:' + str(self.ServerUris) + ', ' + \
-               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
-               'ServiceId:' + str(self.ServiceId) + ')'
+        return f'SessionlessInvokeRequestType(UrisVersion:{self.UrisVersion}, NamespaceUris:{self.NamespaceUris}, ServerUris:{self.ServerUris}, LocaleIds:{self.LocaleIds}, ServiceId:{self.ServiceId})'
 
     __repr__ = __str__
 
 
 class SessionlessInvokeResponseType(FrozenClass):
-    '''
+    """
     :ivar NamespaceUris:
     :vartype NamespaceUris: String
     :ivar ServerUris:
     :vartype ServerUris: String
     :ivar ServiceId:
     :vartype ServiceId: UInt32
-    '''
+    """
 
     ua_types = [
         ('NamespaceUris', 'ListOfString'),
@@ -3805,22 +3608,20 @@ class SessionlessInvokeResponseType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SessionlessInvokeResponseType(' + 'NamespaceUris:' + str(self.NamespaceUris) + ', ' + \
-               'ServerUris:' + str(self.ServerUris) + ', ' + \
-               'ServiceId:' + str(self.ServiceId) + ')'
+        return f'SessionlessInvokeResponseType(NamespaceUris:{self.NamespaceUris}, ServerUris:{self.ServerUris}, ServiceId:{self.ServiceId})'
 
     __repr__ = __str__
 
 
 class FindServersParameters(FrozenClass):
-    '''
+    """
     :ivar EndpointUrl:
     :vartype EndpointUrl: String
     :ivar LocaleIds:
     :vartype LocaleIds: String
     :ivar ServerUris:
     :vartype ServerUris: String
-    '''
+    """
 
     ua_types = [
         ('EndpointUrl', 'String'),
@@ -3835,22 +3636,20 @@ class FindServersParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FindServersParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
-               'ServerUris:' + str(self.ServerUris) + ')'
+        return f'FindServersParameters(EndpointUrl:{self.EndpointUrl}, LocaleIds:{self.LocaleIds}, ServerUris:{self.ServerUris})'
 
     __repr__ = __str__
 
 
 class FindServersRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: FindServersParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -3865,22 +3664,20 @@ class FindServersRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FindServersRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'FindServersRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class FindServersResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Servers:
     :vartype Servers: ApplicationDescription
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -3895,15 +3692,13 @@ class FindServersResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FindServersResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Servers:' + str(self.Servers) + ')'
+        return f'FindServersResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Servers:{self.Servers})'
 
     __repr__ = __str__
 
 
 class ServerOnNetwork(FrozenClass):
-    '''
+    """
     :ivar RecordId:
     :vartype RecordId: UInt32
     :ivar ServerName:
@@ -3912,7 +3707,7 @@ class ServerOnNetwork(FrozenClass):
     :vartype DiscoveryUrl: String
     :ivar ServerCapabilities:
     :vartype ServerCapabilities: String
-    '''
+    """
 
     ua_types = [
         ('RecordId', 'UInt32'),
@@ -3929,23 +3724,20 @@ class ServerOnNetwork(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ServerOnNetwork(' + 'RecordId:' + str(self.RecordId) + ', ' + \
-               'ServerName:' + str(self.ServerName) + ', ' + \
-               'DiscoveryUrl:' + str(self.DiscoveryUrl) + ', ' + \
-               'ServerCapabilities:' + str(self.ServerCapabilities) + ')'
+        return f'ServerOnNetwork(RecordId:{self.RecordId}, ServerName:{self.ServerName}, DiscoveryUrl:{self.DiscoveryUrl}, ServerCapabilities:{self.ServerCapabilities})'
 
     __repr__ = __str__
 
 
 class FindServersOnNetworkParameters(FrozenClass):
-    '''
+    """
     :ivar StartingRecordId:
     :vartype StartingRecordId: UInt32
     :ivar MaxRecordsToReturn:
     :vartype MaxRecordsToReturn: UInt32
     :ivar ServerCapabilityFilter:
     :vartype ServerCapabilityFilter: String
-    '''
+    """
 
     ua_types = [
         ('StartingRecordId', 'UInt32'),
@@ -3960,22 +3752,20 @@ class FindServersOnNetworkParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FindServersOnNetworkParameters(' + 'StartingRecordId:' + str(self.StartingRecordId) + ', ' + \
-               'MaxRecordsToReturn:' + str(self.MaxRecordsToReturn) + ', ' + \
-               'ServerCapabilityFilter:' + str(self.ServerCapabilityFilter) + ')'
+        return f'FindServersOnNetworkParameters(StartingRecordId:{self.StartingRecordId}, MaxRecordsToReturn:{self.MaxRecordsToReturn}, ServerCapabilityFilter:{self.ServerCapabilityFilter})'
 
     __repr__ = __str__
 
 
 class FindServersOnNetworkRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: FindServersOnNetworkParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -3990,20 +3780,18 @@ class FindServersOnNetworkRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FindServersOnNetworkRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'FindServersOnNetworkRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class FindServersOnNetworkResult(FrozenClass):
-    '''
+    """
     :ivar LastCounterResetTime:
     :vartype LastCounterResetTime: DateTime
     :ivar Servers:
     :vartype Servers: ServerOnNetwork
-    '''
+    """
 
     ua_types = [
         ('LastCounterResetTime', 'DateTime'),
@@ -4016,21 +3804,20 @@ class FindServersOnNetworkResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FindServersOnNetworkResult(' + 'LastCounterResetTime:' + str(self.LastCounterResetTime) + ', ' + \
-               'Servers:' + str(self.Servers) + ')'
+        return f'FindServersOnNetworkResult(LastCounterResetTime:{self.LastCounterResetTime}, Servers:{self.Servers})'
 
     __repr__ = __str__
 
 
 class FindServersOnNetworkResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: FindServersOnNetworkResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -4045,15 +3832,13 @@ class FindServersOnNetworkResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'FindServersOnNetworkResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'FindServersOnNetworkResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class UserTokenPolicy(FrozenClass):
-    '''
+    """
     :ivar PolicyId:
     :vartype PolicyId: String
     :ivar TokenType:
@@ -4064,7 +3849,7 @@ class UserTokenPolicy(FrozenClass):
     :vartype IssuerEndpointUrl: String
     :ivar SecurityPolicyUri:
     :vartype SecurityPolicyUri: String
-    '''
+    """
 
     ua_types = [
         ('PolicyId', 'String'),
@@ -4083,17 +3868,13 @@ class UserTokenPolicy(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UserTokenPolicy(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-               'TokenType:' + str(self.TokenType) + ', ' + \
-               'IssuedTokenType:' + str(self.IssuedTokenType) + ', ' + \
-               'IssuerEndpointUrl:' + str(self.IssuerEndpointUrl) + ', ' + \
-               'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ')'
+        return f'UserTokenPolicy(PolicyId:{self.PolicyId}, TokenType:{self.TokenType}, IssuedTokenType:{self.IssuedTokenType}, IssuerEndpointUrl:{self.IssuerEndpointUrl}, SecurityPolicyUri:{self.SecurityPolicyUri})'
 
     __repr__ = __str__
 
 
 class EndpointDescription(FrozenClass):
-    '''
+    """
     :ivar EndpointUrl:
     :vartype EndpointUrl: String
     :ivar Server:
@@ -4110,7 +3891,7 @@ class EndpointDescription(FrozenClass):
     :vartype TransportProfileUri: String
     :ivar SecurityLevel:
     :vartype SecurityLevel: Byte
-    '''
+    """
 
     ua_types = [
         ('EndpointUrl', 'String'),
@@ -4135,27 +3916,20 @@ class EndpointDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EndpointDescription(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-               'Server:' + str(self.Server) + ', ' + \
-               'ServerCertificate:' + str(self.ServerCertificate) + ', ' + \
-               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
-               'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', ' + \
-               'UserIdentityTokens:' + str(self.UserIdentityTokens) + ', ' + \
-               'TransportProfileUri:' + str(self.TransportProfileUri) + ', ' + \
-               'SecurityLevel:' + str(self.SecurityLevel) + ')'
+        return f'EndpointDescription(EndpointUrl:{self.EndpointUrl}, Server:{self.Server}, ServerCertificate:{self.ServerCertificate}, SecurityMode:{self.SecurityMode}, SecurityPolicyUri:{self.SecurityPolicyUri}, UserIdentityTokens:{self.UserIdentityTokens}, TransportProfileUri:{self.TransportProfileUri}, SecurityLevel:{self.SecurityLevel})'
 
     __repr__ = __str__
 
 
 class GetEndpointsParameters(FrozenClass):
-    '''
+    """
     :ivar EndpointUrl:
     :vartype EndpointUrl: String
     :ivar LocaleIds:
     :vartype LocaleIds: String
     :ivar ProfileUris:
     :vartype ProfileUris: String
-    '''
+    """
 
     ua_types = [
         ('EndpointUrl', 'String'),
@@ -4170,22 +3944,20 @@ class GetEndpointsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'GetEndpointsParameters(' + 'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
-               'ProfileUris:' + str(self.ProfileUris) + ')'
+        return f'GetEndpointsParameters(EndpointUrl:{self.EndpointUrl}, LocaleIds:{self.LocaleIds}, ProfileUris:{self.ProfileUris})'
 
     __repr__ = __str__
 
 
 class GetEndpointsRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: GetEndpointsParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -4200,22 +3972,20 @@ class GetEndpointsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'GetEndpointsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'GetEndpointsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class GetEndpointsResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Endpoints:
     :vartype Endpoints: EndpointDescription
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -4230,15 +4000,13 @@ class GetEndpointsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'GetEndpointsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Endpoints:' + str(self.Endpoints) + ')'
+        return f'GetEndpointsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Endpoints:{self.Endpoints})'
 
     __repr__ = __str__
 
 
 class RegisteredServer(FrozenClass):
-    '''
+    """
     :ivar ServerUri:
     :vartype ServerUri: String
     :ivar ProductUri:
@@ -4255,7 +4023,7 @@ class RegisteredServer(FrozenClass):
     :vartype SemaphoreFilePath: String
     :ivar IsOnline:
     :vartype IsOnline: Boolean
-    '''
+    """
 
     ua_types = [
         ('ServerUri', 'String'),
@@ -4280,27 +4048,20 @@ class RegisteredServer(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisteredServer(' + 'ServerUri:' + str(self.ServerUri) + ', ' + \
-               'ProductUri:' + str(self.ProductUri) + ', ' + \
-               'ServerNames:' + str(self.ServerNames) + ', ' + \
-               'ServerType:' + str(self.ServerType) + ', ' + \
-               'GatewayServerUri:' + str(self.GatewayServerUri) + ', ' + \
-               'DiscoveryUrls:' + str(self.DiscoveryUrls) + ', ' + \
-               'SemaphoreFilePath:' + str(self.SemaphoreFilePath) + ', ' + \
-               'IsOnline:' + str(self.IsOnline) + ')'
+        return f'RegisteredServer(ServerUri:{self.ServerUri}, ProductUri:{self.ProductUri}, ServerNames:{self.ServerNames}, ServerType:{self.ServerType}, GatewayServerUri:{self.GatewayServerUri}, DiscoveryUrls:{self.DiscoveryUrls}, SemaphoreFilePath:{self.SemaphoreFilePath}, IsOnline:{self.IsOnline})'
 
     __repr__ = __str__
 
 
 class RegisterServerRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Server:
     :vartype Server: RegisteredServer
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -4315,20 +4076,18 @@ class RegisterServerRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterServerRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Server:' + str(self.Server) + ')'
+        return f'RegisterServerRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Server:{self.Server})'
 
     __repr__ = __str__
 
 
 class RegisterServerResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -4341,15 +4100,14 @@ class RegisterServerResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterServerResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ')'
+        return f'RegisterServerResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
 
 class DiscoveryConfiguration(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -4358,18 +4116,18 @@ class DiscoveryConfiguration(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DiscoveryConfiguration(' +  + ')'
+        return 'DiscoveryConfiguration()'
 
     __repr__ = __str__
 
 
 class MdnsDiscoveryConfiguration(FrozenClass):
-    '''
+    """
     :ivar MdnsServerName:
     :vartype MdnsServerName: String
     :ivar ServerCapabilities:
     :vartype ServerCapabilities: String
-    '''
+    """
 
     ua_types = [
         ('MdnsServerName', 'String'),
@@ -4382,19 +4140,18 @@ class MdnsDiscoveryConfiguration(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MdnsDiscoveryConfiguration(' + 'MdnsServerName:' + str(self.MdnsServerName) + ', ' + \
-               'ServerCapabilities:' + str(self.ServerCapabilities) + ')'
+        return f'MdnsDiscoveryConfiguration(MdnsServerName:{self.MdnsServerName}, ServerCapabilities:{self.ServerCapabilities})'
 
     __repr__ = __str__
 
 
 class RegisterServer2Parameters(FrozenClass):
-    '''
+    """
     :ivar Server:
     :vartype Server: RegisteredServer
     :ivar DiscoveryConfiguration:
     :vartype DiscoveryConfiguration: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('Server', 'RegisteredServer'),
@@ -4407,21 +4164,20 @@ class RegisterServer2Parameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterServer2Parameters(' + 'Server:' + str(self.Server) + ', ' + \
-               'DiscoveryConfiguration:' + str(self.DiscoveryConfiguration) + ')'
+        return f'RegisterServer2Parameters(Server:{self.Server}, DiscoveryConfiguration:{self.DiscoveryConfiguration})'
 
     __repr__ = __str__
 
 
 class RegisterServer2Request(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: RegisterServer2Parameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -4436,15 +4192,13 @@ class RegisterServer2Request(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterServer2Request(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'RegisterServer2Request(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class RegisterServer2Response(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -4453,7 +4207,7 @@ class RegisterServer2Response(FrozenClass):
     :vartype ConfigurationResults: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -4470,16 +4224,13 @@ class RegisterServer2Response(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterServer2Response(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'ConfigurationResults:' + str(self.ConfigurationResults) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'RegisterServer2Response(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, ConfigurationResults:{self.ConfigurationResults}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class ChannelSecurityToken(FrozenClass):
-    '''
+    """
     :ivar ChannelId:
     :vartype ChannelId: UInt32
     :ivar TokenId:
@@ -4488,7 +4239,7 @@ class ChannelSecurityToken(FrozenClass):
     :vartype CreatedAt: DateTime
     :ivar RevisedLifetime:
     :vartype RevisedLifetime: UInt32
-    '''
+    """
 
     ua_types = [
         ('ChannelId', 'UInt32'),
@@ -4505,16 +4256,13 @@ class ChannelSecurityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ChannelSecurityToken(' + 'ChannelId:' + str(self.ChannelId) + ', ' + \
-               'TokenId:' + str(self.TokenId) + ', ' + \
-               'CreatedAt:' + str(self.CreatedAt) + ', ' + \
-               'RevisedLifetime:' + str(self.RevisedLifetime) + ')'
+        return f'ChannelSecurityToken(ChannelId:{self.ChannelId}, TokenId:{self.TokenId}, CreatedAt:{self.CreatedAt}, RevisedLifetime:{self.RevisedLifetime})'
 
     __repr__ = __str__
 
 
 class OpenSecureChannelParameters(FrozenClass):
-    '''
+    """
     :ivar ClientProtocolVersion:
     :vartype ClientProtocolVersion: UInt32
     :ivar RequestType:
@@ -4525,7 +4273,7 @@ class OpenSecureChannelParameters(FrozenClass):
     :vartype ClientNonce: ByteString
     :ivar RequestedLifetime:
     :vartype RequestedLifetime: UInt32
-    '''
+    """
 
     ua_types = [
         ('ClientProtocolVersion', 'UInt32'),
@@ -4544,24 +4292,20 @@ class OpenSecureChannelParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'OpenSecureChannelParameters(' + 'ClientProtocolVersion:' + str(self.ClientProtocolVersion) + ', ' + \
-               'RequestType:' + str(self.RequestType) + ', ' + \
-               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
-               'ClientNonce:' + str(self.ClientNonce) + ', ' + \
-               'RequestedLifetime:' + str(self.RequestedLifetime) + ')'
+        return f'OpenSecureChannelParameters(ClientProtocolVersion:{self.ClientProtocolVersion}, RequestType:{self.RequestType}, SecurityMode:{self.SecurityMode}, ClientNonce:{self.ClientNonce}, RequestedLifetime:{self.RequestedLifetime})'
 
     __repr__ = __str__
 
 
 class OpenSecureChannelRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: OpenSecureChannelParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -4576,22 +4320,20 @@ class OpenSecureChannelRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'OpenSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'OpenSecureChannelRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class OpenSecureChannelResult(FrozenClass):
-    '''
+    """
     :ivar ServerProtocolVersion:
     :vartype ServerProtocolVersion: UInt32
     :ivar SecurityToken:
     :vartype SecurityToken: ChannelSecurityToken
     :ivar ServerNonce:
     :vartype ServerNonce: ByteString
-    '''
+    """
 
     ua_types = [
         ('ServerProtocolVersion', 'UInt32'),
@@ -4606,22 +4348,20 @@ class OpenSecureChannelResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'OpenSecureChannelResult(' + 'ServerProtocolVersion:' + str(self.ServerProtocolVersion) + ', ' + \
-               'SecurityToken:' + str(self.SecurityToken) + ', ' + \
-               'ServerNonce:' + str(self.ServerNonce) + ')'
+        return f'OpenSecureChannelResult(ServerProtocolVersion:{self.ServerProtocolVersion}, SecurityToken:{self.SecurityToken}, ServerNonce:{self.ServerNonce})'
 
     __repr__ = __str__
 
 
 class OpenSecureChannelResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: OpenSecureChannelResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -4636,20 +4376,18 @@ class OpenSecureChannelResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'OpenSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'OpenSecureChannelResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class CloseSecureChannelRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -4662,19 +4400,18 @@ class CloseSecureChannelRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CloseSecureChannelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ')'
+        return f'CloseSecureChannelRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader})'
 
     __repr__ = __str__
 
 
 class CloseSecureChannelResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -4687,19 +4424,18 @@ class CloseSecureChannelResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CloseSecureChannelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ')'
+        return f'CloseSecureChannelResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
 
 class SignedSoftwareCertificate(FrozenClass):
-    '''
+    """
     :ivar CertificateData:
     :vartype CertificateData: ByteString
     :ivar Signature:
     :vartype Signature: ByteString
-    '''
+    """
 
     ua_types = [
         ('CertificateData', 'ByteString'),
@@ -4712,19 +4448,18 @@ class SignedSoftwareCertificate(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SignedSoftwareCertificate(' + 'CertificateData:' + str(self.CertificateData) + ', ' + \
-               'Signature:' + str(self.Signature) + ')'
+        return f'SignedSoftwareCertificate(CertificateData:{self.CertificateData}, Signature:{self.Signature})'
 
     __repr__ = __str__
 
 
 class SignatureData(FrozenClass):
-    '''
+    """
     :ivar Algorithm:
     :vartype Algorithm: String
     :ivar Signature:
     :vartype Signature: ByteString
-    '''
+    """
 
     ua_types = [
         ('Algorithm', 'String'),
@@ -4737,14 +4472,13 @@ class SignatureData(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SignatureData(' + 'Algorithm:' + str(self.Algorithm) + ', ' + \
-               'Signature:' + str(self.Signature) + ')'
+        return f'SignatureData(Algorithm:{self.Algorithm}, Signature:{self.Signature})'
 
     __repr__ = __str__
 
 
 class CreateSessionParameters(FrozenClass):
-    '''
+    """
     :ivar ClientDescription:
     :vartype ClientDescription: ApplicationDescription
     :ivar ServerUri:
@@ -4761,7 +4495,7 @@ class CreateSessionParameters(FrozenClass):
     :vartype RequestedSessionTimeout: Double
     :ivar MaxResponseMessageSize:
     :vartype MaxResponseMessageSize: UInt32
-    '''
+    """
 
     ua_types = [
         ('ClientDescription', 'ApplicationDescription'),
@@ -4786,27 +4520,20 @@ class CreateSessionParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSessionParameters(' + 'ClientDescription:' + str(self.ClientDescription) + ', ' + \
-               'ServerUri:' + str(self.ServerUri) + ', ' + \
-               'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-               'SessionName:' + str(self.SessionName) + ', ' + \
-               'ClientNonce:' + str(self.ClientNonce) + ', ' + \
-               'ClientCertificate:' + str(self.ClientCertificate) + ', ' + \
-               'RequestedSessionTimeout:' + str(self.RequestedSessionTimeout) + ', ' + \
-               'MaxResponseMessageSize:' + str(self.MaxResponseMessageSize) + ')'
+        return f'CreateSessionParameters(ClientDescription:{self.ClientDescription}, ServerUri:{self.ServerUri}, EndpointUrl:{self.EndpointUrl}, SessionName:{self.SessionName}, ClientNonce:{self.ClientNonce}, ClientCertificate:{self.ClientCertificate}, RequestedSessionTimeout:{self.RequestedSessionTimeout}, MaxResponseMessageSize:{self.MaxResponseMessageSize})'
 
     __repr__ = __str__
 
 
 class CreateSessionRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: CreateSessionParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -4821,15 +4548,13 @@ class CreateSessionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'CreateSessionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class CreateSessionResult(FrozenClass):
-    '''
+    """
     :ivar SessionId:
     :vartype SessionId: NodeId
     :ivar AuthenticationToken:
@@ -4848,7 +4573,7 @@ class CreateSessionResult(FrozenClass):
     :vartype ServerSignature: SignatureData
     :ivar MaxRequestMessageSize:
     :vartype MaxRequestMessageSize: UInt32
-    '''
+    """
 
     ua_types = [
         ('SessionId', 'NodeId'),
@@ -4875,28 +4600,20 @@ class CreateSessionResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSessionResult(' + 'SessionId:' + str(self.SessionId) + ', ' + \
-               'AuthenticationToken:' + str(self.AuthenticationToken) + ', ' + \
-               'RevisedSessionTimeout:' + str(self.RevisedSessionTimeout) + ', ' + \
-               'ServerNonce:' + str(self.ServerNonce) + ', ' + \
-               'ServerCertificate:' + str(self.ServerCertificate) + ', ' + \
-               'ServerEndpoints:' + str(self.ServerEndpoints) + ', ' + \
-               'ServerSoftwareCertificates:' + str(self.ServerSoftwareCertificates) + ', ' + \
-               'ServerSignature:' + str(self.ServerSignature) + ', ' + \
-               'MaxRequestMessageSize:' + str(self.MaxRequestMessageSize) + ')'
+        return f'CreateSessionResult(SessionId:{self.SessionId}, AuthenticationToken:{self.AuthenticationToken}, RevisedSessionTimeout:{self.RevisedSessionTimeout}, ServerNonce:{self.ServerNonce}, ServerCertificate:{self.ServerCertificate}, ServerEndpoints:{self.ServerEndpoints}, ServerSoftwareCertificates:{self.ServerSoftwareCertificates}, ServerSignature:{self.ServerSignature}, MaxRequestMessageSize:{self.MaxRequestMessageSize})'
 
     __repr__ = __str__
 
 
 class CreateSessionResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: CreateSessionResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -4911,18 +4628,16 @@ class CreateSessionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'CreateSessionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class UserIdentityToken(FrozenClass):
-    '''
+    """
     :ivar PolicyId:
     :vartype PolicyId: String
-    '''
+    """
 
     ua_types = [
         ('PolicyId', 'String'),
@@ -4933,16 +4648,16 @@ class UserIdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UserIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ')'
+        return f'UserIdentityToken(PolicyId:{self.PolicyId})'
 
     __repr__ = __str__
 
 
 class AnonymousIdentityToken(FrozenClass):
-    '''
+    """
     :ivar PolicyId:
     :vartype PolicyId: String
-    '''
+    """
 
     ua_types = [
         ('PolicyId', 'String'),
@@ -4953,13 +4668,13 @@ class AnonymousIdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AnonymousIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ')'
+        return f'AnonymousIdentityToken(PolicyId:{self.PolicyId})'
 
     __repr__ = __str__
 
 
 class UserNameIdentityToken(FrozenClass):
-    '''
+    """
     :ivar PolicyId:
     :vartype PolicyId: String
     :ivar UserName:
@@ -4968,7 +4683,7 @@ class UserNameIdentityToken(FrozenClass):
     :vartype Password: ByteString
     :ivar EncryptionAlgorithm:
     :vartype EncryptionAlgorithm: String
-    '''
+    """
 
     ua_types = [
         ('PolicyId', 'String'),
@@ -4985,21 +4700,18 @@ class UserNameIdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UserNameIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-               'UserName:' + str(self.UserName) + ', ' + \
-               'Password:' + str(self.Password) + ', ' + \
-               'EncryptionAlgorithm:' + str(self.EncryptionAlgorithm) + ')'
+        return f'UserNameIdentityToken(PolicyId:{self.PolicyId}, UserName:{self.UserName}, Password:{self.Password}, EncryptionAlgorithm:{self.EncryptionAlgorithm})'
 
     __repr__ = __str__
 
 
 class X509IdentityToken(FrozenClass):
-    '''
+    """
     :ivar PolicyId:
     :vartype PolicyId: String
     :ivar CertificateData:
     :vartype CertificateData: ByteString
-    '''
+    """
 
     ua_types = [
         ('PolicyId', 'String'),
@@ -5012,21 +4724,20 @@ class X509IdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'X509IdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-               'CertificateData:' + str(self.CertificateData) + ')'
+        return f'X509IdentityToken(PolicyId:{self.PolicyId}, CertificateData:{self.CertificateData})'
 
     __repr__ = __str__
 
 
 class IssuedIdentityToken(FrozenClass):
-    '''
+    """
     :ivar PolicyId:
     :vartype PolicyId: String
     :ivar TokenData:
     :vartype TokenData: ByteString
     :ivar EncryptionAlgorithm:
     :vartype EncryptionAlgorithm: String
-    '''
+    """
 
     ua_types = [
         ('PolicyId', 'String'),
@@ -5041,15 +4752,13 @@ class IssuedIdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'IssuedIdentityToken(' + 'PolicyId:' + str(self.PolicyId) + ', ' + \
-               'TokenData:' + str(self.TokenData) + ', ' + \
-               'EncryptionAlgorithm:' + str(self.EncryptionAlgorithm) + ')'
+        return f'IssuedIdentityToken(PolicyId:{self.PolicyId}, TokenData:{self.TokenData}, EncryptionAlgorithm:{self.EncryptionAlgorithm})'
 
     __repr__ = __str__
 
 
 class ActivateSessionParameters(FrozenClass):
-    '''
+    """
     :ivar ClientSignature:
     :vartype ClientSignature: SignatureData
     :ivar ClientSoftwareCertificates:
@@ -5060,7 +4769,7 @@ class ActivateSessionParameters(FrozenClass):
     :vartype UserIdentityToken: ExtensionObject
     :ivar UserTokenSignature:
     :vartype UserTokenSignature: SignatureData
-    '''
+    """
 
     ua_types = [
         ('ClientSignature', 'SignatureData'),
@@ -5079,24 +4788,20 @@ class ActivateSessionParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ActivateSessionParameters(' + 'ClientSignature:' + str(self.ClientSignature) + ', ' + \
-               'ClientSoftwareCertificates:' + str(self.ClientSoftwareCertificates) + ', ' + \
-               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
-               'UserIdentityToken:' + str(self.UserIdentityToken) + ', ' + \
-               'UserTokenSignature:' + str(self.UserTokenSignature) + ')'
+        return f'ActivateSessionParameters(ClientSignature:{self.ClientSignature}, ClientSoftwareCertificates:{self.ClientSoftwareCertificates}, LocaleIds:{self.LocaleIds}, UserIdentityToken:{self.UserIdentityToken}, UserTokenSignature:{self.UserTokenSignature})'
 
     __repr__ = __str__
 
 
 class ActivateSessionRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: ActivateSessionParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -5111,22 +4816,20 @@ class ActivateSessionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ActivateSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'ActivateSessionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class ActivateSessionResult(FrozenClass):
-    '''
+    """
     :ivar ServerNonce:
     :vartype ServerNonce: ByteString
     :ivar Results:
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('ServerNonce', 'ByteString'),
@@ -5141,22 +4844,20 @@ class ActivateSessionResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ActivateSessionResult(' + 'ServerNonce:' + str(self.ServerNonce) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'ActivateSessionResult(ServerNonce:{self.ServerNonce}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class ActivateSessionResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: ActivateSessionResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -5171,22 +4872,20 @@ class ActivateSessionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ActivateSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'ActivateSessionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class CloseSessionRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar DeleteSubscriptions:
     :vartype DeleteSubscriptions: Boolean
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -5201,20 +4900,18 @@ class CloseSessionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CloseSessionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'DeleteSubscriptions:' + str(self.DeleteSubscriptions) + ')'
+        return f'CloseSessionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, DeleteSubscriptions:{self.DeleteSubscriptions})'
 
     __repr__ = __str__
 
 
 class CloseSessionResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -5227,17 +4924,16 @@ class CloseSessionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CloseSessionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ')'
+        return f'CloseSessionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
 
 class CancelParameters(FrozenClass):
-    '''
+    """
     :ivar RequestHandle:
     :vartype RequestHandle: UInt32
-    '''
+    """
 
     ua_types = [
         ('RequestHandle', 'UInt32'),
@@ -5248,20 +4944,20 @@ class CancelParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CancelParameters(' + 'RequestHandle:' + str(self.RequestHandle) + ')'
+        return f'CancelParameters(RequestHandle:{self.RequestHandle})'
 
     __repr__ = __str__
 
 
 class CancelRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: CancelParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -5276,18 +4972,16 @@ class CancelRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CancelRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'CancelRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class CancelResult(FrozenClass):
-    '''
+    """
     :ivar CancelCount:
     :vartype CancelCount: UInt32
-    '''
+    """
 
     ua_types = [
         ('CancelCount', 'UInt32'),
@@ -5298,20 +4992,20 @@ class CancelResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CancelResult(' + 'CancelCount:' + str(self.CancelCount) + ')'
+        return f'CancelResult(CancelCount:{self.CancelCount})'
 
     __repr__ = __str__
 
 
 class CancelResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: CancelResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -5326,15 +5020,13 @@ class CancelResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CancelResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'CancelResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class NodeAttributes(FrozenClass):
-    '''
+    """
     :ivar SpecifiedAttributes:
     :vartype SpecifiedAttributes: UInt32
     :ivar DisplayName:
@@ -5345,7 +5037,7 @@ class NodeAttributes(FrozenClass):
     :vartype WriteMask: UInt32
     :ivar UserWriteMask:
     :vartype UserWriteMask: UInt32
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -5364,17 +5056,13 @@ class NodeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'NodeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ')'
+        return f'NodeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask})'
 
     __repr__ = __str__
 
 
 class ObjectAttributes(FrozenClass):
-    '''
+    """
     :ivar SpecifiedAttributes:
     :vartype SpecifiedAttributes: UInt32
     :ivar DisplayName:
@@ -5387,7 +5075,7 @@ class ObjectAttributes(FrozenClass):
     :vartype UserWriteMask: UInt32
     :ivar EventNotifier:
     :vartype EventNotifier: Byte
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -5408,18 +5096,13 @@ class ObjectAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ObjectAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'EventNotifier:' + str(self.EventNotifier) + ')'
+        return f'ObjectAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, EventNotifier:{self.EventNotifier})'
 
     __repr__ = __str__
 
 
 class VariableAttributes(FrozenClass):
-    '''
+    """
     :ivar SpecifiedAttributes:
     :vartype SpecifiedAttributes: UInt32
     :ivar DisplayName:
@@ -5446,7 +5129,7 @@ class VariableAttributes(FrozenClass):
     :vartype MinimumSamplingInterval: Double
     :ivar Historizing:
     :vartype Historizing: Boolean
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -5481,25 +5164,13 @@ class VariableAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'VariableAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'Value:' + str(self.Value) + ', ' + \
-               'DataType:' + str(self.DataType) + ', ' + \
-               'ValueRank:' + str(self.ValueRank) + ', ' + \
-               'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
-               'AccessLevel:' + str(self.AccessLevel) + ', ' + \
-               'UserAccessLevel:' + str(self.UserAccessLevel) + ', ' + \
-               'MinimumSamplingInterval:' + str(self.MinimumSamplingInterval) + ', ' + \
-               'Historizing:' + str(self.Historizing) + ')'
+        return f'VariableAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, Value:{self.Value}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, AccessLevel:{self.AccessLevel}, UserAccessLevel:{self.UserAccessLevel}, MinimumSamplingInterval:{self.MinimumSamplingInterval}, Historizing:{self.Historizing})'
 
     __repr__ = __str__
 
 
 class MethodAttributes(FrozenClass):
-    '''
+    """
     :ivar SpecifiedAttributes:
     :vartype SpecifiedAttributes: UInt32
     :ivar DisplayName:
@@ -5514,7 +5185,7 @@ class MethodAttributes(FrozenClass):
     :vartype Executable: Boolean
     :ivar UserExecutable:
     :vartype UserExecutable: Boolean
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -5537,19 +5208,13 @@ class MethodAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MethodAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'Executable:' + str(self.Executable) + ', ' + \
-               'UserExecutable:' + str(self.UserExecutable) + ')'
+        return f'MethodAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, Executable:{self.Executable}, UserExecutable:{self.UserExecutable})'
 
     __repr__ = __str__
 
 
 class ObjectTypeAttributes(FrozenClass):
-    '''
+    """
     :ivar SpecifiedAttributes:
     :vartype SpecifiedAttributes: UInt32
     :ivar DisplayName:
@@ -5562,7 +5227,7 @@ class ObjectTypeAttributes(FrozenClass):
     :vartype UserWriteMask: UInt32
     :ivar IsAbstract:
     :vartype IsAbstract: Boolean
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -5583,18 +5248,13 @@ class ObjectTypeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ObjectTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'IsAbstract:' + str(self.IsAbstract) + ')'
+        return f'ObjectTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, IsAbstract:{self.IsAbstract})'
 
     __repr__ = __str__
 
 
 class VariableTypeAttributes(FrozenClass):
-    '''
+    """
     :ivar SpecifiedAttributes:
     :vartype SpecifiedAttributes: UInt32
     :ivar DisplayName:
@@ -5615,7 +5275,7 @@ class VariableTypeAttributes(FrozenClass):
     :vartype ArrayDimensions: UInt32
     :ivar IsAbstract:
     :vartype IsAbstract: Boolean
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -5644,22 +5304,13 @@ class VariableTypeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'VariableTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'Value:' + str(self.Value) + ', ' + \
-               'DataType:' + str(self.DataType) + ', ' + \
-               'ValueRank:' + str(self.ValueRank) + ', ' + \
-               'ArrayDimensions:' + str(self.ArrayDimensions) + ', ' + \
-               'IsAbstract:' + str(self.IsAbstract) + ')'
+        return f'VariableTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, Value:{self.Value}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, IsAbstract:{self.IsAbstract})'
 
     __repr__ = __str__
 
 
 class ReferenceTypeAttributes(FrozenClass):
-    '''
+    """
     :ivar SpecifiedAttributes:
     :vartype SpecifiedAttributes: UInt32
     :ivar DisplayName:
@@ -5676,7 +5327,7 @@ class ReferenceTypeAttributes(FrozenClass):
     :vartype Symmetric: Boolean
     :ivar InverseName:
     :vartype InverseName: LocalizedText
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -5701,20 +5352,13 @@ class ReferenceTypeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReferenceTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'IsAbstract:' + str(self.IsAbstract) + ', ' + \
-               'Symmetric:' + str(self.Symmetric) + ', ' + \
-               'InverseName:' + str(self.InverseName) + ')'
+        return f'ReferenceTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, IsAbstract:{self.IsAbstract}, Symmetric:{self.Symmetric}, InverseName:{self.InverseName})'
 
     __repr__ = __str__
 
 
 class DataTypeAttributes(FrozenClass):
-    '''
+    """
     :ivar SpecifiedAttributes:
     :vartype SpecifiedAttributes: UInt32
     :ivar DisplayName:
@@ -5727,7 +5371,7 @@ class DataTypeAttributes(FrozenClass):
     :vartype UserWriteMask: UInt32
     :ivar IsAbstract:
     :vartype IsAbstract: Boolean
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -5748,18 +5392,13 @@ class DataTypeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataTypeAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'IsAbstract:' + str(self.IsAbstract) + ')'
+        return f'DataTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, IsAbstract:{self.IsAbstract})'
 
     __repr__ = __str__
 
 
 class ViewAttributes(FrozenClass):
-    '''
+    """
     :ivar SpecifiedAttributes:
     :vartype SpecifiedAttributes: UInt32
     :ivar DisplayName:
@@ -5774,7 +5413,7 @@ class ViewAttributes(FrozenClass):
     :vartype ContainsNoLoops: Boolean
     :ivar EventNotifier:
     :vartype EventNotifier: Byte
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -5797,24 +5436,18 @@ class ViewAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ViewAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'ContainsNoLoops:' + str(self.ContainsNoLoops) + ', ' + \
-               'EventNotifier:' + str(self.EventNotifier) + ')'
+        return f'ViewAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, ContainsNoLoops:{self.ContainsNoLoops}, EventNotifier:{self.EventNotifier})'
 
     __repr__ = __str__
 
 
 class GenericAttributeValue(FrozenClass):
-    '''
+    """
     :ivar AttributeId:
     :vartype AttributeId: UInt32
     :ivar Value:
     :vartype Value: Variant
-    '''
+    """
 
     ua_types = [
         ('AttributeId', 'UInt32'),
@@ -5827,14 +5460,13 @@ class GenericAttributeValue(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'GenericAttributeValue(' + 'AttributeId:' + str(self.AttributeId) + ', ' + \
-               'Value:' + str(self.Value) + ')'
+        return f'GenericAttributeValue(AttributeId:{self.AttributeId}, Value:{self.Value})'
 
     __repr__ = __str__
 
 
 class GenericAttributes(FrozenClass):
-    '''
+    """
     :ivar SpecifiedAttributes:
     :vartype SpecifiedAttributes: UInt32
     :ivar DisplayName:
@@ -5847,7 +5479,7 @@ class GenericAttributes(FrozenClass):
     :vartype UserWriteMask: UInt32
     :ivar AttributeValues:
     :vartype AttributeValues: GenericAttributeValue
-    '''
+    """
 
     ua_types = [
         ('SpecifiedAttributes', 'UInt32'),
@@ -5868,18 +5500,13 @@ class GenericAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'GenericAttributes(' + 'SpecifiedAttributes:' + str(self.SpecifiedAttributes) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ', ' + \
-               'WriteMask:' + str(self.WriteMask) + ', ' + \
-               'UserWriteMask:' + str(self.UserWriteMask) + ', ' + \
-               'AttributeValues:' + str(self.AttributeValues) + ')'
+        return f'GenericAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, AttributeValues:{self.AttributeValues})'
 
     __repr__ = __str__
 
 
 class AddNodesItem(FrozenClass):
-    '''
+    """
     :ivar ParentNodeId:
     :vartype ParentNodeId: ExpandedNodeId
     :ivar ReferenceTypeId:
@@ -5894,7 +5521,7 @@ class AddNodesItem(FrozenClass):
     :vartype NodeAttributes: ExtensionObject
     :ivar TypeDefinition:
     :vartype TypeDefinition: ExpandedNodeId
-    '''
+    """
 
     ua_types = [
         ('ParentNodeId', 'ExpandedNodeId'),
@@ -5917,24 +5544,18 @@ class AddNodesItem(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddNodesItem(' + 'ParentNodeId:' + str(self.ParentNodeId) + ', ' + \
-               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-               'RequestedNewNodeId:' + str(self.RequestedNewNodeId) + ', ' + \
-               'BrowseName:' + str(self.BrowseName) + ', ' + \
-               'NodeClass:' + str(self.NodeClass) + ', ' + \
-               'NodeAttributes:' + str(self.NodeAttributes) + ', ' + \
-               'TypeDefinition:' + str(self.TypeDefinition) + ')'
+        return f'AddNodesItem(ParentNodeId:{self.ParentNodeId}, ReferenceTypeId:{self.ReferenceTypeId}, RequestedNewNodeId:{self.RequestedNewNodeId}, BrowseName:{self.BrowseName}, NodeClass:{self.NodeClass}, NodeAttributes:{self.NodeAttributes}, TypeDefinition:{self.TypeDefinition})'
 
     __repr__ = __str__
 
 
 class AddNodesResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar AddedNodeId:
     :vartype AddedNodeId: NodeId
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
@@ -5947,17 +5568,16 @@ class AddNodesResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddNodesResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'AddedNodeId:' + str(self.AddedNodeId) + ')'
+        return f'AddNodesResult(StatusCode:{self.StatusCode}, AddedNodeId:{self.AddedNodeId})'
 
     __repr__ = __str__
 
 
 class AddNodesParameters(FrozenClass):
-    '''
+    """
     :ivar NodesToAdd:
     :vartype NodesToAdd: AddNodesItem
-    '''
+    """
 
     ua_types = [
         ('NodesToAdd', 'ListOfAddNodesItem'),
@@ -5968,20 +5588,20 @@ class AddNodesParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddNodesParameters(' + 'NodesToAdd:' + str(self.NodesToAdd) + ')'
+        return f'AddNodesParameters(NodesToAdd:{self.NodesToAdd})'
 
     __repr__ = __str__
 
 
 class AddNodesRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: AddNodesParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -5996,15 +5616,13 @@ class AddNodesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'AddNodesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class AddNodesResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -6013,7 +5631,7 @@ class AddNodesResponse(FrozenClass):
     :vartype Results: AddNodesResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -6030,16 +5648,13 @@ class AddNodesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'AddNodesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class AddReferencesItem(FrozenClass):
-    '''
+    """
     :ivar SourceNodeId:
     :vartype SourceNodeId: NodeId
     :ivar ReferenceTypeId:
@@ -6052,7 +5667,7 @@ class AddReferencesItem(FrozenClass):
     :vartype TargetNodeId: ExpandedNodeId
     :ivar TargetNodeClass:
     :vartype TargetNodeClass: NodeClass
-    '''
+    """
 
     ua_types = [
         ('SourceNodeId', 'NodeId'),
@@ -6073,21 +5688,16 @@ class AddReferencesItem(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', ' + \
-               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-               'IsForward:' + str(self.IsForward) + ', ' + \
-               'TargetServerUri:' + str(self.TargetServerUri) + ', ' + \
-               'TargetNodeId:' + str(self.TargetNodeId) + ', ' + \
-               'TargetNodeClass:' + str(self.TargetNodeClass) + ')'
+        return f'AddReferencesItem(SourceNodeId:{self.SourceNodeId}, ReferenceTypeId:{self.ReferenceTypeId}, IsForward:{self.IsForward}, TargetServerUri:{self.TargetServerUri}, TargetNodeId:{self.TargetNodeId}, TargetNodeClass:{self.TargetNodeClass})'
 
     __repr__ = __str__
 
 
 class AddReferencesParameters(FrozenClass):
-    '''
+    """
     :ivar ReferencesToAdd:
     :vartype ReferencesToAdd: AddReferencesItem
-    '''
+    """
 
     ua_types = [
         ('ReferencesToAdd', 'ListOfAddReferencesItem'),
@@ -6098,20 +5708,20 @@ class AddReferencesParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddReferencesParameters(' + 'ReferencesToAdd:' + str(self.ReferencesToAdd) + ')'
+        return f'AddReferencesParameters(ReferencesToAdd:{self.ReferencesToAdd})'
 
     __repr__ = __str__
 
 
 class AddReferencesRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: AddReferencesParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -6126,15 +5736,13 @@ class AddReferencesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'AddReferencesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class AddReferencesResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -6143,7 +5751,7 @@ class AddReferencesResponse(FrozenClass):
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -6160,21 +5768,18 @@ class AddReferencesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AddReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'AddReferencesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class DeleteNodesItem(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar DeleteTargetReferences:
     :vartype DeleteTargetReferences: Boolean
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -6187,17 +5792,16 @@ class DeleteNodesItem(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteNodesItem(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'DeleteTargetReferences:' + str(self.DeleteTargetReferences) + ')'
+        return f'DeleteNodesItem(NodeId:{self.NodeId}, DeleteTargetReferences:{self.DeleteTargetReferences})'
 
     __repr__ = __str__
 
 
 class DeleteNodesParameters(FrozenClass):
-    '''
+    """
     :ivar NodesToDelete:
     :vartype NodesToDelete: DeleteNodesItem
-    '''
+    """
 
     ua_types = [
         ('NodesToDelete', 'ListOfDeleteNodesItem'),
@@ -6208,20 +5812,20 @@ class DeleteNodesParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteNodesParameters(' + 'NodesToDelete:' + str(self.NodesToDelete) + ')'
+        return f'DeleteNodesParameters(NodesToDelete:{self.NodesToDelete})'
 
     __repr__ = __str__
 
 
 class DeleteNodesRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: DeleteNodesParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -6236,15 +5840,13 @@ class DeleteNodesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'DeleteNodesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class DeleteNodesResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -6253,7 +5855,7 @@ class DeleteNodesResponse(FrozenClass):
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -6270,16 +5872,13 @@ class DeleteNodesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'DeleteNodesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class DeleteReferencesItem(FrozenClass):
-    '''
+    """
     :ivar SourceNodeId:
     :vartype SourceNodeId: NodeId
     :ivar ReferenceTypeId:
@@ -6290,7 +5889,7 @@ class DeleteReferencesItem(FrozenClass):
     :vartype TargetNodeId: ExpandedNodeId
     :ivar DeleteBidirectional:
     :vartype DeleteBidirectional: Boolean
-    '''
+    """
 
     ua_types = [
         ('SourceNodeId', 'NodeId'),
@@ -6309,20 +5908,16 @@ class DeleteReferencesItem(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteReferencesItem(' + 'SourceNodeId:' + str(self.SourceNodeId) + ', ' + \
-               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-               'IsForward:' + str(self.IsForward) + ', ' + \
-               'TargetNodeId:' + str(self.TargetNodeId) + ', ' + \
-               'DeleteBidirectional:' + str(self.DeleteBidirectional) + ')'
+        return f'DeleteReferencesItem(SourceNodeId:{self.SourceNodeId}, ReferenceTypeId:{self.ReferenceTypeId}, IsForward:{self.IsForward}, TargetNodeId:{self.TargetNodeId}, DeleteBidirectional:{self.DeleteBidirectional})'
 
     __repr__ = __str__
 
 
 class DeleteReferencesParameters(FrozenClass):
-    '''
+    """
     :ivar ReferencesToDelete:
     :vartype ReferencesToDelete: DeleteReferencesItem
-    '''
+    """
 
     ua_types = [
         ('ReferencesToDelete', 'ListOfDeleteReferencesItem'),
@@ -6333,20 +5928,20 @@ class DeleteReferencesParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteReferencesParameters(' + 'ReferencesToDelete:' + str(self.ReferencesToDelete) + ')'
+        return f'DeleteReferencesParameters(ReferencesToDelete:{self.ReferencesToDelete})'
 
     __repr__ = __str__
 
 
 class DeleteReferencesRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: DeleteReferencesParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -6361,20 +5956,18 @@ class DeleteReferencesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteReferencesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'DeleteReferencesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class DeleteReferencesResult(FrozenClass):
-    '''
+    """
     :ivar Results:
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('Results', 'ListOfStatusCode'),
@@ -6387,21 +5980,20 @@ class DeleteReferencesResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteReferencesResult(' + 'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'DeleteReferencesResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class DeleteReferencesResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: DeleteReferencesResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -6416,22 +6008,20 @@ class DeleteReferencesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteReferencesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'DeleteReferencesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class ViewDescription(FrozenClass):
-    '''
+    """
     :ivar ViewId:
     :vartype ViewId: NodeId
     :ivar Timestamp:
     :vartype Timestamp: DateTime
     :ivar ViewVersion:
     :vartype ViewVersion: UInt32
-    '''
+    """
 
     ua_types = [
         ('ViewId', 'NodeId'),
@@ -6446,15 +6036,13 @@ class ViewDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ViewDescription(' + 'ViewId:' + str(self.ViewId) + ', ' + \
-               'Timestamp:' + str(self.Timestamp) + ', ' + \
-               'ViewVersion:' + str(self.ViewVersion) + ')'
+        return f'ViewDescription(ViewId:{self.ViewId}, Timestamp:{self.Timestamp}, ViewVersion:{self.ViewVersion})'
 
     __repr__ = __str__
 
 
 class BrowseDescription(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar BrowseDirection:
@@ -6467,7 +6055,7 @@ class BrowseDescription(FrozenClass):
     :vartype NodeClassMask: UInt32
     :ivar ResultMask:
     :vartype ResultMask: UInt32
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -6488,18 +6076,13 @@ class BrowseDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseDescription(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'BrowseDirection:' + str(self.BrowseDirection) + ', ' + \
-               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-               'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', ' + \
-               'NodeClassMask:' + str(self.NodeClassMask) + ', ' + \
-               'ResultMask:' + str(self.ResultMask) + ')'
+        return f'BrowseDescription(NodeId:{self.NodeId}, BrowseDirection:{self.BrowseDirection}, ReferenceTypeId:{self.ReferenceTypeId}, IncludeSubtypes:{self.IncludeSubtypes}, NodeClassMask:{self.NodeClassMask}, ResultMask:{self.ResultMask})'
 
     __repr__ = __str__
 
 
 class ReferenceDescription(FrozenClass):
-    '''
+    """
     :ivar ReferenceTypeId:
     :vartype ReferenceTypeId: NodeId
     :ivar IsForward:
@@ -6514,7 +6097,7 @@ class ReferenceDescription(FrozenClass):
     :vartype NodeClass: NodeClass
     :ivar TypeDefinition:
     :vartype TypeDefinition: ExpandedNodeId
-    '''
+    """
 
     ua_types = [
         ('ReferenceTypeId', 'NodeId'),
@@ -6537,26 +6120,20 @@ class ReferenceDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReferenceDescription(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-               'IsForward:' + str(self.IsForward) + ', ' + \
-               'NodeId:' + str(self.NodeId) + ', ' + \
-               'BrowseName:' + str(self.BrowseName) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'NodeClass:' + str(self.NodeClass) + ', ' + \
-               'TypeDefinition:' + str(self.TypeDefinition) + ')'
+        return f'ReferenceDescription(ReferenceTypeId:{self.ReferenceTypeId}, IsForward:{self.IsForward}, NodeId:{self.NodeId}, BrowseName:{self.BrowseName}, DisplayName:{self.DisplayName}, NodeClass:{self.NodeClass}, TypeDefinition:{self.TypeDefinition})'
 
     __repr__ = __str__
 
 
 class BrowseResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar ContinuationPoint:
     :vartype ContinuationPoint: ByteString
     :ivar References:
     :vartype References: ReferenceDescription
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
@@ -6571,22 +6148,20 @@ class BrowseResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
-               'References:' + str(self.References) + ')'
+        return f'BrowseResult(StatusCode:{self.StatusCode}, ContinuationPoint:{self.ContinuationPoint}, References:{self.References})'
 
     __repr__ = __str__
 
 
 class BrowseParameters(FrozenClass):
-    '''
+    """
     :ivar View:
     :vartype View: ViewDescription
     :ivar RequestedMaxReferencesPerNode:
     :vartype RequestedMaxReferencesPerNode: UInt32
     :ivar NodesToBrowse:
     :vartype NodesToBrowse: BrowseDescription
-    '''
+    """
 
     ua_types = [
         ('View', 'ViewDescription'),
@@ -6601,22 +6176,20 @@ class BrowseParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseParameters(' + 'View:' + str(self.View) + ', ' + \
-               'RequestedMaxReferencesPerNode:' + str(self.RequestedMaxReferencesPerNode) + ', ' + \
-               'NodesToBrowse:' + str(self.NodesToBrowse) + ')'
+        return f'BrowseParameters(View:{self.View}, RequestedMaxReferencesPerNode:{self.RequestedMaxReferencesPerNode}, NodesToBrowse:{self.NodesToBrowse})'
 
     __repr__ = __str__
 
 
 class BrowseRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: BrowseParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -6631,15 +6204,13 @@ class BrowseRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'BrowseRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class BrowseResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -6648,7 +6219,7 @@ class BrowseResponse(FrozenClass):
     :vartype Results: BrowseResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -6665,21 +6236,18 @@ class BrowseResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'BrowseResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class BrowseNextParameters(FrozenClass):
-    '''
+    """
     :ivar ReleaseContinuationPoints:
     :vartype ReleaseContinuationPoints: Boolean
     :ivar ContinuationPoints:
     :vartype ContinuationPoints: ByteString
-    '''
+    """
 
     ua_types = [
         ('ReleaseContinuationPoints', 'Boolean'),
@@ -6692,21 +6260,20 @@ class BrowseNextParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseNextParameters(' + 'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', ' + \
-               'ContinuationPoints:' + str(self.ContinuationPoints) + ')'
+        return f'BrowseNextParameters(ReleaseContinuationPoints:{self.ReleaseContinuationPoints}, ContinuationPoints:{self.ContinuationPoints})'
 
     __repr__ = __str__
 
 
 class BrowseNextRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: BrowseNextParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -6721,20 +6288,18 @@ class BrowseNextRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseNextRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'BrowseNextRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class BrowseNextResult(FrozenClass):
-    '''
+    """
     :ivar Results:
     :vartype Results: BrowseResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('Results', 'ListOfBrowseResult'),
@@ -6747,21 +6312,20 @@ class BrowseNextResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseNextResult(' + 'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'BrowseNextResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class BrowseNextResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: BrowseNextResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -6776,15 +6340,13 @@ class BrowseNextResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowseNextResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'BrowseNextResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class RelativePathElement(FrozenClass):
-    '''
+    """
     :ivar ReferenceTypeId:
     :vartype ReferenceTypeId: NodeId
     :ivar IsInverse:
@@ -6793,7 +6355,7 @@ class RelativePathElement(FrozenClass):
     :vartype IncludeSubtypes: Boolean
     :ivar TargetName:
     :vartype TargetName: QualifiedName
-    '''
+    """
 
     ua_types = [
         ('ReferenceTypeId', 'NodeId'),
@@ -6810,19 +6372,16 @@ class RelativePathElement(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RelativePathElement(' + 'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-               'IsInverse:' + str(self.IsInverse) + ', ' + \
-               'IncludeSubtypes:' + str(self.IncludeSubtypes) + ', ' + \
-               'TargetName:' + str(self.TargetName) + ')'
+        return f'RelativePathElement(ReferenceTypeId:{self.ReferenceTypeId}, IsInverse:{self.IsInverse}, IncludeSubtypes:{self.IncludeSubtypes}, TargetName:{self.TargetName})'
 
     __repr__ = __str__
 
 
 class RelativePath(FrozenClass):
-    '''
+    """
     :ivar Elements:
     :vartype Elements: RelativePathElement
-    '''
+    """
 
     ua_types = [
         ('Elements', 'ListOfRelativePathElement'),
@@ -6833,18 +6392,18 @@ class RelativePath(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RelativePath(' + 'Elements:' + str(self.Elements) + ')'
+        return f'RelativePath(Elements:{self.Elements})'
 
     __repr__ = __str__
 
 
 class BrowsePath(FrozenClass):
-    '''
+    """
     :ivar StartingNode:
     :vartype StartingNode: NodeId
     :ivar RelativePath:
     :vartype RelativePath: RelativePath
-    '''
+    """
 
     ua_types = [
         ('StartingNode', 'NodeId'),
@@ -6857,19 +6416,18 @@ class BrowsePath(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowsePath(' + 'StartingNode:' + str(self.StartingNode) + ', ' + \
-               'RelativePath:' + str(self.RelativePath) + ')'
+        return f'BrowsePath(StartingNode:{self.StartingNode}, RelativePath:{self.RelativePath})'
 
     __repr__ = __str__
 
 
 class BrowsePathTarget(FrozenClass):
-    '''
+    """
     :ivar TargetId:
     :vartype TargetId: ExpandedNodeId
     :ivar RemainingPathIndex:
     :vartype RemainingPathIndex: UInt32
-    '''
+    """
 
     ua_types = [
         ('TargetId', 'ExpandedNodeId'),
@@ -6882,19 +6440,18 @@ class BrowsePathTarget(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowsePathTarget(' + 'TargetId:' + str(self.TargetId) + ', ' + \
-               'RemainingPathIndex:' + str(self.RemainingPathIndex) + ')'
+        return f'BrowsePathTarget(TargetId:{self.TargetId}, RemainingPathIndex:{self.RemainingPathIndex})'
 
     __repr__ = __str__
 
 
 class BrowsePathResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar Targets:
     :vartype Targets: BrowsePathTarget
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
@@ -6907,17 +6464,16 @@ class BrowsePathResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BrowsePathResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'Targets:' + str(self.Targets) + ')'
+        return f'BrowsePathResult(StatusCode:{self.StatusCode}, Targets:{self.Targets})'
 
     __repr__ = __str__
 
 
 class TranslateBrowsePathsToNodeIdsParameters(FrozenClass):
-    '''
+    """
     :ivar BrowsePaths:
     :vartype BrowsePaths: BrowsePath
-    '''
+    """
 
     ua_types = [
         ('BrowsePaths', 'ListOfBrowsePath'),
@@ -6928,20 +6484,20 @@ class TranslateBrowsePathsToNodeIdsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TranslateBrowsePathsToNodeIdsParameters(' + 'BrowsePaths:' + str(self.BrowsePaths) + ')'
+        return f'TranslateBrowsePathsToNodeIdsParameters(BrowsePaths:{self.BrowsePaths})'
 
     __repr__ = __str__
 
 
 class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: TranslateBrowsePathsToNodeIdsParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -6956,15 +6512,13 @@ class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TranslateBrowsePathsToNodeIdsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'TranslateBrowsePathsToNodeIdsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -6973,7 +6527,7 @@ class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
     :vartype Results: BrowsePathResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -6990,19 +6544,16 @@ class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TranslateBrowsePathsToNodeIdsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'TranslateBrowsePathsToNodeIdsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class RegisterNodesParameters(FrozenClass):
-    '''
+    """
     :ivar NodesToRegister:
     :vartype NodesToRegister: NodeId
-    '''
+    """
 
     ua_types = [
         ('NodesToRegister', 'ListOfNodeId'),
@@ -7013,20 +6564,20 @@ class RegisterNodesParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterNodesParameters(' + 'NodesToRegister:' + str(self.NodesToRegister) + ')'
+        return f'RegisterNodesParameters(NodesToRegister:{self.NodesToRegister})'
 
     __repr__ = __str__
 
 
 class RegisterNodesRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: RegisterNodesParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -7041,18 +6592,16 @@ class RegisterNodesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'RegisterNodesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class RegisterNodesResult(FrozenClass):
-    '''
+    """
     :ivar RegisteredNodeIds:
     :vartype RegisteredNodeIds: NodeId
-    '''
+    """
 
     ua_types = [
         ('RegisteredNodeIds', 'ListOfNodeId'),
@@ -7063,20 +6612,20 @@ class RegisterNodesResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterNodesResult(' + 'RegisteredNodeIds:' + str(self.RegisteredNodeIds) + ')'
+        return f'RegisterNodesResult(RegisteredNodeIds:{self.RegisteredNodeIds})'
 
     __repr__ = __str__
 
 
 class RegisterNodesResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: RegisterNodesResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -7091,18 +6640,16 @@ class RegisterNodesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RegisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'RegisterNodesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class UnregisterNodesParameters(FrozenClass):
-    '''
+    """
     :ivar NodesToUnregister:
     :vartype NodesToUnregister: NodeId
-    '''
+    """
 
     ua_types = [
         ('NodesToUnregister', 'ListOfNodeId'),
@@ -7113,20 +6660,20 @@ class UnregisterNodesParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UnregisterNodesParameters(' + 'NodesToUnregister:' + str(self.NodesToUnregister) + ')'
+        return f'UnregisterNodesParameters(NodesToUnregister:{self.NodesToUnregister})'
 
     __repr__ = __str__
 
 
 class UnregisterNodesRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: UnregisterNodesParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -7141,20 +6688,18 @@ class UnregisterNodesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UnregisterNodesRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'UnregisterNodesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class UnregisterNodesResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -7167,14 +6712,13 @@ class UnregisterNodesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UnregisterNodesResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ')'
+        return f'UnregisterNodesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
 
 class EndpointConfiguration(FrozenClass):
-    '''
+    """
     :ivar OperationTimeout:
     :vartype OperationTimeout: Int32
     :ivar UseBinaryEncoding:
@@ -7193,7 +6737,7 @@ class EndpointConfiguration(FrozenClass):
     :vartype ChannelLifetime: Int32
     :ivar SecurityTokenLifetime:
     :vartype SecurityTokenLifetime: Int32
-    '''
+    """
 
     ua_types = [
         ('OperationTimeout', 'Int32'),
@@ -7220,28 +6764,20 @@ class EndpointConfiguration(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EndpointConfiguration(' + 'OperationTimeout:' + str(self.OperationTimeout) + ', ' + \
-               'UseBinaryEncoding:' + str(self.UseBinaryEncoding) + ', ' + \
-               'MaxStringLength:' + str(self.MaxStringLength) + ', ' + \
-               'MaxByteStringLength:' + str(self.MaxByteStringLength) + ', ' + \
-               'MaxArrayLength:' + str(self.MaxArrayLength) + ', ' + \
-               'MaxMessageSize:' + str(self.MaxMessageSize) + ', ' + \
-               'MaxBufferSize:' + str(self.MaxBufferSize) + ', ' + \
-               'ChannelLifetime:' + str(self.ChannelLifetime) + ', ' + \
-               'SecurityTokenLifetime:' + str(self.SecurityTokenLifetime) + ')'
+        return f'EndpointConfiguration(OperationTimeout:{self.OperationTimeout}, UseBinaryEncoding:{self.UseBinaryEncoding}, MaxStringLength:{self.MaxStringLength}, MaxByteStringLength:{self.MaxByteStringLength}, MaxArrayLength:{self.MaxArrayLength}, MaxMessageSize:{self.MaxMessageSize}, MaxBufferSize:{self.MaxBufferSize}, ChannelLifetime:{self.ChannelLifetime}, SecurityTokenLifetime:{self.SecurityTokenLifetime})'
 
     __repr__ = __str__
 
 
 class QueryDataDescription(FrozenClass):
-    '''
+    """
     :ivar RelativePath:
     :vartype RelativePath: RelativePath
     :ivar AttributeId:
     :vartype AttributeId: UInt32
     :ivar IndexRange:
     :vartype IndexRange: String
-    '''
+    """
 
     ua_types = [
         ('RelativePath', 'RelativePath'),
@@ -7256,22 +6792,20 @@ class QueryDataDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryDataDescription(' + 'RelativePath:' + str(self.RelativePath) + ', ' + \
-               'AttributeId:' + str(self.AttributeId) + ', ' + \
-               'IndexRange:' + str(self.IndexRange) + ')'
+        return f'QueryDataDescription(RelativePath:{self.RelativePath}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange})'
 
     __repr__ = __str__
 
 
 class NodeTypeDescription(FrozenClass):
-    '''
+    """
     :ivar TypeDefinitionNode:
     :vartype TypeDefinitionNode: ExpandedNodeId
     :ivar IncludeSubTypes:
     :vartype IncludeSubTypes: Boolean
     :ivar DataToReturn:
     :vartype DataToReturn: QueryDataDescription
-    '''
+    """
 
     ua_types = [
         ('TypeDefinitionNode', 'ExpandedNodeId'),
@@ -7286,22 +6820,20 @@ class NodeTypeDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'NodeTypeDescription(' + 'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', ' + \
-               'IncludeSubTypes:' + str(self.IncludeSubTypes) + ', ' + \
-               'DataToReturn:' + str(self.DataToReturn) + ')'
+        return f'NodeTypeDescription(TypeDefinitionNode:{self.TypeDefinitionNode}, IncludeSubTypes:{self.IncludeSubTypes}, DataToReturn:{self.DataToReturn})'
 
     __repr__ = __str__
 
 
 class QueryDataSet(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: ExpandedNodeId
     :ivar TypeDefinitionNode:
     :vartype TypeDefinitionNode: ExpandedNodeId
     :ivar Values:
     :vartype Values: Variant
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'ExpandedNodeId'),
@@ -7316,15 +6848,13 @@ class QueryDataSet(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryDataSet(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'TypeDefinitionNode:' + str(self.TypeDefinitionNode) + ', ' + \
-               'Values:' + str(self.Values) + ')'
+        return f'QueryDataSet(NodeId:{self.NodeId}, TypeDefinitionNode:{self.TypeDefinitionNode}, Values:{self.Values})'
 
     __repr__ = __str__
 
 
 class NodeReference(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar ReferenceTypeId:
@@ -7333,7 +6863,7 @@ class NodeReference(FrozenClass):
     :vartype IsForward: Boolean
     :ivar ReferencedNodeIds:
     :vartype ReferencedNodeIds: NodeId
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -7350,21 +6880,18 @@ class NodeReference(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'NodeReference(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'ReferenceTypeId:' + str(self.ReferenceTypeId) + ', ' + \
-               'IsForward:' + str(self.IsForward) + ', ' + \
-               'ReferencedNodeIds:' + str(self.ReferencedNodeIds) + ')'
+        return f'NodeReference(NodeId:{self.NodeId}, ReferenceTypeId:{self.ReferenceTypeId}, IsForward:{self.IsForward}, ReferencedNodeIds:{self.ReferencedNodeIds})'
 
     __repr__ = __str__
 
 
 class ContentFilterElement(FrozenClass):
-    '''
+    """
     :ivar FilterOperator:
     :vartype FilterOperator: FilterOperator
     :ivar FilterOperands:
     :vartype FilterOperands: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('FilterOperator', 'FilterOperator'),
@@ -7377,17 +6904,16 @@ class ContentFilterElement(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ContentFilterElement(' + 'FilterOperator:' + str(self.FilterOperator) + ', ' + \
-               'FilterOperands:' + str(self.FilterOperands) + ')'
+        return f'ContentFilterElement(FilterOperator:{self.FilterOperator}, FilterOperands:{self.FilterOperands})'
 
     __repr__ = __str__
 
 
 class ContentFilter(FrozenClass):
-    '''
+    """
     :ivar Elements:
     :vartype Elements: ContentFilterElement
-    '''
+    """
 
     ua_types = [
         ('Elements', 'ListOfContentFilterElement'),
@@ -7398,16 +6924,16 @@ class ContentFilter(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ContentFilter(' + 'Elements:' + str(self.Elements) + ')'
+        return f'ContentFilter(Elements:{self.Elements})'
 
     __repr__ = __str__
 
 
 class ElementOperand(FrozenClass):
-    '''
+    """
     :ivar Index:
     :vartype Index: UInt32
-    '''
+    """
 
     ua_types = [
         ('Index', 'UInt32'),
@@ -7418,16 +6944,16 @@ class ElementOperand(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ElementOperand(' + 'Index:' + str(self.Index) + ')'
+        return f'ElementOperand(Index:{self.Index})'
 
     __repr__ = __str__
 
 
 class LiteralOperand(FrozenClass):
-    '''
+    """
     :ivar Value:
     :vartype Value: Variant
-    '''
+    """
 
     ua_types = [
         ('Value', 'Variant'),
@@ -7438,13 +6964,13 @@ class LiteralOperand(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'LiteralOperand(' + 'Value:' + str(self.Value) + ')'
+        return f'LiteralOperand(Value:{self.Value})'
 
     __repr__ = __str__
 
 
 class AttributeOperand(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar Alias:
@@ -7455,7 +6981,7 @@ class AttributeOperand(FrozenClass):
     :vartype AttributeId: UInt32
     :ivar IndexRange:
     :vartype IndexRange: String
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -7474,17 +7000,13 @@ class AttributeOperand(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AttributeOperand(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'Alias:' + str(self.Alias) + ', ' + \
-               'BrowsePath:' + str(self.BrowsePath) + ', ' + \
-               'AttributeId:' + str(self.AttributeId) + ', ' + \
-               'IndexRange:' + str(self.IndexRange) + ')'
+        return f'AttributeOperand(NodeId:{self.NodeId}, Alias:{self.Alias}, BrowsePath:{self.BrowsePath}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange})'
 
     __repr__ = __str__
 
 
 class SimpleAttributeOperand(FrozenClass):
-    '''
+    """
     :ivar TypeDefinitionId:
     :vartype TypeDefinitionId: NodeId
     :ivar BrowsePath:
@@ -7493,7 +7015,7 @@ class SimpleAttributeOperand(FrozenClass):
     :vartype AttributeId: UInt32
     :ivar IndexRange:
     :vartype IndexRange: String
-    '''
+    """
 
     ua_types = [
         ('TypeDefinitionId', 'NodeId'),
@@ -7510,23 +7032,20 @@ class SimpleAttributeOperand(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SimpleAttributeOperand(' + 'TypeDefinitionId:' + str(self.TypeDefinitionId) + ', ' + \
-               'BrowsePath:' + str(self.BrowsePath) + ', ' + \
-               'AttributeId:' + str(self.AttributeId) + ', ' + \
-               'IndexRange:' + str(self.IndexRange) + ')'
+        return f'SimpleAttributeOperand(TypeDefinitionId:{self.TypeDefinitionId}, BrowsePath:{self.BrowsePath}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange})'
 
     __repr__ = __str__
 
 
 class ContentFilterElementResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar OperandStatusCodes:
     :vartype OperandStatusCodes: StatusCode
     :ivar OperandDiagnosticInfos:
     :vartype OperandDiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
@@ -7541,20 +7060,18 @@ class ContentFilterElementResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ContentFilterElementResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'OperandStatusCodes:' + str(self.OperandStatusCodes) + ', ' + \
-               'OperandDiagnosticInfos:' + str(self.OperandDiagnosticInfos) + ')'
+        return f'ContentFilterElementResult(StatusCode:{self.StatusCode}, OperandStatusCodes:{self.OperandStatusCodes}, OperandDiagnosticInfos:{self.OperandDiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class ContentFilterResult(FrozenClass):
-    '''
+    """
     :ivar ElementResults:
     :vartype ElementResults: ContentFilterElementResult
     :ivar ElementDiagnosticInfos:
     :vartype ElementDiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('ElementResults', 'ListOfContentFilterElementResult'),
@@ -7567,21 +7084,20 @@ class ContentFilterResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ContentFilterResult(' + 'ElementResults:' + str(self.ElementResults) + ', ' + \
-               'ElementDiagnosticInfos:' + str(self.ElementDiagnosticInfos) + ')'
+        return f'ContentFilterResult(ElementResults:{self.ElementResults}, ElementDiagnosticInfos:{self.ElementDiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class ParsingResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar DataStatusCodes:
     :vartype DataStatusCodes: StatusCode
     :ivar DataDiagnosticInfos:
     :vartype DataDiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
@@ -7596,15 +7112,13 @@ class ParsingResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ParsingResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'DataStatusCodes:' + str(self.DataStatusCodes) + ', ' + \
-               'DataDiagnosticInfos:' + str(self.DataDiagnosticInfos) + ')'
+        return f'ParsingResult(StatusCode:{self.StatusCode}, DataStatusCodes:{self.DataStatusCodes}, DataDiagnosticInfos:{self.DataDiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class QueryFirstParameters(FrozenClass):
-    '''
+    """
     :ivar View:
     :vartype View: ViewDescription
     :ivar NodeTypes:
@@ -7615,7 +7129,7 @@ class QueryFirstParameters(FrozenClass):
     :vartype MaxDataSetsToReturn: UInt32
     :ivar MaxReferencesToReturn:
     :vartype MaxReferencesToReturn: UInt32
-    '''
+    """
 
     ua_types = [
         ('View', 'ViewDescription'),
@@ -7634,24 +7148,20 @@ class QueryFirstParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryFirstParameters(' + 'View:' + str(self.View) + ', ' + \
-               'NodeTypes:' + str(self.NodeTypes) + ', ' + \
-               'Filter:' + str(self.Filter) + ', ' + \
-               'MaxDataSetsToReturn:' + str(self.MaxDataSetsToReturn) + ', ' + \
-               'MaxReferencesToReturn:' + str(self.MaxReferencesToReturn) + ')'
+        return f'QueryFirstParameters(View:{self.View}, NodeTypes:{self.NodeTypes}, Filter:{self.Filter}, MaxDataSetsToReturn:{self.MaxDataSetsToReturn}, MaxReferencesToReturn:{self.MaxReferencesToReturn})'
 
     __repr__ = __str__
 
 
 class QueryFirstRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: QueryFirstParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -7666,15 +7176,13 @@ class QueryFirstRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryFirstRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'QueryFirstRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class QueryFirstResult(FrozenClass):
-    '''
+    """
     :ivar QueryDataSets:
     :vartype QueryDataSets: QueryDataSet
     :ivar ContinuationPoint:
@@ -7685,7 +7193,7 @@ class QueryFirstResult(FrozenClass):
     :vartype DiagnosticInfos: DiagnosticInfo
     :ivar FilterResult:
     :vartype FilterResult: ContentFilterResult
-    '''
+    """
 
     ua_types = [
         ('QueryDataSets', 'ListOfQueryDataSet'),
@@ -7704,24 +7212,20 @@ class QueryFirstResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryFirstResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', ' + \
-               'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
-               'ParsingResults:' + str(self.ParsingResults) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ', ' + \
-               'FilterResult:' + str(self.FilterResult) + ')'
+        return f'QueryFirstResult(QueryDataSets:{self.QueryDataSets}, ContinuationPoint:{self.ContinuationPoint}, ParsingResults:{self.ParsingResults}, DiagnosticInfos:{self.DiagnosticInfos}, FilterResult:{self.FilterResult})'
 
     __repr__ = __str__
 
 
 class QueryFirstResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: QueryFirstResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -7736,20 +7240,18 @@ class QueryFirstResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryFirstResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'QueryFirstResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class QueryNextParameters(FrozenClass):
-    '''
+    """
     :ivar ReleaseContinuationPoint:
     :vartype ReleaseContinuationPoint: Boolean
     :ivar ContinuationPoint:
     :vartype ContinuationPoint: ByteString
-    '''
+    """
 
     ua_types = [
         ('ReleaseContinuationPoint', 'Boolean'),
@@ -7762,21 +7264,20 @@ class QueryNextParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryNextParameters(' + 'ReleaseContinuationPoint:' + str(self.ReleaseContinuationPoint) + ', ' + \
-               'ContinuationPoint:' + str(self.ContinuationPoint) + ')'
+        return f'QueryNextParameters(ReleaseContinuationPoint:{self.ReleaseContinuationPoint}, ContinuationPoint:{self.ContinuationPoint})'
 
     __repr__ = __str__
 
 
 class QueryNextRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: QueryNextParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -7791,20 +7292,18 @@ class QueryNextRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryNextRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'QueryNextRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class QueryNextResult(FrozenClass):
-    '''
+    """
     :ivar QueryDataSets:
     :vartype QueryDataSets: QueryDataSet
     :ivar RevisedContinuationPoint:
     :vartype RevisedContinuationPoint: ByteString
-    '''
+    """
 
     ua_types = [
         ('QueryDataSets', 'ListOfQueryDataSet'),
@@ -7817,21 +7316,20 @@ class QueryNextResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryNextResult(' + 'QueryDataSets:' + str(self.QueryDataSets) + ', ' + \
-               'RevisedContinuationPoint:' + str(self.RevisedContinuationPoint) + ')'
+        return f'QueryNextResult(QueryDataSets:{self.QueryDataSets}, RevisedContinuationPoint:{self.RevisedContinuationPoint})'
 
     __repr__ = __str__
 
 
 class QueryNextResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: QueryNextResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -7846,15 +7344,13 @@ class QueryNextResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'QueryNextResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'QueryNextResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class ReadValueId(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar AttributeId:
@@ -7863,7 +7359,7 @@ class ReadValueId(FrozenClass):
     :vartype IndexRange: String
     :ivar DataEncoding:
     :vartype DataEncoding: QualifiedName
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -7880,23 +7376,20 @@ class ReadValueId(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadValueId(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'AttributeId:' + str(self.AttributeId) + ', ' + \
-               'IndexRange:' + str(self.IndexRange) + ', ' + \
-               'DataEncoding:' + str(self.DataEncoding) + ')'
+        return f'ReadValueId(NodeId:{self.NodeId}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange}, DataEncoding:{self.DataEncoding})'
 
     __repr__ = __str__
 
 
 class ReadParameters(FrozenClass):
-    '''
+    """
     :ivar MaxAge:
     :vartype MaxAge: Double
     :ivar TimestampsToReturn:
     :vartype TimestampsToReturn: TimestampsToReturn
     :ivar NodesToRead:
     :vartype NodesToRead: ReadValueId
-    '''
+    """
 
     ua_types = [
         ('MaxAge', 'Double'),
@@ -7911,22 +7404,20 @@ class ReadParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadParameters(' + 'MaxAge:' + str(self.MaxAge) + ', ' + \
-               'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
-               'NodesToRead:' + str(self.NodesToRead) + ')'
+        return f'ReadParameters(MaxAge:{self.MaxAge}, TimestampsToReturn:{self.TimestampsToReturn}, NodesToRead:{self.NodesToRead})'
 
     __repr__ = __str__
 
 
 class ReadRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: ReadParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -7941,15 +7432,13 @@ class ReadRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'ReadRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class ReadResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -7958,7 +7447,7 @@ class ReadResponse(FrozenClass):
     :vartype Results: DataValue
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -7975,16 +7464,13 @@ class ReadResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'ReadResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class HistoryReadValueId(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar IndexRange:
@@ -7993,7 +7479,7 @@ class HistoryReadValueId(FrozenClass):
     :vartype DataEncoding: QualifiedName
     :ivar ContinuationPoint:
     :vartype ContinuationPoint: ByteString
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -8010,23 +7496,20 @@ class HistoryReadValueId(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryReadValueId(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'IndexRange:' + str(self.IndexRange) + ', ' + \
-               'DataEncoding:' + str(self.DataEncoding) + ', ' + \
-               'ContinuationPoint:' + str(self.ContinuationPoint) + ')'
+        return f'HistoryReadValueId(NodeId:{self.NodeId}, IndexRange:{self.IndexRange}, DataEncoding:{self.DataEncoding}, ContinuationPoint:{self.ContinuationPoint})'
 
     __repr__ = __str__
 
 
 class HistoryReadResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar ContinuationPoint:
     :vartype ContinuationPoint: ByteString
     :ivar HistoryData:
     :vartype HistoryData: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
@@ -8041,16 +7524,14 @@ class HistoryReadResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryReadResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'ContinuationPoint:' + str(self.ContinuationPoint) + ', ' + \
-               'HistoryData:' + str(self.HistoryData) + ')'
+        return f'HistoryReadResult(StatusCode:{self.StatusCode}, ContinuationPoint:{self.ContinuationPoint}, HistoryData:{self.HistoryData})'
 
     __repr__ = __str__
 
 
 class HistoryReadDetails(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -8059,13 +7540,13 @@ class HistoryReadDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryReadDetails(' +  + ')'
+        return 'HistoryReadDetails()'
 
     __repr__ = __str__
 
 
 class ReadEventDetails(FrozenClass):
-    '''
+    """
     :ivar NumValuesPerNode:
     :vartype NumValuesPerNode: UInt32
     :ivar StartTime:
@@ -8074,7 +7555,7 @@ class ReadEventDetails(FrozenClass):
     :vartype EndTime: DateTime
     :ivar Filter:
     :vartype Filter: EventFilter
-    '''
+    """
 
     ua_types = [
         ('NumValuesPerNode', 'UInt32'),
@@ -8091,16 +7572,13 @@ class ReadEventDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadEventDetails(' + 'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', ' + \
-               'StartTime:' + str(self.StartTime) + ', ' + \
-               'EndTime:' + str(self.EndTime) + ', ' + \
-               'Filter:' + str(self.Filter) + ')'
+        return f'ReadEventDetails(NumValuesPerNode:{self.NumValuesPerNode}, StartTime:{self.StartTime}, EndTime:{self.EndTime}, Filter:{self.Filter})'
 
     __repr__ = __str__
 
 
 class ReadRawModifiedDetails(FrozenClass):
-    '''
+    """
     :ivar IsReadModified:
     :vartype IsReadModified: Boolean
     :ivar StartTime:
@@ -8111,7 +7589,7 @@ class ReadRawModifiedDetails(FrozenClass):
     :vartype NumValuesPerNode: UInt32
     :ivar ReturnBounds:
     :vartype ReturnBounds: Boolean
-    '''
+    """
 
     ua_types = [
         ('IsReadModified', 'Boolean'),
@@ -8130,17 +7608,13 @@ class ReadRawModifiedDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadRawModifiedDetails(' + 'IsReadModified:' + str(self.IsReadModified) + ', ' + \
-               'StartTime:' + str(self.StartTime) + ', ' + \
-               'EndTime:' + str(self.EndTime) + ', ' + \
-               'NumValuesPerNode:' + str(self.NumValuesPerNode) + ', ' + \
-               'ReturnBounds:' + str(self.ReturnBounds) + ')'
+        return f'ReadRawModifiedDetails(IsReadModified:{self.IsReadModified}, StartTime:{self.StartTime}, EndTime:{self.EndTime}, NumValuesPerNode:{self.NumValuesPerNode}, ReturnBounds:{self.ReturnBounds})'
 
     __repr__ = __str__
 
 
 class ReadProcessedDetails(FrozenClass):
-    '''
+    """
     :ivar StartTime:
     :vartype StartTime: DateTime
     :ivar EndTime:
@@ -8151,7 +7625,7 @@ class ReadProcessedDetails(FrozenClass):
     :vartype AggregateType: NodeId
     :ivar AggregateConfiguration:
     :vartype AggregateConfiguration: AggregateConfiguration
-    '''
+    """
 
     ua_types = [
         ('StartTime', 'DateTime'),
@@ -8170,22 +7644,18 @@ class ReadProcessedDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadProcessedDetails(' + 'StartTime:' + str(self.StartTime) + ', ' + \
-               'EndTime:' + str(self.EndTime) + ', ' + \
-               'ProcessingInterval:' + str(self.ProcessingInterval) + ', ' + \
-               'AggregateType:' + str(self.AggregateType) + ', ' + \
-               'AggregateConfiguration:' + str(self.AggregateConfiguration) + ')'
+        return f'ReadProcessedDetails(StartTime:{self.StartTime}, EndTime:{self.EndTime}, ProcessingInterval:{self.ProcessingInterval}, AggregateType:{self.AggregateType}, AggregateConfiguration:{self.AggregateConfiguration})'
 
     __repr__ = __str__
 
 
 class ReadAtTimeDetails(FrozenClass):
-    '''
+    """
     :ivar ReqTimes:
     :vartype ReqTimes: DateTime
     :ivar UseSimpleBounds:
     :vartype UseSimpleBounds: Boolean
-    '''
+    """
 
     ua_types = [
         ('ReqTimes', 'ListOfDateTime'),
@@ -8198,17 +7668,16 @@ class ReadAtTimeDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadAtTimeDetails(' + 'ReqTimes:' + str(self.ReqTimes) + ', ' + \
-               'UseSimpleBounds:' + str(self.UseSimpleBounds) + ')'
+        return f'ReadAtTimeDetails(ReqTimes:{self.ReqTimes}, UseSimpleBounds:{self.UseSimpleBounds})'
 
     __repr__ = __str__
 
 
 class ReadAnnotationDataDetails(FrozenClass):
-    '''
+    """
     :ivar ReqTimes:
     :vartype ReqTimes: DateTime
-    '''
+    """
 
     ua_types = [
         ('ReqTimes', 'ListOfDateTime'),
@@ -8219,16 +7688,16 @@ class ReadAnnotationDataDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ReadAnnotationDataDetails(' + 'ReqTimes:' + str(self.ReqTimes) + ')'
+        return f'ReadAnnotationDataDetails(ReqTimes:{self.ReqTimes})'
 
     __repr__ = __str__
 
 
 class HistoryData(FrozenClass):
-    '''
+    """
     :ivar DataValues:
     :vartype DataValues: DataValue
-    '''
+    """
 
     ua_types = [
         ('DataValues', 'ListOfDataValue'),
@@ -8239,20 +7708,20 @@ class HistoryData(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryData(' + 'DataValues:' + str(self.DataValues) + ')'
+        return f'HistoryData(DataValues:{self.DataValues})'
 
     __repr__ = __str__
 
 
 class ModificationInfo(FrozenClass):
-    '''
+    """
     :ivar ModificationTime:
     :vartype ModificationTime: DateTime
     :ivar UpdateType:
     :vartype UpdateType: HistoryUpdateType
     :ivar UserName:
     :vartype UserName: String
-    '''
+    """
 
     ua_types = [
         ('ModificationTime', 'DateTime'),
@@ -8267,20 +7736,18 @@ class ModificationInfo(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModificationInfo(' + 'ModificationTime:' + str(self.ModificationTime) + ', ' + \
-               'UpdateType:' + str(self.UpdateType) + ', ' + \
-               'UserName:' + str(self.UserName) + ')'
+        return f'ModificationInfo(ModificationTime:{self.ModificationTime}, UpdateType:{self.UpdateType}, UserName:{self.UserName})'
 
     __repr__ = __str__
 
 
 class HistoryModifiedData(FrozenClass):
-    '''
+    """
     :ivar DataValues:
     :vartype DataValues: DataValue
     :ivar ModificationInfos:
     :vartype ModificationInfos: ModificationInfo
-    '''
+    """
 
     ua_types = [
         ('DataValues', 'ListOfDataValue'),
@@ -8293,17 +7760,16 @@ class HistoryModifiedData(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryModifiedData(' + 'DataValues:' + str(self.DataValues) + ', ' + \
-               'ModificationInfos:' + str(self.ModificationInfos) + ')'
+        return f'HistoryModifiedData(DataValues:{self.DataValues}, ModificationInfos:{self.ModificationInfos})'
 
     __repr__ = __str__
 
 
 class HistoryEvent(FrozenClass):
-    '''
+    """
     :ivar Events:
     :vartype Events: HistoryEventFieldList
-    '''
+    """
 
     ua_types = [
         ('Events', 'ListOfHistoryEventFieldList'),
@@ -8314,13 +7780,13 @@ class HistoryEvent(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryEvent(' + 'Events:' + str(self.Events) + ')'
+        return f'HistoryEvent(Events:{self.Events})'
 
     __repr__ = __str__
 
 
 class HistoryReadParameters(FrozenClass):
-    '''
+    """
     :ivar HistoryReadDetails:
     :vartype HistoryReadDetails: ExtensionObject
     :ivar TimestampsToReturn:
@@ -8329,7 +7795,7 @@ class HistoryReadParameters(FrozenClass):
     :vartype ReleaseContinuationPoints: Boolean
     :ivar NodesToRead:
     :vartype NodesToRead: HistoryReadValueId
-    '''
+    """
 
     ua_types = [
         ('HistoryReadDetails', 'ExtensionObject'),
@@ -8346,23 +7812,20 @@ class HistoryReadParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryReadParameters(' + 'HistoryReadDetails:' + str(self.HistoryReadDetails) + ', ' + \
-               'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
-               'ReleaseContinuationPoints:' + str(self.ReleaseContinuationPoints) + ', ' + \
-               'NodesToRead:' + str(self.NodesToRead) + ')'
+        return f'HistoryReadParameters(HistoryReadDetails:{self.HistoryReadDetails}, TimestampsToReturn:{self.TimestampsToReturn}, ReleaseContinuationPoints:{self.ReleaseContinuationPoints}, NodesToRead:{self.NodesToRead})'
 
     __repr__ = __str__
 
 
 class HistoryReadRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: HistoryReadParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -8377,15 +7840,13 @@ class HistoryReadRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryReadRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'HistoryReadRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class HistoryReadResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -8394,7 +7855,7 @@ class HistoryReadResponse(FrozenClass):
     :vartype Results: HistoryReadResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -8411,16 +7872,13 @@ class HistoryReadResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryReadResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'HistoryReadResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class WriteValue(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar AttributeId:
@@ -8429,7 +7887,7 @@ class WriteValue(FrozenClass):
     :vartype IndexRange: String
     :ivar Value:
     :vartype Value: DataValue
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -8446,19 +7904,16 @@ class WriteValue(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'WriteValue(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'AttributeId:' + str(self.AttributeId) + ', ' + \
-               'IndexRange:' + str(self.IndexRange) + ', ' + \
-               'Value:' + str(self.Value) + ')'
+        return f'WriteValue(NodeId:{self.NodeId}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange}, Value:{self.Value})'
 
     __repr__ = __str__
 
 
 class WriteParameters(FrozenClass):
-    '''
+    """
     :ivar NodesToWrite:
     :vartype NodesToWrite: WriteValue
-    '''
+    """
 
     ua_types = [
         ('NodesToWrite', 'ListOfWriteValue'),
@@ -8469,20 +7924,20 @@ class WriteParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'WriteParameters(' + 'NodesToWrite:' + str(self.NodesToWrite) + ')'
+        return f'WriteParameters(NodesToWrite:{self.NodesToWrite})'
 
     __repr__ = __str__
 
 
 class WriteRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: WriteParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -8497,15 +7952,13 @@ class WriteRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'WriteRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'WriteRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class WriteResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -8514,7 +7967,7 @@ class WriteResponse(FrozenClass):
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -8531,19 +7984,16 @@ class WriteResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'WriteResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'WriteResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class HistoryUpdateDetails(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -8554,20 +8004,20 @@ class HistoryUpdateDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryUpdateDetails(' + 'NodeId:' + str(self.NodeId) + ')'
+        return f'HistoryUpdateDetails(NodeId:{self.NodeId})'
 
     __repr__ = __str__
 
 
 class UpdateDataDetails(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar PerformInsertReplace:
     :vartype PerformInsertReplace: PerformUpdateType
     :ivar UpdateValues:
     :vartype UpdateValues: DataValue
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -8582,22 +8032,20 @@ class UpdateDataDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UpdateDataDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
-               'UpdateValues:' + str(self.UpdateValues) + ')'
+        return f'UpdateDataDetails(NodeId:{self.NodeId}, PerformInsertReplace:{self.PerformInsertReplace}, UpdateValues:{self.UpdateValues})'
 
     __repr__ = __str__
 
 
 class UpdateStructureDataDetails(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar PerformInsertReplace:
     :vartype PerformInsertReplace: PerformUpdateType
     :ivar UpdateValues:
     :vartype UpdateValues: DataValue
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -8612,15 +8060,13 @@ class UpdateStructureDataDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UpdateStructureDataDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
-               'UpdateValues:' + str(self.UpdateValues) + ')'
+        return f'UpdateStructureDataDetails(NodeId:{self.NodeId}, PerformInsertReplace:{self.PerformInsertReplace}, UpdateValues:{self.UpdateValues})'
 
     __repr__ = __str__
 
 
 class UpdateEventDetails(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar PerformInsertReplace:
@@ -8629,7 +8075,7 @@ class UpdateEventDetails(FrozenClass):
     :vartype Filter: EventFilter
     :ivar EventData:
     :vartype EventData: HistoryEventFieldList
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -8646,16 +8092,13 @@ class UpdateEventDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'UpdateEventDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'PerformInsertReplace:' + str(self.PerformInsertReplace) + ', ' + \
-               'Filter:' + str(self.Filter) + ', ' + \
-               'EventData:' + str(self.EventData) + ')'
+        return f'UpdateEventDetails(NodeId:{self.NodeId}, PerformInsertReplace:{self.PerformInsertReplace}, Filter:{self.Filter}, EventData:{self.EventData})'
 
     __repr__ = __str__
 
 
 class DeleteRawModifiedDetails(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar IsDeleteModified:
@@ -8664,7 +8107,7 @@ class DeleteRawModifiedDetails(FrozenClass):
     :vartype StartTime: DateTime
     :ivar EndTime:
     :vartype EndTime: DateTime
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -8681,21 +8124,18 @@ class DeleteRawModifiedDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteRawModifiedDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'IsDeleteModified:' + str(self.IsDeleteModified) + ', ' + \
-               'StartTime:' + str(self.StartTime) + ', ' + \
-               'EndTime:' + str(self.EndTime) + ')'
+        return f'DeleteRawModifiedDetails(NodeId:{self.NodeId}, IsDeleteModified:{self.IsDeleteModified}, StartTime:{self.StartTime}, EndTime:{self.EndTime})'
 
     __repr__ = __str__
 
 
 class DeleteAtTimeDetails(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar ReqTimes:
     :vartype ReqTimes: DateTime
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -8708,19 +8148,18 @@ class DeleteAtTimeDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteAtTimeDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'ReqTimes:' + str(self.ReqTimes) + ')'
+        return f'DeleteAtTimeDetails(NodeId:{self.NodeId}, ReqTimes:{self.ReqTimes})'
 
     __repr__ = __str__
 
 
 class DeleteEventDetails(FrozenClass):
-    '''
+    """
     :ivar NodeId:
     :vartype NodeId: NodeId
     :ivar EventIds:
     :vartype EventIds: ByteString
-    '''
+    """
 
     ua_types = [
         ('NodeId', 'NodeId'),
@@ -8733,21 +8172,20 @@ class DeleteEventDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteEventDetails(' + 'NodeId:' + str(self.NodeId) + ', ' + \
-               'EventIds:' + str(self.EventIds) + ')'
+        return f'DeleteEventDetails(NodeId:{self.NodeId}, EventIds:{self.EventIds})'
 
     __repr__ = __str__
 
 
 class HistoryUpdateResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar OperationResults:
     :vartype OperationResults: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
@@ -8762,18 +8200,16 @@ class HistoryUpdateResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryUpdateResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'OperationResults:' + str(self.OperationResults) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'HistoryUpdateResult(StatusCode:{self.StatusCode}, OperationResults:{self.OperationResults}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class HistoryUpdateParameters(FrozenClass):
-    '''
+    """
     :ivar HistoryUpdateDetails:
     :vartype HistoryUpdateDetails: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('HistoryUpdateDetails', 'ListOfExtensionObject'),
@@ -8784,20 +8220,20 @@ class HistoryUpdateParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryUpdateParameters(' + 'HistoryUpdateDetails:' + str(self.HistoryUpdateDetails) + ')'
+        return f'HistoryUpdateParameters(HistoryUpdateDetails:{self.HistoryUpdateDetails})'
 
     __repr__ = __str__
 
 
 class HistoryUpdateRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: HistoryUpdateParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -8812,15 +8248,13 @@ class HistoryUpdateRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryUpdateRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'HistoryUpdateRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class HistoryUpdateResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -8829,7 +8263,7 @@ class HistoryUpdateResponse(FrozenClass):
     :vartype Results: HistoryUpdateResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -8846,23 +8280,20 @@ class HistoryUpdateResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryUpdateResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'HistoryUpdateResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class CallMethodRequest(FrozenClass):
-    '''
+    """
     :ivar ObjectId:
     :vartype ObjectId: NodeId
     :ivar MethodId:
     :vartype MethodId: NodeId
     :ivar InputArguments:
     :vartype InputArguments: Variant
-    '''
+    """
 
     ua_types = [
         ('ObjectId', 'NodeId'),
@@ -8877,15 +8308,13 @@ class CallMethodRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CallMethodRequest(' + 'ObjectId:' + str(self.ObjectId) + ', ' + \
-               'MethodId:' + str(self.MethodId) + ', ' + \
-               'InputArguments:' + str(self.InputArguments) + ')'
+        return f'CallMethodRequest(ObjectId:{self.ObjectId}, MethodId:{self.MethodId}, InputArguments:{self.InputArguments})'
 
     __repr__ = __str__
 
 
 class CallMethodResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar InputArgumentResults:
@@ -8894,7 +8323,7 @@ class CallMethodResult(FrozenClass):
     :vartype InputArgumentDiagnosticInfos: DiagnosticInfo
     :ivar OutputArguments:
     :vartype OutputArguments: Variant
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
@@ -8911,19 +8340,16 @@ class CallMethodResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CallMethodResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'InputArgumentResults:' + str(self.InputArgumentResults) + ', ' + \
-               'InputArgumentDiagnosticInfos:' + str(self.InputArgumentDiagnosticInfos) + ', ' + \
-               'OutputArguments:' + str(self.OutputArguments) + ')'
+        return f'CallMethodResult(StatusCode:{self.StatusCode}, InputArgumentResults:{self.InputArgumentResults}, InputArgumentDiagnosticInfos:{self.InputArgumentDiagnosticInfos}, OutputArguments:{self.OutputArguments})'
 
     __repr__ = __str__
 
 
 class CallParameters(FrozenClass):
-    '''
+    """
     :ivar MethodsToCall:
     :vartype MethodsToCall: CallMethodRequest
-    '''
+    """
 
     ua_types = [
         ('MethodsToCall', 'ListOfCallMethodRequest'),
@@ -8934,20 +8360,20 @@ class CallParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CallParameters(' + 'MethodsToCall:' + str(self.MethodsToCall) + ')'
+        return f'CallParameters(MethodsToCall:{self.MethodsToCall})'
 
     __repr__ = __str__
 
 
 class CallRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: CallParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -8962,15 +8388,13 @@ class CallRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CallRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'CallRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class CallResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -8979,7 +8403,7 @@ class CallResponse(FrozenClass):
     :vartype Results: CallMethodResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -8996,17 +8420,14 @@ class CallResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CallResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'CallResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class MonitoringFilter(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -9015,20 +8436,20 @@ class MonitoringFilter(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoringFilter(' +  + ')'
+        return 'MonitoringFilter()'
 
     __repr__ = __str__
 
 
 class DataChangeFilter(FrozenClass):
-    '''
+    """
     :ivar Trigger:
     :vartype Trigger: DataChangeTrigger
     :ivar DeadbandType:
     :vartype DeadbandType: UInt32
     :ivar DeadbandValue:
     :vartype DeadbandValue: Double
-    '''
+    """
 
     ua_types = [
         ('Trigger', 'DataChangeTrigger'),
@@ -9043,20 +8464,18 @@ class DataChangeFilter(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataChangeFilter(' + 'Trigger:' + str(self.Trigger) + ', ' + \
-               'DeadbandType:' + str(self.DeadbandType) + ', ' + \
-               'DeadbandValue:' + str(self.DeadbandValue) + ')'
+        return f'DataChangeFilter(Trigger:{self.Trigger}, DeadbandType:{self.DeadbandType}, DeadbandValue:{self.DeadbandValue})'
 
     __repr__ = __str__
 
 
 class EventFilter(FrozenClass):
-    '''
+    """
     :ivar SelectClauses:
     :vartype SelectClauses: SimpleAttributeOperand
     :ivar WhereClause:
     :vartype WhereClause: ContentFilter
-    '''
+    """
 
     ua_types = [
         ('SelectClauses', 'ListOfSimpleAttributeOperand'),
@@ -9069,14 +8488,13 @@ class EventFilter(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EventFilter(' + 'SelectClauses:' + str(self.SelectClauses) + ', ' + \
-               'WhereClause:' + str(self.WhereClause) + ')'
+        return f'EventFilter(SelectClauses:{self.SelectClauses}, WhereClause:{self.WhereClause})'
 
     __repr__ = __str__
 
 
 class AggregateConfiguration(FrozenClass):
-    '''
+    """
     :ivar UseServerCapabilitiesDefaults:
     :vartype UseServerCapabilitiesDefaults: Boolean
     :ivar TreatUncertainAsBad:
@@ -9087,7 +8505,7 @@ class AggregateConfiguration(FrozenClass):
     :vartype PercentDataGood: Byte
     :ivar UseSlopedExtrapolation:
     :vartype UseSlopedExtrapolation: Boolean
-    '''
+    """
 
     ua_types = [
         ('UseServerCapabilitiesDefaults', 'Boolean'),
@@ -9106,17 +8524,13 @@ class AggregateConfiguration(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AggregateConfiguration(' + 'UseServerCapabilitiesDefaults:' + str(self.UseServerCapabilitiesDefaults) + ', ' + \
-               'TreatUncertainAsBad:' + str(self.TreatUncertainAsBad) + ', ' + \
-               'PercentDataBad:' + str(self.PercentDataBad) + ', ' + \
-               'PercentDataGood:' + str(self.PercentDataGood) + ', ' + \
-               'UseSlopedExtrapolation:' + str(self.UseSlopedExtrapolation) + ')'
+        return f'AggregateConfiguration(UseServerCapabilitiesDefaults:{self.UseServerCapabilitiesDefaults}, TreatUncertainAsBad:{self.TreatUncertainAsBad}, PercentDataBad:{self.PercentDataBad}, PercentDataGood:{self.PercentDataGood}, UseSlopedExtrapolation:{self.UseSlopedExtrapolation})'
 
     __repr__ = __str__
 
 
 class AggregateFilter(FrozenClass):
-    '''
+    """
     :ivar StartTime:
     :vartype StartTime: DateTime
     :ivar AggregateType:
@@ -9125,7 +8539,7 @@ class AggregateFilter(FrozenClass):
     :vartype ProcessingInterval: Double
     :ivar AggregateConfiguration:
     :vartype AggregateConfiguration: AggregateConfiguration
-    '''
+    """
 
     ua_types = [
         ('StartTime', 'DateTime'),
@@ -9142,17 +8556,14 @@ class AggregateFilter(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AggregateFilter(' + 'StartTime:' + str(self.StartTime) + ', ' + \
-               'AggregateType:' + str(self.AggregateType) + ', ' + \
-               'ProcessingInterval:' + str(self.ProcessingInterval) + ', ' + \
-               'AggregateConfiguration:' + str(self.AggregateConfiguration) + ')'
+        return f'AggregateFilter(StartTime:{self.StartTime}, AggregateType:{self.AggregateType}, ProcessingInterval:{self.ProcessingInterval}, AggregateConfiguration:{self.AggregateConfiguration})'
 
     __repr__ = __str__
 
 
 class MonitoringFilterResult(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -9161,20 +8572,20 @@ class MonitoringFilterResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoringFilterResult(' +  + ')'
+        return 'MonitoringFilterResult()'
 
     __repr__ = __str__
 
 
 class EventFilterResult(FrozenClass):
-    '''
+    """
     :ivar SelectClauseResults:
     :vartype SelectClauseResults: StatusCode
     :ivar SelectClauseDiagnosticInfos:
     :vartype SelectClauseDiagnosticInfos: DiagnosticInfo
     :ivar WhereClauseResult:
     :vartype WhereClauseResult: ContentFilterResult
-    '''
+    """
 
     ua_types = [
         ('SelectClauseResults', 'ListOfStatusCode'),
@@ -9189,22 +8600,20 @@ class EventFilterResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EventFilterResult(' + 'SelectClauseResults:' + str(self.SelectClauseResults) + ', ' + \
-               'SelectClauseDiagnosticInfos:' + str(self.SelectClauseDiagnosticInfos) + ', ' + \
-               'WhereClauseResult:' + str(self.WhereClauseResult) + ')'
+        return f'EventFilterResult(SelectClauseResults:{self.SelectClauseResults}, SelectClauseDiagnosticInfos:{self.SelectClauseDiagnosticInfos}, WhereClauseResult:{self.WhereClauseResult})'
 
     __repr__ = __str__
 
 
 class AggregateFilterResult(FrozenClass):
-    '''
+    """
     :ivar RevisedStartTime:
     :vartype RevisedStartTime: DateTime
     :ivar RevisedProcessingInterval:
     :vartype RevisedProcessingInterval: Double
     :ivar RevisedAggregateConfiguration:
     :vartype RevisedAggregateConfiguration: AggregateConfiguration
-    '''
+    """
 
     ua_types = [
         ('RevisedStartTime', 'DateTime'),
@@ -9219,15 +8628,13 @@ class AggregateFilterResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AggregateFilterResult(' + 'RevisedStartTime:' + str(self.RevisedStartTime) + ', ' + \
-               'RevisedProcessingInterval:' + str(self.RevisedProcessingInterval) + ', ' + \
-               'RevisedAggregateConfiguration:' + str(self.RevisedAggregateConfiguration) + ')'
+        return f'AggregateFilterResult(RevisedStartTime:{self.RevisedStartTime}, RevisedProcessingInterval:{self.RevisedProcessingInterval}, RevisedAggregateConfiguration:{self.RevisedAggregateConfiguration})'
 
     __repr__ = __str__
 
 
 class MonitoringParameters(FrozenClass):
-    '''
+    """
     :ivar ClientHandle:
     :vartype ClientHandle: UInt32
     :ivar SamplingInterval:
@@ -9238,7 +8645,7 @@ class MonitoringParameters(FrozenClass):
     :vartype QueueSize: UInt32
     :ivar DiscardOldest:
     :vartype DiscardOldest: Boolean
-    '''
+    """
 
     ua_types = [
         ('ClientHandle', 'UInt32'),
@@ -9257,24 +8664,20 @@ class MonitoringParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoringParameters(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
-               'SamplingInterval:' + str(self.SamplingInterval) + ', ' + \
-               'Filter:' + str(self.Filter) + ', ' + \
-               'QueueSize:' + str(self.QueueSize) + ', ' + \
-               'DiscardOldest:' + str(self.DiscardOldest) + ')'
+        return f'MonitoringParameters(ClientHandle:{self.ClientHandle}, SamplingInterval:{self.SamplingInterval}, Filter:{self.Filter}, QueueSize:{self.QueueSize}, DiscardOldest:{self.DiscardOldest})'
 
     __repr__ = __str__
 
 
 class MonitoredItemCreateRequest(FrozenClass):
-    '''
+    """
     :ivar ItemToMonitor:
     :vartype ItemToMonitor: ReadValueId
     :ivar MonitoringMode:
     :vartype MonitoringMode: MonitoringMode
     :ivar RequestedParameters:
     :vartype RequestedParameters: MonitoringParameters
-    '''
+    """
 
     ua_types = [
         ('ItemToMonitor', 'ReadValueId'),
@@ -9289,15 +8692,13 @@ class MonitoredItemCreateRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoredItemCreateRequest(' + 'ItemToMonitor:' + str(self.ItemToMonitor) + ', ' + \
-               'MonitoringMode:' + str(self.MonitoringMode) + ', ' + \
-               'RequestedParameters:' + str(self.RequestedParameters) + ')'
+        return f'MonitoredItemCreateRequest(ItemToMonitor:{self.ItemToMonitor}, MonitoringMode:{self.MonitoringMode}, RequestedParameters:{self.RequestedParameters})'
 
     __repr__ = __str__
 
 
 class MonitoredItemCreateResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar MonitoredItemId:
@@ -9308,7 +8709,7 @@ class MonitoredItemCreateResult(FrozenClass):
     :vartype RevisedQueueSize: UInt32
     :ivar FilterResult:
     :vartype FilterResult: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
@@ -9327,24 +8728,20 @@ class MonitoredItemCreateResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoredItemCreateResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'MonitoredItemId:' + str(self.MonitoredItemId) + ', ' + \
-               'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', ' + \
-               'RevisedQueueSize:' + str(self.RevisedQueueSize) + ', ' + \
-               'FilterResult:' + str(self.FilterResult) + ')'
+        return f'MonitoredItemCreateResult(StatusCode:{self.StatusCode}, MonitoredItemId:{self.MonitoredItemId}, RevisedSamplingInterval:{self.RevisedSamplingInterval}, RevisedQueueSize:{self.RevisedQueueSize}, FilterResult:{self.FilterResult})'
 
     __repr__ = __str__
 
 
 class CreateMonitoredItemsParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar TimestampsToReturn:
     :vartype TimestampsToReturn: TimestampsToReturn
     :ivar ItemsToCreate:
     :vartype ItemsToCreate: MonitoredItemCreateRequest
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
@@ -9359,22 +8756,20 @@ class CreateMonitoredItemsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
-               'ItemsToCreate:' + str(self.ItemsToCreate) + ')'
+        return f'CreateMonitoredItemsParameters(SubscriptionId:{self.SubscriptionId}, TimestampsToReturn:{self.TimestampsToReturn}, ItemsToCreate:{self.ItemsToCreate})'
 
     __repr__ = __str__
 
 
 class CreateMonitoredItemsRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: CreateMonitoredItemsParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -9389,15 +8784,13 @@ class CreateMonitoredItemsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'CreateMonitoredItemsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class CreateMonitoredItemsResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -9406,7 +8799,7 @@ class CreateMonitoredItemsResponse(FrozenClass):
     :vartype Results: MonitoredItemCreateResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -9423,21 +8816,18 @@ class CreateMonitoredItemsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'CreateMonitoredItemsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class MonitoredItemModifyRequest(FrozenClass):
-    '''
+    """
     :ivar MonitoredItemId:
     :vartype MonitoredItemId: UInt32
     :ivar RequestedParameters:
     :vartype RequestedParameters: MonitoringParameters
-    '''
+    """
 
     ua_types = [
         ('MonitoredItemId', 'UInt32'),
@@ -9450,14 +8840,13 @@ class MonitoredItemModifyRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoredItemModifyRequest(' + 'MonitoredItemId:' + str(self.MonitoredItemId) + ', ' + \
-               'RequestedParameters:' + str(self.RequestedParameters) + ')'
+        return f'MonitoredItemModifyRequest(MonitoredItemId:{self.MonitoredItemId}, RequestedParameters:{self.RequestedParameters})'
 
     __repr__ = __str__
 
 
 class MonitoredItemModifyResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar RevisedSamplingInterval:
@@ -9466,7 +8855,7 @@ class MonitoredItemModifyResult(FrozenClass):
     :vartype RevisedQueueSize: UInt32
     :ivar FilterResult:
     :vartype FilterResult: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
@@ -9483,23 +8872,20 @@ class MonitoredItemModifyResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoredItemModifyResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'RevisedSamplingInterval:' + str(self.RevisedSamplingInterval) + ', ' + \
-               'RevisedQueueSize:' + str(self.RevisedQueueSize) + ', ' + \
-               'FilterResult:' + str(self.FilterResult) + ')'
+        return f'MonitoredItemModifyResult(StatusCode:{self.StatusCode}, RevisedSamplingInterval:{self.RevisedSamplingInterval}, RevisedQueueSize:{self.RevisedQueueSize}, FilterResult:{self.FilterResult})'
 
     __repr__ = __str__
 
 
 class ModifyMonitoredItemsParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar TimestampsToReturn:
     :vartype TimestampsToReturn: TimestampsToReturn
     :ivar ItemsToModify:
     :vartype ItemsToModify: MonitoredItemModifyRequest
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
@@ -9514,22 +8900,20 @@ class ModifyMonitoredItemsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModifyMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'TimestampsToReturn:' + str(self.TimestampsToReturn) + ', ' + \
-               'ItemsToModify:' + str(self.ItemsToModify) + ')'
+        return f'ModifyMonitoredItemsParameters(SubscriptionId:{self.SubscriptionId}, TimestampsToReturn:{self.TimestampsToReturn}, ItemsToModify:{self.ItemsToModify})'
 
     __repr__ = __str__
 
 
 class ModifyMonitoredItemsRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: ModifyMonitoredItemsParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -9544,15 +8928,13 @@ class ModifyMonitoredItemsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModifyMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'ModifyMonitoredItemsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class ModifyMonitoredItemsResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -9561,7 +8943,7 @@ class ModifyMonitoredItemsResponse(FrozenClass):
     :vartype Results: MonitoredItemModifyResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -9578,23 +8960,20 @@ class ModifyMonitoredItemsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModifyMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'ModifyMonitoredItemsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class SetMonitoringModeParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar MonitoringMode:
     :vartype MonitoringMode: MonitoringMode
     :ivar MonitoredItemIds:
     :vartype MonitoredItemIds: UInt32
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
@@ -9609,22 +8988,20 @@ class SetMonitoringModeParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetMonitoringModeParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'MonitoringMode:' + str(self.MonitoringMode) + ', ' + \
-               'MonitoredItemIds:' + str(self.MonitoredItemIds) + ')'
+        return f'SetMonitoringModeParameters(SubscriptionId:{self.SubscriptionId}, MonitoringMode:{self.MonitoringMode}, MonitoredItemIds:{self.MonitoredItemIds})'
 
     __repr__ = __str__
 
 
 class SetMonitoringModeRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: SetMonitoringModeParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -9639,20 +9016,18 @@ class SetMonitoringModeRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetMonitoringModeRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'SetMonitoringModeRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class SetMonitoringModeResult(FrozenClass):
-    '''
+    """
     :ivar Results:
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('Results', 'ListOfStatusCode'),
@@ -9665,21 +9040,20 @@ class SetMonitoringModeResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetMonitoringModeResult(' + 'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'SetMonitoringModeResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class SetMonitoringModeResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: SetMonitoringModeResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -9694,15 +9068,13 @@ class SetMonitoringModeResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetMonitoringModeResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'SetMonitoringModeResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class SetTriggeringParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar TriggeringItemId:
@@ -9711,7 +9083,7 @@ class SetTriggeringParameters(FrozenClass):
     :vartype LinksToAdd: UInt32
     :ivar LinksToRemove:
     :vartype LinksToRemove: UInt32
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
@@ -9728,23 +9100,20 @@ class SetTriggeringParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetTriggeringParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'TriggeringItemId:' + str(self.TriggeringItemId) + ', ' + \
-               'LinksToAdd:' + str(self.LinksToAdd) + ', ' + \
-               'LinksToRemove:' + str(self.LinksToRemove) + ')'
+        return f'SetTriggeringParameters(SubscriptionId:{self.SubscriptionId}, TriggeringItemId:{self.TriggeringItemId}, LinksToAdd:{self.LinksToAdd}, LinksToRemove:{self.LinksToRemove})'
 
     __repr__ = __str__
 
 
 class SetTriggeringRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: SetTriggeringParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -9759,15 +9128,13 @@ class SetTriggeringRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetTriggeringRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'SetTriggeringRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class SetTriggeringResult(FrozenClass):
-    '''
+    """
     :ivar AddResults:
     :vartype AddResults: StatusCode
     :ivar AddDiagnosticInfos:
@@ -9776,7 +9143,7 @@ class SetTriggeringResult(FrozenClass):
     :vartype RemoveResults: StatusCode
     :ivar RemoveDiagnosticInfos:
     :vartype RemoveDiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('AddResults', 'ListOfStatusCode'),
@@ -9793,23 +9160,20 @@ class SetTriggeringResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetTriggeringResult(' + 'AddResults:' + str(self.AddResults) + ', ' + \
-               'AddDiagnosticInfos:' + str(self.AddDiagnosticInfos) + ', ' + \
-               'RemoveResults:' + str(self.RemoveResults) + ', ' + \
-               'RemoveDiagnosticInfos:' + str(self.RemoveDiagnosticInfos) + ')'
+        return f'SetTriggeringResult(AddResults:{self.AddResults}, AddDiagnosticInfos:{self.AddDiagnosticInfos}, RemoveResults:{self.RemoveResults}, RemoveDiagnosticInfos:{self.RemoveDiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class SetTriggeringResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: SetTriggeringResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -9824,20 +9188,18 @@ class SetTriggeringResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetTriggeringResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'SetTriggeringResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class DeleteMonitoredItemsParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar MonitoredItemIds:
     :vartype MonitoredItemIds: UInt32
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
@@ -9850,21 +9212,20 @@ class DeleteMonitoredItemsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteMonitoredItemsParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'MonitoredItemIds:' + str(self.MonitoredItemIds) + ')'
+        return f'DeleteMonitoredItemsParameters(SubscriptionId:{self.SubscriptionId}, MonitoredItemIds:{self.MonitoredItemIds})'
 
     __repr__ = __str__
 
 
 class DeleteMonitoredItemsRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: DeleteMonitoredItemsParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -9879,15 +9240,13 @@ class DeleteMonitoredItemsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteMonitoredItemsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'DeleteMonitoredItemsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class DeleteMonitoredItemsResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -9896,7 +9255,7 @@ class DeleteMonitoredItemsResponse(FrozenClass):
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -9913,16 +9272,13 @@ class DeleteMonitoredItemsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteMonitoredItemsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'DeleteMonitoredItemsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class CreateSubscriptionParameters(FrozenClass):
-    '''
+    """
     :ivar RequestedPublishingInterval:
     :vartype RequestedPublishingInterval: Double
     :ivar RequestedLifetimeCount:
@@ -9935,7 +9291,7 @@ class CreateSubscriptionParameters(FrozenClass):
     :vartype PublishingEnabled: Boolean
     :ivar Priority:
     :vartype Priority: Byte
-    '''
+    """
 
     ua_types = [
         ('RequestedPublishingInterval', 'Double'),
@@ -9956,25 +9312,20 @@ class CreateSubscriptionParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSubscriptionParameters(' + 'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', ' + \
-               'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', ' + \
-               'RequestedMaxKeepAliveCount:' + str(self.RequestedMaxKeepAliveCount) + ', ' + \
-               'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
-               'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
-               'Priority:' + str(self.Priority) + ')'
+        return f'CreateSubscriptionParameters(RequestedPublishingInterval:{self.RequestedPublishingInterval}, RequestedLifetimeCount:{self.RequestedLifetimeCount}, RequestedMaxKeepAliveCount:{self.RequestedMaxKeepAliveCount}, MaxNotificationsPerPublish:{self.MaxNotificationsPerPublish}, PublishingEnabled:{self.PublishingEnabled}, Priority:{self.Priority})'
 
     __repr__ = __str__
 
 
 class CreateSubscriptionRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: CreateSubscriptionParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -9989,15 +9340,13 @@ class CreateSubscriptionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'CreateSubscriptionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class CreateSubscriptionResult(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar RevisedPublishingInterval:
@@ -10006,7 +9355,7 @@ class CreateSubscriptionResult(FrozenClass):
     :vartype RevisedLifetimeCount: UInt32
     :ivar RevisedMaxKeepAliveCount:
     :vartype RevisedMaxKeepAliveCount: UInt32
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
@@ -10023,23 +9372,20 @@ class CreateSubscriptionResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSubscriptionResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', ' + \
-               'RevisedLifetimeCount:' + str(self.RevisedLifetimeCount) + ', ' + \
-               'RevisedMaxKeepAliveCount:' + str(self.RevisedMaxKeepAliveCount) + ')'
+        return f'CreateSubscriptionResult(SubscriptionId:{self.SubscriptionId}, RevisedPublishingInterval:{self.RevisedPublishingInterval}, RevisedLifetimeCount:{self.RevisedLifetimeCount}, RevisedMaxKeepAliveCount:{self.RevisedMaxKeepAliveCount})'
 
     __repr__ = __str__
 
 
 class CreateSubscriptionResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: CreateSubscriptionResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -10054,15 +9400,13 @@ class CreateSubscriptionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'CreateSubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'CreateSubscriptionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class ModifySubscriptionParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar RequestedPublishingInterval:
@@ -10075,7 +9419,7 @@ class ModifySubscriptionParameters(FrozenClass):
     :vartype MaxNotificationsPerPublish: UInt32
     :ivar Priority:
     :vartype Priority: Byte
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
@@ -10096,25 +9440,20 @@ class ModifySubscriptionParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModifySubscriptionParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'RequestedPublishingInterval:' + str(self.RequestedPublishingInterval) + ', ' + \
-               'RequestedLifetimeCount:' + str(self.RequestedLifetimeCount) + ', ' + \
-               'RequestedMaxKeepAliveCount:' + str(self.RequestedMaxKeepAliveCount) + ', ' + \
-               'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
-               'Priority:' + str(self.Priority) + ')'
+        return f'ModifySubscriptionParameters(SubscriptionId:{self.SubscriptionId}, RequestedPublishingInterval:{self.RequestedPublishingInterval}, RequestedLifetimeCount:{self.RequestedLifetimeCount}, RequestedMaxKeepAliveCount:{self.RequestedMaxKeepAliveCount}, MaxNotificationsPerPublish:{self.MaxNotificationsPerPublish}, Priority:{self.Priority})'
 
     __repr__ = __str__
 
 
 class ModifySubscriptionRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: ModifySubscriptionParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -10129,22 +9468,20 @@ class ModifySubscriptionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModifySubscriptionRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'ModifySubscriptionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class ModifySubscriptionResult(FrozenClass):
-    '''
+    """
     :ivar RevisedPublishingInterval:
     :vartype RevisedPublishingInterval: Double
     :ivar RevisedLifetimeCount:
     :vartype RevisedLifetimeCount: UInt32
     :ivar RevisedMaxKeepAliveCount:
     :vartype RevisedMaxKeepAliveCount: UInt32
-    '''
+    """
 
     ua_types = [
         ('RevisedPublishingInterval', 'Double'),
@@ -10159,22 +9496,20 @@ class ModifySubscriptionResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModifySubscriptionResult(' + 'RevisedPublishingInterval:' + str(self.RevisedPublishingInterval) + ', ' + \
-               'RevisedLifetimeCount:' + str(self.RevisedLifetimeCount) + ', ' + \
-               'RevisedMaxKeepAliveCount:' + str(self.RevisedMaxKeepAliveCount) + ')'
+        return f'ModifySubscriptionResult(RevisedPublishingInterval:{self.RevisedPublishingInterval}, RevisedLifetimeCount:{self.RevisedLifetimeCount}, RevisedMaxKeepAliveCount:{self.RevisedMaxKeepAliveCount})'
 
     __repr__ = __str__
 
 
 class ModifySubscriptionResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: ModifySubscriptionResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -10189,20 +9524,18 @@ class ModifySubscriptionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModifySubscriptionResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'ModifySubscriptionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class SetPublishingModeParameters(FrozenClass):
-    '''
+    """
     :ivar PublishingEnabled:
     :vartype PublishingEnabled: Boolean
     :ivar SubscriptionIds:
     :vartype SubscriptionIds: UInt32
-    '''
+    """
 
     ua_types = [
         ('PublishingEnabled', 'Boolean'),
@@ -10215,21 +9548,20 @@ class SetPublishingModeParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetPublishingModeParameters(' + 'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
-               'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
+        return f'SetPublishingModeParameters(PublishingEnabled:{self.PublishingEnabled}, SubscriptionIds:{self.SubscriptionIds})'
 
     __repr__ = __str__
 
 
 class SetPublishingModeRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: SetPublishingModeParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -10244,20 +9576,18 @@ class SetPublishingModeRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetPublishingModeRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'SetPublishingModeRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class SetPublishingModeResult(FrozenClass):
-    '''
+    """
     :ivar Results:
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('Results', 'ListOfStatusCode'),
@@ -10270,21 +9600,20 @@ class SetPublishingModeResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetPublishingModeResult(' + 'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'SetPublishingModeResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class SetPublishingModeResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: SetPublishingModeResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -10299,22 +9628,20 @@ class SetPublishingModeResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SetPublishingModeResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'SetPublishingModeResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class NotificationMessage(FrozenClass):
-    '''
+    """
     :ivar SequenceNumber:
     :vartype SequenceNumber: UInt32
     :ivar PublishTime:
     :vartype PublishTime: DateTime
     :ivar NotificationData:
     :vartype NotificationData: ExtensionObject
-    '''
+    """
 
     ua_types = [
         ('SequenceNumber', 'UInt32'),
@@ -10329,16 +9656,14 @@ class NotificationMessage(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'NotificationMessage(' + 'SequenceNumber:' + str(self.SequenceNumber) + ', ' + \
-               'PublishTime:' + str(self.PublishTime) + ', ' + \
-               'NotificationData:' + str(self.NotificationData) + ')'
+        return f'NotificationMessage(SequenceNumber:{self.SequenceNumber}, PublishTime:{self.PublishTime}, NotificationData:{self.NotificationData})'
 
     __repr__ = __str__
 
 
 class NotificationData(FrozenClass):
-    '''
-    '''
+    """
+    """
 
     ua_types = [
                ]
@@ -10347,18 +9672,18 @@ class NotificationData(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'NotificationData(' +  + ')'
+        return 'NotificationData()'
 
     __repr__ = __str__
 
 
 class DataChangeNotification(FrozenClass):
-    '''
+    """
     :ivar MonitoredItems:
     :vartype MonitoredItems: MonitoredItemNotification
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('MonitoredItems', 'ListOfMonitoredItemNotification'),
@@ -10371,19 +9696,18 @@ class DataChangeNotification(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DataChangeNotification(' + 'MonitoredItems:' + str(self.MonitoredItems) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'DataChangeNotification(MonitoredItems:{self.MonitoredItems}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class MonitoredItemNotification(FrozenClass):
-    '''
+    """
     :ivar ClientHandle:
     :vartype ClientHandle: UInt32
     :ivar Value:
     :vartype Value: DataValue
-    '''
+    """
 
     ua_types = [
         ('ClientHandle', 'UInt32'),
@@ -10396,17 +9720,16 @@ class MonitoredItemNotification(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'MonitoredItemNotification(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
-               'Value:' + str(self.Value) + ')'
+        return f'MonitoredItemNotification(ClientHandle:{self.ClientHandle}, Value:{self.Value})'
 
     __repr__ = __str__
 
 
 class EventNotificationList(FrozenClass):
-    '''
+    """
     :ivar Events:
     :vartype Events: EventFieldList
-    '''
+    """
 
     ua_types = [
         ('Events', 'ListOfEventFieldList'),
@@ -10417,18 +9740,18 @@ class EventNotificationList(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EventNotificationList(' + 'Events:' + str(self.Events) + ')'
+        return f'EventNotificationList(Events:{self.Events})'
 
     __repr__ = __str__
 
 
 class EventFieldList(FrozenClass):
-    '''
+    """
     :ivar ClientHandle:
     :vartype ClientHandle: UInt32
     :ivar EventFields:
     :vartype EventFields: Variant
-    '''
+    """
 
     ua_types = [
         ('ClientHandle', 'UInt32'),
@@ -10441,17 +9764,16 @@ class EventFieldList(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EventFieldList(' + 'ClientHandle:' + str(self.ClientHandle) + ', ' + \
-               'EventFields:' + str(self.EventFields) + ')'
+        return f'EventFieldList(ClientHandle:{self.ClientHandle}, EventFields:{self.EventFields})'
 
     __repr__ = __str__
 
 
 class HistoryEventFieldList(FrozenClass):
-    '''
+    """
     :ivar EventFields:
     :vartype EventFields: Variant
-    '''
+    """
 
     ua_types = [
         ('EventFields', 'ListOfVariant'),
@@ -10462,18 +9784,18 @@ class HistoryEventFieldList(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'HistoryEventFieldList(' + 'EventFields:' + str(self.EventFields) + ')'
+        return f'HistoryEventFieldList(EventFields:{self.EventFields})'
 
     __repr__ = __str__
 
 
 class StatusChangeNotification(FrozenClass):
-    '''
+    """
     :ivar Status:
     :vartype Status: StatusCode
     :ivar DiagnosticInfo:
     :vartype DiagnosticInfo: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('Status', 'StatusCode'),
@@ -10486,19 +9808,18 @@ class StatusChangeNotification(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'StatusChangeNotification(' + 'Status:' + str(self.Status) + ', ' + \
-               'DiagnosticInfo:' + str(self.DiagnosticInfo) + ')'
+        return f'StatusChangeNotification(Status:{self.Status}, DiagnosticInfo:{self.DiagnosticInfo})'
 
     __repr__ = __str__
 
 
 class SubscriptionAcknowledgement(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar SequenceNumber:
     :vartype SequenceNumber: UInt32
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
@@ -10511,17 +9832,16 @@ class SubscriptionAcknowledgement(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SubscriptionAcknowledgement(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'SequenceNumber:' + str(self.SequenceNumber) + ')'
+        return f'SubscriptionAcknowledgement(SubscriptionId:{self.SubscriptionId}, SequenceNumber:{self.SequenceNumber})'
 
     __repr__ = __str__
 
 
 class PublishParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionAcknowledgements:
     :vartype SubscriptionAcknowledgements: SubscriptionAcknowledgement
-    '''
+    """
 
     ua_types = [
         ('SubscriptionAcknowledgements', 'ListOfSubscriptionAcknowledgement'),
@@ -10532,20 +9852,20 @@ class PublishParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PublishParameters(' + 'SubscriptionAcknowledgements:' + str(self.SubscriptionAcknowledgements) + ')'
+        return f'PublishParameters(SubscriptionAcknowledgements:{self.SubscriptionAcknowledgements})'
 
     __repr__ = __str__
 
 
 class PublishRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: PublishParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -10560,15 +9880,13 @@ class PublishRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PublishRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'PublishRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class PublishResult(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar AvailableSequenceNumbers:
@@ -10581,7 +9899,7 @@ class PublishResult(FrozenClass):
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
@@ -10602,25 +9920,20 @@ class PublishResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PublishResult(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ', ' + \
-               'MoreNotifications:' + str(self.MoreNotifications) + ', ' + \
-               'NotificationMessage:' + str(self.NotificationMessage) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class PublishResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: PublishResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -10635,20 +9948,18 @@ class PublishResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'PublishResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'PublishResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class RepublishParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionId:
     :vartype SubscriptionId: UInt32
     :ivar RetransmitSequenceNumber:
     :vartype RetransmitSequenceNumber: UInt32
-    '''
+    """
 
     ua_types = [
         ('SubscriptionId', 'UInt32'),
@@ -10661,21 +9972,20 @@ class RepublishParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RepublishParameters(' + 'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'RetransmitSequenceNumber:' + str(self.RetransmitSequenceNumber) + ')'
+        return f'RepublishParameters(SubscriptionId:{self.SubscriptionId}, RetransmitSequenceNumber:{self.RetransmitSequenceNumber})'
 
     __repr__ = __str__
 
 
 class RepublishRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: RepublishParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -10690,22 +10000,20 @@ class RepublishRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RepublishRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'RepublishRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class RepublishResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar NotificationMessage:
     :vartype NotificationMessage: NotificationMessage
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -10720,20 +10028,18 @@ class RepublishResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RepublishResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'NotificationMessage:' + str(self.NotificationMessage) + ')'
+        return f'RepublishResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, NotificationMessage:{self.NotificationMessage})'
 
     __repr__ = __str__
 
 
 class TransferResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar AvailableSequenceNumbers:
     :vartype AvailableSequenceNumbers: UInt32
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
@@ -10746,19 +10052,18 @@ class TransferResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TransferResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'AvailableSequenceNumbers:' + str(self.AvailableSequenceNumbers) + ')'
+        return f'TransferResult(StatusCode:{self.StatusCode}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers})'
 
     __repr__ = __str__
 
 
 class TransferSubscriptionsParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionIds:
     :vartype SubscriptionIds: UInt32
     :ivar SendInitialValues:
     :vartype SendInitialValues: Boolean
-    '''
+    """
 
     ua_types = [
         ('SubscriptionIds', 'ListOfUInt32'),
@@ -10771,21 +10076,20 @@ class TransferSubscriptionsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TransferSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ', ' + \
-               'SendInitialValues:' + str(self.SendInitialValues) + ')'
+        return f'TransferSubscriptionsParameters(SubscriptionIds:{self.SubscriptionIds}, SendInitialValues:{self.SendInitialValues})'
 
     __repr__ = __str__
 
 
 class TransferSubscriptionsRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: TransferSubscriptionsParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -10800,20 +10104,18 @@ class TransferSubscriptionsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TransferSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'TransferSubscriptionsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class TransferSubscriptionsResult(FrozenClass):
-    '''
+    """
     :ivar Results:
     :vartype Results: TransferResult
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('Results', 'ListOfTransferResult'),
@@ -10826,21 +10128,20 @@ class TransferSubscriptionsResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TransferSubscriptionsResult(' + 'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'TransferSubscriptionsResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class TransferSubscriptionsResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
     :vartype ResponseHeader: ResponseHeader
     :ivar Parameters:
     :vartype Parameters: TransferSubscriptionsResult
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -10855,18 +10156,16 @@ class TransferSubscriptionsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'TransferSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'TransferSubscriptionsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class DeleteSubscriptionsParameters(FrozenClass):
-    '''
+    """
     :ivar SubscriptionIds:
     :vartype SubscriptionIds: UInt32
-    '''
+    """
 
     ua_types = [
         ('SubscriptionIds', 'ListOfUInt32'),
@@ -10877,20 +10176,20 @@ class DeleteSubscriptionsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteSubscriptionsParameters(' + 'SubscriptionIds:' + str(self.SubscriptionIds) + ')'
+        return f'DeleteSubscriptionsParameters(SubscriptionIds:{self.SubscriptionIds})'
 
     __repr__ = __str__
 
 
 class DeleteSubscriptionsRequest(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar RequestHeader:
     :vartype RequestHeader: RequestHeader
     :ivar Parameters:
     :vartype Parameters: DeleteSubscriptionsParameters
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -10905,15 +10204,13 @@ class DeleteSubscriptionsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteSubscriptionsRequest(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'RequestHeader:' + str(self.RequestHeader) + ', ' + \
-               'Parameters:' + str(self.Parameters) + ')'
+        return f'DeleteSubscriptionsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
 
 class DeleteSubscriptionsResponse(FrozenClass):
-    '''
+    """
     :ivar TypeId:
     :vartype TypeId: NodeId
     :ivar ResponseHeader:
@@ -10922,7 +10219,7 @@ class DeleteSubscriptionsResponse(FrozenClass):
     :vartype Results: StatusCode
     :ivar DiagnosticInfos:
     :vartype DiagnosticInfos: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('TypeId', 'NodeId'),
@@ -10939,16 +10236,13 @@ class DeleteSubscriptionsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DeleteSubscriptionsResponse(' + 'TypeId:' + str(self.TypeId) + ', ' + \
-               'ResponseHeader:' + str(self.ResponseHeader) + ', ' + \
-               'Results:' + str(self.Results) + ', ' + \
-               'DiagnosticInfos:' + str(self.DiagnosticInfos) + ')'
+        return f'DeleteSubscriptionsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
 
 class BuildInfo(FrozenClass):
-    '''
+    """
     :ivar ProductUri:
     :vartype ProductUri: String
     :ivar ManufacturerName:
@@ -10961,7 +10255,7 @@ class BuildInfo(FrozenClass):
     :vartype BuildNumber: String
     :ivar BuildDate:
     :vartype BuildDate: DateTime
-    '''
+    """
 
     ua_types = [
         ('ProductUri', 'String'),
@@ -10982,25 +10276,20 @@ class BuildInfo(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'BuildInfo(' + 'ProductUri:' + str(self.ProductUri) + ', ' + \
-               'ManufacturerName:' + str(self.ManufacturerName) + ', ' + \
-               'ProductName:' + str(self.ProductName) + ', ' + \
-               'SoftwareVersion:' + str(self.SoftwareVersion) + ', ' + \
-               'BuildNumber:' + str(self.BuildNumber) + ', ' + \
-               'BuildDate:' + str(self.BuildDate) + ')'
+        return f'BuildInfo(ProductUri:{self.ProductUri}, ManufacturerName:{self.ManufacturerName}, ProductName:{self.ProductName}, SoftwareVersion:{self.SoftwareVersion}, BuildNumber:{self.BuildNumber}, BuildDate:{self.BuildDate})'
 
     __repr__ = __str__
 
 
 class RedundantServerDataType(FrozenClass):
-    '''
+    """
     :ivar ServerId:
     :vartype ServerId: String
     :ivar ServiceLevel:
     :vartype ServiceLevel: Byte
     :ivar ServerState:
     :vartype ServerState: ServerState
-    '''
+    """
 
     ua_types = [
         ('ServerId', 'String'),
@@ -11015,18 +10304,16 @@ class RedundantServerDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'RedundantServerDataType(' + 'ServerId:' + str(self.ServerId) + ', ' + \
-               'ServiceLevel:' + str(self.ServiceLevel) + ', ' + \
-               'ServerState:' + str(self.ServerState) + ')'
+        return f'RedundantServerDataType(ServerId:{self.ServerId}, ServiceLevel:{self.ServiceLevel}, ServerState:{self.ServerState})'
 
     __repr__ = __str__
 
 
 class EndpointUrlListDataType(FrozenClass):
-    '''
+    """
     :ivar EndpointUrlList:
     :vartype EndpointUrlList: String
-    '''
+    """
 
     ua_types = [
         ('EndpointUrlList', 'ListOfString'),
@@ -11037,18 +10324,18 @@ class EndpointUrlListDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EndpointUrlListDataType(' + 'EndpointUrlList:' + str(self.EndpointUrlList) + ')'
+        return f'EndpointUrlListDataType(EndpointUrlList:{self.EndpointUrlList})'
 
     __repr__ = __str__
 
 
 class NetworkGroupDataType(FrozenClass):
-    '''
+    """
     :ivar ServerUri:
     :vartype ServerUri: String
     :ivar NetworkPaths:
     :vartype NetworkPaths: EndpointUrlListDataType
-    '''
+    """
 
     ua_types = [
         ('ServerUri', 'String'),
@@ -11061,14 +10348,13 @@ class NetworkGroupDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'NetworkGroupDataType(' + 'ServerUri:' + str(self.ServerUri) + ', ' + \
-               'NetworkPaths:' + str(self.NetworkPaths) + ')'
+        return f'NetworkGroupDataType(ServerUri:{self.ServerUri}, NetworkPaths:{self.NetworkPaths})'
 
     __repr__ = __str__
 
 
 class SamplingIntervalDiagnosticsDataType(FrozenClass):
-    '''
+    """
     :ivar SamplingInterval:
     :vartype SamplingInterval: Double
     :ivar MonitoredItemCount:
@@ -11077,7 +10363,7 @@ class SamplingIntervalDiagnosticsDataType(FrozenClass):
     :vartype MaxMonitoredItemCount: UInt32
     :ivar DisabledMonitoredItemCount:
     :vartype DisabledMonitoredItemCount: UInt32
-    '''
+    """
 
     ua_types = [
         ('SamplingInterval', 'Double'),
@@ -11094,16 +10380,13 @@ class SamplingIntervalDiagnosticsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SamplingIntervalDiagnosticsDataType(' + 'SamplingInterval:' + str(self.SamplingInterval) + ', ' + \
-               'MonitoredItemCount:' + str(self.MonitoredItemCount) + ', ' + \
-               'MaxMonitoredItemCount:' + str(self.MaxMonitoredItemCount) + ', ' + \
-               'DisabledMonitoredItemCount:' + str(self.DisabledMonitoredItemCount) + ')'
+        return f'SamplingIntervalDiagnosticsDataType(SamplingInterval:{self.SamplingInterval}, MonitoredItemCount:{self.MonitoredItemCount}, MaxMonitoredItemCount:{self.MaxMonitoredItemCount}, DisabledMonitoredItemCount:{self.DisabledMonitoredItemCount})'
 
     __repr__ = __str__
 
 
 class ServerDiagnosticsSummaryDataType(FrozenClass):
-    '''
+    """
     :ivar ServerViewCount:
     :vartype ServerViewCount: UInt32
     :ivar CurrentSessionCount:
@@ -11128,7 +10411,7 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
     :vartype SecurityRejectedRequestsCount: UInt32
     :ivar RejectedRequestsCount:
     :vartype RejectedRequestsCount: UInt32
-    '''
+    """
 
     ua_types = [
         ('ServerViewCount', 'UInt32'),
@@ -11161,24 +10444,13 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ServerDiagnosticsSummaryDataType(' + 'ServerViewCount:' + str(self.ServerViewCount) + ', ' + \
-               'CurrentSessionCount:' + str(self.CurrentSessionCount) + ', ' + \
-               'CumulatedSessionCount:' + str(self.CumulatedSessionCount) + ', ' + \
-               'SecurityRejectedSessionCount:' + str(self.SecurityRejectedSessionCount) + ', ' + \
-               'RejectedSessionCount:' + str(self.RejectedSessionCount) + ', ' + \
-               'SessionTimeoutCount:' + str(self.SessionTimeoutCount) + ', ' + \
-               'SessionAbortCount:' + str(self.SessionAbortCount) + ', ' + \
-               'CurrentSubscriptionCount:' + str(self.CurrentSubscriptionCount) + ', ' + \
-               'CumulatedSubscriptionCount:' + str(self.CumulatedSubscriptionCount) + ', ' + \
-               'PublishingIntervalCount:' + str(self.PublishingIntervalCount) + ', ' + \
-               'SecurityRejectedRequestsCount:' + str(self.SecurityRejectedRequestsCount) + ', ' + \
-               'RejectedRequestsCount:' + str(self.RejectedRequestsCount) + ')'
+        return f'ServerDiagnosticsSummaryDataType(ServerViewCount:{self.ServerViewCount}, CurrentSessionCount:{self.CurrentSessionCount}, CumulatedSessionCount:{self.CumulatedSessionCount}, SecurityRejectedSessionCount:{self.SecurityRejectedSessionCount}, RejectedSessionCount:{self.RejectedSessionCount}, SessionTimeoutCount:{self.SessionTimeoutCount}, SessionAbortCount:{self.SessionAbortCount}, CurrentSubscriptionCount:{self.CurrentSubscriptionCount}, CumulatedSubscriptionCount:{self.CumulatedSubscriptionCount}, PublishingIntervalCount:{self.PublishingIntervalCount}, SecurityRejectedRequestsCount:{self.SecurityRejectedRequestsCount}, RejectedRequestsCount:{self.RejectedRequestsCount})'
 
     __repr__ = __str__
 
 
 class ServerStatusDataType(FrozenClass):
-    '''
+    """
     :ivar StartTime:
     :vartype StartTime: DateTime
     :ivar CurrentTime:
@@ -11191,7 +10463,7 @@ class ServerStatusDataType(FrozenClass):
     :vartype SecondsTillShutdown: UInt32
     :ivar ShutdownReason:
     :vartype ShutdownReason: LocalizedText
-    '''
+    """
 
     ua_types = [
         ('StartTime', 'DateTime'),
@@ -11212,18 +10484,13 @@ class ServerStatusDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ServerStatusDataType(' + 'StartTime:' + str(self.StartTime) + ', ' + \
-               'CurrentTime:' + str(self.CurrentTime) + ', ' + \
-               'State:' + str(self.State) + ', ' + \
-               'BuildInfo:' + str(self.BuildInfo) + ', ' + \
-               'SecondsTillShutdown:' + str(self.SecondsTillShutdown) + ', ' + \
-               'ShutdownReason:' + str(self.ShutdownReason) + ')'
+        return f'ServerStatusDataType(StartTime:{self.StartTime}, CurrentTime:{self.CurrentTime}, State:{self.State}, BuildInfo:{self.BuildInfo}, SecondsTillShutdown:{self.SecondsTillShutdown}, ShutdownReason:{self.ShutdownReason})'
 
     __repr__ = __str__
 
 
 class SessionDiagnosticsDataType(FrozenClass):
-    '''
+    """
     :ivar SessionId:
     :vartype SessionId: NodeId
     :ivar SessionName:
@@ -11310,7 +10577,7 @@ class SessionDiagnosticsDataType(FrozenClass):
     :vartype RegisterNodesCount: ServiceCounterDataType
     :ivar UnregisterNodesCount:
     :vartype UnregisterNodesCount: ServiceCounterDataType
-    '''
+    """
 
     ua_types = [
         ('SessionId', 'NodeId'),
@@ -11405,55 +10672,13 @@ class SessionDiagnosticsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SessionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
-               'SessionName:' + str(self.SessionName) + ', ' + \
-               'ClientDescription:' + str(self.ClientDescription) + ', ' + \
-               'ServerUri:' + str(self.ServerUri) + ', ' + \
-               'EndpointUrl:' + str(self.EndpointUrl) + ', ' + \
-               'LocaleIds:' + str(self.LocaleIds) + ', ' + \
-               'ActualSessionTimeout:' + str(self.ActualSessionTimeout) + ', ' + \
-               'MaxResponseMessageSize:' + str(self.MaxResponseMessageSize) + ', ' + \
-               'ClientConnectionTime:' + str(self.ClientConnectionTime) + ', ' + \
-               'ClientLastContactTime:' + str(self.ClientLastContactTime) + ', ' + \
-               'CurrentSubscriptionsCount:' + str(self.CurrentSubscriptionsCount) + ', ' + \
-               'CurrentMonitoredItemsCount:' + str(self.CurrentMonitoredItemsCount) + ', ' + \
-               'CurrentPublishRequestsInQueue:' + str(self.CurrentPublishRequestsInQueue) + ', ' + \
-               'TotalRequestCount:' + str(self.TotalRequestCount) + ', ' + \
-               'UnauthorizedRequestCount:' + str(self.UnauthorizedRequestCount) + ', ' + \
-               'ReadCount:' + str(self.ReadCount) + ', ' + \
-               'HistoryReadCount:' + str(self.HistoryReadCount) + ', ' + \
-               'WriteCount:' + str(self.WriteCount) + ', ' + \
-               'HistoryUpdateCount:' + str(self.HistoryUpdateCount) + ', ' + \
-               'CallCount:' + str(self.CallCount) + ', ' + \
-               'CreateMonitoredItemsCount:' + str(self.CreateMonitoredItemsCount) + ', ' + \
-               'ModifyMonitoredItemsCount:' + str(self.ModifyMonitoredItemsCount) + ', ' + \
-               'SetMonitoringModeCount:' + str(self.SetMonitoringModeCount) + ', ' + \
-               'SetTriggeringCount:' + str(self.SetTriggeringCount) + ', ' + \
-               'DeleteMonitoredItemsCount:' + str(self.DeleteMonitoredItemsCount) + ', ' + \
-               'CreateSubscriptionCount:' + str(self.CreateSubscriptionCount) + ', ' + \
-               'ModifySubscriptionCount:' + str(self.ModifySubscriptionCount) + ', ' + \
-               'SetPublishingModeCount:' + str(self.SetPublishingModeCount) + ', ' + \
-               'PublishCount:' + str(self.PublishCount) + ', ' + \
-               'RepublishCount:' + str(self.RepublishCount) + ', ' + \
-               'TransferSubscriptionsCount:' + str(self.TransferSubscriptionsCount) + ', ' + \
-               'DeleteSubscriptionsCount:' + str(self.DeleteSubscriptionsCount) + ', ' + \
-               'AddNodesCount:' + str(self.AddNodesCount) + ', ' + \
-               'AddReferencesCount:' + str(self.AddReferencesCount) + ', ' + \
-               'DeleteNodesCount:' + str(self.DeleteNodesCount) + ', ' + \
-               'DeleteReferencesCount:' + str(self.DeleteReferencesCount) + ', ' + \
-               'BrowseCount:' + str(self.BrowseCount) + ', ' + \
-               'BrowseNextCount:' + str(self.BrowseNextCount) + ', ' + \
-               'TranslateBrowsePathsToNodeIdsCount:' + str(self.TranslateBrowsePathsToNodeIdsCount) + ', ' + \
-               'QueryFirstCount:' + str(self.QueryFirstCount) + ', ' + \
-               'QueryNextCount:' + str(self.QueryNextCount) + ', ' + \
-               'RegisterNodesCount:' + str(self.RegisterNodesCount) + ', ' + \
-               'UnregisterNodesCount:' + str(self.UnregisterNodesCount) + ')'
+        return f'SessionDiagnosticsDataType(SessionId:{self.SessionId}, SessionName:{self.SessionName}, ClientDescription:{self.ClientDescription}, ServerUri:{self.ServerUri}, EndpointUrl:{self.EndpointUrl}, LocaleIds:{self.LocaleIds}, ActualSessionTimeout:{self.ActualSessionTimeout}, MaxResponseMessageSize:{self.MaxResponseMessageSize}, ClientConnectionTime:{self.ClientConnectionTime}, ClientLastContactTime:{self.ClientLastContactTime}, CurrentSubscriptionsCount:{self.CurrentSubscriptionsCount}, CurrentMonitoredItemsCount:{self.CurrentMonitoredItemsCount}, CurrentPublishRequestsInQueue:{self.CurrentPublishRequestsInQueue}, TotalRequestCount:{self.TotalRequestCount}, UnauthorizedRequestCount:{self.UnauthorizedRequestCount}, ReadCount:{self.ReadCount}, HistoryReadCount:{self.HistoryReadCount}, WriteCount:{self.WriteCount}, HistoryUpdateCount:{self.HistoryUpdateCount}, CallCount:{self.CallCount}, CreateMonitoredItemsCount:{self.CreateMonitoredItemsCount}, ModifyMonitoredItemsCount:{self.ModifyMonitoredItemsCount}, SetMonitoringModeCount:{self.SetMonitoringModeCount}, SetTriggeringCount:{self.SetTriggeringCount}, DeleteMonitoredItemsCount:{self.DeleteMonitoredItemsCount}, CreateSubscriptionCount:{self.CreateSubscriptionCount}, ModifySubscriptionCount:{self.ModifySubscriptionCount}, SetPublishingModeCount:{self.SetPublishingModeCount}, PublishCount:{self.PublishCount}, RepublishCount:{self.RepublishCount}, TransferSubscriptionsCount:{self.TransferSubscriptionsCount}, DeleteSubscriptionsCount:{self.DeleteSubscriptionsCount}, AddNodesCount:{self.AddNodesCount}, AddReferencesCount:{self.AddReferencesCount}, DeleteNodesCount:{self.DeleteNodesCount}, DeleteReferencesCount:{self.DeleteReferencesCount}, BrowseCount:{self.BrowseCount}, BrowseNextCount:{self.BrowseNextCount}, TranslateBrowsePathsToNodeIdsCount:{self.TranslateBrowsePathsToNodeIdsCount}, QueryFirstCount:{self.QueryFirstCount}, QueryNextCount:{self.QueryNextCount}, RegisterNodesCount:{self.RegisterNodesCount}, UnregisterNodesCount:{self.UnregisterNodesCount})'
 
     __repr__ = __str__
 
 
 class SessionSecurityDiagnosticsDataType(FrozenClass):
-    '''
+    """
     :ivar SessionId:
     :vartype SessionId: NodeId
     :ivar ClientUserIdOfSession:
@@ -11472,7 +10697,7 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
     :vartype SecurityPolicyUri: String
     :ivar ClientCertificate:
     :vartype ClientCertificate: ByteString
-    '''
+    """
 
     ua_types = [
         ('SessionId', 'NodeId'),
@@ -11499,26 +10724,18 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SessionSecurityDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
-               'ClientUserIdOfSession:' + str(self.ClientUserIdOfSession) + ', ' + \
-               'ClientUserIdHistory:' + str(self.ClientUserIdHistory) + ', ' + \
-               'AuthenticationMechanism:' + str(self.AuthenticationMechanism) + ', ' + \
-               'Encoding:' + str(self.Encoding) + ', ' + \
-               'TransportProtocol:' + str(self.TransportProtocol) + ', ' + \
-               'SecurityMode:' + str(self.SecurityMode) + ', ' + \
-               'SecurityPolicyUri:' + str(self.SecurityPolicyUri) + ', ' + \
-               'ClientCertificate:' + str(self.ClientCertificate) + ')'
+        return f'SessionSecurityDiagnosticsDataType(SessionId:{self.SessionId}, ClientUserIdOfSession:{self.ClientUserIdOfSession}, ClientUserIdHistory:{self.ClientUserIdHistory}, AuthenticationMechanism:{self.AuthenticationMechanism}, Encoding:{self.Encoding}, TransportProtocol:{self.TransportProtocol}, SecurityMode:{self.SecurityMode}, SecurityPolicyUri:{self.SecurityPolicyUri}, ClientCertificate:{self.ClientCertificate})'
 
     __repr__ = __str__
 
 
 class ServiceCounterDataType(FrozenClass):
-    '''
+    """
     :ivar TotalCount:
     :vartype TotalCount: UInt32
     :ivar ErrorCount:
     :vartype ErrorCount: UInt32
-    '''
+    """
 
     ua_types = [
         ('TotalCount', 'UInt32'),
@@ -11531,19 +10748,18 @@ class ServiceCounterDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ServiceCounterDataType(' + 'TotalCount:' + str(self.TotalCount) + ', ' + \
-               'ErrorCount:' + str(self.ErrorCount) + ')'
+        return f'ServiceCounterDataType(TotalCount:{self.TotalCount}, ErrorCount:{self.ErrorCount})'
 
     __repr__ = __str__
 
 
 class StatusResult(FrozenClass):
-    '''
+    """
     :ivar StatusCode:
     :vartype StatusCode: StatusCode
     :ivar DiagnosticInfo:
     :vartype DiagnosticInfo: DiagnosticInfo
-    '''
+    """
 
     ua_types = [
         ('StatusCode', 'StatusCode'),
@@ -11556,14 +10772,13 @@ class StatusResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'StatusResult(' + 'StatusCode:' + str(self.StatusCode) + ', ' + \
-               'DiagnosticInfo:' + str(self.DiagnosticInfo) + ')'
+        return f'StatusResult(StatusCode:{self.StatusCode}, DiagnosticInfo:{self.DiagnosticInfo})'
 
     __repr__ = __str__
 
 
 class SubscriptionDiagnosticsDataType(FrozenClass):
-    '''
+    """
     :ivar SessionId:
     :vartype SessionId: NodeId
     :ivar SubscriptionId:
@@ -11626,7 +10841,7 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
     :vartype NextSequenceNumber: UInt32
     :ivar EventQueueOverFlowCount:
     :vartype EventQueueOverFlowCount: UInt32
-    '''
+    """
 
     ua_types = [
         ('SessionId', 'NodeId'),
@@ -11697,50 +10912,20 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SubscriptionDiagnosticsDataType(' + 'SessionId:' + str(self.SessionId) + ', ' + \
-               'SubscriptionId:' + str(self.SubscriptionId) + ', ' + \
-               'Priority:' + str(self.Priority) + ', ' + \
-               'PublishingInterval:' + str(self.PublishingInterval) + ', ' + \
-               'MaxKeepAliveCount:' + str(self.MaxKeepAliveCount) + ', ' + \
-               'MaxLifetimeCount:' + str(self.MaxLifetimeCount) + ', ' + \
-               'MaxNotificationsPerPublish:' + str(self.MaxNotificationsPerPublish) + ', ' + \
-               'PublishingEnabled:' + str(self.PublishingEnabled) + ', ' + \
-               'ModifyCount:' + str(self.ModifyCount) + ', ' + \
-               'EnableCount:' + str(self.EnableCount) + ', ' + \
-               'DisableCount:' + str(self.DisableCount) + ', ' + \
-               'RepublishRequestCount:' + str(self.RepublishRequestCount) + ', ' + \
-               'RepublishMessageRequestCount:' + str(self.RepublishMessageRequestCount) + ', ' + \
-               'RepublishMessageCount:' + str(self.RepublishMessageCount) + ', ' + \
-               'TransferRequestCount:' + str(self.TransferRequestCount) + ', ' + \
-               'TransferredToAltClientCount:' + str(self.TransferredToAltClientCount) + ', ' + \
-               'TransferredToSameClientCount:' + str(self.TransferredToSameClientCount) + ', ' + \
-               'PublishRequestCount:' + str(self.PublishRequestCount) + ', ' + \
-               'DataChangeNotificationsCount:' + str(self.DataChangeNotificationsCount) + ', ' + \
-               'EventNotificationsCount:' + str(self.EventNotificationsCount) + ', ' + \
-               'NotificationsCount:' + str(self.NotificationsCount) + ', ' + \
-               'LatePublishRequestCount:' + str(self.LatePublishRequestCount) + ', ' + \
-               'CurrentKeepAliveCount:' + str(self.CurrentKeepAliveCount) + ', ' + \
-               'CurrentLifetimeCount:' + str(self.CurrentLifetimeCount) + ', ' + \
-               'UnacknowledgedMessageCount:' + str(self.UnacknowledgedMessageCount) + ', ' + \
-               'DiscardedMessageCount:' + str(self.DiscardedMessageCount) + ', ' + \
-               'MonitoredItemCount:' + str(self.MonitoredItemCount) + ', ' + \
-               'DisabledMonitoredItemCount:' + str(self.DisabledMonitoredItemCount) + ', ' + \
-               'MonitoringQueueOverflowCount:' + str(self.MonitoringQueueOverflowCount) + ', ' + \
-               'NextSequenceNumber:' + str(self.NextSequenceNumber) + ', ' + \
-               'EventQueueOverFlowCount:' + str(self.EventQueueOverFlowCount) + ')'
+        return f'SubscriptionDiagnosticsDataType(SessionId:{self.SessionId}, SubscriptionId:{self.SubscriptionId}, Priority:{self.Priority}, PublishingInterval:{self.PublishingInterval}, MaxKeepAliveCount:{self.MaxKeepAliveCount}, MaxLifetimeCount:{self.MaxLifetimeCount}, MaxNotificationsPerPublish:{self.MaxNotificationsPerPublish}, PublishingEnabled:{self.PublishingEnabled}, ModifyCount:{self.ModifyCount}, EnableCount:{self.EnableCount}, DisableCount:{self.DisableCount}, RepublishRequestCount:{self.RepublishRequestCount}, RepublishMessageRequestCount:{self.RepublishMessageRequestCount}, RepublishMessageCount:{self.RepublishMessageCount}, TransferRequestCount:{self.TransferRequestCount}, TransferredToAltClientCount:{self.TransferredToAltClientCount}, TransferredToSameClientCount:{self.TransferredToSameClientCount}, PublishRequestCount:{self.PublishRequestCount}, DataChangeNotificationsCount:{self.DataChangeNotificationsCount}, EventNotificationsCount:{self.EventNotificationsCount}, NotificationsCount:{self.NotificationsCount}, LatePublishRequestCount:{self.LatePublishRequestCount}, CurrentKeepAliveCount:{self.CurrentKeepAliveCount}, CurrentLifetimeCount:{self.CurrentLifetimeCount}, UnacknowledgedMessageCount:{self.UnacknowledgedMessageCount}, DiscardedMessageCount:{self.DiscardedMessageCount}, MonitoredItemCount:{self.MonitoredItemCount}, DisabledMonitoredItemCount:{self.DisabledMonitoredItemCount}, MonitoringQueueOverflowCount:{self.MonitoringQueueOverflowCount}, NextSequenceNumber:{self.NextSequenceNumber}, EventQueueOverFlowCount:{self.EventQueueOverFlowCount})'
 
     __repr__ = __str__
 
 
 class ModelChangeStructureDataType(FrozenClass):
-    '''
+    """
     :ivar Affected:
     :vartype Affected: NodeId
     :ivar AffectedType:
     :vartype AffectedType: NodeId
     :ivar Verb:
     :vartype Verb: Byte
-    '''
+    """
 
     ua_types = [
         ('Affected', 'NodeId'),
@@ -11755,20 +10940,18 @@ class ModelChangeStructureDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ModelChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', ' + \
-               'AffectedType:' + str(self.AffectedType) + ', ' + \
-               'Verb:' + str(self.Verb) + ')'
+        return f'ModelChangeStructureDataType(Affected:{self.Affected}, AffectedType:{self.AffectedType}, Verb:{self.Verb})'
 
     __repr__ = __str__
 
 
 class SemanticChangeStructureDataType(FrozenClass):
-    '''
+    """
     :ivar Affected:
     :vartype Affected: NodeId
     :ivar AffectedType:
     :vartype AffectedType: NodeId
-    '''
+    """
 
     ua_types = [
         ('Affected', 'NodeId'),
@@ -11781,19 +10964,18 @@ class SemanticChangeStructureDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'SemanticChangeStructureDataType(' + 'Affected:' + str(self.Affected) + ', ' + \
-               'AffectedType:' + str(self.AffectedType) + ')'
+        return f'SemanticChangeStructureDataType(Affected:{self.Affected}, AffectedType:{self.AffectedType})'
 
     __repr__ = __str__
 
 
 class Range(FrozenClass):
-    '''
+    """
     :ivar Low:
     :vartype Low: Double
     :ivar High:
     :vartype High: Double
-    '''
+    """
 
     ua_types = [
         ('Low', 'Double'),
@@ -11806,14 +10988,13 @@ class Range(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'Range(' + 'Low:' + str(self.Low) + ', ' + \
-               'High:' + str(self.High) + ')'
+        return f'Range(Low:{self.Low}, High:{self.High})'
 
     __repr__ = __str__
 
 
 class EUInformation(FrozenClass):
-    '''
+    """
     :ivar NamespaceUri:
     :vartype NamespaceUri: String
     :ivar UnitId:
@@ -11822,7 +11003,7 @@ class EUInformation(FrozenClass):
     :vartype DisplayName: LocalizedText
     :ivar Description:
     :vartype Description: LocalizedText
-    '''
+    """
 
     ua_types = [
         ('NamespaceUri', 'String'),
@@ -11839,21 +11020,18 @@ class EUInformation(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'EUInformation(' + 'NamespaceUri:' + str(self.NamespaceUri) + ', ' + \
-               'UnitId:' + str(self.UnitId) + ', ' + \
-               'DisplayName:' + str(self.DisplayName) + ', ' + \
-               'Description:' + str(self.Description) + ')'
+        return f'EUInformation(NamespaceUri:{self.NamespaceUri}, UnitId:{self.UnitId}, DisplayName:{self.DisplayName}, Description:{self.Description})'
 
     __repr__ = __str__
 
 
 class ComplexNumberType(FrozenClass):
-    '''
+    """
     :ivar Real:
     :vartype Real: Float
     :ivar Imaginary:
     :vartype Imaginary: Float
-    '''
+    """
 
     ua_types = [
         ('Real', 'Float'),
@@ -11866,19 +11044,18 @@ class ComplexNumberType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ComplexNumberType(' + 'Real:' + str(self.Real) + ', ' + \
-               'Imaginary:' + str(self.Imaginary) + ')'
+        return f'ComplexNumberType(Real:{self.Real}, Imaginary:{self.Imaginary})'
 
     __repr__ = __str__
 
 
 class DoubleComplexNumberType(FrozenClass):
-    '''
+    """
     :ivar Real:
     :vartype Real: Double
     :ivar Imaginary:
     :vartype Imaginary: Double
-    '''
+    """
 
     ua_types = [
         ('Real', 'Double'),
@@ -11891,14 +11068,13 @@ class DoubleComplexNumberType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'DoubleComplexNumberType(' + 'Real:' + str(self.Real) + ', ' + \
-               'Imaginary:' + str(self.Imaginary) + ')'
+        return f'DoubleComplexNumberType(Real:{self.Real}, Imaginary:{self.Imaginary})'
 
     __repr__ = __str__
 
 
 class AxisInformation(FrozenClass):
-    '''
+    """
     :ivar EngineeringUnits:
     :vartype EngineeringUnits: EUInformation
     :ivar EURange:
@@ -11909,7 +11085,7 @@ class AxisInformation(FrozenClass):
     :vartype AxisScaleType: AxisScaleEnumeration
     :ivar AxisSteps:
     :vartype AxisSteps: Double
-    '''
+    """
 
     ua_types = [
         ('EngineeringUnits', 'EUInformation'),
@@ -11928,22 +11104,18 @@ class AxisInformation(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'AxisInformation(' + 'EngineeringUnits:' + str(self.EngineeringUnits) + ', ' + \
-               'EURange:' + str(self.EURange) + ', ' + \
-               'Title:' + str(self.Title) + ', ' + \
-               'AxisScaleType:' + str(self.AxisScaleType) + ', ' + \
-               'AxisSteps:' + str(self.AxisSteps) + ')'
+        return f'AxisInformation(EngineeringUnits:{self.EngineeringUnits}, EURange:{self.EURange}, Title:{self.Title}, AxisScaleType:{self.AxisScaleType}, AxisSteps:{self.AxisSteps})'
 
     __repr__ = __str__
 
 
 class XVType(FrozenClass):
-    '''
+    """
     :ivar X:
     :vartype X: Double
     :ivar Value:
     :vartype Value: Float
-    '''
+    """
 
     ua_types = [
         ('X', 'Double'),
@@ -11956,14 +11128,13 @@ class XVType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'XVType(' + 'X:' + str(self.X) + ', ' + \
-               'Value:' + str(self.Value) + ')'
+        return f'XVType(X:{self.X}, Value:{self.Value})'
 
     __repr__ = __str__
 
 
 class ProgramDiagnosticDataType(FrozenClass):
-    '''
+    """
     :ivar CreateSessionId:
     :vartype CreateSessionId: NodeId
     :ivar CreateClientName:
@@ -11984,7 +11155,7 @@ class ProgramDiagnosticDataType(FrozenClass):
     :vartype LastMethodCallTime: DateTime
     :ivar LastMethodReturnStatus:
     :vartype LastMethodReturnStatus: StatusResult
-    '''
+    """
 
     ua_types = [
         ('CreateSessionId', 'NodeId'),
@@ -12013,22 +11184,13 @@ class ProgramDiagnosticDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ProgramDiagnosticDataType(' + 'CreateSessionId:' + str(self.CreateSessionId) + ', ' + \
-               'CreateClientName:' + str(self.CreateClientName) + ', ' + \
-               'InvocationCreationTime:' + str(self.InvocationCreationTime) + ', ' + \
-               'LastTransitionTime:' + str(self.LastTransitionTime) + ', ' + \
-               'LastMethodCall:' + str(self.LastMethodCall) + ', ' + \
-               'LastMethodSessionId:' + str(self.LastMethodSessionId) + ', ' + \
-               'LastMethodInputArguments:' + str(self.LastMethodInputArguments) + ', ' + \
-               'LastMethodOutputArguments:' + str(self.LastMethodOutputArguments) + ', ' + \
-               'LastMethodCallTime:' + str(self.LastMethodCallTime) + ', ' + \
-               'LastMethodReturnStatus:' + str(self.LastMethodReturnStatus) + ')'
+        return f'ProgramDiagnosticDataType(CreateSessionId:{self.CreateSessionId}, CreateClientName:{self.CreateClientName}, InvocationCreationTime:{self.InvocationCreationTime}, LastTransitionTime:{self.LastTransitionTime}, LastMethodCall:{self.LastMethodCall}, LastMethodSessionId:{self.LastMethodSessionId}, LastMethodInputArguments:{self.LastMethodInputArguments}, LastMethodOutputArguments:{self.LastMethodOutputArguments}, LastMethodCallTime:{self.LastMethodCallTime}, LastMethodReturnStatus:{self.LastMethodReturnStatus})'
 
     __repr__ = __str__
 
 
 class ProgramDiagnostic2DataType(FrozenClass):
-    '''
+    """
     :ivar CreateSessionId:
     :vartype CreateSessionId: NodeId
     :ivar CreateClientName:
@@ -12053,7 +11215,7 @@ class ProgramDiagnostic2DataType(FrozenClass):
     :vartype LastMethodCallTime: DateTime
     :ivar LastMethodReturnStatus:
     :vartype LastMethodReturnStatus: StatusResult
-    '''
+    """
 
     ua_types = [
         ('CreateSessionId', 'NodeId'),
@@ -12086,31 +11248,20 @@ class ProgramDiagnostic2DataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'ProgramDiagnostic2DataType(' + 'CreateSessionId:' + str(self.CreateSessionId) + ', ' + \
-               'CreateClientName:' + str(self.CreateClientName) + ', ' + \
-               'InvocationCreationTime:' + str(self.InvocationCreationTime) + ', ' + \
-               'LastTransitionTime:' + str(self.LastTransitionTime) + ', ' + \
-               'LastMethodCall:' + str(self.LastMethodCall) + ', ' + \
-               'LastMethodSessionId:' + str(self.LastMethodSessionId) + ', ' + \
-               'LastMethodInputArguments:' + str(self.LastMethodInputArguments) + ', ' + \
-               'LastMethodOutputArguments:' + str(self.LastMethodOutputArguments) + ', ' + \
-               'LastMethodInputValues:' + str(self.LastMethodInputValues) + ', ' + \
-               'LastMethodOutputValues:' + str(self.LastMethodOutputValues) + ', ' + \
-               'LastMethodCallTime:' + str(self.LastMethodCallTime) + ', ' + \
-               'LastMethodReturnStatus:' + str(self.LastMethodReturnStatus) + ')'
+        return f'ProgramDiagnostic2DataType(CreateSessionId:{self.CreateSessionId}, CreateClientName:{self.CreateClientName}, InvocationCreationTime:{self.InvocationCreationTime}, LastTransitionTime:{self.LastTransitionTime}, LastMethodCall:{self.LastMethodCall}, LastMethodSessionId:{self.LastMethodSessionId}, LastMethodInputArguments:{self.LastMethodInputArguments}, LastMethodOutputArguments:{self.LastMethodOutputArguments}, LastMethodInputValues:{self.LastMethodInputValues}, LastMethodOutputValues:{self.LastMethodOutputValues}, LastMethodCallTime:{self.LastMethodCallTime}, LastMethodReturnStatus:{self.LastMethodReturnStatus})'
 
     __repr__ = __str__
 
 
 class Annotation(FrozenClass):
-    '''
+    """
     :ivar Message:
     :vartype Message: String
     :ivar UserName:
     :vartype UserName: String
     :ivar AnnotationTime:
     :vartype AnnotationTime: DateTime
-    '''
+    """
 
     ua_types = [
         ('Message', 'String'),
@@ -12125,9 +11276,7 @@ class Annotation(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return 'Annotation(' + 'Message:' + str(self.Message) + ', ' + \
-               'UserName:' + str(self.UserName) + ', ' + \
-               'AnnotationTime:' + str(self.AnnotationTime) + ')'
+        return f'Annotation(Message:{self.Message}, UserName:{self.UserName}, AnnotationTime:{self.AnnotationTime})'
 
     __repr__ = __str__
 
@@ -12321,6 +11470,9 @@ extension_object_ids['BrokerDataSetWriterTransportDataType'] = nid
 nid = FourByteNodeId(ObjectIds.BrokerDataSetReaderTransportDataType_Encoding_DefaultBinary)
 extension_object_classes[nid] = BrokerDataSetReaderTransportDataType
 extension_object_ids['BrokerDataSetReaderTransportDataType'] = nid
+nid = FourByteNodeId(ObjectIds.AliasNameDataType_Encoding_DefaultBinary)
+extension_object_classes[nid] = AliasNameDataType
+extension_object_ids['AliasNameDataType'] = nid
 nid = FourByteNodeId(ObjectIds.RolePermissionType_Encoding_DefaultBinary)
 extension_object_classes[nid] = RolePermissionType
 extension_object_ids['RolePermissionType'] = nid
