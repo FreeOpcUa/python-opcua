@@ -55,11 +55,10 @@ class StandardAddressSpaceTests(unittest.TestCase):
         self.node_mgt_service = NodeManagementService(self.aspace)
         standard_address_space.fill_address_space(self.node_mgt_service)
 
-    @pytest.mark.skip("Donot understand that code and I am not sure we should test the xml file. it is not ours")
-    def test_std_address_space_references(self):
-        std_nodes = read_nodes(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'schemas', 'Opc.Ua.NodeSet2.xml')))
-        for k in self.aspace.keys():
-            refs = set((r.ReferenceTypeId.to_string(), r.NodeId.to_string(), r.IsForward) for r in self.aspace[k].references)
-            # FIXME: should renable this but it fails and I do not undertsand it
-            #xml_refs = set((r.attrib['ReferenceType'], r.text, r.attrib.get('IsForward', 'true') == 'true') for r in find_elem(std_nodes[k.to_string()], 'References'))
-            #self.assertTrue(len(xml_refs-refs)==0)
+    # def test_std_address_space_references(self):
+    #     std_nodes = read_nodes(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'schemas', 'Opc.Ua.NodeSet2.xml')))
+    #     for k in self.aspace.keys():
+    #         refs = set((r.ReferenceTypeId.to_string(), r.NodeId.to_string(), r.IsForward) for r in self.aspace[k].references)
+    #         # FIXME: should renable this but it fails and I do not undertsand it
+    #         #xml_refs = set((r.attrib['ReferenceType'], r.text, r.attrib.get('IsForward', 'true') == 'true') for r in find_elem(std_nodes[k.to_string()], 'References'))
+    #         #self.assertTrue(len(xml_refs-refs)==0)
