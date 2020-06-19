@@ -2,6 +2,7 @@
 Generate address space c++ code from xml file specification
 xmlparser.py is a requirement. it is in opcua folder but to avoid importing all code, developer can link xmlparser.py in current directory
 """
+import asyncio
 import sys
 import os
 import datetime
@@ -10,6 +11,7 @@ import logging
 #from opcua import xmlparser
 import opcua.common.xmlparser as xmlparser
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def _to_val(objs, attr, val):
     from opcua import ua
@@ -19,7 +21,6 @@ def _to_val(objs, attr, val):
     if cls == ua.NodeId:
         return f"NodeId.from_string('{val}')"
     return ua_type_to_python(val, _get_uatype_name(cls, attr))
-
 
 
 def _get_uatype_name(cls, attname):
@@ -92,11 +93,10 @@ class CodeGenerator:
         self.part = self.input_path.split(".")[-2]
         self.parser = None
 
-    async def run(self):
+    def run(self):
         sys.stderr.write(f"Generating Python code {self.output_path} for XML file {self.input_path}\n")
         self.output_file = open(self.output_path, 'w', encoding='utf-8')
         self.make_header()
-        self.parser = xmlparser.XMLParser()
         self.parser = xmlparser.XMLParser(self.input_path)
         for node in self.parser.get_node_datas():
             if node.nodetype == 'UAObject':
@@ -131,9 +131,9 @@ Date:{datetime.datetime.now()}
 import datetime
 from dateutil.tz import tzutc
 
-from asyncua import ua
-from asyncua.ua import NodeId, QualifiedName, NumericNodeId, StringNodeId, GuidNodeId
-from asyncua.ua import NodeClass, LocalizedText
+from opcua import ua
+from opcua.ua import NodeId, QualifiedName, NumericNodeId, StringNodeId, GuidNodeId
+from opcua.ua import NodeClass, LocalizedText
 
 
 def create_standard_address_space_{self.part!s}(server):
@@ -213,23 +213,26 @@ def create_standard_address_space_{self.part!s}(server):
             else:
                 if obj.valuetype.startswith("ListOf"):
                     obj.valuetype = obj.valuetype[6:]
-                self.writecode(indent, 'attrs.Value = ua.Variant({0}, ua.VariantType.{1})'.format(repr(obj.value), obj.valuetype))
+                self.writecode(
+                    indent,
+                    f'attrs.Value = ua.Variant({obj.value!r}, ua.VariantType.{obj.valuetype})'
+            )
         if obj.rank:
-            self.writecode(indent, 'attrs.ValueRank = {0}'.format(obj.rank))
+            self.writecode(indent, f'attrs.ValueRank = {obj.rank}')
         if obj.accesslevel:
-            self.writecode(indent, 'attrs.AccessLevel = {0}'.format(obj.accesslevel))
+            self.writecode(indent, f'attrs.AccessLevel = {obj.accesslevel}')
         if obj.useraccesslevel:
-            self.writecode(indent, 'attrs.UserAccessLevel = {0}'.format(obj.useraccesslevel))
+            self.writecode(indent, f'attrs.UserAccessLevel = {obj.useraccesslevel}')
         if obj.dimensions:
-            self.writecode(indent, 'attrs.ArrayDimensions = {0}'.format(obj.dimensions))
+            self.writecode(indent, f'attrs.ArrayDimensions = {obj.dimensions}')
 
     def make_ext_obj_code(self, indent, extobj):
-        self.writecode(indent, 'extobj = ua.{0}()'.format(extobj.objname))
+        self.writecode(indent, f'extobj = ua.{extobj.objname}()')
         for name, val in extobj.body:
             for k, v in val:
                 if type(v) is str:
                     val = _to_val([extobj.objname], k, v)
-                    self.writecode(indent, 'extobj.{0} = {1}'.format(k, val))
+                    self.writecode(indent, f'extobj.{k} = {val}')
                 else:
                     if k == "DataType":  #hack for strange nodeid xml format
                         self.writecode(indent, 'extobj.{0} = {1}'.format(k, nodeid_code(v[0][1])))
@@ -239,7 +242,7 @@ def create_standard_address_space_{self.part!s}(server):
                         continue
                     for k2, v2 in v:
                         val2 = _to_val([extobj.objname, k], k2, v2)
-                        self.writecode(indent, 'extobj.{0}.{1} = {2}'.format(k, k2, val2))
+                        self.writecode(indent, f'extobj.{k}.{k2} = {val2}')
 
     def make_variable_code(self, obj):
         indent = "   "
@@ -247,7 +250,7 @@ def create_standard_address_space_{self.part!s}(server):
         self.make_node_code(obj, indent)
         self.writecode(indent, 'attrs = ua.VariableAttributes()')
         if obj.minsample:
-            self.writecode(indent, 'attrs.MinimumSamplingInterval = {0}'.format(obj.minsample))
+            self.writecode(indent, f'attrs.MinimumSamplingInterval = {obj.minsample}')
         self.make_common_variable_code(indent, obj)
         self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
@@ -262,7 +265,7 @@ def create_standard_address_space_{self.part!s}(server):
             self.writecode(indent, 'attrs.Description = LocalizedText("{0}")'.format(obj.desc))
         self.writecode(indent, 'attrs.DisplayName = LocalizedText("{0}")'.format(obj.displayname))
         if obj.abstract:
-            self.writecode(indent, 'attrs.IsAbstract = {0}'.format(obj.abstract))
+            self.writecode(indent, f'attrs.IsAbstract = {obj.abstract}')
         self.make_common_variable_code(indent, obj)
         self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
@@ -291,9 +294,9 @@ def create_standard_address_space_{self.part!s}(server):
         if obj. inversename:
             self.writecode(indent, 'attrs.InverseName = LocalizedText("{0}")'.format(obj.inversename))
         if obj.abstract:
-            self.writecode(indent, 'attrs.IsAbstract = {0}'.format(obj.abstract))
+            self.writecode(indent, f'attrs.IsAbstract = {obj.abstract}')
         if obj.symmetric:
-            self.writecode(indent, 'attrs.Symmetric = {0}'.format(obj.symmetric))
+            self.writecode(indent, f'attrs.Symmetric = {obj.symmetric}')
         self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
@@ -307,7 +310,7 @@ def create_standard_address_space_{self.part!s}(server):
             self.writecode(indent, u'attrs.Description = LocalizedText("{0}")'.format(obj.desc))
         self.writecode(indent, 'attrs.DisplayName = LocalizedText("{0}")'.format(obj.displayname))
         if obj.abstract:
-            self.writecode(indent, 'attrs.IsAbstract = {0}'.format(obj.abstract))
+            self.writecode(indent, f'attrs.IsAbstract = {obj.abstract}')
         self.writecode(indent, 'node.NodeAttributes = attrs')
         self.writecode(indent, 'server.add_nodes([node])')
         self.make_refs_code(obj, indent)
@@ -328,22 +331,23 @@ def create_standard_address_space_{self.part!s}(server):
 
 
 def save_aspace_to_disk():
-    import os.path
-    path = os.path.join("..", "opcua", "binary_address_space.pickle")
-    print("Savind standard address space to:", path)
-    sys.path.append("..")
+    path = os.path.join(BASE_DIR, 'opcua', 'binary_address_space.pickle')
+    print('Saving standard address space to:', path)
+    sys.path.append('..')
     from opcua.server.standard_address_space import standard_address_space
     from opcua.server.address_space import NodeManagementService, AddressSpace
     aspace = AddressSpace()
     standard_address_space.fill_address_space(NodeManagementService(aspace))
     aspace.dump(path)
 
-if __name__ == "__main__":
+def main():
     logging.basicConfig(level=logging.WARN)
     for i in (3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 17, 19):
-        xmlpath = "Opc.Ua.NodeSet2.Part{0}.xml".format(str(i))
-        cpppath = "../opcua/server/standard_address_space/standard_address_space_part{0}.py".format(str(i))
-        c = CodeGenerator(xmlpath, cpppath)
-        c.run()
-
+        xml_path = os.path.join(BASE_DIR, 'schemas', 'UA-Nodeset-master', 'Schema', f'Opc.Ua.NodeSet2.Part{i}.xml')
+        py_path = os.path.join(BASE_DIR, 'opcua', 'server', 'standard_address_space', f'standard_address_space_part{i}.py')
+        CodeGenerator(xml_path, py_path).run()
     save_aspace_to_disk()
+
+
+if __name__ == '__main__':
+    main()
