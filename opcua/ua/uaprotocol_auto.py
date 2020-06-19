@@ -1,6 +1,6 @@
 '''
 Autogenerate code from xml spec
-Date:2020-06-19 19:38:01.887066
+Date:2020-06-19 20:01:05.685393
 '''
 
 from datetime import datetime
@@ -1200,7 +1200,7 @@ class DiagnosticInfo(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DiagnosticInfo(Encoding:{self.Encoding}, SymbolicId:{self.SymbolicId}, NamespaceURI:{self.NamespaceURI}, Locale:{self.Locale}, LocalizedText:{self.LocalizedText}, AdditionalInfo:{self.AdditionalInfo}, InnerStatusCode:{self.InnerStatusCode}, InnerDiagnosticInfo:{self.InnerDiagnosticInfo})'
+        return 'DiagnosticInfo(Encoding:{self.Encoding}, SymbolicId:{self.SymbolicId}, NamespaceURI:{self.NamespaceURI}, Locale:{self.Locale}, LocalizedText:{self.LocalizedText}, AdditionalInfo:{self.AdditionalInfo}, InnerStatusCode:{self.InnerStatusCode}, InnerDiagnosticInfo:{self.InnerDiagnosticInfo})'
 
     __repr__ = __str__
 
@@ -1224,7 +1224,7 @@ class KeyValuePair(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'KeyValuePair(Key:{self.Key}, Value:{self.Value})'
+        return 'KeyValuePair(Key:{self.Key}, Value:{self.Value})'
 
     __repr__ = __str__
 
@@ -1256,7 +1256,7 @@ class EndpointType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'EndpointType(EndpointUrl:{self.EndpointUrl}, SecurityMode:{self.SecurityMode}, SecurityPolicyUri:{self.SecurityPolicyUri}, TransportProfileUri:{self.TransportProfileUri})'
+        return 'EndpointType(EndpointUrl:{self.EndpointUrl}, SecurityMode:{self.SecurityMode}, SecurityPolicyUri:{self.SecurityPolicyUri}, TransportProfileUri:{self.TransportProfileUri})'
 
     __repr__ = __str__
 
@@ -1280,7 +1280,7 @@ class RationalNumber(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RationalNumber(Numerator:{self.Numerator}, Denominator:{self.Denominator})'
+        return 'RationalNumber(Numerator:{self.Numerator}, Denominator:{self.Denominator})'
 
     __repr__ = __str__
 
@@ -1324,7 +1324,7 @@ class ThreeDVector(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ThreeDVector(X:{self.X}, Y:{self.Y}, Z:{self.Z})'
+        return 'ThreeDVector(X:{self.X}, Y:{self.Y}, Z:{self.Z})'
 
     __repr__ = __str__
 
@@ -1368,7 +1368,7 @@ class ThreeDCartesianCoordinates(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ThreeDCartesianCoordinates(X:{self.X}, Y:{self.Y}, Z:{self.Z})'
+        return 'ThreeDCartesianCoordinates(X:{self.X}, Y:{self.Y}, Z:{self.Z})'
 
     __repr__ = __str__
 
@@ -1412,7 +1412,7 @@ class ThreeDOrientation(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ThreeDOrientation(A:{self.A}, B:{self.B}, C:{self.C})'
+        return 'ThreeDOrientation(A:{self.A}, B:{self.B}, C:{self.C})'
 
     __repr__ = __str__
 
@@ -1452,7 +1452,7 @@ class ThreeDFrame(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ThreeDFrame(CartesianCoordinates:{self.CartesianCoordinates}, Orientation:{self.Orientation})'
+        return 'ThreeDFrame(CartesianCoordinates:{self.CartesianCoordinates}, Orientation:{self.Orientation})'
 
     __repr__ = __str__
 
@@ -1476,7 +1476,7 @@ class IdentityMappingRuleType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'IdentityMappingRuleType(CriteriaType:{self.CriteriaType}, Criteria:{self.Criteria})'
+        return 'IdentityMappingRuleType(CriteriaType:{self.CriteriaType}, Criteria:{self.Criteria})'
 
     __repr__ = __str__
 
@@ -1508,7 +1508,7 @@ class CurrencyUnitType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CurrencyUnitType(NumericCode:{self.NumericCode}, Exponent:{self.Exponent}, AlphabeticCode:{self.AlphabeticCode}, Currency:{self.Currency})'
+        return 'CurrencyUnitType(NumericCode:{self.NumericCode}, Exponent:{self.Exponent}, AlphabeticCode:{self.AlphabeticCode}, Currency:{self.Currency})'
 
     __repr__ = __str__
 
@@ -1544,7 +1544,7 @@ class TrustListDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'TrustListDataType(SpecifiedLists:{self.SpecifiedLists}, TrustedCertificates:{self.TrustedCertificates}, TrustedCrls:{self.TrustedCrls}, IssuerCertificates:{self.IssuerCertificates}, IssuerCrls:{self.IssuerCrls})'
+        return 'TrustListDataType(SpecifiedLists:{self.SpecifiedLists}, TrustedCertificates:{self.TrustedCertificates}, TrustedCrls:{self.TrustedCrls}, IssuerCertificates:{self.IssuerCertificates}, IssuerCrls:{self.IssuerCrls})'
 
     __repr__ = __str__
 
@@ -1568,7 +1568,7 @@ class DecimalDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DecimalDataType(Scale:{self.Scale}, Value:{self.Value})'
+        return 'DecimalDataType(Scale:{self.Scale}, Value:{self.Value})'
 
     __repr__ = __str__
 
@@ -1600,7 +1600,7 @@ class DataTypeSchemaHeader(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DataTypeSchemaHeader(Namespaces:{self.Namespaces}, StructureDataTypes:{self.StructureDataTypes}, EnumDataTypes:{self.EnumDataTypes}, SimpleDataTypes:{self.SimpleDataTypes})'
+        return 'DataTypeSchemaHeader(Namespaces:{self.Namespaces}, StructureDataTypes:{self.StructureDataTypes}, EnumDataTypes:{self.EnumDataTypes}, SimpleDataTypes:{self.SimpleDataTypes})'
 
     __repr__ = __str__
 
@@ -1624,7 +1624,7 @@ class DataTypeDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DataTypeDescription(DataTypeId:{self.DataTypeId}, Name:{self.Name})'
+        return 'DataTypeDescription(DataTypeId:{self.DataTypeId}, Name:{self.Name})'
 
     __repr__ = __str__
 
@@ -1652,7 +1652,7 @@ class StructureDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'StructureDescription(DataTypeId:{self.DataTypeId}, Name:{self.Name}, StructureDefinition:{self.StructureDefinition})'
+        return 'StructureDescription(DataTypeId:{self.DataTypeId}, Name:{self.Name}, StructureDefinition:{self.StructureDefinition})'
 
     __repr__ = __str__
 
@@ -1684,7 +1684,7 @@ class EnumDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'EnumDescription(DataTypeId:{self.DataTypeId}, Name:{self.Name}, EnumDefinition:{self.EnumDefinition}, BuiltInType:{self.BuiltInType})'
+        return 'EnumDescription(DataTypeId:{self.DataTypeId}, Name:{self.Name}, EnumDefinition:{self.EnumDefinition}, BuiltInType:{self.BuiltInType})'
 
     __repr__ = __str__
 
@@ -1716,7 +1716,7 @@ class SimpleTypeDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SimpleTypeDescription(DataTypeId:{self.DataTypeId}, Name:{self.Name}, BaseDataType:{self.BaseDataType}, BuiltInType:{self.BuiltInType})'
+        return 'SimpleTypeDescription(DataTypeId:{self.DataTypeId}, Name:{self.Name}, BaseDataType:{self.BaseDataType}, BuiltInType:{self.BuiltInType})'
 
     __repr__ = __str__
 
@@ -1760,7 +1760,7 @@ class UABinaryFileDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'UABinaryFileDataType(Namespaces:{self.Namespaces}, StructureDataTypes:{self.StructureDataTypes}, EnumDataTypes:{self.EnumDataTypes}, SimpleDataTypes:{self.SimpleDataTypes}, SchemaLocation:{self.SchemaLocation}, FileHeader:{self.FileHeader}, Body:{self.Body})'
+        return 'UABinaryFileDataType(Namespaces:{self.Namespaces}, StructureDataTypes:{self.StructureDataTypes}, EnumDataTypes:{self.EnumDataTypes}, SimpleDataTypes:{self.SimpleDataTypes}, SchemaLocation:{self.SchemaLocation}, FileHeader:{self.FileHeader}, Body:{self.Body})'
 
     __repr__ = __str__
 
@@ -1812,7 +1812,7 @@ class DataSetMetaDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DataSetMetaDataType(Namespaces:{self.Namespaces}, StructureDataTypes:{self.StructureDataTypes}, EnumDataTypes:{self.EnumDataTypes}, SimpleDataTypes:{self.SimpleDataTypes}, Name:{self.Name}, Description:{self.Description}, Fields:{self.Fields}, DataSetClassId:{self.DataSetClassId}, ConfigurationVersion:{self.ConfigurationVersion})'
+        return 'DataSetMetaDataType(Namespaces:{self.Namespaces}, StructureDataTypes:{self.StructureDataTypes}, EnumDataTypes:{self.EnumDataTypes}, SimpleDataTypes:{self.SimpleDataTypes}, Name:{self.Name}, Description:{self.Description}, Fields:{self.Fields}, DataSetClassId:{self.DataSetClassId}, ConfigurationVersion:{self.ConfigurationVersion})'
 
     __repr__ = __str__
 
@@ -1868,7 +1868,7 @@ class FieldMetaData(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'FieldMetaData(Name:{self.Name}, Description:{self.Description}, FieldFlags:{self.FieldFlags}, BuiltInType:{self.BuiltInType}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, MaxStringLength:{self.MaxStringLength}, DataSetFieldId:{self.DataSetFieldId}, Properties:{self.Properties})'
+        return 'FieldMetaData(Name:{self.Name}, Description:{self.Description}, FieldFlags:{self.FieldFlags}, BuiltInType:{self.BuiltInType}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, MaxStringLength:{self.MaxStringLength}, DataSetFieldId:{self.DataSetFieldId}, Properties:{self.Properties})'
 
     __repr__ = __str__
 
@@ -1892,7 +1892,7 @@ class ConfigurationVersionDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ConfigurationVersionDataType(MajorVersion:{self.MajorVersion}, MinorVersion:{self.MinorVersion})'
+        return 'ConfigurationVersionDataType(MajorVersion:{self.MajorVersion}, MinorVersion:{self.MinorVersion})'
 
     __repr__ = __str__
 
@@ -1928,7 +1928,7 @@ class PublishedDataSetDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'PublishedDataSetDataType(Name:{self.Name}, DataSetFolder:{self.DataSetFolder}, DataSetMetaData:{self.DataSetMetaData}, ExtensionFields:{self.ExtensionFields}, DataSetSource:{self.DataSetSource})'
+        return 'PublishedDataSetDataType(Name:{self.Name}, DataSetFolder:{self.DataSetFolder}, DataSetMetaData:{self.DataSetMetaData}, ExtensionFields:{self.ExtensionFields}, DataSetSource:{self.DataSetSource})'
 
     __repr__ = __str__
 
@@ -1992,7 +1992,7 @@ class PublishedVariableDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'PublishedVariableDataType(PublishedVariable:{self.PublishedVariable}, AttributeId:{self.AttributeId}, SamplingIntervalHint:{self.SamplingIntervalHint}, DeadbandType:{self.DeadbandType}, DeadbandValue:{self.DeadbandValue}, IndexRange:{self.IndexRange}, SubstituteValue:{self.SubstituteValue}, MetaDataProperties:{self.MetaDataProperties})'
+        return 'PublishedVariableDataType(PublishedVariable:{self.PublishedVariable}, AttributeId:{self.AttributeId}, SamplingIntervalHint:{self.SamplingIntervalHint}, DeadbandType:{self.DeadbandType}, DeadbandValue:{self.DeadbandValue}, IndexRange:{self.IndexRange}, SubstituteValue:{self.SubstituteValue}, MetaDataProperties:{self.MetaDataProperties})'
 
     __repr__ = __str__
 
@@ -2012,7 +2012,7 @@ class PublishedDataItemsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'PublishedDataItemsDataType(PublishedData:{self.PublishedData})'
+        return 'PublishedDataItemsDataType(PublishedData:{self.PublishedData})'
 
     __repr__ = __str__
 
@@ -2040,7 +2040,7 @@ class PublishedEventsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'PublishedEventsDataType(EventNotifier:{self.EventNotifier}, SelectedFields:{self.SelectedFields}, Filter:{self.Filter})'
+        return 'PublishedEventsDataType(EventNotifier:{self.EventNotifier}, SelectedFields:{self.SelectedFields}, Filter:{self.Filter})'
 
     __repr__ = __str__
 
@@ -2092,7 +2092,7 @@ class DataSetWriterDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DataSetWriterDataType(Name:{self.Name}, Enabled:{self.Enabled}, DataSetWriterId:{self.DataSetWriterId}, DataSetFieldContentMask:{self.DataSetFieldContentMask}, KeyFrameCount:{self.KeyFrameCount}, DataSetName:{self.DataSetName}, DataSetWriterProperties:{self.DataSetWriterProperties}, TransportSettings:{self.TransportSettings}, MessageSettings:{self.MessageSettings})'
+        return 'DataSetWriterDataType(Name:{self.Name}, Enabled:{self.Enabled}, DataSetWriterId:{self.DataSetWriterId}, DataSetFieldContentMask:{self.DataSetFieldContentMask}, KeyFrameCount:{self.KeyFrameCount}, DataSetName:{self.DataSetName}, DataSetWriterProperties:{self.DataSetWriterProperties}, TransportSettings:{self.TransportSettings}, MessageSettings:{self.MessageSettings})'
 
     __repr__ = __str__
 
@@ -2168,7 +2168,7 @@ class PubSubGroupDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'PubSubGroupDataType(Name:{self.Name}, Enabled:{self.Enabled}, SecurityMode:{self.SecurityMode}, SecurityGroupId:{self.SecurityGroupId}, SecurityKeyServices:{self.SecurityKeyServices}, MaxNetworkMessageSize:{self.MaxNetworkMessageSize}, GroupProperties:{self.GroupProperties})'
+        return 'PubSubGroupDataType(Name:{self.Name}, Enabled:{self.Enabled}, SecurityMode:{self.SecurityMode}, SecurityGroupId:{self.SecurityGroupId}, SecurityKeyServices:{self.SecurityKeyServices}, MaxNetworkMessageSize:{self.MaxNetworkMessageSize}, GroupProperties:{self.GroupProperties})'
 
     __repr__ = __str__
 
@@ -2248,7 +2248,7 @@ class WriterGroupDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'WriterGroupDataType(Name:{self.Name}, Enabled:{self.Enabled}, SecurityMode:{self.SecurityMode}, SecurityGroupId:{self.SecurityGroupId}, SecurityKeyServices:{self.SecurityKeyServices}, MaxNetworkMessageSize:{self.MaxNetworkMessageSize}, GroupProperties:{self.GroupProperties}, WriterGroupId:{self.WriterGroupId}, PublishingInterval:{self.PublishingInterval}, KeepAliveTime:{self.KeepAliveTime}, Priority:{self.Priority}, LocaleIds:{self.LocaleIds}, HeaderLayoutUri:{self.HeaderLayoutUri}, TransportSettings:{self.TransportSettings}, MessageSettings:{self.MessageSettings}, DataSetWriters:{self.DataSetWriters})'
+        return 'WriterGroupDataType(Name:{self.Name}, Enabled:{self.Enabled}, SecurityMode:{self.SecurityMode}, SecurityGroupId:{self.SecurityGroupId}, SecurityKeyServices:{self.SecurityKeyServices}, MaxNetworkMessageSize:{self.MaxNetworkMessageSize}, GroupProperties:{self.GroupProperties}, WriterGroupId:{self.WriterGroupId}, PublishingInterval:{self.PublishingInterval}, KeepAliveTime:{self.KeepAliveTime}, Priority:{self.Priority}, LocaleIds:{self.LocaleIds}, HeaderLayoutUri:{self.HeaderLayoutUri}, TransportSettings:{self.TransportSettings}, MessageSettings:{self.MessageSettings}, DataSetWriters:{self.DataSetWriters})'
 
     __repr__ = __str__
 
@@ -2332,7 +2332,7 @@ class PubSubConnectionDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'PubSubConnectionDataType(Name:{self.Name}, Enabled:{self.Enabled}, PublisherId:{self.PublisherId}, TransportProfileUri:{self.TransportProfileUri}, Address:{self.Address}, ConnectionProperties:{self.ConnectionProperties}, TransportSettings:{self.TransportSettings}, WriterGroups:{self.WriterGroups}, ReaderGroups:{self.ReaderGroups})'
+        return 'PubSubConnectionDataType(Name:{self.Name}, Enabled:{self.Enabled}, PublisherId:{self.PublisherId}, TransportProfileUri:{self.TransportProfileUri}, Address:{self.Address}, ConnectionProperties:{self.ConnectionProperties}, TransportSettings:{self.TransportSettings}, WriterGroups:{self.WriterGroups}, ReaderGroups:{self.ReaderGroups})'
 
     __repr__ = __str__
 
@@ -2368,7 +2368,7 @@ class NetworkAddressDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'NetworkAddressDataType(NetworkInterface:{self.NetworkInterface})'
+        return 'NetworkAddressDataType(NetworkInterface:{self.NetworkInterface})'
 
     __repr__ = __str__
 
@@ -2392,7 +2392,7 @@ class NetworkAddressUrlDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'NetworkAddressUrlDataType(NetworkInterface:{self.NetworkInterface}, Url:{self.Url})'
+        return 'NetworkAddressUrlDataType(NetworkInterface:{self.NetworkInterface}, Url:{self.Url})'
 
     __repr__ = __str__
 
@@ -2448,7 +2448,7 @@ class ReaderGroupDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ReaderGroupDataType(Name:{self.Name}, Enabled:{self.Enabled}, SecurityMode:{self.SecurityMode}, SecurityGroupId:{self.SecurityGroupId}, SecurityKeyServices:{self.SecurityKeyServices}, MaxNetworkMessageSize:{self.MaxNetworkMessageSize}, GroupProperties:{self.GroupProperties}, TransportSettings:{self.TransportSettings}, MessageSettings:{self.MessageSettings}, DataSetReaders:{self.DataSetReaders})'
+        return 'ReaderGroupDataType(Name:{self.Name}, Enabled:{self.Enabled}, SecurityMode:{self.SecurityMode}, SecurityGroupId:{self.SecurityGroupId}, SecurityKeyServices:{self.SecurityKeyServices}, MaxNetworkMessageSize:{self.MaxNetworkMessageSize}, GroupProperties:{self.GroupProperties}, TransportSettings:{self.TransportSettings}, MessageSettings:{self.MessageSettings}, DataSetReaders:{self.DataSetReaders})'
 
     __repr__ = __str__
 
@@ -2564,7 +2564,7 @@ class DataSetReaderDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DataSetReaderDataType(Name:{self.Name}, Enabled:{self.Enabled}, PublisherId:{self.PublisherId}, WriterGroupId:{self.WriterGroupId}, DataSetWriterId:{self.DataSetWriterId}, DataSetMetaData:{self.DataSetMetaData}, DataSetFieldContentMask:{self.DataSetFieldContentMask}, MessageReceiveTimeout:{self.MessageReceiveTimeout}, KeyFrameCount:{self.KeyFrameCount}, HeaderLayoutUri:{self.HeaderLayoutUri}, SecurityMode:{self.SecurityMode}, SecurityGroupId:{self.SecurityGroupId}, SecurityKeyServices:{self.SecurityKeyServices}, DataSetReaderProperties:{self.DataSetReaderProperties}, TransportSettings:{self.TransportSettings}, MessageSettings:{self.MessageSettings}, SubscribedDataSet:{self.SubscribedDataSet})'
+        return 'DataSetReaderDataType(Name:{self.Name}, Enabled:{self.Enabled}, PublisherId:{self.PublisherId}, WriterGroupId:{self.WriterGroupId}, DataSetWriterId:{self.DataSetWriterId}, DataSetMetaData:{self.DataSetMetaData}, DataSetFieldContentMask:{self.DataSetFieldContentMask}, MessageReceiveTimeout:{self.MessageReceiveTimeout}, KeyFrameCount:{self.KeyFrameCount}, HeaderLayoutUri:{self.HeaderLayoutUri}, SecurityMode:{self.SecurityMode}, SecurityGroupId:{self.SecurityGroupId}, SecurityKeyServices:{self.SecurityKeyServices}, DataSetReaderProperties:{self.DataSetReaderProperties}, TransportSettings:{self.TransportSettings}, MessageSettings:{self.MessageSettings}, SubscribedDataSet:{self.SubscribedDataSet})'
 
     __repr__ = __str__
 
@@ -2632,7 +2632,7 @@ class TargetVariablesDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'TargetVariablesDataType(TargetVariables:{self.TargetVariables})'
+        return 'TargetVariablesDataType(TargetVariables:{self.TargetVariables})'
 
     __repr__ = __str__
 
@@ -2676,7 +2676,7 @@ class FieldTargetDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'FieldTargetDataType(DataSetFieldId:{self.DataSetFieldId}, ReceiverIndexRange:{self.ReceiverIndexRange}, TargetNodeId:{self.TargetNodeId}, AttributeId:{self.AttributeId}, WriteIndexRange:{self.WriteIndexRange}, OverrideValueHandling:{self.OverrideValueHandling}, OverrideValue:{self.OverrideValue})'
+        return 'FieldTargetDataType(DataSetFieldId:{self.DataSetFieldId}, ReceiverIndexRange:{self.ReceiverIndexRange}, TargetNodeId:{self.TargetNodeId}, AttributeId:{self.AttributeId}, WriteIndexRange:{self.WriteIndexRange}, OverrideValueHandling:{self.OverrideValueHandling}, OverrideValue:{self.OverrideValue})'
 
     __repr__ = __str__
 
@@ -2700,7 +2700,7 @@ class SubscribedDataSetMirrorDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SubscribedDataSetMirrorDataType(ParentNodeName:{self.ParentNodeName}, RolePermissions:{self.RolePermissions})'
+        return 'SubscribedDataSetMirrorDataType(ParentNodeName:{self.ParentNodeName}, RolePermissions:{self.RolePermissions})'
 
     __repr__ = __str__
 
@@ -2728,7 +2728,7 @@ class PubSubConfigurationDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'PubSubConfigurationDataType(PublishedDataSets:{self.PublishedDataSets}, Connections:{self.Connections}, Enabled:{self.Enabled})'
+        return 'PubSubConfigurationDataType(PublishedDataSets:{self.PublishedDataSets}, Connections:{self.Connections}, Enabled:{self.Enabled})'
 
     __repr__ = __str__
 
@@ -2764,7 +2764,7 @@ class UadpWriterGroupMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'UadpWriterGroupMessageDataType(GroupVersion:{self.GroupVersion}, DataSetOrdering:{self.DataSetOrdering}, NetworkMessageContentMask:{self.NetworkMessageContentMask}, SamplingOffset:{self.SamplingOffset}, PublishingOffset:{self.PublishingOffset})'
+        return 'UadpWriterGroupMessageDataType(GroupVersion:{self.GroupVersion}, DataSetOrdering:{self.DataSetOrdering}, NetworkMessageContentMask:{self.NetworkMessageContentMask}, SamplingOffset:{self.SamplingOffset}, PublishingOffset:{self.PublishingOffset})'
 
     __repr__ = __str__
 
@@ -2796,7 +2796,7 @@ class UadpDataSetWriterMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'UadpDataSetWriterMessageDataType(DataSetMessageContentMask:{self.DataSetMessageContentMask}, ConfiguredSize:{self.ConfiguredSize}, NetworkMessageNumber:{self.NetworkMessageNumber}, DataSetOffset:{self.DataSetOffset})'
+        return 'UadpDataSetWriterMessageDataType(DataSetMessageContentMask:{self.DataSetMessageContentMask}, ConfiguredSize:{self.ConfiguredSize}, NetworkMessageNumber:{self.NetworkMessageNumber}, DataSetOffset:{self.DataSetOffset})'
 
     __repr__ = __str__
 
@@ -2848,7 +2848,7 @@ class UadpDataSetReaderMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'UadpDataSetReaderMessageDataType(GroupVersion:{self.GroupVersion}, NetworkMessageNumber:{self.NetworkMessageNumber}, DataSetOffset:{self.DataSetOffset}, DataSetClassId:{self.DataSetClassId}, NetworkMessageContentMask:{self.NetworkMessageContentMask}, DataSetMessageContentMask:{self.DataSetMessageContentMask}, PublishingInterval:{self.PublishingInterval}, ReceiveOffset:{self.ReceiveOffset}, ProcessingOffset:{self.ProcessingOffset})'
+        return 'UadpDataSetReaderMessageDataType(GroupVersion:{self.GroupVersion}, NetworkMessageNumber:{self.NetworkMessageNumber}, DataSetOffset:{self.DataSetOffset}, DataSetClassId:{self.DataSetClassId}, NetworkMessageContentMask:{self.NetworkMessageContentMask}, DataSetMessageContentMask:{self.DataSetMessageContentMask}, PublishingInterval:{self.PublishingInterval}, ReceiveOffset:{self.ReceiveOffset}, ProcessingOffset:{self.ProcessingOffset})'
 
     __repr__ = __str__
 
@@ -2868,7 +2868,7 @@ class JsonWriterGroupMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'JsonWriterGroupMessageDataType(NetworkMessageContentMask:{self.NetworkMessageContentMask})'
+        return 'JsonWriterGroupMessageDataType(NetworkMessageContentMask:{self.NetworkMessageContentMask})'
 
     __repr__ = __str__
 
@@ -2888,7 +2888,7 @@ class JsonDataSetWriterMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'JsonDataSetWriterMessageDataType(DataSetMessageContentMask:{self.DataSetMessageContentMask})'
+        return 'JsonDataSetWriterMessageDataType(DataSetMessageContentMask:{self.DataSetMessageContentMask})'
 
     __repr__ = __str__
 
@@ -2912,7 +2912,7 @@ class JsonDataSetReaderMessageDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'JsonDataSetReaderMessageDataType(NetworkMessageContentMask:{self.NetworkMessageContentMask}, DataSetMessageContentMask:{self.DataSetMessageContentMask})'
+        return 'JsonDataSetReaderMessageDataType(NetworkMessageContentMask:{self.NetworkMessageContentMask}, DataSetMessageContentMask:{self.DataSetMessageContentMask})'
 
     __repr__ = __str__
 
@@ -2932,7 +2932,7 @@ class DatagramConnectionTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DatagramConnectionTransportDataType(DiscoveryAddress:{self.DiscoveryAddress})'
+        return 'DatagramConnectionTransportDataType(DiscoveryAddress:{self.DiscoveryAddress})'
 
     __repr__ = __str__
 
@@ -2956,7 +2956,7 @@ class DatagramWriterGroupTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DatagramWriterGroupTransportDataType(MessageRepeatCount:{self.MessageRepeatCount}, MessageRepeatDelay:{self.MessageRepeatDelay})'
+        return 'DatagramWriterGroupTransportDataType(MessageRepeatCount:{self.MessageRepeatCount}, MessageRepeatDelay:{self.MessageRepeatDelay})'
 
     __repr__ = __str__
 
@@ -2980,7 +2980,7 @@ class BrokerConnectionTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrokerConnectionTransportDataType(ResourceUri:{self.ResourceUri}, AuthenticationProfileUri:{self.AuthenticationProfileUri})'
+        return 'BrokerConnectionTransportDataType(ResourceUri:{self.ResourceUri}, AuthenticationProfileUri:{self.AuthenticationProfileUri})'
 
     __repr__ = __str__
 
@@ -3012,7 +3012,7 @@ class BrokerWriterGroupTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrokerWriterGroupTransportDataType(QueueName:{self.QueueName}, ResourceUri:{self.ResourceUri}, AuthenticationProfileUri:{self.AuthenticationProfileUri}, RequestedDeliveryGuarantee:{self.RequestedDeliveryGuarantee})'
+        return 'BrokerWriterGroupTransportDataType(QueueName:{self.QueueName}, ResourceUri:{self.ResourceUri}, AuthenticationProfileUri:{self.AuthenticationProfileUri}, RequestedDeliveryGuarantee:{self.RequestedDeliveryGuarantee})'
 
     __repr__ = __str__
 
@@ -3052,7 +3052,7 @@ class BrokerDataSetWriterTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrokerDataSetWriterTransportDataType(QueueName:{self.QueueName}, ResourceUri:{self.ResourceUri}, AuthenticationProfileUri:{self.AuthenticationProfileUri}, RequestedDeliveryGuarantee:{self.RequestedDeliveryGuarantee}, MetaDataQueueName:{self.MetaDataQueueName}, MetaDataUpdateTime:{self.MetaDataUpdateTime})'
+        return 'BrokerDataSetWriterTransportDataType(QueueName:{self.QueueName}, ResourceUri:{self.ResourceUri}, AuthenticationProfileUri:{self.AuthenticationProfileUri}, RequestedDeliveryGuarantee:{self.RequestedDeliveryGuarantee}, MetaDataQueueName:{self.MetaDataQueueName}, MetaDataUpdateTime:{self.MetaDataUpdateTime})'
 
     __repr__ = __str__
 
@@ -3088,7 +3088,7 @@ class BrokerDataSetReaderTransportDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrokerDataSetReaderTransportDataType(QueueName:{self.QueueName}, ResourceUri:{self.ResourceUri}, AuthenticationProfileUri:{self.AuthenticationProfileUri}, RequestedDeliveryGuarantee:{self.RequestedDeliveryGuarantee}, MetaDataQueueName:{self.MetaDataQueueName})'
+        return 'BrokerDataSetReaderTransportDataType(QueueName:{self.QueueName}, ResourceUri:{self.ResourceUri}, AuthenticationProfileUri:{self.AuthenticationProfileUri}, RequestedDeliveryGuarantee:{self.RequestedDeliveryGuarantee}, MetaDataQueueName:{self.MetaDataQueueName})'
 
     __repr__ = __str__
 
@@ -3112,7 +3112,7 @@ class AliasNameDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AliasNameDataType(AliasName:{self.AliasName}, ReferencedNodes:{self.ReferencedNodes})'
+        return 'AliasNameDataType(AliasName:{self.AliasName}, ReferencedNodes:{self.ReferencedNodes})'
 
     __repr__ = __str__
 
@@ -3136,7 +3136,7 @@ class RolePermissionType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RolePermissionType(RoleId:{self.RoleId}, Permissions:{self.Permissions})'
+        return 'RolePermissionType(RoleId:{self.RoleId}, Permissions:{self.Permissions})'
 
     __repr__ = __str__
 
@@ -3180,7 +3180,7 @@ class StructureField(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'StructureField(Name:{self.Name}, Description:{self.Description}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, MaxStringLength:{self.MaxStringLength}, IsOptional:{self.IsOptional})'
+        return 'StructureField(Name:{self.Name}, Description:{self.Description}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, MaxStringLength:{self.MaxStringLength}, IsOptional:{self.IsOptional})'
 
     __repr__ = __str__
 
@@ -3212,7 +3212,7 @@ class StructureDefinition(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'StructureDefinition(DefaultEncodingId:{self.DefaultEncodingId}, BaseDataType:{self.BaseDataType}, StructureType:{self.StructureType}, Fields:{self.Fields})'
+        return 'StructureDefinition(DefaultEncodingId:{self.DefaultEncodingId}, BaseDataType:{self.BaseDataType}, StructureType:{self.StructureType}, Fields:{self.Fields})'
 
     __repr__ = __str__
 
@@ -3232,7 +3232,7 @@ class EnumDefinition(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'EnumDefinition(Fields:{self.Fields})'
+        return 'EnumDefinition(Fields:{self.Fields})'
 
     __repr__ = __str__
 
@@ -3268,7 +3268,7 @@ class Argument(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'Argument(Name:{self.Name}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, Description:{self.Description})'
+        return 'Argument(Name:{self.Name}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, Description:{self.Description})'
 
     __repr__ = __str__
 
@@ -3296,7 +3296,7 @@ class EnumValueType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'EnumValueType(Value:{self.Value}, DisplayName:{self.DisplayName}, Description:{self.Description})'
+        return 'EnumValueType(Value:{self.Value}, DisplayName:{self.DisplayName}, Description:{self.Description})'
 
     __repr__ = __str__
 
@@ -3328,7 +3328,7 @@ class EnumField(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'EnumField(Value:{self.Value}, DisplayName:{self.DisplayName}, Description:{self.Description}, Name:{self.Name})'
+        return 'EnumField(Value:{self.Value}, DisplayName:{self.DisplayName}, Description:{self.Description}, Name:{self.Name})'
 
     __repr__ = __str__
 
@@ -3352,7 +3352,7 @@ class OptionSet(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'OptionSet(Value:{self.Value}, ValidBits:{self.ValidBits})'
+        return 'OptionSet(Value:{self.Value}, ValidBits:{self.ValidBits})'
 
     __repr__ = __str__
 
@@ -3392,7 +3392,7 @@ class TimeZoneDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'TimeZoneDataType(Offset:{self.Offset}, DaylightSavingInOffset:{self.DaylightSavingInOffset})'
+        return 'TimeZoneDataType(Offset:{self.Offset}, DaylightSavingInOffset:{self.DaylightSavingInOffset})'
 
     __repr__ = __str__
 
@@ -3436,7 +3436,7 @@ class ApplicationDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ApplicationDescription(ApplicationUri:{self.ApplicationUri}, ProductUri:{self.ProductUri}, ApplicationName:{self.ApplicationName}, ApplicationType:{self.ApplicationType}, GatewayServerUri:{self.GatewayServerUri}, DiscoveryProfileUri:{self.DiscoveryProfileUri}, DiscoveryUrls:{self.DiscoveryUrls})'
+        return 'ApplicationDescription(ApplicationUri:{self.ApplicationUri}, ProductUri:{self.ProductUri}, ApplicationName:{self.ApplicationName}, ApplicationType:{self.ApplicationType}, GatewayServerUri:{self.GatewayServerUri}, DiscoveryProfileUri:{self.DiscoveryProfileUri}, DiscoveryUrls:{self.DiscoveryUrls})'
 
     __repr__ = __str__
 
@@ -3480,7 +3480,7 @@ class RequestHeader(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RequestHeader(AuthenticationToken:{self.AuthenticationToken}, Timestamp:{self.Timestamp}, RequestHandle:{self.RequestHandle}, ReturnDiagnostics:{self.ReturnDiagnostics}, AuditEntryId:{self.AuditEntryId}, TimeoutHint:{self.TimeoutHint}, AdditionalHeader:{self.AdditionalHeader})'
+        return 'RequestHeader(AuthenticationToken:{self.AuthenticationToken}, Timestamp:{self.Timestamp}, RequestHandle:{self.RequestHandle}, ReturnDiagnostics:{self.ReturnDiagnostics}, AuditEntryId:{self.AuditEntryId}, TimeoutHint:{self.TimeoutHint}, AdditionalHeader:{self.AdditionalHeader})'
 
     __repr__ = __str__
 
@@ -3520,7 +3520,7 @@ class ResponseHeader(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ResponseHeader(Timestamp:{self.Timestamp}, RequestHandle:{self.RequestHandle}, ServiceResult:{self.ServiceResult}, ServiceDiagnostics:{self.ServiceDiagnostics}, StringTable:{self.StringTable}, AdditionalHeader:{self.AdditionalHeader})'
+        return 'ResponseHeader(Timestamp:{self.Timestamp}, RequestHandle:{self.RequestHandle}, ServiceResult:{self.ServiceResult}, ServiceDiagnostics:{self.ServiceDiagnostics}, StringTable:{self.StringTable}, AdditionalHeader:{self.AdditionalHeader})'
 
     __repr__ = __str__
 
@@ -3544,7 +3544,7 @@ class ServiceFault(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ServiceFault(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
+        return 'ServiceFault(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
@@ -3580,7 +3580,7 @@ class SessionlessInvokeRequestType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SessionlessInvokeRequestType(UrisVersion:{self.UrisVersion}, NamespaceUris:{self.NamespaceUris}, ServerUris:{self.ServerUris}, LocaleIds:{self.LocaleIds}, ServiceId:{self.ServiceId})'
+        return 'SessionlessInvokeRequestType(UrisVersion:{self.UrisVersion}, NamespaceUris:{self.NamespaceUris}, ServerUris:{self.ServerUris}, LocaleIds:{self.LocaleIds}, ServiceId:{self.ServiceId})'
 
     __repr__ = __str__
 
@@ -3608,7 +3608,7 @@ class SessionlessInvokeResponseType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SessionlessInvokeResponseType(NamespaceUris:{self.NamespaceUris}, ServerUris:{self.ServerUris}, ServiceId:{self.ServiceId})'
+        return 'SessionlessInvokeResponseType(NamespaceUris:{self.NamespaceUris}, ServerUris:{self.ServerUris}, ServiceId:{self.ServiceId})'
 
     __repr__ = __str__
 
@@ -3636,7 +3636,7 @@ class FindServersParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'FindServersParameters(EndpointUrl:{self.EndpointUrl}, LocaleIds:{self.LocaleIds}, ServerUris:{self.ServerUris})'
+        return 'FindServersParameters(EndpointUrl:{self.EndpointUrl}, LocaleIds:{self.LocaleIds}, ServerUris:{self.ServerUris})'
 
     __repr__ = __str__
 
@@ -3664,7 +3664,7 @@ class FindServersRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'FindServersRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'FindServersRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -3692,7 +3692,7 @@ class FindServersResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'FindServersResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Servers:{self.Servers})'
+        return 'FindServersResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Servers:{self.Servers})'
 
     __repr__ = __str__
 
@@ -3724,7 +3724,7 @@ class ServerOnNetwork(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ServerOnNetwork(RecordId:{self.RecordId}, ServerName:{self.ServerName}, DiscoveryUrl:{self.DiscoveryUrl}, ServerCapabilities:{self.ServerCapabilities})'
+        return 'ServerOnNetwork(RecordId:{self.RecordId}, ServerName:{self.ServerName}, DiscoveryUrl:{self.DiscoveryUrl}, ServerCapabilities:{self.ServerCapabilities})'
 
     __repr__ = __str__
 
@@ -3752,7 +3752,7 @@ class FindServersOnNetworkParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'FindServersOnNetworkParameters(StartingRecordId:{self.StartingRecordId}, MaxRecordsToReturn:{self.MaxRecordsToReturn}, ServerCapabilityFilter:{self.ServerCapabilityFilter})'
+        return 'FindServersOnNetworkParameters(StartingRecordId:{self.StartingRecordId}, MaxRecordsToReturn:{self.MaxRecordsToReturn}, ServerCapabilityFilter:{self.ServerCapabilityFilter})'
 
     __repr__ = __str__
 
@@ -3780,7 +3780,7 @@ class FindServersOnNetworkRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'FindServersOnNetworkRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'FindServersOnNetworkRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -3804,7 +3804,7 @@ class FindServersOnNetworkResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'FindServersOnNetworkResult(LastCounterResetTime:{self.LastCounterResetTime}, Servers:{self.Servers})'
+        return 'FindServersOnNetworkResult(LastCounterResetTime:{self.LastCounterResetTime}, Servers:{self.Servers})'
 
     __repr__ = __str__
 
@@ -3832,7 +3832,7 @@ class FindServersOnNetworkResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'FindServersOnNetworkResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'FindServersOnNetworkResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -3868,7 +3868,7 @@ class UserTokenPolicy(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'UserTokenPolicy(PolicyId:{self.PolicyId}, TokenType:{self.TokenType}, IssuedTokenType:{self.IssuedTokenType}, IssuerEndpointUrl:{self.IssuerEndpointUrl}, SecurityPolicyUri:{self.SecurityPolicyUri})'
+        return 'UserTokenPolicy(PolicyId:{self.PolicyId}, TokenType:{self.TokenType}, IssuedTokenType:{self.IssuedTokenType}, IssuerEndpointUrl:{self.IssuerEndpointUrl}, SecurityPolicyUri:{self.SecurityPolicyUri})'
 
     __repr__ = __str__
 
@@ -3916,7 +3916,7 @@ class EndpointDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'EndpointDescription(EndpointUrl:{self.EndpointUrl}, Server:{self.Server}, ServerCertificate:{self.ServerCertificate}, SecurityMode:{self.SecurityMode}, SecurityPolicyUri:{self.SecurityPolicyUri}, UserIdentityTokens:{self.UserIdentityTokens}, TransportProfileUri:{self.TransportProfileUri}, SecurityLevel:{self.SecurityLevel})'
+        return 'EndpointDescription(EndpointUrl:{self.EndpointUrl}, Server:{self.Server}, ServerCertificate:{self.ServerCertificate}, SecurityMode:{self.SecurityMode}, SecurityPolicyUri:{self.SecurityPolicyUri}, UserIdentityTokens:{self.UserIdentityTokens}, TransportProfileUri:{self.TransportProfileUri}, SecurityLevel:{self.SecurityLevel})'
 
     __repr__ = __str__
 
@@ -3944,7 +3944,7 @@ class GetEndpointsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'GetEndpointsParameters(EndpointUrl:{self.EndpointUrl}, LocaleIds:{self.LocaleIds}, ProfileUris:{self.ProfileUris})'
+        return 'GetEndpointsParameters(EndpointUrl:{self.EndpointUrl}, LocaleIds:{self.LocaleIds}, ProfileUris:{self.ProfileUris})'
 
     __repr__ = __str__
 
@@ -3972,7 +3972,7 @@ class GetEndpointsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'GetEndpointsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'GetEndpointsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -4000,7 +4000,7 @@ class GetEndpointsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'GetEndpointsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Endpoints:{self.Endpoints})'
+        return 'GetEndpointsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Endpoints:{self.Endpoints})'
 
     __repr__ = __str__
 
@@ -4048,7 +4048,7 @@ class RegisteredServer(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RegisteredServer(ServerUri:{self.ServerUri}, ProductUri:{self.ProductUri}, ServerNames:{self.ServerNames}, ServerType:{self.ServerType}, GatewayServerUri:{self.GatewayServerUri}, DiscoveryUrls:{self.DiscoveryUrls}, SemaphoreFilePath:{self.SemaphoreFilePath}, IsOnline:{self.IsOnline})'
+        return 'RegisteredServer(ServerUri:{self.ServerUri}, ProductUri:{self.ProductUri}, ServerNames:{self.ServerNames}, ServerType:{self.ServerType}, GatewayServerUri:{self.GatewayServerUri}, DiscoveryUrls:{self.DiscoveryUrls}, SemaphoreFilePath:{self.SemaphoreFilePath}, IsOnline:{self.IsOnline})'
 
     __repr__ = __str__
 
@@ -4076,7 +4076,7 @@ class RegisterServerRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RegisterServerRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Server:{self.Server})'
+        return 'RegisterServerRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Server:{self.Server})'
 
     __repr__ = __str__
 
@@ -4100,7 +4100,7 @@ class RegisterServerResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RegisterServerResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
+        return 'RegisterServerResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
@@ -4140,7 +4140,7 @@ class MdnsDiscoveryConfiguration(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'MdnsDiscoveryConfiguration(MdnsServerName:{self.MdnsServerName}, ServerCapabilities:{self.ServerCapabilities})'
+        return 'MdnsDiscoveryConfiguration(MdnsServerName:{self.MdnsServerName}, ServerCapabilities:{self.ServerCapabilities})'
 
     __repr__ = __str__
 
@@ -4164,7 +4164,7 @@ class RegisterServer2Parameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RegisterServer2Parameters(Server:{self.Server}, DiscoveryConfiguration:{self.DiscoveryConfiguration})'
+        return 'RegisterServer2Parameters(Server:{self.Server}, DiscoveryConfiguration:{self.DiscoveryConfiguration})'
 
     __repr__ = __str__
 
@@ -4192,7 +4192,7 @@ class RegisterServer2Request(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RegisterServer2Request(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'RegisterServer2Request(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -4224,7 +4224,7 @@ class RegisterServer2Response(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RegisterServer2Response(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, ConfigurationResults:{self.ConfigurationResults}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'RegisterServer2Response(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, ConfigurationResults:{self.ConfigurationResults}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -4256,7 +4256,7 @@ class ChannelSecurityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ChannelSecurityToken(ChannelId:{self.ChannelId}, TokenId:{self.TokenId}, CreatedAt:{self.CreatedAt}, RevisedLifetime:{self.RevisedLifetime})'
+        return 'ChannelSecurityToken(ChannelId:{self.ChannelId}, TokenId:{self.TokenId}, CreatedAt:{self.CreatedAt}, RevisedLifetime:{self.RevisedLifetime})'
 
     __repr__ = __str__
 
@@ -4292,7 +4292,7 @@ class OpenSecureChannelParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'OpenSecureChannelParameters(ClientProtocolVersion:{self.ClientProtocolVersion}, RequestType:{self.RequestType}, SecurityMode:{self.SecurityMode}, ClientNonce:{self.ClientNonce}, RequestedLifetime:{self.RequestedLifetime})'
+        return 'OpenSecureChannelParameters(ClientProtocolVersion:{self.ClientProtocolVersion}, RequestType:{self.RequestType}, SecurityMode:{self.SecurityMode}, ClientNonce:{self.ClientNonce}, RequestedLifetime:{self.RequestedLifetime})'
 
     __repr__ = __str__
 
@@ -4320,7 +4320,7 @@ class OpenSecureChannelRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'OpenSecureChannelRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'OpenSecureChannelRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -4348,7 +4348,7 @@ class OpenSecureChannelResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'OpenSecureChannelResult(ServerProtocolVersion:{self.ServerProtocolVersion}, SecurityToken:{self.SecurityToken}, ServerNonce:{self.ServerNonce})'
+        return 'OpenSecureChannelResult(ServerProtocolVersion:{self.ServerProtocolVersion}, SecurityToken:{self.SecurityToken}, ServerNonce:{self.ServerNonce})'
 
     __repr__ = __str__
 
@@ -4376,7 +4376,7 @@ class OpenSecureChannelResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'OpenSecureChannelResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'OpenSecureChannelResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -4400,7 +4400,7 @@ class CloseSecureChannelRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CloseSecureChannelRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader})'
+        return 'CloseSecureChannelRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader})'
 
     __repr__ = __str__
 
@@ -4424,7 +4424,7 @@ class CloseSecureChannelResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CloseSecureChannelResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
+        return 'CloseSecureChannelResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
@@ -4448,7 +4448,7 @@ class SignedSoftwareCertificate(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SignedSoftwareCertificate(CertificateData:{self.CertificateData}, Signature:{self.Signature})'
+        return 'SignedSoftwareCertificate(CertificateData:{self.CertificateData}, Signature:{self.Signature})'
 
     __repr__ = __str__
 
@@ -4472,7 +4472,7 @@ class SignatureData(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SignatureData(Algorithm:{self.Algorithm}, Signature:{self.Signature})'
+        return 'SignatureData(Algorithm:{self.Algorithm}, Signature:{self.Signature})'
 
     __repr__ = __str__
 
@@ -4520,7 +4520,7 @@ class CreateSessionParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CreateSessionParameters(ClientDescription:{self.ClientDescription}, ServerUri:{self.ServerUri}, EndpointUrl:{self.EndpointUrl}, SessionName:{self.SessionName}, ClientNonce:{self.ClientNonce}, ClientCertificate:{self.ClientCertificate}, RequestedSessionTimeout:{self.RequestedSessionTimeout}, MaxResponseMessageSize:{self.MaxResponseMessageSize})'
+        return 'CreateSessionParameters(ClientDescription:{self.ClientDescription}, ServerUri:{self.ServerUri}, EndpointUrl:{self.EndpointUrl}, SessionName:{self.SessionName}, ClientNonce:{self.ClientNonce}, ClientCertificate:{self.ClientCertificate}, RequestedSessionTimeout:{self.RequestedSessionTimeout}, MaxResponseMessageSize:{self.MaxResponseMessageSize})'
 
     __repr__ = __str__
 
@@ -4548,7 +4548,7 @@ class CreateSessionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CreateSessionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'CreateSessionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -4600,7 +4600,7 @@ class CreateSessionResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CreateSessionResult(SessionId:{self.SessionId}, AuthenticationToken:{self.AuthenticationToken}, RevisedSessionTimeout:{self.RevisedSessionTimeout}, ServerNonce:{self.ServerNonce}, ServerCertificate:{self.ServerCertificate}, ServerEndpoints:{self.ServerEndpoints}, ServerSoftwareCertificates:{self.ServerSoftwareCertificates}, ServerSignature:{self.ServerSignature}, MaxRequestMessageSize:{self.MaxRequestMessageSize})'
+        return 'CreateSessionResult(SessionId:{self.SessionId}, AuthenticationToken:{self.AuthenticationToken}, RevisedSessionTimeout:{self.RevisedSessionTimeout}, ServerNonce:{self.ServerNonce}, ServerCertificate:{self.ServerCertificate}, ServerEndpoints:{self.ServerEndpoints}, ServerSoftwareCertificates:{self.ServerSoftwareCertificates}, ServerSignature:{self.ServerSignature}, MaxRequestMessageSize:{self.MaxRequestMessageSize})'
 
     __repr__ = __str__
 
@@ -4628,7 +4628,7 @@ class CreateSessionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CreateSessionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'CreateSessionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -4648,7 +4648,7 @@ class UserIdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'UserIdentityToken(PolicyId:{self.PolicyId})'
+        return 'UserIdentityToken(PolicyId:{self.PolicyId})'
 
     __repr__ = __str__
 
@@ -4668,7 +4668,7 @@ class AnonymousIdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AnonymousIdentityToken(PolicyId:{self.PolicyId})'
+        return 'AnonymousIdentityToken(PolicyId:{self.PolicyId})'
 
     __repr__ = __str__
 
@@ -4700,7 +4700,7 @@ class UserNameIdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'UserNameIdentityToken(PolicyId:{self.PolicyId}, UserName:{self.UserName}, Password:{self.Password}, EncryptionAlgorithm:{self.EncryptionAlgorithm})'
+        return 'UserNameIdentityToken(PolicyId:{self.PolicyId}, UserName:{self.UserName}, Password:{self.Password}, EncryptionAlgorithm:{self.EncryptionAlgorithm})'
 
     __repr__ = __str__
 
@@ -4724,7 +4724,7 @@ class X509IdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'X509IdentityToken(PolicyId:{self.PolicyId}, CertificateData:{self.CertificateData})'
+        return 'X509IdentityToken(PolicyId:{self.PolicyId}, CertificateData:{self.CertificateData})'
 
     __repr__ = __str__
 
@@ -4752,7 +4752,7 @@ class IssuedIdentityToken(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'IssuedIdentityToken(PolicyId:{self.PolicyId}, TokenData:{self.TokenData}, EncryptionAlgorithm:{self.EncryptionAlgorithm})'
+        return 'IssuedIdentityToken(PolicyId:{self.PolicyId}, TokenData:{self.TokenData}, EncryptionAlgorithm:{self.EncryptionAlgorithm})'
 
     __repr__ = __str__
 
@@ -4788,7 +4788,7 @@ class ActivateSessionParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ActivateSessionParameters(ClientSignature:{self.ClientSignature}, ClientSoftwareCertificates:{self.ClientSoftwareCertificates}, LocaleIds:{self.LocaleIds}, UserIdentityToken:{self.UserIdentityToken}, UserTokenSignature:{self.UserTokenSignature})'
+        return 'ActivateSessionParameters(ClientSignature:{self.ClientSignature}, ClientSoftwareCertificates:{self.ClientSoftwareCertificates}, LocaleIds:{self.LocaleIds}, UserIdentityToken:{self.UserIdentityToken}, UserTokenSignature:{self.UserTokenSignature})'
 
     __repr__ = __str__
 
@@ -4816,7 +4816,7 @@ class ActivateSessionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ActivateSessionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'ActivateSessionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -4844,7 +4844,7 @@ class ActivateSessionResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ActivateSessionResult(ServerNonce:{self.ServerNonce}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'ActivateSessionResult(ServerNonce:{self.ServerNonce}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -4872,7 +4872,7 @@ class ActivateSessionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ActivateSessionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'ActivateSessionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -4900,7 +4900,7 @@ class CloseSessionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CloseSessionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, DeleteSubscriptions:{self.DeleteSubscriptions})'
+        return 'CloseSessionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, DeleteSubscriptions:{self.DeleteSubscriptions})'
 
     __repr__ = __str__
 
@@ -4924,7 +4924,7 @@ class CloseSessionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CloseSessionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
+        return 'CloseSessionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
@@ -4944,7 +4944,7 @@ class CancelParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CancelParameters(RequestHandle:{self.RequestHandle})'
+        return 'CancelParameters(RequestHandle:{self.RequestHandle})'
 
     __repr__ = __str__
 
@@ -4972,7 +4972,7 @@ class CancelRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CancelRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'CancelRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -4992,7 +4992,7 @@ class CancelResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CancelResult(CancelCount:{self.CancelCount})'
+        return 'CancelResult(CancelCount:{self.CancelCount})'
 
     __repr__ = __str__
 
@@ -5020,7 +5020,7 @@ class CancelResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CancelResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'CancelResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -5056,7 +5056,7 @@ class NodeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'NodeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask})'
+        return 'NodeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask})'
 
     __repr__ = __str__
 
@@ -5096,7 +5096,7 @@ class ObjectAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ObjectAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, EventNotifier:{self.EventNotifier})'
+        return 'ObjectAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, EventNotifier:{self.EventNotifier})'
 
     __repr__ = __str__
 
@@ -5164,7 +5164,7 @@ class VariableAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'VariableAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, Value:{self.Value}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, AccessLevel:{self.AccessLevel}, UserAccessLevel:{self.UserAccessLevel}, MinimumSamplingInterval:{self.MinimumSamplingInterval}, Historizing:{self.Historizing})'
+        return 'VariableAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, Value:{self.Value}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, AccessLevel:{self.AccessLevel}, UserAccessLevel:{self.UserAccessLevel}, MinimumSamplingInterval:{self.MinimumSamplingInterval}, Historizing:{self.Historizing})'
 
     __repr__ = __str__
 
@@ -5208,7 +5208,7 @@ class MethodAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'MethodAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, Executable:{self.Executable}, UserExecutable:{self.UserExecutable})'
+        return 'MethodAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, Executable:{self.Executable}, UserExecutable:{self.UserExecutable})'
 
     __repr__ = __str__
 
@@ -5248,7 +5248,7 @@ class ObjectTypeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ObjectTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, IsAbstract:{self.IsAbstract})'
+        return 'ObjectTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, IsAbstract:{self.IsAbstract})'
 
     __repr__ = __str__
 
@@ -5304,7 +5304,7 @@ class VariableTypeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'VariableTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, Value:{self.Value}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, IsAbstract:{self.IsAbstract})'
+        return 'VariableTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, Value:{self.Value}, DataType:{self.DataType}, ValueRank:{self.ValueRank}, ArrayDimensions:{self.ArrayDimensions}, IsAbstract:{self.IsAbstract})'
 
     __repr__ = __str__
 
@@ -5352,7 +5352,7 @@ class ReferenceTypeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ReferenceTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, IsAbstract:{self.IsAbstract}, Symmetric:{self.Symmetric}, InverseName:{self.InverseName})'
+        return 'ReferenceTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, IsAbstract:{self.IsAbstract}, Symmetric:{self.Symmetric}, InverseName:{self.InverseName})'
 
     __repr__ = __str__
 
@@ -5392,7 +5392,7 @@ class DataTypeAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DataTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, IsAbstract:{self.IsAbstract})'
+        return 'DataTypeAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, IsAbstract:{self.IsAbstract})'
 
     __repr__ = __str__
 
@@ -5436,7 +5436,7 @@ class ViewAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ViewAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, ContainsNoLoops:{self.ContainsNoLoops}, EventNotifier:{self.EventNotifier})'
+        return 'ViewAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, ContainsNoLoops:{self.ContainsNoLoops}, EventNotifier:{self.EventNotifier})'
 
     __repr__ = __str__
 
@@ -5460,7 +5460,7 @@ class GenericAttributeValue(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'GenericAttributeValue(AttributeId:{self.AttributeId}, Value:{self.Value})'
+        return 'GenericAttributeValue(AttributeId:{self.AttributeId}, Value:{self.Value})'
 
     __repr__ = __str__
 
@@ -5500,7 +5500,7 @@ class GenericAttributes(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'GenericAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, AttributeValues:{self.AttributeValues})'
+        return 'GenericAttributes(SpecifiedAttributes:{self.SpecifiedAttributes}, DisplayName:{self.DisplayName}, Description:{self.Description}, WriteMask:{self.WriteMask}, UserWriteMask:{self.UserWriteMask}, AttributeValues:{self.AttributeValues})'
 
     __repr__ = __str__
 
@@ -5544,7 +5544,7 @@ class AddNodesItem(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AddNodesItem(ParentNodeId:{self.ParentNodeId}, ReferenceTypeId:{self.ReferenceTypeId}, RequestedNewNodeId:{self.RequestedNewNodeId}, BrowseName:{self.BrowseName}, NodeClass:{self.NodeClass}, NodeAttributes:{self.NodeAttributes}, TypeDefinition:{self.TypeDefinition})'
+        return 'AddNodesItem(ParentNodeId:{self.ParentNodeId}, ReferenceTypeId:{self.ReferenceTypeId}, RequestedNewNodeId:{self.RequestedNewNodeId}, BrowseName:{self.BrowseName}, NodeClass:{self.NodeClass}, NodeAttributes:{self.NodeAttributes}, TypeDefinition:{self.TypeDefinition})'
 
     __repr__ = __str__
 
@@ -5568,7 +5568,7 @@ class AddNodesResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AddNodesResult(StatusCode:{self.StatusCode}, AddedNodeId:{self.AddedNodeId})'
+        return 'AddNodesResult(StatusCode:{self.StatusCode}, AddedNodeId:{self.AddedNodeId})'
 
     __repr__ = __str__
 
@@ -5588,7 +5588,7 @@ class AddNodesParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AddNodesParameters(NodesToAdd:{self.NodesToAdd})'
+        return 'AddNodesParameters(NodesToAdd:{self.NodesToAdd})'
 
     __repr__ = __str__
 
@@ -5616,7 +5616,7 @@ class AddNodesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AddNodesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'AddNodesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -5648,7 +5648,7 @@ class AddNodesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AddNodesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'AddNodesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -5688,7 +5688,7 @@ class AddReferencesItem(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AddReferencesItem(SourceNodeId:{self.SourceNodeId}, ReferenceTypeId:{self.ReferenceTypeId}, IsForward:{self.IsForward}, TargetServerUri:{self.TargetServerUri}, TargetNodeId:{self.TargetNodeId}, TargetNodeClass:{self.TargetNodeClass})'
+        return 'AddReferencesItem(SourceNodeId:{self.SourceNodeId}, ReferenceTypeId:{self.ReferenceTypeId}, IsForward:{self.IsForward}, TargetServerUri:{self.TargetServerUri}, TargetNodeId:{self.TargetNodeId}, TargetNodeClass:{self.TargetNodeClass})'
 
     __repr__ = __str__
 
@@ -5708,7 +5708,7 @@ class AddReferencesParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AddReferencesParameters(ReferencesToAdd:{self.ReferencesToAdd})'
+        return 'AddReferencesParameters(ReferencesToAdd:{self.ReferencesToAdd})'
 
     __repr__ = __str__
 
@@ -5736,7 +5736,7 @@ class AddReferencesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AddReferencesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'AddReferencesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -5768,7 +5768,7 @@ class AddReferencesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AddReferencesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'AddReferencesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -5792,7 +5792,7 @@ class DeleteNodesItem(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteNodesItem(NodeId:{self.NodeId}, DeleteTargetReferences:{self.DeleteTargetReferences})'
+        return 'DeleteNodesItem(NodeId:{self.NodeId}, DeleteTargetReferences:{self.DeleteTargetReferences})'
 
     __repr__ = __str__
 
@@ -5812,7 +5812,7 @@ class DeleteNodesParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteNodesParameters(NodesToDelete:{self.NodesToDelete})'
+        return 'DeleteNodesParameters(NodesToDelete:{self.NodesToDelete})'
 
     __repr__ = __str__
 
@@ -5840,7 +5840,7 @@ class DeleteNodesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteNodesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'DeleteNodesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -5872,7 +5872,7 @@ class DeleteNodesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteNodesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'DeleteNodesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -5908,7 +5908,7 @@ class DeleteReferencesItem(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteReferencesItem(SourceNodeId:{self.SourceNodeId}, ReferenceTypeId:{self.ReferenceTypeId}, IsForward:{self.IsForward}, TargetNodeId:{self.TargetNodeId}, DeleteBidirectional:{self.DeleteBidirectional})'
+        return 'DeleteReferencesItem(SourceNodeId:{self.SourceNodeId}, ReferenceTypeId:{self.ReferenceTypeId}, IsForward:{self.IsForward}, TargetNodeId:{self.TargetNodeId}, DeleteBidirectional:{self.DeleteBidirectional})'
 
     __repr__ = __str__
 
@@ -5928,7 +5928,7 @@ class DeleteReferencesParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteReferencesParameters(ReferencesToDelete:{self.ReferencesToDelete})'
+        return 'DeleteReferencesParameters(ReferencesToDelete:{self.ReferencesToDelete})'
 
     __repr__ = __str__
 
@@ -5956,7 +5956,7 @@ class DeleteReferencesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteReferencesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'DeleteReferencesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -5980,7 +5980,7 @@ class DeleteReferencesResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteReferencesResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'DeleteReferencesResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -6008,7 +6008,7 @@ class DeleteReferencesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteReferencesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'DeleteReferencesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -6036,7 +6036,7 @@ class ViewDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ViewDescription(ViewId:{self.ViewId}, Timestamp:{self.Timestamp}, ViewVersion:{self.ViewVersion})'
+        return 'ViewDescription(ViewId:{self.ViewId}, Timestamp:{self.Timestamp}, ViewVersion:{self.ViewVersion})'
 
     __repr__ = __str__
 
@@ -6076,7 +6076,7 @@ class BrowseDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrowseDescription(NodeId:{self.NodeId}, BrowseDirection:{self.BrowseDirection}, ReferenceTypeId:{self.ReferenceTypeId}, IncludeSubtypes:{self.IncludeSubtypes}, NodeClassMask:{self.NodeClassMask}, ResultMask:{self.ResultMask})'
+        return 'BrowseDescription(NodeId:{self.NodeId}, BrowseDirection:{self.BrowseDirection}, ReferenceTypeId:{self.ReferenceTypeId}, IncludeSubtypes:{self.IncludeSubtypes}, NodeClassMask:{self.NodeClassMask}, ResultMask:{self.ResultMask})'
 
     __repr__ = __str__
 
@@ -6120,7 +6120,7 @@ class ReferenceDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ReferenceDescription(ReferenceTypeId:{self.ReferenceTypeId}, IsForward:{self.IsForward}, NodeId:{self.NodeId}, BrowseName:{self.BrowseName}, DisplayName:{self.DisplayName}, NodeClass:{self.NodeClass}, TypeDefinition:{self.TypeDefinition})'
+        return 'ReferenceDescription(ReferenceTypeId:{self.ReferenceTypeId}, IsForward:{self.IsForward}, NodeId:{self.NodeId}, BrowseName:{self.BrowseName}, DisplayName:{self.DisplayName}, NodeClass:{self.NodeClass}, TypeDefinition:{self.TypeDefinition})'
 
     __repr__ = __str__
 
@@ -6148,7 +6148,7 @@ class BrowseResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrowseResult(StatusCode:{self.StatusCode}, ContinuationPoint:{self.ContinuationPoint}, References:{self.References})'
+        return 'BrowseResult(StatusCode:{self.StatusCode}, ContinuationPoint:{self.ContinuationPoint}, References:{self.References})'
 
     __repr__ = __str__
 
@@ -6176,7 +6176,7 @@ class BrowseParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrowseParameters(View:{self.View}, RequestedMaxReferencesPerNode:{self.RequestedMaxReferencesPerNode}, NodesToBrowse:{self.NodesToBrowse})'
+        return 'BrowseParameters(View:{self.View}, RequestedMaxReferencesPerNode:{self.RequestedMaxReferencesPerNode}, NodesToBrowse:{self.NodesToBrowse})'
 
     __repr__ = __str__
 
@@ -6204,7 +6204,7 @@ class BrowseRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrowseRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'BrowseRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -6236,7 +6236,7 @@ class BrowseResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrowseResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'BrowseResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -6260,7 +6260,7 @@ class BrowseNextParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrowseNextParameters(ReleaseContinuationPoints:{self.ReleaseContinuationPoints}, ContinuationPoints:{self.ContinuationPoints})'
+        return 'BrowseNextParameters(ReleaseContinuationPoints:{self.ReleaseContinuationPoints}, ContinuationPoints:{self.ContinuationPoints})'
 
     __repr__ = __str__
 
@@ -6288,7 +6288,7 @@ class BrowseNextRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrowseNextRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'BrowseNextRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -6312,7 +6312,7 @@ class BrowseNextResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrowseNextResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'BrowseNextResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -6340,7 +6340,7 @@ class BrowseNextResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrowseNextResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'BrowseNextResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -6372,7 +6372,7 @@ class RelativePathElement(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RelativePathElement(ReferenceTypeId:{self.ReferenceTypeId}, IsInverse:{self.IsInverse}, IncludeSubtypes:{self.IncludeSubtypes}, TargetName:{self.TargetName})'
+        return 'RelativePathElement(ReferenceTypeId:{self.ReferenceTypeId}, IsInverse:{self.IsInverse}, IncludeSubtypes:{self.IncludeSubtypes}, TargetName:{self.TargetName})'
 
     __repr__ = __str__
 
@@ -6392,7 +6392,7 @@ class RelativePath(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RelativePath(Elements:{self.Elements})'
+        return 'RelativePath(Elements:{self.Elements})'
 
     __repr__ = __str__
 
@@ -6416,7 +6416,7 @@ class BrowsePath(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrowsePath(StartingNode:{self.StartingNode}, RelativePath:{self.RelativePath})'
+        return 'BrowsePath(StartingNode:{self.StartingNode}, RelativePath:{self.RelativePath})'
 
     __repr__ = __str__
 
@@ -6440,7 +6440,7 @@ class BrowsePathTarget(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrowsePathTarget(TargetId:{self.TargetId}, RemainingPathIndex:{self.RemainingPathIndex})'
+        return 'BrowsePathTarget(TargetId:{self.TargetId}, RemainingPathIndex:{self.RemainingPathIndex})'
 
     __repr__ = __str__
 
@@ -6464,7 +6464,7 @@ class BrowsePathResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BrowsePathResult(StatusCode:{self.StatusCode}, Targets:{self.Targets})'
+        return 'BrowsePathResult(StatusCode:{self.StatusCode}, Targets:{self.Targets})'
 
     __repr__ = __str__
 
@@ -6484,7 +6484,7 @@ class TranslateBrowsePathsToNodeIdsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'TranslateBrowsePathsToNodeIdsParameters(BrowsePaths:{self.BrowsePaths})'
+        return 'TranslateBrowsePathsToNodeIdsParameters(BrowsePaths:{self.BrowsePaths})'
 
     __repr__ = __str__
 
@@ -6512,7 +6512,7 @@ class TranslateBrowsePathsToNodeIdsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'TranslateBrowsePathsToNodeIdsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'TranslateBrowsePathsToNodeIdsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -6544,7 +6544,7 @@ class TranslateBrowsePathsToNodeIdsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'TranslateBrowsePathsToNodeIdsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'TranslateBrowsePathsToNodeIdsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -6564,7 +6564,7 @@ class RegisterNodesParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RegisterNodesParameters(NodesToRegister:{self.NodesToRegister})'
+        return 'RegisterNodesParameters(NodesToRegister:{self.NodesToRegister})'
 
     __repr__ = __str__
 
@@ -6592,7 +6592,7 @@ class RegisterNodesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RegisterNodesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'RegisterNodesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -6612,7 +6612,7 @@ class RegisterNodesResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RegisterNodesResult(RegisteredNodeIds:{self.RegisteredNodeIds})'
+        return 'RegisterNodesResult(RegisteredNodeIds:{self.RegisteredNodeIds})'
 
     __repr__ = __str__
 
@@ -6640,7 +6640,7 @@ class RegisterNodesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RegisterNodesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'RegisterNodesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -6660,7 +6660,7 @@ class UnregisterNodesParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'UnregisterNodesParameters(NodesToUnregister:{self.NodesToUnregister})'
+        return 'UnregisterNodesParameters(NodesToUnregister:{self.NodesToUnregister})'
 
     __repr__ = __str__
 
@@ -6688,7 +6688,7 @@ class UnregisterNodesRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'UnregisterNodesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'UnregisterNodesRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -6712,7 +6712,7 @@ class UnregisterNodesResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'UnregisterNodesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
+        return 'UnregisterNodesResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader})'
 
     __repr__ = __str__
 
@@ -6764,7 +6764,7 @@ class EndpointConfiguration(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'EndpointConfiguration(OperationTimeout:{self.OperationTimeout}, UseBinaryEncoding:{self.UseBinaryEncoding}, MaxStringLength:{self.MaxStringLength}, MaxByteStringLength:{self.MaxByteStringLength}, MaxArrayLength:{self.MaxArrayLength}, MaxMessageSize:{self.MaxMessageSize}, MaxBufferSize:{self.MaxBufferSize}, ChannelLifetime:{self.ChannelLifetime}, SecurityTokenLifetime:{self.SecurityTokenLifetime})'
+        return 'EndpointConfiguration(OperationTimeout:{self.OperationTimeout}, UseBinaryEncoding:{self.UseBinaryEncoding}, MaxStringLength:{self.MaxStringLength}, MaxByteStringLength:{self.MaxByteStringLength}, MaxArrayLength:{self.MaxArrayLength}, MaxMessageSize:{self.MaxMessageSize}, MaxBufferSize:{self.MaxBufferSize}, ChannelLifetime:{self.ChannelLifetime}, SecurityTokenLifetime:{self.SecurityTokenLifetime})'
 
     __repr__ = __str__
 
@@ -6792,7 +6792,7 @@ class QueryDataDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'QueryDataDescription(RelativePath:{self.RelativePath}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange})'
+        return 'QueryDataDescription(RelativePath:{self.RelativePath}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange})'
 
     __repr__ = __str__
 
@@ -6820,7 +6820,7 @@ class NodeTypeDescription(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'NodeTypeDescription(TypeDefinitionNode:{self.TypeDefinitionNode}, IncludeSubTypes:{self.IncludeSubTypes}, DataToReturn:{self.DataToReturn})'
+        return 'NodeTypeDescription(TypeDefinitionNode:{self.TypeDefinitionNode}, IncludeSubTypes:{self.IncludeSubTypes}, DataToReturn:{self.DataToReturn})'
 
     __repr__ = __str__
 
@@ -6848,7 +6848,7 @@ class QueryDataSet(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'QueryDataSet(NodeId:{self.NodeId}, TypeDefinitionNode:{self.TypeDefinitionNode}, Values:{self.Values})'
+        return 'QueryDataSet(NodeId:{self.NodeId}, TypeDefinitionNode:{self.TypeDefinitionNode}, Values:{self.Values})'
 
     __repr__ = __str__
 
@@ -6880,7 +6880,7 @@ class NodeReference(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'NodeReference(NodeId:{self.NodeId}, ReferenceTypeId:{self.ReferenceTypeId}, IsForward:{self.IsForward}, ReferencedNodeIds:{self.ReferencedNodeIds})'
+        return 'NodeReference(NodeId:{self.NodeId}, ReferenceTypeId:{self.ReferenceTypeId}, IsForward:{self.IsForward}, ReferencedNodeIds:{self.ReferencedNodeIds})'
 
     __repr__ = __str__
 
@@ -6904,7 +6904,7 @@ class ContentFilterElement(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ContentFilterElement(FilterOperator:{self.FilterOperator}, FilterOperands:{self.FilterOperands})'
+        return 'ContentFilterElement(FilterOperator:{self.FilterOperator}, FilterOperands:{self.FilterOperands})'
 
     __repr__ = __str__
 
@@ -6924,7 +6924,7 @@ class ContentFilter(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ContentFilter(Elements:{self.Elements})'
+        return 'ContentFilter(Elements:{self.Elements})'
 
     __repr__ = __str__
 
@@ -6944,7 +6944,7 @@ class ElementOperand(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ElementOperand(Index:{self.Index})'
+        return 'ElementOperand(Index:{self.Index})'
 
     __repr__ = __str__
 
@@ -6964,7 +6964,7 @@ class LiteralOperand(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'LiteralOperand(Value:{self.Value})'
+        return 'LiteralOperand(Value:{self.Value})'
 
     __repr__ = __str__
 
@@ -7000,7 +7000,7 @@ class AttributeOperand(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AttributeOperand(NodeId:{self.NodeId}, Alias:{self.Alias}, BrowsePath:{self.BrowsePath}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange})'
+        return 'AttributeOperand(NodeId:{self.NodeId}, Alias:{self.Alias}, BrowsePath:{self.BrowsePath}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange})'
 
     __repr__ = __str__
 
@@ -7032,7 +7032,7 @@ class SimpleAttributeOperand(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SimpleAttributeOperand(TypeDefinitionId:{self.TypeDefinitionId}, BrowsePath:{self.BrowsePath}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange})'
+        return 'SimpleAttributeOperand(TypeDefinitionId:{self.TypeDefinitionId}, BrowsePath:{self.BrowsePath}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange})'
 
     __repr__ = __str__
 
@@ -7060,7 +7060,7 @@ class ContentFilterElementResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ContentFilterElementResult(StatusCode:{self.StatusCode}, OperandStatusCodes:{self.OperandStatusCodes}, OperandDiagnosticInfos:{self.OperandDiagnosticInfos})'
+        return 'ContentFilterElementResult(StatusCode:{self.StatusCode}, OperandStatusCodes:{self.OperandStatusCodes}, OperandDiagnosticInfos:{self.OperandDiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -7084,7 +7084,7 @@ class ContentFilterResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ContentFilterResult(ElementResults:{self.ElementResults}, ElementDiagnosticInfos:{self.ElementDiagnosticInfos})'
+        return 'ContentFilterResult(ElementResults:{self.ElementResults}, ElementDiagnosticInfos:{self.ElementDiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -7112,7 +7112,7 @@ class ParsingResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ParsingResult(StatusCode:{self.StatusCode}, DataStatusCodes:{self.DataStatusCodes}, DataDiagnosticInfos:{self.DataDiagnosticInfos})'
+        return 'ParsingResult(StatusCode:{self.StatusCode}, DataStatusCodes:{self.DataStatusCodes}, DataDiagnosticInfos:{self.DataDiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -7148,7 +7148,7 @@ class QueryFirstParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'QueryFirstParameters(View:{self.View}, NodeTypes:{self.NodeTypes}, Filter:{self.Filter}, MaxDataSetsToReturn:{self.MaxDataSetsToReturn}, MaxReferencesToReturn:{self.MaxReferencesToReturn})'
+        return 'QueryFirstParameters(View:{self.View}, NodeTypes:{self.NodeTypes}, Filter:{self.Filter}, MaxDataSetsToReturn:{self.MaxDataSetsToReturn}, MaxReferencesToReturn:{self.MaxReferencesToReturn})'
 
     __repr__ = __str__
 
@@ -7176,7 +7176,7 @@ class QueryFirstRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'QueryFirstRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'QueryFirstRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -7212,7 +7212,7 @@ class QueryFirstResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'QueryFirstResult(QueryDataSets:{self.QueryDataSets}, ContinuationPoint:{self.ContinuationPoint}, ParsingResults:{self.ParsingResults}, DiagnosticInfos:{self.DiagnosticInfos}, FilterResult:{self.FilterResult})'
+        return 'QueryFirstResult(QueryDataSets:{self.QueryDataSets}, ContinuationPoint:{self.ContinuationPoint}, ParsingResults:{self.ParsingResults}, DiagnosticInfos:{self.DiagnosticInfos}, FilterResult:{self.FilterResult})'
 
     __repr__ = __str__
 
@@ -7240,7 +7240,7 @@ class QueryFirstResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'QueryFirstResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'QueryFirstResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -7264,7 +7264,7 @@ class QueryNextParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'QueryNextParameters(ReleaseContinuationPoint:{self.ReleaseContinuationPoint}, ContinuationPoint:{self.ContinuationPoint})'
+        return 'QueryNextParameters(ReleaseContinuationPoint:{self.ReleaseContinuationPoint}, ContinuationPoint:{self.ContinuationPoint})'
 
     __repr__ = __str__
 
@@ -7292,7 +7292,7 @@ class QueryNextRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'QueryNextRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'QueryNextRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -7316,7 +7316,7 @@ class QueryNextResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'QueryNextResult(QueryDataSets:{self.QueryDataSets}, RevisedContinuationPoint:{self.RevisedContinuationPoint})'
+        return 'QueryNextResult(QueryDataSets:{self.QueryDataSets}, RevisedContinuationPoint:{self.RevisedContinuationPoint})'
 
     __repr__ = __str__
 
@@ -7344,7 +7344,7 @@ class QueryNextResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'QueryNextResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'QueryNextResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -7376,7 +7376,7 @@ class ReadValueId(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ReadValueId(NodeId:{self.NodeId}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange}, DataEncoding:{self.DataEncoding})'
+        return 'ReadValueId(NodeId:{self.NodeId}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange}, DataEncoding:{self.DataEncoding})'
 
     __repr__ = __str__
 
@@ -7404,7 +7404,7 @@ class ReadParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ReadParameters(MaxAge:{self.MaxAge}, TimestampsToReturn:{self.TimestampsToReturn}, NodesToRead:{self.NodesToRead})'
+        return 'ReadParameters(MaxAge:{self.MaxAge}, TimestampsToReturn:{self.TimestampsToReturn}, NodesToRead:{self.NodesToRead})'
 
     __repr__ = __str__
 
@@ -7432,7 +7432,7 @@ class ReadRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ReadRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'ReadRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -7464,7 +7464,7 @@ class ReadResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ReadResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'ReadResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -7496,7 +7496,7 @@ class HistoryReadValueId(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'HistoryReadValueId(NodeId:{self.NodeId}, IndexRange:{self.IndexRange}, DataEncoding:{self.DataEncoding}, ContinuationPoint:{self.ContinuationPoint})'
+        return 'HistoryReadValueId(NodeId:{self.NodeId}, IndexRange:{self.IndexRange}, DataEncoding:{self.DataEncoding}, ContinuationPoint:{self.ContinuationPoint})'
 
     __repr__ = __str__
 
@@ -7524,7 +7524,7 @@ class HistoryReadResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'HistoryReadResult(StatusCode:{self.StatusCode}, ContinuationPoint:{self.ContinuationPoint}, HistoryData:{self.HistoryData})'
+        return 'HistoryReadResult(StatusCode:{self.StatusCode}, ContinuationPoint:{self.ContinuationPoint}, HistoryData:{self.HistoryData})'
 
     __repr__ = __str__
 
@@ -7572,7 +7572,7 @@ class ReadEventDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ReadEventDetails(NumValuesPerNode:{self.NumValuesPerNode}, StartTime:{self.StartTime}, EndTime:{self.EndTime}, Filter:{self.Filter})'
+        return 'ReadEventDetails(NumValuesPerNode:{self.NumValuesPerNode}, StartTime:{self.StartTime}, EndTime:{self.EndTime}, Filter:{self.Filter})'
 
     __repr__ = __str__
 
@@ -7608,7 +7608,7 @@ class ReadRawModifiedDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ReadRawModifiedDetails(IsReadModified:{self.IsReadModified}, StartTime:{self.StartTime}, EndTime:{self.EndTime}, NumValuesPerNode:{self.NumValuesPerNode}, ReturnBounds:{self.ReturnBounds})'
+        return 'ReadRawModifiedDetails(IsReadModified:{self.IsReadModified}, StartTime:{self.StartTime}, EndTime:{self.EndTime}, NumValuesPerNode:{self.NumValuesPerNode}, ReturnBounds:{self.ReturnBounds})'
 
     __repr__ = __str__
 
@@ -7644,7 +7644,7 @@ class ReadProcessedDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ReadProcessedDetails(StartTime:{self.StartTime}, EndTime:{self.EndTime}, ProcessingInterval:{self.ProcessingInterval}, AggregateType:{self.AggregateType}, AggregateConfiguration:{self.AggregateConfiguration})'
+        return 'ReadProcessedDetails(StartTime:{self.StartTime}, EndTime:{self.EndTime}, ProcessingInterval:{self.ProcessingInterval}, AggregateType:{self.AggregateType}, AggregateConfiguration:{self.AggregateConfiguration})'
 
     __repr__ = __str__
 
@@ -7668,7 +7668,7 @@ class ReadAtTimeDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ReadAtTimeDetails(ReqTimes:{self.ReqTimes}, UseSimpleBounds:{self.UseSimpleBounds})'
+        return 'ReadAtTimeDetails(ReqTimes:{self.ReqTimes}, UseSimpleBounds:{self.UseSimpleBounds})'
 
     __repr__ = __str__
 
@@ -7688,7 +7688,7 @@ class ReadAnnotationDataDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ReadAnnotationDataDetails(ReqTimes:{self.ReqTimes})'
+        return 'ReadAnnotationDataDetails(ReqTimes:{self.ReqTimes})'
 
     __repr__ = __str__
 
@@ -7708,7 +7708,7 @@ class HistoryData(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'HistoryData(DataValues:{self.DataValues})'
+        return 'HistoryData(DataValues:{self.DataValues})'
 
     __repr__ = __str__
 
@@ -7736,7 +7736,7 @@ class ModificationInfo(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ModificationInfo(ModificationTime:{self.ModificationTime}, UpdateType:{self.UpdateType}, UserName:{self.UserName})'
+        return 'ModificationInfo(ModificationTime:{self.ModificationTime}, UpdateType:{self.UpdateType}, UserName:{self.UserName})'
 
     __repr__ = __str__
 
@@ -7760,7 +7760,7 @@ class HistoryModifiedData(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'HistoryModifiedData(DataValues:{self.DataValues}, ModificationInfos:{self.ModificationInfos})'
+        return 'HistoryModifiedData(DataValues:{self.DataValues}, ModificationInfos:{self.ModificationInfos})'
 
     __repr__ = __str__
 
@@ -7780,7 +7780,7 @@ class HistoryEvent(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'HistoryEvent(Events:{self.Events})'
+        return 'HistoryEvent(Events:{self.Events})'
 
     __repr__ = __str__
 
@@ -7812,7 +7812,7 @@ class HistoryReadParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'HistoryReadParameters(HistoryReadDetails:{self.HistoryReadDetails}, TimestampsToReturn:{self.TimestampsToReturn}, ReleaseContinuationPoints:{self.ReleaseContinuationPoints}, NodesToRead:{self.NodesToRead})'
+        return 'HistoryReadParameters(HistoryReadDetails:{self.HistoryReadDetails}, TimestampsToReturn:{self.TimestampsToReturn}, ReleaseContinuationPoints:{self.ReleaseContinuationPoints}, NodesToRead:{self.NodesToRead})'
 
     __repr__ = __str__
 
@@ -7840,7 +7840,7 @@ class HistoryReadRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'HistoryReadRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'HistoryReadRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -7872,7 +7872,7 @@ class HistoryReadResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'HistoryReadResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'HistoryReadResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -7904,7 +7904,7 @@ class WriteValue(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'WriteValue(NodeId:{self.NodeId}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange}, Value:{self.Value})'
+        return 'WriteValue(NodeId:{self.NodeId}, AttributeId:{self.AttributeId}, IndexRange:{self.IndexRange}, Value:{self.Value})'
 
     __repr__ = __str__
 
@@ -7924,7 +7924,7 @@ class WriteParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'WriteParameters(NodesToWrite:{self.NodesToWrite})'
+        return 'WriteParameters(NodesToWrite:{self.NodesToWrite})'
 
     __repr__ = __str__
 
@@ -7952,7 +7952,7 @@ class WriteRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'WriteRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'WriteRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -7984,7 +7984,7 @@ class WriteResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'WriteResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'WriteResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -8004,7 +8004,7 @@ class HistoryUpdateDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'HistoryUpdateDetails(NodeId:{self.NodeId})'
+        return 'HistoryUpdateDetails(NodeId:{self.NodeId})'
 
     __repr__ = __str__
 
@@ -8032,7 +8032,7 @@ class UpdateDataDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'UpdateDataDetails(NodeId:{self.NodeId}, PerformInsertReplace:{self.PerformInsertReplace}, UpdateValues:{self.UpdateValues})'
+        return 'UpdateDataDetails(NodeId:{self.NodeId}, PerformInsertReplace:{self.PerformInsertReplace}, UpdateValues:{self.UpdateValues})'
 
     __repr__ = __str__
 
@@ -8060,7 +8060,7 @@ class UpdateStructureDataDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'UpdateStructureDataDetails(NodeId:{self.NodeId}, PerformInsertReplace:{self.PerformInsertReplace}, UpdateValues:{self.UpdateValues})'
+        return 'UpdateStructureDataDetails(NodeId:{self.NodeId}, PerformInsertReplace:{self.PerformInsertReplace}, UpdateValues:{self.UpdateValues})'
 
     __repr__ = __str__
 
@@ -8092,7 +8092,7 @@ class UpdateEventDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'UpdateEventDetails(NodeId:{self.NodeId}, PerformInsertReplace:{self.PerformInsertReplace}, Filter:{self.Filter}, EventData:{self.EventData})'
+        return 'UpdateEventDetails(NodeId:{self.NodeId}, PerformInsertReplace:{self.PerformInsertReplace}, Filter:{self.Filter}, EventData:{self.EventData})'
 
     __repr__ = __str__
 
@@ -8124,7 +8124,7 @@ class DeleteRawModifiedDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteRawModifiedDetails(NodeId:{self.NodeId}, IsDeleteModified:{self.IsDeleteModified}, StartTime:{self.StartTime}, EndTime:{self.EndTime})'
+        return 'DeleteRawModifiedDetails(NodeId:{self.NodeId}, IsDeleteModified:{self.IsDeleteModified}, StartTime:{self.StartTime}, EndTime:{self.EndTime})'
 
     __repr__ = __str__
 
@@ -8148,7 +8148,7 @@ class DeleteAtTimeDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteAtTimeDetails(NodeId:{self.NodeId}, ReqTimes:{self.ReqTimes})'
+        return 'DeleteAtTimeDetails(NodeId:{self.NodeId}, ReqTimes:{self.ReqTimes})'
 
     __repr__ = __str__
 
@@ -8172,7 +8172,7 @@ class DeleteEventDetails(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteEventDetails(NodeId:{self.NodeId}, EventIds:{self.EventIds})'
+        return 'DeleteEventDetails(NodeId:{self.NodeId}, EventIds:{self.EventIds})'
 
     __repr__ = __str__
 
@@ -8200,7 +8200,7 @@ class HistoryUpdateResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'HistoryUpdateResult(StatusCode:{self.StatusCode}, OperationResults:{self.OperationResults}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'HistoryUpdateResult(StatusCode:{self.StatusCode}, OperationResults:{self.OperationResults}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -8220,7 +8220,7 @@ class HistoryUpdateParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'HistoryUpdateParameters(HistoryUpdateDetails:{self.HistoryUpdateDetails})'
+        return 'HistoryUpdateParameters(HistoryUpdateDetails:{self.HistoryUpdateDetails})'
 
     __repr__ = __str__
 
@@ -8248,7 +8248,7 @@ class HistoryUpdateRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'HistoryUpdateRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'HistoryUpdateRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -8280,7 +8280,7 @@ class HistoryUpdateResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'HistoryUpdateResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'HistoryUpdateResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -8308,7 +8308,7 @@ class CallMethodRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CallMethodRequest(ObjectId:{self.ObjectId}, MethodId:{self.MethodId}, InputArguments:{self.InputArguments})'
+        return 'CallMethodRequest(ObjectId:{self.ObjectId}, MethodId:{self.MethodId}, InputArguments:{self.InputArguments})'
 
     __repr__ = __str__
 
@@ -8340,7 +8340,7 @@ class CallMethodResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CallMethodResult(StatusCode:{self.StatusCode}, InputArgumentResults:{self.InputArgumentResults}, InputArgumentDiagnosticInfos:{self.InputArgumentDiagnosticInfos}, OutputArguments:{self.OutputArguments})'
+        return 'CallMethodResult(StatusCode:{self.StatusCode}, InputArgumentResults:{self.InputArgumentResults}, InputArgumentDiagnosticInfos:{self.InputArgumentDiagnosticInfos}, OutputArguments:{self.OutputArguments})'
 
     __repr__ = __str__
 
@@ -8360,7 +8360,7 @@ class CallParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CallParameters(MethodsToCall:{self.MethodsToCall})'
+        return 'CallParameters(MethodsToCall:{self.MethodsToCall})'
 
     __repr__ = __str__
 
@@ -8388,7 +8388,7 @@ class CallRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CallRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'CallRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -8420,7 +8420,7 @@ class CallResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CallResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'CallResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -8464,7 +8464,7 @@ class DataChangeFilter(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DataChangeFilter(Trigger:{self.Trigger}, DeadbandType:{self.DeadbandType}, DeadbandValue:{self.DeadbandValue})'
+        return 'DataChangeFilter(Trigger:{self.Trigger}, DeadbandType:{self.DeadbandType}, DeadbandValue:{self.DeadbandValue})'
 
     __repr__ = __str__
 
@@ -8488,7 +8488,7 @@ class EventFilter(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'EventFilter(SelectClauses:{self.SelectClauses}, WhereClause:{self.WhereClause})'
+        return 'EventFilter(SelectClauses:{self.SelectClauses}, WhereClause:{self.WhereClause})'
 
     __repr__ = __str__
 
@@ -8524,7 +8524,7 @@ class AggregateConfiguration(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AggregateConfiguration(UseServerCapabilitiesDefaults:{self.UseServerCapabilitiesDefaults}, TreatUncertainAsBad:{self.TreatUncertainAsBad}, PercentDataBad:{self.PercentDataBad}, PercentDataGood:{self.PercentDataGood}, UseSlopedExtrapolation:{self.UseSlopedExtrapolation})'
+        return 'AggregateConfiguration(UseServerCapabilitiesDefaults:{self.UseServerCapabilitiesDefaults}, TreatUncertainAsBad:{self.TreatUncertainAsBad}, PercentDataBad:{self.PercentDataBad}, PercentDataGood:{self.PercentDataGood}, UseSlopedExtrapolation:{self.UseSlopedExtrapolation})'
 
     __repr__ = __str__
 
@@ -8556,7 +8556,7 @@ class AggregateFilter(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AggregateFilter(StartTime:{self.StartTime}, AggregateType:{self.AggregateType}, ProcessingInterval:{self.ProcessingInterval}, AggregateConfiguration:{self.AggregateConfiguration})'
+        return 'AggregateFilter(StartTime:{self.StartTime}, AggregateType:{self.AggregateType}, ProcessingInterval:{self.ProcessingInterval}, AggregateConfiguration:{self.AggregateConfiguration})'
 
     __repr__ = __str__
 
@@ -8600,7 +8600,7 @@ class EventFilterResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'EventFilterResult(SelectClauseResults:{self.SelectClauseResults}, SelectClauseDiagnosticInfos:{self.SelectClauseDiagnosticInfos}, WhereClauseResult:{self.WhereClauseResult})'
+        return 'EventFilterResult(SelectClauseResults:{self.SelectClauseResults}, SelectClauseDiagnosticInfos:{self.SelectClauseDiagnosticInfos}, WhereClauseResult:{self.WhereClauseResult})'
 
     __repr__ = __str__
 
@@ -8628,7 +8628,7 @@ class AggregateFilterResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AggregateFilterResult(RevisedStartTime:{self.RevisedStartTime}, RevisedProcessingInterval:{self.RevisedProcessingInterval}, RevisedAggregateConfiguration:{self.RevisedAggregateConfiguration})'
+        return 'AggregateFilterResult(RevisedStartTime:{self.RevisedStartTime}, RevisedProcessingInterval:{self.RevisedProcessingInterval}, RevisedAggregateConfiguration:{self.RevisedAggregateConfiguration})'
 
     __repr__ = __str__
 
@@ -8664,7 +8664,7 @@ class MonitoringParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'MonitoringParameters(ClientHandle:{self.ClientHandle}, SamplingInterval:{self.SamplingInterval}, Filter:{self.Filter}, QueueSize:{self.QueueSize}, DiscardOldest:{self.DiscardOldest})'
+        return 'MonitoringParameters(ClientHandle:{self.ClientHandle}, SamplingInterval:{self.SamplingInterval}, Filter:{self.Filter}, QueueSize:{self.QueueSize}, DiscardOldest:{self.DiscardOldest})'
 
     __repr__ = __str__
 
@@ -8692,7 +8692,7 @@ class MonitoredItemCreateRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'MonitoredItemCreateRequest(ItemToMonitor:{self.ItemToMonitor}, MonitoringMode:{self.MonitoringMode}, RequestedParameters:{self.RequestedParameters})'
+        return 'MonitoredItemCreateRequest(ItemToMonitor:{self.ItemToMonitor}, MonitoringMode:{self.MonitoringMode}, RequestedParameters:{self.RequestedParameters})'
 
     __repr__ = __str__
 
@@ -8728,7 +8728,7 @@ class MonitoredItemCreateResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'MonitoredItemCreateResult(StatusCode:{self.StatusCode}, MonitoredItemId:{self.MonitoredItemId}, RevisedSamplingInterval:{self.RevisedSamplingInterval}, RevisedQueueSize:{self.RevisedQueueSize}, FilterResult:{self.FilterResult})'
+        return 'MonitoredItemCreateResult(StatusCode:{self.StatusCode}, MonitoredItemId:{self.MonitoredItemId}, RevisedSamplingInterval:{self.RevisedSamplingInterval}, RevisedQueueSize:{self.RevisedQueueSize}, FilterResult:{self.FilterResult})'
 
     __repr__ = __str__
 
@@ -8756,7 +8756,7 @@ class CreateMonitoredItemsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CreateMonitoredItemsParameters(SubscriptionId:{self.SubscriptionId}, TimestampsToReturn:{self.TimestampsToReturn}, ItemsToCreate:{self.ItemsToCreate})'
+        return 'CreateMonitoredItemsParameters(SubscriptionId:{self.SubscriptionId}, TimestampsToReturn:{self.TimestampsToReturn}, ItemsToCreate:{self.ItemsToCreate})'
 
     __repr__ = __str__
 
@@ -8784,7 +8784,7 @@ class CreateMonitoredItemsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CreateMonitoredItemsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'CreateMonitoredItemsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -8816,7 +8816,7 @@ class CreateMonitoredItemsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CreateMonitoredItemsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'CreateMonitoredItemsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -8840,7 +8840,7 @@ class MonitoredItemModifyRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'MonitoredItemModifyRequest(MonitoredItemId:{self.MonitoredItemId}, RequestedParameters:{self.RequestedParameters})'
+        return 'MonitoredItemModifyRequest(MonitoredItemId:{self.MonitoredItemId}, RequestedParameters:{self.RequestedParameters})'
 
     __repr__ = __str__
 
@@ -8872,7 +8872,7 @@ class MonitoredItemModifyResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'MonitoredItemModifyResult(StatusCode:{self.StatusCode}, RevisedSamplingInterval:{self.RevisedSamplingInterval}, RevisedQueueSize:{self.RevisedQueueSize}, FilterResult:{self.FilterResult})'
+        return 'MonitoredItemModifyResult(StatusCode:{self.StatusCode}, RevisedSamplingInterval:{self.RevisedSamplingInterval}, RevisedQueueSize:{self.RevisedQueueSize}, FilterResult:{self.FilterResult})'
 
     __repr__ = __str__
 
@@ -8900,7 +8900,7 @@ class ModifyMonitoredItemsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ModifyMonitoredItemsParameters(SubscriptionId:{self.SubscriptionId}, TimestampsToReturn:{self.TimestampsToReturn}, ItemsToModify:{self.ItemsToModify})'
+        return 'ModifyMonitoredItemsParameters(SubscriptionId:{self.SubscriptionId}, TimestampsToReturn:{self.TimestampsToReturn}, ItemsToModify:{self.ItemsToModify})'
 
     __repr__ = __str__
 
@@ -8928,7 +8928,7 @@ class ModifyMonitoredItemsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ModifyMonitoredItemsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'ModifyMonitoredItemsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -8960,7 +8960,7 @@ class ModifyMonitoredItemsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ModifyMonitoredItemsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'ModifyMonitoredItemsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -8988,7 +8988,7 @@ class SetMonitoringModeParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SetMonitoringModeParameters(SubscriptionId:{self.SubscriptionId}, MonitoringMode:{self.MonitoringMode}, MonitoredItemIds:{self.MonitoredItemIds})'
+        return 'SetMonitoringModeParameters(SubscriptionId:{self.SubscriptionId}, MonitoringMode:{self.MonitoringMode}, MonitoredItemIds:{self.MonitoredItemIds})'
 
     __repr__ = __str__
 
@@ -9016,7 +9016,7 @@ class SetMonitoringModeRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SetMonitoringModeRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'SetMonitoringModeRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -9040,7 +9040,7 @@ class SetMonitoringModeResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SetMonitoringModeResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'SetMonitoringModeResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -9068,7 +9068,7 @@ class SetMonitoringModeResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SetMonitoringModeResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'SetMonitoringModeResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -9100,7 +9100,7 @@ class SetTriggeringParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SetTriggeringParameters(SubscriptionId:{self.SubscriptionId}, TriggeringItemId:{self.TriggeringItemId}, LinksToAdd:{self.LinksToAdd}, LinksToRemove:{self.LinksToRemove})'
+        return 'SetTriggeringParameters(SubscriptionId:{self.SubscriptionId}, TriggeringItemId:{self.TriggeringItemId}, LinksToAdd:{self.LinksToAdd}, LinksToRemove:{self.LinksToRemove})'
 
     __repr__ = __str__
 
@@ -9128,7 +9128,7 @@ class SetTriggeringRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SetTriggeringRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'SetTriggeringRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -9160,7 +9160,7 @@ class SetTriggeringResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SetTriggeringResult(AddResults:{self.AddResults}, AddDiagnosticInfos:{self.AddDiagnosticInfos}, RemoveResults:{self.RemoveResults}, RemoveDiagnosticInfos:{self.RemoveDiagnosticInfos})'
+        return 'SetTriggeringResult(AddResults:{self.AddResults}, AddDiagnosticInfos:{self.AddDiagnosticInfos}, RemoveResults:{self.RemoveResults}, RemoveDiagnosticInfos:{self.RemoveDiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -9188,7 +9188,7 @@ class SetTriggeringResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SetTriggeringResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'SetTriggeringResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -9212,7 +9212,7 @@ class DeleteMonitoredItemsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteMonitoredItemsParameters(SubscriptionId:{self.SubscriptionId}, MonitoredItemIds:{self.MonitoredItemIds})'
+        return 'DeleteMonitoredItemsParameters(SubscriptionId:{self.SubscriptionId}, MonitoredItemIds:{self.MonitoredItemIds})'
 
     __repr__ = __str__
 
@@ -9240,7 +9240,7 @@ class DeleteMonitoredItemsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteMonitoredItemsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'DeleteMonitoredItemsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -9272,7 +9272,7 @@ class DeleteMonitoredItemsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteMonitoredItemsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'DeleteMonitoredItemsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -9312,7 +9312,7 @@ class CreateSubscriptionParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CreateSubscriptionParameters(RequestedPublishingInterval:{self.RequestedPublishingInterval}, RequestedLifetimeCount:{self.RequestedLifetimeCount}, RequestedMaxKeepAliveCount:{self.RequestedMaxKeepAliveCount}, MaxNotificationsPerPublish:{self.MaxNotificationsPerPublish}, PublishingEnabled:{self.PublishingEnabled}, Priority:{self.Priority})'
+        return 'CreateSubscriptionParameters(RequestedPublishingInterval:{self.RequestedPublishingInterval}, RequestedLifetimeCount:{self.RequestedLifetimeCount}, RequestedMaxKeepAliveCount:{self.RequestedMaxKeepAliveCount}, MaxNotificationsPerPublish:{self.MaxNotificationsPerPublish}, PublishingEnabled:{self.PublishingEnabled}, Priority:{self.Priority})'
 
     __repr__ = __str__
 
@@ -9340,7 +9340,7 @@ class CreateSubscriptionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CreateSubscriptionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'CreateSubscriptionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -9372,7 +9372,7 @@ class CreateSubscriptionResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CreateSubscriptionResult(SubscriptionId:{self.SubscriptionId}, RevisedPublishingInterval:{self.RevisedPublishingInterval}, RevisedLifetimeCount:{self.RevisedLifetimeCount}, RevisedMaxKeepAliveCount:{self.RevisedMaxKeepAliveCount})'
+        return 'CreateSubscriptionResult(SubscriptionId:{self.SubscriptionId}, RevisedPublishingInterval:{self.RevisedPublishingInterval}, RevisedLifetimeCount:{self.RevisedLifetimeCount}, RevisedMaxKeepAliveCount:{self.RevisedMaxKeepAliveCount})'
 
     __repr__ = __str__
 
@@ -9400,7 +9400,7 @@ class CreateSubscriptionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'CreateSubscriptionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'CreateSubscriptionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -9440,7 +9440,7 @@ class ModifySubscriptionParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ModifySubscriptionParameters(SubscriptionId:{self.SubscriptionId}, RequestedPublishingInterval:{self.RequestedPublishingInterval}, RequestedLifetimeCount:{self.RequestedLifetimeCount}, RequestedMaxKeepAliveCount:{self.RequestedMaxKeepAliveCount}, MaxNotificationsPerPublish:{self.MaxNotificationsPerPublish}, Priority:{self.Priority})'
+        return 'ModifySubscriptionParameters(SubscriptionId:{self.SubscriptionId}, RequestedPublishingInterval:{self.RequestedPublishingInterval}, RequestedLifetimeCount:{self.RequestedLifetimeCount}, RequestedMaxKeepAliveCount:{self.RequestedMaxKeepAliveCount}, MaxNotificationsPerPublish:{self.MaxNotificationsPerPublish}, Priority:{self.Priority})'
 
     __repr__ = __str__
 
@@ -9468,7 +9468,7 @@ class ModifySubscriptionRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ModifySubscriptionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'ModifySubscriptionRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -9496,7 +9496,7 @@ class ModifySubscriptionResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ModifySubscriptionResult(RevisedPublishingInterval:{self.RevisedPublishingInterval}, RevisedLifetimeCount:{self.RevisedLifetimeCount}, RevisedMaxKeepAliveCount:{self.RevisedMaxKeepAliveCount})'
+        return 'ModifySubscriptionResult(RevisedPublishingInterval:{self.RevisedPublishingInterval}, RevisedLifetimeCount:{self.RevisedLifetimeCount}, RevisedMaxKeepAliveCount:{self.RevisedMaxKeepAliveCount})'
 
     __repr__ = __str__
 
@@ -9524,7 +9524,7 @@ class ModifySubscriptionResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ModifySubscriptionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'ModifySubscriptionResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -9548,7 +9548,7 @@ class SetPublishingModeParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SetPublishingModeParameters(PublishingEnabled:{self.PublishingEnabled}, SubscriptionIds:{self.SubscriptionIds})'
+        return 'SetPublishingModeParameters(PublishingEnabled:{self.PublishingEnabled}, SubscriptionIds:{self.SubscriptionIds})'
 
     __repr__ = __str__
 
@@ -9576,7 +9576,7 @@ class SetPublishingModeRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SetPublishingModeRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'SetPublishingModeRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -9600,7 +9600,7 @@ class SetPublishingModeResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SetPublishingModeResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'SetPublishingModeResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -9628,7 +9628,7 @@ class SetPublishingModeResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SetPublishingModeResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'SetPublishingModeResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -9656,7 +9656,7 @@ class NotificationMessage(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'NotificationMessage(SequenceNumber:{self.SequenceNumber}, PublishTime:{self.PublishTime}, NotificationData:{self.NotificationData})'
+        return 'NotificationMessage(SequenceNumber:{self.SequenceNumber}, PublishTime:{self.PublishTime}, NotificationData:{self.NotificationData})'
 
     __repr__ = __str__
 
@@ -9696,7 +9696,7 @@ class DataChangeNotification(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DataChangeNotification(MonitoredItems:{self.MonitoredItems}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'DataChangeNotification(MonitoredItems:{self.MonitoredItems}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -9720,7 +9720,7 @@ class MonitoredItemNotification(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'MonitoredItemNotification(ClientHandle:{self.ClientHandle}, Value:{self.Value})'
+        return 'MonitoredItemNotification(ClientHandle:{self.ClientHandle}, Value:{self.Value})'
 
     __repr__ = __str__
 
@@ -9740,7 +9740,7 @@ class EventNotificationList(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'EventNotificationList(Events:{self.Events})'
+        return 'EventNotificationList(Events:{self.Events})'
 
     __repr__ = __str__
 
@@ -9764,7 +9764,7 @@ class EventFieldList(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'EventFieldList(ClientHandle:{self.ClientHandle}, EventFields:{self.EventFields})'
+        return 'EventFieldList(ClientHandle:{self.ClientHandle}, EventFields:{self.EventFields})'
 
     __repr__ = __str__
 
@@ -9784,7 +9784,7 @@ class HistoryEventFieldList(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'HistoryEventFieldList(EventFields:{self.EventFields})'
+        return 'HistoryEventFieldList(EventFields:{self.EventFields})'
 
     __repr__ = __str__
 
@@ -9808,7 +9808,7 @@ class StatusChangeNotification(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'StatusChangeNotification(Status:{self.Status}, DiagnosticInfo:{self.DiagnosticInfo})'
+        return 'StatusChangeNotification(Status:{self.Status}, DiagnosticInfo:{self.DiagnosticInfo})'
 
     __repr__ = __str__
 
@@ -9832,7 +9832,7 @@ class SubscriptionAcknowledgement(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SubscriptionAcknowledgement(SubscriptionId:{self.SubscriptionId}, SequenceNumber:{self.SequenceNumber})'
+        return 'SubscriptionAcknowledgement(SubscriptionId:{self.SubscriptionId}, SequenceNumber:{self.SequenceNumber})'
 
     __repr__ = __str__
 
@@ -9852,7 +9852,7 @@ class PublishParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'PublishParameters(SubscriptionAcknowledgements:{self.SubscriptionAcknowledgements})'
+        return 'PublishParameters(SubscriptionAcknowledgements:{self.SubscriptionAcknowledgements})'
 
     __repr__ = __str__
 
@@ -9880,7 +9880,7 @@ class PublishRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'PublishRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'PublishRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -9920,7 +9920,7 @@ class PublishResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -9948,7 +9948,7 @@ class PublishResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'PublishResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'PublishResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -9972,7 +9972,7 @@ class RepublishParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RepublishParameters(SubscriptionId:{self.SubscriptionId}, RetransmitSequenceNumber:{self.RetransmitSequenceNumber})'
+        return 'RepublishParameters(SubscriptionId:{self.SubscriptionId}, RetransmitSequenceNumber:{self.RetransmitSequenceNumber})'
 
     __repr__ = __str__
 
@@ -10000,7 +10000,7 @@ class RepublishRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RepublishRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'RepublishRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -10028,7 +10028,7 @@ class RepublishResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RepublishResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, NotificationMessage:{self.NotificationMessage})'
+        return 'RepublishResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, NotificationMessage:{self.NotificationMessage})'
 
     __repr__ = __str__
 
@@ -10052,7 +10052,7 @@ class TransferResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'TransferResult(StatusCode:{self.StatusCode}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers})'
+        return 'TransferResult(StatusCode:{self.StatusCode}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers})'
 
     __repr__ = __str__
 
@@ -10076,7 +10076,7 @@ class TransferSubscriptionsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'TransferSubscriptionsParameters(SubscriptionIds:{self.SubscriptionIds}, SendInitialValues:{self.SendInitialValues})'
+        return 'TransferSubscriptionsParameters(SubscriptionIds:{self.SubscriptionIds}, SendInitialValues:{self.SendInitialValues})'
 
     __repr__ = __str__
 
@@ -10104,7 +10104,7 @@ class TransferSubscriptionsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'TransferSubscriptionsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'TransferSubscriptionsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -10128,7 +10128,7 @@ class TransferSubscriptionsResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'TransferSubscriptionsResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'TransferSubscriptionsResult(Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -10156,7 +10156,7 @@ class TransferSubscriptionsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'TransferSubscriptionsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
+        return 'TransferSubscriptionsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -10176,7 +10176,7 @@ class DeleteSubscriptionsParameters(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteSubscriptionsParameters(SubscriptionIds:{self.SubscriptionIds})'
+        return 'DeleteSubscriptionsParameters(SubscriptionIds:{self.SubscriptionIds})'
 
     __repr__ = __str__
 
@@ -10204,7 +10204,7 @@ class DeleteSubscriptionsRequest(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteSubscriptionsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
+        return 'DeleteSubscriptionsRequest(TypeId:{self.TypeId}, RequestHeader:{self.RequestHeader}, Parameters:{self.Parameters})'
 
     __repr__ = __str__
 
@@ -10236,7 +10236,7 @@ class DeleteSubscriptionsResponse(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DeleteSubscriptionsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
+        return 'DeleteSubscriptionsResponse(TypeId:{self.TypeId}, ResponseHeader:{self.ResponseHeader}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})'
 
     __repr__ = __str__
 
@@ -10276,7 +10276,7 @@ class BuildInfo(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'BuildInfo(ProductUri:{self.ProductUri}, ManufacturerName:{self.ManufacturerName}, ProductName:{self.ProductName}, SoftwareVersion:{self.SoftwareVersion}, BuildNumber:{self.BuildNumber}, BuildDate:{self.BuildDate})'
+        return 'BuildInfo(ProductUri:{self.ProductUri}, ManufacturerName:{self.ManufacturerName}, ProductName:{self.ProductName}, SoftwareVersion:{self.SoftwareVersion}, BuildNumber:{self.BuildNumber}, BuildDate:{self.BuildDate})'
 
     __repr__ = __str__
 
@@ -10304,7 +10304,7 @@ class RedundantServerDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'RedundantServerDataType(ServerId:{self.ServerId}, ServiceLevel:{self.ServiceLevel}, ServerState:{self.ServerState})'
+        return 'RedundantServerDataType(ServerId:{self.ServerId}, ServiceLevel:{self.ServiceLevel}, ServerState:{self.ServerState})'
 
     __repr__ = __str__
 
@@ -10324,7 +10324,7 @@ class EndpointUrlListDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'EndpointUrlListDataType(EndpointUrlList:{self.EndpointUrlList})'
+        return 'EndpointUrlListDataType(EndpointUrlList:{self.EndpointUrlList})'
 
     __repr__ = __str__
 
@@ -10348,7 +10348,7 @@ class NetworkGroupDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'NetworkGroupDataType(ServerUri:{self.ServerUri}, NetworkPaths:{self.NetworkPaths})'
+        return 'NetworkGroupDataType(ServerUri:{self.ServerUri}, NetworkPaths:{self.NetworkPaths})'
 
     __repr__ = __str__
 
@@ -10380,7 +10380,7 @@ class SamplingIntervalDiagnosticsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SamplingIntervalDiagnosticsDataType(SamplingInterval:{self.SamplingInterval}, MonitoredItemCount:{self.MonitoredItemCount}, MaxMonitoredItemCount:{self.MaxMonitoredItemCount}, DisabledMonitoredItemCount:{self.DisabledMonitoredItemCount})'
+        return 'SamplingIntervalDiagnosticsDataType(SamplingInterval:{self.SamplingInterval}, MonitoredItemCount:{self.MonitoredItemCount}, MaxMonitoredItemCount:{self.MaxMonitoredItemCount}, DisabledMonitoredItemCount:{self.DisabledMonitoredItemCount})'
 
     __repr__ = __str__
 
@@ -10444,7 +10444,7 @@ class ServerDiagnosticsSummaryDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ServerDiagnosticsSummaryDataType(ServerViewCount:{self.ServerViewCount}, CurrentSessionCount:{self.CurrentSessionCount}, CumulatedSessionCount:{self.CumulatedSessionCount}, SecurityRejectedSessionCount:{self.SecurityRejectedSessionCount}, RejectedSessionCount:{self.RejectedSessionCount}, SessionTimeoutCount:{self.SessionTimeoutCount}, SessionAbortCount:{self.SessionAbortCount}, CurrentSubscriptionCount:{self.CurrentSubscriptionCount}, CumulatedSubscriptionCount:{self.CumulatedSubscriptionCount}, PublishingIntervalCount:{self.PublishingIntervalCount}, SecurityRejectedRequestsCount:{self.SecurityRejectedRequestsCount}, RejectedRequestsCount:{self.RejectedRequestsCount})'
+        return 'ServerDiagnosticsSummaryDataType(ServerViewCount:{self.ServerViewCount}, CurrentSessionCount:{self.CurrentSessionCount}, CumulatedSessionCount:{self.CumulatedSessionCount}, SecurityRejectedSessionCount:{self.SecurityRejectedSessionCount}, RejectedSessionCount:{self.RejectedSessionCount}, SessionTimeoutCount:{self.SessionTimeoutCount}, SessionAbortCount:{self.SessionAbortCount}, CurrentSubscriptionCount:{self.CurrentSubscriptionCount}, CumulatedSubscriptionCount:{self.CumulatedSubscriptionCount}, PublishingIntervalCount:{self.PublishingIntervalCount}, SecurityRejectedRequestsCount:{self.SecurityRejectedRequestsCount}, RejectedRequestsCount:{self.RejectedRequestsCount})'
 
     __repr__ = __str__
 
@@ -10484,7 +10484,7 @@ class ServerStatusDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ServerStatusDataType(StartTime:{self.StartTime}, CurrentTime:{self.CurrentTime}, State:{self.State}, BuildInfo:{self.BuildInfo}, SecondsTillShutdown:{self.SecondsTillShutdown}, ShutdownReason:{self.ShutdownReason})'
+        return 'ServerStatusDataType(StartTime:{self.StartTime}, CurrentTime:{self.CurrentTime}, State:{self.State}, BuildInfo:{self.BuildInfo}, SecondsTillShutdown:{self.SecondsTillShutdown}, ShutdownReason:{self.ShutdownReason})'
 
     __repr__ = __str__
 
@@ -10672,7 +10672,7 @@ class SessionDiagnosticsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SessionDiagnosticsDataType(SessionId:{self.SessionId}, SessionName:{self.SessionName}, ClientDescription:{self.ClientDescription}, ServerUri:{self.ServerUri}, EndpointUrl:{self.EndpointUrl}, LocaleIds:{self.LocaleIds}, ActualSessionTimeout:{self.ActualSessionTimeout}, MaxResponseMessageSize:{self.MaxResponseMessageSize}, ClientConnectionTime:{self.ClientConnectionTime}, ClientLastContactTime:{self.ClientLastContactTime}, CurrentSubscriptionsCount:{self.CurrentSubscriptionsCount}, CurrentMonitoredItemsCount:{self.CurrentMonitoredItemsCount}, CurrentPublishRequestsInQueue:{self.CurrentPublishRequestsInQueue}, TotalRequestCount:{self.TotalRequestCount}, UnauthorizedRequestCount:{self.UnauthorizedRequestCount}, ReadCount:{self.ReadCount}, HistoryReadCount:{self.HistoryReadCount}, WriteCount:{self.WriteCount}, HistoryUpdateCount:{self.HistoryUpdateCount}, CallCount:{self.CallCount}, CreateMonitoredItemsCount:{self.CreateMonitoredItemsCount}, ModifyMonitoredItemsCount:{self.ModifyMonitoredItemsCount}, SetMonitoringModeCount:{self.SetMonitoringModeCount}, SetTriggeringCount:{self.SetTriggeringCount}, DeleteMonitoredItemsCount:{self.DeleteMonitoredItemsCount}, CreateSubscriptionCount:{self.CreateSubscriptionCount}, ModifySubscriptionCount:{self.ModifySubscriptionCount}, SetPublishingModeCount:{self.SetPublishingModeCount}, PublishCount:{self.PublishCount}, RepublishCount:{self.RepublishCount}, TransferSubscriptionsCount:{self.TransferSubscriptionsCount}, DeleteSubscriptionsCount:{self.DeleteSubscriptionsCount}, AddNodesCount:{self.AddNodesCount}, AddReferencesCount:{self.AddReferencesCount}, DeleteNodesCount:{self.DeleteNodesCount}, DeleteReferencesCount:{self.DeleteReferencesCount}, BrowseCount:{self.BrowseCount}, BrowseNextCount:{self.BrowseNextCount}, TranslateBrowsePathsToNodeIdsCount:{self.TranslateBrowsePathsToNodeIdsCount}, QueryFirstCount:{self.QueryFirstCount}, QueryNextCount:{self.QueryNextCount}, RegisterNodesCount:{self.RegisterNodesCount}, UnregisterNodesCount:{self.UnregisterNodesCount})'
+        return 'SessionDiagnosticsDataType(SessionId:{self.SessionId}, SessionName:{self.SessionName}, ClientDescription:{self.ClientDescription}, ServerUri:{self.ServerUri}, EndpointUrl:{self.EndpointUrl}, LocaleIds:{self.LocaleIds}, ActualSessionTimeout:{self.ActualSessionTimeout}, MaxResponseMessageSize:{self.MaxResponseMessageSize}, ClientConnectionTime:{self.ClientConnectionTime}, ClientLastContactTime:{self.ClientLastContactTime}, CurrentSubscriptionsCount:{self.CurrentSubscriptionsCount}, CurrentMonitoredItemsCount:{self.CurrentMonitoredItemsCount}, CurrentPublishRequestsInQueue:{self.CurrentPublishRequestsInQueue}, TotalRequestCount:{self.TotalRequestCount}, UnauthorizedRequestCount:{self.UnauthorizedRequestCount}, ReadCount:{self.ReadCount}, HistoryReadCount:{self.HistoryReadCount}, WriteCount:{self.WriteCount}, HistoryUpdateCount:{self.HistoryUpdateCount}, CallCount:{self.CallCount}, CreateMonitoredItemsCount:{self.CreateMonitoredItemsCount}, ModifyMonitoredItemsCount:{self.ModifyMonitoredItemsCount}, SetMonitoringModeCount:{self.SetMonitoringModeCount}, SetTriggeringCount:{self.SetTriggeringCount}, DeleteMonitoredItemsCount:{self.DeleteMonitoredItemsCount}, CreateSubscriptionCount:{self.CreateSubscriptionCount}, ModifySubscriptionCount:{self.ModifySubscriptionCount}, SetPublishingModeCount:{self.SetPublishingModeCount}, PublishCount:{self.PublishCount}, RepublishCount:{self.RepublishCount}, TransferSubscriptionsCount:{self.TransferSubscriptionsCount}, DeleteSubscriptionsCount:{self.DeleteSubscriptionsCount}, AddNodesCount:{self.AddNodesCount}, AddReferencesCount:{self.AddReferencesCount}, DeleteNodesCount:{self.DeleteNodesCount}, DeleteReferencesCount:{self.DeleteReferencesCount}, BrowseCount:{self.BrowseCount}, BrowseNextCount:{self.BrowseNextCount}, TranslateBrowsePathsToNodeIdsCount:{self.TranslateBrowsePathsToNodeIdsCount}, QueryFirstCount:{self.QueryFirstCount}, QueryNextCount:{self.QueryNextCount}, RegisterNodesCount:{self.RegisterNodesCount}, UnregisterNodesCount:{self.UnregisterNodesCount})'
 
     __repr__ = __str__
 
@@ -10724,7 +10724,7 @@ class SessionSecurityDiagnosticsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SessionSecurityDiagnosticsDataType(SessionId:{self.SessionId}, ClientUserIdOfSession:{self.ClientUserIdOfSession}, ClientUserIdHistory:{self.ClientUserIdHistory}, AuthenticationMechanism:{self.AuthenticationMechanism}, Encoding:{self.Encoding}, TransportProtocol:{self.TransportProtocol}, SecurityMode:{self.SecurityMode}, SecurityPolicyUri:{self.SecurityPolicyUri}, ClientCertificate:{self.ClientCertificate})'
+        return 'SessionSecurityDiagnosticsDataType(SessionId:{self.SessionId}, ClientUserIdOfSession:{self.ClientUserIdOfSession}, ClientUserIdHistory:{self.ClientUserIdHistory}, AuthenticationMechanism:{self.AuthenticationMechanism}, Encoding:{self.Encoding}, TransportProtocol:{self.TransportProtocol}, SecurityMode:{self.SecurityMode}, SecurityPolicyUri:{self.SecurityPolicyUri}, ClientCertificate:{self.ClientCertificate})'
 
     __repr__ = __str__
 
@@ -10748,7 +10748,7 @@ class ServiceCounterDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ServiceCounterDataType(TotalCount:{self.TotalCount}, ErrorCount:{self.ErrorCount})'
+        return 'ServiceCounterDataType(TotalCount:{self.TotalCount}, ErrorCount:{self.ErrorCount})'
 
     __repr__ = __str__
 
@@ -10772,7 +10772,7 @@ class StatusResult(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'StatusResult(StatusCode:{self.StatusCode}, DiagnosticInfo:{self.DiagnosticInfo})'
+        return 'StatusResult(StatusCode:{self.StatusCode}, DiagnosticInfo:{self.DiagnosticInfo})'
 
     __repr__ = __str__
 
@@ -10912,7 +10912,7 @@ class SubscriptionDiagnosticsDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SubscriptionDiagnosticsDataType(SessionId:{self.SessionId}, SubscriptionId:{self.SubscriptionId}, Priority:{self.Priority}, PublishingInterval:{self.PublishingInterval}, MaxKeepAliveCount:{self.MaxKeepAliveCount}, MaxLifetimeCount:{self.MaxLifetimeCount}, MaxNotificationsPerPublish:{self.MaxNotificationsPerPublish}, PublishingEnabled:{self.PublishingEnabled}, ModifyCount:{self.ModifyCount}, EnableCount:{self.EnableCount}, DisableCount:{self.DisableCount}, RepublishRequestCount:{self.RepublishRequestCount}, RepublishMessageRequestCount:{self.RepublishMessageRequestCount}, RepublishMessageCount:{self.RepublishMessageCount}, TransferRequestCount:{self.TransferRequestCount}, TransferredToAltClientCount:{self.TransferredToAltClientCount}, TransferredToSameClientCount:{self.TransferredToSameClientCount}, PublishRequestCount:{self.PublishRequestCount}, DataChangeNotificationsCount:{self.DataChangeNotificationsCount}, EventNotificationsCount:{self.EventNotificationsCount}, NotificationsCount:{self.NotificationsCount}, LatePublishRequestCount:{self.LatePublishRequestCount}, CurrentKeepAliveCount:{self.CurrentKeepAliveCount}, CurrentLifetimeCount:{self.CurrentLifetimeCount}, UnacknowledgedMessageCount:{self.UnacknowledgedMessageCount}, DiscardedMessageCount:{self.DiscardedMessageCount}, MonitoredItemCount:{self.MonitoredItemCount}, DisabledMonitoredItemCount:{self.DisabledMonitoredItemCount}, MonitoringQueueOverflowCount:{self.MonitoringQueueOverflowCount}, NextSequenceNumber:{self.NextSequenceNumber}, EventQueueOverFlowCount:{self.EventQueueOverFlowCount})'
+        return 'SubscriptionDiagnosticsDataType(SessionId:{self.SessionId}, SubscriptionId:{self.SubscriptionId}, Priority:{self.Priority}, PublishingInterval:{self.PublishingInterval}, MaxKeepAliveCount:{self.MaxKeepAliveCount}, MaxLifetimeCount:{self.MaxLifetimeCount}, MaxNotificationsPerPublish:{self.MaxNotificationsPerPublish}, PublishingEnabled:{self.PublishingEnabled}, ModifyCount:{self.ModifyCount}, EnableCount:{self.EnableCount}, DisableCount:{self.DisableCount}, RepublishRequestCount:{self.RepublishRequestCount}, RepublishMessageRequestCount:{self.RepublishMessageRequestCount}, RepublishMessageCount:{self.RepublishMessageCount}, TransferRequestCount:{self.TransferRequestCount}, TransferredToAltClientCount:{self.TransferredToAltClientCount}, TransferredToSameClientCount:{self.TransferredToSameClientCount}, PublishRequestCount:{self.PublishRequestCount}, DataChangeNotificationsCount:{self.DataChangeNotificationsCount}, EventNotificationsCount:{self.EventNotificationsCount}, NotificationsCount:{self.NotificationsCount}, LatePublishRequestCount:{self.LatePublishRequestCount}, CurrentKeepAliveCount:{self.CurrentKeepAliveCount}, CurrentLifetimeCount:{self.CurrentLifetimeCount}, UnacknowledgedMessageCount:{self.UnacknowledgedMessageCount}, DiscardedMessageCount:{self.DiscardedMessageCount}, MonitoredItemCount:{self.MonitoredItemCount}, DisabledMonitoredItemCount:{self.DisabledMonitoredItemCount}, MonitoringQueueOverflowCount:{self.MonitoringQueueOverflowCount}, NextSequenceNumber:{self.NextSequenceNumber}, EventQueueOverFlowCount:{self.EventQueueOverFlowCount})'
 
     __repr__ = __str__
 
@@ -10940,7 +10940,7 @@ class ModelChangeStructureDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ModelChangeStructureDataType(Affected:{self.Affected}, AffectedType:{self.AffectedType}, Verb:{self.Verb})'
+        return 'ModelChangeStructureDataType(Affected:{self.Affected}, AffectedType:{self.AffectedType}, Verb:{self.Verb})'
 
     __repr__ = __str__
 
@@ -10964,7 +10964,7 @@ class SemanticChangeStructureDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'SemanticChangeStructureDataType(Affected:{self.Affected}, AffectedType:{self.AffectedType})'
+        return 'SemanticChangeStructureDataType(Affected:{self.Affected}, AffectedType:{self.AffectedType})'
 
     __repr__ = __str__
 
@@ -10988,7 +10988,7 @@ class Range(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'Range(Low:{self.Low}, High:{self.High})'
+        return 'Range(Low:{self.Low}, High:{self.High})'
 
     __repr__ = __str__
 
@@ -11020,7 +11020,7 @@ class EUInformation(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'EUInformation(NamespaceUri:{self.NamespaceUri}, UnitId:{self.UnitId}, DisplayName:{self.DisplayName}, Description:{self.Description})'
+        return 'EUInformation(NamespaceUri:{self.NamespaceUri}, UnitId:{self.UnitId}, DisplayName:{self.DisplayName}, Description:{self.Description})'
 
     __repr__ = __str__
 
@@ -11044,7 +11044,7 @@ class ComplexNumberType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ComplexNumberType(Real:{self.Real}, Imaginary:{self.Imaginary})'
+        return 'ComplexNumberType(Real:{self.Real}, Imaginary:{self.Imaginary})'
 
     __repr__ = __str__
 
@@ -11068,7 +11068,7 @@ class DoubleComplexNumberType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'DoubleComplexNumberType(Real:{self.Real}, Imaginary:{self.Imaginary})'
+        return 'DoubleComplexNumberType(Real:{self.Real}, Imaginary:{self.Imaginary})'
 
     __repr__ = __str__
 
@@ -11104,7 +11104,7 @@ class AxisInformation(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'AxisInformation(EngineeringUnits:{self.EngineeringUnits}, EURange:{self.EURange}, Title:{self.Title}, AxisScaleType:{self.AxisScaleType}, AxisSteps:{self.AxisSteps})'
+        return 'AxisInformation(EngineeringUnits:{self.EngineeringUnits}, EURange:{self.EURange}, Title:{self.Title}, AxisScaleType:{self.AxisScaleType}, AxisSteps:{self.AxisSteps})'
 
     __repr__ = __str__
 
@@ -11128,7 +11128,7 @@ class XVType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'XVType(X:{self.X}, Value:{self.Value})'
+        return 'XVType(X:{self.X}, Value:{self.Value})'
 
     __repr__ = __str__
 
@@ -11184,7 +11184,7 @@ class ProgramDiagnosticDataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ProgramDiagnosticDataType(CreateSessionId:{self.CreateSessionId}, CreateClientName:{self.CreateClientName}, InvocationCreationTime:{self.InvocationCreationTime}, LastTransitionTime:{self.LastTransitionTime}, LastMethodCall:{self.LastMethodCall}, LastMethodSessionId:{self.LastMethodSessionId}, LastMethodInputArguments:{self.LastMethodInputArguments}, LastMethodOutputArguments:{self.LastMethodOutputArguments}, LastMethodCallTime:{self.LastMethodCallTime}, LastMethodReturnStatus:{self.LastMethodReturnStatus})'
+        return 'ProgramDiagnosticDataType(CreateSessionId:{self.CreateSessionId}, CreateClientName:{self.CreateClientName}, InvocationCreationTime:{self.InvocationCreationTime}, LastTransitionTime:{self.LastTransitionTime}, LastMethodCall:{self.LastMethodCall}, LastMethodSessionId:{self.LastMethodSessionId}, LastMethodInputArguments:{self.LastMethodInputArguments}, LastMethodOutputArguments:{self.LastMethodOutputArguments}, LastMethodCallTime:{self.LastMethodCallTime}, LastMethodReturnStatus:{self.LastMethodReturnStatus})'
 
     __repr__ = __str__
 
@@ -11248,7 +11248,7 @@ class ProgramDiagnostic2DataType(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'ProgramDiagnostic2DataType(CreateSessionId:{self.CreateSessionId}, CreateClientName:{self.CreateClientName}, InvocationCreationTime:{self.InvocationCreationTime}, LastTransitionTime:{self.LastTransitionTime}, LastMethodCall:{self.LastMethodCall}, LastMethodSessionId:{self.LastMethodSessionId}, LastMethodInputArguments:{self.LastMethodInputArguments}, LastMethodOutputArguments:{self.LastMethodOutputArguments}, LastMethodInputValues:{self.LastMethodInputValues}, LastMethodOutputValues:{self.LastMethodOutputValues}, LastMethodCallTime:{self.LastMethodCallTime}, LastMethodReturnStatus:{self.LastMethodReturnStatus})'
+        return 'ProgramDiagnostic2DataType(CreateSessionId:{self.CreateSessionId}, CreateClientName:{self.CreateClientName}, InvocationCreationTime:{self.InvocationCreationTime}, LastTransitionTime:{self.LastTransitionTime}, LastMethodCall:{self.LastMethodCall}, LastMethodSessionId:{self.LastMethodSessionId}, LastMethodInputArguments:{self.LastMethodInputArguments}, LastMethodOutputArguments:{self.LastMethodOutputArguments}, LastMethodInputValues:{self.LastMethodInputValues}, LastMethodOutputValues:{self.LastMethodOutputValues}, LastMethodCallTime:{self.LastMethodCallTime}, LastMethodReturnStatus:{self.LastMethodReturnStatus})'
 
     __repr__ = __str__
 
@@ -11276,7 +11276,7 @@ class Annotation(FrozenClass):
         self._freeze = True
 
     def __str__(self):
-        return f'Annotation(Message:{self.Message}, UserName:{self.UserName}, AnnotationTime:{self.AnnotationTime})'
+        return 'Annotation(Message:{self.Message}, UserName:{self.UserName}, AnnotationTime:{self.AnnotationTime})'
 
     __repr__ = __str__
 
