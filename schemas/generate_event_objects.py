@@ -2,9 +2,9 @@
 import xml.etree.ElementTree as ET
 import opcua.ua.object_ids as obIds
 import generate_model_event as gme
-
 import os
 import datetime
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class EventsCodeGenerator(object):
@@ -43,8 +43,8 @@ class EventsCodeGenerator(object):
         for ref in event.references:
             if ref.referenceType == "HasProperty":
                 self.write("self.add_property('{0}', {1}, {2})".format(
-                    ref.refBrowseName, self.get_property_value(ref),
-                    self.get_property_data_type(ref)
+                    ref.refBrowseName, self.getPropertyValue(ref),
+                    self.getPropertyDataType(ref)
                 ))
 
     def getPropertyValue(self, reference):
@@ -104,10 +104,9 @@ class EventsCodeGenerator(object):
             self.addProperties(event)
         self.iidx -= 2
 
-
     def generateEventsCode(self, model):
         self.output_file = open(self.output_file, "w")
-        self.make_header()
+        self.make_header(model.values())
         for event in model.values():
             if (event.browseName == "BaseEvent"):
                 self.generateEventclass(event)
