@@ -295,16 +295,19 @@ class Subscription(object):
         unsubscribe to datachange or events using the handle returned while subscribing
         if you delete subscription, you do not need to unsubscribe
         """
+        handles = [handle] if type(handle) is int else handle
+        if not handles:
+            return
         params = ua.DeleteMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
-        params.MonitoredItemIds = [handle]
+        params.MonitoredItemIds = handles
         results = self.server.delete_monitored_items(params)
+        self.server.delete_monitored_items(params)
         results[0].check()
-        with self._lock:
-            for k, v in self._monitoreditems_map.items():
-                if v.server_handle == handle:
-                    del(self._monitoreditems_map[k])
-                    return
+        handle_map = {v.server_handle: k for k, v in self._monitoreditems_map.items()}
+        for handle in handles:
+            if handle in handle_map:
+                del self._monitoreditems_map[handle_map[handle]]
 
     def modify_monitored_item(self, handle, new_samp_time, new_queuesize=0, mod_filter_val=-1):
         """
