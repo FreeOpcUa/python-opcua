@@ -300,14 +300,14 @@ class Subscription(object):
             return
         params = ua.DeleteMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
-        params.MonitoredItemIds = handles
+        params.MonitoredItemIds = [handle]
         results = self.server.delete_monitored_items(params)
-        self.server.delete_monitored_items(params)
         results[0].check()
-        handle_map = {v.server_handle: k for k, v in self._monitoreditems_map.items()}
-        for handle in handles:
-            if handle in handle_map:
-                del self._monitoreditems_map[handle_map[handle]]
+        with self._lock:
+            for k, v in self._monitoreditems_map.items():
+                if v.server_handle == handle:
+                    del(self._monitoreditems_map[k])
+                    return
 
     def modify_monitored_item(self, handle, new_samp_time, new_queuesize=0, mod_filter_val=-1):
         """
