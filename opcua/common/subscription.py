@@ -295,6 +295,9 @@ class Subscription(object):
         unsubscribe to datachange or events using the handle returned while subscribing
         if you delete subscription, you do not need to unsubscribe
         """
+        handles = [handle] if type(handle) is int else handle
+        if not handles:
+            return
         params = ua.DeleteMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
         params.MonitoredItemIds = [handle]
