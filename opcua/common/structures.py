@@ -81,7 +81,7 @@ class EnumeratedValue(object):
 
 class Struct(object):
     def __init__(self, name):
-        self.name = name
+        self.name = _clean_name(name)
         self.fields = []
         self.typeid = None
 
@@ -258,7 +258,6 @@ def load_type_definitions(server, nodes=None):
     generators = []
     for node in nodes:
         xml = node.get_value()
-        xml = xml.decode("utf-8")
         generator = StructGenerator()
         generators.append(generator)
         generator.make_model_from_string(xml)
@@ -299,6 +298,8 @@ def _clean_name(name):
     but cannot be part of of Python class names
     """
     name = re.sub(r'\W+', '_', name)
+    name = re.sub(r'\.', '_', name)
+    name = re.sub(r'"', '_', name)
     name = re.sub(r'^[0-9]+', r'_\g<0>', name)
 
     return name

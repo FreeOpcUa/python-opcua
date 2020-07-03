@@ -374,6 +374,12 @@ class TypeDictionaryBuilderTest(unittest.TestCase):
         nested_result = nested_var.get_value()
         self.assertEqual(nested_result, nested_msg)
 
+    def test_siemens_flavored_struct_name(self):
+        struct_name = '"Siemens"."OPC-UA"."Identifiers_LookLikeThis"'
+        struct_node = self.dict_builder.create_data_type(struct_name)
+        struct_node.add_field('"a"."field"', ua.VariantType.Int32)
+        self.dict_builder.set_dict_byte_string()
+        self.srv.load_type_definitions()
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARNING)
