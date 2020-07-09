@@ -300,7 +300,7 @@ class Subscription(object):
             return
         params = ua.DeleteMonitoredItemsParameters()
         params.SubscriptionId = self.subscription_id
-        params.MonitoredItemIds = [handle]
+        params.MonitoredItemIds = handle
         results = self.server.delete_monitored_items(params)
         results[0].check()
         with self._lock:
