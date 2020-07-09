@@ -893,6 +893,7 @@ class DataValue(FrozenClass):
             )
     
     def __init__(self, variant=None, status=None, sourceTimestamp=None, sourcePicoseconds=None, serverTimestamp=None, serverPicoseconds=None):
+        
         self.Encoding = 0
         if not isinstance(variant, Variant):
             variant = Variant(variant)
