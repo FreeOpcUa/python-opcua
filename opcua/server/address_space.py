@@ -650,6 +650,7 @@ class AddressSpace(object):
                 return dv
             node = self._nodes[nodeid]
             if attr not in node.attributes:
+                self.logger.warning("Tried to read attribute '%s' in %s, but the attribute is missing", attr, nodeid)
                 dv = ua.DataValue()
                 dv.StatusCode = ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
                 return dv
@@ -666,6 +667,7 @@ class AddressSpace(object):
                 return ua.StatusCode(ua.StatusCodes.BadNodeIdUnknown)
             attval = node.attributes.get(attr, None)
             if attval is None:
+                self.logger.warning("Tried to write attribute '%s' in %s, but the attribute is missing", attr, nodeid)
                 return ua.StatusCode(ua.StatusCodes.BadAttributeIdInvalid)
 
             old = attval.value
