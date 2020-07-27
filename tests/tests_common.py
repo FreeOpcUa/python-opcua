@@ -118,6 +118,27 @@ class CommonTests(object):
         childs = fold.get_children()
         self.assertNotIn(var, childs)
 
+
+    def test_delete_nodes_with_inverse_references(self):
+        obj = self.opc.get_objects_node()
+        fold = obj.add_folder(2, "FolderToDelete")
+        var = fold.add_variable(2, "VarToDelete", 9.1)
+        var2 = fold.add_variable(2, "VarWithReference", 9.2)
+        childs = fold.get_children()
+        self.assertIn(var, childs)
+        self.assertIn(var2, childs)
+        # add two references to var, this includes adding the inverse references to var2
+        var.add_reference(var2.nodeid, reftype=ua.ObjectIds.HasDescription, forward=True, bidirectional=True)
+        var.add_reference(var2.nodeid, reftype=ua.ObjectIds.HasEffect, forward=True, bidirectional=True)
+        self.opc.delete_nodes([var])
+        childs = fold.get_children()
+        assert var not in childs
+        has_desc_refs = var2.get_referenced_nodes(refs=ua.ObjectIds.HasDescription, direction=ua.BrowseDirection.Inverse)
+        assert len(has_desc_refs) == 0
+        has_effect_refs = var2.get_referenced_nodes(refs=ua.ObjectIds.HasEffect, direction=ua.BrowseDirection.Inverse)
+        assert len(has_effect_refs) == 0
+
+
     def test_delete_nodes_recursive(self):
         obj = self.opc.get_objects_node()
         fold = obj.add_folder(2, "FolderToDeleteR")
