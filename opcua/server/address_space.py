@@ -330,7 +330,7 @@ class NodeManagementService(object):
 
         if item.DeleteTargetReferences:
             for elem in self._aspace.keys():
-                for rdesc in self._aspace[elem].references:
+                for rdesc in self._aspace[elem].references[:]:
                     if rdesc.NodeId == item.NodeId:
                         self._aspace[elem].references.remove(rdesc)
 
