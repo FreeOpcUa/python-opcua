@@ -164,9 +164,9 @@ class CodeGenerator(object):
         tmp = [f"{f.name}:{{self.{f.name}}}" for f in obj.fields]
         tmp = ", ".join(tmp)
         if tmp:
-            self.write(f"return '{obj.name}({tmp})'")
+            self.write(f"return f'{obj.name}({tmp})'")
         else:
-            self.write(f"return '{obj.name}()'")
+            self.write(f"return f'{obj.name}()'")
         self.iidx -= 1
         self.write("")
         self.write("__repr__ = __str__")
@@ -211,9 +211,9 @@ class CodeGenerator(object):
             enum = self.model.get_enum(field.uatype)
             return enum.name + "(0)"
         if field.uatype in ("String"):
-            return None 
+            return None
         elif field.uatype in ("ByteString", "CharArray", "Char"):
-            return None 
+            return None
         elif field.uatype in ("Boolean"):
             return "True"
         elif field.uatype in ("DateTime"):
@@ -227,7 +227,7 @@ class CodeGenerator(object):
 
 if __name__ == "__main__":
     import generate_model as gm
-    xml_path = os.path.join(BASE_DIR, 'schemas', 'UA-Nodeset-master', 'Schema', 'Opc.Ua.Types.bsd')
+    xml_path = os.path.join(BASE_DIR, 'schemas', 'UA-Nodeset', 'Schema', 'Opc.Ua.Types.bsd')
     protocol_path = os.path.join(BASE_DIR, "opcua", "ua", "uaprotocol_auto.py")
     p = gm.Parser(xml_path)
     model = p.parse()
