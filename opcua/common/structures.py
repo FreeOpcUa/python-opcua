@@ -330,40 +330,44 @@ def _generate_python_class(model, env=None):
     return env
 
 
-def load_enums(server, env=None):
+def load_enums(server, env=None, force=False):
     """
     Read enumeration data types on server and generate python Enums in ua scope for them
+    if force,all enums are loaded inclusive those that have a name which is already in ua namespace
+    (This might happend if they use the same name but different namespaces)
     """
     model = []
-    nodes = server.nodes.enum_data_type.get_children()
     if env is None:
         env = ua.__dict__
-    for node in nodes:
-        name = node.get_browse_name().Name
-        try:
-            c = _get_enum_strings(name, node)
-        except ua.UaError as ex:
-            try:
-                c = _get_enum_values(name, node)
-            except ua.UaError as ex:
-                logger.info("Node %s, %s under DataTypes/Enumeration, does not seem to have a child called EnumString or EumValue: %s", name, node, ex)
-                continue
-        if not hasattr(ua, c.name):
+    for desc in server.nodes.enum_data_type.get_children_descriptions(refs=ua.ObjectIds.HasSubtype):
+        enum_name = desc.BrowseName.Name
+        enum_node = server.get_node(desc.NodeId)
+        if not force and hasattr(ua, enum_name):
+            logger.debug("Enum type %s is already in ua namespace, ignoring", enum_name)
+            continue
+        c = None
+        for child_desc in enum_node.get_children_descriptions(refs=ua.ObjectIds.HasProperty):
+            child_node = server.get_node(child_desc.NodeId)
+            if child_desc.BrowseName.Name == "EnumStrings":
+                c = _get_enum_strings(enum_name, child_node)
+            elif child_desc.BrowseName.Name == "EnumValues":
+                c = _get_enum_values(enum_name, server.get_node(child_desc.NodeId))
+            else:
+                logger.warning("Unexpected children of node %s: %s", desc, child_desc)
+        if c is not None:
             model.append(c)
     return _generate_python_class(model, env=env)
 
 
 def _get_enum_values(name, node):
-    def_node = node.get_child("0:EnumValues")
-    val = def_node.get_value()
+    val = node.get_value()
     c = EnumType(name)
     c.fields = [EnumeratedValue(enumval.DisplayName.Text, enumval.Value) for enumval in val]
     return c
 
 
 def _get_enum_strings(name, node):
-    def_node = node.get_child("0:EnumStrings")
-    val = def_node.get_value()
+    val = node.get_value()
     c = EnumType(name)
     c.fields = [EnumeratedValue(st.Text, idx) for idx, st in enumerate(val)]
     return c

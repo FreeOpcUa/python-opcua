@@ -492,7 +492,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
 
     def test_load_enum_strings(self):
         dt = self.opc.nodes.enum_data_type.add_data_type(0, "MyStringEnum")
-        dt.add_variable(0, "EnumStrings", [ua.LocalizedText("e1"), ua.LocalizedText("e2"), ua.LocalizedText("e3"), ua.LocalizedText("e 4")])
+        dt.add_property(0, "EnumStrings", [ua.LocalizedText("e1"), ua.LocalizedText("e2"), ua.LocalizedText("e3"), ua.LocalizedText("e 4")])
         self.opc.load_enums()
         e = getattr(ua, "MyStringEnum")
         self.assertIsInstance(e, EnumMeta)
@@ -511,7 +511,7 @@ class TestServer(unittest.TestCase, CommonTests, SubscriptionTests, XmlTests):
         v3 = ua.EnumValueType()
         v3.DisplayName.Text = "v 3 "
         v3.Value = 4
-        dt.add_variable(0, "EnumValues", [v1, v2, v3])
+        dt.add_property(0, "EnumValues", [v1, v2, v3])
         self.opc.load_enums()
         e = getattr(ua, "MyValuesEnum")
         self.assertIsInstance(e, EnumMeta)
