@@ -378,25 +378,26 @@ class InternalSubscription(object):
                 return ua.NotificationMessage()
 
     def enqueue_datachange_event(self, mid, eventdata, maxsize):
-        self._enqueue_event(mid, eventdata, maxsize, self._triggered_datachanges)
+        with self._lock:
+            self._enqueue_event(mid, eventdata, maxsize, self._triggered_datachanges)
 
     def enqueue_event(self, mid, eventdata, maxsize):
-        self._enqueue_event(mid, eventdata, maxsize, self._triggered_events)
+        with self._lock:
+            self._enqueue_event(mid, eventdata, maxsize, self._triggered_events)
 
     def enqueue_statuschange(self, code):
         self._triggered_statuschanges.append(code)
         self._trigger_publish()
 
     def _enqueue_event(self, mid, eventdata, size, queue):
-        with self._lock:
-            if mid not in queue:
-                queue[mid] = [eventdata]
-                self._trigger_publish()
-                return
-            if size != 0:
-                if len(queue[mid]) >= size:
-                    queue[mid].pop(0)
-            queue[mid].append(eventdata)
+        if mid not in queue:
+            queue[mid] = [eventdata]
+            self._trigger_publish()
+            return
+        if size != 0:
+            if len(queue[mid]) >= size:
+                queue[mid].pop(0)
+        queue[mid].append(eventdata)
 
 
 class WhereClauseEvaluator(object):
