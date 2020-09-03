@@ -163,8 +163,8 @@ class HistorySQLite(HistoryStorageInterface):
         with self._lock:
             _c_sub = self._conn.cursor()
 
-            table = self._get_table_name(event.emitting_node)
-            columns, placeholders, evtup = self._format_event(event)
+            table = self._get_table_name(event.SourceNode) #Emitting node is not always the Source (event.SourceNode)
+            columns, placeholders, evtup = self._format_event(event) #from event_prop_dict
             event_type = event.EventType  # useful for troubleshooting database
 
             # insert the event into the database
@@ -174,12 +174,12 @@ class HistorySQLite(HistoryStorageInterface):
                     .format(tn=table, co=columns, ts=event.Time, et=event_type, pl=placeholders), evtup)
 
             except sqlite3.Error as e:
-                self.logger.error('Historizing SQL Insert Error for events from %s: %s', event.emitting_node, e)
+                self.logger.error('Historizing SQL Insert Error for events from %s: %s', event.SourceNode, e)
 
             self._conn.commit()
 
             # get this node's period from the period dict and calculate the limit
-            period = self._datachanges_period[event.emitting_node]
+            period = self._datachanges_period[event.SourceNode]
 
             if period:
                 # after the insert, if a period was specified delete all records older than period
@@ -190,10 +190,10 @@ class HistorySQLite(HistoryStorageInterface):
                                    (date_limit.isoformat(' '),))
                 except sqlite3.Error as e:
                     self.logger.error('Historizing SQL Delete Old Data Error for events from %s: %s',
-                                      event.emitting_node, e)
+                                      event.SourceNode, e)
 
                 self._conn.commit()
-
+                
     def read_event_history(self, source_id, start, end, nb_values, evfilter):
         with self._lock:
             _c_read = self._conn.cursor()
