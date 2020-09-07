@@ -18,7 +18,7 @@ from opcua.ua.uaerrors import UaError
 class XmlExporter(object):
 
     ''' If it is required that for _extobj_to_etree members to the value should be written in a certain
-        order it can be added to the dictionary below.    
+        order it can be added to the dictionary below.
     '''
     extobj_ordered_elements = {
         ua.NodeId(ua.ObjectIds.Argument) : ['Name',
@@ -443,7 +443,7 @@ class XmlExporter(object):
 
     def _get_member_order(self, dtype, val):
         '''
-        If an dtype has an entry in XmlExporter.extobj_ordered_elements return the export order of the elements 
+        If an dtype has an entry in XmlExporter.extobj_ordered_elements return the export order of the elements
         else return the unordered members.
         '''
         if dtype not in XmlExporter.extobj_ordered_elements.keys():
