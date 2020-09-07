@@ -330,7 +330,7 @@ class XmlExporter(object):
         for nodeid in ordered_keys:
             name = self.aliases[nodeid]
             ref_el = Et.SubElement(aliases_el, 'Alias', Alias=name)
-            ref_el.text = nodeid.to_string()
+            ref_el.text = self._node_to_string(nodeid)
 
         # insert behind the namespace element
         self.etree.getroot().insert(1, aliases_el)
@@ -340,10 +340,11 @@ class XmlExporter(object):
         refs_el = Et.SubElement(parent_el, 'References')
 
         for ref in refs:
-            if ref.ReferenceTypeId.Identifier in o_ids.ObjectIdNames:
+            if ref.ReferenceTypeId.NamespaceIndex == 0 and ref.ReferenceTypeId.Identifier in o_ids.ObjectIdNames:
                 ref_name = o_ids.ObjectIdNames[ref.ReferenceTypeId.Identifier]
             else:
-                ref_name = ref.ReferenceTypeId.to_string()
+                ref_name = self.server.get_node(ref.ReferenceTypeId).get_browse_name().Name
+
             ref_el = Et.SubElement(refs_el, 'Reference')
             ref_el.attrib['ReferenceType'] = ref_name
             if not ref.IsForward:
