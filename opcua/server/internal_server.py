@@ -78,6 +78,10 @@ class InternalServer(object):
         return self._parent.user_manager
 
     @property
+    def certificate_manager(self):
+        return self._parent.certificate_manager
+
+    @property
     def thread_loop(self):
         if self.loop is None:
             raise Exception("InternalServer stopped: async threadloop is not running.")
@@ -309,6 +313,10 @@ class InternalSession(object):
     def user_manager(self):
         return self.iserver.user_manager
 
+    @property
+    def certificate_manager(self):
+        return self.iserver.certificate_manager
+
     def __str__(self):
         return "InternalSession(name:{0}, user:{1}, id:{2}, auth_token:{3})".format(
             self.name, self.user, self.session_id, self.authentication_token)
@@ -337,18 +345,45 @@ class InternalSession(object):
 
     def activate_session(self, params):
         self.logger.info("activate session")
+
         result = ua.ActivateSessionResult()
         if self.state != SessionState.Created:
             raise utils.ServiceError(ua.StatusCodes.BadSessionIdInvalid)
+
+        # FIXME: Get the server available UserIdentityToken policy's ids. I don't how to get it in other way.
+        # iserver_policy_ids = ["anonymous", "certificate_basic256sha256", "username"]
+        # Note that it is different from server._policyIDs = ["Anonymous", "Basic256Sha256", "Username"]
+        iserver_policy_ids = []
+        edp = self.iserver.get_endpoints()[0]  # FIXME: is it the same list whatever endpoint ?
+        for token in edp.UserIdentityTokens:
+            iserver_policy_ids.append(token.PolicyId)
+
+        # Check if params UserIdentityToken is authorized by the server.
+        params_id_token = params.UserIdentityToken
+        if params_id_token.PolicyId not in iserver_policy_ids:
+            raise utils.ServiceError(ua.StatusCodes.BadIdentityTokenInvalid)
+
+        # Route to the correct manager
+        if isinstance(params_id_token, ua.AnonymousIdentityToken):
+            pass  # TODO: Call AnonymousIdentityToken Manager
+
+        elif isinstance(params_id_token, ua.UserNameIdentityToken):
+            if not self.user_manager.check_user_token(self, params_id_token):
+                raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
+
+        elif isinstance(params_id_token, ua.X509IdentityToken):
+            if not self.certificate_manager.check_certificate_token(self, params):
+                raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
+
+        else:  # Not implemented IdentityToken
+            raise utils.ServiceError(ua.StatusCodes.BadIdentityTokenInvalid)
+
         self.nonce = utils.create_nonce(32)
         result.ServerNonce = self.nonce
         for _ in params.ClientSoftwareCertificates:
             result.Results.append(ua.StatusCode())
         self.state = SessionState.Activated
-        id_token = params.UserIdentityToken
-        if isinstance(id_token, ua.UserNameIdentityToken):
-            if self.user_manager.check_user_token(self, id_token) == False:
-                raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
+
         self.logger.info("Activated internal session %s for user %s", self.name, self.user)
         return result
 

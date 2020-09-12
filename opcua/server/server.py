@@ -16,6 +16,7 @@ from opcua.server.binary_server_asyncio import BinaryServer
 from opcua.server.internal_server import InternalServer
 from opcua.server.event_generator import EventGenerator
 from opcua.server.user_manager import UserManager
+from opcua.server.certificate_manager import CertificateManager
 from opcua.server.discovery_service import LocalDiscoveryService
 from opcua.common.node import Node
 from opcua.common.subscription import Subscription
@@ -104,7 +105,8 @@ class Server(object):
         # enable all endpoints by default
         self.certificate = None
         self.private_key = None
-        self.user_manager = UserManager(parent = self)
+        self.user_manager = UserManager(parent=self)
+        self.certificate_manager = CertificateManager()
         self._security_policy = [
                         ua.SecurityPolicyType.NoSecurity,
                         ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt,
