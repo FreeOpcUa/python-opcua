@@ -89,7 +89,7 @@ class Server(object):
         if iserver is not None:
             self.iserver = iserver
         else:
-            self.iserver = InternalServer(shelffile = shelffile, parent = self)
+            self.iserver = InternalServer(shelffile = shelffile)
         self.bserver = None
         self._policies = []
         self.nodes = Shortcuts(self.iserver.isession)
@@ -118,6 +118,14 @@ class Server(object):
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.stop()
+
+    @property
+    def user_manager(self):
+        return self.iserver.user_manager
+
+    @user_manager.setter
+    def user_manager(self, user_manager):
+        self.iserver.user_manager = user_manager
 
     @property
     def local_discovery_service(self):

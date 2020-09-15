@@ -39,10 +39,9 @@ class SessionState(Enum):
 
 class InternalServer(object):
 
-    def __init__(self, shelffile=None, parent=None, session_cls=None):
+    def __init__(self, shelffile=None, user_manager=None, session_cls=None):
         self.logger = logging.getLogger(__name__)
 
-        self._parent = parent
         self.server_callback_dispatcher = CallbackDispatcher()
 
         self.endpoints = []
@@ -63,6 +62,7 @@ class InternalServer(object):
         self.subscription_service = SubscriptionService(self.aspace)
 
         self.history_manager = HistoryManager(self)
+        self.user_manager = user_manager
 
         # create a session to use on server side
         self.session_cls = session_cls or InternalSession
@@ -72,10 +72,6 @@ class InternalServer(object):
         self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
         self._address_space_fixes()
         self.setup_nodes()
-
-    @property
-    def user_manager(self):
-        return self._parent.user_manager
 
     @property
     def thread_loop(self):
