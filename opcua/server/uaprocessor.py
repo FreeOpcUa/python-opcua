@@ -51,8 +51,13 @@ class UaProcessor(object):
     def open_secure_channel(self, algohdr, seqhdr, body):
         request = struct_from_binary(ua.OpenSecureChannelRequest, body)
 
-        self._connection.select_policy(
-            algohdr.SecurityPolicyURI, algohdr.SenderCertificate, request.Parameters.SecurityMode)
+        if self._connection.is_open():
+            # In case the channel is already open we don't want to call
+            # select_policy. Since it will break the Secure channel renewal
+            pass
+        else:
+            self._connection.select_policy(
+                algohdr.SecurityPolicyURI, algohdr.SenderCertificate, request.Parameters.SecurityMode)
 
         channel = self._connection.open(request.Parameters, self.iserver)
         # send response

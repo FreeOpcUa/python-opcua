@@ -299,7 +299,14 @@ class SecureConnection(object):
         if header.MessageType == ua.MessageType.SecureOpen:
             data = body.copy(header.body_size)
             security_header = struct_from_binary(ua.AsymmetricAlgorithmHeader, data)
-            self.select_policy(security_header.SecurityPolicyURI, security_header.SenderCertificate)
+
+            if self.is_open():
+                # In case the channel is already open we don't want to call
+                # select_policy. Since it will break the Secure channel renewal
+                pass
+            else:
+                self.select_policy(security_header.SecurityPolicyURI, security_header.SenderCertificate)
+
         elif header.MessageType in (ua.MessageType.SecureMessage, ua.MessageType.SecureClose):
             data = body.copy(header.body_size)
             security_header = struct_from_binary(ua.SymmetricAlgorithmHeader, data)
