@@ -505,6 +505,7 @@ def struct_from_binary(objtype, data):
         val = from_binary(uatype, data)
         if val is None and uatype[:6] == 'ListOf':
             val = []
+            
         setattr(obj, name, val)
     return obj
 
