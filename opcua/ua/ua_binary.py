@@ -503,6 +503,8 @@ def struct_from_binary(objtype, data):
             if not test_bit(val, idx):
                 continue
         val = from_binary(uatype, data)
+        if val is None and uatype[:6] == 'ListOf':
+            val = []
         setattr(obj, name, val)
     return obj
 
