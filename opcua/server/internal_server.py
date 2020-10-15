@@ -69,6 +69,7 @@ class InternalServer(object):
         self.isession = self.session_cls(self, self.aspace, \
           self.subscription_service, "Internal", user=UserManager.User.Admin)
 
+        self.server_status_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus))
         self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
         self._address_space_fixes()
         self.setup_nodes()
@@ -195,6 +196,9 @@ class InternalServer(object):
 
     def _set_current_time(self):
         self.current_time_node.set_value(datetime.utcnow())
+        ssdata = self.server_status_node.get_value()
+        ssdata.CurrentTime = datetime.utcnow()
+        self.server_status_node.set_value(ssdata)
         self.loop.call_later(1, self._set_current_time)
 
     def get_new_channel_id(self):
