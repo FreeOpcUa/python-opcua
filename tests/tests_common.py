@@ -173,6 +173,30 @@ class CommonTests(object):
             with self.assertRaises(ua.UaStatusCodeError):
                 node.get_browse_name()
 
+    def test_delete_nodes_recursive_batching(self):
+        obj = self.opc.get_objects_node()
+        fold = obj.add_folder(2, "FolderToDeleteRoot")
+        nfold = fold
+        mynodes = []
+        for i in range(7):
+            nfold = fold.add_folder(2, "FolderToDeleteRoot")
+            var = fold.add_variable(2, "VarToDeleteR", 9.1)
+            var = fold.add_property(2, "ProToDeleteR", 9.1)
+            prop = fold.add_property(2, "ProToDeleteR", 9.1)
+            o = fold.add_object(3, "ObjToDeleteR")
+            o_var = o.add_variable(3, "VarToDeleteRR", 9.2)
+            o_prop = o.add_property(3, "PropToDeleteRR", 9.2)
+            mynodes.append(nfold)
+            mynodes.append(var)
+            mynodes.append(prop)
+            mynodes.append(o)
+            mynodes.append(o_var)
+            mynodes.append(o_prop)
+        self.opc.delete_nodes([fold], recursive=True, batch=2)
+        for node in mynodes:
+            with self.assertRaises(ua.UaStatusCodeError):
+                node.get_browse_name()
+
     def test_delete_references(self):
         newtype = self.opc.get_node(ua.ObjectIds.HierarchicalReferences).add_reference_type(0, "HasSuperSecretVariable")
 

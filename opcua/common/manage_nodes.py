@@ -372,10 +372,13 @@ def _guess_datatype(variant):
         return ua.NodeId(getattr(ua.ObjectIds, variant.VariantType.name))
 
 
-def delete_nodes(server, nodes, recursive=False, delete_target_references=True):
+def delete_nodes(server, nodes, recursive=False, delete_target_references=True, batch=False):
     """
-    Delete specified nodes. Optionally delete recursively all nodes with a
-    downward hierachic references to the node
+    Delete specified nodes. Optionally recursively delete all nodes with a
+    downward hierachic references to the node.
+    `batch` can be False or an integer denoting the maximum amount of items per
+    request. If an integer is given, batches the discovered nodes into multiple
+    DeleteNodesRequests.
     return the list of deleted node and the result
     """
     nodestodelete = []
@@ -386,9 +389,26 @@ def delete_nodes(server, nodes, recursive=False, delete_target_references=True):
         it.NodeId = mynode.nodeid
         it.DeleteTargetReferences = delete_target_references
         nodestodelete.append(it)
-    params = ua.DeleteNodesParameters()
-    params.NodesToDelete = nodestodelete
-    return nodes, server.delete_nodes(params)
+
+    if batch is True:
+        batch = 100
+
+    if batch and isinstance(batch, int):
+        chunks = [
+            nodestodelete[i : i + batch]
+            for i in range(0, len(nodestodelete), batch)
+        ]
+
+        results = []
+        for chunk in chunks:
+            params = ua.DeleteNodesParameters()
+            params.NodesToDelete = chunk
+            results.extend(server.delete_nodes(params))
+        return nodes, results
+    else:
+        params = ua.DeleteNodesParameters()
+        params.NodesToDelete = nodestodelete
+        return nodes, server.delete_nodes(params)
 
 
 def _add_childs(nodes):
