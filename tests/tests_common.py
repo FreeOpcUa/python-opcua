@@ -465,7 +465,7 @@ class CommonTests(object):
 
     def test_node_path(self):
         objects = self.opc.get_objects_node()
-        o = objects.add_object('ns=2;i=105;', '2:NodePathObject')
+        o = objects.add_object('ns=2;i=1005;', '2:NodePathObject')
         root = self.opc.get_root_node()
         o2 = root.get_child(['0:Objects', '2:NodePathObject'])
         self.assertEqual(o, o2)
