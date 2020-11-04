@@ -2,7 +2,6 @@ from opcua import Server, ua, uamethod
 
 @uamethod
 def callback(parent, in_extobj):
-
     out_extobj = ua.uaprotocol_auto.AxisInformation() # get new instanace of AxisInformation
     out_extobj.EngineeringUnits = in_extobj.EngineeringUnits
     out_extobj.EURange.Low = in_extobj.EURange.Low
@@ -12,10 +11,13 @@ def callback(parent, in_extobj):
     out_extobj.AxisSteps = in_extobj.AxisSteps
 
     axis_info.set_value(out_extobj) #write values to variable
-    
-    return [
-        out_extobj
-    ]
+
+    ret = (
+        ua.Variant(out_extobj, ua.VariantType.ExtensionObject),
+        ua.Variant("test", ua.VariantType.String)
+    )
+
+    return ret
 
 server = Server()
 server.set_endpoint("opc.tcp://0.0.0.0:4840/freeopcua/server/")
@@ -40,6 +42,13 @@ outarg_extobj.ValueRank = -1
 outarg_extobj.ArrayDimensions = []
 outarg_extobj.Description = ua.LocalizedText("Actual AxisInformation")
 
+status = ua.Argument()
+status.Name = "Status"
+status.DataType = ua.NodeId(12, 0)
+status.ValueRank = -1
+status.ArrayDimensions = []
+status.Description = ua.LocalizedText("MSG")
+
 method_parent = obj.add_object(idx, "Methods")
 method_node = method_parent.add_method(
     idx, 
@@ -49,7 +58,8 @@ method_node = method_parent.add_method(
         inarg_extobj
     ], 
     [
-        outarg_extobj
+        outarg_extobj,
+        status
     ]
 )
 
