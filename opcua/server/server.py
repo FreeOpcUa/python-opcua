@@ -377,7 +377,7 @@ class Server(object):
         """
         Get Server node of server. Returns a Node object.
         """
-        return self.get_node(ua.TwoByteNodeId(ua.ObjectIds.Server))
+        return self.get_node(ua.FourByteNodeId(ua.ObjectIds.Server))
 
     def get_node(self, nodeid):
         """
