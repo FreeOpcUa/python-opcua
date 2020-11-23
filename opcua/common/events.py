@@ -81,6 +81,7 @@ class Event(object):
         """
         return a field list using a select clause and the object properties
         """
+        none_field = ua.Variant(None, ua.VariantType.Null)
         fields = []
         for sattr in select_clauses:
             if not sattr.BrowsePath:
@@ -90,7 +91,7 @@ class Event(object):
             try:
                 val = getattr(self, name)
             except AttributeError:
-                field = ua.Variant(None)
+                field = none_field
             else:
                 field = ua.Variant(copy.deepcopy(val), self.data_types[name])
             fields.append(field)
