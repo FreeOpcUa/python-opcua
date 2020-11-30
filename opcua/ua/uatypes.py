@@ -513,17 +513,23 @@ class LocalizedText(FrozenClass):
             ('Locale', 'String'),
             ('Text', 'String'), )
 
-    def __init__(self, text=None):
+    def __init__(self, text=None, locale=None):
         self.Encoding = 0
         self._text = None
+        self._locale = None
         if text:
             self.Text = text
-        self.Locale = None
+        if locale:
+            self.Locale = locale
         self._freeze = True
 
     @property
     def Text(self):
         return self._text
+    
+    @property
+    def Locale(self):
+        return self._locale
 
     @Text.setter
     def Text(self, text):
@@ -536,12 +542,31 @@ class LocalizedText(FrozenClass):
         self._text = text
         if self._text:
             self.Encoding |= (1 << 1)
+            
+    @Locale.setter
+    def Locale(self, locale):
+        if not isinstance(locale, str):
+            raise ValueError("A LocalizedText object takes a string as argument, not a {}, {}".format({type(locale)}, {locale}))
+        self._locale = locale
+        if self._locale:
+            self.Encoding |= (1)
 
     def to_string(self):
-        # FIXME: use local
         if self.Text is None:
             return ""
-        return self.Text
+        if self.Locale is None:
+            return self.Text
+        return self.__str__()
+    
+    @staticmethod
+    def from_string(string):
+        m = re.match(r"^LocalizedText\(Encoding:(.*), Locale:(.*), Text:(.*)\)$", string)
+        if m:
+            text = m.group(3) if m.group(3) != str(None) else None
+            locale = m.group(2) if m.group(2) != str(None) else None
+            return LocalizedText(text=text, locale=locale)
+        else:
+            return LocalizedText(string)
 
     def __str__(self):
         return 'LocalizedText(' + 'Encoding:' + str(self.Encoding) + ', ' + \
