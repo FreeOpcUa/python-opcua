@@ -92,7 +92,7 @@ class Client(object):
     if use_crypto is False:
         logging.getLogger(__name__).warning("cryptography is not installed, use of crypto disabled")
 
-    def __init__(self, url, timeout=4):
+    def __init__(self, url, timeout=4, session_timeout=3600000, secure_channel_timeout=3600000):
         """
 
         :param url: url of the server.
@@ -125,8 +125,8 @@ class Client(object):
         self.product_uri = "urn:freeopcua.github.io:client"
         self.security_policy = ua.SecurityPolicy()
         self.secure_channel_id = None
-        self.secure_channel_timeout = 3600000  # 1 hour
-        self.session_timeout = 3600000  # 1 hour
+        self.secure_channel_timeout = session_timeout
+        self.session_timeout = secure_channel_timeout
         self._policy_ids = []
         self.uaclient = UaClient(timeout)
         self.user_certificate = None
