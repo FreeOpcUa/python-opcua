@@ -2,9 +2,14 @@ from setuptools import setup, find_packages
 
 import sys
 
-install_requires = ["python-dateutil", "pytz", "lxml"]
-if sys.version_info[0] < 3:
-    install_requires.extend(["enum34", "trollius", "futures"])
+install_requires = [
+    "lxml",
+    "python-dateutil",
+    "pytz",
+    "enum34; python_version < '3'",
+    "futures; python_version < '3'",
+    "trollius; python_version < '3'",
+]
 
 setup(name="opcua",
       version="0.98.12",
@@ -43,4 +48,3 @@ setup(name="opcua",
                     ]
                     }
       )
-
