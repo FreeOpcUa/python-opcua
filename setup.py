@@ -12,7 +12,7 @@ install_requires = [
 ]
 
 setup(name="opcua",
-      version="0.98.12",
+      version="0.98.13",
       description="Pure Python OPC-UA client and server library",
       author="Olivier Roulet-Dubonnet",
       author_email="olivier.roulet@gmail.com",
