@@ -47,7 +47,7 @@ def get_default_value(uatype, enums):
 
 class EnumType(object):
     def __init__(self, name):
-        self.name = name
+        self.name = _clean_name(name)
         self.fields = []
         self.typeid = None
 
@@ -63,7 +63,7 @@ class {0}(IntEnum):
 """.format(self.name)
 
         for EnumeratedValue in self.fields:
-            name = EnumeratedValue.Name
+            name = _clean_name(EnumeratedValue.Name)
             value = EnumeratedValue.Value
             code += "    {} = {}\n".format(name, value)
 
