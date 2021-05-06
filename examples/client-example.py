@@ -58,6 +58,7 @@ if __name__ == "__main__":
         # get a specific node knowing its node id
         #var = client.get_node(ua.NodeId(1002, 2))
         #var = client.get_node("ns=3;i=2002")
+        #var = client.get_node("ns=2;g=1be5ba38-d004-46bd-aa3a-b5b87940c698")
         #print(var)
         #var.get_data_value() # get value of node as a DataValue object
         #var.get_value() # get value of node as a python builtin
