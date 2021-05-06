@@ -897,3 +897,11 @@ class CommonTests(object):
             }
         for dt, vdt in test_data.items():
             self.assertEqual(ua_utils.data_type_to_variant_type(self.opc.get_node(ua.NodeId(dt))), vdt)
+
+    def test_guid_node_id(self):
+        """
+        Test that a Node can be instantiated with a GUID string and that the NodeId ca be converted to binary.
+        """
+        node = Node(None, "ns=4;g=35d5f86f-2777-4550-9d48-b098f5ee285c")
+        binary_node_id = ua.ua_binary.nodeid_to_binary(node.nodeid)
+        assert type(binary_node_id) is bytes
