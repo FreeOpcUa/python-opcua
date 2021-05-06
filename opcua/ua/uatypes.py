@@ -362,7 +362,7 @@ class NodeId(object):
                 identifier = v
             elif k == "g":
                 ntype = NodeIdType.Guid
-                identifier = uuid.UUID(f"urn:uuid:{v}")
+                identifier = uuid.UUID("urn:uuid:{0}".format(v))
             elif k == "b":
                 ntype = NodeIdType.ByteString
                 identifier = v
