@@ -377,6 +377,8 @@ class XmlExporter(object):
                 val = b""
             data = base64.b64encode(val)
             el.text = data.decode("utf-8")
+        elif dtype == ua.NodeId(ua.ObjectIds.DateTime):
+            el.text = val.isoformat()
         elif not hasattr(val, "ua_types"):
             if isinstance(val, bytes):
                 # FIXME: should we also encode this (localized text I guess) using base64??
