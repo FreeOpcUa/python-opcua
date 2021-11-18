@@ -205,7 +205,7 @@ class StructGenerator(object):
         for child in root.iter("{*}EnumeratedType"):
             intenum = EnumType(child.get("Name"))
             for xmlfield in child.iter("{*}EnumeratedValue"):
-                name = xmlfield.get("Name")
+                name = _clean_name(xmlfield.get("Name"))
                 value = xmlfield.get("Value")
                 enumvalue = EnumeratedValue(name, value)
                 intenum.fields.append(enumvalue)
