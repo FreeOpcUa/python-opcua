@@ -1010,7 +1010,7 @@ def get_default_value(vtype):
         raise RuntimeError("function take a uatype as argument, got:", vtype)
 
 
-# These dictionnaries are used to register extensions classes for automatic
+# These dictionaries are used to register extensions classes for automatic
 # decoding and encoding
 extension_object_classes = {}
 extension_object_ids = {}

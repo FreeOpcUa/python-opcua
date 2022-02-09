@@ -24,7 +24,7 @@ class XmlTests(object):
     assertEqual = dir
 
     def test_xml_import(self):
-        self.opc.import_xml("tests/custom_nodes.xml")
+        self.opc.import_xml("custom_nodes.xml")
         o = self.opc.get_objects_node()
         v = o.get_child(["1:MyXMLFolder", "1:MyXMLObject", "1:MyXMLVariable"])
         val = v.get_value()
@@ -52,7 +52,7 @@ class XmlTests(object):
         self.srv.register_namespace('http://placeholder.toincrease.nsindex')  # if not already shift the new namespaces
 
         # "tests/custom_nodes.xml" isn't created with namespaces in mind, provide new test file
-        self.opc.import_xml("tests/custom_nodesns.xml")  # the ns=1 in to file now should be mapped to ns=2
+        self.opc.import_xml("custom_nodesns.xml")  # the ns=1 in to file now should be mapped to ns=2
 
         ns = self.opc.get_namespace_index("http://examples.freeopcua.github.io/")
         o = self.opc.get_objects_node()
