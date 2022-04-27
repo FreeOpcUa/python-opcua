@@ -17,6 +17,7 @@ else:
 port_num1 = 48515
 port_num2 = 48512
 port_num3 = 48510
+port_num4 = 48533
 
 @unittest.skipIf(disable_crypto_tests, "crypto not available")
 class TestCryptoConnect(unittest.TestCase):
@@ -50,6 +51,14 @@ class TestCryptoConnect(unittest.TestCase):
         cls.srv_crypto2.load_certificate("examples/certificate-3072-example.der")
         cls.srv_crypto2.load_private_key("examples/private-key-3072-example.pem")
         cls.srv_crypto2.start()
+
+        cls.srv_crypto_no_anoymous = Server()
+        cls.uri_crypto_no_anoymous = 'opc.tcp://127.0.0.1:{0:d}'.format(port_num4)
+        cls.srv_crypto_no_anoymous.set_endpoint(cls.uri_crypto_no_anoymous)
+        cls.srv_crypto_no_anoymous.load_certificate("examples/certificate-3072-example.der")
+        cls.srv_crypto_no_anoymous.load_private_key("examples/private-key-3072-example.pem")
+        cls.srv_crypto_no_anoymous.set_security_IDs(["Username", "Basic256Sha256"])
+        cls.srv_crypto_no_anoymous.start()
 
     @classmethod
     def tearDownClass(cls):
@@ -131,3 +140,11 @@ class TestCryptoConnect(unittest.TestCase):
                              None,
                              ua.MessageSecurityMode.None_
                              )
+
+    def test_anonymous_rejection(self):
+        # FIXME: how to make it fail???
+        clt = Client(self.uri_crypto_no_anoymous)
+        with self.assertRaises(ua.UaError) as exc_info:
+            clt.connect()
+            clt.disconnect()
+        assert ua.StatusCodes.BadIdentityTokenRejected == exc_info.type.code

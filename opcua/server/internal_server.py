@@ -73,6 +73,7 @@ class InternalServer(object):
         self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
         self._address_space_fixes()
         self.setup_nodes()
+        self.supported_tokens = []
 
     @property
     def thread_loop(self):
@@ -346,6 +347,10 @@ class InternalSession(object):
             result.Results.append(ua.StatusCode())
         self.state = SessionState.Activated
         id_token = params.UserIdentityToken
+        # Check if security policy is supported
+        if not isinstance(id_token, self.iserver.supported_tokens):
+            self.logger.error('Rejected active session UserIdentityToken not supported')
+            raise utils.ServiceError(ua.StatusCodes.BadIdentityTokenRejected)
         if isinstance(id_token, ua.UserNameIdentityToken):
             if self.user_manager.check_user_token(self, id_token) == False:
                 raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
