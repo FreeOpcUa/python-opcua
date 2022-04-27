@@ -263,23 +263,27 @@ class Server(object):
 
     def _set_endpoints(self, policy=ua.SecurityPolicy, mode=ua.MessageSecurityMode.None_):
         idtokens = []
+        supported_token_classes = []
         if "Anonymous" in self._policyIDs:
             idtoken = ua.UserTokenPolicy()
             idtoken.PolicyId = 'anonymous'
             idtoken.TokenType = ua.UserTokenType.Anonymous
             idtokens.append(idtoken)
+            supported_token_classes.append(ua.AnonymousIdentityToken)
 
         if "Basic256Sha256" in self._policyIDs:
             idtoken = ua.UserTokenPolicy()
             idtoken.PolicyId = 'certificate_basic256sha256'
             idtoken.TokenType = ua.UserTokenType.Certificate
             idtokens.append(idtoken)
+            supported_token_classes.append(ua.X509IdentityToken)
 
         if "Username" in self._policyIDs:
             idtoken = ua.UserTokenPolicy()
             idtoken.PolicyId = 'username'
             idtoken.TokenType = ua.UserTokenType.UserName
             idtokens.append(idtoken)
+            supported_token_classes.append(ua.UserNameIdentityToken)
 
         appdesc = ua.ApplicationDescription()
         appdesc.ApplicationName = ua.LocalizedText(self.name)
@@ -299,6 +303,7 @@ class Server(object):
         edp.TransportProfileUri = 'http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary'
         edp.SecurityLevel = 0
         self.iserver.add_endpoint(edp)
+        self.iserver.supported_tokens = tuple(supported_token_classes)
 
     def set_server_name(self, name):
         self.name = name
