@@ -34,5 +34,5 @@ if __name__ == "__main__":
             count += 0.1
             myvar.set_value(count)
     finally:
-        #close connection, remove subcsriptions, etc
+        #close connection, remove subscriptions, etc
         server.stop()
