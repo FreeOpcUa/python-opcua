@@ -554,7 +554,7 @@ class LocalizedText(FrozenClass):
     def to_string(self):
         if self.Text is None:
             return ""
-        if self.Locale is None:
+        if not self.Locale:
             return self.Text
         return self.__str__()
     
