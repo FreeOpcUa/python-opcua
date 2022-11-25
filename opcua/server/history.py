@@ -123,7 +123,7 @@ class HistoryDict(HistoryStorageInterface):
             else:
                 results = [dv for dv in self._datachanges[node_id] if start <= dv.SourceTimestamp <= end]
             if nb_values and len(results) > nb_values:
-                cont = results[nb_values + 1].SourceTimestamp
+                cont = results[nb_values].SourceTimestamp
                 results = results[:nb_values]
             return results, cont
 
@@ -164,7 +164,7 @@ class HistoryDict(HistoryStorageInterface):
             else:
                 results = [ev for ev in self._events[source_id] if start <= ev.Time <= end]
             if nb_values and len(results) > nb_values:
-                cont = results[nb_values + 1].Time
+                cont = results[nb_values].Time
                 results = results[:nb_values]
             return results, cont
 
