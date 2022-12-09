@@ -340,7 +340,7 @@ class NodeId(object):
 
     @staticmethod
     def _from_string(string):
-        l = string.split(";")
+        l = string.split(";", 1)
         identifier = None
         namespace = 0
         ntype = None
