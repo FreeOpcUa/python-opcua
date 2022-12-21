@@ -211,9 +211,15 @@ class Node(object):
         elif isinstance(value, ua.Variant):
             datavalue = ua.DataValue(value)
             datavalue.SourceTimestamp = datetime.utcnow()
+        elif varianttype is None:
+            # Use the data type of the node (self) if no data type is given. 
+            varianttype = self.get_data_type_as_variant_type()
+            datavalue = ua.DataValue(ua.Variant(value, varianttype))
+            datavalue.SourceTimestamp = datetime.utcnow()
         else:
             datavalue = ua.DataValue(ua.Variant(value, varianttype))
             datavalue.SourceTimestamp = datetime.utcnow()
+
         self.set_attribute(ua.AttributeIds.Value, datavalue)
 
     set_data_value = set_value
