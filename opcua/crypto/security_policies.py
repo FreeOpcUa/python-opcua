@@ -283,7 +283,7 @@ class VerifierAesCbc(Verifier):
     def verify(self, data, signature):
         expected = uacrypto.hmac_sha1(self.key, data)
         if signature != expected:
-            raise uacrypto.InvalidSignature
+            raise UaError("Invalid signature in data {} with signature {}".format(data, signature))
 
 
 class EncryptorAesCbc(Encryptor):
