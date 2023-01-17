@@ -673,3 +673,9 @@ class Client(object):
         for result in results:
             result.check()
 
+    def is_connected(self):
+        """
+        Get OPC-UA client connection status.
+        """
+        return self.uaclient._uasocket._thread.isAlive()
+
