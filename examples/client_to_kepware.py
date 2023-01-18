@@ -31,7 +31,7 @@ if __name__ == "__main__":
         print("childs of root are: ", root.get_children())
         print("name of root is", root.get_browse_name())
         objects = client.get_objects_node()
-        print("childs og objects are: ", objects.get_children())
+        print("childs of objects are: ", objects.get_children())
 
 
         tag1 = client.get_node("ns=2;s=Channel1.Device1.Tag1")
