@@ -10,7 +10,7 @@ except:
 
 from opcua import ua
 from opcua.server.user_manager import UserManager
-
+import pytz
 
 class AttributeValue(object):
 
@@ -63,6 +63,9 @@ class AttributeService(object):
                 if not ua.ua_binary.test_bit(al.Value.Value, ua.AccessLevel.CurrentWrite) or not ua.ua_binary.test_bit(ual.Value.Value, ua.AccessLevel.CurrentWrite):
                     res.append(ua.StatusCode(ua.StatusCodes.BadUserAccessDenied))
                     continue
+            tz = pytz.timezone('Europe/Berlin')
+            writevalue.Value.ServerTimestamp = datetime.now(tz)
+            #writevalue.Value.SourceTimestamp = datetime.now(tz)
             res.append(self._aspace.set_attribute_value(writevalue.NodeId, writevalue.AttributeId, writevalue.Value))
         return res
 
