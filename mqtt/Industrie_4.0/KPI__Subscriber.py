@@ -9,7 +9,7 @@ import paho.mqtt.client as mqtt
 import time
 
 
-Broker = "127.0.0.1"
+Broker = "##############"
 client = mqtt.Client("KPI Subscriber")
 client.connect(Broker)
 
