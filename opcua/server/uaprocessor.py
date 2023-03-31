@@ -174,6 +174,49 @@ class UaProcessor(object):
                 data = self._connection.security_policy.client_certificate + self.session.nonce
             self._connection.security_policy.asymmetric_cryptography.verify(data, params.ClientSignature.Signature)
 
+            #
+            # somewhere create a list of trusted certificates
+            #
+            from opcua.crypto import uacrypto
+            trusted_certificates = [uacrypto.load_certificate('certificate-example.der')]
+
+            #
+            # To be implmeneted in the asymmetric_cryptography.verify (just called function above)
+            #
+            from opcua.crypto import uacrypto
+            client_cert = params.UserIdentityToken.CertificateData
+            sig1 = params.ClientSignature.Signature
+            sig2 = params.UserTokenSignature.Signature
+            verification_passed = False
+
+            '''
+            # test
+            cert1 = uacrypto.load_certificate('certificate-example.der')
+            cert2 = uacrypto.load_certificate('cert.pem')
+            import pdb
+            pdb.set_trace()
+            '''
+
+            for cert in trusted_certificates:
+                if uacrypto.der_from_x509(cert) == client_cert:
+                    # even if certificates match, veryfy that a matching key is assigned with the signature
+                    # not sure what is the role of data here but the verification can't be done with any data
+                    try:
+                        uacrypto.verify_sha1(cert, data, sig2)
+                        verification_passed = True
+                    except:
+                        self.logger.warning('Faulty client signature received by server during connection activation')
+                    break
+
+            if verification_passed: 
+                self.logger.info('Verification of signature with a trusted certificate is confirmed')
+            else:
+                self.logger.warning('An untrusted client activates a session with the server!!!')
+
+            #
+            #######
+            #
+
             result = self.session.activate_session(params)
 
             response = ua.ActivateSessionResponse()
