@@ -546,8 +546,8 @@ class Server(object):
         nodes = get_nodes_of_namespace(self, namespaces)
         self.export_xml(nodes, path)
 
-    def delete_nodes(self, nodes, recursive=False):
-        return delete_nodes(self.iserver.isession, nodes, recursive)
+    def delete_nodes(self, nodes, recursive=False, batch=False):
+        return delete_nodes(self.iserver.isession, nodes, recursive, batch=batch)
 
     def historize_node_data_change(self, node, period=timedelta(days=7), count=0):
         """
