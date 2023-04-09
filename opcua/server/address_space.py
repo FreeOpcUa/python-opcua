@@ -475,6 +475,8 @@ class MethodService(object):
                 res.StatusCode = ua.StatusCode(ua.StatusCodes.BadNothingToDo)
             else:
                 try:
+                    if method.InputArguments is None:
+                        method.InputArguments = [] 
                     result = node.call(method.ObjectId, *method.InputArguments)
                     if isinstance(result, ua.CallMethodResult):
                         res = result
