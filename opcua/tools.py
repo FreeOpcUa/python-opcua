@@ -374,11 +374,11 @@ def uasubscribe():
                         "--eventtype",
                         dest="eventtype",
                         default="datachange",
-                        choices=['datachange', 'event'],
+                        choices=['datachange', 'timeordatachange', 'event'],
                         help="Event type to subscribe to")
 
     args = parse_args(parser, requirenodeid=False)
-    if args.eventtype == "datachange":
+    if args.eventtype == "datachange" or args.eventtype == "timeordatachange":
         _require_nodeid(parser, args)
     else:
         # FIXME: this is broken, someone may have written i=84 on purpose
@@ -394,6 +394,8 @@ def uasubscribe():
         sub = client.create_subscription(500, handler)
         if args.eventtype == "datachange":
             sub.subscribe_data_change(node)
+        elif args.eventtype == "timeordatachange":
+            sub.subscribe_data_timestamp_change(node)
         else:
             sub.subscribe_events(node)
         print("Type Ctr-C to exit")

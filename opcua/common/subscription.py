@@ -196,6 +196,17 @@ class Subscription(object):
         """
         return self._subscribe(nodes, attr, queuesize=queuesize)
 
+    def subscribe_data_timestamp_change(self, nodes, attr=ua.AttributeIds.Value):
+        """
+        Subscribe for data and timestamp change events for a node or list of nodes.
+        default attribute is Value.
+        Return a handle which can be used to unsubscribe
+        If more control is necessary use create_monitored_items method
+        """
+        timestamp_filter = ua.DataChangeFilter()
+        timestamp_filter.Trigger = ua.DataChangeTrigger(2) # send notification when status, value or timestamp change
+        return self._subscribe(nodes, attr, mfilter=timestamp_filter, queuesize=0)
+
     def subscribe_events(self, sourcenode=ua.ObjectIds.Server, evtypes=ua.ObjectIds.BaseEventType, evfilter=None, queuesize=0):
         """
         Subscribe to events from a node. Default node is Server node.

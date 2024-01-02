@@ -673,7 +673,7 @@ class AddressSpace(object):
             old = attval.value
             attval.value = value
             cbs = []
-            if old.Value != value.Value:  # only send call callback when a value change has happend
+            if old.SourceTimestamp != value.SourceTimestamp or old.ServerTimestamp != value.ServerTimestamp:
                 cbs = list(attval.datachange_callbacks.items())
 
         for k, v in cbs:
