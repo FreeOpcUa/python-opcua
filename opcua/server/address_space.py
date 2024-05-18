@@ -311,7 +311,7 @@ class NodeManagementService(object):
         addref.IsForward = True
         addref.ReferenceTypeId = ua.NodeId(ua.ObjectIds.HasTypeDefinition)
         addref.TargetNodeId = item.TypeDefinition
-        addref.TargetNodeClass = ua.NodeClass.DataType
+        addref.TargetNodeClass = ua.NodeClass.ObjectType
         self._add_reference_no_check(nodedata, addref)
 
     def delete_nodes(self, deletenodeitems, user=UserManager.User.Admin):
