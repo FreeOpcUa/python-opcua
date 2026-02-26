@@ -351,7 +351,7 @@ class NodeId(object):
                 continue
             k, v = el.split("=", 1)
             k = k.strip()
-            v = v.strip()
+            v = v.lstrip()
             if k == "ns":
                 namespace = int(v)
             elif k == "i":
