@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='utf-8'?>
+<UANodeSet xmlns="http://opcfoundation.org/UA/2011/03/UANodeSet.xsd" xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Aliases>
+    <Alias Alias="Organizes">i=35</Alias>
+    <Alias Alias="HasTypeDefinition">i=40</Alias>
+    <Alias Alias="HasProperty">i=46</Alias>
+    <Alias Alias="HasComponent">i=47</Alias>
+    <Alias Alias="Argument">i=296</Alias>
+  </Aliases>
+  <NamespaceUris />
+  <UAObject BrowseName="0:Hellower" NodeId="i=20001" ParentNodeId="i=85">
+    <DisplayName>BaseObjectType</DisplayName>
+    <Description>The base type for all object nodes.</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="Organizes">i=85</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=58</Reference>
+      <Reference ReferenceType="HasComponent">i=20002</Reference>
+    </References>
+  </UAObject>
+  <UAMethod BrowseName="0:SayHello" NodeId="i=20002" ParentNodeId="i=20001">
+    <DisplayName>SayHello</DisplayName>
+    <Description>SayHello</Description>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasComponent">i=20001</Reference>
+      <Reference ReferenceType="HasProperty">i=20003</Reference>
+      <Reference ReferenceType="HasProperty">i=20004</Reference>
+    </References>
+  </UAMethod>
+  <UAVariable BrowseName="0:InputArguments" DataType="Argument" NodeId="i=20003" ParentNodeId="i=20002" ValueRank="0">
+    <DisplayName>InputArguments</DisplayName>
+    <Description>InputArguments</Description>
+    <Value>
+      <uax:ListOfExtensionObject>
+        <uax:ExtensionObject>
+          <uax:TypeId>
+            <uax:Identifier>i=296</uax:Identifier>
+          </uax:TypeId>
+          <uax:Body>
+            <uax:Argument>
+              <uax:ValueRank>-1</uax:ValueRank>
+              <uax:Description>
+                <uax:Text />
+                <uax:Locale />
+              </uax:Description>
+              <uax:DataType>
+                <uax:Identifier>i=1</uax:Identifier>
+              </uax:DataType>
+              <uax:Name>happy</uax:Name>
+              <uax:ArrayDimensions />
+            </uax:Argument>
+          </uax:Body>
+        </uax:ExtensionObject>
+      </uax:ListOfExtensionObject>
+    </Value>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">i=20002</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+    </References>
+  </UAVariable>
+  <UAVariable BrowseName="0:OutputArguments" DataType="Argument" NodeId="i=20004" ParentNodeId="i=20002" ValueRank="0">
+    <DisplayName>OutputArguments</DisplayName>
+    <Description>OutputArguments</Description>
+    <Value>
+      <uax:ListOfExtensionObject>
+        <uax:ExtensionObject>
+          <uax:TypeId>
+            <uax:Identifier>i=296</uax:Identifier>
+          </uax:TypeId>
+          <uax:Body>
+            <uax:Argument>
+              <uax:ValueRank>-1</uax:ValueRank>
+              <uax:Description>
+                <uax:Text />
+                <uax:Locale />
+              </uax:Description>
+              <uax:DataType>
+                <uax:Identifier>i=12</uax:Identifier>
+              </uax:DataType>
+              <uax:Name>saying</uax:Name>
+              <uax:ArrayDimensions />
+            </uax:Argument>
+          </uax:Body>
+        </uax:ExtensionObject>
+      </uax:ListOfExtensionObject>
+    </Value>
+    <References>
+      <Reference IsForward="false" ReferenceType="HasProperty">i=20002</Reference>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+    </References>
+  </UAVariable>
+</UANodeSet>

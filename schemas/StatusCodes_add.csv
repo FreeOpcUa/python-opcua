@@ -1,0 +1,3 @@
+Good,0,The operation completed successfully.
+Uncertain,0x40000000,The operation completed however its outputs may not be usable.
+Bad,0x80000000,The operation failed.

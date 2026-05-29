@@ -1,0 +1,4 @@
+sphinx
+sphinxcontrib-napoleon
+futures
+cryptography

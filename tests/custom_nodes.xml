@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UANodeSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.02" LastModified="2013-03-06T05:36:44.0862658Z" xmlns="http://opcfoundation.org/UA/2011/03/UANodeSet.xsd" xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd">
+  <Aliases>
+     <Alias Alias="LocalizedText">i=21</Alias>
+     <Alias Alias="HasModellingRule">i=37</Alias>
+     <Alias Alias="HasTypeDefinition">i=40</Alias>
+     <Alias Alias="HasSubtype">i=45</Alias>
+     <Alias Alias="HasProperty">i=46</Alias>
+     <Alias Alias="MyCustomString">ns=1;i=3008</Alias>
+     <Alias Alias="MyEnum">ns=1;i=3010</Alias>
+     <Alias Alias="MyEnumVal">ns=1;i=3011</Alias>
+  </Aliases>
+
+  <UAObject NodeId="ns=1;i=30001" BrowseName="1:MyXMLFolder"  >
+    <Description>A custom folder.</Description>
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=61</Reference>
+      <Reference ReferenceType="Organizes" IsForward="false">i=85</Reference>
+    </References>
+  </UAObject>
+
+
+  <UAObject NodeId="ns=1;i=30002" BrowseName="1:MyXMLObject">
+    <Description>A custom object node.</Description>
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=58</Reference>
+      <Reference ReferenceType="Organizes" IsForward="false">ns=1;i=30001</Reference>
+    </References>
+  </UAObject>
+
+
+  <UAVariable NodeId="ns=1;i=30004" BrowseName="1:MyXMLVariable" DataType="String">
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=69</Reference>
+      <Reference ReferenceType="Organizes" IsForward="false">ns=1;i=30002</Reference>
+    </References>
+    <Value>
+      <String>StringValue</String>
+    </Value>
+  </UAVariable>
+
+  <UAVariable NodeId="ns=1;i=30005" BrowseName="1:MyXMLProperty" DataType="UInt32">
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      <Reference ReferenceType="HasProperty" IsForward="false">ns=1;i=30002</Reference>
+    </References>
+    <Value>
+      <UInt32>76</UInt32>
+    </Value>
+  </UAVariable>
+
+  <UAVariable NodeId="ns=1;i=30006" BrowseName="1:MyXMLVariableWithoutValue" DataType="String">
+    <References>
+    
+      <Reference ReferenceType="HasTypeDefinition">i=69</Reference>
+      <Reference ReferenceType="Organizes" IsForward="false">ns=1;i=30002</Reference>
+    </References>
+  </UAVariable>
+  
+  <UADataType NodeId="ns=1;i=3008" BrowseName="1:MyCustomString">
+    <DisplayName>MyCustomString</DisplayName>
+      <References>
+          <Reference ReferenceType="HasSubtype" IsForward="false">i=12</Reference>
+    </References>
+  </UADataType>
+	
+  <UAVariable NodeId="ns=1;i=30007" BrowseName="1:MyCustomTypeVar" DataType="MyCustomString">
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=69</Reference>
+      <Reference ReferenceType="Organizes" IsForward="false">ns=1;i=30002</Reference>
+    </References>
+  </UAVariable>
+  
+  <!-- test data Enumeration with EnumStrings -->
+  <UADataType NodeId="ns=1;i=3010" BrowseName="1:MyEnum">
+        <DisplayName>MyEnum</DisplayName>
+        <Description>Demonstrates enums</Description>
+        <References>
+            <Reference ReferenceType="HasProperty">ns=1;i=6001</Reference>
+            <Reference ReferenceType="HasSubtype" IsForward="false">i=29</Reference>
+        </References>
+        <Definition Name="1:MyEnum">
+            <Field Name="ok" Value="0"/>
+            <Field Name="run" Value="1"/>
+            <Field Name="error" Value="2"/>
+        </Definition>
+  </UADataType>
+    
+  <UAVariable DataType="LocalizedText" ParentNodeId="ns=1;i=3010" ValueRank="1" NodeId="ns=1;i=6001" ArrayDimensions="3" BrowseName="EnumStrings">
+        <DisplayName>EnumStrings</DisplayName>
+        <References>
+            <Reference ReferenceType="HasProperty" IsForward="false">ns=1;i=3010</Reference>
+            <Reference ReferenceType="HasModellingRule">i=78</Reference>
+            <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+        </References>
+        <Value>
+            <uax:ListOfLocalizedText>
+                <uax:LocalizedText>
+                    <uax:Text>ok</uax:Text>
+                </uax:LocalizedText>
+                <uax:LocalizedText>
+                    <uax:Text>run</uax:Text>
+                </uax:LocalizedText>
+                <uax:LocalizedText>
+                    <uax:Text>error</uax:Text>
+                </uax:LocalizedText>
+            </uax:ListOfLocalizedText>
+        </Value>
+  </UAVariable>
+  
+  <!-- test data Enumeration with EnumValues -->  
+  <UADataType NodeId="ns=1;i=3011" BrowseName="1:MyEnumVal">
+        <DisplayName>MyEnumVal</DisplayName>
+        <References>
+            <Reference ReferenceType="HasSubtype" IsForward="false">i=29</Reference>
+        </References>
+        <Definition Name="1:MyEnumVal">
+            <Field Name="idle" Value="1"/>
+            <Field Name="run" Value="2"/>
+            <Field Name="error" Value="4"/>
+        </Definition>
+  </UADataType>
+  
+  <UAVariable DataType="EnumValueType" ParentNodeId="i=120" ValueRank="1" NodeId="ns=1;i=99002" ArrayDimensions="3" BrowseName="EnumValues">
+        <DisplayName>EnumValues</DisplayName>
+        <References>
+            <Reference ReferenceType="HasModellingRule">i=78</Reference>
+            <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+            <Reference ReferenceType="HasProperty" IsForward="false">ns=1;i=3011</Reference>
+        </References>
+        <Value>
+            <uax:ListOfExtensionObject>
+                <uax:ExtensionObject>
+                    <uax:TypeId>
+                        <uax:Identifier>i=7616</uax:Identifier>
+                    </uax:TypeId>
+                    <uax:Body>
+                        <uax:EnumValueType>
+                            <uax:Value>1</uax:Value>
+                            <uax:DisplayName>
+                                <uax:Text>idle</uax:Text>
+                            </uax:DisplayName>
+                            <uax:Description/>
+                        </uax:EnumValueType>
+                    </uax:Body>
+                </uax:ExtensionObject>
+                <uax:ExtensionObject>
+                    <uax:TypeId>
+                        <uax:Identifier>i=7616</uax:Identifier>
+                    </uax:TypeId>
+                    <uax:Body>
+                        <uax:EnumValueType>
+                            <uax:Value>2</uax:Value>
+                            <uax:DisplayName>
+                                <uax:Text>run</uax:Text>
+                            </uax:DisplayName>
+                            <uax:Description/>
+                        </uax:EnumValueType>
+                    </uax:Body>
+                </uax:ExtensionObject>
+                <uax:ExtensionObject>
+                    <uax:TypeId>
+                        <uax:Identifier>i=7616</uax:Identifier>
+                    </uax:TypeId>
+                    <uax:Body>
+                        <uax:EnumValueType>
+                            <uax:Value>4</uax:Value>
+                            <uax:DisplayName>
+                                <uax:Text>error</uax:Text>
+                            </uax:DisplayName>
+                            <uax:Description/>
+                        </uax:EnumValueType>
+                    </uax:Body>
+                </uax:ExtensionObject>
+            </uax:ListOfExtensionObject>
+        </Value>
+  </UAVariable>
+
+  <!-- Test the other xml format-->
+  <UAVariable NodeId="i=99003" BrowseName="EnumValues" ParentNodeId="i=120" DataType="i=7594" ValueRank="1">
+    <DisplayName>EnumValues</DisplayName>
+    <References>
+      <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      <Reference ReferenceType="HasModellingRule">i=78</Reference>
+      <Reference ReferenceType="HasProperty" IsForward="false">i=120</Reference>
+    </References>
+    <Value>
+      <ListOfExtensionObject xmlns="http://opcfoundation.org/UA/2008/02/Types.xsd">
+        <ExtensionObject>
+          <TypeId>
+            <Identifier>i=7616</Identifier>
+          </TypeId>
+          <Body>
+            <EnumValueType>
+              <Value>1</Value>
+              <DisplayName>
+                <Locale>
+                </Locale>
+                <Text>Mandatory</Text>
+              </DisplayName>
+              <Description>
+                <Locale>
+                </Locale>
+                <Text>The BrowseName must appear in all instances of the type.</Text>
+              </Description>
+            </EnumValueType>
+          </Body>
+        </ExtensionObject>
+        <ExtensionObject>
+          <TypeId>
+            <Identifier>i=7616</Identifier>
+          </TypeId>
+          <Body>
+            <EnumValueType>
+              <Value>2</Value>
+              <DisplayName>
+                <Locale>
+                </Locale>
+                <Text>Optional</Text>
+              </DisplayName>
+              <Description>
+                <Locale>
+                </Locale>
+                <Text>The BrowseName may appear in an instance of the type.</Text>
+              </Description>
+            </EnumValueType>
+          </Body>
+        </ExtensionObject>
+        <ExtensionObject>
+          <TypeId>
+            <Identifier>i=7616</Identifier>
+          </TypeId>
+          <Body>
+            <EnumValueType>
+              <Value>3</Value>
+              <DisplayName>
+                <Locale>
+                </Locale>
+                <Text>Constraint</Text>
+              </DisplayName>
+              <Description>
+                <Locale>
+                </Locale>
+                <Text>The modelling rule defines a constraint and the BrowseName is not used in an instance of the type.</Text>
+              </Description>
+            </EnumValueType>
+          </Body>
+        </ExtensionObject>
+      </ListOfExtensionObject>
+    </Value>
+  </UAVariable>
+
+
+  <!-- test data Object with Method and MethodArguments -->
+  <UAObjectType NodeId="ns=1;i=1050" BrowseName="1:MyObjectType">
+      <DisplayName>MyObjectType</DisplayName>
+      <References>
+          <Reference ReferenceType="HasComponent">ns=1;i=7050</Reference>
+          <Reference ReferenceType="HasSubtype" IsForward="false">i=58</Reference>
+      </References>
+  </UAObjectType>
+  <UAMethod ParentNodeId="ns=1;i=1050" NodeId="ns=1;i=7050" BrowseName="1:MyMethod">
+      <DisplayName>MyMethod</DisplayName>
+      <References>
+          <Reference ReferenceType="HasProperty">ns=1;i=6050</Reference>
+          <Reference ReferenceType="HasModellingRule">i=78</Reference>
+          <Reference ReferenceType="HasComponent" IsForward="false">ns=1;i=1050</Reference>
+          <Reference ReferenceType="HasProperty">ns=1;i=6051</Reference>
+      </References>
+  </UAMethod>
+  <UAVariable DataType="Argument" ParentNodeId="ns=1;i=7050" ValueRank="1" NodeId="ns=1;i=6050" ArrayDimensions="1" BrowseName="InputArguments">
+      <DisplayName>InputArguments</DisplayName>
+      <References>
+          <Reference ReferenceType="HasProperty" IsForward="false">ns=1;i=7050</Reference>
+          <Reference ReferenceType="HasModellingRule">i=78</Reference>
+          <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      </References>
+      <Value>
+          <uax:ListOfExtensionObject>
+              <uax:ExtensionObject>
+                  <uax:TypeId>
+                      <uax:Identifier>i=297</uax:Identifier>
+                  </uax:TypeId>
+                  <uax:Body>
+                      <uax:Argument>
+                          <uax:Name>Context</uax:Name>
+                          <uax:DataType>
+                              <uax:Identifier>i=12</uax:Identifier>
+                          </uax:DataType>
+                          <uax:ValueRank>-1</uax:ValueRank>
+                          <uax:ArrayDimensions/>
+                          <uax:Description/>
+                      </uax:Argument>
+                  </uax:Body>
+              </uax:ExtensionObject>
+          </uax:ListOfExtensionObject>
+      </Value>
+  </UAVariable>
+  <UAVariable DataType="Argument" ParentNodeId="ns=1;i=7050" ValueRank="1" NodeId="ns=1;i=6051" ArrayDimensions="1" BrowseName="OutputArguments">
+      <DisplayName>OutputArguments</DisplayName>
+      <References>
+          <Reference ReferenceType="HasModellingRule">i=78</Reference>
+          <Reference ReferenceType="HasProperty" IsForward="false">ns=1;i=7050</Reference>
+          <Reference ReferenceType="HasTypeDefinition">i=68</Reference>
+      </References>
+      <Value>
+          <uax:ListOfExtensionObject>
+              <uax:ExtensionObject>
+                  <uax:TypeId>
+                      <uax:Identifier>i=297</uax:Identifier>
+                  </uax:TypeId>
+                  <uax:Body>
+                      <uax:Argument>
+                          <uax:Name>Status</uax:Name>
+                          <uax:DataType>
+                              <uax:Identifier>i=6</uax:Identifier>
+                          </uax:DataType>
+                          <uax:ValueRank>-1</uax:ValueRank>
+                          <uax:ArrayDimensions/>
+                          <uax:Description/>
+                      </uax:Argument>
+                  </uax:Body>
+              </uax:ExtensionObject>
+          </uax:ListOfExtensionObject>
+      </Value>
+  </UAVariable>    
+      
+</UANodeSet>
